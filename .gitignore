@@ -37,3 +37,4 @@ _.txt
 _local_/
 
 **/turbo-build.log
+.vercel

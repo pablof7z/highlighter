@@ -1,3 +1,4 @@
 [submodule "packages"]
 	path = packages
 	url = git@github.com:kind-0/packages.git
+	branch = master
