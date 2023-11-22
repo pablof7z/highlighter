@@ -1,5 +1,6 @@
 import type NDK from "@nostr-dev-kit/ndk";
 import { NDKNip07Signer, NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
+import { user } from "@kind0/ui-common";
 
 export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
 
@@ -10,28 +11,37 @@ export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
 export async function login(ndk: NDK, bunkerNDK?: NDK, method?: LoginMethod): Promise<NDKUser | null> {
     // Check if there is a localStorage item with the key "nostr-key-method"
     const nostrKeyMethod = method || localStorage.getItem("nostr-key-method");
+    let u: NDKUser | null;
 
     switch (nostrKeyMethod) {
         case 'none': return null;
-        case 'pk':
+        case 'pk': {
             const key = localStorage.getItem('nostr-key');
 
             if (!key) return null;
 
             const signer = new NDKPrivateKeySigner(key);
             ndk.signer = signer;
-            const user = await signer.user();
-            if (user) user.ndk = ndk;
-            return user;
+            const u = await signer.u();
+            if (u) u.ndk = ndk;
+            break;
+        }
         case 'nip07':
-            return nip07SignIn(ndk);
+            u = await nip07SignIn(ndk);
+            break;
         case 'nip46': {
-            const promise = new Promise<NDKUser | null>((resolve, reject) => {
+            const promise = new Promise<NDKUser | null>((resolve) => {
                 const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
+                const storedNpub = localStorage.getItem('nostr-target-npub');
+
+                if (storedNpub) {
+                    u = ndk.getUser({ npub: storedNpub! });
+                }
 
                 if (!bunkerNDK) bunkerNDK = ndk;
 
                 if (existingPrivateKey) {
+                    user.set(u);
                     bunkerNDK.connect(2500);
                     bunkerNDK.pool.on('relay:connect', async () => {
                         const user = await nip46SignIn(ndk, bunkerNDK!, existingPrivateKey);
@@ -61,13 +71,16 @@ export async function login(ndk: NDK, bunkerNDK?: NDK, method?: LoginMethod): Pr
             return promise;
         }
     }
+
+    user.set(u);
+    return u;
 }
 
 /**
  * This function attempts to sign in using a NIP-07 extension.
  */
 async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
-    const storedNpub = localStorage.getItem('currentUserNpub');
+    const storedNpub = localStorage.getItem('nostr-target-npub');
     let user: NDKUser | null = null;
 
     if (storedNpub) {
@@ -78,10 +91,12 @@ async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
     if (window.nostr) {
         try {
             ndk.signer = new NDKNip07Signer();
-            user = await ndk.signer.user();
+            user = await ndk.signer?.blockUntilReady();
             user.ndk = ndk;
-            localStorage.setItem('currentUserNpub', user.npub);
-            ndk = ndk;
+            if (user) {
+                localStorage.setItem('nostr-key-method', 'nip07');
+            }
+            localStorage.setItem('nostr-target-npub', user.npub);
         } catch (e) {
         }
     }
@@ -105,7 +120,12 @@ async function nip46SignIn(ndk: NDK, bunkerNDK: NDK, existingPrivateKey: string)
         localSigner = new NDKPrivateKeySigner(existingPrivateKey);
     }
 
-    const remoteSigner = new NDKNip46Signer(bunkerNDK, remoteUser.pubkey, localSigner);
+    if (!localSigner) {
+        alert("Local signer not available");
+        return null;
+    }
+
+    const remoteSigner = new NDKNip46Signer(bunkerNDK, remoteUser.pubkey, localSigner!);
 
     await remoteSigner.blockUntilReady();
     ndk.signer = remoteSigner;

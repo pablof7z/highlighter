@@ -1,15 +1,14 @@
 <script lang="ts">
-    import ndk from '$lib/stores/ndk';
     import LoginNip07Button from './LoginNip07Button.svelte';
     import LoginGuestButton from './LoginGuestButton.svelte';
+	import { CollapsableDropdown, ndk } from '@kind0/ui-common';
     // import LoginNip46Button from './LoginNip46Button.svelte';
-    import CollapsableDropdown from '$lib/components/CollapsableDropdown.svelte';
 </script>
 
 {#if !$ndk.signer}
     <CollapsableDropdown>
         <!-- dropdown-button can not be <button> element. Issue with daisyUI dropdown -->
-        <div slot="dropdown-button" class="btn btn-outline btn-rounded-full rounded-full border-accent2 bg-transparent text-base-100-content text-sm md:text-base normal-case hover:border-accent2 hover:bg-accent2 hover:bg-opacity-20 hover:text-base-100-content">
+        <div class="btn btn-outline btn-rounded-full rounded-full border-accent2 bg-transparent text-base-100-content text-sm md:text-base normal-case hover:border-accent2 hover:bg-accent2 hover:bg-opacity-20 hover:text-base-100-content">
             <span class="px-0 md:px-4 lg:px-9">
                 Log In
             </span>

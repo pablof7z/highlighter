@@ -18,9 +18,6 @@ module.exports = {
 		width: {
 		  'sidebar': '244px',
 		  'main': '700px',
-		},
-		spacing: {
-		  '32': '32px'
 		}
 	  },
 	  fontFamily: {

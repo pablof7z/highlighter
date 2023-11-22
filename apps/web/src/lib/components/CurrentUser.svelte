@@ -1,13 +1,29 @@
 <script lang="ts">
-    import { currentUser } from '$stores/current-user';
-    import LoginDropdown from '$components/LoginDropdown.svelte';
     import UserDropdown from './UserDropdown.svelte';
+	import { openModal } from 'svelte-modals';
+	import SignupModal from '$modals/SignupModal.svelte';
+	import { bunkerNDK, ndk, user } from '@kind0/ui-common';
+	import { login } from '$utils/login';
+
+    async function openSignupModal() {
+        if (window.nostr) {
+            const u = await login($ndk, $bunkerNDK, 'nip07');
+            if (u) {
+                $user = u;
+                return;
+            }
+        }
+
+        openModal(SignupModal);
+    }
 </script>
 
-{#if $currentUser}
+{#if $user}
     <UserDropdown />
 {:else}
-    <LoginDropdown />
+    <button class="button" on:click={openSignupModal}>
+        Sign up
+    </button>
 {/if}
 
 <style lang="postcss">

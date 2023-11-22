@@ -1,23 +1,21 @@
 <script lang="ts">
-    import ndk from '$lib/stores/ndk';
     import { login } from '$lib/utils/login';
-    import { currentUser } from '$stores/current-user';
-    import SubtleButton from '$lib/components/buttons/SubtleButton.svelte';
     import { browser } from '$app/environment';
+	import { ndk, user } from '@kind0/ui-common';
 
     let noNip07extenion: boolean;
 
     $: noNip07extenion = browser ? !window.nostr : false;
 
     async function loginNip07() {
-        const user = await login($ndk, undefined, 'nip07');
+        const u = await login($ndk, undefined, 'nip07');
 
-        if (!user) {
+        if (!u) {
             alert('Login failed');
         } else {
-            $currentUser = user;
+            $user = u;
             localStorage.setItem('nostr-key-method', 'nip07');
-            localStorage.setItem('nostr-target-npub', $currentUser.npub);
+            localStorage.setItem('nostr-target-npub', $user.npub);
         }
     }
 </script>
@@ -38,7 +36,7 @@
         </div>
     </div>
 {:else}
-    <SubtleButton handleClick={loginNip07} class="w-full">
-        <span slot="btn-content">Use Browser Extension</span>
-    </SubtleButton>
+    <button on:click={loginNip07} class="w-full">
+        <span>Use Browser Extension</span>
+    </button>
 {/if}

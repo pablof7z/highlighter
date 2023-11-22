@@ -4,32 +4,27 @@
 
 @layer base {
 	@font-face {
-		font-family: 'Inter';
-		font-style: normal;
-		font-weight: 100 900;
-		font-display: swap;
-		ascent-override: 80%;
-		descent-override: 20%;
-		line-gap-override: 0%;
-		src: url(/fonts/Inter-VariableFont_slnt,wght.woff2) format('woff2');
-		unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
-			U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		font-family: 'Outfit';
 	}
 
 	html,
 	body,
 	body > div {
-		height: 100%;
+		font-family: Outfit;
+		min-height: 100%;
 	}
 
-	.list-container {
-		@apply flex flex-col divide-y divide-base-300;
-		@apply md:divide-y-0 md:gap-4;
-
+	.button {
+		@apply px-3 py-1.5 bg-white rounded-full justify-center items-center gap-2 inline-flex;
+		@apply text-black text-base font-semibold;
 	}
 
-	.event-card--dropdown-menu {
-		@apply absolute top-0 right-0 z-10;
-		@apply !opacity-75;
+	.button-primary {
+		@apply px-6 py-3 bg-black rounded-full justify-center items-center gap-2 inline-flex;
+		@apply text-white text-base font-semibold;
+	}
+
+	.button-primary:disabled {
+		@apply bg-gray-400;
 	}
 }

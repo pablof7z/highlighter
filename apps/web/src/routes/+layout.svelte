@@ -1,45 +1,50 @@
 <script lang="ts">
-	import { initJobRequests, userJobRequests } from '$stores/jobRequests';
-	import ndk from '$stores/ndk';
 	import { onMount } from 'svelte';
 	import '../app.postcss';
-	import { NDKNip07Signer } from '@nostr-dev-kit/ndk';
-	import { currentUser } from '$stores/current-user';
-	import Navbar from '$components/Navbar.svelte';
 	import { Modals, closeModal } from 'svelte-modals'
 	import { fade } from 'svelte/transition';
-	import { initNotifications } from '$stores/notifications';
+	import { Toaster, bunkerNDK, ndk, user } from '@kind0/ui-common';
+	import { login } from '$utils/login';
 
 	onMount(async () => {
         try {
+			const keyMethod = localStorage.getItem('nostr-key-method');
             $ndk.connect();
 
-			if (localStorage.getItem('nostr-key-method') === 'nip07') {
-				await login();
+			if (keyMethod === 'nip07') {
+				await loginNip07();
+			} else if (keyMethod === 'nip46') {
+				await login($ndk, $bunkerNDK, 'nip46');
+			} else if (!keyMethod) {
+				let nip07Attempts = 0;
+				const nip07Attempt = setInterval(() => {
+					if (nip07Attempts > 10) {
+						clearInterval(nip07Attempt);
+						return;
+					}
+
+					if ($ndk.signer) {
+						clearInterval(nip07Attempt);
+						return;
+					}
+
+					nip07Attempts++;
+					if (window.nostr) {
+						loginNip07();
+						clearInterval(nip07Attempt);
+					}
+				}, 100);
 			}
         } catch (e) {
             console.error(`layout error`, e);
         }
     });
 
-	async function login() {
-		$ndk.signer = new NDKNip07Signer();
-		$currentUser = await $ndk.signer?.blockUntilReady();
-		$currentUser.ndk = $ndk;
-
-		if ($currentUser) {
-			localStorage.setItem('nostr-key-method', 'nip07');
-		}
-	}
-
-	$: if ($currentUser && !$userJobRequests) {
-		console.log(`init`);
-		initJobRequests();
-		initNotifications();
+	async function loginNip07() {
+		const u = await login($ndk, $bunkerNDK, 'nip07');
+		if (u) $user = u;
 	}
 </script>
-
-<Navbar />
 
 <Modals>
     <div
@@ -49,15 +54,9 @@
         transition:fade={{ duration: 100 }}></div>
 </Modals>
 
-<div class="mx-auto">
-	<slot />
-</div>
+<slot />
 
 <style lang="postcss">
-	:global(.userCard .userCard--avatar .avatar--image) {
-		@apply w-12 h-12;
-	}
-
 	.backdrop {
         position: fixed;
         top: 0;
@@ -67,4 +66,11 @@
         left: 0;
         background: rgba(0,0,0,0.50)
     }
+
+	:global(.toast) {
+		@apply fixed bottom-2 right-2;
+	}
+
 </style>
+
+<Toaster />
