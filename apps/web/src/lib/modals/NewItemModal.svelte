@@ -34,7 +34,7 @@
         <div class="bg-white p-8 rounded-2xl shadow-lg p-12">
             <div class="flex flex-col md:flex-row gap-16">
 
-                <a href="#">
+                <a href="/new/note">
                     <span>
                         <NoteIcon />
                     </span>

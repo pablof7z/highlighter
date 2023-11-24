@@ -1,5 +1,5 @@
 import { ndk } from "@kind0/ui-common";
-import { NDKKind, NDKEvent, type NDKUser, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
+import { NDKKind, NDKEvent, type NDKUser, NDKSubscriptionCacheUsage, NDKArticle } from "@nostr-dev-kit/ndk";
 import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 import { writable, get as getStore, derived, type Readable } from "svelte/store";
 
@@ -42,6 +42,11 @@ export function startUserView(user: NDKUser) {
         {
             kinds: [ NDKKind.Zap ],
             "#p": [ user.pubkey ]
+        },
+        // get group content published by the user
+        {
+            "#h": [ user.pubkey ],
+            "authors": [ user.pubkey ],
         }
     ], {
         subId: 'user-view',
@@ -51,14 +56,30 @@ export function startUserView(user: NDKUser) {
     });
 }
 
-export function getUserSupportPlansStore() {
+export function getContent() {
     if (!userSubscription) return derived([], () => []);
+
+    return derived(userSubscription, ($userSubscription) => {
+        if (!$userSubscription || !activeUserView) return [];
+
+        const groupContent = $userSubscription.filter((event: NDKEvent) => {
+            return event.tagValue("h") === activeUserView?.pubkey;
+        });
+
+        return groupContent;
+    });
+}
+
+export function getUserSupportPlansStore() {
+    if (!userSubscription) return derived<[], NDKArticle[]>([], () => []);
 
     return derived(userSubscription, ($userSubscription) => {
         if (!$userSubscription || !activeUserView) return [];
 
         const plans = $userSubscription.filter((event: NDKEvent) => {
             return event.kind === 37001;
+        }).map((event: NDKEvent) => {
+            return NDKArticle.from(event);
         });
 
         return plans;

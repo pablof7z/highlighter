@@ -3,7 +3,7 @@
 	import { slide } from "svelte/transition";
     let show = false;
 
-    export let tiers: Record<string, boolean> = { "Free": true, "Premium": true, "Exclusive": true };
+    export let tiers: Record<string, boolean>;
     let selectedString = "";
 
     function updateSelectedString(changingTier?: string) {
@@ -17,7 +17,7 @@
             tiers = Object.keys(tiers).reduce((acc, tier) => ({ ...acc, [tier]: true }), {});
         }
 
-        if (Object.keys(tiers).filter(tier => tiers[tier]).length === 3) {
+        if (Object.keys(tiers).filter(tier => tiers[tier]).length === Object.keys(tiers).length) {
             selectedString = "Free";
             return;
         } else if (Object.keys(tiers).filter(tier => tiers[tier]).length === 0) {

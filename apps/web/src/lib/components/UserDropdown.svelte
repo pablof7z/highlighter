@@ -22,7 +22,7 @@
 </script>
 
 <div class="dropdown dropdown-end">
-    <label tabindex="0" class="btn-circle avatar">
+    <label tabindex="0" class="btn-circle avatar flex">
         <Avatar user={$user}/>
     </label>
 

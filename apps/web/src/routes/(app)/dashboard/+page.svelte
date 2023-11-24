@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Timeline from '$components/Events/Timeline.svelte';
 	import NewTier from '$components/Forms/NewTier.svelte';
 	import PageTitle from "$components/Page/PageTitle.svelte";
 	import NewItemModal from "$modals/NewItemModal.svelte";
@@ -57,4 +58,6 @@
             {/await}
         </div>
     </div>
+
+    <Timeline user={$user} />
 </div>
