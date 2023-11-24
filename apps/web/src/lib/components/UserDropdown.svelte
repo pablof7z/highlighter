@@ -2,6 +2,7 @@
     import { get as getStore } from 'svelte/store';
 	import { Avatar, CollapsableDropdown, Name, ndk, user } from '@kind0/ui-common';
     import {SignOut, SquaresFour, Tray} from 'phosphor-svelte';
+	import { userFollows } from '$stores/session';
 
     export function logout(): void {
         const $ndk = getStore(ndk);
@@ -20,34 +21,40 @@
     }
 </script>
 
-<CollapsableDropdown>
-        <div slot="dropdown-btn-open" class="btn-circle avatar">
-            <Avatar user={$user}/>
-        </div>
+<div class="dropdown dropdown-end">
+    <label tabindex="0" class="btn-circle avatar">
+        <Avatar user={$user}/>
+    </label>
 
-        <ul slot="dropdown-content" class="absolute right-0 divide-y divide-neutral-800 menu p-0 z-50 rounded-box whitespace-nowrap text-base">
-            <li><a href="#">
-                <Tray size={16} class="mr-2"/>
-                Inbox
-            </a></li>
-            <li><a href="/dashboard">
-                <SquaresFour size={16} class="mr-2"/>
-                Creator Dashboard
-            </a></li>
-            <li><a href="/dashboard/tiers">
-                <SquaresFour size={16} class="mr-2"/>
-                Tiers
-            </a></li>
-            <li><button on:click={logout} class="w-full">
-                <SignOut size={16} class="mr-2"/>
-                Log Out
-            </button></li>
-        </ul>
+    <ul class="dropdown-content divide-y divide-neutral-900 menu p-0 z-50 rounded-box whitespace-nowrap text-base">
+        <li><a href="#">
+            <Tray size={16} class="mr-2"/>
+            Inbox
+        </a></li>
+        <li><a href="/dashboard">
+            <SquaresFour size={16} class="mr-2"/>
+            Creator Dashboard
+        </a></li>
+        <li><a href="/dashboard/tiers">
+            <SquaresFour size={16} class="mr-2"/>
+            Tiers
+        </a></li>
+        <li><button on:click={logout} class="w-full">
+            <SignOut size={16} class="mr-2"/>
+            Log Out
+        </button></li>
+        <li>
+            <div class="flex flex-col gap-4 items-start text-sm">
+                <div>Debug Information</div>
+                User follows: {$userFollows.size}
+            </div>
+        </li>
+    </ul>
 
-    </CollapsableDropdown>
+</div>
 
-    <style lang="postcss">
-        li a {
-            @apply whitespace-nowrap;
-        }
-    </style>
+<style lang="postcss">
+    li a {
+        @apply whitespace-nowrap;
+    }
+</style>

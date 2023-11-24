@@ -51,10 +51,6 @@
             return articles;
         });
     }
-
-
-
-
 </script>
 
 {#if promise}

@@ -1,11 +1,21 @@
 <script lang="ts">
 	import { Avatar, Name } from "@kind0/ui-common";
 	import type { NDKUser } from "@nostr-dev-kit/ndk";
+	import { ArrowLeft } from "phosphor-svelte";
+    import { createEventDispatcher } from "svelte";
 
     export let user: NDKUser;
+    export let showBackArrow = false;
+
+    const dispatch = createEventDispatcher();
 </script>
 
 <div class="justify-start items-center gap-3 inline-flex">
+    {#if showBackArrow}
+        <button class="btn btn-ghost btn-circle absolute left-4" on:click={() => dispatch("back")}>
+            <ArrowLeft color="black" class="w-6 h-6" />
+        </button>
+    {/if}
     <div class="w-10 h-10 relative">
         <div class="w-10 h-10 left-0 top-0 absolute bg-white rounded-full"></div>
         <Avatar {user} class="w-10 h-10 left-0 top-0 absolute" />

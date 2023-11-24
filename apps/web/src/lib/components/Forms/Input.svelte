@@ -6,6 +6,7 @@
     bind:value
     type="text"
     on:change
+    on:blur
     on:keyup
     {...$$props}
     class="

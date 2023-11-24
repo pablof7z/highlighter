@@ -26,6 +26,12 @@ importers:
 
   apps/web:
     dependencies:
+      '@getalby/bitcoin-connect':
+        specifier: 2.4.0-alpha.7
+        version: 2.4.0-alpha.7(react@18.2.0)(typescript@5.2.2)
+      '@getalby/sdk':
+        specifier: ^2.7.0
+        version: 2.7.0(typescript@5.2.2)
       '@kind0/ui-common':
         specifier: workspace:*
         version: link:../../packages/ui-common
@@ -3081,6 +3087,40 @@ packages:
   /@floating-ui/utils@0.1.1:
     resolution: {integrity: sha512-m0G6wlnhm/AX0H12IOWtK8gASEMffnX08RtKkCgTdHb9JpHKGloI7icFfLg9ZmQeavcvR0PKmzxClyuFPSjKWw==}
 
+  /@getalby/bitcoin-connect@2.4.0-alpha.7(react@18.2.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-ADWiiEtcdbgfKnzhQOfCr7CFGuBG0oNqL3rFBUtBAFyEvRq87GKg8S9q7+pIK4+XUL4WiiAGXb+EORPxJq9W4A==}
+    dependencies:
+      '@getalby/lightning-tools': 4.2.0
+      '@getalby/sdk': 2.7.0(typescript@5.2.2)
+      '@lightninglabs/lnc-web': 0.2.6-alpha
+      qrcode-generator: 1.4.4
+      zustand: 4.4.6(react@18.2.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - immer
+      - react
+      - typescript
+    dev: false
+
+  /@getalby/lightning-tools@4.2.0:
+    resolution: {integrity: sha512-o87OTIgKgzOjDPoepDATQVGc2WkrO0Mwt4w+QAorYJx1z5MaCTipJi2cTO0GESObH1sEWCorZikanhMoRUh+qA==}
+    engines: {node: '>=14'}
+    dependencies:
+      crypto-js: 4.2.0
+      light-bolt11-decoder: 3.0.0
+    dev: false
+
+  /@getalby/sdk@2.7.0(typescript@5.2.2):
+    resolution: {integrity: sha512-4NoEgdjx0R8SYDmJfCAsgvuBs0w3d8wsOMGI4m0h2MVsSeCcWW93lrzCl8bRmHTF5N7EfleHwnieYwn5j9KZTA==}
+    engines: {node: '>=14'}
+    dependencies:
+      crypto-js: 4.2.0
+      events: 3.3.0
+      nostr-tools: 1.17.0(typescript@5.2.2)
+    transitivePeerDependencies:
+      - typescript
+    dev: false
+
   /@grail-ui/svelte@0.10.1(svelte@4.2.0):
     resolution: {integrity: sha512-r3joX8KZPupEb+xL9DFHDsUwFulcejuSkjITkJsiBJlIZMplN1gMCw6Onh99hvN3rFTTSi5ULvCu7oRZHxy6TA==}
     peerDependencies:
@@ -3444,6 +3484,17 @@ packages:
   /@juggle/resize-observer@3.4.0:
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
     dev: true
+
+  /@lightninglabs/lnc-core@0.2.6-alpha:
+    resolution: {integrity: sha512-bw2EQG78pPKMZMFwV+TR99RUbYgPVUKQYMLGGKIOvhPds3dBWSDZpMoqOyW/WidWGXF/ugPHzud8lDbKKhNXgA==}
+    dev: false
+
+  /@lightninglabs/lnc-web@0.2.6-alpha:
+    resolution: {integrity: sha512-SrqR8xaDnFLgNzPe5om7REOAhSOP95jQNIHP0GY0Lv895eDjrI6CPkfCFcX97INoDWYHBvDT8DZeYkBvlznVNA==}
+    dependencies:
+      '@lightninglabs/lnc-core': 0.2.6-alpha
+      crypto-js: 4.1.1
+    dev: false
 
   /@macfja/serializer@1.1.2:
     resolution: {integrity: sha512-kqEg3Zu5/g3ivdeb+jP4rBVVdmtKXVsRwH+x9KdM2Y7d2mKLq54g+YLSgTQ4KwJvWmyHFvRq0ouX5Dr4H1Hw3Q==}
@@ -7356,6 +7407,14 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
 
+  /crypto-js@4.1.1:
+    resolution: {integrity: sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==}
+    dev: false
+
+  /crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    dev: false
+
   /crypto-random-string@2.0.0:
     resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
     engines: {node: '>=8'}
@@ -8636,6 +8695,11 @@ packages:
 
   /eventemitter3@5.0.1:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+    dev: false
+
+  /events@3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
+    engines: {node: '>=0.8.x'}
     dev: false
 
   /execa@5.1.1:
@@ -10673,7 +10737,6 @@ packages:
     hasBin: true
     dependencies:
       js-tokens: 4.0.0
-    dev: true
 
   /loupe@2.3.6:
     resolution: {integrity: sha512-RaPMZKiMy8/JruncMU5Bt6na1eftNoo++R4Y+N2FrxkDVTrGvcyzFTsaGif4QTeKESheMGegbhw6iUAq+5A8zA==}
@@ -12462,6 +12525,10 @@ packages:
     resolution: {integrity: sha512-6Yg0ekpKICSjPswYOuC5sku/TSWaRYlA0qsXqJgM/d/4pLPHPuTxK7Nbf7jFKzAeedUhR8C7K9Uv63FBsSo8xQ==}
     dev: true
 
+  /qrcode-generator@1.4.4:
+    resolution: {integrity: sha512-HM7yY8O2ilqhmULxGMpcHSF1EhJJ9yBj8gvDEuZ6M+KGJ0YY2hKpnXvRD+hZPLrDVck3ExIGhmPtSdcjC+guuw==}
+    dev: false
+
   /qs@6.11.0:
     resolution: {integrity: sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==}
     engines: {node: '>=0.6'}
@@ -12596,7 +12663,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
-    dev: true
 
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -14714,6 +14780,14 @@ packages:
       tslib: 2.6.2
     dev: true
 
+  /use-sync-external-store@1.2.0(react@18.2.0):
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /utf-8-validate@5.0.10:
     resolution: {integrity: sha512-Z6czzLq4u8fPOyx7TU6X3dvUZVvoJmxSQ+IcrlmagKhilxlhZgxPK6C5Jqbkw1IDUmFTM+cz9QDnnLTwDz/2gQ==}
     engines: {node: '>=6.14.2'}
@@ -15360,6 +15434,25 @@ packages:
     resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
     engines: {node: '>=12.20'}
     dev: true
+
+  /zustand@4.4.6(react@18.2.0):
+    resolution: {integrity: sha512-Rb16eW55gqL4W2XZpJh0fnrATxYEG3Apl2gfHTyDSE965x/zxslTikpNch0JgNjJA9zK6gEFW8Fl6d1rTZaqgg==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
 
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}

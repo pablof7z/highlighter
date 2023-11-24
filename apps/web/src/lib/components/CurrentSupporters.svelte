@@ -32,8 +32,6 @@
         {#each supportingPubkeys as supportingPubkey (supportingPubkey)}
             <Avatar pubkey={supportingPubkey} class="w-10 h-10 border-2 border-black" />
         {/each}
-        {$tiers.length}
-
     </div>
 
     <div class="ml-4">

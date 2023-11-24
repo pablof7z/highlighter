@@ -5,8 +5,13 @@
 	import { fade } from 'svelte/transition';
 	import { Toaster, bunkerNDK, ndk, user } from '@kind0/ui-common';
 	import { login } from '$utils/login';
+	import { prepareSession } from '$stores/session';
 
 	onMount(async () => {
+		window?.addEventListener('bc:connected', (e) => {
+			console.log('bc:connected', e);
+		});
+
         try {
 			const keyMethod = localStorage.getItem('nostr-key-method');
             $ndk.connect();
@@ -43,6 +48,13 @@
 	async function loginNip07() {
 		const u = await login($ndk, $bunkerNDK, 'nip07');
 		if (u) $user = u;
+	}
+
+	let sessionPreparationStarted = false;
+
+	$: if (!sessionPreparationStarted && !!$user) {
+		sessionPreparationStarted = true;
+		prepareSession();
 	}
 </script>
 

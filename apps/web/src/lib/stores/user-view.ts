@@ -1,5 +1,5 @@
 import { ndk } from "@kind0/ui-common";
-import { NDKKind, NDKEvent, type NDKUser } from "@nostr-dev-kit/ndk";
+import { NDKKind, NDKEvent, type NDKUser, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 import { writable, get as getStore, derived, type Readable } from "svelte/store";
 
@@ -30,7 +30,7 @@ export function startUserView(user: NDKUser) {
         },
         // supporting options
         {
-            kinds: [ 7002 as number ],
+            kinds: [ 37001 as number ],
             authors: [ user.pubkey ],
         },
         // supporters
@@ -47,6 +47,7 @@ export function startUserView(user: NDKUser) {
         subId: 'user-view',
         autoStart: true,
         groupable: false,
+        cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY
     });
 }
 
@@ -57,7 +58,7 @@ export function getUserSupportPlansStore() {
         if (!$userSubscription || !activeUserView) return [];
 
         const plans = $userSubscription.filter((event: NDKEvent) => {
-            return event.kind === 7002;
+            return event.kind === 37001;
         });
 
         return plans;

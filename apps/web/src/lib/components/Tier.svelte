@@ -32,7 +32,7 @@
                     /{term}</div>
                 </div>
         </div>
-        <div class="flex-col justify-start items-start gap-4 flex w-full text-black text-left">
+        <div class="flex-col justify-start items-start gap-4 flex w-full text-black text-left whitespace-pre-line">
             {description}
         </div>
     </div>

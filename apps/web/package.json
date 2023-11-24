@@ -39,6 +39,8 @@
 		"vitest": "^0.34.2"
 	},
 	"dependencies": {
+		"@getalby/bitcoin-connect": "2.4.0-alpha.7",
+		"@getalby/sdk": "^2.7.0",
 		"@kind0/ui-common": "workspace:*",
 		"@macfja/svelte-persistent-store": "^2.4.0",
 		"@nostr-dev-kit/ndk": "workspace:*",

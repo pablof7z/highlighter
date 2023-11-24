@@ -1,23 +1,28 @@
 <script lang="ts">
-    import Input from '$components/Forms/Input.svelte';
 	import PageTitle from "$components/Page/PageTitle.svelte";
-	import { Avatar, Name, Textarea, ndk, newToasterMessage, user } from "@kind0/ui-common";
-	import { Pencil, X } from 'phosphor-svelte';
+	import { ndk, newToasterMessage, user } from "@kind0/ui-common";
+	import { X } from 'phosphor-svelte';
 	import { NDKEvent, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import { getUserSupportPlansStore, startUserView } from '$stores/user-view';
 	import { onMount } from 'svelte';
 	import TierHeader from '$components/TierHeader.svelte';
+	import TierEditor from '$components/TierEditor.svelte';
+	import type { Term } from '$utils/term';
+	import type { Readable } from 'svelte/store';
+	import { goto } from '$app/navigation';
+
+    let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
 
     onMount(() => {
         startUserView($user);
+        currentTiers = getUserSupportPlansStore();
     })
 
-    const currentTiers = getUserSupportPlansStore();
 
     let tiers: Tier[] = [];
-    let terms: string[] = ["monthly"];
+    let terms: Term[] = ["monthly"];
     const possibleTerms = ["monthly", "quarterly", "yearly"];
-    let selectedTerm: string = "monthly";
+    let selectedTerm: Term = "monthly";
     let currency = "USD";
 
     function addTerm(term: string) {
@@ -33,10 +38,6 @@
         description: string;
         amounts: Record<string, string>;
         image: string;
-        editName?: boolean;
-        editAmount?: boolean;
-        ediImage?: string;
-        editDescription?: boolean;
     };
 
     function addTier() {
@@ -77,11 +78,17 @@
         }
 
         for (const tier of tiers) {
-            const amountTags = Object.entries(tier.amounts).map(([cadence, amount]) => [ "amount", amount, currency, cadence ]);
+            const amountTags = terms.map(term => {
+                if (tier.amounts[term]) {
+                    return [ "amount", tier.amounts[term], currency, term ];
+                }
+            })
+
             const tierEvent = new NDKEvent($ndk, {
-                kind: 7002,
+                kind: 37001,
                 content: tier.description,
                 tags: [
+                    [ "d", tier.name ],
                     [ "title", tier.name ],
                     ...amountTags
                 ]
@@ -89,20 +96,34 @@
 
             if (tier.image) tierEvent.tags.push(["image", tier.image]);
 
-            await tierEvent.publish();
-
             console.log(tierEvent.rawEvent());
+
+            try {
+                await tierEvent.publish();
+                newToasterMessage("Saved", "success");
+                goto("/dashboard");
+            } catch (e) {
+                console.error(e);
+                newToasterMessage("Failed to save tiers", "error");
+                return;
+            }
         }
+    }
+
+    async function removeExistingTier(tier: NDKEvent) {
+        await tier.delete();
+        alert('remove')
     }
 </script>
 
+{#if currentTiers && $currentTiers}
 <div class="flex flex-col gap-10 mx-auto max-w-prose">
     <PageTitle title="Support Tiers">
-        <div class="flex flex-row gap-2">
+        <div class="flex flex-row gap-4">
             <!-- <button on:click={preview} class="button button-primary">Preview</button>
             <button on:click={preview} class="button button-primary">Save Draft</button> -->
-            <button on:click={addTier} class="button px-10">Add new tier</button>
-            <button on:click={saveTiers} class="button px-10">Save</button>
+            <button on:click={addTier} class="button">Add new tier</button>
+            <button on:click={saveTiers} class="button px-6" disabled={tiers.length === 0}>Save</button>
         </div>
     </PageTitle>
     <div class="mx-auto w-fit">
@@ -127,7 +148,7 @@
                 {/if}
                 <div class="dropdown">
                     <button tabindex="0" class="button">+</button>
-                    <ul tabindex="0" class="dropdown-content menu !bg-white">
+                    <ul tabindex="0" class="dropdown-content menu !bg-white z-50">
                         {#each possibleTerms as term}
                             {#if !terms.includes(term)}
                                 <li><button class="text-black" on:click={() => addTerm(term)}>
@@ -139,79 +160,26 @@
                 </div>
             </div>
             <div class="justify-start items-start gap-4 inline-flex overflow-y-auto max-w-prose">
+                {#each $currentTiers as tier}
+                    <TierEditor
+                        {tier}
+                        {terms}
+                        on:remove={() => removeExistingTier(tier)}
+                    />
+                {/each}
+
                 {#each tiers as tier}
-                    <div class="card card-compact full-image !rounded-3xl">
-                        <figure on:click={() => {tier.image = prompt("Enter new URL")}}>
-                            <img src={tier.image} alt="Tier Image" />
-                        </figure>
-                        <div class="card-body self-stretch p-4 bg-neutral-100 justify-between items-start flex-col min-w-[250px] min-h-[300px] gap-4 inline-flex w-full h-full">
-                            <div class="flex flex-col gap-4">
-                                <div class="flex-col justify-start items-start gap-2 flex w-full">
-                                    <div class="text-black text-2xl font-medium w-full items-start">
-                                        {#if !tier.editName}
-                                            <button class="flex group flex-row justify-between items-center w-full" on:click={() => tier.editName = true}>
-                                                {tier.name}
-                                                <Pencil color="black" class="text-lg opacity-0 group-hover:opacity-100 transition-all duration-100" />
-                                            </button>
-                                        {:else}
-                                            <Input
-                                                bind:value={tier.name}
-                                                class="w-64 !bg-transparent text-2xl"
-                                                on:keyup={(k) => {
-                                                    if (k.key === "Enter") {
-                                                        tier.editName = false;
-                                                    }
-                                                }}
-                                            />
-                                        {/if}
-                                    </div>
-                                    {#if !tier.editAmount}
-                                        <button class="flex group flex-row justify-between items-center w-full" on:click={() => tier.editAmount = true}>
-                                            <div class="text-center text-black text-[15px] font-medium">$
-                                                {tier.amounts[selectedTerm]}
-                                            /{selectedTerm}</div>
-                                            <Pencil color="black" class="text-lg opacity-0 group-hover:opacity-100 transition-all duration-100" />
-                                        </button>
-                                    {:else}
-                                        <button class="flex flex-row justify-between items-center w-full" on:click={() => tier.editAmount = true}>
-                                            <div class="text-center text-black text-[15px] font-medium">
-                                                <Input
-                                                    bind:value={tier.amounts[selectedTerm]}
-                                                    class="w-64 !bg-transparent"
-                                                    on:keyup={(k) => {
-                                                        if (k.key === "Enter") {
-                                                            tier.editAmount = false;
-                                                        }
-                                                    }}
-                                                />
-                                            </div>
-                                        </button>
-                                    {/if}
-                                </div>
-                                <div class="flex-col justify-start items-start gap-4 flex w-full">
-                                    {#if !tier.editDescription}
-                                        <button class="flex group flex-row justify-between items-center w-full" on:click={() => tier.editDescription = true}>
-                                            <div class="text-center text-black text-[15px] font-medium">
-                                                {@html tier.description}
-                                            </div>
-                                            <Pencil color="black" class="text-lg opacity-0 group-hover:opacity-100 transition-all duration-100" />
-                                        </button>
-                                    {:else}
-                                        <Textarea
-                                            bind:value={tier.description}
-                                            on:blur={() => tier.editDescription = false }
-                                            class="w-full !bg-transparent border border-neutral-800 rounded-xl rounded-t-none resize-none text-lg text-black tracking-widest" />
-                                    {/if}
-
-                                </div>
-                            </div>
-
-
-                            <button class="button button-primary w-full self-end" on:click={() => removeTier(tier)}>Remove</button>
-                        </div>
-                    </div>
+                    <TierEditor
+                        {terms}
+                        bind:name={tier.name}
+                        bind:description={tier.description}
+                        bind:amounts={tier.amounts}
+                        bind:image={tier.image}
+                        on:remove={() => removeTier(tier)}
+                    />
                 {/each}
             </div>
         </div>
     </div>
 </div>
+{/if}

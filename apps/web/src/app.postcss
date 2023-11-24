@@ -4,27 +4,35 @@
 
 @layer base {
 	@font-face {
-		font-family: 'Outfit';
+		font-family: 'Inter';
 	}
 
 	html,
 	body,
 	body > div {
-		font-family: Outfit;
+		font-family: Inter;
 		min-height: 100%;
 	}
 
 	.button {
-		@apply px-3 py-1.5 bg-white rounded-full justify-center items-center gap-2 inline-flex;
+		@apply px-3 py-1.5 bg-white rounded-lg justify-center items-center gap-2 inline-flex;
 		@apply text-black text-base font-semibold;
 	}
 
+	.button[disabled] {
+		@apply opacity-80 cursor-not-allowed;
+	}
+
 	.button-primary {
-		@apply px-6 py-3 bg-black rounded-full justify-center items-center gap-2 inline-flex;
+		@apply px-6 py-3 bg-black rounded-lg justify-center items-center gap-2 inline-flex;
 		@apply text-white text-base font-semibold;
 	}
 
 	.button-primary:disabled {
 		@apply bg-gray-400;
+	}
+
+	h1 {
+		font-family: InterDisplay;
 	}
 }

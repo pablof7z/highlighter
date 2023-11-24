@@ -16,6 +16,6 @@
 
 <style lang="postcss">
     h1 {
-        @apply text-white text-2xl font-medium;
+        @apply text-white text-2xl font-semibold;
     }
 </style>

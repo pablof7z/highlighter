@@ -2,8 +2,27 @@
 	import NewTier from '$components/Forms/NewTier.svelte';
 	import PageTitle from "$components/Page/PageTitle.svelte";
 	import NewItemModal from "$modals/NewItemModal.svelte";
+	import { getUserSupporters, startUserView } from '$stores/user-view';
 	import { Avatar, Name, user } from "@kind0/ui-common";
+	import type { Hexpubkey, NDKEvent } from '@nostr-dev-kit/ndk';
+	import { onMount } from 'svelte';
 	import { openModal } from "svelte-modals";
+	import type { Readable } from 'svelte/motion';
+
+    let supporters: Readable<NDKEvent[]> | undefined = undefined;
+    let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
+
+    $: if (supporters && $supporters) {
+        for (const supportEvent of $supporters) {
+            supportingPubkeys.add(supportEvent.pubkey);
+        }
+        supportingPubkeys = supportingPubkeys;
+    }
+
+    onMount(() => {
+        startUserView($user);
+        supporters = getUserSupporters();
+    })
 
     function publish() {
         openModal(NewItemModal);
@@ -24,7 +43,18 @@
 
         <div class="flex flex-col gap-2">
             <Name user={$user} class="text-xl font-semibold text-white" />
-            <div class="text-white text-opacity-60 text-sm font-normal leading-6">0 subscriber  ·  0 paying supporters</div>
+            {#if supportingPubkeys}
+                <div class="text-white text-opacity-60 text-sm font-normal leading-6">
+                    0
+                    subscribers  ·  {supportingPubkeys?.size} paying supporters
+                </div>
+            {/if}
+        </div>
+
+        <div class="ml-auto">
+            {#await $user.fetchProfile() then profile}
+                <a href="/{profile.nip05}" class="button px-6">View Profile</a>
+            {/await}
         </div>
     </div>
 </div>
