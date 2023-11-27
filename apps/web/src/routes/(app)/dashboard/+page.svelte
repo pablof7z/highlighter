@@ -1,10 +1,11 @@
 <script lang="ts">
+	import CreatorFeed from '$components/CreatorFeed.svelte';
 	import Timeline from '$components/Events/Timeline.svelte';
-	import NewTier from '$components/Forms/NewTier.svelte';
 	import PageTitle from "$components/Page/PageTitle.svelte";
+	import DashboardStats from '$components/dashboard/DashboardStats.svelte';
 	import NewItemModal from "$modals/NewItemModal.svelte";
-	import { getUserSupporters, startUserView } from '$stores/user-view';
-	import { Avatar, Name, user } from "@kind0/ui-common";
+	import { getUserContent, getUserSupporters, startUserView } from '$stores/user-view';
+	import { Avatar, Name, ndk, user } from "@kind0/ui-common";
 	import type { Hexpubkey, NDKEvent } from '@nostr-dev-kit/ndk';
 	import { onMount } from 'svelte';
 	import { openModal } from "svelte-modals";
@@ -13,6 +14,10 @@
     let supporters: Readable<NDKEvent[]> | undefined = undefined;
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
+    const subscribers = $ndk.storeSubscribe(
+        { kinds: [17001], "#p": [$user.pubkey] }
+    )
+
     $: if (supporters && $supporters) {
         for (const supportEvent of $supporters) {
             supportingPubkeys.add(supportEvent.pubkey);
@@ -20,16 +25,28 @@
         supportingPubkeys = supportingPubkeys;
     }
 
+    let mounted = false;
+
     onMount(() => {
         startUserView($user);
         supporters = getUserSupporters();
+        mounted = true;
     })
+
+
 
     function publish() {
         openModal(NewItemModal);
     }
+
+    let profileLink = `/${$user.npub}`;
+    $user.fetchProfile().then(profile => {
+        if (profile && profile.nip05)
+            profileLink = `/${profile.nip05}`;
+    });
 </script>
 
+{#if mounted}
 <div class="flex flex-col gap-10 mx-auto max-w-prose">
     <PageTitle title="Creator Dashboard">
         <div class="flex flex-row gap-2">
@@ -39,25 +56,22 @@
         </div>
     </PageTitle>
 
-    <div class="flex flex-row items-center gap-4">
+    <a href={profileLink} class="flex flex-row items-center gap-4 text-left">
         <Avatar user={$user} class="w-32 h-32" />
 
         <div class="flex flex-col gap-2">
             <Name user={$user} class="text-xl font-semibold text-white" />
             {#if supportingPubkeys}
                 <div class="text-white text-opacity-60 text-sm font-normal leading-6">
-                    0
+                    {$subscribers.length}
                     subscribers  ·  {supportingPubkeys?.size} paying supporters
                 </div>
             {/if}
         </div>
+    </a>
 
-        <div class="ml-auto">
-            {#await $user.fetchProfile() then profile}
-                <a href="/{profile.nip05}" class="button px-6">View Profile</a>
-            {/await}
-        </div>
-    </div>
+    <DashboardStats />
 
-    <Timeline user={$user} />
+    <CreatorFeed content={getUserContent()} />
 </div>
+{/if}

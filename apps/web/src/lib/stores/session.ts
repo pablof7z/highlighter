@@ -1,6 +1,6 @@
 import { writable, get as getStore, type Writable, derived } from 'svelte/store';
 import { ndk, user } from "@kind0/ui-common";
-import { NDKEvent, NDKList, NDKSubscriptionCacheUsage, type NDKFilter, type NDKTag, NDKKind, type NDKEventId, NDKDVMJobResult, NDKDVMRequest, NDKListKinds } from '@nostr-dev-kit/ndk';
+import { NDKEvent, NDKList, NDKSubscriptionCacheUsage, type NDKFilter, type NDKTag, NDKKind, type NDKEventId, NDKDVMJobResult, NDKDVMRequest, NDKListKinds, type Hexpubkey } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { NDKHighlight } from "@nostr-dev-kit/ndk";
 import { persist, createLocalStorage } from "@macfja/svelte-persistent-store";
@@ -18,6 +18,24 @@ export const userFollows = persist(
     createLocalStorage(),
     'user-follows'
 );
+
+export const userSuperFollows = persist(
+    writable<Set<string>>(new Set()),
+    createLocalStorage(),
+    'user-super-follows'
+);
+
+export const userCreatorSubscriptionPlans = derived(userSuperFollows, $userSuperFollows => {
+    const plans = new Map<Hexpubkey, string>();
+
+    for (const superFollow of $userSuperFollows) {
+        if (!plans.has(superFollow)) {
+            plans.set(superFollow, "Free");
+        }
+    }
+
+    return plans;
+});
 
 /**
  * Current user app handlers
@@ -114,6 +132,7 @@ export async function prepareSession(): Promise<void> {
             [$user.pubkey],
             {
                 followsStore: userFollows,
+                superFollowsStore: userSuperFollows,
                 appHandlers: userAppHandlers,
                 supportStore: userSupport,
                 waitUntilEoseToResolve: !alreadyKnowFollows,
@@ -139,7 +158,8 @@ function isHashtagListEvent(event: NDKEvent) {
 
 interface IFetchDataOptions {
     highlightStore? : Writable<Map<string, NDKEvent>>;
-    followsStore?: Writable<Set<string>>;
+    followsStore?: Writable<Set<Hexpubkey>>;
+    superFollowsStore?: Writable<Set<Hexpubkey>>;
     labelsStore?: Writable<Set<string>>;
     supportStore?: Writable<NDKEvent[]>;
     appHandlers?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
@@ -173,7 +193,7 @@ async function fetchData(
     opts.listsKinds ??= NDKListKinds;
 
     const mostRecentEvents: Map<string, NDKEvent> = new Map();
-    let processedKind3Id: string | undefined = undefined;
+    const processedIdForKind: Record<number, string> = {};
     let kind3Key: string;
     const _ = d.extend(`fetch:${name}`);
 
@@ -191,7 +211,9 @@ async function fetchData(
 
         if (event.kind === 3 && opts.followsStore) {
             kind3Key = dedupKey;
-            processKind3(event);
+            processContactList(event, opts.followsStore);
+        } else if (event.kind === 17001 && opts.superFollowsStore) {
+            processContactList(event, opts.superFollowsStore);
         } else if (event.kind === NDKKind.Highlight && opts.highlightStore) {
             processHighlight(event);
         } else if (isHashtagListEvent(event) && opts.followHashtagsStore) {
@@ -288,13 +310,10 @@ async function fetchData(
     /**
      * Called when a newer event of kind 3 is received.
      */
-    const processKind3 = (event: NDKEvent) => {
-        if (
-            (event.id !== processedKind3Id) ||
-            authors.length > 1 // if authors has more than one, add the received list
-        ) {
-            processedKind3Id = event.id;
-            updateFollows(event);
+    const processContactList = (event: NDKEvent, store: Writable<Set<Hexpubkey>>) => {
+        if (event.id !== processedIdForKind[event.kind!]) {
+            processedIdForKind[event.kind!] = event.id;
+            updateFollows(event, store);
         }
     };
 
@@ -330,7 +349,7 @@ async function fetchData(
         });
     };
 
-    const updateFollows = (event: NDKEvent) => {
+    const updateFollows = (event: NDKEvent, store: Writable<Set<Hexpubkey>>) => {
         const follows = event.tags
             .filter((t: NDKTag) => t[0] === 'p')
             .map((t: NDKTag) => t[1]);
@@ -342,7 +361,7 @@ async function fetchData(
                 return existingFollows;
             });
         } else
-            opts.followsStore!.set(new Set(follows));
+            store!.set(new Set(follows));
     };
 
     return new Promise((resolve) => {
@@ -389,6 +408,10 @@ async function fetchData(
             filters.push({ kinds: [3], authors: authorPrefixes });
         }
 
+        if (opts.superFollowsStore) {
+            filters.push({ kinds: [17001], authors: authorPrefixes });
+        }
+
         if (opts.followHashtagsStore) {
             filters.push({ authors: authorPrefixes, "#d": ["hashtags"] });
         }
@@ -413,15 +436,15 @@ async function fetchData(
             _(`received eose`);
             console.log(`received eose`, opts.waitUntilEoseToResolve);
 
-            if (kind3Key) {
-                const mostRecentKind3 = mostRecentEvents.get(kind3Key!);
+            // if (kind3Key) {
+            //     const mostRecentKind3 = mostRecentEvents.get(kind3Key!);
 
-                // Process the most recent kind 3
-                if (mostRecentKind3!.id !== processedKind3Id) {
-                    processedKind3Id = mostRecentKind3!.id;
-                    updateFollows(mostRecentKind3!);
-                }
-            }
+            //     // Process the most recent kind 3
+            //     if (mostRecentKind3!.id !== processedKind3Id) {
+            //         processedKind3Id = mostRecentKind3!.id;
+            //         updateFollows(mostRecentKind3!);
+            //     }
+            // }
 
             if (opts.waitUntilEoseToResolve) {
                 _(`resolving`);

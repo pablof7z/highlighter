@@ -5,14 +5,11 @@
     import { onDestroy, onMount } from "svelte";
 	import { startUserView, userSubscription } from "$stores/user-view";
 
-    //let npub = $page.data.npub;
-    let user: NDKUser;
+    export let user: NDKUser = $page.data.user;
 
-    $: npub = $page.data.npub;
+    // $: npub = $page.data.npub;
 
     onMount(() => {
-        user = $ndk.getUser({npub});
-
         startUserView(user);
     });
 
@@ -20,6 +17,7 @@
         userSubscription?.unref();
     })
 </script>
+
 
 {#if user}
     {#key user.pubkey}

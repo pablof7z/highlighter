@@ -1,11 +1,10 @@
 import type NDK from "@nostr-dev-kit/ndk";
 import { NDKEvent, NDKRelaySet, NDKUser } from "@nostr-dev-kit/ndk";
 
-const defaultRelays = [
+export const defaultRelays = [
     'wss://relay.getfaaans.com'
     // "ws://localhost:5577"
 ];
-
 export async function publishToTiers(
     event: NDKEvent,
     tiers: Record<string, boolean>,
@@ -16,9 +15,18 @@ export async function publishToTiers(
     } = {}
 ) {
     const ndk = opts.ndk ?? event.ndk!;
+    const teaser = opts.teaserEvent;
     opts.relaySet ??= NDKRelaySet.fromRelayUrls(defaultRelays, ndk);
 
     const user: NDKUser = await ndk.signer!.user();
+
+    // remove signature
+    event.sig = undefined;
+    if (teaser) teaser.sig = undefined;
+
+    // update created_at date
+    event.created_at = Math.floor(Date.now() / 1000);
+    if (teaser) teaser.created_at = Math.floor(Date.now() / 1000);
 
     if (!event.tagValue("h")) {
         // Add NIP-29 group `h` tag
@@ -27,17 +35,50 @@ export async function publishToTiers(
         )
     }
 
-    // Annotate the `d` tags with the tier
-    for (const tier in tiers) {
-        if (!tiers[tier]) continue;
-
-        event.tags.push(
-            ["d", tier]
+    if (teaser && !teaser.tagValue("h")) {
+        // Add NIP-29 group `h` tag
+        teaser.tags.push(
+            ["h", user.pubkey ]
         )
+    }
+
+    // Annotate the tiers
+    for (const tier in tiers) {
+        if (teaser) {
+            if (tiers[tier]) { // If this tier is required, mark is such
+                teaser.tags.push(["tier", tier]);
+            } else { // Otherwise, mark it for indexing
+                teaser.tags.push(["f", tier]);
+            }
+        }
+
+        if (!tiers[tier]) continue;
+        event.tags.push(["f", tier]);
+    }
+
+    // Add pubkey and `d` tags if appropriate
+    event.pubkey = user.pubkey;
+    if (event.isParamReplaceable() && !event.tagValue("d")) await event.generateTags();
+    if (teaser) {
+        teaser.pubkey = user.pubkey;
+        if (teaser.isParamReplaceable() && !teaser.tagValue("d")) await teaser.generateTags();
+    }
+
+    if (teaser) {
+        event.tags.push(["preview", teaser.tagId()]);
+
+        if (event.isParamReplaceable()) {
+            teaser.tags.push(["full", event.tagId()]);
+        }
+
+        await teaser.publish(opts.relaySet);
+        // await teaser.sign();
+        console.log(teaser.rawEvent());
     }
 
     await event.publish(opts.relaySet);
 
+    // await event.sign();
     console.log(event.rawEvent());
 }
 

@@ -41,7 +41,7 @@
                     Note
                 </a>
 
-                <a href="/new/article">
+                <a href="/articles/new">
                     <span>
                         <ArticleIcon />
                     </span>

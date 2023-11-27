@@ -6,6 +6,7 @@
 	import { Toaster, bunkerNDK, ndk, user } from '@kind0/ui-common';
 	import { login } from '$utils/login';
 	import { prepareSession } from '$stores/session';
+	import { NDKRelay } from '@nostr-dev-kit/ndk';
 
 	onMount(async () => {
 		window?.addEventListener('bc:connected', (e) => {
@@ -14,6 +15,8 @@
 
         try {
 			const keyMethod = localStorage.getItem('nostr-key-method');
+			$ndk.clientName = "getfaaans";
+			$ndk.pool.addRelay(new NDKRelay('ws://localhost:5577'));
             $ndk.connect();
 
 			if (keyMethod === 'nip07') {

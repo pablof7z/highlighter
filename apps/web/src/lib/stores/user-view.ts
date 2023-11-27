@@ -41,7 +41,8 @@ export function startUserView(user: NDKUser) {
         // zaps the user has received
         {
             kinds: [ NDKKind.Zap ],
-            "#p": [ user.pubkey ]
+            "#p": [ user.pubkey ],
+            limit: 20
         },
         // get group content published by the user
         {
@@ -107,7 +108,7 @@ export function getUserContent(): Readable<NDKEvent[]> {
         if (!$userSubscription || !activeUserView) return [];
 
         const highlights = $userSubscription.filter((event: NDKEvent) => {
-            return event.kind === NDKKind.Article;
+            return event.tagValue("h") === activeUserView!.pubkey;
         });
 
         return highlights;

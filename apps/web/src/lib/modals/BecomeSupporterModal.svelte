@@ -2,7 +2,7 @@
 	import ModalShell from '$components/ModalShell.svelte';
     import TierHeader from "$components/TierHeader.svelte";
     import { user as loggedInUser } from '@kind0/ui-common';
-    import { userFollows } from '$stores/session';
+    import { userFollows, userSuperFollows } from '$stores/session';
     import Input from "$components/Forms/Input.svelte";
     import Tier from "$components/Tier.svelte";
 	import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
@@ -70,9 +70,9 @@
     async function follow() {
         closeModal();
 
-        if ($userFollows.has(user.pubkey)) return;
+        if ($userSuperFollows.has(user.pubkey)) return;
 
-        $loggedInUser.follow(user);
+        $loggedInUser.follow(user, undefined, 17001);
     }
 </script>
 

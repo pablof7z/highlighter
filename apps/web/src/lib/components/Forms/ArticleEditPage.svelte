@@ -2,14 +2,17 @@
 	import PublishButton from '$components/buttons/PublishButton.svelte';
 	import PageTitle from "$components/Page/PageTitle.svelte";
     import Input from "$components/Forms/Input.svelte";
-	import { Textarea, ndk, user } from "@kind0/ui-common";
+	import { Textarea, ndk, newToasterMessage, user } from "@kind0/ui-common";
 	import SelectTier from "$components/Forms/SelectTier.svelte";
 	import { NDKArticle, NDKEvent, NDKKind, NDKList, NDKRelaySet, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { publishToTiers } from "$actions/publishToTiers";
+	import { defaultRelays, publishToTiers } from "$actions/publishToTiers";
 	import { slide } from "svelte/transition";
 	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
     import truncateMarkdown from 'markdown-truncate';
 	import { getUserSupportPlansStore } from "$stores/user-view";
+	import { page } from '$app/stores';
+
+    export let article: NDKArticle;
 
     let previewContent: string;
     let tiers: Record<string, boolean> = { "Free": false };
@@ -64,9 +67,7 @@
     async function publish() {
         updatePreviewContent();
 
-        const relaySet = NDKRelaySet.fromRelayUrls([
-            'wss://relay.getfaaans.com'
-        ], $ndk);
+        const relaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
 
         article.relay = Array.from(relaySet.relays)[0];
 
@@ -97,10 +98,7 @@
 
     function preview() {
     }
-
-    let article = new NDKArticle($ndk);
 </script>
-
 
 <div class="flex flex-col gap-10">
     <PageTitle title="New Article">

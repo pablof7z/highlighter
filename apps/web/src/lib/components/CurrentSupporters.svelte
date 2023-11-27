@@ -24,17 +24,19 @@
 </script>
 
 <div class="flex items-center">
-    <span class="text-sm">
-        {supportingPubkeys?.size}
-        Faaans
-    </span>
+    {#if supportingPubkeys?.size > 0}
+        <span class="text-sm whitespace-nowrap">
+            {supportingPubkeys?.size}
+            Faaans
+        </span>
+    {/if}
     <div class="flex -space-x-4 ml-4">
-        {#each supportingPubkeys as supportingPubkey (supportingPubkey)}
+        {#each Array.from(supportingPubkeys).slice(0, 10) as supportingPubkey (supportingPubkey)}
             <Avatar pubkey={supportingPubkey} class="w-10 h-10 border-2 border-black" />
         {/each}
     </div>
 
     <div class="ml-4">
-        <button class="button px-6" on:click={openSupportModal}>Become a Faaan</button>
+        <button class="whitespace-nowrap button px-6" on:click={openSupportModal}>Become a Faaan</button>
     </div>
 </div>

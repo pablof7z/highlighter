@@ -27,7 +27,7 @@
     </label>
 
     <ul class="dropdown-content divide-y divide-neutral-900 menu p-0 z-50 rounded-box whitespace-nowrap text-base">
-        <li><a href="#">
+        <li><a href="/inbox">
             <Tray size={16} class="mr-2"/>
             Inbox
         </a></li>

@@ -32,7 +32,27 @@
 		@apply bg-gray-400;
 	}
 
-	h1 {
+	h1, h2 {
 		font-family: InterDisplay;
+	}
+
+	.article {
+		@apply text-neutral-500 leading-7;
+	}
+
+	.article h2 {
+		@apply text-xl text-white mt-8 mb-1;
+	}
+
+	.article p {
+		@apply text-lg leading-normal font-medium mb-4;
+	}
+
+	input, textarea {
+		@apply border-neutral-800 !bg-neutral-800 !border-2 text-white ring-0;
+	}
+
+	input:focus, textarea:focus {
+		@apply outline-none !ring-0 border-2 !border-neutral-500;
 	}
 }

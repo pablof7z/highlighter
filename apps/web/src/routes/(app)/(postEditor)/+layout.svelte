@@ -17,7 +17,7 @@
 </script>
 
 {#if startedUserView}
-    <div class="mx-auto max-w-prose">
+    <div class="mx-auto max-w-3xl">
         <slot />
     </div>
 {:else}
