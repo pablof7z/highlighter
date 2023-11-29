@@ -19,7 +19,7 @@
     overflow-y-hidden
     {$$props.class}
     " style="pointer-events: auto; max-height: 92vh;" on:click|stopPropagation={()=>{}} transition:fade>
-        <div class="bg-white shadow-lg p-6 flex flex-col items-center gap-8">
+        <div class="bg-white shadow-lg p-6 flex flex-col items-center gap-6">
             <slot />
         </div>
     </div>

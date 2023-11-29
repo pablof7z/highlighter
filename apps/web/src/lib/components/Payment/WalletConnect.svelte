@@ -3,18 +3,35 @@
     import Input from "$components/Forms/Input.svelte";
 	import { ArrowDown } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
+	import { page } from '$app/stores';
+	import { finalizeLogin } from '$utils/login';
+    import { createEventDispatcher } from 'svelte';
 
     type Mode = "alby" | "mutiny" | "nwc";
 
     export let mode: Mode | undefined;
     export let nwcUrl: string;
 
+    const dispatch = createEventDispatcher();
+
     let nwc: string;
 
-    const onSuccess = (e: CustomEvent<{url: string, nwc: any}>) => {
+    const hostname = $page.url.hostname;
+
+    const onSuccess = async (e: CustomEvent<{url: string, nwc: any}>) => {
         const { url, nwc } = e.detail;
 
+        await fetch("/api/user/nwc", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ nwc: url })
+        })
+        await finalizeLogin(hostname);
+
         nwcUrl = url;
+        dispatch('connected', e.detail);
     }
 </script>
 

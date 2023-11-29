@@ -12,7 +12,7 @@
 
 <FeedEvent event={article} suffixUrl={dTag}>
     {#if article.image}
-        <img src={article.image} alt={article.title} class="w-full h-96 object-cover rounded-t-lg" />
+        <img src={article.image} alt={article.title} class="w-full h-96 object-cover rounded-t-lg object-top" />
     {/if}
 
     <div class="flex flex-col gap-1 w-full">

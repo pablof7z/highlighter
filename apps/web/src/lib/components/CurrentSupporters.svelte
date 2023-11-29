@@ -1,12 +1,12 @@
 <script lang="ts">
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { Avatar } from "@kind0/ui-common";
-	import type { NDKUser, Hexpubkey, NDKEvent } from "@nostr-dev-kit/ndk";
+	import type { NDKUser, Hexpubkey, NDKEvent, NDKArticle } from "@nostr-dev-kit/ndk";
 	import { openModal } from "svelte-modals";
 	import type { Readable } from "svelte/motion";
 
     export let user: NDKUser;
-    export let tiers: Readable<NDKEvent[]>;
+    export let tiers: Readable<NDKArticle[]>;
     export let supporters: Readable<NDKEvent[]>;
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();

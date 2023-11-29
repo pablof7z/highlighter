@@ -2,14 +2,19 @@ import { ndk } from "@kind0/ui-common";
 import { NDKKind, NDKEvent, type NDKUser, NDKSubscriptionCacheUsage, NDKArticle } from "@nostr-dev-kit/ndk";
 import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 import { writable, get as getStore, derived, type Readable } from "svelte/store";
+import { userActiveSubscriptions } from "./session";
 
 let activeUserView: NDKUser | undefined;
 
 export let userSubscription: NDKEventStore<NDKEvent> | undefined = undefined;
 export const userHighlights = writable(new Set<NDKEvent>);
+export const userTiers = writable<Readable<NDKArticle[]> | undefined>(undefined);
+export const userContent = writable<Readable<NDKEvent[]> | undefined>(undefined);
 
 export function startUserView(user: NDKUser) {
     const $ndk = getStore(ndk);
+    const $userActiveSubscriptions = getStore(userActiveSubscriptions);
+    const tier = $userActiveSubscriptions.get(user.pubkey) || "Free";
 
     if (userSubscription) {
         userSubscription.unsubscribe();
@@ -18,15 +23,10 @@ export function startUserView(user: NDKUser) {
     activeUserView = user;
 
     userSubscription = $ndk.storeSubscribe([
-        // highlights and articles the user has created
         {
-            kinds: [ NDKKind.Highlight, NDKKind.Article ],
-            authors: [user.pubkey]
-        },
-        {
-            kinds: [ NDKKind.Text ],
+            kinds: [ NDKKind.Article ],
             authors: [user.pubkey],
-            limit: 200
+            limit: 50
         },
         // supporting options
         {
@@ -48,6 +48,7 @@ export function startUserView(user: NDKUser) {
         {
             "#h": [ user.pubkey ],
             "authors": [ user.pubkey ],
+            "#f": [ tier ]
         }
     ], {
         subId: 'user-view',
@@ -55,6 +56,9 @@ export function startUserView(user: NDKUser) {
         groupable: false,
         cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY
     });
+
+    userTiers.set(getUserSupportPlansStore());
+    userContent.set(getUserContent());
 }
 
 export function getContent() {
@@ -104,13 +108,27 @@ export function getUserSupporters(): Readable<NDKEvent[]> {
 export function getUserContent(): Readable<NDKEvent[]> {
     if (!userSubscription) return derived([], () => []);
 
-    return derived(userSubscription, ($userSubscription) => {
+    return derived(
+        [userSubscription],
+        ([$userSubscription]) => {
         if (!$userSubscription || !activeUserView) return [];
+        return $userSubscription;
 
-        const highlights = $userSubscription.filter((event: NDKEvent) => {
-            return event.tagValue("h") === activeUserView!.pubkey;
-        });
+        // const items = $userSubscription.filter((event: NDKEvent) => {
+        //     return event.tagValue("h") === activeUserView!.pubkey;
+        // });
 
-        return highlights;
+        // if we have any active subscriptions, filter out any content that is not
+        // from the active subscriptions
+        // const subscribed = $userActiveSubscriptions.get(activeUserView.pubkey) !== "Free";
+        // if (subscribed) {
+        //     // find the item that belongs to this active subscription
+        //     const rightItems = items.filter((event: NDKEvent) => {
+        //     return items.filter((event: NDKEvent) => {
+        //         return $userActiveSubscriptions.get(event.author) !== "Free";
+        //     });
+        // }
+
+        return items;
     });
 }

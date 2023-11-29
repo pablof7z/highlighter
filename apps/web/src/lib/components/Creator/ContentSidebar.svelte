@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Avatar, Name } from "@kind0/ui-common";
+	import { Avatar, Name, UserProfile } from "@kind0/ui-common";
     import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 
     export let event: NDKEvent;
@@ -7,12 +7,14 @@
 </script>
 
 <div class="w-[360px] px-6 pt-4 pb-6 rounded-3xl border border-neutral-800 flex-col justify-center items-start gap-4 inline-flex">
-    <a href="/{user.npub}" class="justify-start items-center gap-4 inline-flex w-full">
-        <Avatar {user} class="w-16 h-16 rounded-full border border-white" />
-        <div class="text-white text-base font-semibold">
-            <Name {user} class="w-11 h-11 rounded-full" />
-        </div>
-    </a>
+    <UserProfile {user} let:userProfile let:fetching>
+        <a href="/{userProfile?.nip05??user.npub}" class="justify-start items-center gap-4 inline-flex w-full">
+            <Avatar {userProfile} {fetching} class="w-16 h-16 rounded-full border border-white" />
+            <div class="text-white text-base font-semibold">
+                <Name {userProfile} {fetching} class="w-11 h-11 rounded-full" />
+            </div>
+        </a>
+    </UserProfile>
     <button class="button w-full py-3">
         Faaan
     </button>

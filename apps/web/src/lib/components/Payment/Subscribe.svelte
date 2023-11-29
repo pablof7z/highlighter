@@ -1,62 +1,124 @@
 <script lang="ts">
-	import { ndk, nicelyFormattedSatNumber } from "@kind0/ui-common";
+	import { ndk, newToasterMessage, nicelyFormattedSatNumber } from "@kind0/ui-common";
 	import { onMount } from "svelte";
     import { webln } from "@getalby/sdk";
-	import { NDKEvent, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKUser, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import type { Term } from "$utils/term";
+	import { createSubscriptionEvent, createZapRequest } from "./subscription-event";
+	import { nwcPay } from "$actions/nwcPay";
+	import { slide } from "svelte/transition";
+    import { createEventDispatcher } from "svelte";
 
     export let amount: string;
     export let currency: string;
-    export let nwcUrl: string;
     export let term: Term;
-    export let plan: NDKEvent;
+    export let plan: NDKEvent | undefined = undefined;
+    export let preimage: string | undefined = undefined;
+
+    /**
+     * User that is being supported, passed in when no plan is provided
+     */
+    export let supportedUser: NDKUser | undefined = plan?.author;
+
+    const dispatch = createEventDispatcher();
+
+    const zapComment = "Getfaaans.com supporter";
 
     let bitcoinPrice: number | undefined;
-    const nwc = new webln.NWC({ nostrWalletConnectUrl: nwcUrl });
+    let satsAmount: number | undefined;
 
     onMount(async () => {
         const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
         const data = await response.json();
         bitcoinPrice = data.bitcoin.usd;
+
+        if (!bitcoinPrice) {
+            newToasterMessage("Failed to fetch bitcoin price, try again please", "error");
+            return;
+        }
+
+        satsAmount = Math.floor(Number(amount) / bitcoinPrice * 100_000_000);
+        // XXX HARDCODE
+        satsAmount = 10;
     });
 
-    let subscribing = true;
+    let subscribing = false;
+    let error: string | undefined;
+
+    async function sendZap(zapRequest: NDKEvent) {
+        const res = await fetch("/api/user/pay-zap-request", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", },
+            body: JSON.stringify({
+                zapRequest: JSON.stringify(zapRequest.rawEvent())
+            }),
+        });
+
+        const data = await res.json();
+        const stutus = res.status;
+
+        if (data.error) {
+            newToasterMessage(data.error, "error");
+            return;
+        }
+
+        dispatch("paid", { preimage: data.preimage });
+    }
 
     async function subscribe() {
-        const supportEvent = new NDKEvent($ndk, {
-            kind: 7001,
-            tags: [
-                [ "amount", amount, currency, term ],
-                [ "event", JSON.stringify(plan.rawEvent()) ],
-            ]
-        } as NostrEvent);
-        supportEvent.tag(plan);
+        error = undefined;
+        subscribing = true;
 
-        await supportEvent.sign();
+        if (!satsAmount) {
+            newToasterMessage("Invalid amount", "error");
+            return;
+        }
 
-        console.log(supportEvent.rawEvent());
+        const supportEvent = await createSubscriptionEvent($ndk, amount, currency, term, plan, supportedUser);
+        const zapRequest = await createZapRequest(supportEvent, zapComment);
+        console.log('zaprequest id', zapRequest.id, zapRequest.rawEvent());
+        zapRequest.sig = await $ndk.signer?.sign(zapRequest.rawEvent());
+        console.log('after signing zaprequest id', zapRequest.id, zapRequest.rawEvent());
+        await sendZap(zapRequest);
+        // const invoice = await supportEvent.zap(satsAmount*1000, zapComment, undefined, supportedUser);
+
+        // if (!invoice) {
+        //     newToasterMessage("Failed to fetch an invoice, try again please", "error");
+        //     return;
+        // }
+
+        // try {
+        //     preimage = await nwcPay(invoice);
+        //     dispatch("paid", { preimage });
+        // } catch (e: any) {
+        //     error = e.message;
+        //     subscribing = false;
+        //     return;
+        // }
     }
 </script>
 
 <div class="text-black text-sm font-medium leading-[19px]">
     ${amount}
-    {#if bitcoinPrice}
-        ({nicelyFormattedSatNumber(Math.floor(Number(amount) / bitcoinPrice * 100_000_000))} sats)
+    {#if satsAmount}
+        ({nicelyFormattedSatNumber(satsAmount)} sats)
     {/if}
 </div>
 
-<div class="w-[300px] h-[75px] flex-col justify-start items-center gap-3 inline-flex">
-    {#await nwc.enable()}
-        <div class="loading loading-sm"></div>
-    {:then}
-        <button class="button button-primary w-full" on:click={subscribe}>
-            Subscribe
-        </button>
-    {:catch e}
-        <div class="text-red-500 text-sm font-medium leading-[19px]">
-            {e.message}
+<div class="min-w-[300px] flex-col justify-start items-center gap-3 inline-flex">
+    {#if error}
+        <div class="alert alert-error" transition:slide>
+            {error}
         </div>
-    {/await}
+    {/if}
+
+    <button class="button button-primary w-full" on:click={subscribe} disabled={subscribing}>
+        {#if subscribing}
+            <div class="loading loading-sm"></div>
+        {:else}
+            Subscribe
+        {/if}
+    </button>
 
     <div class="text-neutral-400 text-sm font-medium leading-[19px]">Connected with NWC</div>
 </div>

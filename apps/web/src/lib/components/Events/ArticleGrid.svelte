@@ -23,18 +23,20 @@
     const isFullVersion = !article.tagValue("full");
     const wordCount = article.content.split(" ").length;
     const readTime = Math.ceil(wordCount / 265);
+
+    const defaultUrl = "https://cdn.satellite.earth/01a8a5f5162a90fd7e6d3af6bc86d975e08a98f1852864c8ae7d8ba547bad669.png";
 </script>
 
-<a href={articleLink} class="grow shrink basis-0 flex-col justify-between items-start gap-4 inline-flex h-full">
-    <img class="max-sm:{size} object-cover relative rounded-xl flex-grow" src={article.image} />
+<a href={articleLink} class="flex flex-col items-start gap-4 h-full">
+    <img class="max-sm:{size} object-cover bg-gradiesnt-to-r from-base-300/80 to-base-300 border-none object-top flex-none rounded-xl !w-[321px] !h-[180px]" src={article.image??defaultUrl} />
     <div class="self-stretch justify-start items-start gap-4 inline-flex">
         {#if !skipAuthor}
-            <div class="justify-start items-start gap-4 flex">
+            <div class="justify-start flex-none items-start gap-4 flex">
                 <Avatar {user} {userProfile} class="w-11 h-11 rounded-full" />
             </div>
         {/if}
-        <div class="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex">
-            <div class="self-stretch text-white text-[15px] font-medium">
+        <div class="w-full shrink flex-col justify-start items-start gap-2 flex">
+            <div class="self-stretch text-white text-[15px] font-medium max-h-10 overflow-y-clip">
                 {article.title}
             </div>
             <div class="self-stretch h-[38px] flex-col justify-start items-start gap-1 flex">
@@ -59,7 +61,7 @@
     }
 
     .large {
-        @apply w-[346px] h-52;
+        @apply w-[346px] h-[180px];
     }
 
     a {

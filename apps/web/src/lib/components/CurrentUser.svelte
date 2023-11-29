@@ -4,10 +4,13 @@
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { bunkerNDK, ndk, user } from '@kind0/ui-common';
 	import { login } from '$utils/login';
+	import { page } from '$app/stores';
+
+    const hostname = $page.url.hostname;
 
     async function openSignupModal() {
         if (window.nostr) {
-            const u = await login($ndk, $bunkerNDK, 'nip07');
+            const u = await login($ndk, $bunkerNDK, 'nip07', hostname);
             if (u) {
                 $user = u;
                 return;

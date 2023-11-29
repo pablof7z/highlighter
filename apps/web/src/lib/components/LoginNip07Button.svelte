@@ -6,9 +6,10 @@
     let noNip07extenion: boolean;
 
     $: noNip07extenion = browser ? !window.nostr : false;
+    const hostname = $page.url.hostname;
 
     async function loginNip07() {
-        const u = await login($ndk, undefined, 'nip07');
+        const u = await login($ndk, undefined, 'nip07', hostname);
 
         if (!u) {
             alert('Login failed');

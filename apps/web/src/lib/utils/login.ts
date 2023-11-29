@@ -1,17 +1,34 @@
 import type NDK from "@nostr-dev-kit/ndk";
-import { NDKNip07Signer, NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
-import { user } from "@kind0/ui-common";
+import { NDKEvent, NDKNip07Signer, NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
+import { newToasterMessage, user } from "@kind0/ui-common";
+import { generateLoginEvent } from "$actions/signLoginEvent";
 
 export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
+
+export async function finalizeLogin(hostname: string) {
+    // fetch jwt
+    const loginEvent = await generateLoginEvent(hostname);
+    if (!loginEvent) return null;
+    const jwt = await fetchJWT(loginEvent);
+    if (jwt) {
+        localStorage.setItem('jwt', jwt);
+        document.cookie = `jwt=${jwt}; path=/; domain=${hostname};`;
+    }
+}
 
 /**
  * This function attempts to sign in using whatever method was previously
  * used, or a NIP-07 extension.
  */
-export async function login(ndk: NDK, bunkerNDK?: NDK, method?: LoginMethod): Promise<NDKUser | null> {
+export async function login(
+    ndk: NDK,
+    bunkerNDK: NDK,
+    method: LoginMethod,
+    hostname: string
+): Promise<NDKUser | null> {
     // Check if there is a localStorage item with the key "nostr-key-method"
     const nostrKeyMethod = method || localStorage.getItem("nostr-key-method");
-    let u: NDKUser | null;
+    let u: NDKUser | null | undefined;
 
     switch (nostrKeyMethod) {
         case 'none': return null;
@@ -45,6 +62,7 @@ export async function login(ndk: NDK, bunkerNDK?: NDK, method?: LoginMethod): Pr
                     bunkerNDK.connect(2500);
                     bunkerNDK.pool.on('relay:connect', async () => {
                         const user = await nip46SignIn(ndk, bunkerNDK!, existingPrivateKey);
+                        await finalizeLogin(hostname);
                         resolve(user);
                     });
                 }
@@ -53,14 +71,15 @@ export async function login(ndk: NDK, bunkerNDK?: NDK, method?: LoginMethod): Pr
             return promise;
         }
         default: {
-            const promise = new Promise<NDKUser | null>((resolve, reject) => {
+            const promise = new Promise<NDKUser | null>((resolve) => {
                 // Attempt to see window.nostr a few times, there is a race condition
                 // since the page might begin rendering before the nostr extension is loaded
                 let loadAttempts = 0;
-                const loadNip07Interval = setInterval(() => {
+                const loadNip07Interval = setInterval(async () => {
                     if (window.nostr) {
                         clearInterval(loadNip07Interval);
                         const user = nip07SignIn(ndk);
+                        await finalizeLogin(hostname);
                         resolve(user);
                     }
 
@@ -72,8 +91,39 @@ export async function login(ndk: NDK, bunkerNDK?: NDK, method?: LoginMethod): Pr
         }
     }
 
+    if (!u) return null;
+
+    await finalizeLogin(hostname);
+
     user.set(u);
     return u;
+}
+
+export async function fetchJWT(event: NDKEvent) {
+    const formData = new FormData();
+    formData.append('event', JSON.stringify(event.rawEvent()));
+
+    const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { 'accept': 'application/json' },
+        body: JSON.stringify({ event: event.rawEvent() })
+    });
+
+    if (res.status !== 200) {
+        let error: string;
+        const data = await res.json();
+        console.log(data);
+
+        error = data.error;
+        error ??= res.statusText;
+
+        newToasterMessage(`Failed to login: ${error.message}`, "error");
+        return false;
+    }
+
+    const { jwt } = await res.json();
+
+    return jwt;
 }
 
 /**

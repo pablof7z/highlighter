@@ -2,6 +2,7 @@
 	import CommentIcon from "$icons/CommentIcon.svelte";
 	import LikeIcon from "$icons/LikeIcon.svelte";
 	import RepostIcon from "$icons/RepostIcon.svelte";
+	import { requiredTiersFor } from "$lib/events/tiers";
 	import { Avatar, Name, user } from "@kind0/ui-common";
     import type { NDKEvent, NDKTag, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
@@ -23,7 +24,7 @@
         }
     });
 
-    const tiers = event.getMatchingTags("f").map((tag: NDKTag) => tag[1])
+    const tiers = requiredTiersFor(event);
     const includesFree = tiers.includes("Free");
 </script>
 

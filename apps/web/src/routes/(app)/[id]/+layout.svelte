@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import type { NDKUser } from "@nostr-dev-kit/ndk";
-    import { ndk } from "@kind0/ui-common";
     import { onDestroy, onMount } from "svelte";
 	import { startUserView, userSubscription } from "$stores/user-view";
 
@@ -10,14 +9,18 @@
     // $: npub = $page.data.npub;
 
     onMount(() => {
-        startUserView(user);
+        try {
+            startUserView(user);
+        } catch(e) {
+            console.trace(e);
+            alert(e);
+        }
     });
 
     onDestroy(() => {
         userSubscription?.unref();
     })
 </script>
-
 
 {#if user}
     {#key user.pubkey}

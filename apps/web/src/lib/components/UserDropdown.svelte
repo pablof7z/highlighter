@@ -2,7 +2,7 @@
     import { get as getStore } from 'svelte/store';
 	import { Avatar, CollapsableDropdown, Name, ndk, user } from '@kind0/ui-common';
     import {SignOut, SquaresFour, Tray} from 'phosphor-svelte';
-	import { userFollows } from '$stores/session';
+	import { userActiveSubscriptions, userFollows, userSuperFollows } from '$stores/session';
 
     export function logout(): void {
         const $ndk = getStore(ndk);
@@ -46,7 +46,9 @@
         <li>
             <div class="flex flex-col gap-4 items-start text-sm">
                 <div>Debug Information</div>
-                User follows: {$userFollows.size}
+                <p>User follows: {$userFollows.size}</p>
+                <p>User super-follows: {$userSuperFollows.size}</p>
+                <p>Active Subscriptions: {$userActiveSubscriptions.size}</p>
             </div>
         </li>
     </ul>

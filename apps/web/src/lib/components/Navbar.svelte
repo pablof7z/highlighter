@@ -11,7 +11,7 @@
 	export let maxSize = "max-w-7xl";
 </script>
 
-<div class="navbar mb-2 bg-base-100 px-8 mx-auto {maxSize} {$$props.class??""}">
+<div class="navbar mb-2 bg-base-100 px-8 mx-auto {maxSize} {$$props.class??""} fixed top-0 z-20 bg-opacity-80 backdrop-blur">
 	<div class="navbar-start items-center">
 		<div class="dropdown">
 			<label tabindex="0" class="btn btn-ghost xl:hidden">

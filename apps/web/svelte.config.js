@@ -21,7 +21,9 @@ const config = {
 			$icons: 'src/lib/icons',
 			$modals: 'src/lib/modals',
 			$stores: 'src/lib/stores',
-			$utils: 'src/lib/utils'
+			$utils: 'src/lib/utils',
+			$lib: 'src/lib',
+			$api: "src/lib/api",
 		}
 	},
 

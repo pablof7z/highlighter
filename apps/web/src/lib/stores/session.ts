@@ -25,13 +25,25 @@ export const userSuperFollows = persist(
     'user-super-follows'
 );
 
-export const userCreatorSubscriptionPlans = derived(userSuperFollows, $userSuperFollows => {
+export const userActiveSubscriptions = persist(
+    writable<Map<Hexpubkey, string>>(new Map()),
+    createLocalStorage(),
+    'user-active-subscriptions'
+);
+
+export const userCreatorSubscriptionPlans = derived(
+    [userSuperFollows, userActiveSubscriptions],
+    ([$userSuperFollows, $userActiveSubscriptions]) => {
     const plans = new Map<Hexpubkey, string>();
 
     for (const superFollow of $userSuperFollows) {
         if (!plans.has(superFollow)) {
             plans.set(superFollow, "Free");
         }
+    }
+
+    for (const [creator, plan] of $userActiveSubscriptions) {
+        plans.set(creator, plan);
     }
 
     return plans;
@@ -133,6 +145,7 @@ export async function prepareSession(): Promise<void> {
             {
                 followsStore: userFollows,
                 superFollowsStore: userSuperFollows,
+                activeSubscriptionsStore: userActiveSubscriptions,
                 appHandlers: userAppHandlers,
                 supportStore: userSupport,
                 waitUntilEoseToResolve: !alreadyKnowFollows,
@@ -157,14 +170,11 @@ function isHashtagListEvent(event: NDKEvent) {
 }
 
 interface IFetchDataOptions {
-    highlightStore? : Writable<Map<string, NDKEvent>>;
     followsStore?: Writable<Set<Hexpubkey>>;
     superFollowsStore?: Writable<Set<Hexpubkey>>;
-    labelsStore?: Writable<Set<string>>;
+    activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
     supportStore?: Writable<NDKEvent[]>;
     appHandlers?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
-    dvmRequestsStore?: Writable<Map<number, NDKDVMRequest[]>>;
-    dvmResultsStore?: Writable<Map<NDKEventId, NDKDVMJobResult[]>>;
     listsStore?: Writable<Map<string, NDKList>>;
     listsKinds?: number[];
     extraKinds?: number[];
@@ -194,7 +204,6 @@ async function fetchData(
 
     const mostRecentEvents: Map<string, NDKEvent> = new Map();
     const processedIdForKind: Record<number, string> = {};
-    let kind3Key: string;
     const _ = d.extend(`fetch:${name}`);
 
     _({waitUntilEoseToResolve: opts.waitUntilEoseToResolve});
@@ -210,47 +219,41 @@ async function fetchData(
         mostRecentEvents.set(dedupKey, event);
 
         if (event.kind === 3 && opts.followsStore) {
-            kind3Key = dedupKey;
             processContactList(event, opts.followsStore);
         } else if (event.kind === 17001 && opts.superFollowsStore) {
             processContactList(event, opts.superFollowsStore);
-        } else if (event.kind === NDKKind.Highlight && opts.highlightStore) {
-            processHighlight(event);
+        } else if (event.kind === 7002 && opts.activeSubscriptionsStore) {
+            processActiveSubscription(event);
         } else if (isHashtagListEvent(event) && opts.followHashtagsStore) {
             processHashtagList(event);
-        } else if (event.kind === NDKKind.Label) {
-            processLabel(event);
         } else if (event.kind === 7001) {
             processSupport(event);
         } else if (event.kind === NDKKind.AppRecommendation) {
             processAppHandler(event);
-        } else if (event.kind! >= 5000 && event.kind! <= 5999) {
-            processDVMRequests(event);
-        } else if (event.kind! >= 6000 && event.kind! <= 6999) {
-            processDVMResults(event);
         } else if (NDKListKinds.includes(event.kind!) && opts.listsStore) {
             processList(event);
         }
     };
 
-    const processHighlight = (event: NDKEvent) => {
-        const highlight = NDKHighlight.from(event);
-        opts.highlightStore!.update((highlights) => {
-            highlights.set(highlight.id, highlight);
+    const processActiveSubscription = (event: NDKEvent) => {
+        opts.activeSubscriptionsStore!.update((activeSubscriptions) => {
+            const untilTag = event.tagValue("until");
+            const tierName = event.tagValue("tier");
+            const creator = event.tagValue("creator");
 
-            return highlights;
-        });
-    };
+            if (!untilTag || !tierName || !creator) return activeSubscriptions;
 
-    const processLabel = (event: NDKEvent) => {
-        opts.labelsStore!.update((labels) => {
-            for (const tag of event.getMatchingTags("l")) {
-                if (tag[2] === "#t") labels.add(tag[1]);
+            const activeUntil = new Date(parseInt(untilTag)*1000);
+
+            console.log(`active until: ${activeUntil}`);
+
+            if (activeUntil > new Date()) {
+                activeSubscriptions.set(creator, tierName);
             }
 
-            return labels;
+            return activeSubscriptions;
         });
-    };
+    }
 
     const processSupport = (event: NDKEvent) => {
         opts.supportStore!.update((support) => {
@@ -275,35 +278,6 @@ async function fetchData(
             }
 
             return appHandlers;
-        });
-    };
-
-    const processDVMRequests = (event: NDKEvent) => {
-        const dvmRequest = NDKDVMRequest.from(event);
-        opts.dvmRequestsStore!.update((existingRequests) => {
-            const kind = dvmRequest.kind!;
-            if (!existingRequests.has(kind)) {
-                existingRequests.set(kind, []);
-            }
-
-            existingRequests.get(kind)!.push(dvmRequest);
-
-            return existingRequests;
-        });
-    };
-
-    const processDVMResults = (event: NDKEvent) => {
-        const dvmRequest = NDKDVMJobResult.from(event);
-        opts.dvmResultsStore!.update((existingResults) => {
-            const jobRequestId = dvmRequest.tagValue("e");
-            if (!jobRequestId) return existingResults;
-            if (!existingResults.has(jobRequestId)) {
-                existingResults.set(jobRequestId, []);
-            }
-
-            existingResults.get(jobRequestId)!.push(dvmRequest);
-
-            return existingResults;
         });
     };
 
@@ -387,21 +361,8 @@ async function fetchData(
             filters.push({ kinds, authors: authorPrefixes, limit: 10 });
         }
 
-        if (opts.highlightStore) {
-            filters.push({ authors: authorPrefixes, kinds: [NDKKind.Highlight], limit: 50 });
-            filters.push({ "#k": ["9802"], authors: authorPrefixes, limit: 50 });
-        }
-
-        if (opts.labelsStore) {
-            filters.push({ authors: authorPrefixes, kinds: [NDKKind.Label], "#L": ["#t"], limit: 100 });
-        }
-
         if (opts.appHandlers) {
             filters.push({ authors: authorPrefixes, kinds: [NDKKind.AppRecommendation] });
-        }
-
-        if (opts.dvmRequestsStore) {
-            filters.push({ authors: authorPrefixes, kinds: [5000], limit: 10 });
         }
 
         if (opts.followsStore) {
@@ -410,6 +371,10 @@ async function fetchData(
 
         if (opts.superFollowsStore) {
             filters.push({ kinds: [17001], authors: authorPrefixes });
+        }
+
+        if (opts.activeSubscriptionsStore) {
+            filters.push({ kinds: [7002], "#p": authorPrefixes });
         }
 
         if (opts.followHashtagsStore) {

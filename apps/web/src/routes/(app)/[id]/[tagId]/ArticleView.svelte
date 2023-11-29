@@ -5,8 +5,8 @@
 	import LikeIcon from "$icons/LikeIcon.svelte";
 	import RepostIcon from "$icons/RepostIcon.svelte";
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
-	import { userCreatorSubscriptionPlans } from "$stores/session";
-	import { getUserSupportPlansStore, startUserView, userSubscription } from "$stores/user-view";
+	import { userActiveSubscriptions } from "$stores/session";
+	import { getUserSupportPlansStore, startUserView, userSubscription, userTiers } from "$stores/user-view";
 	import { ndk, user } from "@kind0/ui-common";
 	import type { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
@@ -25,12 +25,10 @@
         userSubscription?.unref();
     });
 
-    const tiers = getUserSupportPlansStore();
-
     // Check if this suer has access to the full article and if they do, redirect them to the full article
     const fullTiers = article.getMatchingTags("tier").map(t => t[1]);
 
-    $: if (fullTiers.includes($userCreatorSubscriptionPlans.get(article.pubkey))) {
+    $: if (fullTiers.includes($userActiveSubscriptions.get(article.pubkey))) {
         const parts = article.tagValue("full")?.split(/:/) as string[];
         const dTag = parts[2] || parts[0];
         goto(`/${author.npub}/${dTag}`);
@@ -41,7 +39,7 @@
     let content = article.content;
 
     function openSupportModal() {
-        openModal(BecomeSupporterModal, { user: author, tiers });
+        openModal(BecomeSupporterModal, { user: author, tiers: $userTiers });
     }
 </script>
 
@@ -70,7 +68,7 @@
                                 </div>
                             </div>
 
-                            {#if article.pubkey === $user.pubkey}
+                            {#if article.pubkey === $user?.pubkey}
                                 <a href="/articles/{article.tagValue("d")}/edit" class="button">Edit</a>
                             {/if}
                         </div>
@@ -83,7 +81,7 @@
                     {#if isTeaser}
                         <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
                             <button
-                                class="button flex flex-row items-center gap-2 px-6 py-3 z-50 absolute whitespace-nowrap"
+                                class="button flex flex-row items-center gap-2 px-6 py-3 z-10 absolute whitespace-nowrap"
                                 on:click={openSupportModal}
                             >
                                 <Lock class="w-6 h-6" />

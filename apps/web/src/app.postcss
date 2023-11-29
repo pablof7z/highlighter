@@ -49,10 +49,14 @@
 	}
 
 	input, textarea {
-		@apply border-neutral-800 !bg-neutral-800 !border-2 text-white ring-0;
+		@apply border-neutral-800 !bg-neutral-800 !border-2 text-white ring-0 rounded-lg;
 	}
 
 	input:focus, textarea:focus {
 		@apply outline-none !ring-0 border-2 !border-neutral-500;
+	}
+
+	.toast {
+		@apply z-50;
 	}
 }

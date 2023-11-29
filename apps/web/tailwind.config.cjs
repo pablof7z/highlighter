@@ -30,6 +30,8 @@ module.exports = {
 	  require("daisyui"),
 	],
 	daisyui: {
+		utils: true,
+		styled: true,
 	  themes: [
 		{
 		  lofi: {
