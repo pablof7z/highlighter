@@ -11,29 +11,53 @@
 
     const dispatch = createEventDispatcher();
 
+    let showBannerInput = false;
+    let imageBanner: string;
+    let contentAreaElement: HTMLTextAreaElement;
+
     function chooseBanner() {
-        const banner = prompt("Banner URL");
-        if (banner) {
-            article.image = banner;
-        }
+        showBannerInput = true;
     }
 
-    let image: string;
+	function onImageBannerKeyDown(e: KeyboardEvent) {
+        if (e.key === "Enter") {
+            article.image = imageBanner;
+            showBannerInput = false;
+        } else if (e.key === "Escape") {
+            showBannerInput = false;
+        }
+	}
+
+    function onTitleKeyDown(e: KeyboardEvent) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            // move focus to content
+            if (contentAreaElement) contentAreaElement.focus();
+        }
+    }
 </script>
 
-<div class="flex flex-col border-none border-neutral-800 rounded-xl bg-base-200">
-    {#if article.image}
+<div class="flex flex-col border-none border-neutral-800 rounded-xl">
+    {#if showBannerInput}
+            <Input
+                bind:value={imageBanner}
+                color="black"
+                on:keydown={onImageBannerKeyDown}
+                placeholder="Cover image URL"
+            />
+    {:else if article.image}
         <div class="w-full h-80 relative">
             <button on:click={chooseBanner} class="w-full h-full object-cover relative rounded-xl">
                 <img class="w-full h-full object-cover relative rounded-xl" src={article.image} />
             </button>
-            <!-- gradient at the bottom going from transparent to black -->
             <div class="absolute bottom-0 w-full h-2/5 bg-gradient-to-b from-transparent to-black"></div>
             <div class="p-6 absolute bottom-0 w-full">
                 <Input
                     bind:value={article.title}
+                    color="black"
                     class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
                     placeholder="Add a title"
+                    on:keydown={onTitleKeyDown}
                 />
             </div>
         </div>
@@ -44,13 +68,13 @@
                     <Image class="w-8 h-8" />
                 </button>
             </div>
-
         </div>
     {/if}
     <div class="p-6 flex flex-col gap-4">
         {#if !article.image}
             <Input
                 bind:value={article.title}
+                color="black"
                 class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
                 placeholder="Add a title"
             />
@@ -59,6 +83,7 @@
         <Textarea
             bind:value={article.content}
             on:keyup={() => dispatch("contentUpdate", article.content)}
+            bind:element={contentAreaElement}
             class="
                 !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg text-white
                 focus:ring-0

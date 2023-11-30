@@ -15,6 +15,8 @@ export async function load({ params }) {
         user = await NDKUser.fromNip05(id);
         if (user) {
             npub = user.npub;
+        } else {
+            console.log(`No user found for ${id}`);
         }
     } catch(e) {
         console.log(e, ` error`);

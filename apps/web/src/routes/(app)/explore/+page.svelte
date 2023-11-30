@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKEvent, NDKRelaySet } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import ArticleGrid from "$components/Events/ArticleGrid.svelte";
 	import Navbar from "$components/Navbar.svelte";
     import { Avatar, Name, ndk } from "@kind0/ui-common";
@@ -14,7 +14,7 @@
     onMount(() => {
         const relaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
         events = $ndk.storeSubscribe(
-            { kinds: [30023], "#f": ["Free"] },
+            { kinds: [NDKKind.Article], "#f": ["Free"] },
         { relaySet, autoStart: true, groupable: false, subId: 'explore' })
     });
 
@@ -57,9 +57,9 @@
         <div class="w-full max-5xl">
             <div class="grid grid-cols-4 gap-10">
                 {#each $events as event (event.id)}
-                    {#if event.kind === 30023}
+                    {#if event.kind === NDKKind.Article}
                         <ArticleGrid article={NDKArticle.from(event)} />
-                    {:else if event.kind === 9}
+                    {:else if event.kind === NDKKind.GroupNote}
                         <PostGrid {event} />
                     {/if}
                 {/each}

@@ -5,7 +5,9 @@ import { generateLoginEvent } from "$actions/signLoginEvent";
 
 export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
 
-export async function finalizeLogin(hostname: string) {
+export async function finalizeLogin() {
+    const hostname = import.meta.env.VITE_HOSTNAME;
+    console.trace("finalizeLogin", {hostname});
     // fetch jwt
     const loginEvent = await generateLoginEvent(hostname);
     if (!loginEvent) return null;
@@ -24,11 +26,12 @@ export async function login(
     ndk: NDK,
     bunkerNDK: NDK,
     method: LoginMethod,
-    hostname: string
 ): Promise<NDKUser | null> {
     // Check if there is a localStorage item with the key "nostr-key-method"
     const nostrKeyMethod = method || localStorage.getItem("nostr-key-method");
     let u: NDKUser | null | undefined;
+
+    console.log("login", {nostrKeyMethod});
 
     switch (nostrKeyMethod) {
         case 'none': return null;
@@ -62,7 +65,7 @@ export async function login(
                     bunkerNDK.connect(2500);
                     bunkerNDK.pool.on('relay:connect', async () => {
                         const user = await nip46SignIn(ndk, bunkerNDK!, existingPrivateKey);
-                        await finalizeLogin(hostname);
+                        await finalizeLogin();
                         resolve(user);
                     });
                 }
@@ -79,7 +82,7 @@ export async function login(
                     if (window.nostr) {
                         clearInterval(loadNip07Interval);
                         const user = nip07SignIn(ndk);
-                        await finalizeLogin(hostname);
+                        await finalizeLogin();
                         resolve(user);
                     }
 
@@ -93,7 +96,7 @@ export async function login(
 
     if (!u) return null;
 
-    await finalizeLogin(hostname);
+    await finalizeLogin();
 
     user.set(u);
     return u;
@@ -175,6 +178,7 @@ async function nip46SignIn(ndk: NDK, bunkerNDK: NDK, existingPrivateKey: string)
         return null;
     }
 
+    console.log("nip46SignIn", {remoteUser, localSigner});
     const remoteSigner = new NDKNip46Signer(bunkerNDK, remoteUser.pubkey, localSigner!);
 
     await remoteSigner.blockUntilReady();

@@ -6,7 +6,7 @@
     export let content: Readable<NDKEvent[]>;
 </script>
 
-<div class="flex flex-col max-w-xl mx-auto">
+<div class="flex flex-col max-w-xl">
     {#each $content as event (event.id)}
         <FeedEvent {event} />
     {/each}

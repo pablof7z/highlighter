@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { publishToTiers } from "$actions/publishToTiers";
+	import { goto } from "$app/navigation";
 	import SelectTier from "$components/Forms/SelectTier.svelte";
 	import PageTitle from "$components/Page/PageTitle.svelte";
 	import { getUserSupportPlansStore } from "$stores/user-view";
@@ -10,7 +11,7 @@
 
     const allTiers = getUserSupportPlansStore();
 
-    let tiers: Record<string, boolean> = { "Free": false };
+    let tiers: Record<string, boolean> = { "Free": true };
     let content: string;
 
     $: for (const tier of $allTiers) {
@@ -35,7 +36,8 @@
         }
 
         try {
-            publishToTiers(note, tiers);
+            await publishToTiers(note, tiers);
+            goto("/dashboard");
         } catch (e: any) {
             console.error(e);
             newToasterMessage("Failed to publish note: "+e?.message, "error");
@@ -61,7 +63,7 @@
     }
 </script>
 
-<div class="flex flex-col gap-10">
+<div class="flex flex-col gap-10 mx-auto max-w-2xl">
     <PageTitle title="New Note">
         <div class="flex flex-row gap-2">
             <button on:click={publish} class="button px-10" disabled={publishing}>

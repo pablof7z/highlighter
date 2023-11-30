@@ -9,7 +9,7 @@
     export let value: string = "";
 
     let blocking = false;
-    let advanced = true;
+    let advanced = false;
 
     let error: string | undefined;
 

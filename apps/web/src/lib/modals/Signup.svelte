@@ -1,56 +1,30 @@
 <script lang="ts">
     import { NDKKind, NDKPrivateKeySigner, type Hexpubkey, type NostrEvent, NDKRelaySet, NDKNostrRpc, NDKUser, type NDKRpcResponse, NDKNip46Signer } from "@nostr-dev-kit/ndk";
     import Input from "$components/Forms/Input.svelte";
-	import { derived } from "svelte/store";
 	import { bunkerNDK, ndk, user } from "@kind0/ui-common";
     import createDebug from "debug";
 	import { closeModal } from "svelte-modals";
+	import NsecBunkerProviderSelect from "$components/Forms/NsecBunkerProviderSelect.svelte";
+	import type { NsecBunkerProvider } from "../../app";
+	import { slide } from "svelte/transition";
 
-    let email: string = '';
-    let username: string = '';
-    let provider: string = "4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce" ;
+    let email: string;
+    let username: string;
+    let nsecBunker: NsecBunkerProvider = {
+        pubkey: "4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce",
+        domain: "getfaaans.com"
+    };
     let creating: boolean;
-
-    const allNsecBunkerProviders = $ndk.storeSubscribe(
-        { kinds: [NDKKind.AppHandler], "#k": [NDKKind.NostrConnect.toString()] },
-        { closeOnEose: true, subId: 'nsec-bunker-providers' }
-    )
-
-    const nsecBunkerProviders = derived(allNsecBunkerProviders, ($allNsecBunkerProviders) => {
-        const providers: Record<Hexpubkey, string> = {};
-        const events = $allNsecBunkerProviders?.filter((handler) => handler.tagValue("k") === NDKKind.NostrConnect.toString())
-
-        if (events) {
-            events.forEach((event) => {
-                try {
-                    const profile = JSON.parse(event.content);
-                    const nip05 = profile?.nip05;
-                    const [ username, domain ] = nip05?.split("@") ?? [];
-
-                    if (username === '_' && domain) {
-                        // should verify that the NIP-05 resolves to this pubkey
-                        providers[event.pubkey] = domain;
-                    } else {
-                        console.log(`invalid nip05: ${nip05}`);
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
-            });
-        }
-
-        return providers;
-    });
+    let usernameTaken = false;
 
     async function signup() {
         creating = true;
         // See if this username resolves to an existing NIP-05
-        const domain = $nsecBunkerProviders[provider];
+        const domain = nsecBunker.domain;
         const nip05 = await NDKUser.fromNip05([ username, domain ].join("@"));
 
-
         if (nip05) {
-            alert('already exists, login instead');
+            usernameTaken = true;
             return;
         }
 
@@ -76,18 +50,25 @@
         const localKeyPubkey = (await localSigner.user()).pubkey;
 
         // Generate event
-        const recipient = $ndk.getUser({ pubkey: provider });
+        const recipient = $ndk.getUser({ pubkey: nsecBunker.pubkey });
         const debug = createDebug("signup");
         const rpc = new NDKNostrRpc($bunkerNDK, localSigner, debug);
         const authPayload = { email, username, domain };
 
         rpc.subscribe({ kinds: [24133 as number], "#p": [localKeyPubkey] });
+        let popup: Window | null = null;
         rpc.on("authUrl", (url: string) => {
-            window.open(url, "_blank", "width=350,height=450");
+            popup = window.open(url, "_blank", "width=350,height=450");
+            let checkPopup = setInterval(() => {
+            if (popup?.closed) {
+                clearInterval(checkPopup);
+                creating = false;
+            }
+        }, 500); // Check every 500ms
         });
 
         rpc.sendRequest(
-            provider,
+            nsecBunker.pubkey,
             "create_account",
             [JSON.stringify(authPayload)],
             24134,
@@ -97,8 +78,10 @@
                 const u = await remoteSigner.blockUntilReady();
                 console.log({u});
                 $user = u;
+                $ndk.signer = remoteSigner;
                 localStorage.setItem("nostr-key-method", 'nip46');
                 localStorage.setItem('nostr-target-npub', $user.npub);
+                popup.close();
                 closeModal();
             }
         );
@@ -108,31 +91,88 @@
         // Open iFrame
 
     }
+
+    let usernameHasFocus = false;
+    let recoveryHasFocus = false;
+
+    async function checkUsername() {
+        const domain = nsecBunker?.domain;
+        if (username.length === 0 || !domain) return;
+        const nip05 = await NDKUser.fromNip05([ username, domain ].join("@"));
+
+        if (nip05) {
+            usernameTaken = true;
+        } else {
+            usernameTaken = false;
+        }
+    }
 </script>
 
-<div class="text-center text-black text-[15px] font-medium leading-normal">Create an account</div>
+<div class="text-center text-black text-lg font-medium leading-normal">Create an account</div>
 
 <div class="flex flex-col gap-4">
-    <Input color="white" type="email" placeholder="Recovery email" autofocus={true} bind:value={email} />
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-1">
+        <div class="font-semibold">
+            Choose your username
+        </div>
         <div class="relative">
-            <Input bind:value={username} type="text" autocomplete="off" placeholder="Username" />
-            <div class="absolute border-0 inset-y-1 right-4 flex items-center text-sm text-gray-500">
-                <select bind:value={provider} class="border-0 flex items-center text-sm text-gray-500">
-                    {#each Object.entries($nsecBunkerProviders) as [pubkey, domain]}
-                        <option value={pubkey}>@{domain}</option>
-                    {/each}
-                </select>
+            <Input
+                tabindex={1}
+                bind:value={username}
+                type="text"
+                autocomplete="off"
+                placeholder="Username"
+                autofocus={true}
+                on:focus={() => usernameHasFocus = true}
+                on:blur={() => {usernameHasFocus = false; checkUsername(); }}
+            />
+            <div class="absolute border-0 inset-y-1 right-0.5 flex items-center text-sm text-gray-500">
+                <NsecBunkerProviderSelect bind:value={nsecBunker} />
             </div>
         </div>
-        <div class="!text-opacity-50 text-sm">You can change your username any time</div>
+        <div
+            class="text-xs opacity-50 transition-all duration-300"
+        >
+            Don't stress about it; you can change your username any time
+        </div>
+
+        {#if usernameTaken}
+        <div class="alert alert-warning text-sm font-medium" transition:slide>
+            This username is already taken
+        </div>
+    {/if}
     </div>
-    <div class="mb-6 hidden">
-        <input type="password" placeholder="Password" class="w-full px-4 py-3 bg-white rounded-full shadow border border-neutral-200 justify-start items-center gap-2 inline-flex" />
+
+    <div class="flex flex-col gap-1">
+        <div class="font-semibold">
+            Email
+            <span class="font-normal opacity-50">(to recover your account)</span>
+        </div>
+        <Input
+            tabindex={2}
+            color="white"
+            type="email"
+            placeholder="Recovery email"
+            bind:value={email}
+            on:focus={() => recoveryHasFocus = true}
+            on:blur={() => recoveryHasFocus = false}
+        />
+        <div
+            class="text-xs opacity-50 transition-all duration-300"
+        >
+            We only use this to recover your account if you lose your password
+        </div>
     </div>
-    <button class="button button-primary" on:click={signup} disabled={!provider || creating}>
+    <button class="button button-primary transition duration-300 flex flex-col gap-1" on:click={signup} disabled={username?.length === 0 || !nsecBunker?.pubkey || creating} transition:slide>
         {#if !creating}
             Create account
+            {#if username?.length > 0 && nsecBunker.domain}
+                <span class="text-sm font-light">
+
+                    {username}@{nsecBunker.domain}
+                </span>
+            {:else}
+            {/if}
         {:else}
             <div class="loading loading-sm"></div>
         {/if}

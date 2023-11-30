@@ -14,17 +14,6 @@
     $: if (id !== $page.params.id) {
         id = $page.params.id;
         user.ndk = $ndk;
-
-        try {
-            user.fetchProfile({ groupable: false }).then((p) => {
-                profile = p;
-                if (profile?.banner) banner = profile.banner;
-            }).catch((e) => {
-                console.log(e, ` error`);
-            });
-        } catch(e) {
-            console.log(e, ` error`);
-        }
     }
 
     let articles: Readable<Map<NDKEventId, NDKArticle>>;

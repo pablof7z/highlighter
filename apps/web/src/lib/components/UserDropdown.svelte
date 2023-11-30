@@ -11,10 +11,12 @@
         localStorage.removeItem("currentUserFollowPubkeysStore");
         localStorage.removeItem("currentUserStore");
         localStorage.removeItem("user-follows");
+        localStorage.removeItem("user-super-follows");
         localStorage.removeItem("network-follows");
         localStorage.removeItem("network-follows-updated-t");
         localStorage.removeItem("currentUserNpub");
         localStorage.removeItem("nostr-target-npub");
+        localStorage.removeItem("jwt");
 
         // explicitly prevent auto-login with NIP-07
         localStorage.setItem("nostr-key-method", "none");
@@ -43,7 +45,7 @@
             <SignOut size={16} class="mr-2"/>
             Log Out
         </button></li>
-        <li>
+        <li class="hidden">
             <div class="flex flex-col gap-4 items-start text-sm">
                 <div>Debug Information</div>
                 <p>User follows: {$userFollows.size}</p>

@@ -2,7 +2,7 @@
     import LogoBlack from '$icons/LogoBlack.svelte';
 	import { closeModal } from "svelte-modals";
     import { createEventDispatcher } from "svelte";
-	import { fade } from "svelte/transition";
+	import { fade, slide } from "svelte/transition";
     import Signup from './Signup.svelte';
 	import Login from "./Login.svelte";
 
@@ -33,17 +33,21 @@
     overflow-y-hidden
     {$$props.class}
     " style="pointer-events: auto; max-height: 92vh;" on:click|stopPropagation={()=>{}} transition:fade>
-        <div class="bg-white p-8 rounded-2xl shadow-lg w-96 flex flex-col gap-5 text-black">
+        <div class="bg-white p-8 rounded-2xl shadow-lg w-96 flex flex-col gap-0 text-black">
             <div class="flex justify-center">
                 <LogoBlack />
             </div>
 
             {#if mode === 'signup'}
-                <Signup />
-                <p class="text-center text-black text-sm my-2">Already have a Nostr account? <button on:click={() => mode = 'login'} class="text-black font-bold underline">Log in</button></p>
-                {:else}
-                <Login />
-                <p class="text-center text-sm my-2 text-black">Don’t have an account? <button on:click={() => mode = 'signup'} class="text-black font-bold underline">Sign Up</button></p>
+                <div class="w-full flex flex-col gap-5" transition:slide>
+                    <Signup />
+                    <p class="text-center text-black text-sm my-2">Already have a Nostr account? <button on:click={() => mode = 'login'} class="text-black font-bold underline">Log in</button></p>
+                </div>
+            {:else}
+                <div class="w-full flex flex-col gap-5" transition:slide>
+                    <Login />
+                    <p class="text-center text-sm my-2 text-black">Don’t have an account? <button on:click={() => mode = 'signup'} class="text-black font-bold underline">Sign Up</button></p>
+                </div>
             {/if}
         </div>
     </div>

@@ -15,7 +15,7 @@
     export let article: NDKArticle;
 
     let previewContent: string;
-    let tiers: Record<string, boolean> = { "Free": false };
+    let tiers: Record<string, boolean> = { "Free": true };
     let nonSubscribersPreview = true;
 
     const allTiers = getUserSupportPlansStore();

@@ -33,8 +33,6 @@
         mounted = true;
     })
 
-
-
     function publish() {
         openModal(NewItemModal);
     }

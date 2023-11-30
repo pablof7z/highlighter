@@ -28,7 +28,7 @@
     const includesFree = tiers.includes("Free");
 </script>
 
-<a href={eventUrl} class="flex flex-col gap-4 mt-4 pb-4 border-b border-neutral-800">
+<a href={eventUrl} class="flex flex-col gap-4 mt-4 pb-4 border-b border-neutral-800 w-full">
     <slot />
 
     <div class="w-full justify-between items-center inline-flex">
@@ -42,8 +42,8 @@
                         <Name {userProfile} user={author} />
                     </div>
 
-                    {#if event.pubkey === $user?.pubkey}
-                    <div class="flex flex-row items-center gap-1 text-xs ">
+                    {#if event.pubkey === $user?.pubkey && false}
+                        <div class="flex flex-row items-center gap-1 text-xs ">
                             {#if includesFree}
                                 <div class="badge badge-neutral badge-sm">Free</div>
                             {:else}

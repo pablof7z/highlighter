@@ -9,7 +9,6 @@
 	import { page } from '$app/stores';
 	import { configureFeNDK } from '$utils/configure-fe-ndk';
 
-	const hostname = $page.url.hostname;
 	let mounted = false;
 
 	onMount(async () => {
@@ -22,7 +21,7 @@
 			if (keyMethod === 'nip07') {
 				await loginNip07();
 			} else if (keyMethod === 'nip46') {
-				await login($ndk, $bunkerNDK, 'nip46', hostname);
+				await login($ndk, $bunkerNDK, 'nip46');
 			} else if (!keyMethod) {
 				let nip07Attempts = 0;
 				const nip07Attempt = setInterval(() => {
@@ -49,7 +48,7 @@
     });
 
 	async function loginNip07() {
-		const u = await login($ndk, $bunkerNDK, 'nip07', hostname);
+		const u = await login($ndk, $bunkerNDK, 'nip07');
 		if (u) $user = u;
 	}
 
@@ -61,10 +60,10 @@
 		console.log(`hasJwt`, hasJwt);
 	}
 
-	$: if (mounted && $user && !hasJwt && !finalizingLogin) {
+	$: if (mounted && $user && $ndk.signer && !hasJwt && !finalizingLogin) {
 		console.log(`requesting jwt after the fact`);
 		finalizingLogin = true;
-		finalizeLogin(hostname);
+		finalizeLogin();
 	}
 
 	let sessionPreparationStarted = false;
