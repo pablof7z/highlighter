@@ -41,8 +41,6 @@
 		"vitest": "^0.34.2"
 	},
 	"dependencies": {
-		"@bugsnag/browser-performance": "^2.0.0",
-		"@bugsnag/js": "^7.22.2",
 		"@getalby/sdk": "^2.7.0",
 		"@kind0/ui-common": "workspace:*",
 		"@macfja/svelte-persistent-store": "^2.4.0",
