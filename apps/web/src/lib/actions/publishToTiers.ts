@@ -1,10 +1,7 @@
 import type NDK from "@nostr-dev-kit/ndk";
-import { NDKEvent, NDKRelaySet, NDKUser } from "@nostr-dev-kit/ndk";
+import type { NDKEvent, NDKRelaySet, NDKUser } from "@nostr-dev-kit/ndk";
+import { getDefaultRelaySet } from "$utils/ndk";
 
-export const defaultRelays = [
-    'wss://relay.getfaaans.com'
-    // "ws://localhost:5577"
-];
 export async function publishToTiers(
     event: NDKEvent,
     tiers: Record<string, boolean>,
@@ -16,7 +13,7 @@ export async function publishToTiers(
 ) {
     const ndk = opts.ndk ?? event.ndk!;
     const teaser = opts.teaserEvent;
-    opts.relaySet ??= NDKRelaySet.fromRelayUrls(defaultRelays, ndk);
+    opts.relaySet ??= getDefaultRelaySet();
 
     const user: NDKUser = await ndk.signer!.user();
 

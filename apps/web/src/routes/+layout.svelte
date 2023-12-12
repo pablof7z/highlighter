@@ -3,17 +3,17 @@
 	import '../app.postcss';
 	import { Modals, closeModal } from 'svelte-modals'
 	import { fade } from 'svelte/transition';
-	import { Toaster, bunkerNDK, ndk, user } from '@kind0/ui-common';
+	import { Toaster, bunkerNDK, ndk, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
 	import { finalizeLogin, login } from '$utils/login';
 	import { prepareSession } from '$stores/session';
-	import { page } from '$app/stores';
-	import { configureFeNDK } from '$utils/configure-fe-ndk';
+	import { configureFeNDK } from '$utils/ndk';
 
 	let mounted = false;
 
 	onMount(async () => {
 		mounted = true;
-		configureFeNDK();
+		hasJwt = !!localStorage.getItem('jwt');
+		await configureFeNDK();
 
         try {
 			const keyMethod = localStorage.getItem('nostr-key-method');
@@ -61,7 +61,6 @@
 	}
 
 	$: if (mounted && $user && $ndk.signer && !hasJwt && !finalizingLogin) {
-		console.log(`requesting jwt after the fact`);
 		finalizingLogin = true;
 		finalizeLogin();
 	}
@@ -82,7 +81,18 @@
 		transition:fade={{ duration: 100 }}></div>
 </Modals>
 
-<slot />
+<div class="drawer drawer-end">
+	<input id="my-drawer-4" type="checkbox" class="drawer-toggle" bind:checked={$pageDrawerToggle} />
+	<div class="drawer-content">
+		<slot />
+	</div>
+	<div class="drawer-side z-50">
+		<label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
+		<div class="menu p-4 w-[40vw] min-h-full bg-base-200 text-base-content p-8">
+			<svelte:component this={$rightSidebar.component} {...$rightSidebar.props} />
+		</div>
+	</div>
+</div>
 
 <Toaster />
 
@@ -102,3 +112,6 @@
 	}
 
 </style>
+
+
+<Analytics />

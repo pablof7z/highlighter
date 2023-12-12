@@ -1,6 +1,6 @@
 <script lang="ts">
 	import MediaCollection from "$components/Events/MediaCollection.svelte";
-	import FeedEvent from "$components/FeedEvent.svelte";
+	import FeedEventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { ndk } from "@kind0/ui-common";
     import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
@@ -8,9 +8,9 @@
     export let event: NDKEvent;
 </script>
 
-<FeedEvent {event} suffixUrl={event.id.slice(0, 18)}>
+<FeedEventWrapper {event}>
     <EventContent ndk={$ndk} {event} showEntire={true} maxLength={9999} mediaCollectionComponent={MediaCollection} />
-</FeedEvent>
+</FeedEventWrapper>
 
 <style lang="postcss">
     :global(.event-content .note-media--wrapper) {

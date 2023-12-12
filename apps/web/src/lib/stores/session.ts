@@ -2,11 +2,10 @@ import { writable, get as getStore, type Writable, derived } from 'svelte/store'
 import { ndk, user } from "@kind0/ui-common";
 import { NDKEvent, NDKList, NDKSubscriptionCacheUsage, type NDKFilter, type NDKTag, NDKKind, type NDKEventId, NDKDVMJobResult, NDKDVMRequest, NDKListKinds, type Hexpubkey } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
-import { NDKHighlight } from "@nostr-dev-kit/ndk";
 import { persist, createLocalStorage } from "@macfja/svelte-persistent-store";
 import debug from 'debug';
 
-const d = debug('highlighter:session');
+const d = debug('getfaaans:session');
 
 export const loadingScreen = writable<boolean>(false);
 
@@ -72,8 +71,6 @@ export const userLists = writable<Map<string, NDKList>>(new Map());
  * Current user labels
  */
 export const userLabels = writable<Set<string>>(new Set());
-
-export const highlights = writable<Map<string, NDKHighlight>>(new Map());
 
 /**
  * Current user's followed hashtags
@@ -220,13 +217,13 @@ async function fetchData(
 
         if (event.kind === 3 && opts.followsStore) {
             processContactList(event, opts.followsStore);
-        } else if (event.kind === 17001 && opts.superFollowsStore) {
+        } else if (event.kind === NDKKind.SuperFollowList && opts.superFollowsStore) {
             processContactList(event, opts.superFollowsStore);
-        } else if (event.kind === 7002 && opts.activeSubscriptionsStore) {
+        } else if (event.kind === 7003 && opts.activeSubscriptionsStore) {
             processActiveSubscription(event);
         } else if (isHashtagListEvent(event) && opts.followHashtagsStore) {
             processHashtagList(event);
-        } else if (event.kind === 7001) {
+        } else if (event.kind === NDKKind.SubscriptionStart) {
             processSupport(event);
         } else if (event.kind === NDKKind.AppRecommendation) {
             processAppHandler(event);
@@ -236,6 +233,7 @@ async function fetchData(
     };
 
     const processActiveSubscription = (event: NDKEvent) => {
+        console.log(`processing active subscription`, event.rawEvent())
         opts.activeSubscriptionsStore!.update((activeSubscriptions) => {
             const untilTag = event.tagValue("until");
             const tierName = event.tagValue("tier");
@@ -374,7 +372,7 @@ async function fetchData(
         }
 
         if (opts.activeSubscriptionsStore) {
-            filters.push({ kinds: [7002], "#p": authorPrefixes });
+            filters.push({ kinds: [7003], "#p": authorPrefixes });
         }
 
         if (opts.followHashtagsStore) {

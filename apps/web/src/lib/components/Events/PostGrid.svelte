@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { urlSuffixFromEvent } from "$utils/url";
 	import { Avatar, Name } from "@kind0/ui-common";
 	import type { NDKArticle, NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
@@ -6,7 +7,7 @@
     export let event: NDKEvent;
     export let size: "small" | "large" = "small";
     export let skipAuthor: boolean = false;
-    const suffixUrl = event.tagValue("d") || event.id.slice(0, 18);
+    const suffixUrl = urlSuffixFromEvent(event);
 
     const user = event.author;
     let userProfile: NDKUserProfile | undefined = undefined;

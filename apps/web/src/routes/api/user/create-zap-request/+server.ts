@@ -33,10 +33,8 @@ async function calculateAmount(event: NDKEvent): Promise<number> {
 
     if (!amountTag) throw new Error("Amount not found");
 
-    const value = parseInt(amountTag[1]);
+    const value = parseFloat(amountTag[1]);
     const currency = amountTag[2];
-
-    return 10;
 
     if (currency === "USD") {
         return Math.floor(Number(value) / bitcoinPrice * 100_000_000); // expressed in USD in the tag
@@ -64,6 +62,10 @@ function calculateValidUntil(event: NDKEvent): Date {
         now.setFullYear(now.getFullYear() + 1);
     } else if (cadennce === "quarterly") {
         now.setMonth(now.getMonth() + 3);
+    } else if (cadennce === "weekly") {
+        now.setDate(now.getDate() + 7);
+    } else if (cadennce === "daily") {
+        now.setDate(now.getDate() + 1);
     } else {
         throw new Error("Cadence not supported");
     }
@@ -79,7 +81,12 @@ export async function POST({request, locals}) {
         let { event: eventData, comment } = payload as Payload;
         const event = new NDKEvent($ndk, JSON.parse(eventData));
         const recipient = getRecipient(event);
-        const satsAmount = await calculateAmount(event);
+        console.log({event, recipient});
+        let satsAmount = await calculateAmount(event);
+        console.log({satsAmount});
+
+        satsAmount = 1;
+
         const tierName = getTierNameFromSubscriptionEvent(event);
 
         if (!recipient) throw new Error("Recipient not found");
@@ -90,7 +97,9 @@ export async function POST({request, locals}) {
             zappedUser: recipient
         });
         comment ??= `Zap from getfaaans`;
+        console.log('generate', recipient);
         const res = await zap.generateZapRequest(satsAmount, comment);
+        console.log({res});
         if (!res) throw new Error("Zap request not generated");
         const {event: zapReq, zapEndpoint} = res;
         zapReq.pubkey = pubkey;

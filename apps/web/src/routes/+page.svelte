@@ -24,13 +24,13 @@
 	</div>
 </div>
 
-<div class="flex-col justify-start items-start gap-14 inline-flex px-32 w-full max-w-screen overflow-hidden ">
-	<div class="flex-col justify-start items-start gap-12 flex w-full">
+<div class="flex flex-col justify-start items-start gap-14 overflow-y-hidden w-full max-w-[100vw] px-4 -mx-4">
+	<div class="flex-col justify-start items-start gap-12 flex w-full overflow-x-auto">
 		<div class="w-full border border-white border-opacity-20"></div>
 		<div class="text-white text-[32px] font-light">Formats</div>
 	</div>
-	<div class="justify-center items-center gap-16 inline-flex w-screen overflow-x-hidden">
-		<div class="text-white text-[200px] font-light">Music  </div>
+	<div class="justify-start items-center gap-16 flex w-full overflow-x-auto flex-nowrap">
+		<div class="text-white text-[200px] font-light">Music</div>
 		<div class="text-white text-[200px]">·</div>
 		<div class="text-white text-[200px] font-light">Film</div>
 		<div class="text-white text-[200px]">·</div>
@@ -41,14 +41,14 @@
 	<div class="w-full border border-white border-opacity-20"></div>
 </div>
 
-<div class="relative bg-black">
+<div class="relative bg-black hidden">
 
     <div class="left-0 absolute flex-col justify-start items-start gap-[180px] inline-flex">
         <div class="self-stretch px-[120px] justify-start items-start gap-2 inline-flex">
         </div>
-        <div class="h-[993px] flex-col justify-start items-center gap-[120px] flex">
-            <div class="h-[799px] px-[120px] justify-start items-start gap-8 inline-flex">
-                <div class="h-[799px] pl-12 pr-[154.67px] pt-[523px] pb-12 bg-purple-500 bg-opacity-20 flex-col justify-end items-center inline-flex">
+        <div class="flex-col justify-start items-center gap-[120px] flex">
+            <div class="px-[120px] justify-start items-start gap-8 inline-flex">
+                <div class="pl-12 pr-[154.67px] pt-[523px] pb-12 bg-purple-500 bg-opacity-20 flex-col justify-end items-center inline-flex">
                     <div class="self-stretch flex-col justify-start items-start gap-8 inline-flex">
                         <div class="w-20 h-20 relative"></div>
                         <div class="flex-col justify-start items-start gap-4 flex">

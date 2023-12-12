@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { getContent } from "$stores/user-view";
-	import { EventCard, ndk } from "@kind0/ui-common";
-	import type { NDKUser } from "@nostr-dev-kit/ndk";
-
-    export let user: NDKUser;
+	import { EventCard, } from "@kind0/ui-common";
 
     const content = getContent();
 </script>

@@ -1,19 +1,17 @@
 <script lang="ts">
 	import { ndk, newToasterMessage, nicelyFormattedSatNumber } from "@kind0/ui-common";
 	import { onMount } from "svelte";
-    import { webln } from "@getalby/sdk";
-	import { NDKEvent, NDKUser, type NostrEvent } from "@nostr-dev-kit/ndk";
+    import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 	import type { Term } from "$utils/term";
 	import { createSubscriptionEvent, createZapRequest } from "./subscription-event";
-	import { nwcPay } from "$actions/nwcPay";
 	import { slide } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
+	import { currencyFormat } from "$utils/currency";
 
     export let amount: string;
     export let currency: string;
     export let term: Term;
     export let plan: NDKEvent | undefined = undefined;
-    export let preimage: string | undefined = undefined;
 
     /**
      * User that is being supported, passed in when no plan is provided
@@ -39,7 +37,7 @@
 
         satsAmount = Math.floor(Number(amount) / bitcoinPrice * 100_000_000);
         // XXX HARDCODE
-        satsAmount = 10;
+        // satsAmount = 10;
     });
 
     let subscribing = false;
@@ -80,6 +78,7 @@
         zapRequest.sig = await $ndk.signer?.sign(zapRequest.rawEvent());
         console.log('after signing zaprequest id', zapRequest.id, zapRequest.rawEvent());
         await sendZap(zapRequest);
+        await supportEvent.publish();
         // const invoice = await supportEvent.zap(satsAmount*1000, zapComment, undefined, supportedUser);
 
         // if (!invoice) {
@@ -99,9 +98,13 @@
 </script>
 
 <div class="text-black text-sm font-medium leading-[19px]">
-    ${amount}
-    {#if satsAmount}
-        ({nicelyFormattedSatNumber(satsAmount)} sats)
+    {#if currency !== 'msat'}
+        {currencyFormat(currency, amount)}
+        {#if satsAmount}
+            ({nicelyFormattedSatNumber(satsAmount)} sats)
+        {/if}
+    {:else}
+        {currencyFormat(currency, amount)}
     {/if}
 </div>
 

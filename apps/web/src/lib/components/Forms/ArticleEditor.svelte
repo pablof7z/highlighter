@@ -85,17 +85,11 @@
             on:keyup={() => dispatch("contentUpdate", article.content)}
             bind:element={contentAreaElement}
             class="
-                !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg text-white
+                !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg
                 focus:ring-0
                 resize-none min-h-[20vh]
             "
             placeholder="Write your heart out..."
         />
-
-        <!-- <div class="relative flex flex-row items-center w-full">
-            <Image class="w-5 h-5  text-white absolute left-0" />
-            <input type="text" class="!bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg focus:text-white text-neutral-500/50 focus:text-opacity-100 w-full !pl-12" placeholder="Cover image URL" bind:value={image} on:blur={() => article.image = image} />
-
-        </div> -->
     </div>
 </div>

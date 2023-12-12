@@ -1,7 +1,8 @@
 <script lang="ts">
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
-	import { Avatar } from "@kind0/ui-common";
+	import { Avatar, user as currentUser } from "@kind0/ui-common";
 	import type { NDKUser, Hexpubkey, NDKEvent, NDKArticle } from "@nostr-dev-kit/ndk";
+	import { Share } from "phosphor-svelte";
 	import { openModal } from "svelte-modals";
 	import type { Readable } from "svelte/motion";
 
@@ -21,9 +22,19 @@
     function openSupportModal() {
         openModal(BecomeSupporterModal, { user, tiers });
     }
+
+    function openShareModal() {
+        // openModal(ShareModal, { user });
+    }
+
+    let isCurrentUser: boolean;
+    let isSupporter: boolean;
+
+    $: isCurrentUser = user && user?.pubkey === $currentUser?.pubkey;
+    $: isSupporter = supportingPubkeys.has($currentUser?.pubkey);
 </script>
 
-<div class="flex items-center">
+<div class="flex items-center gap-4">
     {#if supportingPubkeys?.size > 0}
         <span class="text-sm whitespace-nowrap">
             {supportingPubkeys?.size}
@@ -36,7 +47,12 @@
         {/each}
     </div>
 
-    <div class="ml-4">
+    {#if !isSupporter}
         <button class="whitespace-nowrap button px-6" on:click={openSupportModal}>Become a Faaan</button>
-    </div>
+    {:else}
+        <button class="whitespace-nowrap button px-6" on:click={openShareModal}>
+            <Share class="mr-2" />
+            Share
+        </button>
+    {/if}
 </div>

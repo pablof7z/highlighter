@@ -146,7 +146,7 @@
     <div class="flex flex-col gap-1">
         <div class="font-semibold">
             Email
-            <span class="font-normal opacity-50">(to recover your account)</span>
+            <span class="font-normal opacity-50">(optional)</span>
         </div>
         <Input
             tabindex={2}

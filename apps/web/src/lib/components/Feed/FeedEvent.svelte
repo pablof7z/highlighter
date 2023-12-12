@@ -2,7 +2,6 @@
 	import NDK, { NDKArticle, NDKKind, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import FeedArticle from "./FeedArticle.svelte";
 	import FeedGroupPost from "./FeedGroupPost.svelte";
-	import { user } from "@kind0/ui-common";
 
     export let event: NDKEvent;
 </script>

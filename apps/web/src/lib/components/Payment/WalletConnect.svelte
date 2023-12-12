@@ -18,9 +18,7 @@
 
     const hostname = $page.url.hostname;
 
-    const onSuccess = async (e: CustomEvent<{url: string, nwc: any}>) => {
-        const { url, nwc } = e.detail;
-
+    async function nwcConnect(url: string) {
         await fetch("/api/user/nwc", {
             method: "POST",
             headers: {
@@ -28,10 +26,15 @@
             },
             body: JSON.stringify({ nwc: url })
         })
-        await finalizeLogin(hostname);
-
+        await finalizeLogin();
         nwcUrl = url;
-        dispatch('connected', e.detail);
+        dispatch('connected', {url});
+    }
+
+    const onSuccess = async (e: CustomEvent<{url: string, nwc: any}>) => {
+        const { url, nwc } = e.detail;
+
+        nwcConnect(url);
     }
 </script>
 
@@ -45,7 +48,7 @@
 
         <button class="button button-primary w-full" on:click={() => mode = "mutiny"}>
             Connect with Mutiny
-        </button>2
+        </button>
 
         <div class="self-stretch justify-center items-center gap-3 inline-flex">
             <div class="grow shrink basis-0 h-[0px] border border-neutral-200"></div>
@@ -57,9 +60,10 @@
             <Input
                 class="w-full"
                 placeholder="Wallet connect URL / pairing secret"
+                bind:value={nwc}
             />
             <div class="self-stretch h-[93px] flex-col justify-start items-start gap-1.5 flex">
-                <button class="button button-primary w-full">
+                <button class="button button-primary w-full" on:click={() => nwcConnect(nwc)}>
                     Connect
                 </button>
             </div>
@@ -68,6 +72,7 @@
 {:else if mode === "mutiny"}
     <div class="flex-col justify-start items-center gap-3 inline-flex flex-nowrap" transition:slide>
         <div class="text-black">
+
             Add a new Wallet Connection from:
             <div class="text-center flex flex-col items-center">
                 <b>Settings</b>
@@ -82,7 +87,7 @@
             </div>
         </div>
 
-        <button class="button button-primary w-full">
+        <button class="button button-primary w-full" on:click={() => nwcConnect(nwc)}>
             Connect
         </button>
     </div>

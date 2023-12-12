@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  app:
+    image: client
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+      - 24678:24678
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"

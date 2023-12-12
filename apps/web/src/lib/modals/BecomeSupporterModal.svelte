@@ -16,6 +16,7 @@
 	import { onMount } from 'svelte';
 	import ThankYou from '$components/Payment/ThankYou.svelte';
 	import { isNwcAvailable } from '$utils/nwc';
+	import { currencyFormat } from '$utils/currency';
 
     export let user: NDKUser;
     export let tiers: Readable<NDKEvent[]>;
@@ -25,10 +26,12 @@
     let nwcMode: any;
     let userHasWalletConnected = false;
     let nwcUrl: string;
+    let currency: string;
 
     let selected: NDKEvent | undefined;
     let selectedTerm: Term = "monthly";
-    let selectedAmount: string | undefined;
+    let selectedAmount: number | undefined;
+    let selectedCurrency: string | undefined;
 
     onMount(() => {
         userHasWalletConnected = isNwcAvailable();
@@ -63,7 +66,15 @@
 
     function selectTier(tier: NDKEvent) {
         selected = tier;
-        selectedAmount = tier.getMatchingTags("amount").find((tag) => tag[3] === selectedTerm)![1];
+        console.log(tier);
+        const t = tier.getMatchingTags("amount").find((tag) => tag[3] === selectedTerm)!;
+        selectedAmount = parseFloat(t[1]);
+        selectedCurrency = t[2]!;
+    }
+
+    function selectTerm(term: Term) {
+        selectedTerm = term;
+        selectTier(selected!);
     }
 
     function backClicked() {
@@ -107,7 +118,7 @@
                             <button
                                 class="px-2.5 py-1 rounded-full justify-center items-center flex"
                                 class:bg-zinc-100={term === selectedTerm}
-                                on:click={() => selectedTerm = term}
+                                on:click={() => selectTerm(term)}
                             >
                                 <div class="text-center text-black text-[15px] font-medium">{term}</div>
                             </button>
@@ -127,12 +138,15 @@
                 </div>
 
                 <div class="justify-center items-start gap-5 inline-flex">
-                    <button
-                        class="button button-primary"
-                        disabled={!selected}
-                    >
-                        Support for ${selectedAmount}/{termToShort(selectedTerm)}
-                    </button>
+                    {#if selectedCurrency !== "msat"}
+                        <button
+                            class="button button-primary"
+                            disabled={!selected}
+                        >
+                            Support for {currencyFormat(selectedCurrency, selectedAmount)}/{termToShort(selectedTerm)}
+                        </button>
+                    {/if}
+
                     <button
                         class="button button-primary"
                         on:click={() => bitcoin = true}
@@ -160,10 +174,9 @@
                 {:else}
                     <Subscribe
                         amount={selectedAmount}
-                        currency="USD"
+                        currency={selectedCurrency}
                         term={selectedTerm}
                         plan={selected}
-                        {nwcUrl}
                         on:paid={onPaid}
                     />
                 {/if}
@@ -174,7 +187,7 @@
     {/if}
 </ModalShell>
 
-<style lang="postcss">
+<!-- <style lang="postcss">
     a {
         @apply px-4 py-3 rounded-xl justify-start items-start gap-2 inline-flex;
         @apply text-black text-sm font-semibold leading-5;
@@ -188,4 +201,4 @@
             @apply hover:bg-zinc-100;
         }
     }
-</style>
+</style> -->

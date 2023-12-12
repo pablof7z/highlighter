@@ -34,54 +34,6 @@ module.exports = {
 		styled: true,
 	  themes: [
 		{
-		  lofi: {
-			...require("daisyui/src/theming/themes")["[data-theme=light]"],
-			"base-100": "#f2f2f2",
-			"base-200": "#ffffff",
-			"accent": "#817EFF",
-			".card": {
-			  "background": "white",
-			  "box-shadow": "0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1)"
-			},
-			".svg-logo": {
-			  "fill": "black",
-			},
-			".text-base-100-content": {
-			  "color": "#000000",
-			},
-			".input": {
-			  "background": "white",
-			},
-			"mark": {
-			  "background": "rgba(255, 104, 94, 0.33)",
-			  "color": "#000000",
-			},
-			".menu": {
-			  "background": "white",
-			},
-			".menu .menu-title": {
-			  "color": "#b3b3b3",
-			  "font-weight": "600",
-			},
-			".dropdown-content": {
-			  "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px"
-			},
-			".grad-orange": {
-			  "background-image": "radial-gradient(farthest-corner at 100% 0px, #FF7E34 0%, #FF5E63 100%)"
-			},
-			".grad-blue": {
-			  "background-image": "radial-gradient(farthest-corner at 100% 0px, #5CA2FF 0%, #916EFF 100%)"
-			},
-			".btn-close-outter": {
-			  "background-color": "#ffffff",
-			},
-			".btn-close-inner": {
-			  "background-color": "#f2f2f2",
-			  "color": "#232323"
-			}
-		  }
-		},
-		{
 		  black: {
 			...require("daisyui/src/theming/themes")["[data-theme=dark]"],
 			"base-100": "#000000",
@@ -138,10 +90,10 @@ module.exports = {
 			  "background": "rgba(255, 104, 94, 0.33)",
 			  "color": "#FDC1BE",
 			},
-			"::selection": {
-			  "background": "rgba(255, 104, 94, 0.33)",
-			  "color": "#FDC1BE",
-			},
+			// "::selection": {
+			//   "background": "rgba(255, 104, 94, 0.33)",
+			//   "color": "#FDC1BE",
+			// },
 			"mark.active": {
 			  "background": "rgba(246, 48, 2, 0.8)",
 			  "color": "#FFF0F0"

@@ -8,14 +8,7 @@
 
     // $: npub = $page.data.npub;
 
-    onMount(() => {
-        try {
-            startUserView(user);
-        } catch(e) {
-            console.trace(e);
-            alert(e);
-        }
-    });
+    startUserView(user);
 
     onDestroy(() => {
         userSubscription?.unref();

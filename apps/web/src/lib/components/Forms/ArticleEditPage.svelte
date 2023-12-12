@@ -1,22 +1,24 @@
 <script lang="ts">
-	import PublishButton from '$components/buttons/PublishButton.svelte';
 	import PageTitle from "$components/Page/PageTitle.svelte";
-    import Input from "$components/Forms/Input.svelte";
 	import { Textarea, ndk, newToasterMessage, user } from "@kind0/ui-common";
 	import SelectTier from "$components/Forms/SelectTier.svelte";
 	import { NDKArticle, NDKEvent, NDKKind, NDKList, NDKRelaySet, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { defaultRelays, publishToTiers } from "$actions/publishToTiers";
+	import { publishToTiers } from "$actions/publishToTiers";
 	import { slide } from "svelte/transition";
 	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
     import truncateMarkdown from 'markdown-truncate';
 	import { getUserSupportPlansStore } from "$stores/user-view";
-	import { page } from '$app/stores';
+	import { defaultRelays } from '$utils/ndk';
+	import CategorySelector from './CategorySelector.svelte';
+	import UserProfile from '$components/User/UserProfile.svelte';
+	import type { UserProfileType } from '../../../app';
 
     export let article: NDKArticle;
 
     let previewContent: string;
     let tiers: Record<string, boolean> = { "Free": true };
     let nonSubscribersPreview = true;
+    let categories: string[] = [];
 
     const allTiers = getUserSupportPlansStore();
 
@@ -89,6 +91,12 @@
             previewArticle.summary = article.summary;
         }
 
+        // add categories
+        for (const category of categories) {
+            article.tags.push(["t", category]);
+            if (previewArticle) previewArticle.tags.push(["t", category]);
+        }
+
         await publishToTiers(article, tiers, {
             relaySet,
             ndk: $ndk,
@@ -98,7 +106,16 @@
 
     function preview() {
     }
+
+    let userProfile: UserProfileType;
+
+    $: if (userProfile?.categories?.length > 0 && categories.length === 0) {
+        categories = userProfile.categories;
+
+    }
 </script>
+
+<UserProfile user={$user} bind:userProfile />
 
 <div class="flex flex-col gap-10">
     <PageTitle title="New Article">
@@ -114,6 +131,8 @@
     <ArticleEditor bind:article on:contentUpdate={updatePreviewContent} />
 
     <SelectTier bind:tiers />
+
+    <CategorySelector bind:categories />
 
     <div class="flex flex-col gap-4" class:hidden={tiers["Free"]}>
         <label class="text-white text-base font-medium flex flex-row gap-2 items-cente justify-between">

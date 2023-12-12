@@ -96,7 +96,7 @@ export async function login(
 
     if (!u) return null;
 
-    await finalizeLogin();
+    if (!localStorage.getItem('jwt')) await finalizeLogin();
 
     user.set(u);
     return u;

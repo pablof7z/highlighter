@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Logo from '$icons/Logo.svelte';
-	import { AttentionButton, PrimaryButton, user } from '@kind0/ui-common';
+	import { user } from '@kind0/ui-common';
 	import CurrentUser from './CurrentUser.svelte';
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { openModal } from 'svelte-modals';
@@ -11,45 +11,22 @@
 	export let maxSize = "max-w-7xl";
 </script>
 
-<div class="navbar mb-2 bg-base-100 px-8 mx-auto {maxSize} {$$props.class??""} fixed top-0 z-20 bg-opacity-80 backdrop-blur">
+<div class="navbar mb-2 bg-base-100 sm:px-8 mx-auto {maxSize} {$$props.class??""} fixed top-0 z-20 bg-opacity-80 backdrop-blur">
 	<div class="navbar-start items-center">
-		<div class="dropdown">
-			<label tabindex="0" class="btn btn-ghost xl:hidden">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="h-5 w-5"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-					><path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M4 6h16M4 12h8m-8 6h16"
-					/></svg
-				>
-			</label>
-			<ul
-				tabindex="0"
-				class="menu dropdown-content rounded-box menu-sm z-[1] mt-3 w-52 bg-base-100 p-2 shadow"
-			>
-			</ul>
-		</div>
-
 		<a href="/" class="btn btn-ghost text-xl normal-case px-0 hover:bg-transparent">
 			<Logo />
 		</a>
 
-		<div class="ml-14 flex flex-row items-center gap-8">
+		<div class="ml-8 sm:ml-14 flex flex-row items-center gap-8 links">
 			<a
 				href="/explore"
 				class="justify-start items-center gap-2 inline-flex"
-				class:active={$page.url.pathname === '/explore'}
+				class:active={$page.url.pathname.startsWith('/explore')}
 				>
 				<div class="w-6 h-6 relative">
 					<ExploreIcon />
 				</div>
-				<div class="">Explore</div>
+				<span class="">Explore</span>
 			</a>
 
 			<a
@@ -60,7 +37,7 @@
 				<div class="w-6 h-6 relative">
 					<Tray class="w-full h-full" />
 				</div>
-				<div class="">Inbox</div>
+				<span class="">Inbox</span>
 			</a>
 		</div>
 	</div>
@@ -85,5 +62,9 @@
 
 	.active {
 		@apply !text-white;
+	}
+
+	.links a span {
+		@apply max-sm:hidden;
 	}
 </style>

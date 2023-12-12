@@ -1,0 +1,24 @@
+# Choose a Node.js version
+FROM node:19
+
+ENV NODE_ENV development
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json
+COPY package*.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN npm install -g pnpm
+
+RUN pnpm install
+
+# Copy the rest of the code
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Command to run the application
+CMD ["pnpm", "dev", "--host", "0.0.0.0"]

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { currencyFormat, currencySymbol } from "$utils/currency";
+import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Pencil } from "phosphor-svelte";
 
     export let tier: NDKEvent;
@@ -10,9 +11,14 @@
     const description = tier.content;
     const image = tier.tagValue("image") ?? "https://c10.patreonusercontent.com/4/patreon-media/p/reward/5573765/9d074162251943e5ab33aab20473401b/eyJ3Ijo0MDB9/1.jpg?token-time=2145916800&token-hash=cv0bruLHhMqG8H2k18NhN0rjdHmfeOTTifNxVoRYRNw%3D";
 
-    let amount: string | undefined;
+    let amount: number | undefined;
+    let currency: string;
 
-    $: amount = tier.getMatchingTags("amount").find((tag) => tag[3] === term)![1];
+    $: {
+        const t = tier.getMatchingTags("amount").find((tag) => tag[3] === term)!;
+        amount = parseFloat(t[1]);
+        currency = t[2];
+    }
 </script>
 
 <button on:click
@@ -28,8 +34,7 @@
                 {name}
             </div>
                 <div class="flex group flex-row justify-between items-center w-full">
-                    <div class="text-center text-black text-[15px] font-medium">${amount}
-                    /{term}</div>
+                    <div class="text-center text-black text-[15px] font-medium">{currencyFormat(currency, amount)}/{term}</div>
                 </div>
         </div>
         <div class="flex-col justify-start items-start gap-4 flex w-full text-black text-left whitespace-pre-line">

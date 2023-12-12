@@ -1,55 +1,85 @@
 <script lang="ts">
 	import PageTitle from "$components/Page/PageTitle.svelte";
 	import { ndk, newToasterMessage, user } from "@kind0/ui-common";
-	import { X } from 'phosphor-svelte';
-	import { NDKEvent, type NostrEvent } from '@nostr-dev-kit/ndk';
-	import { getUserSupportPlansStore, startUserView } from '$stores/user-view';
-	import { onMount } from 'svelte';
-	import TierHeader from '$components/TierHeader.svelte';
+	import NDK, { NDKEvent, NDKKind, type NDKEventId, type NostrEvent } from '@nostr-dev-kit/ndk';
+	import { getUserSupportPlansStore, startUserView, userSubscription } from '$stores/user-view';
+	import { onDestroy, onMount } from 'svelte';
+    import Terms from "./Terms.svelte";
 	import TierEditor from '$components/TierEditor.svelte';
-	import type { Term } from '$utils/term';
+    import type { Term } from '$utils/term';
 	import type { Readable } from 'svelte/store';
 	import { goto } from '$app/navigation';
+	import { amountsFromTier, amountTag, type Tier } from "./tier";
 
     let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
+    // let currentTiersModified: Record<NDKEventId, boolean> = {};
+    // let currentTierDetails: Record<NDKEventId, Tier> = {};
+
+    let tiers: Tier[] = [];
 
     onMount(() => {
         startUserView($user);
         currentTiers = getUserSupportPlansStore();
     })
 
+    onDestroy(() => {
+        userSubscription?.unref();
+    })
 
-    let tiers: Tier[] = [];
-    let terms: Term[] = ["monthly"];
-    const possibleTerms = ["monthly", "quarterly", "yearly"];
-    let selectedTerm: Term = "monthly";
-    let currency = "USD";
+    $: if ($currentTiers) {
+        for (const tierEvent of $currentTiers) {
+            // check if we already have this tier and replace or push
+            const dTag = tierEvent.tagValue("d");
+            const existingTier = tiers.find(t => t.dTag === dTag);
+            if (existingTier) continue;
 
-    function addTerm(term: string) {
-        terms = [...terms, term];
+            const tier = {
+                localId: dTag,
+                dTag,
+                name: tierEvent.tagValue("title"),
+                description: tierEvent.content,
+                image: tierEvent.tagValue("image"),
+                amounts: amountsFromTier(tierEvent),
+                modified: false
+            };
+
+            for (const amountTag of tierEvent.getMatchingTags("amount")) {
+                if (amountTag && amountTag[2]) {
+                    if (!changedCurrency)
+                        currency = amountTag[2];
+                }
+
+                if (amountTag && amountTag[3]) {
+                    if (!terms?.includes(amountTag[3])) {
+                        terms = [...(terms??[]), amountTag[3]];
+                        console.log(terms);
+                    }
+                }
+            }
+
+            tiers.push(tier);
+        }
+
+        tiers = tiers;
     }
 
-    function removeTerm(term: string) {
-        terms = terms.filter(t => t !== term);
-    }
-
-    type Tier = {
-        name: string;
-        description: string;
-        amounts: Record<string, string>;
-        image: string;
-    };
+    let terms: Term[] | undefined;
+    let currency: string | undefined = "USD";
+    let changedCurrency: boolean = false;
 
     function addTier() {
         let name = "F";
         // add the letter "A" by the the number of tiers there are
-        for (let i = 0; i < tiers.length+1; i++) {
+        for (let i = 0; i < Object.values(tiers).length+1; i++) {
             name += "a";
         }
 
         name += "ns";
 
-        tiers = [...tiers, {
+        const rand = Math.floor(Math.random() * 1000000).toString();
+
+        const tier = {
+            localId: rand,
             name,
             description: "Blah",
             image: "https://c10.patreonusercontent.com/4/patreon-media/p/reward/5573766/fe0d9353b56a447586507118071bb33c/eyJ3Ijo0MDB9/1.jpg?token-time=2145916800&token-hash=qbzX7mOVIcgAeYnH_tHB2ARAEWIbH98YPPdjIpahYh8%3D",
@@ -58,11 +88,21 @@
                 quarterly: "30",
                 yearly: "100",
             },
-        }];
+        };
+
+        tiers.push(tier);
+        tiers = tiers;
     }
 
     function removeTier(tier: Tier) {
-        tiers = tiers.filter(t => t !== tier);
+        for (const t of tiers) {
+            if (t === tier) {
+                t.deleted = true;
+                break;
+            }
+        }
+
+        tiers = tiers;
     }
 
     async function saveTiers() {
@@ -72,23 +112,36 @@
             return;
         }
 
-        if (tiers.length === 0) {
-            newToasterMessage("No tiers to save");
-            return;
-        }
+        const tiersList = new NDKEvent($ndk, {
+            kind: NDKKind.TierList,
+        } as NostrEvent);
 
         for (const tier of tiers) {
+            if (tier.modified === false && tier.deleted === false) continue;
+
+            if (tier.deleted) {
+                const tierEvent = $currentTiers?.find(t => t.tagValue("d") === tier.dTag);
+                if (tierEvent) {
+                    await tierEvent.delete();
+                    newToasterMessage("Deleted", "success");
+                } else {
+                    newToasterMessage("Failed to delete tier", "error");
+                    console.error(`Failed to delete tier ${tier.dTag}`);
+                }
+
+                continue;
+            }
+
             const amountTags = terms.map(term => {
                 if (tier.amounts[term]) {
-                    return [ "amount", tier.amounts[term], currency, term ];
+                    return amountTag(tier.amounts[term], currency, term);
                 }
             })
 
             const tierEvent = new NDKEvent($ndk, {
-                kind: 37001,
+                kind: NDKKind.SubscriptionTier,
                 content: tier.description,
                 tags: [
-                    [ "d", tier.name ],
                     [ "title", tier.name ],
                     ...amountTags
                 ]
@@ -96,10 +149,11 @@
 
             if (tier.image) tierEvent.tags.push(["image", tier.image]);
 
-            console.log(tierEvent.rawEvent());
-
             try {
+                await tierEvent.sign();
+                console.log(`tier to publish`, tierEvent.rawEvent())
                 await tierEvent.publish();
+                tiersList.tags.push(["e", tierEvent.id]);
                 newToasterMessage("Saved", "success");
                 goto("/dashboard");
             } catch (e) {
@@ -108,75 +162,68 @@
                 return;
             }
         }
+
+        console.log(tiersList.rawEvent());
+        await tiersList.sign();
+        console.log(tiersList.rawEvent());
+        await tiersList.publish();
     }
 
-    async function removeExistingTier(tier: NDKEvent) {
-        await tier.delete();
-        alert('remove')
+    let modifiedTiers = 0;
+
+    $: {
+        const someModifiedTier = Object.values(tiers).filter(t => t.modified);
+        const someTierToDelete = Object.values(tiers).filter(t => t.deleted);
+        const someNewTier = Object.values(tiers).filter(t => !t.dTag);
+        modifiedTiers = someModifiedTier.length + someTierToDelete.length + someNewTier.length;
     }
 </script>
 
 {#if currentTiers && $currentTiers}
-<div class="flex flex-col gap-10 mx-auto max-w-prose">
+<div class="flex flex-col gap-10 mx-auto max-w-5xl">
     <PageTitle title="Support Tiers">
         <div class="flex flex-row gap-4">
             <!-- <button on:click={preview} class="button button-primary">Preview</button>
             <button on:click={preview} class="button button-primary">Save Draft</button> -->
             <button on:click={addTier} class="button">Add new tier</button>
-            <button on:click={saveTiers} class="button px-6" disabled={tiers.length === 0}>Save</button>
+            <button on:click={saveTiers} class="button px-6">
+                Save
+            </button>
         </div>
     </PageTitle>
     <div class="mx-auto w-fit">
         <div class="px-12 pt-6 pb-10 bg-white rounded-3xl flex-col justify-start items-center gap-6 inline-flex w-full">
-            <TierHeader user={$user} />
-            <div class="justify-center items-center inline-flex">
-                {#if terms.length === 0}
-                    add at least one term
-                {:else}
-                    {#each terms as term}
-                        <button
-                            class="px-2.5 py-1 rounded-full justify-center items-center flex"
-                            class:bg-zinc-100={term === selectedTerm}
-                            on:click={() => selectedTerm = term}
-                        >
-                            <div class="text-center text-black text-[15px] font-medium">{term}</div>
-                            <button class="btn btn-circle btn-ghost btn-xs ml-2" on:click={() => removeTerm(term)}>
-                                <X color="black" class="text-sm" />
-                            </button>
-                        </button>
-                    {/each}
-                {/if}
-                <div class="dropdown">
-                    <button tabindex="0" class="button">+</button>
-                    <ul tabindex="0" class="dropdown-content menu !bg-white z-50">
-                        {#each possibleTerms as term}
-                            {#if !terms.includes(term)}
-                                <li><button class="text-black" on:click={() => addTerm(term)}>
-                                    {term}
-                                </button></li>
-                            {/if}
-                        {/each}
-                    </ul>
-                </div>
-            </div>
-            <div class="justify-start items-start gap-4 inline-flex overflow-y-auto max-w-prose">
-                {#each $currentTiers as tier}
-                    <TierEditor
-                        {tier}
-                        {terms}
-                        on:remove={() => removeExistingTier(tier)}
-                    />
-                {/each}
+            <!-- <TierHeader user={$user} /> -->
+            <div class="justify-center items-center inline-flex gap-4">
+                <select
+                    value={currency}
+                    class="bg-zinc-100 border-none rounded-lg text-black text-sm font-medium"
+                    on:change={e => {
+                        currency = e.target.value;
+                    }}
+                >
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="msat">Bitcoin</option>
+                </select>
 
-                {#each tiers as tier}
-                    <TierEditor
-                        {terms}
-                        bind:name={tier.name}
-                        bind:description={tier.description}
-                        bind:amounts={tier.amounts}
-                        bind:image={tier.image}
-                        on:remove={() => removeTier(tier)}
-                    />
+                <Terms
+                    terms={terms??["monthly"]}
+                    on:change={(e) => terms = e.detail}
+                />
+            </div>
+            <div class="justify-start items-start gap-4 inline-flex overflow-y-auto max-w-3xl">
+                {#each tiers as tier, i}
+                    {#if !tier.deleted}
+                        <TierEditor
+                            currency={currency||"USD"}
+                            {terms}
+                            bind:tier={tiers[i]}
+                            event={$currentTiers.find(t => t.tagValue("d") === tier.dTag)}
+                            on:save={() => saveTiers()}
+                            on:remove={() => removeTier(tier)}
+                        />
+                    {/if}
                 {/each}
             </div>
         </div>

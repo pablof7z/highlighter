@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { UserProfile, Avatar, Name, ndk } from "@kind0/ui-common";
+	import { Avatar, Name, ndk } from "@kind0/ui-common";
 	import type { Hexpubkey } from "@nostr-dev-kit/ndk";
 	import { slide } from "svelte/transition";
+    import UserProfile from "$components/User/UserProfile.svelte";
 
     export let pubkey: Hexpubkey;
     export let selectedId: string;
@@ -10,18 +11,21 @@
     const user = $ndk.getUser({ pubkey });
 
     const randSkeletonWidth = Math.max(Math.floor(Math.random() * 100) + 120, 1900);
+    let userProfile: UserProfile | undefined = undefined;
+
+    $: id = userProfile?.nip05 || pubkey;
 </script>
 
-<UserProfile {user} let:userProfile let:fetching>
+<UserProfile {user} bind:userProfile let:fetching>
     <a
-        href="/id={userProfile?.nip05??pubkey}"
+        href="?id={id}"
         class="justify-between items-center gap-2 flex w-full"
-        class:active={selectedId === pubkey || selectedId === id}
+        class:active={selectedId === id}
         transition:slide
     >
         <div class="flex flex-row gap-2 items-center">
             <Avatar {userProfile} {fetching} class="w-11 h-11 rounded-full" />
-            <span class="truncate text-white name">
+            <span class="truncate name">
                 <Name
                     {userProfile}
                     {fetching}
@@ -31,6 +35,13 @@
         </div>
     </a>
 </UserProfile>
+
+<style lang="postcss">
+    .active {
+        @apply text-white;
+    }
+</style>
+
 <!--
 {#if userProfile !== undefined}
     <a

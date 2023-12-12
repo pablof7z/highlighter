@@ -6,9 +6,10 @@ import { json } from "@sveltejs/kit"
 import createDebug from "debug";
 import type { Session } from "../../../../app.js";
 import { webln } from "@getalby/sdk";
-import { NDKEvent, NDKUser, NDKZap, type Hexpubkey, type NostrEvent } from "@nostr-dev-kit/ndk";
+import NDK, { NDKEvent, NDKUser, NDKZap, type Hexpubkey, type NostrEvent, NostrEvent, type NDKTag } from "@nostr-dev-kit/ndk";
 import { sendPayment } from "$lib/backend/pay.js";
 import type { Payment } from "@prisma/client";
+import { calculateValidUntil } from "$utils/payment.js";
 
 const log = createDebug("fans:/api/user/pay-zap-request");
 
@@ -46,6 +47,7 @@ export async function POST({request, locals}) {
         const payment = await sendPayment(invoice, pubkey);
 
         if (payment.preimage) {
+            console.log("Payment sent", payment);
             await markSubscriberPayment(id);
         }
 
@@ -64,14 +66,25 @@ async function markSubscriberPayment(id: string) {
 
     if (!record) throw new Error("Payment record not found with id: " + id);
 
-    const validUntil = new Date(record.validUntil);
     const $ndk = getStore(ndk);
+
+    // update the list of supporters of this creator
+    await publishPaymentReceivedEvent(record);
+    await publishListOfSupporters($ndk, record.receiverPubkey);
+}
+
+/**
+ * Publishes a payment received event.
+ */
+async function publishPaymentReceivedEvent(record: Payment) {
+    const $ndk = getStore(ndk);
+    const validUntil = calculateValidUntil(new NDKEvent($ndk, JSON.parse(record.zappedEvent)));
     const event = new NDKEvent($ndk, {
-        kind: 7002,
+        kind: 7003,
         content: "Payment received for getfaaans.com subscription",
         tags: [
             [ "p", record.payerPubkey],
-            [ "creator", record.receiverPubkey],
+            [ "P", record.receiverPubkey],
             [ "tier", record.tierName],
             [ "until", Math.floor(validUntil.getTime() / 1000).toString()],
         ]
@@ -89,4 +102,48 @@ async function markSubscriberPayment(id: string) {
         console.log(error);
         log(error);
     }
+}
+
+/**
+ * Creates a list of pubkeys that are currently supporting a creator.
+ * The "d" tag is the pubkey of the creator.
+ * THe "p" tag is the pubkey of the supporter with a marker of the tier they are supporting.
+ */
+async function publishListOfSupporters(ndk: NDK, creatorPubkey: string) {
+    const payments = await db.payment.findMany({
+        where: {
+            receiverPubkey: creatorPubkey,
+            paid: true,
+            validUntil: {
+                gt: new Date()
+            }
+        }
+    });
+
+    const event = new NDKEvent(ndk, {
+        kind: 37003,
+        content: "",
+        tags: [ [ "d", creatorPubkey] ]
+    } as NostrEvent);
+
+    const subscribers: Record<string, string[]> = {};
+
+    for (const payment of payments) {
+        if (!payment.payerPubkey) continue;
+
+        subscribers[payment.payerPubkey] ??= [];
+
+        if (!subscribers[payment.payerPubkey].includes(payment.tierName!)) {
+            subscribers[payment.payerPubkey].push(payment.tierName!);
+        }
+    }
+
+    for (const [pubkey, tiers] of Object.entries(subscribers)) {
+        for (const tier of tiers) {
+            event.tags.push(["p", pubkey, tier]);
+        }
+    }
+
+    await event.sign();
+    console.log("List of supporters event", event.rawEvent());
 }

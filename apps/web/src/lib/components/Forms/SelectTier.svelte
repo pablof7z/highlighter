@@ -35,7 +35,14 @@
     <div class="text-white text-base font-medium">Content Tier</div>
     <div class="self-stretch rounded-xl border border-neutral-800 items-start inline-flex bg-transparent flex-col justify-start gap-4">
         <button on:click={() => show = !show} class="text-white text-base px-4 py-3 font-medium w-full text-left flex flex-row justify-between">
-            {selectedString}
+            <div class="flex flex-row items-end gap-4">
+                {selectedString}
+                {#if selectedString === "Free"}
+                    <div class="font-light text-sm opacity-50">
+                        Content will be publicly visible
+                    </div>
+                {/if}
+            </div>
             <CaretDown color="white"/>
         </button>
         {#if show}
