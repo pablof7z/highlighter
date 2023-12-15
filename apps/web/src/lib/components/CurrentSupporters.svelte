@@ -8,15 +8,12 @@
 
     export let user: NDKUser;
     export let tiers: Readable<NDKArticle[]>;
-    export let supporters: Readable<NDKEvent[]>;
+    export let supporters: Readable<Record<Hexpubkey, string | undefined>>;
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
     $: if (supporters && $supporters) {
-        for (const supportEvent of $supporters) {
-            supportingPubkeys.add(supportEvent.pubkey);
-        }
-        supportingPubkeys = supportingPubkeys;
+        supportingPubkeys = new Set(Object.keys($supporters));
     }
 
     function openSupportModal() {
@@ -50,9 +47,9 @@
     {#if !isSupporter}
         <button class="whitespace-nowrap button px-6" on:click={openSupportModal}>Become a Faaan</button>
     {:else}
-        <button class="whitespace-nowrap button px-6" on:click={openShareModal}>
+        <!-- <button class="whitespace-nowrap button px-6" on:click={openShareModal}>
             <Share class="mr-2" />
             Share
-        </button>
+        </button> -->
     {/if}
 </div>

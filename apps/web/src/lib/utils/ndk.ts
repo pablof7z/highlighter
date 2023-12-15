@@ -5,10 +5,10 @@ import NDKRedisAdapter from "@nostr-dev-kit/ndk-cache-redis";
 import { NDKPrivateKeySigner, NDKRelayAuthPolicies, NDKRelaySet } from "@nostr-dev-kit/ndk";
 
 export const defaultRelays = [
-    'wss://relay.getfaaans.com',
-    'wss://offchain.pub',
+    // 'wss://relay.getfaaans.com',
+    // 'wss://offchain.pub',
     // "wss://eden.nostr.land",
-    // "ws://localhost:5577"Ik90uj7
+    "ws://localhost:5577"
 ];
 
 // Relays we are going to send a request to check if we need to auth
@@ -34,6 +34,7 @@ export async function configureDefaultNDK() {
             NDKRelayAuthPolicies.signIn({ndk: $ndk}),
             false
         );
+        r.trusted = true;
 
         if (authRelays.includes(relay)) {
             r.authRequired = true;
@@ -55,9 +56,7 @@ export async function configureBeNDK(privateKey: string) {
     $ndk.debug.enabled = true;
     $ndk.signer = new NDKPrivateKeySigner(privateKey);
     $ndk.cacheAdapter = new NDKRedisAdapter();
-    console.log(`calling $ndk.connect`);
     await $ndk.connect(2000);
-    console.log(`explicit relays`, $ndk.explicitRelayUrls);
 
     setInterval(() => {
         console.log(`NDK, pool stats`, $ndk.pool.stats());

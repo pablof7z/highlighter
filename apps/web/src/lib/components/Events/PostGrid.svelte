@@ -5,7 +5,6 @@
     import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
 
     export let event: NDKEvent;
-    export let size: "small" | "large" = "small";
     export let skipAuthor: boolean = false;
     const suffixUrl = urlSuffixFromEvent(event);
 
@@ -58,14 +57,6 @@
 </a>
 
 <style lang="postcss">
-    .small {
-        @apply w-72 h-40;
-    }
-
-    .large {
-        @apply w-[346px] h-52;
-    }
-
     a {
         @apply transition-all duration-300 ease-in-out;
     }

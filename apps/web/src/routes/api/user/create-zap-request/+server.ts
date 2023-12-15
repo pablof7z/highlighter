@@ -2,7 +2,7 @@ import "websocket-polyfill";
 import db from "$lib/db";
 import { get as getStore } from "svelte/store";
 import { ndk } from "@kind0/ui-common";
-import { json } from "@sveltejs/kit"
+import { json, text } from "@sveltejs/kit"
 import createDebug from "debug";
 import type { Session } from "../../../../app.js";
 import { webln } from "@getalby/sdk";
@@ -98,10 +98,29 @@ export async function POST({request, locals}) {
         });
         comment ??= `Zap from getfaaans`;
         console.log('generate', recipient);
-        const res = await zap.generateZapRequest(satsAmount, comment);
-        console.log({res});
-        if (!res) throw new Error("Zap request not generated");
-        const {event: zapReq, zapEndpoint} = res;
+
+        const timeoutPromise = new Promise<boolean>((_, reject) => {
+            setTimeout(() => reject(new Error("Timeout")), 2500);
+        });
+
+        const getZapPromise = new Promise(async (resolve, reject) => {
+            const res = await zap.generateZapRequest(satsAmount, comment);
+            console.log({res});
+            if (!res) reject(new Error("Zap request not generated"));
+            resolve(res);
+        });
+
+        const a = await Promise.race([
+            getZapPromise,
+            timeoutPromise
+        ]).catch((e) => {
+            console.log("error", e);
+            throw e;
+        });
+
+        console.log({a});
+
+        const {event: zapReq, zapEndpoint} = a;
         zapReq.pubkey = pubkey;
         await zapReq.toNostrEvent();
 
@@ -127,6 +146,6 @@ export async function POST({request, locals}) {
     } catch (error: any) {
         console.log(error);
         log(error);
-        return json(error, { status: 400 });
+        return text(error.message, { status: 400 });
     }
 }

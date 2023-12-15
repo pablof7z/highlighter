@@ -108,7 +108,7 @@
                                 <a href={editUrl} class="button">Edit</a>
                             {/if}
                         </div>
-                        <div class="w-[600px] text-white text-opacity-60 text-sm font-normal leading-[21px]">32 responses  108 boosts</div>
+                        <div class="text-white text-opacity-60 text-sm font-normal leading-[21px]">32 responses  108 boosts</div>
                     </div>
                 </div>
                 <div class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative">

@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet, type NDKFilter } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter } from '@nostr-dev-kit/ndk';
 	import ArticleGrid from "$components/Events/ArticleGrid.svelte";
+	import VideoGrid from "$components/Events/VideoGrid.svelte";
     import { ndk } from "@kind0/ui-common";
 	import { onDestroy, onMount } from 'svelte';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
@@ -18,13 +19,16 @@
         if (events) events.unsubscribe();
 
         const relaySet = getDefaultRelaySet();
-        const filters: NDKFilter[] = [{ kinds: [NDKKind.Article], "#f": ["Free"] }];
+        const filters: NDKFilter[] = [
+            { kinds: [
+                NDKKind.Article,
+                NDKKind.HorizontalVideo,
+            ], "#f": ["Free"] },
+        ];
 
         if (activeCategory) {
             filters[0]["#t"] = [activeCategory];
         }
-
-        console.log(filters);
 
         events = $ndk.storeSubscribe(
             filters,
@@ -70,11 +74,13 @@
             </div>
         </div>
 
-        <div class="w-full max-5xl px-4 sm:px-0">
+        <div class="w-full max-2xl px-4 sm:px-0">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
                 {#each $events as event (event.id)}
                     {#if event.kind === NDKKind.Article}
                         <ArticleGrid article={NDKArticle.from(event)} />
+                    {:else if event.kind === NDKKind.HorizontalVideo}
+                        <VideoGrid video={NDKVideo.from(event)} />
                     {:else if event.kind === NDKKind.GroupNote}
                         <PostGrid {event} />
                     {/if}

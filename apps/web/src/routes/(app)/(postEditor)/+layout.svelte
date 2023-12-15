@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { user } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
+	import LoadingScreen from '$components/LoadingScreen.svelte';
 
     let startedUserView = false;
 
@@ -16,13 +16,8 @@
     })
 </script>
 
-{#if startedUserView}
+<LoadingScreen ready={!!startedUserView}>
     <div class="mx-auto max-w-3xl">
         <slot />
     </div>
-{:else}
-    <!-- TODO: Loading screen -->
-    <div class="flex flex-col w-[90vw] h-[90vh] items-center justify-center" transition:fade>
-        <div class="loading loading-lg"></div>
-    </div>
-{/if}
+</LoadingScreen>

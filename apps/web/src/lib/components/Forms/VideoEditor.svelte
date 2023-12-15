@@ -1,159 +1,153 @@
 <script lang="ts">
-    import ArticleGrid from "$components/Events/ArticleGrid.svelte";
-	import VideoPlayer from "$components/Events/VideoPlayer.svelte";
-import Input from "$components/Forms/Input.svelte";
-	import VideoIcon from "$icons/VideoIcon.svelte";
-	import { isImage, isVideo, isYoutube, youtubeIdFromUrl } from "$utils/media";
-	import { Textarea, UploadButton, UrlIcon, ndk } from "@kind0/ui-common";
-	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { Image, Link, Upload, X } from "phosphor-svelte";
-    import { createEventDispatcher } from "svelte";
-	import { slide } from "svelte/transition";
+	import { fade } from 'svelte/transition';
+	import { ndk, newToasterMessage } from "@kind0/ui-common";
+	import { NDKVideo, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { CaretLeft, CaretRight, Image, Images, Link, Upload, X } from "phosphor-svelte";
+	import { debugMode } from "$stores/session";
+	import Page1 from "./VideoEditorPage/Page1.svelte";
+	import Page2 from "./VideoEditorPage/Page2.svelte";
+	import Page3 from "./VideoEditorPage/Page3.svelte";
+	import { getDefaultRelaySet } from '$utils/ndk';
+	import { publishToTiers } from '$actions/publishToTiers';
+	import { goto } from '$app/navigation';
 
-    export let article: NDKArticle = new NDKArticle($ndk, {
+    export let video: NDKVideo = new NDKVideo($ndk, {
         content: "",
     } as NostrEvent);
+    export let teaser: NDKVideo = new NDKVideo($ndk);
+    export let tiers: Record<string, boolean>;
 
-    article.image ??= "https://cdn.satellite.earth/01a8a5f5162a90fd7e6d3af6bc86d975e08a98f1852864c8ae7d8ba547bad669.png";
+    let videoFile: File | undefined;
+    let nonSubscribersPreview: boolean;
 
-    const dispatch = createEventDispatcher();
+    let step = 0;
 
-    let imageBanner: string;
-    let contentAreaElement: HTMLTextAreaElement;
-
-	function onImageBannerKeyDown(e: KeyboardEvent) {
-        if (e.key === "Enter") {
-            article.image = imageBanner;
-        }
-	}
-
-    function onTitleKeyDown(e: KeyboardEvent) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            // move focus to content
-            if (contentAreaElement) contentAreaElement.focus();
-        }
+    function prev() {
+        step--;
     }
 
-    function uploadedCover(e: CustomEvent<string>) {
-        const url = e.detail;
-        article.image = url;
-    }
+    function next() {
+        if (step === 2) {
+            if (statusToShow) return;
 
-    const mTag = article.getMatchingTags("m")[0];
-
-    let videoUrl: string | undefined = mTag && mTag[2];
-
-    function uploadedVideo(e: CustomEvent<string>) {
-        videoUrl = e.detail;
-        // remove m tag from event
-        setVideoUrl(videoUrl);
-    }
-
-    function setVideoUrl(url: string) {
-        article.removeTag("m");
-        article.tags.push(["m", "video", url]);
-    }
-
-    let showExistingUrlInput = false;
-
-    function keydownExistingUrl(e: KeyboardEvent) {
-        if (e.key === "Enter") {
-            showExistingUrlInput = false;
-            if (e.target?.value) {
-                videoUrl = e.target.value!;
-                setVideoUrl(videoUrl!);
-            }
-        } else if (e.key === "Escape") {
-            showExistingUrlInput = false;
+            return publish();
+        } else {
+            step++;
         }
     }
+
+    async function publish() {
+        const relaySet = getDefaultRelaySet();
+
+        video.relay = Array.from(relaySet.relays)[0];
+
+        // Don't create a preview video if all tiers are selected
+        if (Object.keys(tiers).filter(tier => tiers[tier]).length === Object.values(tiers).length) {
+            nonSubscribersPreview = false;
+        }
+
+        // Create a preview video if necessary
+        if (nonSubscribersPreview) {
+            teaser.relay = Array.from(relaySet.relays)[0];
+            teaser.title = video.title;
+            teaser.thumbnail = video.thumbnail;
+            teaser.duration = video.duration;
+        }
+
+        await video.sign();
+        await teaser.sign();
+
+        console.log(`video`, video.rawEvent())
+        console.log(`teaser`, teaser.rawEvent())
+
+        await publishToTiers(video, tiers, {
+            relaySet,
+            ndk: $ndk,
+            teaserEvent: teaser
+        });
+
+        video = video;
+        teaser = teaser;
+
+        goto(`/dashboard`);
+        newToasterMessage("Video published", "success");
+    }
+
+    let pendingStatus: string[] = [];
+    let canContinue = [false, false, false];
+    let showPrevButton = false;
+
+    $: showPrevButton = step > 0;
+
+    let statusToShow: string | undefined = undefined;
+
+    $: teaser.content = video.content;
+
+    $: statusToShow = pendingStatus.find(status => status !== undefined);
 </script>
 
 <div class="flex flex-col border-none border-neutral-800 rounded-xl gap-6">
-    <div class="bg-base-300 rounded-md w-full h-96 flex flex-col items-center justify-center relative">
-        {#if videoUrl}
-            <VideoPlayer url={videoUrl} />
-        {:else}
-            <img src={article.image} alt="" class="absolute top-0 w-full h-full object-cover rounded-xl">
-            <div class="z-10 absolute top-0 w-full h-full bg-black/80"></div>
-            <div class="max-w-lg w-full z-10 flex flex-col items-center">
-                <UploadButton
-                    class="button px-8 py-3 w-fit"
-                    on:uploaded={uploadedVideo}
-                >
-                    <Upload class="w-6 h-6" />
-                    Upload
-                </UploadButton>
-                <div class="flex flex-col w-full border-opacity-50 my-2">
-                    <div class="divider">OR</div>
-                </div>
-                {#if !showExistingUrlInput}
-                    <button class="button px-8 py-3 w-fit" on:click={() => showExistingUrlInput = true}>
-                        <Link class="w-6 h-6 mr-2" />
-                        Use existing URL
-                    </button>
-                {:else}
-                    <Input
-                        color="black"
-                        autofocus={true}
-                        class="border rounded-lg focus:ring-0 text-white font-['InterDisplay'] text-lg placeholder:text-white/50 placeholder:font-normal"
-                        placeholder="Enter existing URL"
-                        on:keydown={keydownExistingUrl}
-                    />
-                {/if}
-            </div>
-        {/if}
-    </div>
-
-    {#if videoUrl}
-        <button class="font-semibold text-white border rounded-lg px-4 py-2 text-sm my-2 self-start" on:click={() => videoUrl = undefined }>Reset</button>
-    {/if}
-
-    <div class="flex flex-col">
-        <Input
-            bind:value={article.title}
-            color="black"
-            class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
-            placeholder="Add a title"
-            on:keydown={onTitleKeyDown}
+    <div class:hidden={step !== 0}>
+        <Page1
+            bind:video={video}
+            bind:videoFile={videoFile}
+            bind:canContinue={canContinue[0]}
+            bind:pendingStatus={pendingStatus[0]}
+            bind:step
         />
-
-        <Textarea
-            bind:value={article.content}
-            on:keyup={() => dispatch("contentUpdate", article.content)}
-            bind:element={contentAreaElement}
-            class="
-                !bg-transparent text-base border-none !px-4 -mx-4 rounded-lg text-white
-                focus:ring-0 text-opacity-60
-                resize-none min-h-[2rem]
-            "
-            placeholder="Optional description"
+    </div>
+    <div class:hidden={step !== 1}>
+        <Page2
+            {videoFile}
+            bind:video
+            bind:canContinue={canContinue[1]}
+            bind:pendingStatus={pendingStatus[1]}
+            bind:step
         />
     </div>
 
-    <div class="flex flex-row gap-6 items-center">
-        {#if article.image}
-            <UploadButton class="relative w-72 h-40" on:uploaded={uploadedCover}>
-                <img src={article.image} class="absolute top-0 left-0 w-72 h-40 object-cover rounded-xl" />
-            </UploadButton>
-        {/if}
-        <div class="flex flex-col gap-2 w-full h-full items-stretch">
-            <div class="font-semibold text-white">Cover Image</div>
-            <Input
-                bind:value={article.image}
-                color="black"
-                class="w-full font-normal !text-opacity-50 focus:!text-opacity-100"
-                on:keydown={onImageBannerKeyDown}
-                placeholder="Cover image URL"
-            />
+    <div class:hidden={step !== 2}>
+        <Page3
+            bind:video
+            bind:teaser
+            bind:tiers
+            bind:canContinue={canContinue[2]}
+            bind:pendingStatus={pendingStatus[2]}
+            bind:step
+            bind:nonSubscribersPreview
+        />
+    </div>
 
-            <div class="flex flex-row items-center text-white gap-4">
-                <UploadButton class="button button-primary px-6 bg-base-300" on:uploaded={uploadedCover}>
-                    <Image class="w-6 h-6" />
-                    Upload
-                </UploadButton>
-            </div>
+    <div class="w-full flex flex-row justify-between">
+        <div>
+            <button class="button px-6 py-2.5" on:click={prev} class:hidden={!showPrevButton}>
+                <CaretLeft size="18" />
+                Previous
+            </button>
         </div>
+
+        {#if statusToShow}
+            <div class="flex flex-row gap-2 items-center" transition:fade>
+                {statusToShow}
+                <span class="loading loading-sm loading-dots"></span>
+            </div>
+        {/if}
+
+        <button class="button px-6 py-2.5 transition-all duration-100" on:click={next} disabled={!canContinue[step]}>
+            {#if step === 2}
+                Publish
+            {:else}
+                Next
+            {/if}
+            <CaretRight size="18" />
+        </button>
     </div>
 </div>
+
+{#if $debugMode}
+    <pre>{JSON.stringify(video.rawEvent(), null, 4)}</pre>
+{/if}
+
+{#if $debugMode && teaser}
+    <pre>{JSON.stringify(teaser.rawEvent(), null, 4)}</pre>
+{/if}

@@ -1,10 +1,6 @@
 <script lang="ts">
 	import Navbar from '$components/Navbar.svelte';
 	import { ndk } from '@kind0/ui-common';
-
-	const supporters = $ndk.storeSubscribe([
-		{ kinds: [7001 as number] },
-	], { subId: 'subscribers' });
 </script>
 
 <svelte:head>

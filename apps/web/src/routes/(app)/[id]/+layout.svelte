@@ -8,7 +8,8 @@
 
     // $: npub = $page.data.npub;
 
-    startUserView(user);
+    if (user)
+        startUserView(user);
 
     onDestroy(() => {
         userSubscription?.unref();

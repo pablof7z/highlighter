@@ -5,6 +5,13 @@ import { generateLoginEvent } from "$actions/signLoginEvent";
 
 export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
 
+/**
+ * These are pubkeys managed by the relay running this app, which gates access to content
+ */
+export const trustedPubkeys = [
+    "4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce", // faaans
+]
+
 export async function finalizeLogin() {
     const hostname = import.meta.env.VITE_HOSTNAME;
     console.trace("finalizeLogin", {hostname});

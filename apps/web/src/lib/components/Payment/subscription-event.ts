@@ -39,6 +39,12 @@ export async function createZapRequest(event: NDKEvent, comment: string) {
             comment,
         }),
     });
+
+    if (res.status !== 200) {
+        throw new Error(await res.text());
+    }
+
     const data = await res.json();
+
     return new NDKEvent($ndk, data.event);
 }

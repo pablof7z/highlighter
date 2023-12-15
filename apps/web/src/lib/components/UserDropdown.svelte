@@ -3,6 +3,7 @@
 	import { Avatar, CollapsableDropdown, Name, ndk, user } from '@kind0/ui-common';
     import {SignOut, SquaresFour, Tray} from 'phosphor-svelte';
 	import { userActiveSubscriptions, userFollows, userSuperFollows } from '$stores/session';
+    import UserProfile from './User/UserProfile.svelte';
 
     export function logout(): void {
         const $ndk = getStore(ndk);
@@ -23,39 +24,40 @@
     }
 </script>
 
-<div class="dropdown dropdown-end">
-    <label tabindex="0" class="btn-circle avatar flex">
-        <Avatar user={$user}/>
-    </label>
+<UserProfile user={$user} let:userProfile let:fetching>
+    <div class="dropdown dropdown-end">
+        <label tabindex="0" class="btn-circle avatar flex">
+            <Avatar user={$user} {userProfile} {fetching}/>
+        </label>
 
-    <ul class="dropdown-content divide-y divide-neutral-900 menu p-0 z-50 rounded-box whitespace-nowrap text-base">
-        <li><a href="/inbox">
-            <Tray size={16} class="mr-2"/>
-            Inbox
-        </a></li>
-        <li><a href="/dashboard">
-            <SquaresFour size={16} class="mr-2"/>
-            Creator Dashboard
-        </a></li>
-        <li><a href="/dashboard/tiers">
-            <SquaresFour size={16} class="mr-2"/>
-            Tiers
-        </a></li>
-        <li><button on:click={logout} class="w-full">
-            <SignOut size={16} class="mr-2"/>
-            Log Out
-        </button></li>
-        <li class="hidden">
-            <div class="flex flex-col gap-4 items-start text-sm">
-                <div>Debug Information</div>
-                <p>User follows: {$userFollows.size}</p>
-                <p>User super-follows: {$userSuperFollows.size}</p>
-                <p>Active Subscriptions: {$userActiveSubscriptions.size}</p>
-            </div>
-        </li>
-    </ul>
-
-</div>
+        <ul class="dropdown-content divide-y divide-neutral-900 menu p-0 z-50 rounded-box whitespace-nowrap text-base">
+            <li><a href="/inbox">
+                <Tray size={16} class="mr-2"/>
+                Inbox
+            </a></li>
+            <li><a href="/dashboard">
+                <SquaresFour size={16} class="mr-2"/>
+                Creator Dashboard
+            </a></li>
+            <li><a href="/dashboard/tiers">
+                <SquaresFour size={16} class="mr-2"/>
+                Tiers
+            </a></li>
+            <li><button on:click={logout} class="w-full">
+                <SignOut size={16} class="mr-2"/>
+                Log Out
+            </button></li>
+            <li class="hidden">
+                <div class="flex flex-col gap-4 items-start text-sm">
+                    <div>Debug Information</div>
+                    <p>User follows: {$userFollows.size}</p>
+                    <p>User super-follows: {$userSuperFollows.size}</p>
+                    <p>Active Subscriptions: {$userActiveSubscriptions.size}</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</UserProfile>
 
 <style lang="postcss">
     li a {

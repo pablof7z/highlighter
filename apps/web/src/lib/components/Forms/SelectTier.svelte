@@ -1,8 +1,9 @@
 <script lang="ts">
     import { CaretDown } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
-    let show = false;
 
+    export let show = false;
+    export let skipTitle = false;
     export let tiers: Record<string, boolean>;
     let selectedString = "";
 
@@ -29,10 +30,16 @@
     }
 
     updateSelectedString();
+
+    $: if (tiers) {
+        updateSelectedString();
+    }
 </script>
 
 <div class="w-full flex-col justify-start items-start gap-2 inline-flex">
-    <div class="text-white text-base font-medium">Content Tier</div>
+    {#if !skipTitle}
+        <div class="text-white text-base font-medium">Content Tier</div>
+    {/if}
     <div class="self-stretch rounded-xl border border-neutral-800 items-start inline-flex bg-transparent flex-col justify-start gap-4">
         <button on:click={() => show = !show} class="text-white text-base px-4 py-3 font-medium w-full text-left flex flex-row justify-between">
             <div class="flex flex-row items-end gap-4">

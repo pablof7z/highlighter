@@ -145,7 +145,6 @@
             </div>
 
             {#if editing}
-            {JSON.stringify(userProfile.categories)}
                 <CategorySelector bind:categories={editingCategories} />
             {/if}
         </UserProfileFetcher>

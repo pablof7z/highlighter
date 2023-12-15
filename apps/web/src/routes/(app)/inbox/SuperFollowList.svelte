@@ -63,7 +63,7 @@
             </div>
             <span class="text-right text-white text-[15px] font-medium name">All Feeds</span>
         </a>
-        {#each activeView as pubkey}
+        {#each activeView as pubkey (pubkey)}
             <SuperFollowListItem {pubkey} {selectedId} />
         {/each}
         <!-- <button on:click={resetFollow} class="btn w-full btn-ghost">Reset</button> -->

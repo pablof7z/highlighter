@@ -72,13 +72,19 @@
             return;
         }
 
-        const supportEvent = await createSubscriptionEvent($ndk, amount, currency, term, plan, supportedUser);
-        const zapRequest = await createZapRequest(supportEvent, zapComment);
-        console.log('zaprequest id', zapRequest.id, zapRequest.rawEvent());
-        zapRequest.sig = await $ndk.signer?.sign(zapRequest.rawEvent());
-        console.log('after signing zaprequest id', zapRequest.id, zapRequest.rawEvent());
-        await sendZap(zapRequest);
-        await supportEvent.publish();
+        try {
+            const supportEvent = await createSubscriptionEvent($ndk, amount, currency, term, plan, supportedUser);
+            const zapRequest = await createZapRequest(supportEvent, zapComment);
+            console.log('zaprequest id', zapRequest.id, zapRequest.rawEvent());
+            zapRequest.sig = await $ndk.signer?.sign(zapRequest.rawEvent());
+            console.log('after signing zaprequest id', zapRequest.id, zapRequest.rawEvent());
+            await sendZap(zapRequest);
+            await supportEvent.publish();
+        } catch (e: any) {
+            error = e.message;
+            subscribing = false;
+            return;
+        }
         // const invoice = await supportEvent.zap(satsAmount*1000, zapComment, undefined, supportedUser);
 
         // if (!invoice) {

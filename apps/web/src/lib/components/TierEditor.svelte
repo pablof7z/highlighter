@@ -71,6 +71,7 @@
                     bind:value={tier.description}
                     on:change={() => tier = tier }
                     class="w-full !bg-transparent border-none p-0 rounded-xl rounded-t-none resize-none text-black flex-grow"
+                    placeholder="Tier description"
                 />
             </div>
         </div>

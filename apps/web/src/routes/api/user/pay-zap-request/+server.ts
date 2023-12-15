@@ -6,7 +6,7 @@ import { json } from "@sveltejs/kit"
 import createDebug from "debug";
 import type { Session } from "../../../../app.js";
 import { webln } from "@getalby/sdk";
-import NDK, { NDKEvent, NDKUser, NDKZap, type Hexpubkey, type NostrEvent, NostrEvent, type NDKTag } from "@nostr-dev-kit/ndk";
+import NDK, { NDKEvent, NDKUser, NDKZap, type Hexpubkey, type NostrEvent, NostrEvent, type NDKTag, NDKKind } from "@nostr-dev-kit/ndk";
 import { sendPayment } from "$lib/backend/pay.js";
 import type { Payment } from "@prisma/client";
 import { calculateValidUntil } from "$utils/payment.js";
@@ -49,6 +49,8 @@ export async function POST({request, locals}) {
         if (payment.preimage) {
             console.log("Payment sent", payment);
             await markSubscriberPayment(id);
+        } else {
+            console.log("Payment failed", payment);
         }
 
         return json(payment);
@@ -121,7 +123,7 @@ async function publishListOfSupporters(ndk: NDK, creatorPubkey: string) {
     });
 
     const event = new NDKEvent(ndk, {
-        kind: 37003,
+        kind: NDKKind.SubscriptorsList,
         content: "",
         tags: [ [ "d", creatorPubkey] ]
     } as NostrEvent);
@@ -144,6 +146,6 @@ async function publishListOfSupporters(ndk: NDK, creatorPubkey: string) {
         }
     }
 
-    await event.sign();
+    await event.publish();
     console.log("List of supporters event", event.rawEvent());
 }

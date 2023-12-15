@@ -3,11 +3,11 @@ import { verifySignature, type Event } from "nostr-tools";
 import db from "$lib/db.js";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { json } from "@sveltejs/kit"
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import type { Session } from "../../../app";
 const { sign } = jwt;
 
-const CURRENT_DOMAIN = process.env.NODE_ENV === "production" ? "getfaaans.com" : "localhost";
+const CURRENT_DOMAIN = import.meta.env.VITE_HOSTNAME;
 
 export async function POST({request}) {
     const { event } = await request.json();
@@ -71,7 +71,8 @@ function validateEvent(event: NDKEvent) {
     const timeWindow = 3 * 60; // 3 minutes
 
     if (event.created_at! < now - timeWindow || event.created_at! > now + timeWindow) {
-        throw new Error("Invalid date")
+        const dateString = new Date(event.created_at! * 1000).toISOString();
+        throw new Error("Invalid date, event has date " + dateString);
     }
 
     // validate domain

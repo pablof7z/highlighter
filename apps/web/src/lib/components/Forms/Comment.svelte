@@ -5,15 +5,18 @@
     import { userActiveSubscriptions } from "$stores/session";
     import { createEventDispatcher } from "svelte";
 	import { getDefaultRelaySet } from "$utils/ndk";
+    import { debugMode } from "$stores/session";
 
     const dispatch = createEventDispatcher();
 
     export let event: NDKEvent;
-    export let autofocus = false;
+    export let narrowView = false;
 
     let content: string;
 
     let reply: NDKEvent | undefined;
+
+    let debugView = true;
 
     function getCommentTags() {
         const tags: NDKTag[] = [];
@@ -45,7 +48,14 @@
         return tags;
     }
 
-    async function publish() {
+    async function debug() {
+        debugView = true;
+        await generateEvent();
+        await reply?.sign();
+        reply = reply;
+    }
+
+    async function generateEvent() {
         const rootTags = event.tags.filter(t => t[3] === "root");
         const hasRootTag = rootTags.length > 0;
         const hTag = event.tagValue("h");
@@ -58,6 +68,9 @@
             kind,
             content
         } as NostrEvent);
+
+        if (!content || content.length === 0) return;
+
         if (hTag) {
             const userTier = $userActiveSubscriptions.get(hTag);
 
@@ -94,8 +107,11 @@
         // else
 
         // reply.tags.push(...getCommentTags());
+    }
 
-        console.log('reply tags', reply.tags);
+    async function publish() {
+        await generateEvent();
+        if (!reply) return;
 
         await reply.publish(getDefaultRelaySet());
         reply = reply;
@@ -105,19 +121,54 @@
 </script>
 
 <UserProfile user={$user} let:userProfile>
-    <div class="flex flex-row gap-4 w-full">
-        <Avatar user={$user} {userProfile} class="flex-none w-12 h-12" />
+    {#if !narrowView}
+        <div class="flex flex-row gap-4 w-full">
+            <Avatar user={$user} {userProfile} class="flex-none w-12 h-12" />
 
-        <div class="flex flex-col gap-4 w-full items-start">
-            <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
+            <div class="flex flex-col gap-4 w-full items-start">
+                <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
+                <Textarea
+                    class="flex-grow w-full min-h-[10rem] border-base-200 focus:!border-base-300 rounded-xl"
+                    placeholder="Write a response..."
+                    bind:value={content}
+                    on:focus
+                    on:blur
+                />
+
+                <div class="flex flex-row items-center justify-between w-full">
+                    {#if debugMode}
+                        <button class="button button-primary px-10" on:click={debug}>Debug</button>
+                    {/if}
+
+                    <button class="button self-end px-10" on:click={publish}>Publish</button>
+                </div>
+            </div>
+        </div>
+    {:else}
+        <div class="flex flex-col gap-4 w-full">
+            <div class="flex flex-row gap-4 w-full items-center">
+                <Avatar user={$user} {userProfile} class="flex-none w-12 h-12" />
+                <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
+            </div>
+
             <Textarea
-                class="flex-grow w-full min-h-[10rem] border-base-200 focus:!border-base-300 rounded-xl"
+                class="flex-grow w-full min-h-[6rem] border-base-200 focus:!border-base-300 rounded-xl"
                 placeholder="Write a response..."
+                on:focus
+                on:blur
                 bind:value={content}
             />
-            <button class="button self-end px-10" on:click={publish}>Publish</button>
+            <button class="button px-10" on:click={publish}>Publish</button>
+
+            {#if debugMode}
+                <button class="button button-primary px-10" on:click={() => debugView = !debugView}>Debug</button>
+            {/if}
         </div>
-    </div>
+    {/if}
+
+    {#if debugView && reply}
+        <pre class="bg-base-200 p-4 overflow-scroll">{JSON.stringify(reply?.rawEvent(), null, 2)}</pre>
+    {/if}
 </UserProfile>
 
 <!-- {#if reply}

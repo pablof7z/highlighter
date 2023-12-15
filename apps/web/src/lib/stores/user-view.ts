@@ -5,14 +5,17 @@ import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 import { writable, get as getStore, derived, type Readable } from "svelte/store";
 import { userActiveSubscriptions } from "./session";
 import { getDefaultRelaySet } from "$utils/ndk";
+import { trustedPubkeys } from "$utils/login";
 
 export const activeUserViewPubkey = writable<Hexpubkey | undefined>(undefined);
 
 export let userSubscription: NDKEventStore<NDKEvent> | undefined = undefined;
 export const userTiers = writable<Readable<NDKArticle[]> | undefined>(undefined);
 export const userContent = writable<Readable<NDKEvent[]> | undefined>(undefined);
+export const userSupporters = writable<Readable<never[] | Record<Hexpubkey, string|undefined>> | undefined>(undefined);
 
 export function startUserView(user: NDKUser) {
+    console.trace('starting user view', user);
     const $ndk = getStore(ndk);
     const $userActiveSubscriptions = getStore(userActiveSubscriptions);
     const tier = $userActiveSubscriptions.get(user.pubkey) || "Free";
@@ -45,21 +48,15 @@ export function startUserView(user: NDKUser) {
             "#p": [ user.pubkey ],
         },
         {
-            kinds: [ 7003 as number ],
-            "#P": [ user.pubkey ],
-        },
-        // zaps the user has received
-        // {
-        //     kinds: [ NDKKind.Zap ],
-        //     "#p": [ user.pubkey ],
-        //     limit: 20
-        // }
+            kinds: [ NDKKind.SubscriptorsList as number ],
+            "#d": [ user.pubkey ],
+            authors: trustedPubkeys,
+        }
     ];
 
     const groupFilter: NDKFilter = {
         "#h": [ user.pubkey ],
         "authors": [ user.pubkey ],
-
     }
 
     if (!$currentUser || $currentUser.pubkey !== user.pubkey) {
@@ -78,6 +75,7 @@ export function startUserView(user: NDKUser) {
 
     userTiers.set(getUserSupportPlansStore());
     userContent.set(getUserContent());
+    userSupporters.set(getUserSupporters());
 }
 
 export function getContent() {
@@ -129,26 +127,46 @@ export function getUserSupportPlansStore() {
     });
 }
 
-export function getUserSupporters(): Readable<NDKEvent[]> {
+export function getUserSupporters(): Readable<never[] | Record<Hexpubkey, string|undefined>> {
     const $activeUserViewPubkey = getStore(activeUserViewPubkey);
 
-    if (!userSubscription) return derived([], () => []);
+    if (!userSubscription) return derived([], () => {});
 
     return derived(userSubscription, ($userSubscription) => {
         if (!$userSubscription || !$activeUserViewPubkey) return [];
 
-        const supporters = $userSubscription.filter((event: NDKEvent) => {
-            const until = event.tagValue("until")
-            if (!until) return false;
-            const validUntil = new Date(parseInt(until) * 1000);
-            return (
-                event.kind === 7003 &&
-                event.tagValue("P") === $activeUserViewPubkey &&
-                validUntil > new Date()
-            );
-        });
+        const supportersList: NDKEvent | undefined = $userSubscription.find(e => e.kind === NDKKind.SubscriptorsList);
 
-        return supporters;
+        console.log({supportersList});
+
+        if (supportersList) {
+            const supporters: Record<Hexpubkey, string|undefined> = {};
+
+            for (const pTag of supportersList.getMatchingTags("p")) {
+                const pubkey = pTag[1];
+                const tier = pTag[2];
+                supporters[pubkey] = tier;
+            }
+
+            console.log(`found ${Object.keys(supporters).length} supporters`);
+
+            return supporters;
+        }
+
+        return {};
+
+        // const supporters = $userSubscription.filter((event: NDKEvent) => {
+        //     const until = event.tagValue("until")
+        //     if (!until) return false;
+        //     const validUntil = new Date(parseInt(until) * 1000);
+        //     return (
+        //         event.kind === 7003 &&
+        //         event.tagValue("P") === $activeUserViewPubkey &&
+        //         validUntil > new Date()
+        //     );
+        // });
+
+        // return supporters;
     });
 }
 

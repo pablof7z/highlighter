@@ -5,8 +5,9 @@
 	import { fade } from 'svelte/transition';
 	import { Toaster, bunkerNDK, ndk, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
 	import { finalizeLogin, login } from '$utils/login';
-	import { prepareSession } from '$stores/session';
+	import { debugMode, prepareSession } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
+	import { Bug, Check } from 'phosphor-svelte';
 
 	let mounted = false;
 
@@ -113,5 +114,10 @@
 
 </style>
 
-
-<Analytics />
+{#if import.meta.env.VITE_HOSTNAME === "localhost" || $user?.npub === "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft"}
+	<button
+		on:click={() => $debugMode = !$debugMode}
+		class="fixed bottom-2 right-2 z-50 btn btn-circle btn-sm">
+		<Bug size="24" />
+	</button>
+{/if}

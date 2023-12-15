@@ -172,6 +172,7 @@
                     {username}@{nsecBunker.domain}
                 </span>
             {:else}
+                <!--  -->
             {/if}
         {:else}
             <div class="loading loading-sm"></div>

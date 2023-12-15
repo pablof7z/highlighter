@@ -104,9 +104,6 @@
         });
     }
 
-    function preview() {
-    }
-
     let userProfile: UserProfileType;
 
     $: if (userProfile?.categories?.length > 0 && categories.length === 0) {

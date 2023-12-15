@@ -4,8 +4,11 @@ import { NDKEvent, NDKList, NDKSubscriptionCacheUsage, type NDKFilter, type NDKT
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from "@macfja/svelte-persistent-store";
 import debug from 'debug';
+import { trustedPubkeys } from '$utils/login';
 
 const d = debug('getfaaans:session');
+
+export const debugMode = writable<boolean>(false);
 
 export const loadingScreen = writable<boolean>(false);
 
@@ -24,11 +27,7 @@ export const userSuperFollows = persist(
     'user-super-follows'
 );
 
-export const userActiveSubscriptions = persist(
-    writable<Map<Hexpubkey, string>>(new Map()),
-    createLocalStorage(),
-    'user-active-subscriptions'
-);
+export const userActiveSubscriptions = writable<Map<Hexpubkey, string>>(new Map());
 
 export const userCreatorSubscriptionPlans = derived(
     [userSuperFollows, userActiveSubscriptions],
@@ -159,13 +158,6 @@ export async function prepareSession(): Promise<void> {
     });
 }
 
-function isHashtagListEvent(event: NDKEvent) {
-    return (
-        // event.kind === 30001 &&
-        event.tagValue('d') === 'hashtags'
-    );
-}
-
 interface IFetchDataOptions {
     followsStore?: Writable<Set<Hexpubkey>>;
     superFollowsStore?: Writable<Set<Hexpubkey>>;
@@ -175,7 +167,6 @@ interface IFetchDataOptions {
     listsStore?: Writable<Map<string, NDKList>>;
     listsKinds?: number[];
     extraKinds?: number[];
-    followHashtagsStore?: Writable<string[]>;
     closeOnEose?: boolean;
     waitUntilEoseToResolve?: boolean;
 }
@@ -219,10 +210,8 @@ async function fetchData(
             processContactList(event, opts.followsStore);
         } else if (event.kind === NDKKind.SuperFollowList && opts.superFollowsStore) {
             processContactList(event, opts.superFollowsStore);
-        } else if (event.kind === 7003 && opts.activeSubscriptionsStore) {
-            processActiveSubscription(event);
-        } else if (isHashtagListEvent(event) && opts.followHashtagsStore) {
-            processHashtagList(event);
+        } else if (event.kind === NDKKind.SubscriptorsList && opts.activeSubscriptionsStore) {
+            processSubscriptionList(event, authors[0]);
         } else if (event.kind === NDKKind.SubscriptionStart) {
             processSupport(event);
         } else if (event.kind === NDKKind.AppRecommendation) {
@@ -232,21 +221,14 @@ async function fetchData(
         }
     };
 
-    const processActiveSubscription = (event: NDKEvent) => {
-        console.log(`processing active subscription`, event.rawEvent())
+    const processSubscriptionList = (event: NDKEvent, author: string) => {
         opts.activeSubscriptionsStore!.update((activeSubscriptions) => {
-            const untilTag = event.tagValue("until");
-            const tierName = event.tagValue("tier");
-            const creator = event.tagValue("creator");
+            const userTag = event.getMatchingTags("p").find(t => t[1] === author);
+            const dTag = event.tagValue("d");
 
-            if (!untilTag || !tierName || !creator) return activeSubscriptions;
-
-            const activeUntil = new Date(parseInt(untilTag)*1000);
-
-            console.log(`active until: ${activeUntil}`);
-
-            if (activeUntil > new Date()) {
-                activeSubscriptions.set(creator, tierName);
+            if (userTag && dTag) {
+                const tier = userTag[2];
+                activeSubscriptions.set(dTag, tier);
             }
 
             return activeSubscriptions;
@@ -287,25 +269,6 @@ async function fetchData(
             processedIdForKind[event.kind!] = event.id;
             updateFollows(event, store);
         }
-    };
-
-    const processHashtagList = (event: NDKEvent) => {
-        userFollowHashtags.update((existingHashtags) => {
-            for (const t of event.tags) {
-                if (t[0] === 't') {
-                    if (existingHashtags instanceof Array) {
-                        if (!existingHashtags.includes(t[1]))
-                            existingHashtags.push(t[1]);
-                    // } else {
-                    //     existingHashtags[t[1]] = (existingHashtags[t[1]] ?? 0) + 1;
-                    }
-                }
-            }
-
-            console.log(existingHashtags);
-
-            return existingHashtags;
-        });
     };
 
     const processList = (event: NDKEvent) => {
@@ -372,11 +335,11 @@ async function fetchData(
         }
 
         if (opts.activeSubscriptionsStore) {
-            filters.push({ kinds: [7003], "#p": authorPrefixes });
-        }
-
-        if (opts.followHashtagsStore) {
-            filters.push({ authors: authorPrefixes, "#d": ["hashtags"] });
+            filters.push({
+                kinds: [NDKKind.SubscriptorsList],
+                authors: trustedPubkeys,
+                "#p": authorPrefixes,
+            });
         }
 
         if (opts.supportStore) {

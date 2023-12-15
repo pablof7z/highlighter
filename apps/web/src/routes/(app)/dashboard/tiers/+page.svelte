@@ -1,6 +1,8 @@
 <script lang="ts">
 	import PageTitle from "$components/Page/PageTitle.svelte";
+    import TierEditorEmpty from "$components/TierEditorEmpty.svelte";
 	import { ndk, newToasterMessage, user } from "@kind0/ui-common";
+    import TierHeader from "$components/TierHeader.svelte";
 	import NDK, { NDKEvent, NDKKind, type NDKEventId, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import { getUserSupportPlansStore, startUserView, userSubscription } from '$stores/user-view';
 	import { onDestroy, onMount } from 'svelte';
@@ -60,6 +62,10 @@
             tiers.push(tier);
         }
 
+        if (!terms || terms.length === 0) {
+            terms = ["monthly"];
+        }
+
         tiers = tiers;
     }
 
@@ -81,7 +87,7 @@
         const tier = {
             localId: rand,
             name,
-            description: "Blah",
+            description: "",
             image: "https://c10.patreonusercontent.com/4/patreon-media/p/reward/5573766/fe0d9353b56a447586507118071bb33c/eyJ3Ijo0MDB9/1.jpg?token-time=2145916800&token-hash=qbzX7mOVIcgAeYnH_tHB2ARAEWIbH98YPPdjIpahYh8%3D",
             amounts: {
                 monthly: "10",
@@ -183,8 +189,6 @@
 <div class="flex flex-col gap-10 mx-auto max-w-5xl">
     <PageTitle title="Support Tiers">
         <div class="flex flex-row gap-4">
-            <!-- <button on:click={preview} class="button button-primary">Preview</button>
-            <button on:click={preview} class="button button-primary">Save Draft</button> -->
             <button on:click={addTier} class="button">Add new tier</button>
             <button on:click={saveTiers} class="button px-6">
                 Save
@@ -193,8 +197,9 @@
     </PageTitle>
     <div class="mx-auto w-fit">
         <div class="px-12 pt-6 pb-10 bg-white rounded-3xl flex-col justify-start items-center gap-6 inline-flex w-full">
-            <!-- <TierHeader user={$user} /> -->
+            <TierHeader user={$user} />
             <div class="justify-center items-center inline-flex gap-4">
+
                 <select
                     value={currency}
                     class="bg-zinc-100 border-none rounded-lg text-black text-sm font-medium"
@@ -213,6 +218,10 @@
                 />
             </div>
             <div class="justify-start items-start gap-4 inline-flex overflow-y-auto max-w-3xl">
+                {#if tiers.filter(t => !t.deleted).length === 0}
+                    <TierEditorEmpty on:click={addTier} />
+                {/if}
+
                 {#each tiers as tier, i}
                     {#if !tier.deleted}
                         <TierEditor
@@ -225,7 +234,12 @@
                         />
                     {/if}
                 {/each}
+
             </div>
+
+            {#if tiers.filter(t => !t.deleted).length > 0}
+                <button on:click={addTier} class="button">Add new tier</button>
+            {/if}
         </div>
     </div>
 </div>
