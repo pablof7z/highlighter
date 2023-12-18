@@ -36,7 +36,6 @@
     ], { closeOnEose: true, cacheUsage: NDKSubscriptionCacheUsage.PARALLEL, ...subsOptions});
 
     sub.on("event", (e: NDKEvent, r: NDKRelay) => {
-        console.log(`got event`, e.rawEvent());
         switch (e.kind) {
             case 0: {
                 const no31777Received = !kind37777Event;

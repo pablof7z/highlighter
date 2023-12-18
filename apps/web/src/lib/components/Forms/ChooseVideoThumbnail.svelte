@@ -194,15 +194,17 @@
 {/if}
 
 <div class="flex flex-row gap-4 flex-nowrap overflow-x-auto overflow-y-hidden w-full pb-10">
-    {#each thumbnails as thumbnail, index}
-        <button
-            class="object-cover rounded-xl flex-none opacity-50"
-            class:opacity-100={selectedIndex === index}
-            on:click={() => selectedIndex = index}
-        >
-            <img src={thumbnail.dataUrl} class="w-full h-full object-cover rounded-xl" />
-        </button>
-    {/each}
+    {#if thumbnails.length > 1}
+        {#each thumbnails as thumbnail, index}
+            <button
+                class="object-cover rounded-xl flex-none opacity-50"
+                class:opacity-100={selectedIndex === index}
+                on:click={() => selectedIndex = index}
+            >
+                <img src={thumbnail.dataUrl} class="w-full h-full object-cover rounded-xl" />
+            </button>
+        {/each}
+    {/if}
 
     {#if !selectedThumbnail}
         <button class="image-placeholder w-fit h-full object-cover rounded-xl bg-base-300" on:click={() => fileUpload.click()} />

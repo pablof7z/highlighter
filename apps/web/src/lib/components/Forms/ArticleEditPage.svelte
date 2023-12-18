@@ -1,56 +1,42 @@
 <script lang="ts">
-	import PageTitle from "$components/Page/PageTitle.svelte";
-	import { Textarea, ndk, newToasterMessage, user } from "@kind0/ui-common";
-	import SelectTier from "$components/Forms/SelectTier.svelte";
-	import { NDKArticle, NDKEvent, NDKKind, NDKList, NDKRelaySet, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { ndk, user } from "@kind0/ui-common";
+	import { NDKArticle, NDKEvent, NDKKind, NDKList, NDKRelay, NDKRelaySet, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { publishToTiers } from "$actions/publishToTiers";
-	import { slide } from "svelte/transition";
 	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
     import truncateMarkdown from 'markdown-truncate';
 	import { getUserSupportPlansStore } from "$stores/user-view";
-	import { defaultRelays } from '$utils/ndk';
+	import { getDefaultRelaySet } from '$utils/ndk';
 	import CategorySelector from './CategorySelector.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import type { UserProfileType } from '../../../app';
+	import Page2 from "./ArticleEditor/Page2.svelte";
 
     export let article: NDKArticle;
+
+    let step = 0;
 
     let previewContent: string;
     let tiers: Record<string, boolean> = { "Free": true };
     let nonSubscribersPreview = true;
+    let wideDistribution = true;
     let categories: string[] = [];
 
     const allTiers = getUserSupportPlansStore();
 
-    let publishingAllowed = false;
-    let publishButtonTooltip = "Initializing";
-
     $: for (const tier of $allTiers) {
-        if (tiers[tier.title] === undefined) {
-            tiers[tier.title] = false;
+        if (tiers[tier.title!] === undefined) {
+            tiers[tier.title!] = false;
         }
     }
 
-    $: {
-        const someTierSelected = Object.keys(tiers).filter(tier => tiers[tier]).length > 0;
-        publishingAllowed = false;
-
-        if (!someTierSelected) {
-            publishButtonTooltip = "Select at least one tier";
-        } else if (!article.content) {
-            publishButtonTooltip = "Add some content";
-        } else if (!article.title) {
-            publishButtonTooltip = "Add a title";
-        } else {
-            publishButtonTooltip = "Publish";
-            publishingAllowed = true;
-        }
-    }
-
-    let publishing = false;
     let previewContentChanged = false;
 
-    let showTeaser = false;
+    const domain = "https://getfaaans.com";
+    let authorLink: string = domain;
+    let authorUrl: string | undefined;
+    $: authorLink = authorUrl ? `${domain}${authorUrl}` : domain;
+    let previewContentReadLink: string;
+    $: previewContentReadLink = `\n\n\nSupport my work and read the rest of this article on my Faaans page: ${authorLink}`;
 
     function updatePreviewContent() {
         if (!previewContentChanged) {
@@ -59,6 +45,8 @@
                 limit,
                 ellipsis: true
             });
+
+            previewContent += previewContentReadLink;
         }
     }
 
@@ -69,23 +57,27 @@
     async function publish() {
         updatePreviewContent();
 
-        const relaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
-
-        article.relay = Array.from(relaySet.relays)[0];
-
-        let previewArticle: NDKArticle | undefined;
-
         // Don't create a preview article if all tiers are selected
         if (Object.keys(tiers).filter(tier => tiers[tier]).length === Object.values(tiers).length) {
             nonSubscribersPreview = false;
         }
+
+        console.log({tiers});
+        console.log(Object.keys(tiers).filter(tier => tiers[tier]).length, Object.values(tiers).length);
+
+        const rs = getDefaultRelaySet();
+        article.relay = Array.from(rs.relays)[0];
+
+        let previewArticle: NDKArticle | undefined;
 
         // Create a preview article if necessary
         if (nonSubscribersPreview) {
             previewArticle = new NDKArticle($ndk, {
                 content: previewContent,
             } as NostrEvent);
-            previewArticle.relay = Array.from(relaySet.relays)[0];
+
+            previewArticle.relay = article.relay;
+
             previewArticle.title = article.title;
             previewArticle.image = article.image;
             previewArticle.summary = article.summary;
@@ -98,9 +90,9 @@
         }
 
         await publishToTiers(article, tiers, {
-            relaySet,
             ndk: $ndk,
-            teaserEvent: previewArticle
+            teaserEvent: previewArticle,
+            wideDistribution
         });
     }
 
@@ -110,52 +102,88 @@
         categories = userProfile.categories;
 
     }
+
+    function next() {
+        if (step < 2) {
+            step++;
+        } else {
+            publish();
+        }
+    }
 </script>
 
-<UserProfile user={$user} bind:userProfile />
+<UserProfile user={$user} bind:userProfile bind:authorUrl />
 
-<div class="flex flex-col gap-10">
-    <PageTitle title="New Article">
-        <div class="flex flex-row gap-2">
-            <!-- <button on:click={preview} class="button button-primary">Preview</button>
-            <button on:click={preview} class="button button-primary">Save Draft</button> -->
-            <div class="tooltip" data-tip={publishButtonTooltip}>
-                <button on:click={publish} class="button px-10" disabled={!publishingAllowed}>Publish</button>
-            </div>
+<div class="flex flex-col gap-10 sm:py-20">
+    <div class="min-h-[70vh]" class:hidden={step !== 0}>
+        <ArticleEditor bind:article on:contentUpdate={updatePreviewContent} textareaClass="" />
+    </div>
+
+    <div class="flex flex-col gap-10 max-sm:pt-24 max-sm:px-4" class:hidden={step !== 1}>
+        <Page2
+            bind:tiers
+            bind:nonSubscribersPreview
+            bind:previewContent
+            bind:wideDistribution
+            bind:previewContentChanged
+        />
+    </div>
+
+    {#if step === 2}
+        <div class="max-sm:pt-24">
+            <CategorySelector bind:categories />
         </div>
-    </PageTitle>
+    {/if}
+</div>
 
-    <ArticleEditor bind:article on:contentUpdate={updatePreviewContent} />
+<div class="
+    fixed
+    max-sm:top-0 sm:bottom-0
+    max-sm:bg-base-200/50 sm:bg-base-200
+    max-sm:backdrop-blur-sm
+    w-full left-0 z-50
+">
+    <div class="mx-auto max-w-3xl py-3 sm:py-8 max-sm:px-4">
+        <div class="flex flex-row justify-between items-center">
+            <div class="flex flex-col gap-1 max-sm:hidden">
+                {#if step === 0}
+                    <span class="font-medium text-white/80 text-lg">
+                        Write to your heart's content
+                    </span>
+                {/if}
 
-    <SelectTier bind:tiers />
-
-    <CategorySelector bind:categories />
-
-    <div class="flex flex-col gap-4" class:hidden={tiers["Free"]}>
-        <label class="text-white text-base font-medium flex flex-row gap-2 items-cente justify-between">
-            <div class="flex flex-row items-start">
-                <input type="checkbox" class="checkbox mr-2" bind:checked={nonSubscribersPreview} />
-                <div class="flex flex-col items-start">
-                    Non-subscribers Teaser
-                    <div class="text-neutral-500 text-sm">Allow non-subscribers to preview this article</div>
-                </div>
+                {#if step === 1}
+                    <span class="font-medium text-white/80 text-lg">
+                        Define this article's visibility
+                    </span>
+                {/if}
             </div>
 
-            <div class="flex items-center justify-between transition-all duration-500" class:opacity-0={!nonSubscribersPreview}>
-                <button class="button text-xs" on:click={() => showTeaser = !showTeaser} disabled={!nonSubscribersPreview}>
-                    Edit Teaser
+            <div class="sm:hidden">
+                {#if step > 0}
+                    <button on:click={() => step--}>
+                        Back
+                    </button>
+                {/if}
+            </div>
+
+            <div class="flex flex-row gap-6">
+                {#if step > 0}
+                    <button class="max-sm:hidden" on:click={() => step--}>
+                        Back
+                    </button>
+                {/if}
+
+                <button class="button" on:click={next}>
+                    {#if step === 0}
+                        Next: Audience
+                    {:else if step === 1}
+                        Next: Categories
+                    {:else if step === 2}
+                        Publish
+                    {/if}
                 </button>
             </div>
-        </label>
-
-        {#if showTeaser}
-            <div class="transition-all duration-300" transition:slide>
-                <Textarea
-                    bind:value={previewContent}
-                    on:change={() => previewContentChanged = true}
-                    class="w-full !bg-transparent border border-neutral-800 rounded-xl resize-none min-h-[50vh] text-lg text-white"
-                />
-            </div>
-        {/if}
+        </div>
     </div>
 </div>

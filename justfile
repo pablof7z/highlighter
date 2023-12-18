@@ -29,3 +29,7 @@ renew:
 
 compile-ndk:
     ./ndk_compile.sh
+
+deploy:
+	rsync -avP -l -t --exclude node_modules --exclude build /Users/pablofernandez/src/kind0/fans/ kind0:/home/pablo/projects/fans/fans
+	ssh pablo@kind0 ./deploy-fans.sh

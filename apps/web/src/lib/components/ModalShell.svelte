@@ -11,13 +11,13 @@
     w-screen
 " transition:fade on:click={closeModal}>
     <div class="
-    card
-    !rounded-3xl
-    shadow-xl
-    flex flex-col
-    relative
-    overflow-y-hidden
-    {$$props.class}
+        card
+        !rounded-3xl
+        shadow-xl
+        flex flex-col
+        relative
+        overflow-y-hidden
+        {$$props.class}
     " style="pointer-events: auto; max-height: 92vh;" on:click|stopPropagation={()=>{}} transition:fade>
         <div class="bg-white shadow-lg p-6 flex flex-col items-center gap-6 {$$props.class}">
             <slot />

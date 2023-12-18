@@ -11,7 +11,7 @@
 
 <EventWrapper event={article}>
     {#if article.image}
-        <img src={article.image} alt={article.title} class="w-full h-96 object-cover rounded-t-lg object-top" />
+        <img src={article.image} alt={article.title} class="w-full h-96 object-cover rounded rounded-b-none object-top" />
     {/if}
 
     <div class="flex flex-col gap-1 w-full">

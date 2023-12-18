@@ -13,6 +13,7 @@ export const trustedPubkeys = [
 ]
 
 export async function finalizeLogin() {
+    console.log
     const hostname = import.meta.env.VITE_HOSTNAME;
     console.trace("finalizeLogin", {hostname});
     // fetch jwt
@@ -20,6 +21,7 @@ export async function finalizeLogin() {
     if (!loginEvent) return null;
     const jwt = await fetchJWT(loginEvent);
     if (jwt) {
+        console.trace(`localStorage access`)
         localStorage.setItem('jwt', jwt);
         document.cookie = `jwt=${jwt}; path=/; domain=${hostname};`;
     }
@@ -140,6 +142,7 @@ export async function fetchJWT(event: NDKEvent) {
  * This function attempts to sign in using a NIP-07 extension.
  */
 async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
+    console.trace(`localStorage access`)
     const storedNpub = localStorage.getItem('nostr-target-npub');
     let user: NDKUser | null = null;
 

@@ -4,6 +4,7 @@
 	import { Info, LockSimple } from "phosphor-svelte";
 	import SelectTier from '../SelectTier.svelte';
 	import VideoUploader from '../VideoUploader.svelte';
+	import Checkbox from '../Checkbox.svelte';
 
     export let video: NDKVideo;
     export let teaser: NDKVideo;
@@ -11,17 +12,26 @@
     export let tiers: Record<string, boolean>;
     export let canContinue: boolean;
     export let nonSubscribersPreview = true;
+    export let wideDistribution: boolean;
+
+    let hasFree: boolean;
+    $: hasFree = !!tiers["Free"];
 
     let useTrailer = !!video.tagValue("preview");
 
-    $: canContinue = true;
+    $: canContinue = tiers && Object.keys(tiers).filter(tier => tiers[tier]).length > 0;
 
     function teaserUploaded(e: CustomEvent<{url: string}>): void {
         teaserUrl = e.detail.url;
+        wideDistribution = true;
 	}
 
     $: if (useTrailer === false) {
         teaserUrl = undefined;
+    }
+
+    $: if (!hasFree && (!nonSubscribersPreview || !teaserUrl)) {
+        wideDistribution = false;
     }
 </script>
 
@@ -38,15 +48,20 @@
 
     <div class="flex flex-col gap-4" class:hidden={tiers["Free"]}>
         <div class="divider"></div>
-        <label class="text-white text-base font-medium flex flex-row gap-2 items-cente justify-between">
-            <div class="flex flex-row items-start">
-                <input type="checkbox" class="checkbox mr-2" bind:checked={nonSubscribersPreview} />
-                <div class="flex flex-col items-start">
-                    Non-subscribers Teaser
-                    <div class="text-neutral-500 text-sm">Allow non-subscribers to preview this video</div>
-                </div>
+        <Checkbox bind:value={nonSubscribersPreview}>
+            Non-subscribers preview version
+            <div slot="description">
+                {#if nonSubscribersPreview}
+                    <div class="text-neutral-500">
+                        Non-subscribers will see a preview of this article.
+                    </div>
+                {:else}
+                    <div class="text-neutral-500">
+                        Non-subscribers will not know this article exists.
+                    </div>
+                {/if}
             </div>
-        </label>
+        </Checkbox>
 
         <div class="transition-all duration-300 flex flex-col gap-6" class:hidden={!nonSubscribersPreview}>
             <div class="alert alert-neutral mb-2">
@@ -93,4 +108,23 @@
             </div>
         </div>
     </div>
+
+    {#if hasFree || (nonSubscribersPreview && teaserUrl)}
+        <Checkbox bind:value={wideDistribution} button={wideDistribution}>
+            Distribute {#if !hasFree}preview version{/if} widely
+            <div slot="description">
+                {#if wideDistribution}
+                    <div class="text-neutral-500">
+                        This {!hasFree ? "preview" : "video"} will be published to video feeds beyond your Faaans page.
+                        <br>
+                        This helps you reach more readers!
+                    </div>
+                {:else}
+                    <div class="text-neutral-500">
+                        This {!hasFree ? "preview" : "video"} will only be visible on your Faaans page, not throughout other video sites.
+                    </div>
+                {/if}
+            </div>
+        </Checkbox>
+    {/if}
 </div>

@@ -5,15 +5,15 @@ import NDKRedisAdapter from "@nostr-dev-kit/ndk-cache-redis";
 import { NDKPrivateKeySigner, NDKRelayAuthPolicies, NDKRelaySet } from "@nostr-dev-kit/ndk";
 
 export const defaultRelays = [
-    // 'wss://relay.getfaaans.com',
+    'wss://relay.getfaaans.com',
     // 'wss://offchain.pub',
     // "wss://eden.nostr.land",
-    "ws://localhost:5577"
+    // "ws://localhost:5577"
 ];
 
 // Relays we are going to send a request to check if we need to auth
 const authRelays = [
-    "ws://localhost:5577"
+    // "ws://localhost:5577"
 ];
 
 export function getDefaultRelaySet() {
@@ -55,7 +55,7 @@ export async function configureBeNDK(privateKey: string) {
     const $ndk = getStore(ndk);
     $ndk.debug.enabled = true;
     $ndk.signer = new NDKPrivateKeySigner(privateKey);
-    $ndk.cacheAdapter = new NDKRedisAdapter();
+    // $ndk.cacheAdapter = new NDKRedisAdapter({path: "redis://localhost:6379"});
     await $ndk.connect(2000);
 
     setInterval(() => {

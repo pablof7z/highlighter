@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 const { verify } = jwt;
 
 export async function authenticateUser(event: RequestEvent): Promise<User | null> {
+    console.log(`authenticateUser`)
     const authCookie = event.cookies.get("jwt");
 
     if (!authCookie) {

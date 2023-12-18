@@ -46,7 +46,6 @@
 
 {#if events && $events}
     <div class="flex flex-col gap-6 w-full max-w-7xl mx-auto">
-
         <div class="w-full justify-between items-center inline-flex max-sm:hidden">
             <div class="justify-start items-start gap-6 inline-flex">
                 <div class="text-white text-opacity-60 text-sm font-semibold leading-4">Popular Categories</div>
@@ -74,7 +73,7 @@
             </div>
         </div>
 
-        <div class="w-full max-2xl px-4 sm:px-0">
+        <div class="w-full max-2xl">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
                 {#each $events as event (event.id)}
                     {#if event.kind === NDKKind.Article}

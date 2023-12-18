@@ -56,8 +56,8 @@
     }
 </script>
 
-<div class="flex flex-col gap-10 mx-auto max-w-2xl">
-    <PageTitle title="New Note">
+<div class="flex flex-col gap-10 mx-auto max-w-2xl flex-grow max-sm:h-[calc(100dvh-5rem)]">
+    <PageTitle title="New Note" class="max-sm:hidden">
         <div class="flex flex-row gap-2">
             <button on:click={publish} class="button px-10" disabled={publishing}>
                 {#if publishing}
@@ -72,10 +72,11 @@
     <Textarea
         bind:value={content}
         autofocus={true}
-        class="w-full rounded-xl min-h-[216px] font-normal text-base leading-normal"
+        class="w-full sm:rounded-xl max-sm:border-none flex-grow min-h-[216px] font-normal text-lg leading-normal !bg-transparent !border-base-300 focus:!border-base-300 text-neutral-400 p-6"
+        placeholder="Write your note here..."
     />
 
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4 max-sm:px-4">
         <div class="flex flex-row items-center text-white gap-4">
             <UploadButton class="button button-primary px-4 bg-base-300" on:uploaded={uploaded}>
                 <Image class="w-6 h-6" />
@@ -108,7 +109,17 @@
         {/if}
     </div>
 
-    <SelectTier bind:tiers />
+    <div class="max-sm:px-4">
+        <SelectTier bind:tiers />
+    </div>
+
+    <button on:click={publish} class="button px-10 py-2.5 rounded-none sm:hidden" disabled={publishing}>
+        {#if publishing}
+            <div class="loading loading-sm"></div>
+        {:else}
+            Publish
+        {/if}
+    </button>
 </div>
 
 <style lang="postcss">

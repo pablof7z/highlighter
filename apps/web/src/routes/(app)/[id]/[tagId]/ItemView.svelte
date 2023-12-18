@@ -128,9 +128,7 @@
     <meta property="og:image" content={article?.image} />
 </svelte:head>
 
-{#if !event}
-    <LoadingScreen />
-{:else}
+<LoadingScreen ready={!!event}>
     {#if eventType === "article"}
         <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
             <ArticleView
@@ -140,7 +138,7 @@
 
             <div class="divider my-0"></div>
 
-            <EventResponses {event} />
+            <EventResponses {event} class="max-sm:px-4" />
         </div>
     {:else if eventType === "video"}
         <div class="flex-col justify-start items-start gap-8 flex mx-auto w-full">
@@ -175,7 +173,7 @@
     {:else}
         {event.kind}
     {/if}
-{/if}
+</LoadingScreen>
 
 <div class="py-24"></div>
 

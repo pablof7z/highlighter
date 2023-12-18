@@ -8,6 +8,7 @@
         $ndk.signer = pk;
         $user = await $ndk.signer.user();
 
+        console.trace(`localStorage access`)
         localStorage.setItem('nostr-key-method', 'pk');
         localStorage.setItem('nostr-key', pk.privateKey!);
         localStorage.setItem('nostr-target-npub', $user.npub);

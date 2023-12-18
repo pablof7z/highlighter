@@ -1,15 +1,19 @@
 <script lang="ts">
     import Input from "$components/Forms/Input.svelte";
+	import { randomVideoThumbnail } from "$utils/skeleton";
 	import { Textarea, ndk } from "@kind0/ui-common";
 	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { Image } from "phosphor-svelte";
     import { createEventDispatcher } from "svelte";
+	import ImageUploader from "./ImageUploader.svelte";
 
     export let article: NDKArticle = new NDKArticle($ndk, {
         content: "",
     } as NostrEvent);
 
     const dispatch = createEventDispatcher();
+
+    article.image ??= randomVideoThumbnail();
 
     let showBannerInput = false;
     let imageBanner: string;
@@ -37,7 +41,7 @@
     }
 </script>
 
-<div class="flex flex-col border-none border-neutral-800 rounded-xl">
+<div class="flex flex-col border-none border-neutral-800 sm:rounded-xl">
     {#if showBannerInput}
             <Input
                 bind:value={imageBanner}
@@ -47,9 +51,10 @@
             />
     {:else if article.image}
         <div class="w-full h-80 relative">
-            <button on:click={chooseBanner} class="w-full h-full object-cover relative rounded-xl">
-                <img class="w-full h-full object-cover relative rounded-xl" src={article.image} />
-            </button>
+            <ImageUploader
+                class="absolute top-0 left-0 w-full h-full object-cover sm:rounded-xl"
+                bind:url={article.image}
+            />
             <div class="absolute bottom-0 w-full h-2/5 bg-gradient-to-b from-transparent to-black"></div>
             <div class="p-6 absolute bottom-0 w-full">
                 <Input
@@ -88,6 +93,7 @@
                 !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg
                 focus:ring-0
                 resize-none min-h-[20vh]
+                {$$props.textareaClass??""}
             "
             placeholder="Write your heart out..."
         />

@@ -16,6 +16,8 @@
     };
     let creating: boolean;
     let usernameTaken = false;
+    let popupNotOpened = false;
+    let authUrl: string;
 
     async function signup() {
         creating = true;
@@ -31,6 +33,7 @@
         await $bunkerNDK.connect(2500);
 
         // Create local key
+        console.trace(`localStorage access`)
         const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
         let localSigner: NDKPrivateKeySigner | undefined;
 
@@ -58,13 +61,19 @@
         rpc.subscribe({ kinds: [24133 as number], "#p": [localKeyPubkey] });
         let popup: Window | null = null;
         rpc.on("authUrl", (url: string) => {
+            console.log(`opening popup`, url);
             popup = window.open(url, "_blank", "width=350,height=450");
+            authUrl = url;
+            console.log({popup});
             let checkPopup = setInterval(() => {
-            if (popup?.closed) {
-                clearInterval(checkPopup);
-                creating = false;
-            }
-        }, 500); // Check every 500ms
+                if (!popup) {
+                    popupNotOpened = true;
+                }
+                if (popup?.closed) {
+                    clearInterval(checkPopup);
+                    creating = false;
+                }
+            }, 500); // Check every 500ms
         });
 
         rpc.sendRequest(
@@ -163,19 +172,27 @@
             We only use this to recover your account if you lose your password
         </div>
     </div>
-    <button class="button button-primary transition duration-300 flex flex-col gap-1" on:click={signup} disabled={username?.length === 0 || !nsecBunker?.pubkey || creating} transition:slide>
-        {#if !creating}
-            Create account
-            {#if username?.length > 0 && nsecBunker.domain}
-                <span class="text-sm font-light">
+    {#if !popupNotOpened}
+        <button class="button button-primary transition duration-300 flex flex-col gap-1" on:click={signup} disabled={username?.length === 0 || !nsecBunker?.pubkey || creating} transition:slide>
+            {#if !creating}
+                Create account
+                {#if username?.length > 0 && nsecBunker.domain}
+                    <span class="text-sm font-light">
 
-                    {username}@{nsecBunker.domain}
-                </span>
+                        {username}@{nsecBunker.domain}
+                    </span>
+                {:else}
+                    <!--  -->
+                {/if}
             {:else}
-                <!--  -->
+                <div class="loading loading-sm"></div>
             {/if}
-        {:else}
-            <div class="loading loading-sm"></div>
-        {/if}
-    </button>
+        </button>
+    {:else}
+        <a href={authUrl} target="_blank" class="button button-primary transition duration-300 flex flex-col gap-1" transition:slide>
+            <span class="text-sm font-light">
+                Continue
+            </span>
+        </a>
+    {/if}
 </div>

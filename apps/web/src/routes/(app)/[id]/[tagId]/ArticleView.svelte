@@ -15,8 +15,6 @@
     export let article: NDKArticle;
     const author = article.author;
 
-    let el: HTMLElement;
-
     onMount(() => {
         startUserView(author);
     });
@@ -80,16 +78,14 @@
     })
 </script>
 
-<div bind:this={el}></div>
-
 {#if article.image}
     <div class="w-full max-h-[50vh] relative overflow-hidden">
-        <img class="w-full relative rounded-xl object-cover object-top h-full" src={article.image} />
+        <img class="w-full relative sm:rounded-xl object-cover object-top h-full" src={article.image} />
         <div class="absolute bottom-0 w-full h-2/5 bg-gradient-to-b from-transparent to-black"></div>
     </div>
 {/if}
 
-<div class="flex-col justify-start items-center gap-10 flex w-full">
+<div class="flex-col justify-start items-center gap-10 flex w-full max-sm:px-4">
     <div class="self-stretch justify-center items-start gap-8 inline-flex">
         <div class="grow shrink basis-0 flex-col justify-center items-start gap-10 inline-flex">
             <div class="self-stretch flex-col justify-center items-start gap-6 flex">

@@ -8,6 +8,10 @@
 	import { debugMode, prepareSession } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
 	import { Bug, Check } from 'phosphor-svelte';
+	import { pwaInfo } from 'virtual:pwa-info';
+
+	let webManifestLink: string;
+	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
 
 	let mounted = false;
 
@@ -74,6 +78,10 @@
 	}
 </script>
 
+<svelte:head>
+	{@html webManifestLink}
+</svelte:head>
+
 <Modals>
 	<div
 		slot="backdrop"
@@ -89,7 +97,7 @@
 	</div>
 	<div class="drawer-side z-50">
 		<label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-		<div class="menu p-4 w-[40vw] min-h-full bg-base-200 text-base-content p-8">
+		<div class="menu w-[40vw] min-h-full bg-base-200 text-base-content p-8">
 			<svelte:component this={$rightSidebar.component} {...$rightSidebar.props} />
 		</div>
 	</div>
@@ -117,7 +125,7 @@
 {#if import.meta.env.VITE_HOSTNAME === "localhost" || $user?.npub === "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft"}
 	<button
 		on:click={() => $debugMode = !$debugMode}
-		class="fixed bottom-2 right-2 z-50 btn btn-circle btn-sm">
+		class="max-sm:hidden fixed bottom-2 right-2 z-50 btn btn-circle btn-sm">
 		<Bug size="24" />
 	</button>
 {/if}

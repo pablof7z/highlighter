@@ -5,8 +5,7 @@
 	import CurrentUser from './CurrentUser.svelte';
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { openModal } from 'svelte-modals';
-	import ExploreIcon from '$icons/ExploreIcon.svelte';
-	import { Tray } from 'phosphor-svelte';
+	import { Compass, Tray } from 'phosphor-svelte';
 
 	export let maxSize = "max-w-7xl";
 </script>
@@ -24,7 +23,7 @@
 				class:active={$page.url.pathname.startsWith('/explore')}
 				>
 				<div class="w-6 h-6 relative">
-					<ExploreIcon />
+					<Compass class="w-full h-full" />
 				</div>
 				<span class="">Explore</span>
 			</a>

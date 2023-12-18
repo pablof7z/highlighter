@@ -2,7 +2,7 @@
     export let title: string;
 </script>
 
-<div class="flex flex-row justify-between items-center">
+<div class="flex flex-row justify-between items-center {$$props.class??""}">
     <h1>
         {title}
     </h1>

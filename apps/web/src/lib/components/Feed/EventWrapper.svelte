@@ -59,7 +59,7 @@
 </script>
 
 <UserProfile user={author} let:userProfile let:fetching let:authorUrl>
-    <a href="{authorUrl}/{suffixUrl}" class="flex flex-col gap-4 pb-4 wrapper w-full">
+    <a href="{authorUrl}/{suffixUrl}" class="flex flex-col gap-4 py-6 wrapper w-full {$$props.class??""}">
         {#if $$slots.default}
             <slot />
         {:else}

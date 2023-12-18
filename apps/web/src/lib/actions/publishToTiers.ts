@@ -2,10 +2,18 @@ import type NDK from "@nostr-dev-kit/ndk";
 import type { NDKEvent, NDKRelaySet, NDKUser } from "@nostr-dev-kit/ndk";
 import { getDefaultRelaySet } from "$utils/ndk";
 
+function getEventRelaySet(hasTeaser: boolean, wideDistribution: boolean, relaySet: NDKRelaySet | undefined) {
+    if (!hasTeaser && wideDistribution)
+        return undefined;
+    else
+        return relaySet || getDefaultRelaySet();
+}
+
 export async function publishToTiers(
     event: NDKEvent,
     tiers: Record<string, boolean>,
     opts: {
+        wideDistribution?: boolean,
         teaserEvent?: NDKEvent,
         ndk?: NDK,
         relaySet?: NDKRelaySet,
@@ -13,7 +21,10 @@ export async function publishToTiers(
 ) {
     const ndk = opts.ndk ?? event.ndk!;
     const teaser = opts.teaserEvent;
-    opts.relaySet ??= getDefaultRelaySet();
+
+    opts.relaySet = getEventRelaySet(!!opts.teaserEvent, !!opts.wideDistribution, opts.relaySet);
+
+    console.log({opts});
 
     const user: NDKUser = await ndk.signer!.user();
 
@@ -68,15 +79,38 @@ export async function publishToTiers(
             teaser.tags.push(["full", event.tagId()]);
         }
 
-        await teaser.publish(opts.relaySet);
-        // await teaser.sign();
-        console.log(teaser.rawEvent());
+        const teaserRelaySet = opts.wideDistribution ? undefined : opts.relaySet;
+
+        await teaser.sign();
+
+        let relaySetString: string;
+        if (teaserRelaySet)
+            relaySetString = Array.from(teaserRelaySet?.relays).map(relay => relay.url).join(', ');
+        else
+            relaySetString = 'wide distribution';
+
+        if (confirm(`Publish teaser to ${relaySetString}?`)) {
+            await teaser.publish(teaserRelaySet);
+        }
+
+        console.log('teaser', teaser.rawEvent());
+        console.log({teaserRelaySet: teaserRelaySet ? teaserRelaySet.size() : 'undefined'});
     }
 
-    await event.publish(opts.relaySet);
+    await event.sign();
 
-    // await event.sign();
-    console.log(event.rawEvent());
+    let relaySetString: string;
+    if (opts.relaySet)
+        relaySetString = Array.from(opts.relaySet.relays).map(relay => relay.url).join(', ');
+    else
+        relaySetString = 'wide distribution';
+
+    if (confirm(`Publish event to ${relaySetString}?`)) {
+        await event.publish(opts.relaySet);
+    }
+
+    console.log('event', event.rawEvent());
+    console.log({relaySet: opts.relaySet ? opts.relaySet.size() : 'undefined'});
 }
 
 // async function publish() {

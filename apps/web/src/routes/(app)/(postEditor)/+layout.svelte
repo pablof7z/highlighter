@@ -5,8 +5,13 @@
 	import LoadingScreen from '$components/LoadingScreen.svelte';
 
     let startedUserView = false;
+    let mounted = false;
 
-    $: if (!!$user && !startedUserView) {
+    onMount(() => {
+        mounted = true;
+    });
+
+    $: if (!!$user && !startedUserView && mounted) {
         startedUserView = true;
         startUserView($user);
     }

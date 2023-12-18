@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
 	import { userActiveSubscriptions, userSuperFollows } from "$stores/session";
-	import { Avatar, Name } from "@kind0/ui-common";
 	import { MagicWand } from 'phosphor-svelte';
 	import { page } from '$app/stores';
 	import SuperFollowListItem from './SuperFollowListItem.svelte';

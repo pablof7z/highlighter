@@ -28,8 +28,8 @@
 
 <UserProfileFetch {user} bind:userProfile let:fetching>
     <a href={articleLink} class="flex flex-col items-start gap-4 h-full w-full">
-        <img class="{size} max-sm:!w-full max-sm:!h-fit object-cover bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top flex-none rounded-xl" src={article.image??defaultUrl} />
-        <div class="self-stretch justify-start items-start gap-4 inline-flex">
+        <img class="{size} max-sm:!w-full max-sm:!h-fit object-cover bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top flex-none round" src={article.image??defaultUrl} />
+        <div class="self-stretch justify-start items-start gap-4 inline-flex max-sm:px-4">
             {#if !skipAuthor}
                 <a href="/{authorId}" class="justify-start flex-none items-start gap-4 flex">
                     <Avatar {user} {userProfile} {fetching} class="w-11 h-11 rounded-full" />

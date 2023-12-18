@@ -7,6 +7,7 @@
 	import { Pencil } from "phosphor-svelte";
     import { createEventDispatcher, onMount } from "svelte";
 	import type { Tier } from "../../routes/(app)/dashboard/tiers/tier";
+	import { randomVideoThumbnail } from '$utils/skeleton';
 
     export let event: NDKEvent | undefined = undefined;
     export let tier: Tier;
@@ -25,7 +26,7 @@
     })
 
     const dispatch = createEventDispatcher();
-    const defaultImage = "https://c10.patreonusercontent.com/4/patreon-media/p/reward/5573765/9d074162251943e5ab33aab20473401b/eyJ3Ijo0MDB9/1.jpg?token-time=2145916800&token-hash=cv0bruLHhMqG8H2k18NhN0rjdHmfeOTTifNxVoRYRNw%3D";
+    const defaultImage = randomVideoThumbnail();
 </script>
 
 <div class="card card-compact full-image !rounded-3xl w-80 flex-none">

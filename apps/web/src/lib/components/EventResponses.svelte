@@ -33,7 +33,7 @@
     $: if (narrowView) showComment = true;
 </script>
 
-<div class="w-full">
+<div class="w-full {$$props.class??""}">
     <div class="flex flex-row items-center justify-between w-full mb-8">
         <h1 class="text-white text-2xl font-semibold leading-8">Discussion</h1>
         {#if !narrowView}

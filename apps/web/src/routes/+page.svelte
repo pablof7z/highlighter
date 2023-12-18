@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Navbar from '$components/Navbar.svelte';
-	import { ndk } from '@kind0/ui-common';
+
+    export let prerender = true;
 </script>
 
 <svelte:head>
@@ -13,10 +14,10 @@
 	<div class="hero-overlay bg-black bg-opacity-40"></div>
 	<div class="h-[517px] absolute left-0 w-full bottom-0 bg-gradient-to-b from-transparent to-black"></div>
 	<div class="hero-content text-center text-neutral-content">
-	  <div class="w-full">
-		<h1 class="mb-5 text-[calc(24px_+_5vw)]">A sanctuary for creativity</h1>
-		<p class="mb-5 text-white text-[calc(12px_+_1vw)]">Own the relationship with your fans</p>
-	  </div>
+        <div class="w-full">
+            <h1 class="mb-5 text-[calc(24px_+_5vw)]">A sanctuary for creativity</h1>
+            <p class="mb-5 text-white text-[calc(12px_+_1vw)]">Own the relationship with your fans</p>
+        </div>
 	</div>
 </div>
 

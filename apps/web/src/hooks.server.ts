@@ -2,6 +2,7 @@ import {sequence} from "@sveltejs/kit/hooks";
 import * as Sentry from "@sentry/sveltekit";
 import { redirect, type Handle } from "@sveltejs/kit";
 import { authenticateUser } from "$lib/utils/authentication";
+import { newToasterMessage } from "@kind0/ui-common";
 
 Sentry.init({
     dsn: "https://a63e57721efe045140239736daf0d675@o317830.ingest.sentry.io/4506382142799872",
@@ -13,17 +14,25 @@ const AUTH_PATHS = [
     "/api/user/pay",
     "/api/user/create-zap-request",
     "/api/user/pay-zap-request",
+    /\/dashboard\/?/,
+    /\/(articles|posts|videos)\/.+\/edit\/?/,
+    /\/(articles|posts|videos)\/new\/?/,
+
 ];
 
 export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, resolve }) => {
-    // check if path is in AUTH_PATHS
-    if (!AUTH_PATHS.some(path => event.url.pathname.startsWith(path))){
-        return await resolve(event);
-    }
+    // Convert strings to regular expressions and check if path matches
+    const isAuthPath = AUTH_PATHS.some(path => {
+        const regex = typeof path === 'string' ? new RegExp(`^${path}$`) : path;
+        return event.url.pathname.match(regex);
+    });
+
+    if (!isAuthPath) return await resolve(event);
 
     event.locals.session = await authenticateUser(event);
 
     if (!event.locals.session) {
+        newToasterMessage("You must be logged in to access this page", "error");
         throw redirect(301, "/")
     }
 

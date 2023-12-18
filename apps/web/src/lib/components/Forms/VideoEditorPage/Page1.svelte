@@ -9,7 +9,6 @@
     export let video: NDKVideo;
     export let videoFile: File | undefined;
     export let pendingStatus: string | undefined;
-    export let step: number;
 
     const dispatch = createEventDispatcher();
 
@@ -25,8 +24,8 @@
     }
 
     $: {
-        const haveVideo = videoFile || videoUrl;
-        const haveTitle = video.title && video.title.length > 0;
+        const haveVideo = !!videoFile || !!videoUrl;
+        const haveTitle = !!video.title && video.title.length > 0;
         canContinue = haveVideo && haveTitle;
     }
 
@@ -58,7 +57,7 @@
 
     let title: string;
 
-    function onTitleChange() {
+    function onTitleKeyUp() {
         video.title = title;
         video = video;
     }
@@ -81,7 +80,7 @@
         class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
         placeholder="Add a title"
         on:keydown={onTitleKeyDown}
-        on:change={onTitleChange}
+        on:keyup={onTitleKeyUp}
     />
 
     <Textarea

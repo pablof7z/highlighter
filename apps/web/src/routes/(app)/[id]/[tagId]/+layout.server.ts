@@ -25,7 +25,6 @@ export async function load({ params }) {
         const subscription = new NDKSubscription($ndk, filters, { cacheUsage: NDKSubscriptionCacheUsage.PARALLEL, groupable: false, closeOnEose: true });
         subscription.on("event", (e: NDKEvent) => {
             event = e;
-            console.log('got event', {event: !!e});
         });
         await $ndk.cacheAdapter?.query(subscription);
     }
