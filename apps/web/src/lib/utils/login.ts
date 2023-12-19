@@ -2,6 +2,8 @@ import type NDK from "@nostr-dev-kit/ndk";
 import { NDKEvent, NDKNip07Signer, NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
 import { newToasterMessage, user } from "@kind0/ui-common";
 import { generateLoginEvent } from "$actions/signLoginEvent";
+import { get } from "svelte/store";
+import { jwt as jwtStore, loginState } from "$stores/session";
 
 export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
 
@@ -13,7 +15,6 @@ export const trustedPubkeys = [
 ]
 
 export async function finalizeLogin() {
-    console.log
     const hostname = import.meta.env.VITE_HOSTNAME;
     console.trace("finalizeLogin", {hostname});
     // fetch jwt
@@ -21,8 +22,7 @@ export async function finalizeLogin() {
     if (!loginEvent) return null;
     const jwt = await fetchJWT(loginEvent);
     if (jwt) {
-        console.trace(`localStorage access`)
-        localStorage.setItem('jwt', jwt);
+        jwtStore.set(jwt);
         document.cookie = `jwt=${jwt}; path=/; domain=${hostname};`;
     }
 }
@@ -37,13 +37,14 @@ export async function login(
     method: LoginMethod,
 ): Promise<NDKUser | null> {
     // Check if there is a localStorage item with the key "nostr-key-method"
-    const nostrKeyMethod = method || localStorage.getItem("nostr-key-method");
+    method ??= localStorage.getItem("nostr-key-method") as LoginMethod;
     let u: NDKUser | null | undefined;
 
-    console.log("login", {nostrKeyMethod});
-
-    switch (nostrKeyMethod) {
-        case 'none': return null;
+    switch (method) {
+        case 'none': {
+            loginState.set(null);
+            return null;
+        }
         case 'pk': {
             const key = localStorage.getItem('nostr-key');
 
@@ -51,12 +52,15 @@ export async function login(
 
             const signer = new NDKPrivateKeySigner(key);
             ndk.signer = signer;
-            const u = await signer.u();
+            const u = await signer.user();
             if (u) u.ndk = ndk;
+
+            loginState.set('logged-in');
             break;
         }
         case 'nip07':
             u = await nip07SignIn(ndk);
+            loginState.set('logged-in');
             break;
         case 'nip46': {
             const promise = new Promise<NDKUser | null>((resolve) => {
@@ -69,14 +73,36 @@ export async function login(
 
                 if (!bunkerNDK) bunkerNDK = ndk;
 
-                if (existingPrivateKey) {
+                if (existingPrivateKey && u) {
                     user.set(u);
-                    bunkerNDK.connect(2500);
-                    bunkerNDK.pool.on('relay:connect', async () => {
-                        const user = await nip46SignIn(ndk, bunkerNDK!, existingPrivateKey);
-                        await finalizeLogin();
-                        resolve(user);
+                    bunkerNDK.pool.on('relay:ready', async () => {
+                        console.log("relay ready");
+                        loginState.set('contacting-remote-signer');
+
+                        const completeNip46SignIn = async () => {
+                            const signedInUser = await nip46SignIn(ndk, bunkerNDK!, existingPrivateKey);
+                            if (!signedInUser) {
+                                user.set(null);
+                                loginState.set('logged-out');
+                                return;
+                            }
+
+                            await finalizeLogin();
+                            loginState.set('logged-in');
+                            resolve(signedInUser);
+                        }
+
+                        await Promise.race([
+                            new Promise<void>((resolve) => setTimeout(() => {
+                                if (get(loginState) !== 'contacting-remote-signer') return;
+                                newToasterMessage("Failed to connect to remote signer", "error");
+                                resolve();
+                            }, 5000)),
+                            new Promise((resolve) => { completeNip46SignIn().then(resolve) })
+                        ])
                     });
+                    console.log("connecting to nsecbunker relay");
+                    bunkerNDK.connect(2500);
                 }
             });
 
@@ -91,7 +117,7 @@ export async function login(
                     if (window.nostr) {
                         clearInterval(loadNip07Interval);
                         const user = nip07SignIn(ndk);
-                        await finalizeLogin();
+                        // await finalizeLogin();
                         resolve(user);
                     }
 
@@ -105,7 +131,8 @@ export async function login(
 
     if (!u) return null;
 
-    if (!localStorage.getItem('jwt')) await finalizeLogin();
+    const $jwt = get(jwtStore);
+    if (!$jwt) await finalizeLogin();
 
     user.set(u);
     return u;
@@ -188,11 +215,13 @@ async function nip46SignIn(ndk: NDK, bunkerNDK: NDK, existingPrivateKey: string)
         return null;
     }
 
-    console.log("nip46SignIn", {remoteUser, localSigner});
     const remoteSigner = new NDKNip46Signer(bunkerNDK, remoteUser.pubkey, localSigner!);
 
+    console.log("nip46 blockUntilReady");
     await remoteSigner.blockUntilReady();
+    console.log("nip46 blockUntilReady done");
     ndk.signer = remoteSigner;
+    console.log("setting signer on nip46SignIn");
     user = remoteUser;
     user.ndk = ndk;
 

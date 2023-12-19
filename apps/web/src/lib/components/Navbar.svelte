@@ -5,7 +5,7 @@
 	import CurrentUser from './CurrentUser.svelte';
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { openModal } from 'svelte-modals';
-	import { Compass, Tray } from 'phosphor-svelte';
+	import { Compass, Inbox, InboxIcon } from 'lucide-svelte';
 
 	export let maxSize = "max-w-7xl";
 </script>
@@ -34,7 +34,7 @@
 				class:active={$page.url.pathname === '/inbox'}
 				>
 				<div class="w-6 h-6 relative">
-					<Tray class="w-full h-full" />
+					<Inbox class="w-full h-full" />
 				</div>
 				<span class="">Inbox</span>
 			</a>

@@ -11,5 +11,5 @@ if (!privateKey) {
 
 const $ndk = get(ndk);
 if (!$ndk.explicitRelayUrls || $ndk.explicitRelayUrls.length === 0) {
-    await configureBeNDK(privateKey);
+    configureBeNDK(privateKey);
 }

@@ -55,8 +55,19 @@ export async function configureBeNDK(privateKey: string) {
     const $ndk = getStore(ndk);
     $ndk.debug.enabled = true;
     $ndk.signer = new NDKPrivateKeySigner(privateKey);
-    // $ndk.cacheAdapter = new NDKRedisAdapter({path: "redis://localhost:6379"});
-    await $ndk.connect(2000);
+    const redisAdapter = new NDKRedisAdapter({path: "redis://localhost:6379"});
+    const redisConnected = new Promise<void>((resolve) => {
+        redisAdapter.redis.on("connect", () => {
+            resolve();
+        });
+    });
+    Promise.all([
+        $ndk.connect(2000),
+        redisConnected
+    ]);
+
+    $ndk.cacheAdapter = redisAdapter;
+    console.log(`redis status: ${redisAdapter.redis.status}`);
 
     setInterval(() => {
         console.log(`NDK, pool stats`, $ndk.pool.stats());

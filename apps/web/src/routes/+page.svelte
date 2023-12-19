@@ -1,14 +1,12 @@
 <script lang="ts">
 	import Navbar from '$components/Navbar.svelte';
-
-    export let prerender = true;
 </script>
 
 <svelte:head>
 	<title>Faaans</title>
 </svelte:head>
 
-<Navbar class="!bg-transparent fixed z-50" maxSize="" />
+<Navbar class="!bg-transparent fixed z-40" maxSize="" />
 
 <div class="hero min-h-screen relative" style="background-image: url(/images/landing-bg.jpg);">
 	<div class="hero-overlay bg-black bg-opacity-40"></div>

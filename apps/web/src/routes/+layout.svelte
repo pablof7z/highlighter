@@ -5,7 +5,7 @@
 	import { fade } from 'svelte/transition';
 	import { Toaster, bunkerNDK, ndk, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
 	import { finalizeLogin, login } from '$utils/login';
-	import { debugMode, prepareSession } from '$stores/session';
+	import { debugMode, prepareSession, jwt, loginState } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
 	import { Bug, Check } from 'phosphor-svelte';
 	import { pwaInfo } from 'virtual:pwa-info';
@@ -17,14 +17,15 @@
 
 	onMount(async () => {
 		mounted = true;
-		hasJwt = !!localStorage.getItem('jwt');
+		hasJwt = !!$jwt;
 		await configureFeNDK();
 
         try {
 			const keyMethod = localStorage.getItem('nostr-key-method');
+			loginState.set("logging-in");
 
 			if (keyMethod === 'nip07') {
-				await loginNip07();
+				await login($ndk, $bunkerNDK, 'nip07');
 			} else if (keyMethod === 'nip46') {
 				await login($ndk, $bunkerNDK, 'nip46');
 			} else if (!keyMethod) {
@@ -42,26 +43,21 @@
 
 					nip07Attempts++;
 					if (window.nostr) {
-						loginNip07();
+						login($ndk, $bunkerNDK, 'nip07');
 						clearInterval(nip07Attempt);
 					}
-				}, 100);
+				}, 20);
 			}
         } catch (e) {
             console.error(`layout error`, e);
         }
     });
 
-	async function loginNip07() {
-		const u = await login($ndk, $bunkerNDK, 'nip07');
-		if (u) $user = u;
-	}
-
 	let hasJwt = false;
 	let finalizingLogin = false;
 
 	$: if (mounted && !hasJwt) {
-		hasJwt = !!localStorage.getItem('jwt');
+		hasJwt = !!$jwt;
 		console.log(`hasJwt`, hasJwt);
 	}
 

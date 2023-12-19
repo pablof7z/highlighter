@@ -55,18 +55,19 @@
 </div>
 
 {#if hasFree || nonSubscribersPreview}
-    <Checkbox bind:value={wideDistribution} button={wideDistribution}>
+    <Checkbox bind:value={wideDistribution}>
         Distribute {#if !hasFree}preview version{/if} widely
         <div slot="description">
             {#if wideDistribution}
                 <div class="text-neutral-500">
                     This {!hasFree ? "preview" : "article"} will be published to long-form feeds beyond your Faaans page.
                     <br>
-                    This helps you reach more readers!
+                    <span class="text-white">This helps you reach more readers!</span>
                 </div>
             {:else}
                 <div class="text-neutral-500">
-                    This {!hasFree ? "preview" : "article"} will only be visible on your Faaans page, not throughout other reading sites.
+                    This {!hasFree ? "preview" : "article"} will
+                    <span class="text-white">only be visible on your Faaans page</span>, not throughout other reading sites.
                 </div>
             {/if}
         </div>

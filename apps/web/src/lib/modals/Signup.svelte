@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { redirect } from '@sveltejs/kit';
     import { NDKKind, NDKPrivateKeySigner, type Hexpubkey, type NostrEvent, NDKRelaySet, NDKNostrRpc, NDKUser, type NDKRpcResponse, NDKNip46Signer } from "@nostr-dev-kit/ndk";
     import Input from "$components/Forms/Input.svelte";
 	import { bunkerNDK, ndk, user } from "@kind0/ui-common";
@@ -7,6 +8,7 @@
 	import NsecBunkerProviderSelect from "$components/Forms/NsecBunkerProviderSelect.svelte";
 	import type { NsecBunkerProvider } from "../../app";
 	import { slide } from "svelte/transition";
+	import { goto } from "$app/navigation";
 
     let email: string;
     let username: string;
@@ -18,6 +20,16 @@
     let usernameTaken = false;
     let popupNotOpened = false;
     let authUrl: string;
+
+    function redirectToAuthUrlWithCallback(url: string) {
+        const redirectUrl = new URL(url);
+        const callbackPath = "/auth/callback";
+        const currentUrl = new URL(window.location.href);
+        const callbackUrl = new URL(callbackPath, currentUrl.origin);
+        redirectUrl.searchParams.set("callbackUrl", callbackUrl.toString());
+        localStorage.setItem("intended-url", window.location.href);
+        goto(redirectUrl.toString());
+    }
 
     async function signup() {
         creating = true;
@@ -33,7 +45,6 @@
         await $bunkerNDK.connect(2500);
 
         // Create local key
-        console.trace(`localStorage access`)
         const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
         let localSigner: NDKPrivateKeySigner | undefined;
 
@@ -61,10 +72,14 @@
         rpc.subscribe({ kinds: [24133 as number], "#p": [localKeyPubkey] });
         let popup: Window | null = null;
         rpc.on("authUrl", (url: string) => {
-            console.log(`opening popup`, url);
-            popup = window.open(url, "_blank", "width=350,height=450");
+            popup = window.open(url, "_blank", "width=400,height=600");
+
+            if (!popup) {
+                popupNotOpened = true;
+                redirectToAuthUrlWithCallback(url);
+            }
+
             authUrl = url;
-            console.log({popup});
             let checkPopup = setInterval(() => {
                 if (!popup) {
                     popupNotOpened = true;
@@ -85,12 +100,11 @@
                 const remotePubkey = JSON.parse(res.result)[0];
                 const remoteSigner = new NDKNip46Signer($bunkerNDK, remotePubkey, localSigner);
                 const u = await remoteSigner.blockUntilReady();
-                console.log({u});
                 $user = u;
                 $ndk.signer = remoteSigner;
                 localStorage.setItem("nostr-key-method", 'nip46');
                 localStorage.setItem('nostr-target-npub', $user.npub);
-                popup.close();
+                popup?.close();
                 closeModal();
             }
         );

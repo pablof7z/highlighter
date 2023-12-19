@@ -2,11 +2,11 @@
 	import { page } from "$app/stores";
     import { openModal } from "svelte-modals";
     import NewItemModal from "$modals/NewItemModal.svelte";
-	import { debugMode } from "$stores/session";
 	import { Avatar, user } from "@kind0/ui-common";
-	import { Bug, Compass, House, MagnifyingGlass, PlusCircle, Tray, UserCircle } from "phosphor-svelte";
+	import { Bug, House, MagnifyingGlass, Tray, UserCircle } from "phosphor-svelte";
 	import UserProfile from "./User/UserProfile.svelte";
 	import Signup from "$modals/Signup.svelte";
+	import { Compass, PlusCircle } from "lucide-svelte";
 
     const newItemRegex = /^\/(articles|notes|videos|)\/new/;
 </script>
@@ -38,7 +38,7 @@
     <button
         on:click={() => openModal(NewItemModal)}
     >
-        <PlusCircle class="w-full h-full" />
+        <PlusCircle />
         <span>Publish</span>
     </button>
 
@@ -64,7 +64,7 @@
     }
 
     .btm-nav > a, .btm-nav > button, .btm-nav > label {
-        @apply p-4;
+        @apply p-4 h-24;
     }
 
     .btm-nav > a > span, .btm-nav > button > span, .btm-nav > label > span{

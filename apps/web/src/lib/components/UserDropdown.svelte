@@ -2,13 +2,14 @@
     import { get as getStore } from 'svelte/store';
 	import { Avatar, CollapsableDropdown, Name, ndk, user } from '@kind0/ui-common';
     import {SignOut, SquaresFour, Tray} from 'phosphor-svelte';
-	import { userActiveSubscriptions, userFollows, userSuperFollows } from '$stores/session';
+	import { debugMode, loginState, userActiveSubscriptions, userFollows, userSuperFollows } from '$stores/session';
     import UserProfile from './User/UserProfile.svelte';
 
     export function logout(): void {
         const $ndk = getStore(ndk);
         $ndk.signer = undefined;
         user.set(undefined);
+        loginState.set("logged-out");
         localStorage.removeItem("currentUserFollowPubkeysStore");
         localStorage.removeItem("currentUserStore");
         localStorage.removeItem("user-follows");
@@ -19,6 +20,9 @@
         localStorage.removeItem("nostr-target-npub");
         localStorage.removeItem("jwt");
 
+        document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+
         // explicitly prevent auto-login with NIP-07
         localStorage.setItem("nostr-key-method", "none");
     }
@@ -26,8 +30,13 @@
 
 <UserProfile user={$user} let:userProfile let:fetching>
     <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn-circle avatar flex">
-            <Avatar user={$user} {userProfile} {fetching}/>
+        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <label
+            tabindex="-1"
+            class="btn-circle avatar flex"
+            class:animate-pulse={["logging-in", "contacting-remote-signer"].includes($loginState??"")}
+        >
+            <Avatar user={$user} {userProfile} {fetching} />
         </label>
 
         <ul class="dropdown-content divide-y divide-neutral-900 menu p-0 z-50 rounded-box whitespace-nowrap text-base">
@@ -47,14 +56,16 @@
                 <SignOut size={16} class="mr-2"/>
                 Log Out
             </button></li>
-            <li class="hidden">
-                <div class="flex flex-col gap-4 items-start text-sm">
-                    <div>Debug Information</div>
-                    <p>User follows: {$userFollows.size}</p>
-                    <p>User super-follows: {$userSuperFollows.size}</p>
-                    <p>Active Subscriptions: {$userActiveSubscriptions.size}</p>
-                </div>
-            </li>
+            {#if $debugMode}
+                <li>
+                    <div class="flex flex-col gap-4 items-start text-sm">
+                        <div>Debug Information</div>
+                        <p>User follows: {$userFollows.size}</p>
+                        <p>User super-follows: {$userSuperFollows.size}</p>
+                        <p>Active Subscriptions: {$userActiveSubscriptions.size}</p>
+                    </div>
+                </li>
+            {/if}
         </ul>
     </div>
 </UserProfile>

@@ -6,6 +6,7 @@
     let article = new NDKArticle($ndk);
 </script>
 
+
 <svelte:head>
 	<title>New article</title>
 </svelte:head>

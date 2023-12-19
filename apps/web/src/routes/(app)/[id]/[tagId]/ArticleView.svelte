@@ -78,6 +78,10 @@
     })
 </script>
 
+<svelte:head>
+    <title>{article.title}</title>
+</svelte:head>
+
 {#if article.image}
     <div class="w-full max-h-[50vh] relative overflow-hidden">
         <img class="w-full relative sm:rounded-xl object-cover object-top h-full" src={article.image} />

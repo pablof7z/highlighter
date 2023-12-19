@@ -5,6 +5,8 @@
 	import { bunkerNDK, ndk, user } from '@kind0/ui-common';
 	import { login } from '$utils/login';
 	import { page } from '$app/stores';
+	import { loginState } from '$stores/session';
+	import { fade } from 'svelte/transition';
 
     const hostname = $page.url.hostname;
 
@@ -21,10 +23,14 @@
     }
 </script>
 
-{#if $user}
-    <UserDropdown />
-{:else}
-    <button class="button" on:click={openSignupModal}>
-        Sign up
-    </button>
+{#if $loginState}
+    <div transition:fade>
+        {#if $user}
+            <UserDropdown />
+        {:else}
+            <button class="button" on:click={openSignupModal}>
+                Sign up
+            </button>
+        {/if}
+    </div>
 {/if}

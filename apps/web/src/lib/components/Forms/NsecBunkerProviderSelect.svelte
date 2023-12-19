@@ -50,7 +50,7 @@
     }
 </script>
 
-<select bind:value={selection} class="border-0 flex items-center text-sm text-gray-500 focus:ring-0 focus:outline-none pr-7">
+<select bind:value={selection} class="border-0 flex items-center text-sm text-gray-500 focus:ring-0 focus:outline-none pr-8 text-right">
     {#each Object.entries(nsecBunkerProviders) as [pubkey, domain]}
         <option value={pubkey}>@{domain}</option>
     {/each}

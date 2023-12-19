@@ -10,7 +10,7 @@
     const dispatch = createEventDispatcher();
 
     export let event: NDKEvent;
-    export let narrowView = false;
+    export let narrowView = true;
 
     let content: string;
 
@@ -128,15 +128,19 @@
             <div class="flex flex-col gap-4 w-full items-start">
                 <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
                 <Textarea
-                    class="flex-grow w-full min-h-[10rem] border-base-200 focus:!border-base-300 rounded-xl"
+                    class="
+                        flex-grow w-full min-h-[10rem] border-base-200 focus:!border-base-300 round
+
+                    "
                     placeholder="Write a response..."
                     bind:value={content}
                     on:focus
                     on:blur
+                    on:submit={publish}
                 />
 
                 <div class="flex flex-row items-center justify-between w-full">
-                    {#if debugMode}
+                    {#if $debugMode}
                         <button class="button button-primary px-10" on:click={debug}>Debug</button>
                     {/if}
 
@@ -145,22 +149,38 @@
             </div>
         </div>
     {:else}
-        <div class="flex flex-col gap-4 w-full">
+        <div class="
+            flex flex-col gap-4 w-full
+    ">
             <div class="flex flex-row gap-4 w-full items-center">
                 <Avatar user={$user} {userProfile} class="flex-none w-12 h-12" />
                 <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
             </div>
 
-            <Textarea
-                class="flex-grow w-full min-h-[6rem] border-base-200 focus:!border-base-300 rounded-xl"
-                placeholder="Write a response..."
-                on:focus
-                on:blur
-                bind:value={content}
-            />
-            <button class="button px-10" on:click={publish}>Publish</button>
+            <div class="
+                flex flex-col gap-4
+                max-sm:w-screen max-sm:h-[100vh]
+                max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:right-0 max-sm:bottom-0
+                max-sm:bg-black max-sm:bg-opacity-50 max-sm:backdrop-filter max-sm:backdrop-blur-sm max-sm:overflow-scroll max-sm:z-50
+            ">
+                <Textarea
+                    class="
+                        flex-grow w-full min-h-[6rem] border-base-300 focus:!border-white/30 round
+                        text-xl
+                        !bg-transparent
+                    "
+                    placeholder="Write a response..."
+                    on:focus
+                    on:blur
+                    on:submit={publish}
+                    bind:value={content}
+                />
+                <div class="max-sm:w-full self-end">
+                    <button class="button px-10 py-3" on:click={publish}>Publish</button>
+                </div>
+            </div>
 
-            {#if debugMode}
+            {#if $debugMode}
                 <button class="button button-primary px-10" on:click={() => debugView = !debugView}>Debug</button>
             {/if}
         </div>

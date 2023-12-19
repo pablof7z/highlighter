@@ -44,8 +44,18 @@
     $: selectedCategory = $page.params.category || "All";
 </script>
 
+<svelte:head>
+    {#if selectedCategory}
+        <meta name="description" content={`Explore ${selectedCategory} on Nostr`} />
+        <title>Explore {selectedCategory} | Faaans</title>
+    {:else}
+        <meta name="description" content="Explore what creators are posting" />
+        <title>Explore | Faaans</title>
+    {/if}
+</svelte:head>
+
 {#if events && $events}
-    <div class="flex flex-col gap-6 w-full max-w-7xl mx-auto">
+    <div class="flex flex-col gap-6 w-full max-w-7xl mx-auto sm:px-4">
         <div class="w-full justify-between items-center inline-flex max-sm:hidden">
             <div class="justify-start items-start gap-6 inline-flex">
                 <div class="text-white text-opacity-60 text-sm font-semibold leading-4">Popular Categories</div>

@@ -50,7 +50,7 @@ module.exports = {
 			".tab-active": {
 			  "color": "#ffffff",
 			},
-			"accent": "#6522AB",
+			"accent": "#7A3CB9",
 			".btn": {
 			  "border-radius": "5px",
 			  "text-transform": "none",

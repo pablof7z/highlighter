@@ -8,6 +8,16 @@ import { trustedPubkeys } from '$utils/login';
 
 const d = debug('getfaaans:session');
 
+export const jwt = persist(
+    writable<string | null>(null),
+    createLocalStorage(),
+    'jwt'
+);
+
+export type LoginState = "logging-in" | "logged-in" | "contacting-remote-signer" | "logged-out";
+
+export const loginState = writable<LoginState | null>(null);
+
 export const debugMode = writable<boolean>(false);
 
 export const loadingScreen = writable<boolean>(false);

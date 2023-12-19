@@ -16,7 +16,6 @@
 	import { EVENT_ID_SUFFIX_LENGTH } from "$utils/url";
 	import EventResponses from "$components/EventResponses.svelte";
 	import { getSummary } from "$utils/article";
-	import Logo from "$icons/Logo.svelte";
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 
     export let user: NDKUser = $page.data.user;
@@ -129,64 +128,55 @@
 </svelte:head>
 
 <LoadingScreen ready={!!event}>
-    {#if eventType === "article"}
-        <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
-            <ArticleView
-                article={NDKArticle.from(event)}
-                on:comment={toggleComments}
-            />
+    {#if event}
+        {#if eventType === "article"}
+            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
+                <ArticleView
+                    article={NDKArticle.from(event)}
+                    on:comment={toggleComments}
+                />
 
-            <div class="divider my-0"></div>
-
-            <EventResponses {event} class="max-sm:px-4" />
-        </div>
-    {:else if eventType === "video"}
-        <div class="flex-col justify-start items-start gap-8 flex mx-auto w-full">
-            <VideoView
-                video={NDKVideo.from(event)}
-                on:comment={toggleComments}
-            />
-
-            <div class="mx-auto max-w-3xl w-full">
                 <div class="divider my-0"></div>
 
-                <EventResponses
-                    {event}
-                    on:comment:focus={onVideoCommentFocus}
-                    on:comment:blur={onVideoCommentBlur}
-                />
+                <EventResponses {event} class="max-sm:px-4" />
             </div>
-        </div>
-    {:else if eventType === "group-note"}
-        <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
-            <div class="w-full flex items-center flex-col justify-center">
-                <div class="w-full">
-                    <FeedGroupPost {event} />
+        {:else if eventType === "video"}
+            <div class="flex-col justify-start items-start gap-8 flex mx-auto w-full">
+                <VideoView
+                    video={NDKVideo.from(event)}
+                    on:comment={toggleComments}
+                />
+
+                <div class="mx-auto max-w-3xl w-full">
+                    <div class="divider my-0"></div>
+
+                    <EventResponses
+                        {event}
+                        on:comment:focus={onVideoCommentFocus}
+                        on:comment:blur={onVideoCommentBlur}
+                    />
                 </div>
             </div>
+        {:else if eventType === "group-note"}
+            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
+                <div class="w-full flex items-center flex-col justify-center">
+                    <div class="w-full">
+                        <FeedGroupPost {event} />
+                    </div>
+                </div>
 
-            <div class="divider my-0"></div>
+                <div class="divider my-0"></div>
 
-            <EventResponses {event} />
+                <EventResponses {event} />
 
-        </div>
-    {:else}
-        {event.kind}
+            </div>
+        {:else}
+            {event.kind}
+        {/if}
     {/if}
 </LoadingScreen>
 
 <div class="py-24"></div>
-
-<style lang="postcss">
-    .responses-wrapper {
-        @apply w-[300px];
-        @apply transition-all duration-500;
-    }
-
-    .responses-wrapper.focused {
-        @apply w-1/3;
-    }
-</style>
 
 {#if $debugMode && event}
     <pre>
