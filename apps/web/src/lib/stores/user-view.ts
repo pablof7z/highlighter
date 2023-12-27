@@ -6,6 +6,9 @@ import { writable, get as getStore, derived, type Readable } from "svelte/store"
 import { userActiveSubscriptions } from "./session";
 import { getDefaultRelaySet } from "$utils/ndk";
 import { trustedPubkeys } from "$utils/login";
+import createDebug from "debug";
+
+const d = createDebug('fans:user-view');
 
 export const activeUserViewPubkey = writable<Hexpubkey | undefined>(undefined);
 
@@ -15,17 +18,21 @@ export const userContent = writable<Readable<NDKEvent[]> | undefined>(undefined)
 export const userSupporters = writable<Readable<never[] | Record<Hexpubkey, string|undefined>> | undefined>(undefined);
 
 export function startUserView(user: NDKUser) {
-    console.trace('starting user view', user);
+    const $activeUserViewPubkey = getStore(activeUserViewPubkey);
+    d('starting user view', user.pubkey);
+
+    // if we are already subscribed to this user, do nothing
+    if (userSubscription && $activeUserViewPubkey === user.pubkey) return;
+
     const $ndk = getStore(ndk);
     const $userActiveSubscriptions = getStore(userActiveSubscriptions);
     const tier = $userActiveSubscriptions.get(user.pubkey) || "Free";
     const $currentUser = getStore(currentUser);
-    const $activeUserViewPubkey = getStore(activeUserViewPubkey);
 
-    console.log(`subscribing with tier ${tier} for user ${user.pubkey}`)
+    d(`subscribing with tier ${tier} for user ${user.pubkey}`)
 
     if (userSubscription && $activeUserViewPubkey !== user.pubkey) {
-        console.log(`unsubscribing from user ${$activeUserViewPubkey} to subscribe to ${user.pubkey}`);
+        d(`unsubscribing from user ${$activeUserViewPubkey} to subscribe to ${user.pubkey}`);
         userSubscription.unsubscribe();
     }
 
@@ -48,7 +55,7 @@ export function startUserView(user: NDKUser) {
             "#p": [ user.pubkey ],
         },
         {
-            kinds: [ NDKKind.SubscriptorsList as number ],
+            kinds: [ NDKKind.GroupMembers as number ],
             "#d": [ user.pubkey ],
             authors: trustedPubkeys,
         }
@@ -117,7 +124,7 @@ export function getUserSupportPlansStore() {
             });
 
             if (!tier) {
-                console.log(`could not find tier ${tag[1]}`);
+                d(`could not find tier ${tag[1]}`);
             }
 
             if (tier) tiers.push(NDKArticle.from(tier));
@@ -135,7 +142,7 @@ export function getUserSupporters(): Readable<never[] | Record<Hexpubkey, string
     return derived(userSubscription, ($userSubscription) => {
         if (!$userSubscription || !$activeUserViewPubkey) return [];
 
-        const supportersList: NDKEvent | undefined = $userSubscription.find(e => e.kind === NDKKind.SubscriptorsList);
+        const supportersList: NDKEvent | undefined = $userSubscription.find(e => e.kind === NDKKind.GroupMembers);
 
         console.log({supportersList});
 
