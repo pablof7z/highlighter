@@ -5,6 +5,7 @@
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import { debugMode } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
+	import { addReadReceipt } from "$utils/read-receipts";
 	import { ndk, user } from "@kind0/ui-common";
 	import type { NDKVideo } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
@@ -16,6 +17,7 @@
 
     onMount(() => {
         startUserView(author);
+        addReadReceipt(video);
     });
 
     onDestroy(() => {

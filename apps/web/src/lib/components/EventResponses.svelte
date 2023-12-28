@@ -1,11 +1,14 @@
 <script lang="ts">
-	import { NDKKind, type NDKEvent } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKEvent, NDKUser, type Hexpubkey, type NDKFilter } from "@nostr-dev-kit/ndk";
     import Comment from "./Forms/Comment.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk, user } from "@kind0/ui-common";
 	import RootReply from "./RepliesViewer/RootReply.svelte";
 	import { onDestroy } from "svelte";
 	import { slide } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
+	import { userActiveSubscriptions } from "$stores/session";
+	import { canUserComment, requiredTiersFor } from "$lib/events/tiers";
+	import UpgradeButton from "./buttons/UpgradeButton.svelte";
 
     export let event: NDKEvent;
     export let autofocusOnNewComment = false;
@@ -13,9 +16,15 @@
 
     const dispatch = createEventDispatcher();
 
-    const comments = $ndk.storeSubscribe([
-        { kinds: [NDKKind.GroupNote], ...event.filter() },
-    ], { subId: "comments", groupable: false });
+    // Ids for filter
+    const filters: NDKFilter[] = [{ kinds: [NDKKind.GroupNote], ...event.filter() }]
+    const counterpartEvent = event.tagValue("full") || event.tagValue("preview");
+
+    if (counterpartEvent) {
+        filters.push({ kinds: [NDKKind.GroupNote], "#a": [counterpartEvent] });
+    }
+
+    const comments = $ndk.storeSubscribe(filters, { subId: "comments", groupable: false });
     comments.onEose(() => fullyLoaded = true )
 
     let fullyLoaded = false;
@@ -31,17 +40,33 @@
     }
 
     $: if (narrowView) showComment = true;
+
+    let canComment = false;
+
+    $: if (event && $userActiveSubscriptions) {
+        canComment = canUserComment(event, $user, $userActiveSubscriptions)
+    }
+
+    function toggleCommentBox() {
+        if (!canComment) {
+            alert("You need to be subscribed to this creator to comment");
+            return;
+        }
+        showComment = !showComment;
+    }
 </script>
 
 <div class="w-full {$$props.class??""}">
     <div class="flex flex-row items-center justify-between w-full mb-8">
         <h1 class="text-white text-2xl font-semibold leading-8">Discussion</h1>
         {#if !narrowView}
-            <button class="button" on:click={() => showComment = !showComment}>Add your thoughts</button>
+            {#if canComment}
+                <button class="button" on:click={toggleCommentBox}>Add your thoughts</button>
+            {:else}
+                <UpgradeButton {event} text="Join to comment" />
+            {/if}
         {/if}
     </div>
-
-    <!-- <pre>{JSON.stringify(comments.filters, null, 4)}</pre> -->
 
     {#if showComment}
         <div class="w-full" transition:slide>

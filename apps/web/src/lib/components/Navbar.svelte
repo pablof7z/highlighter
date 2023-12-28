@@ -6,6 +6,8 @@
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { openModal } from 'svelte-modals';
 	import { Compass, Inbox, InboxIcon } from 'lucide-svelte';
+	import { ChatCircle, SpeakerHifi } from 'phosphor-svelte';
+	import CommentIcon from '$icons/CommentIcon.svelte';
 
 	export let maxSize = "max-w-7xl";
 </script>
@@ -16,7 +18,7 @@
 			<Logo />
 		</a>
 
-		<div class="ml-8 sm:ml-14 flex flex-row items-center gap-8 links">
+		<div class="ml-8 sm:ml-14 flex flex-row items-center gap-8 links whitespace-nowrap">
 			<a
 				href="/explore"
 				class="justify-start items-center gap-2 inline-flex"
@@ -38,6 +40,17 @@
 				</div>
 				<span class="">Inbox</span>
 			</a>
+
+			<a
+				href="/chat"
+				class="justify-start items-center gap-2 inline-flex"
+				class:active={$page.url.pathname === '/chat'}
+				>
+				<div class="w-6 h-6 relative">
+					<ChatCircle class="w-full h-full" />
+				</div>
+				<span class="">Faaans Chat</span>
+			</a>
 		</div>
 	</div>
 
@@ -45,7 +58,7 @@
 	</div>
 	<div class="navbar-end flex flex-row items-center gap-4">
 		{#if $user}
-			<button class="button" on:click={() => openModal(NewItemModal)}>
+			<button class="button max-md:hidden" on:click={() => openModal(NewItemModal)}>
 				Publish
 			</button>
 		{/if}

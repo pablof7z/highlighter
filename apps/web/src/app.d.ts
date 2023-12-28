@@ -1,7 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 
-import type { Hexpubkey, NDKUserParams } from "@nostr-dev-kit/ndk";
+import type { Hexpubkey } from "@nostr-dev-kit/ndk";
 
 export type Session = {
 	pubkey: string,
@@ -14,13 +14,15 @@ export type NsecBunkerProvider = {
 }
 
 export type UserProfileType = NDKUserProfile & {
-	categories: string[]?
+	categories: string[] | undefined;
 };
 
 export type EventType = "article" | "group-note" | "video";
 
 declare global {
 	namespace App {
+		type EventType = "all" | "note" | "article" | "video";
+		type FilterType = "all" | EventType;
 		// interface Error {}
 		// interface Locals {}
 		// interface PageData {}

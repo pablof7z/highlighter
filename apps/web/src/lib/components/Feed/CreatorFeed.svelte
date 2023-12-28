@@ -11,7 +11,7 @@
     });
 </script>
 
-<div class="flex flex-col max-w-xl">
+<div class="flex flex-col max-w-xl gap-10">
     {#each $rootContent as event (event.id)}
         <FeedEvent {event} />
     {/each}

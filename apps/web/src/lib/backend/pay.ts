@@ -16,6 +16,7 @@ async function getNwcString(pubkey: string) {
 
 export async function sendPayment(invoice: string, pubkey: Hexpubkey): Promise<string> {
     const nwcUri = await getNwcString(pubkey);
+    console.log("Sending payment with", nwcUri);
     const nwc = new webln.NWC({ nostrWalletConnectUrl: nwcUri });
 
     await nwc.enable();

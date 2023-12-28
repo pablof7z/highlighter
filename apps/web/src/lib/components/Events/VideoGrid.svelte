@@ -28,7 +28,7 @@
 <UserProfile {user} bind:userProfile let:fetching>
     <a href={videoLink} class="flex flex-col items-start gap-4 h-full {size}">
         <div class="relative max-sm:{size} !w-full h-fit flex-none rounded-xl">
-            <img class="{size} !w-full max-sm:!max-h-[1800px] max-sm:!h-fit object-cover bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top flex-none rounded-xl" src={video.thumbnail??defaultUrl} />
+            <img class="{size} !w-full object-cover bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top flex-none rounded-xl sm:h-[180px] max-sm:max-h-[60vw]" src={video.thumbnail??defaultUrl} alt={video.title} />
             {#if video.duration}
                 <div class="absolute bottom-0 right-0 flex flex-row items-center justify-center gap-2 p-2">
                     <div class="bg-base-100/70 rounded-lg px-3 py-1 text-white text-xs font-medium">
@@ -63,12 +63,12 @@
 
 <style lang="postcss">
     a.small {
-        width: 321px;
+        /* width: 321px; */
     }
 
     img.small {
-        width: 321px;
-        height: 180px;
+        /* width: 321px; */
+        /* height: 180px; */
     }
 
     .large {

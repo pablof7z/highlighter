@@ -7,6 +7,7 @@
 	import { openModal } from "svelte-modals";
 
     export let event: NDKEvent;
+    export let text = "Become a fan to unlock";
 
     const requiredTier = requiredTiersFor(event)[0];
     const author = event.author;
@@ -17,6 +18,6 @@
 </script>
 
 <button class="button px-4 py-3 {$$props.class??""}" on:click={upgrade}>
-    <LockSimple class="w-6 h-6 ml-2" />
-    Become a fan to unlock
+    <LockSimple class="w-6 h-6" />
+    {text}
 </button>

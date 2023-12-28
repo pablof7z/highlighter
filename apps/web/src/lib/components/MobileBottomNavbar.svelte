@@ -3,15 +3,36 @@
     import { openModal } from "svelte-modals";
     import NewItemModal from "$modals/NewItemModal.svelte";
 	import { Avatar, user } from "@kind0/ui-common";
-	import { Bug, House, MagnifyingGlass, Tray, UserCircle } from "phosphor-svelte";
 	import UserProfile from "./User/UserProfile.svelte";
-	import Signup from "$modals/Signup.svelte";
-	import { Compass, PlusCircle } from "lucide-svelte";
+	import SignupModal from "$modals/SignupModal.svelte";
+    import { CompassTool, PlusCircle } from "phosphor-svelte";
+	import { Compass, Inbox, Search, Send, UserCircle } from "lucide-svelte";
+	import { afterUpdate, onMount } from "svelte";
+	import Logo from "$icons/Logo.svelte";
 
     const newItemRegex = /^\/(articles|notes|videos|)\/new/;
+
+    let pwaInstalled = false;
+
+    function checkIfPWAIsInstalled() {
+        pwaInstalled = window.matchMedia('(display-mode: standalone)').matches;
+    }
+
+    onMount(checkIfPWAIsInstalled);
+    afterUpdate(checkIfPWAIsInstalled);
 </script>
 
-<div class="btm-nav btm-nav-md left-0 border-t border-base-300 sm:hidden">
+<div class="mobile-nav fixed top-0 flex w-screen left-0 items-center gap-3 px-3 py-2.5 sm:hidden flex-row justify-between hidden">
+    <Logo />
+    <button class="button">
+        Install PWA
+    </button>
+</div>
+
+<div class="
+    mobile-nav btm-nav btm-nav-lg backdrop-blur h-mobile-nav-bar left-0 border-t border-base-300 sm:hidden
+    pb-2
+">
     {#if $user}
         <UserProfile user={$user} let:userProfile let:fetching>
             <label for="mobile-drawer" class="drawer-button">
@@ -21,9 +42,9 @@
         </UserProfile>
     {:else}
         <button
-            on:click={() => openModal(Signup)}
+            on:click={() => openModal(SignupModal)}
         >
-            <UserCircle class="w-full h-full" />
+            <UserCircle class="w-full h-full" strokeWidth="1.2" />
         </button>
     {/if}
 
@@ -31,40 +52,36 @@
 		href="/explore"
 		class:active={$page.url.pathname.startsWith('/explore')}
     >
-        <Compass class="w-full h-full" />
+        <CompassTool class="w-full h-full" />
         <span>Explore</span>
 	</a>
 
     <button
         on:click={() => openModal(NewItemModal)}
     >
-        <PlusCircle />
+        <PlusCircle class="w-full h-full text-accent" weight="fill" />
         <span>Publish</span>
     </button>
 
     <button
-        on:click={() => alert('coming soon')}
+        on:click={() => {alert('Search is not implemented yet!')}}
     >
-        <MagnifyingGlass class="w-full h-full" />
+        <Search class="w-full h-full" strokeWidth="1.2" />
         <span>Search</span>
     </button>
 
     <a
         href="/inbox"
         class:active={$page.url.pathname === '/inbox'}
-        >
-        <Tray class="w-full h-full" />
+    >
+        <Inbox class="w-full h-full" strokeWidth="1.2" />
         <span>Inbox</span>
     </a>
 </div>
 
 <style lang="postcss">
-    .btm-nav {
-        @apply bg-base-200;
-    }
-
     .btm-nav > a, .btm-nav > button, .btm-nav > label {
-        @apply p-4 h-24;
+        @apply py-2;
     }
 
     .btm-nav > a > span, .btm-nav > button > span, .btm-nav > label > span{

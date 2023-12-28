@@ -1,11 +1,14 @@
 import type NDK from "@nostr-dev-kit/ndk";
 import { NDKEvent, NDKNip07Signer, NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
-import { newToasterMessage, user } from "@kind0/ui-common";
+import { ndk, newToasterMessage, user } from "@kind0/ui-common";
 import { generateLoginEvent } from "$actions/signLoginEvent";
 import { get } from "svelte/store";
 import { jwt as jwtStore, loginState } from "$stores/session";
+import createDebug from "debug";
 
 export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
+
+const d = createDebug("fans:login");
 
 /**
  * These are pubkeys managed by the relay running this app, which gates access to content
@@ -36,6 +39,8 @@ export async function login(
     bunkerNDK: NDK,
     method: LoginMethod,
 ): Promise<NDKUser | null> {
+    d(`running with method ${method}`);
+
     // Check if there is a localStorage item with the key "nostr-key-method"
     method ??= localStorage.getItem("nostr-key-method") as LoginMethod;
     let u: NDKUser | null | undefined;
@@ -128,6 +133,8 @@ export async function login(
             return promise;
         }
     }
+
+    console.log("login", { u });
 
     if (!u) return null;
 
@@ -226,4 +233,26 @@ async function nip46SignIn(ndk: NDK, bunkerNDK: NDK, existingPrivateKey: string)
     user.ndk = ndk;
 
     return user;
+}
+
+export function logout(): void {
+    const $ndk = get(ndk);
+    $ndk.signer = undefined;
+    user.set(undefined);
+    loginState.set("logged-out");
+    localStorage.removeItem("currentUserFollowPubkeysStore");
+    localStorage.removeItem("currentUserStore");
+    localStorage.removeItem("user-follows");
+    localStorage.removeItem("user-super-follows");
+    localStorage.removeItem("network-follows");
+    localStorage.removeItem("network-follows-updated-t");
+    localStorage.removeItem("currentUserNpub");
+    localStorage.removeItem("nostr-target-npub");
+    localStorage.removeItem("jwt");
+
+    document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+
+    // explicitly prevent auto-login with NIP-07
+    localStorage.setItem("nostr-key-method", "none");
 }

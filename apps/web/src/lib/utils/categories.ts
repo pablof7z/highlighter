@@ -1,5 +1,7 @@
 export const categories = [
     "NSFW",
     "Development",
-    "Bitcoin",
+    "Freedom Tech",
+    "Art & Photography",
+    "Literature",
 ].sort();

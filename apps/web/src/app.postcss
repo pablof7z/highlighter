@@ -7,6 +7,11 @@
 		font-family: 'Inter';
 	}
 
+	:root {
+		--mobile-nav-bar: 63px;
+		--mobile-body-px: 0.5rem;
+	}
+
 	html,
 	body,
 	body > div {
@@ -62,5 +67,13 @@
 
 	.round {
 		@apply max-sm:rounded-none sm:rounded-xl;
+	}
+
+	.mobile-nav {
+        @apply bg-base-200 bg-opacity-80 backdrop-blur-[50px];
+    }
+
+	main {
+		@apply px-[var(--mobile-body-px)];
 	}
 }

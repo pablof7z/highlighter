@@ -1,17 +1,19 @@
 <script lang="ts">
 	import { redirect } from '@sveltejs/kit';
-    import { NDKKind, NDKPrivateKeySigner, type Hexpubkey, type NostrEvent, NDKRelaySet, NDKNostrRpc, NDKUser, type NDKRpcResponse, NDKNip46Signer } from "@nostr-dev-kit/ndk";
+    import { NDKKind, NDKPrivateKeySigner, type Hexpubkey, type NostrEvent, NDKRelaySet, NDKNostrRpc, NDKUser, type NDKRpcResponse, NDKNip46Signer, NDKEvent } from "@nostr-dev-kit/ndk";
     import Input from "$components/Forms/Input.svelte";
 	import { bunkerNDK, ndk, user } from "@kind0/ui-common";
     import createDebug from "debug";
 	import { closeModal } from "svelte-modals";
 	import NsecBunkerProviderSelect from "$components/Forms/NsecBunkerProviderSelect.svelte";
 	import type { NsecBunkerProvider } from "../../app";
-	import { slide } from "svelte/transition";
+	import { fade, slide } from "svelte/transition";
 	import { goto } from "$app/navigation";
+	import { loginState } from '$stores/session';
+	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 
     let email: string;
-    let username: string;
+    let username: string = "";
     let nsecBunker: NsecBunkerProvider = {
         pubkey: "4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce",
         domain: "getfaaans.com"
@@ -20,6 +22,7 @@
     let usernameTaken = false;
     let popupNotOpened = false;
     let authUrl: string;
+    let allNsecBunkerProviders: NDKEventStore<NDKEvent>;
 
     function redirectToAuthUrlWithCallback(url: string) {
         const redirectUrl = new URL(url);
@@ -61,17 +64,10 @@
             localStorage.setItem("nostr-nsecbunker-key", localSigner.privateKey!);
         }
 
-        const localKeyPubkey = (await localSigner.user()).pubkey;
-
         // Generate event
-        const recipient = $ndk.getUser({ pubkey: nsecBunker.pubkey });
-        const debug = createDebug("signup");
-        const rpc = new NDKNostrRpc($bunkerNDK, localSigner, debug);
-        const authPayload = { email, username, domain };
-
-        rpc.subscribe({ kinds: [24133 as number], "#p": [localKeyPubkey] });
+        const signer = new NDKNip46Signer($bunkerNDK, nsecBunker.pubkey, localSigner);
         let popup: Window | null = null;
-        rpc.on("authUrl", (url: string) => {
+        signer.rpc.on("authUrl", (url: string) => {
             popup = window.open(url, "_blank", "width=400,height=600");
 
             if (!popup) {
@@ -91,23 +87,22 @@
             }, 500); // Check every 500ms
         });
 
-        rpc.sendRequest(
-            nsecBunker.pubkey,
-            "create_account",
-            [JSON.stringify(authPayload)],
-            24134,
-            async (res: NDKRpcResponse) => {
-                const remotePubkey = JSON.parse(res.result)[0];
-                const remoteSigner = new NDKNip46Signer($bunkerNDK, remotePubkey, localSigner);
-                const u = await remoteSigner.blockUntilReady();
-                $user = u;
-                $ndk.signer = remoteSigner;
-                localStorage.setItem("nostr-key-method", 'nip46');
-                localStorage.setItem('nostr-target-npub', $user.npub);
-                popup?.close();
-                closeModal();
-            }
-        );
+        try {
+            const createdPubkey = await signer.createAccount(username, domain, email);
+            const remoteSigner = new NDKNip46Signer($bunkerNDK, createdPubkey, localSigner);
+            const u = await remoteSigner.blockUntilReady();
+            $user = u;
+            $ndk.signer = remoteSigner;
+            localStorage.setItem("nostr-key-method", 'nip46');
+            localStorage.setItem('nostr-target-npub', $user.npub);
+            $loginState = "logged-in";
+            popup?.close();
+            closeModal();
+        } catch (e) {
+            console.error(e);
+            alert(e);
+            creating = false;
+        }
 
         // const remoteSigner = new NDKNip46Signer($bunkerNDK, localKey, debug);
 
@@ -129,11 +124,19 @@
             usernameTaken = false;
         }
     }
+
+    let providerOpen = false;
+
+    $: username = username.toLowerCase().replace(/[^a-z0-9_]/g, "");
 </script>
 
 <div class="text-center text-black text-lg font-medium leading-normal">Create an account</div>
 
-<div class="flex flex-col gap-4">
+<div class="relative">
+<div
+    class="flex flex-col gap-4 transition-opacity duration-0"
+    class:opacity-0={providerOpen}
+>
     <div class="flex flex-col gap-1">
         <div class="font-semibold">
             Choose your username
@@ -145,18 +148,19 @@
                 type="text"
                 autocomplete="off"
                 placeholder="Username"
-                autofocus={true}
+                class="lowercase"
                 on:focus={() => usernameHasFocus = true}
                 on:blur={() => {usernameHasFocus = false; checkUsername(); }}
             />
             <div class="absolute border-0 inset-y-1 right-0.5 flex items-center text-sm text-gray-500">
-                <NsecBunkerProviderSelect bind:value={nsecBunker} />
+                <NsecBunkerProviderSelect {username} bind:allNsecBunkerProviders bind:value={nsecBunker} bind:open={providerOpen} onlyButton={true} />
             </div>
         </div>
         <div
             class="text-xs opacity-50 transition-all duration-300"
         >
-            Don't stress about it; you can change your username any time
+            This is the username you will use to log in and how
+            others will find you on Nostr.
         </div>
 
         {#if usernameTaken}
@@ -208,5 +212,12 @@
                 Continue
             </span>
         </a>
+    {/if}
+</div>
+
+{#if providerOpen}
+    <div class="absolute top-0 w-full h-full z-50">
+        <NsecBunkerProviderSelect {username} bind:allNsecBunkerProviders bind:value={nsecBunker} bind:open={providerOpen} />
+    </div>
     {/if}
 </div>

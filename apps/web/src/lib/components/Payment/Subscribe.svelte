@@ -81,6 +81,7 @@
             await sendZap(zapRequest);
             await supportEvent.publish();
         } catch (e: any) {
+            console.trace(e.message);
             error = e.message;
             subscribing = false;
             return;

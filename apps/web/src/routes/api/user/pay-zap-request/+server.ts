@@ -6,10 +6,11 @@ import { json } from "@sveltejs/kit"
 import createDebug from "debug";
 import type { Session } from "../../../../app.js";
 import { webln } from "@getalby/sdk";
-import NDK, { NDKEvent, NDKUser, NDKZap, type Hexpubkey, type NostrEvent, NostrEvent, type NDKTag, NDKKind } from "@nostr-dev-kit/ndk";
+import NDK, { NDKEvent, NDKZap, type NostrEvent, NostrEvent, NDKKind, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 import { sendPayment } from "$lib/backend/pay.js";
 import type { Payment } from "@prisma/client";
 import { calculateValidUntil } from "$utils/payment.js";
+import { getDefaultRelaySet } from "$utils/ndk.js";
 
 const log = createDebug("fans:/api/user/pay-zap-request");
 
@@ -21,10 +22,13 @@ export async function POST({request, locals}) {
     try {
         const $ndk = getStore(ndk)
         const {pubkey} = locals.session as Session;
+        console.log("/api/user/pay-zap-request", pubkey);
         const payload = await request.json();
         const { zapRequest: eventData } = payload as Payload;
+        console.log("zapRequest", eventData);
         const {id, sig} = new NDKEvent($ndk, JSON.parse(eventData));
         const record = await db.payment.findUnique({where: {id}});
+        console.log("record", record);
 
         if (!record) throw new Error("Payment not found");
 
@@ -41,9 +45,11 @@ export async function POST({request, locals}) {
             zappedUser: recipient
         });
 
+        console.log("fetching invoice");
         const invoice = await zap.getInvoice(zapRequest, satsAmount * 1000, zapEndpoint);
         if (!invoice) throw new Error("Unable to retrieve invoice from destination");
 
+        console.log("paying invoice", invoice);
         const payment = await sendPayment(invoice, pubkey);
 
         if (payment.preimage) {
@@ -71,8 +77,21 @@ async function markSubscriberPayment(id: string) {
     const $ndk = getStore(ndk);
 
     // update the list of supporters of this creator
-    await publishPaymentReceivedEvent(record);
-    await publishListOfSupporters($ndk, record.receiverPubkey);
+    console.log("publishing events");
+    await Promise.all([
+        publishPaymentReceivedEvent(record),
+        publishListOfSupporters($ndk, record.receiverPubkey),
+        publishMemberAcceptedEvent(record),
+    ])
+}
+
+async function publishMemberAcceptedEvent(record: Payment) {
+    const $ndk = getStore(ndk);
+    const group = new NDKSimpleGroup($ndk, record.receiverPubkey, getDefaultRelaySet());
+    const user = $ndk.getUser({pubkey: record.payerPubkey});
+    await group.addUser(user, {
+        marker: record.tierName ?? undefined,
+    });
 }
 
 /**
@@ -80,7 +99,9 @@ async function markSubscriberPayment(id: string) {
  */
 async function publishPaymentReceivedEvent(record: Payment) {
     const $ndk = getStore(ndk);
+    console.log("publishing payment received event");
     const validUntil = calculateValidUntil(new NDKEvent($ndk, JSON.parse(record.zappedEvent)));
+    console.log("valid until", validUntil);
     const event = new NDKEvent($ndk, {
         kind: 7003,
         content: "Payment received for getfaaans.com subscription",
@@ -123,7 +144,7 @@ async function publishListOfSupporters(ndk: NDK, creatorPubkey: string) {
     });
 
     const event = new NDKEvent(ndk, {
-        kind: NDKKind.SubscriptorsList,
+        kind: NDKKind.GroupMembers,
         content: "",
         tags: [ [ "d", creatorPubkey] ]
     } as NostrEvent);

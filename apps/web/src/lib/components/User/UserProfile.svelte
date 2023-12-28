@@ -45,7 +45,6 @@
                 if (no31777Received && (noKind0Event || kind0EventIsOlder)) {
                     kind0Event = e;
                     userProfile = profileFromEvent(e);
-                    console.log(`getting from`, r?.url, e.rawEvent())
                 }
                 break;
             }
@@ -55,7 +54,6 @@
                     userProfile = profileFromEvent(e);
                     userProfile.categories = e.getMatchingTags("t").map(t => t[1]) || [];
                     userProfile = userProfile;
-                    console.log(`categories`, userProfile.categories);
                 }
             }
         }

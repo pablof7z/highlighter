@@ -1,5 +1,8 @@
 <script lang="ts">
-    import { CaretDown } from "phosphor-svelte";
+	import TiersModal from "$modals/TiersModal.svelte";
+	import { user } from "@kind0/ui-common";
+    import { CaretDown, Gear, PlusCircle } from "phosphor-svelte";
+	import { openModal } from "svelte-modals";
 	import { slide } from "svelte/transition";
 
     export let show = false;
@@ -34,6 +37,10 @@
     $: if (tiers) {
         updateSelectedString();
     }
+
+    // function addNewTier() {
+    //     openModal(TiersModal);
+    // }
 </script>
 
 <div class="w-full flex-col justify-start items-start gap-2 inline-flex">
@@ -62,6 +69,12 @@
                         </label>
                     </li>
                 {/each}
+                <!-- <li class="border-t border-base-300">
+                    <button class="w-full flex flex-row gap-4" on:click={addNewTier}>
+                        <PlusCircle size="22" />
+                        Add a new tier
+                    </button>
+                </li> -->
             </div>
         {/if}
     </div>

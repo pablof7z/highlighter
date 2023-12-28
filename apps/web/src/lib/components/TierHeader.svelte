@@ -4,8 +4,10 @@
 	import { ArrowLeft } from "phosphor-svelte";
     import { createEventDispatcher } from "svelte";
 	import UserProfile from "./User/UserProfile.svelte";
+    import type { UserProfileType } from "../../app";
 
     export let user: NDKUser;
+    export let userProfile: UserProfileType | undefined = undefined;
     export let showBackArrow = false;
 
     const dispatch = createEventDispatcher();
@@ -17,7 +19,7 @@
             <ArrowLeft color="black" class="w-6 h-6" />
         </button>
     {/if}
-    <UserProfile {user} let:userProfile let:fetching>
+    <UserProfile {user} bind:userProfile let:fetching>
         <div class="w-10 h-10 relative">
             <div class="w-10 h-10 left-0 top-0 absolute bg-white rounded-full"></div>
             <Avatar {user} {userProfile} {fetching} class="w-10 h-10 left-0 top-0 absolute" />

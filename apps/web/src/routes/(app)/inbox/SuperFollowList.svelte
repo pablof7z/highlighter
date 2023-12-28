@@ -3,6 +3,7 @@
 	import { MagicWand } from 'phosphor-svelte';
 	import { page } from '$app/stores';
 	import SuperFollowListItem from './SuperFollowListItem.svelte';
+	import { ChevronDown } from "lucide-svelte";
 
     export let mode: "all" | "paid" = "all";
 
@@ -27,11 +28,34 @@
 
         activeView = activeSubscriptions;
     }
+
+    let open = false;
+
+    function toggleOpen() {
+        open = !open;
+    }
 </script>
 
-<div class="px-6 pt-4 pb-6 rounded-3xl border border-neutral-800 flex-col justify-start items-start gap-6 inline-flex w-[300px] shrink-0 {$$props.class??""}">
-    <div class="self-stretch justify-start items-center gap-6 inline-flex">
-        <div class="grow shrink basis-0 text-white text-2xl font-semibold font-['Inter Display']">Inbox</div>
+<div class="
+    max-sm:w-full bg-base-100 max-sm:mobile-nav px-[var(--mobile-body-px)] py-2
+    sm:w-[300px] sm:rounded-3xl sm:px-6 sm:pt-4 sm:pb-6
+    border border-neutral-800 flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
+">
+    <div class="self-stretch justify-between items-center gap-6 inline-flex">
+        <button
+            class="flex flex-row items-center gap-4 justify-between"
+            on:click={toggleOpen}
+        >
+            <div class="
+                grow shrink basis-0 text-white font-semibold font-['Inter Display']
+                max-sm:text-lg
+                sm:text-2xl
+            ">Inbox</div>
+
+            <div class="sm:hiddden transition-all duration-500 sm:hidden" class:rotate-180={open}>
+                <ChevronDown class="w-5 h-5 text-white" />
+            </div>
+        </button>
         <div class="justify-start items-center flex">
             <div role="tablist" class="tabs tabs-boxed bg-transparent">
                 <button
@@ -50,11 +74,18 @@
         </div>
     </div>
 
-    <div class="flex-col justify-center items-start gap-3 flex w-full">
+    <div
+        class:max-sm:hidden={!open}
+        class="
+        max-sm:max-h-[50dvh]
+        overflow-y-auto
+        flex-col justify-center items-start gap-3 flex w-full
+    ">
         <a
             href="/inbox"
             class="justify-start items-center gap-2 inline-flex"
             class:active={selectedId === "" || selectedId === undefined}
+            on:click={() => open = false}
         >
             <div class="w-11 h-11 p-2.5 bg-zinc-800 rounded-[100px] justify-center items-center flex">
                 <MagicWand class="w-5 h-5 relative flex-col justify-start items-start flex"></MagicWand>
@@ -62,7 +93,9 @@
             <span class="text-right text-white text-[15px] font-medium name">All Feeds</span>
         </a>
         {#each activeView as pubkey (pubkey)}
-            <SuperFollowListItem {pubkey} {selectedId} />
+            <button on:click={() => open = false}>
+                <SuperFollowListItem {pubkey} {selectedId} />
+            </button>
         {/each}
         <!-- <button on:click={resetFollow} class="btn w-full btn-ghost">Reset</button> -->
     </div>

@@ -31,21 +31,21 @@
     $: isSupporter = supportingPubkeys.has($currentUser?.pubkey);
 </script>
 
-<div class="flex items-center gap-4">
+<div class="flex items-center gap-4 max-sm:w-full">
     {#if supportingPubkeys?.size > 0}
         <span class="text-sm whitespace-nowrap">
             {supportingPubkeys?.size}
             Faaans
         </span>
+        <div class="flex -space-x-4 ml-4">
+            {#each Array.from(supportingPubkeys).slice(0, 10) as supportingPubkey (supportingPubkey)}
+                <Avatar pubkey={supportingPubkey} class="w-10 h-10 border-2 border-black" />
+            {/each}
+        </div>
     {/if}
-    <div class="flex -space-x-4 ml-4">
-        {#each Array.from(supportingPubkeys).slice(0, 10) as supportingPubkey (supportingPubkey)}
-            <Avatar pubkey={supportingPubkey} class="w-10 h-10 border-2 border-black" />
-        {/each}
-    </div>
 
     {#if !isSupporter}
-        <button class="whitespace-nowrap button px-6" on:click={openSupportModal}>Become a Faaan</button>
+        <button class="whitespace-nowrap button px-6 w-full" on:click={openSupportModal}>Become a Faaan</button>
     {:else}
         <!-- <button class="whitespace-nowrap button px-6" on:click={openShareModal}>
             <Share class="mr-2" />

@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { NDKEvent, NDKKind, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
-    import { Avatar, Name, Textarea, ndk, user } from "@kind0/ui-common";
+    import { Avatar, Name, Textarea, ndk, newToasterMessage, user } from "@kind0/ui-common";
     import UserProfile from "$components/User/UserProfile.svelte";
     import { userActiveSubscriptions } from "$stores/session";
     import { createEventDispatcher } from "svelte";
 	import { getDefaultRelaySet } from "$utils/ndk";
     import { debugMode } from "$stores/session";
+	import { canUserComment } from "$lib/events/tiers";
+	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -113,10 +115,21 @@
         await generateEvent();
         if (!reply) return;
 
-        await reply.publish(getDefaultRelaySet());
-        reply = reply;
+        try {
+            await reply.publish(getDefaultRelaySet());
+            reply = reply;
+        } catch (e) {
+            let message = `Ooops, the comment could not be published (${e?.message??"Unknown error"})`;
+            newToasterMessage(message, "error");
+        }
 
         dispatch("published", reply);
+    }
+
+    let canComment = false;
+
+    $: if (event && $userActiveSubscriptions) {
+        canComment = canUserComment(event, $user, $userActiveSubscriptions)
     }
 </script>
 
@@ -128,10 +141,7 @@
             <div class="flex flex-col gap-4 w-full items-start">
                 <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
                 <Textarea
-                    class="
-                        flex-grow w-full min-h-[10rem] border-base-200 focus:!border-base-300 round
-
-                    "
+                    class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-transparent !border-base-300 focus:!border-base-300 text-neutral-400 p-6"
                     placeholder="Write a response..."
                     bind:value={content}
                     on:focus
@@ -157,11 +167,12 @@
                 <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
             </div>
 
+            {#if canComment}
             <div class="
                 flex flex-col gap-4
                 max-sm:w-screen max-sm:h-[100vh]
                 max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:right-0 max-sm:bottom-0
-                max-sm:bg-black max-sm:bg-opacity-50 max-sm:backdrop-filter max-sm:backdrop-blur-sm max-sm:overflow-scroll max-sm:z-50
+                max-sm:bg-base-100 max-sm:bg-opacity-50 max-sm:backdrop-filter max-sm:backdrop-blur-sm max-sm:overflow-scroll max-sm:z-50
             ">
                 <Textarea
                     class="
@@ -175,10 +186,13 @@
                     on:submit={publish}
                     bind:value={content}
                 />
-                <div class="max-sm:w-full self-end">
+                <div class="max-sm:w-full sm:self-end max-sm:fixed max-sm:top-0 max-sm:right-0">
                     <button class="button px-10 py-3" on:click={publish}>Publish</button>
                 </div>
             </div>
+            {:else}
+                <UpgradeButton {event} text="Join to comment" />
+            {/if}
 
             {#if $debugMode}
                 <button class="button button-primary px-10" on:click={() => debugView = !debugView}>Debug</button>

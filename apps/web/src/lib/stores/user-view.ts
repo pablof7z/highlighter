@@ -134,7 +134,7 @@ export function getUserSupportPlansStore() {
     });
 }
 
-export function getUserSupporters(): Readable<never[] | Record<Hexpubkey, string|undefined>> {
+export function getUserSupporters(): Readable<Record<Hexpubkey, string|undefined>> {
     const $activeUserViewPubkey = getStore(activeUserViewPubkey);
 
     if (!userSubscription) return derived([], () => {});
@@ -143,8 +143,6 @@ export function getUserSupporters(): Readable<never[] | Record<Hexpubkey, string
         if (!$userSubscription || !$activeUserViewPubkey) return [];
 
         const supportersList: NDKEvent | undefined = $userSubscription.find(e => e.kind === NDKKind.GroupMembers);
-
-        console.log({supportersList});
 
         if (supportersList) {
             const supporters: Record<Hexpubkey, string|undefined> = {};
@@ -161,19 +159,6 @@ export function getUserSupporters(): Readable<never[] | Record<Hexpubkey, string
         }
 
         return {};
-
-        // const supporters = $userSubscription.filter((event: NDKEvent) => {
-        //     const until = event.tagValue("until")
-        //     if (!until) return false;
-        //     const validUntil = new Date(parseInt(until) * 1000);
-        //     return (
-        //         event.kind === 7003 &&
-        //         event.tagValue("P") === $activeUserViewPubkey &&
-        //         validUntil > new Date()
-        //     );
-        // });
-
-        // return supporters;
     });
 }
 

@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { ndk, newToasterMessage, uploadToSatelliteCDN } from "@kind0/ui-common";
+	import { ndk, newToasterMessage, nip96Upload } from "@kind0/ui-common";
+	import type { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 
     export let url: string;
+    export let tags: NDKTag[];
 
     const dispatch = createEventDispatcher();
     let uploadProgress: number | undefined;
@@ -15,7 +17,7 @@
         const file = fileUpload.files[0];
         if (!file) return;
 
-        const xhr = await uploadToSatelliteCDN($ndk, file.type);
+        const xhr = new XMLHttpRequest();
         xhr.upload.addEventListener('progress', (event) => {
             console.log(event.lengthComputable);
             if (event.lengthComputable) {
@@ -41,14 +43,31 @@
             }
         });
 
-        xhr.addEventListener('error', (e) => {
+        xhr.addEventListener('error', (e: any) => {
             console.log(e);
             console.log(xhr)
             console.error(`Failed to upload image: ${xhr.statusText}`);
             newToasterMessage(`Failed to upload image: ${xhr.statusText}`, "error");
         });
 
-        xhr.send(file);
+        try {
+            const res = await nip96Upload(xhr, $ndk, file, "nostr.build");
+            console.log(res);
+
+            if (res.status !== "success") {
+                newToasterMessage(res.message, res.status);
+                return;
+            }
+
+            url = res.nip94_event.tags.find((t: NDKTag) => t[0] === "url")![1];
+            done = true;
+            tags = res.tags;
+
+            dispatch("uploaded", { url, tags });
+        } catch (err) {
+            console.error(err);
+            newToasterMessage(`Failed to upload image: ${err}`, "error");
+        }
     }
 </script>
 

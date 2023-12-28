@@ -37,6 +37,10 @@
         return $taggedEvents.filter(e => e.kind === NDKKind.GenericRepost);
     });
 
+    const reactions = derived(taggedEvents, ($taggedEvents) => {
+        return $taggedEvents.filter(e => e.kind === NDKKind.Reaction);
+    });
+
     const replyingPubkeys = derived(replies, ($replies) => {
         const s = new Set<Hexpubkey>();
         $replies.forEach((e) => { s.add(e.pubkey); });
@@ -59,7 +63,9 @@
 </script>
 
 <UserProfile user={author} let:userProfile let:fetching let:authorUrl>
-    <a href="{authorUrl}/{suffixUrl}" class="flex flex-col gap-4 py-6 wrapper w-full {$$props.class??""}">
+    <a href="{authorUrl}/{suffixUrl}" class="
+        flex flex-col gap-4 pb-6 wrapper w-full {$$props.class??""}
+    ">
         {#if $$slots.default}
             <slot />
         {:else}
@@ -109,6 +115,10 @@
                     </div>
                 </div>
                 <div class="self-stretch text-right text-white text-opacity-60 text-sm font-normal leading-[21px]">
+                    {#if ($reactions.length > 0)}
+                        {$reactions.length} reactions
+                    {/if}
+
                     {#if ($replies.length > 0)}
                         {$replies.length} replies
                     {/if}

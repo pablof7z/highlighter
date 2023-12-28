@@ -9,15 +9,15 @@
     fixed
     h-screen top-0 bottom-0 left-0 px-4 lg:px-0
     flex justify-center items-center
-    z-50
+    z-40
     w-screen
 " transition:fade on:click={closeModal}>
-<a href="/articles/new">here</a>
     <div class="
         card
         !rounded-3xl
         shadow-xl
         flex flex-col
+        z-50
         relative
         overflow-y-hidden
         {$$props.class}

@@ -26,14 +26,13 @@
     <div class="
     card
     rounded-3xl
-    w-96
     shadow-xl
     flex flex-col
     relative
     overflow-y-hidden
     {$$props.class}
     " style="pointer-events: auto; max-height: 92vh;" on:click|stopPropagation={()=>{}} transition:fade>
-        <div class="bg-white p-8 rounded-2xl shadow-lg w-96 flex flex-col gap-0 text-black">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg sm:w-96 max-w-[100vh] flex flex-col gap-0 text-black">
             <div class="flex justify-center">
                 <LogoBlack />
             </div>

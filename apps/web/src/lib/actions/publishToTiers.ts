@@ -83,70 +83,15 @@ export async function publishToTiers(
 
         await teaser.sign();
 
-        let relaySetString: string;
-        if (teaserRelaySet)
-            relaySetString = Array.from(teaserRelaySet?.relays).map(relay => relay.url).join(', ');
-        else
-            relaySetString = 'wide distribution';
-
-        if (confirm(`Publish teaser to ${relaySetString}?`)) {
-            await teaser.publish(teaserRelaySet);
-        }
+        await teaser.publish(teaserRelaySet);
 
         console.log('teaser', teaser.rawEvent());
         console.log({teaserRelaySet: teaserRelaySet ? teaserRelaySet.size() : 'undefined'});
     }
 
     await event.sign();
-
-    let relaySetString: string;
-    if (opts.relaySet)
-        relaySetString = Array.from(opts.relaySet.relays).map(relay => relay.url).join(', ');
-    else
-        relaySetString = 'wide distribution';
-
-    if (confirm(`Publish event to ${relaySetString}?`)) {
-        await event.publish(opts.relaySet);
-    }
+    await event.publish(opts.relaySet);
 
     console.log('event', event.rawEvent());
     console.log({relaySet: opts.relaySet ? opts.relaySet.size() : 'undefined'});
 }
-
-// async function publish() {
-//     let previewArticle: NDKArticle | undefined;
-
-//     // Don't create a preview article if all tiers are selected
-//     if (Object.keys(tiers).filter(tier => tiers[tier]).length === Object.values(tiers).length) {
-//         nonSubscribersPreview = false;
-//     }
-
-//     // Create a preview article if necessary
-//     const tierEvents = Array.from(await $ndk.fetchEvents(
-//         {kinds: [NDKKind.CurationSet], authors: [$user.pubkey]},
-//         {},
-//         relaySet
-//     ))
-
-//     // Go through the tiers and publish the article to each one
-//     for (const tier in tiers) {
-//         if (!previewArticle && !tiers[tier]) continue;
-
-//         let tierEvent;// = tierEvents.find((event: NDKEvent) => event.tagValue("d") === tier);
-//         let tierList: NDKList;
-//         if (tierEvent) {
-//             tierList = NDKList.from(tierEvent);
-//         } else {
-//             tierList = new NDKList($ndk, {
-//                 kind: NDKKind.CurationSet,
-//                 tags: [ [ "d", tier ] ],
-//             } as NostrEvent);
-//             tierList.title = title;
-//         }
-
-//         const articleToAdd = tiers[tier] ? article : previewArticle;
-
-//         tierList.tags.unshift(articleToAdd?.tagReference()!);
-//         await tierList.publish(relaySet);
-//     }
-// }

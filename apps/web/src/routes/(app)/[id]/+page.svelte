@@ -6,13 +6,13 @@
 	import { Avatar, Name, ndk, user as currentUser } from "@kind0/ui-common";
 	import { NDKArticle, NDKKind, type NDKEventId, NDKEvent, type NostrEvent, serializeProfile } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
-	import UserProfileFetcher from "$components/User/UserProfile.svelte";
+	import UserProfile from "$components/User/UserProfile.svelte";
 	import EditableAvatar from "$components/User/EditableAvatar.svelte";
     import type { UserProfileType } from "../../../app";
-	import { slide } from "svelte/transition";
 	import { Pen } from "phosphor-svelte";
-	import { categories } from "$utils/categories";
 	import CategorySelector from "$components/Forms/CategorySelector.svelte";
+	import { onMount } from "svelte";
+    import { addReadReceipt } from "$utils/read-receipts";
 
     let id: string;
     let { user } = $page.data;
@@ -22,6 +22,10 @@
         id = $page.params.id;
         user.ndk = $ndk;
     }
+
+    onMount(() => {
+        addReadReceipt(user);
+    })
 
     let articles: Readable<Map<NDKEventId, NDKArticle>>;
 
@@ -81,12 +85,16 @@
 
 <div class="max-w-5xl mx-auto">
     <div class="">
-        <UserProfileFetcher {user} bind:userProfile bind:kind37777Event let:fetching>
-            <div class="relative w-full overflow-hidden" style="padding-bottom: 25%;">
-                <img src={userProfile?.banner??defaultBanner} class="absolute w-full h-full object-cover object-top lg:rounded-[2rem]">
+        <UserProfile {user} bind:userProfile bind:kind37777Event let:fetching>
+            <div class="relative w-full overflow-hidden max-sm:pb-[20vh] pb-[25%]">
+                <img src={userProfile?.banner??defaultBanner} class="absolute w-full h-full object-cover object-top lg: rounded" alt={userProfile?.name}>
             </div>
             <!-- Profile Header -->
-            <div class="flex items-end justify-between p-6 relative -top-16">
+            <div class="
+                flex
+                max-sm:flex-col max-sm:w-full max-sm:items-start max-sm:gap-4
+                items-end justify-between p-6 relative -top-16
+            ">
                 <div class="flex items-end">
                     {#if canEdit}
                         <EditableAvatar user={user} {userProfile} {fetching} class="w-24 h-24 border-2 border-black" />
@@ -114,7 +122,7 @@
                             {:else}
                                 {#if fetching && !userProfile?.about}
                                     <div class="skeleton h-15 w-48">&nbsp;</div>
-                                {:else if userProfile.about}
+                                {:else if userProfile?.about}
                                     {userProfile?.about}
                                 {:else}
                                     &nbsp;
@@ -147,7 +155,7 @@
             {#if editing}
                 <CategorySelector bind:categories={editingCategories} />
             {/if}
-        </UserProfileFetcher>
+        </UserProfile>
 
         {#if $userContent}
             <div

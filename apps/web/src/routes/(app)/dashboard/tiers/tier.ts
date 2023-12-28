@@ -14,7 +14,6 @@ export type Tier = {
 
 export function amountsFromTier(tier: NDKEvent) {
     return tier.getMatchingTags("amount").reduce((acc, tag) => {
-        console.log("tag123", tag);
         const currency = tag[2];
         let amount = tag[1];
 

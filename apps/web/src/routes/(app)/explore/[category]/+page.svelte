@@ -9,6 +9,7 @@
 	import { categories } from '$utils/categories';
 	import { page } from '$app/stores';
 	import { getDefaultRelaySet } from '$utils/ndk';
+	import FilterButtons from '$components/FilterButtons.svelte';
 
     let events: NDKEventStore<NDKEvent> | undefined = undefined;
     let activeCategory: string | undefined;
@@ -23,7 +24,7 @@
             { kinds: [
                 NDKKind.Article,
                 NDKKind.HorizontalVideo,
-            ], "#f": ["Free"] },
+            ]},
         ];
 
         if (activeCategory) {
@@ -42,6 +43,8 @@
     let selectedCategory: string;
 
     $: selectedCategory = $page.params.category || "All";
+
+    let filters: App.FilterType[] = ["all"];
 </script>
 
 <svelte:head>
@@ -56,8 +59,8 @@
 
 {#if events && $events}
     <div class="flex flex-col gap-6 w-full max-w-7xl mx-auto sm:px-4">
-        <div class="w-full justify-between items-center inline-flex max-sm:hidden">
-            <div class="justify-start items-start gap-6 inline-flex">
+        <div class="w-full justify-between items-center flex max-sm:hidden overflow-x-clip flex-nowrap max-w-[calc(100vw-40px)]">
+            <div class="justify-start items-start gap-6 flex whitespace-nowrap flex-shrink">
                 <div class="text-white text-opacity-60 text-sm font-semibold leading-4">Popular Categories</div>
                     {#each categories as category}
                         <a
@@ -67,20 +70,7 @@
                         >{category}</a>
                     {/each}
             </div>
-            <div class="justify-start items-center gap-4 inline-flex">
-                <div class="text-white text-opacity-60 text-sm font-semibold leading-4">Sort by</div>
-                <div class="justify-start items-center gap-1 flex">
-                    <div class="p-2 bg-white bg-opacity-10 rounded-lg justify-start items-center gap-1.5 flex">
-                        <div class="w-5 h-5 relative"></div>
-                    </div>
-                    <div class="p-2 rounded-lg justify-start items-center gap-1.5 flex">
-                        <div class="w-5 h-5 relative"></div>
-                    </div>
-                    <div class="p-2 rounded-lg justify-start items-center gap-1.5 flex">
-                        <div class="w-5 h-5 relative"></div>
-                    </div>
-                </div>
-            </div>
+            <FilterButtons bind:filters />
         </div>
 
         <div class="w-full max-2xl">

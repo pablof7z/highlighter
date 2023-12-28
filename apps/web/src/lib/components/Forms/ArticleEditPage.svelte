@@ -36,7 +36,7 @@
     let authorUrl: string | undefined;
     $: authorLink = authorUrl ? `${domain}${authorUrl}` : domain;
     let previewContentReadLink: string;
-    $: previewContentReadLink = `\n\n\nSupport my work and read the rest of this article on my Faaans page: ${authorLink}`;
+    $: previewContentReadLink = `\n\n--------------------------\n\nSupport my work and read the rest of this article on my Faaans page: ${authorLink}`;
 
     function updatePreviewContent() {
         if (!previewContentChanged) {
@@ -141,7 +141,7 @@
     max-sm:top-0 sm:bottom-0
     max-sm:bg-base-200/50 sm:bg-base-200
     max-sm:backdrop-blur-sm
-    w-full left-0 z-50
+    w-full left-0 z-50 right-0
 ">
     <div class="mx-auto max-w-3xl py-3 sm:py-8 max-sm:px-4">
         <div class="flex flex-row justify-between items-center">

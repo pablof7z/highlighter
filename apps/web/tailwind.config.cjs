@@ -18,6 +18,10 @@ module.exports = {
 		width: {
 		  'sidebar': '244px',
 		  'main': '700px',
+		},
+		spacing: {
+			'mobile-nav-bar': 'var(--mobile-nav-bar, 63px)',
+			'mobile-body-padding': 'var(--mobile-body-padding, 4px)',
 		}
 	  },
 	  fontFamily: {
@@ -50,7 +54,7 @@ module.exports = {
 			".tab-active": {
 			  "color": "#ffffff",
 			},
-			"accent": "#7A3CB9",
+			"accent": "#B984FF",
 			".btn": {
 			  "border-radius": "5px",
 			  "text-transform": "none",

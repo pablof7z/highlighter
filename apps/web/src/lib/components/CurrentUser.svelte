@@ -8,12 +8,11 @@
 	import { loginState } from '$stores/session';
 	import { fade } from 'svelte/transition';
 
-    const hostname = $page.url.hostname;
-
     async function openSignupModal() {
         if (window.nostr) {
             const u = await login($ndk, $bunkerNDK, 'nip07');
             if (u) {
+                alert('changing user')
                 $user = u;
                 return;
             }

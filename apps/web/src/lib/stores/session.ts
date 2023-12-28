@@ -220,7 +220,7 @@ async function fetchData(
             processContactList(event, opts.followsStore);
         } else if (event.kind === NDKKind.SuperFollowList && opts.superFollowsStore) {
             processContactList(event, opts.superFollowsStore);
-        } else if (event.kind === NDKKind.SubscriptorsList && opts.activeSubscriptionsStore) {
+        } else if (event.kind === NDKKind.GroupMembers && opts.activeSubscriptionsStore) {
             processSubscriptionList(event, authors[0]);
         } else if (event.kind === NDKKind.SubscriptionStart) {
             processSupport(event);
@@ -346,7 +346,7 @@ async function fetchData(
 
         if (opts.activeSubscriptionsStore) {
             filters.push({
-                kinds: [NDKKind.SubscriptorsList],
+                kinds: [NDKKind.GroupMembers],
                 authors: trustedPubkeys,
                 "#p": authorPrefixes,
             });

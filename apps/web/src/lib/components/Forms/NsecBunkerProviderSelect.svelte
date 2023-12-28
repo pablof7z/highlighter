@@ -1,21 +1,28 @@
 <script lang="ts">
-	import { ndk } from "@kind0/ui-common";
-	import { NDKKind, type Hexpubkey, NDKUser } from "@nostr-dev-kit/ndk";
+	import { Avatar, ndk } from "@kind0/ui-common";
+	import { NDKKind, type Hexpubkey, NDKUser, type NDKUserProfile, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
+	import { Check, ChevronDown, ChevronDownCircle } from "lucide-svelte";
+	import { onMount, tick } from "svelte";
+	import UserProfile from "$components/User/UserProfile.svelte";
 	import type { NsecBunkerProvider } from "../../../app";
 
     export let value: NsecBunkerProvider = { pubkey: "", domain: ""};
+    export let username: string | undefined;
     let selection = value.pubkey;
 
-    $: if (selection !== value.pubkey) {
-        value = { pubkey: selection, domain: nsecBunkerProviders[selection] };
-    }
+    // $: if (selection !== value.pubkey) {
+    //     value = { pubkey: selection, domain: nsecBunkerProviders[selection] };
+    // }
 
-    const allNsecBunkerProviders = $ndk.storeSubscribe(
+    export let onlyButton = false;
+
+    export let allNsecBunkerProviders = $ndk.storeSubscribe(
         { kinds: [NDKKind.AppHandler], "#k": [NDKKind.NostrConnect.toString()] },
         { closeOnEose: true, subId: 'nsec-bunker-providers' }
     )
 
     let nsecBunkerProviders: Record<Hexpubkey, string> = {};
+    let nsecBunkerProviderProfiles: Record<Hexpubkey, NDKUserProfile> = {};
 
     let validatedNsecbunkerProviders: Record<Hexpubkey, boolean> = {};
 
@@ -41,17 +48,61 @@
                 validatedNsecbunkerProviders[provider.pubkey] = res;
                 if (res) {
                     nsecBunkerProviders[provider.pubkey] = domain;
+                    nsecBunkerProviderProfiles[provider.pubkey] = profile;
                     nsecBunkerProviders = nsecBunkerProviders;
+                    nsecBunkerProviderProfiles = nsecBunkerProviderProfiles;
                 }
             })
         } catch (e) {
             console.error(e);
         }
     }
+
+    export let open = false;
+
+    function toggleOpen() {
+        open = !open;
+    }
 </script>
 
-<select bind:value={selection} class="border-0 flex items-center text-sm text-gray-500 focus:ring-0 focus:outline-none pr-8 text-right">
-    {#each Object.entries(nsecBunkerProviders) as [pubkey, domain]}
-        <option value={pubkey}>@{domain}</option>
-    {/each}
-</select>
+{#if !open}
+    <button on:click={toggleOpen} class="border-0 flex items-center text-sm text-gray-500 focus:ring-0 focus:outline-none pr-2">
+        {#if value?.domain}
+            <span class="mr-2">@{value.domain}</span>
+        {/if}
+        <ChevronDown class="w-5 h-5" />
+    </button>
+{:else if !onlyButton}
+    <h1 class="mt-4 mb-2 text-lg !text-black text-center font-semibold">Choose a provider</h1>
+
+    <ul class="menu !bg-transparent flex-nowrap border border-black/10 rounded-box p-0 overflow-y-auto h-fit">
+        {#each Object.entries(nsecBunkerProviders) as [pubkey, domain]}
+            <li class:active={value?.pubkey === pubkey} class="overflow-x-clip">
+                <button
+                    class="border-b rounded-b-none py-2 flex"
+                    on:click={() => {
+                        selection = pubkey;
+                        value.pubkey = selection;
+                        value.domain = nsecBunkerProviders[selection];
+                        value = value;
+                        toggleOpen();
+                        // setTimeout(toggleOpen, 500);
+                    }}
+                >
+                    <img src={nsecBunkerProviderProfiles[pubkey]?.picture??"https://cdn.satellite.earth/fb0e24f6cd8f581c8873e834656163dd497dce47dab8b878d73caf4aae3def89.png"} class="w-12 h-12 object-cover rounded flex-none" alt={domain} />
+                    <div class="flex flex-col gap-1 whitespace-nowrap">
+                        <span class="mr-2 font-bold">
+                            {#if username}<span class="!font-normal opacity-40">{username}@</span>{/if}{domain}</span>
+                        <div class="text-xs w-full truncate text-ellipsis opacity-50">{nsecBunkerProviderProfiles[pubkey].about}</div>
+                    </div>
+                </button>
+            </li>
+        {/each}
+    </ul>
+{/if}
+
+<style>
+    li.active {
+        @apply bg-accent/10;
+    }
+</style>

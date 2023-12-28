@@ -33,9 +33,6 @@
             publishingAllowed = true;
         }
     }
-
-    let publishing = false;
-    let previewContentChanged = false;
 </script>
 
 <div class="flex flex-col gap-10">

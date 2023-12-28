@@ -14,14 +14,24 @@ export function currencySymbol(currency: string) {
 }
 
 export function currencyFormat(currency: string, amount: number) {
+    let retval: string;
+
     switch (currency) {
         case "USD":
-            return `$${amount.toFixed(2)}`;
+            retval = `$${amount.toFixed(2)}`;
+            break;
         case "EUR":
-            return `${amount.toFixed(2)}€`;
+            retval = `${amount.toFixed(2)}€`;
+            break;
         case "msat":
             return nicelyFormattedMilliSatNumber(amount) + ' sats';
         default:
             return `${amount} ${currency}`;
     }
+
+    if (retval.endsWith('.00')) {
+        retval = retval.slice(0, -3);
+    }
+
+    return retval;
 }

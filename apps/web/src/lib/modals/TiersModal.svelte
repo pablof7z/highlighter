@@ -1,18 +1,19 @@
 <script lang="ts">
-	import PageTitle from "$components/Page/PageTitle.svelte";
+    import PageTitle from "$components/Page/PageTitle.svelte";
     import TierEditorEmpty from "$components/TierEditorEmpty.svelte";
 	import { ndk, newToasterMessage, user } from "@kind0/ui-common";
     import TierHeader from "$components/TierHeader.svelte";
 	import NDK, { NDKEvent, NDKKind, type NDKEventId, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import { getUserSupportPlansStore, startUserView, userSubscription } from '$stores/user-view';
-	import { onDestroy, onMount } from 'svelte';
-    import Terms from "./Terms.svelte";
+	import { onDestroy, onMount, afterUpdate } from 'svelte';
+    import Terms from "../../routes/(app)/dashboard/tiers/Terms.svelte";
 	import TierEditor from '$components/TierEditor.svelte';
     import type { Term } from '$utils/term';
 	import type { Readable } from 'svelte/store';
 	import { goto } from '$app/navigation';
-	import { amountsFromTier, amountTag, type Tier } from "./tier";
-	import { getDefaultRelaySet } from "$utils/ndk";
+
+	import ModalShell from "$components/ModalShell.svelte";
+	import { amountsFromTier, amountTag, type Tier } from "../../routes/(app)/dashboard/tiers/tier";
 
     let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
     // let currentTiersModified: Record<NDKEventId, boolean> = {};
@@ -20,14 +21,7 @@
 
     let tiers: Tier[] = [];
 
-    onMount(() => {
-        startUserView($user);
-        currentTiers = getUserSupportPlansStore();
-    })
-
-    onDestroy(() => {
-        userSubscription?.unref();
-    })
+    $: if ($user) currentTiers = getUserSupportPlansStore();
 
     $: if ($currentTiers) {
         for (const tierEvent of $currentTiers) {
@@ -173,7 +167,7 @@
         console.log(tiersList.rawEvent());
         await tiersList.sign();
         console.log(tiersList.rawEvent());
-        await tiersList.publish(getDefaultRelaySet());
+        await tiersList.publish();
     }
 
     let modifiedTiers = 0;
@@ -186,62 +180,58 @@
     }
 </script>
 
-{#if currentTiers && $currentTiers}
-<div class="flex flex-col gap-10 mx-auto max-w-5xl">
-    <PageTitle title="Support Tiers">
-        <div class="flex flex-row gap-4">
-            <button on:click={addTier} class="button">Add new tier</button>
-            <button on:click={saveTiers} class="button px-6">
-                Save
-            </button>
-        </div>
-    </PageTitle>
-    <div class="mx-auto w-fit">
-        <div class="px-12 pt-6 pb-10 bg-white rounded-3xl flex-col justify-start items-center gap-6 inline-flex w-full">
-            <TierHeader user={$user} />
-            <div class="justify-center items-center inline-flex gap-4">
+<ModalShell class="max-w-5xl">
+    $user = {!!$user}
+    {#if currentTiers && $currentTiers && $user}
+            <div class="mx-auto w-fit" on:click|preventDefault|stopPropagation>
+                <div class="px-12 pt-6 pb-10 bg-white rounded-3xl flex-col justify-start items-center gap-6 inline-flex w-full">
+                    <TierHeader user={$user} />
+                    <div class="justify-center items-center inline-flex gap-4">
 
-                <select
-                    value={currency}
-                    class="bg-zinc-100 border-none rounded-lg text-black text-sm font-medium"
-                    on:change={e => {
-                        currency = e.target.value;
-                    }}
-                >
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="msat">Bitcoin</option>
-                </select>
+                        <select
+                            value={currency}
+                            class="bg-zinc-100 border-none rounded-lg text-black text-sm font-medium"
+                            on:change={e => {
+                                currency = e.target.value;
+                            }}
+                        >
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="msat">Bitcoin</option>
+                        </select>
 
-                <Terms
-                    terms={terms??["monthly"]}
-                    on:change={(e) => terms = e.detail}
-                />
-            </div>
-            <div class="justify-start items-start gap-4 inline-flex overflow-y-auto max-w-3xl">
-                {#if tiers.filter(t => !t.deleted).length === 0}
-                    <TierEditorEmpty on:click={addTier} />
-                {/if}
-
-                {#each tiers as tier, i}
-                    {#if !tier.deleted}
-                        <TierEditor
-                            currency={currency||"USD"}
-                            {terms}
-                            bind:tier={tiers[i]}
-                            event={$currentTiers.find(t => t.tagValue("d") === tier.dTag)}
-                            on:save={() => saveTiers()}
-                            on:remove={() => removeTier(tier)}
+                        <Terms
+                            terms={terms??["monthly"]}
+                            on:change={(e) => terms = e.detail}
                         />
+                    </div>
+                    <div class="justify-start items-start gap-4 inline-flex overflow-y-auto max-w-3xl">
+                        {#if tiers.filter(t => !t.deleted).length === 0}
+                            <TierEditorEmpty on:click={addTier} />
+                        {/if}
+
+                        {#each tiers as tier, i}
+                            {#if !tier.deleted}
+                                <TierEditor
+                                    currency={currency||"USD"}
+                                    {terms}
+                                    bind:tier={tiers[i]}
+                                    event={$currentTiers.find(t => t.tagValue("d") === tier.dTag)}
+                                    on:save={() => saveTiers()}
+                                    on:remove={() => removeTier(tier)}
+                                />
+                            {/if}
+                        {/each}
+
+                    </div>
+
+                    {#if tiers.filter(t => !t.deleted).length > 0}
+                        <button on:click={addTier} class="button">Add new tier</button>
+                        <button on:click={saveTiers} class="button px-6">
+                            Save
+                        </button>
                     {/if}
-                {/each}
-
+                </div>
             </div>
-
-            {#if tiers.filter(t => !t.deleted).length > 0}
-                <button on:click={addTier} class="button">Add new tier</button>
-            {/if}
-        </div>
-    </div>
-</div>
-{/if}
+        {/if}
+</ModalShell>

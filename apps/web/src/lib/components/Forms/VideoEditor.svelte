@@ -95,7 +95,6 @@
             bind:videoFile={videoFile}
             bind:canContinue={canContinue[0]}
             bind:pendingStatus={pendingStatus[0]}
-            bind:step
         />
     </div>
     <div class:hidden={step !== 1}>
@@ -115,7 +114,6 @@
             bind:tiers
             bind:canContinue={canContinue[2]}
             bind:pendingStatus={pendingStatus[2]}
-            bind:step
             bind:nonSubscribersPreview
             bind:wideDistribution
         />

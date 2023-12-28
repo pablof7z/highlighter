@@ -5,15 +5,15 @@ import NDKRedisAdapter from "@nostr-dev-kit/ndk-cache-redis";
 import { NDKPrivateKeySigner, NDKRelayAuthPolicies, NDKRelaySet } from "@nostr-dev-kit/ndk";
 
 export const defaultRelays = [
-    'wss://relay.getfaaans.com',
+    // 'wss://relay.getfaaans.com',
     // 'wss://offchain.pub',
     // "wss://eden.nostr.land",
-    // "ws://localhost:5577"
+    "ws://localhost:5577"
 ];
 
 // Relays we are going to send a request to check if we need to auth
 const authRelays = [
-    // "ws://localhost:5577"
+    "ws://localhost:5577"
 ];
 
 export function getDefaultRelaySet() {
@@ -24,8 +24,10 @@ export function getDefaultRelaySet() {
 export async function configureDefaultNDK() {
     const $ndk = getStore(ndk);
     $ndk.clientName = "getfaaans";
+    $ndk.clientNip89 = "31990:4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce:1703282708172";
     $ndk.relayAuthDefaultPolicy = NDKRelayAuthPolicies.disconnect($ndk.pool);
     $ndk.pool.on("relay:connect", (r) => console.log('Connect to relay', r.url));
+    $ndk.pool.on("relay:read", (r) => console.log('Relay ready:', r.url));
 
     // add default relays
     for (const relay of defaultRelays) {
@@ -41,33 +43,36 @@ export async function configureDefaultNDK() {
         }
     }
     $ndk.addExplicitRelay('wss://purplepag.es');
+    $ndk.addExplicitRelay('wss://relay.damus.io');
+    $ndk.addExplicitRelay('wss://nos.lol');
 }
 
 export async function configureFeNDK() {
     const $ndk = getStore(ndk);
-    $ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: "faaans" });
+    // $ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: "faaans" });
     $ndk.clientName = "getfaaans";
 
     await $ndk.connect(2000);
 }
 
-export async function configureBeNDK(privateKey: string) {
+export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch) {
     const $ndk = getStore(ndk);
+    $ndk.httpFetch = nodeFetch as typeof fetch;
     $ndk.debug.enabled = true;
     $ndk.signer = new NDKPrivateKeySigner(privateKey);
-    const redisAdapter = new NDKRedisAdapter({path: "redis://localhost:6379"});
-    const redisConnected = new Promise<void>((resolve) => {
-        redisAdapter.redis.on("connect", () => {
-            resolve();
-        });
-    });
+    // const redisAdapter = new NDKRedisAdapter({path: "redis://localhost:6379"});
+    // const redisConnected = new Promise<void>((resolve) => {
+    //     redisAdapter.redis.on("connect", () => {
+    //         resolve();
+    //     });
+    // });
     Promise.all([
         $ndk.connect(2000),
-        redisConnected
+        // redisConnected
     ]);
 
-    $ndk.cacheAdapter = redisAdapter;
-    console.log(`redis status: ${redisAdapter.redis.status}`);
+    // $ndk.cacheAdapter = redisAdapter;
+    // console.log(`redis status: ${redisAdapter.redis.status}`);
 
     setInterval(() => {
         console.log(`NDK, pool stats`, $ndk.pool.stats());

@@ -4,10 +4,10 @@
 </script>
 
 <div class="w-screen h-screen top-0 left-0 fixed flex justify-center items-center" transition:fade>
-	<div class="w-24 h-24 animate-pulse scale-150">
+	<div class="max-w-2xl">
 		<h1 class="text-4xl font-bold text-center">Oops</h1>
 
-		<p class="text-center">
+			<p class="text-center">
 			There was an error loading this page.
 		</p>
 

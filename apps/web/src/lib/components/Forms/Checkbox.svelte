@@ -4,10 +4,10 @@
 </script>
 
 <label class="text-white text-base font-medium flex flex-row gap-2 items-center justify-between">
-    <div class="flex flex-row items-start">
+    <div class="flex flex-row items-start w-full">
         <input type="checkbox" class="checkbox mr-3" bind:checked={value} />
-        <div class="flex flex-col sm:flex-row gap-2 items-stretch justify-stretch">
-            <div class="flex flex-col items-start">
+        <div class="flex flex-col sm:flex-row gap-2 justify-stretch w-full">
+            <div class="flex flex-col items-start grow w-full">
                 <slot />
                 <div class="text-neutral-500">
                     <slot name="description" />
@@ -15,7 +15,7 @@
             </div>
 
             {#if button}
-                <div class="flex flex-grow items-stretch w-full">
+                <div class="flex shrink items-stretch max-sm:w-full whitespace-nowrap">
                     <slot name="button" />
                 </div>
             {/if}

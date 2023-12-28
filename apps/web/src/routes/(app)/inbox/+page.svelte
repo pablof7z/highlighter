@@ -1,9 +1,9 @@
 <script lang="ts">
 	import SuperFollowList from './SuperFollowList.svelte';
     import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
-    import { ndk, Name, Avatar } from "@kind0/ui-common";
+    import { ndk, Name, Avatar, user } from "@kind0/ui-common";
     import { userSuperFollows, userCreatorSubscriptionPlans } from "$stores/session";
-    import type { NDKEvent, NDKFilter } from "@nostr-dev-kit/ndk";
+    import { NDKRelaySet, type NDKEvent, type NDKFilter, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import FeedEvent from "$components/Feed/FeedEvent.svelte";
 	import { onMount } from "svelte";
 	import { slide } from 'svelte/transition';
@@ -37,7 +37,7 @@
         events.startSubscription();
     }
 
-    onMount(() => {
+    onMount(async () => {
         const filters = getFilters();
         events = $ndk.storeSubscribe(
             filters,
@@ -54,11 +54,17 @@
 </svelte:head>
 
 <div class="flex flex-row gap-8 mx-auto">
-    <div class="w-[300px] flex-none">
+    <div class="
+        max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:h-screen
+        sm:w-[300px] sm:flex-none
+    ">
         <SuperFollowList bind:activeView class="fixed" />
     </div>
 
-    <div class="flex-col justify-start items-start flex w-[680px]">
+    <div class="
+        max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
+        flex-col justify-start items-start flex w-full sm:max-w-[680px]
+    ">
         {#if $userSuperFollows.size === 0}
             <div class="w-full bg-base-200 rounded-xl min-h-[50vh] h-full flex flex-col items-center justify-center gap-6">
                 <Tray size="64" class="text-base-300" />

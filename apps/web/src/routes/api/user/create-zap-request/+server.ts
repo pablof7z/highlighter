@@ -38,7 +38,7 @@ async function calculateAmount(event: NDKEvent): Promise<number> {
 
     if (currency === "USD") {
         return Math.floor(Number(value) / bitcoinPrice * 100_000_000); // expressed in USD in the tag
-    } else if (currency === "BTC") {
+    } else if (currency === "msat") {
         return value / 1000; // expressed in msats in the tag
     } else {
         throw new Error("Currency not supported");
@@ -47,6 +47,9 @@ async function calculateAmount(event: NDKEvent): Promise<number> {
 
 function getTierNameFromSubscriptionEvent(event: NDKEvent): string | undefined {
     const tierEventString = event.tagValue("event");
+
+    if (!tierEventString) return undefined;
+
     const tierEvent = new NDKArticle(undefined, JSON.parse(tierEventString));
     return tierEvent.title;
 }
@@ -74,18 +77,20 @@ function calculateValidUntil(event: NDKEvent): Date {
 }
 
 export async function POST({request, locals}) {
+    console.log("POST /api/user/create-zap-request", request);
     try {
         const $ndk = getStore(ndk)
         const {pubkey} = locals.session as Session;
         const payload = await request.json();
-        let { event: eventData, comment } = payload as Payload;
+        const { event: eventData } = payload as Payload;
+        let { comment } = payload as Payload;
+        console.log("event", eventData);
         const event = new NDKEvent($ndk, JSON.parse(eventData));
+        console.log("event", event.rawEvent());
         const recipient = getRecipient(event);
-        console.log({event, recipient});
         let satsAmount = await calculateAmount(event);
-        console.log({satsAmount});
 
-        satsAmount = 1;
+        satsAmount = 100;
 
         const tierName = getTierNameFromSubscriptionEvent(event);
 
@@ -97,17 +102,22 @@ export async function POST({request, locals}) {
             zappedUser: recipient
         });
         comment ??= `Zap from getfaaans`;
-        console.log('generate', recipient);
 
         const timeoutPromise = new Promise<boolean>((_, reject) => {
-            setTimeout(() => reject(new Error("Timeout")), 2500);
+            setTimeout(() => reject(new Error("Timeout")), 6000);
         });
 
-        const getZapPromise = new Promise(async (resolve, reject) => {
-            const res = await zap.generateZapRequest(satsAmount, comment);
-            console.log({res});
-            if (!res) reject(new Error("Zap request not generated"));
-            resolve(res);
+        const getZapPromise = new Promise((resolve, reject) => {
+            console.log("generating zap request");
+            zap.generateZapRequest(satsAmount, comment).then((res) => {
+                console.log("zap request generated", res);
+                if (!res) reject(new Error("Zap request not generated"));
+                resolve(res);
+            }).catch((e) => {
+                console.log("error generating zap request", e);
+                console.log("error", e);
+                reject(e);
+            });
         });
 
         const a = await Promise.race([
@@ -120,7 +130,7 @@ export async function POST({request, locals}) {
 
         console.log({a});
 
-        const {event: zapReq, zapEndpoint} = a;
+        const {event: zapReq, zapEndpoint} = a as any;
         zapReq.pubkey = pubkey;
         await zapReq.toNostrEvent();
 
