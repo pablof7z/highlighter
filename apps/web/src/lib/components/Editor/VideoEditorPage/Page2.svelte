@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { NDKVideo } from '@nostr-dev-kit/ndk';
-	import ChooseVideoThumbnail from "../ChooseVideoThumbnail.svelte";
 	import { ndk, newToasterMessage, uploadToSatelliteCDN } from '@kind0/ui-common';
+	import ChooseVideoThumbnail from '$components/Forms/ChooseVideoThumbnail.svelte';
 
     export let videoFile: File | undefined = undefined;
     export let video: NDKVideo;
@@ -49,7 +49,7 @@
         xhr.send(selectedBlob);
     }
 
-    $: canContinue = selectedBlob || video.thumbnail;
+    $: canContinue = !!selectedBlob || !!video.thumbnail;
 
     let uploadedBlob: Blob | undefined = undefined;
     let selectedBlob: Blob | undefined = undefined;

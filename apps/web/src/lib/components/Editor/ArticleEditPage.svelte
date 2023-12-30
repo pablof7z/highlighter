@@ -1,15 +1,18 @@
 <script lang="ts">
-	import { ndk, user } from "@kind0/ui-common";
+	import { Textarea, ndk, newToasterMessage, user } from "@kind0/ui-common";
 	import { NDKArticle, NDKEvent, NDKKind, NDKList, NDKRelay, NDKRelaySet, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { publishToTiers } from "$actions/publishToTiers";
 	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
     import truncateMarkdown from 'markdown-truncate';
 	import { getUserSupportPlansStore } from "$stores/user-view";
 	import { getDefaultRelaySet } from '$utils/ndk';
-	import CategorySelector from './CategorySelector.svelte';
+	import CategorySelector from '../Forms/CategorySelector.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import type { UserProfileType } from '../../../app';
-	import Page2 from "./ArticleEditor/Page2.svelte";
+	import DistributionPage from "./Pages/DistributionPage.svelte";
+	import ItemEditShell from "../Forms/ItemEditShell.svelte";
+	import PublishingStep from "./Pages/PublishingStep.svelte";
+	import { fade } from "svelte/transition";
 
     export let article: NDKArticle;
 
@@ -54,16 +57,17 @@
         updatePreviewContent();
     }
 
+    let publishing = false;
+    let shareUrl = "";
+
     async function publish() {
+        publishing = true;
         updatePreviewContent();
 
         // Don't create a preview article if all tiers are selected
         if (Object.keys(tiers).filter(tier => tiers[tier]).length === Object.values(tiers).length) {
             nonSubscribersPreview = false;
         }
-
-        console.log({tiers});
-        console.log(Object.keys(tiers).filter(tier => tiers[tier]).length, Object.values(tiers).length);
 
         const rs = getDefaultRelaySet();
         article.relay = Array.from(rs.relays)[0];
@@ -89,11 +93,23 @@
             if (previewArticle) previewArticle.tags.push(["t", category]);
         }
 
-        await publishToTiers(article, tiers, {
-            ndk: $ndk,
-            teaserEvent: previewArticle,
-            wideDistribution
-        });
+        try {
+            await publishToTiers(article, tiers, {
+                ndk: $ndk,
+                teaserEvent: previewArticle,
+                wideDistribution
+            });
+        } catch (e) {
+            step--;
+            publishing = false;
+            newToasterMessage(e.message, "error");
+            return;
+        }
+
+        const shareArticle = previewArticle ?? article;
+
+        shareUrl = `${domain}${authorUrl}/${shareArticle.tagValue("d")}`;
+        publishing = false;
     }
 
     let userProfile: UserProfileType;
@@ -103,30 +119,57 @@
 
     }
 
-    function next() {
-        if (step < 2) {
-            step++;
-        } else {
-            publish();
+    let steps = [
+        {
+            title: "Write",
+            description: "Write to your heart's content",
+            canContinue: true,
+        },
+        {
+            title: "Audience",
+            description: "Define this article's visibility",
+            canContinue: true,
+        },
+        {
+            title: "Categories",
+            description: "Choose categories for this article",
+            canContinue: true,
+        },
+        {
+            title: "Publish",
+            description: "Publish this article",
+            canContinue: true,
         }
-    }
+    ]
 </script>
 
 <UserProfile user={$user} bind:userProfile bind:authorUrl />
 
-<div class="flex flex-col gap-10 sm:py-20">
+<ItemEditShell
+    bind:step
+    on:publish={publish}
+    bind:steps={steps}
+>
     <div class="min-h-[70vh]" class:hidden={step !== 0}>
         <ArticleEditor bind:article on:contentUpdate={updatePreviewContent} textareaClass="" />
     </div>
 
     <div class="flex flex-col gap-10 max-sm:pt-24 max-sm:px-4" class:hidden={step !== 1}>
-        <Page2
+        <DistributionPage
             bind:tiers
             bind:nonSubscribersPreview
-            bind:previewContent
             bind:wideDistribution
-            bind:previewContentChanged
-        />
+            bind:canContinue={steps[1].canContinue}
+            type="article"
+        >
+            <div slot="previewEditor">
+                <Textarea
+                    bind:value={previewContent}
+                    on:change={() => previewContentChanged = true}
+                    class="w-full !bg-transparent border border-neutral-800 rounded-xl resize-none min-h-[50vh] text-lg text-white"
+                />
+            </div>
+        </DistributionPage>
     </div>
 
     {#if step === 2}
@@ -134,56 +177,14 @@
             <CategorySelector bind:categories />
         </div>
     {/if}
-</div>
 
-<div class="
-    fixed
-    max-sm:top-0 sm:bottom-0
-    max-sm:bg-base-200/50 sm:bg-base-200
-    max-sm:backdrop-blur-sm
-    w-full left-0 z-50 right-0
-">
-    <div class="mx-auto max-w-3xl py-3 sm:py-8 max-sm:px-4">
-        <div class="flex flex-row justify-between items-center">
-            <div class="flex flex-col gap-1 max-sm:hidden">
-                {#if step === 0}
-                    <span class="font-medium text-white/80 text-lg">
-                        Write to your heart's content
-                    </span>
-                {/if}
-
-                {#if step === 1}
-                    <span class="font-medium text-white/80 text-lg">
-                        Define this article's visibility
-                    </span>
-                {/if}
-            </div>
-
-            <div class="sm:hidden">
-                {#if step > 0}
-                    <button on:click={() => step--}>
-                        Back
-                    </button>
-                {/if}
-            </div>
-
-            <div class="flex flex-row gap-6">
-                {#if step > 0}
-                    <button class="max-sm:hidden" on:click={() => step--}>
-                        Back
-                    </button>
-                {/if}
-
-                <button class="button" on:click={next}>
-                    {#if step === 0}
-                        Next: Audience
-                    {:else if step === 1}
-                        Next: Categories
-                    {:else if step === 2}
-                        Publish
-                    {/if}
-                </button>
-            </div>
+    {#if step === 3}
+        <div transition:fade={{duration: 1000}}>
+            <PublishingStep
+                {publishing}
+                title={article.title??"Untitled"}
+                {shareUrl}
+            />
         </div>
-    </div>
-</div>
+    {/if}
+</ItemEditShell>

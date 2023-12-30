@@ -4,17 +4,12 @@ import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
 import NDKRedisAdapter from "@nostr-dev-kit/ndk-cache-redis";
 import { NDKPrivateKeySigner, NDKRelayAuthPolicies, NDKRelaySet } from "@nostr-dev-kit/ndk";
 
-export const defaultRelays = [
-    // 'wss://relay.getfaaans.com',
-    // 'wss://offchain.pub',
-    // "wss://eden.nostr.land",
-    "ws://localhost:5577"
-];
+const RELAY = import.meta.env.VITE_RELAY;
+
+export const defaultRelays = [ RELAY ];
 
 // Relays we are going to send a request to check if we need to auth
-const authRelays = [
-    "ws://localhost:5577"
-];
+const authRelays = [ RELAY ];
 
 export function getDefaultRelaySet() {
     const $ndk = getStore(ndk)

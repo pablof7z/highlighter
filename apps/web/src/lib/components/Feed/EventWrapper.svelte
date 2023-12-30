@@ -1,7 +1,6 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import ReactButton from "$components/buttons/ReactButton.svelte";
-    import CommentIcon from "$icons/CommentIcon.svelte";
 	import RepostIcon from "$icons/RepostIcon.svelte";
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import { urlSuffixFromEvent } from "$utils/url";
@@ -12,6 +11,7 @@
 	import { derived } from "svelte/store";
     import Comment from "$components/Forms/Comment.svelte";
 	import { slide } from "svelte/transition";
+	import { ChatCircle } from "phosphor-svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -108,7 +108,7 @@
                     <button
                         class="w-7 h-7 relative"
                         on:click|preventDefault|stopPropagation={() => { dispatch('comment'); showComment = !showComment; }}>
-                        <CommentIcon class="w-7 h-7" />
+                        <ChatCircle class="w-7 h-7" />
                     </button>
                     <div class="w-7 h-7 relative">
                         <RepostIcon class="w-7 h-7" />

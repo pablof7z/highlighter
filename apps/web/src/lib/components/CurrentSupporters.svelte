@@ -37,9 +37,11 @@
             {supportingPubkeys?.size}
             Faaans
         </span>
-        <div class="flex -space-x-4 ml-4">
+        <div class="flex -space-x-4 ml-4 w-fit">
             {#each Array.from(supportingPubkeys).slice(0, 10) as supportingPubkey (supportingPubkey)}
-                <Avatar pubkey={supportingPubkey} class="w-10 h-10 border-2 border-black" />
+                <div class="flex-none w-10">
+                    <Avatar pubkey={supportingPubkey} class="w-10 h-10 border-2 border-black flex-none" />
+                </div>
             {/each}
         </div>
     {/if}

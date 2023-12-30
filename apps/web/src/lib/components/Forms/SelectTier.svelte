@@ -1,12 +1,11 @@
 <script lang="ts">
-	import TiersModal from "$modals/TiersModal.svelte";
 	import { user } from "@kind0/ui-common";
     import { CaretDown, Gear, PlusCircle } from "phosphor-svelte";
-	import { openModal } from "svelte-modals";
 	import { slide } from "svelte/transition";
 
     export let show = false;
     export let skipTitle = false;
+    export let subtitle: string | undefined = undefined;
     export let tiers: Record<string, boolean>;
     let selectedString = "";
 
@@ -45,7 +44,12 @@
 
 <div class="w-full flex-col justify-start items-start gap-2 inline-flex">
     {#if !skipTitle}
-        <div class="text-white text-base font-medium">Content Tier</div>
+        <div class="text-white text-xl font-medium">Content Tier</div>
+    {/if}
+    {#if subtitle}
+        <div class="text-white/50 font-thin">
+            {subtitle}
+        </div>
     {/if}
     <div class="self-stretch rounded-xl border border-neutral-800 items-start inline-flex bg-transparent flex-col justify-start gap-4">
         <button on:click={() => show = !show} class="text-white text-base px-4 py-3 font-medium w-full text-left flex flex-row justify-between">

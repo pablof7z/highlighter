@@ -11,9 +11,11 @@
         <slot />
     </div>
 {:else}
-    <div class="w-screen h-screen top-0 left-0 fixed flex justify-center items-center" transition:fade>
+    <div class="w-screen h-screen top-0 left-0 fixed flex flex-col gap-10 justify-center items-center" transition:fade>
+        {#if $$slots.loading}
+            <slot name="loading" />
+        {/if}
         <div class="w-24 h-24 animate-pulse scale-150">
-            $user = {!!$user}
             <Logo />
         </div>
     </div>

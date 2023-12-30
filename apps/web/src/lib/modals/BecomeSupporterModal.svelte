@@ -203,6 +203,7 @@
                             plan={selected}
                             supportedUser={user}
                             on:paid={onPaid}
+                            on:disconnectWallet={() => userHasWalletConnected = false}
                         />
                     {/if}
                 </div>

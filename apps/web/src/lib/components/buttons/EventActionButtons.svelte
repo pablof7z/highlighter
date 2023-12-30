@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import ReactButton from "./ReactButton.svelte";
-    import CommentIcon from "$icons/CommentIcon.svelte";
 	import BoostButton from "./BoostButton.svelte";
     import { createEventDispatcher } from "svelte";
+	import { ChatCircle } from "phosphor-svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -14,7 +14,7 @@
     <ReactButton {event} />
 
     <button class="w-7 h-7 relative" on:click={() => dispatch("comment")}>
-        <CommentIcon class="w-7 h-7" />
+        <ChatCircle class="w-7 h-7" />
     </button>
 
     <BoostButton {event} />

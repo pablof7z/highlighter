@@ -130,5 +130,9 @@
         {/if}
     </button>
 
-    <div class="text-neutral-400 text-sm font-medium leading-[19px]">Connected with NWC</div>
+    <div class="flex flex-col gap-2 items-center">
+        <div class="text-neutral-400 text-sm font-medium leading-[19px]">Connected with NWC</div>
+        <button class="text-xs text-neutral-500" on:click={() => dispatch('disconnectWallet')}>Disconnect NWC</button>
+    </div>
+
 </div>

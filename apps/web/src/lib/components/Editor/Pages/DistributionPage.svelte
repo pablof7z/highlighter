@@ -1,0 +1,129 @@
+<script lang="ts">
+	import HowDoesAccessWorkModal from '$modals/HowDoesAccessWorkModal.svelte';
+	import { slide } from "svelte/transition";
+	import SelectTier from "../../Forms/SelectTier.svelte";
+	import Checkbox from "../../Forms/Checkbox.svelte";
+	import { Check, Info } from "phosphor-svelte";
+	import { openModal } from "svelte-modals";
+
+    export let type: "article" | "video";
+    export let tiers: Record<string, boolean>;
+    export let nonSubscribersPreview: boolean;
+    export let wideDistribution = true;
+    export let canContinue: boolean;
+
+    let hasFree: boolean;
+    $: hasFree = !!tiers["Free"];
+
+    let showTeaser = false;
+    let howItWorks = false;
+
+    $: if (!hasFree && !nonSubscribersPreview) {
+        wideDistribution = false;
+    }
+
+    $: canContinue = tiers && Object.keys(tiers).filter(tier => tiers[tier]).length > 0;
+
+    function showHowItWorks() {
+        openModal(HowDoesAccessWorkModal);
+    }
+</script>
+
+<div class="flex flex-col gap-10">
+    <div
+        class="flex flex-col lg:flex-row gap-4 lg:items-end justify-between border-b pb-4 lg:mb-4 border-base-300"
+        class:lg:flex-col={howItWorks}
+        class:lg:!items-start={howItWorks}
+    >
+        <div class="flex flex-col items-start gap-2">
+            <h1 class="text-5xl text-white">
+                Access & Reach
+            </h1>
+
+            <h2 class="text-neutral-500 text-xl">
+                Choose which tiers can access this {type} and its reach
+            </h2>
+        </div>
+
+        <div class="max-sm:w-full">
+            <button
+                class="bdutton text-sm flex text-white gap-2 flex-row items-center max-sm:w-full max-sm:py-2"
+                on:click={showHowItWorks}
+            >
+                <Info class="text-lg text-info" />
+                How does this work?
+            </button>
+        </div>
+    </div>
+
+    <SelectTier
+        subtitle={`Select the tiers that will have access to this ${type}.`}
+        bind:tiers
+    />
+
+    <div class="flex flex-col gap-4" class:hidden={tiers["Free"]}>
+        <Checkbox bind:value={nonSubscribersPreview} button={nonSubscribersPreview}>
+            <div class="text-white">
+                Add a
+                <span class="font-bold text-white">preview version</span>
+                for
+                <span class="font-bold text-white">non-subscribers</span>
+            </div>
+            <div slot="description">
+                {#if nonSubscribersPreview}
+                    <div class="text-neutral-500">
+                        Non-subscribers will
+                        <span class="text-neutral-400">see a preview</span>
+                        of this {type}.
+                    </div>
+                {:else}
+                    <div class="text-neutral-500">
+                        Non-subscribers will
+                        <span class="text-neutral-400">not know</span>
+                        this {type} exists.
+                    </div>
+                {/if}
+            </div>
+            <div slot="button" class="flex items-center justify-between transition-all duration-500 w-full">
+                <button class="button w-full" on:click={() => showTeaser = !showTeaser} disabled={!nonSubscribersPreview}>
+                    Edit Preview
+                </button>
+            </div>
+        </Checkbox>
+
+        {#if showTeaser && nonSubscribersPreview}
+            <div class="transition-all duration-300" transition:slide>
+                <slot name="previewEditor" />
+            </div>
+        {/if}
+    </div>
+
+    {#if hasFree || nonSubscribersPreview}
+        <div transition:slide>
+            <Checkbox bind:value={wideDistribution}>
+                Distribute {#if !hasFree}preview version{/if} widely
+                <div slot="description" class="text-sm mt-1">
+                    {#if wideDistribution}
+                        <div class="text-neutral-500">
+                            {#if type === "article"}
+                                This {!hasFree ? "preview" : "article"} will be published to long-form feeds beyond your Faaans page.
+                                <br>
+                                <span class="text-white">This helps you reach more readers!</span>
+                            {:else if type === "video"}
+                                This {!hasFree ? "preview" : "video"} will be published to video feeds beyond your Faaans page.
+                                <br>
+                                <span class="text-white">This helps you reach more viewers!</span>
+                            {/if}
+
+                        </div>
+                    {:else}
+                        <div class="text-neutral-500">
+                            This {!hasFree ? "preview" : type} will
+                            <span class="text-white">only be visible on your Faaans page</span>, not throughout other reading sites.
+                        </div>
+                    {/if}
+                </div>
+            </Checkbox>
+        </div>
+    {/if}
+</div>

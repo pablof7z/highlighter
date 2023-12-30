@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { currencyFormat, currencySymbol } from "$utils/currency";
 import type { NDKEvent } from "@nostr-dev-kit/ndk";
-	import { Pencil } from "phosphor-svelte";
+	import { Check, Pencil } from "phosphor-svelte";
 
     export let tier: NDKEvent;
     export let selected: boolean;
@@ -13,6 +13,7 @@ import type { NDKEvent } from "@nostr-dev-kit/ndk";
 
     let amount: number | undefined;
     let currency: string;
+    let perks = tier.getMatchingTags("perk");
 
     $: {
         const t = tier.getMatchingTags("amount").find((tag) => tag[3] === term)!;
@@ -25,9 +26,11 @@ import type { NDKEvent } from "@nostr-dev-kit/ndk";
     class="card card-compact full-image self-stretch !rounded-3xl border-2 justify-between items-start flex-col w-[300px] min-h-[300px] inline-flex h-full !bg-neutral-100"
     class:selected={selected}
 >
-    <figure>
-        <img src={image} />
-    </figure>
+    {#if image}
+        <figure>
+            <img src={image} />
+        </figure>
+    {/if}
     <div class="card-body lex flex-col gap-4">
         <div class="flex-col justify-start items-start gap-2 flex w-full">
             <div class="text-black text-2xl font-medium w-full items-start flex group flex-row justify-between text-left">
@@ -40,6 +43,18 @@ import type { NDKEvent } from "@nostr-dev-kit/ndk";
         <div class="flex-col justify-start items-start gap-4 flex w-full text-black text-left whitespace-pre-line">
             {description}
         </div>
+        {#if perks?.length > 0}
+            <div class="flex flex-col gap-2">
+                {#each perks as perk}
+                    <div class="flex flex-row gap-2 items-start text-left text-neutral-500">
+                        <Check class="text-success w-6 h-6" weight="bold" />
+                        <div>
+                            {perk[1]}
+                        </div>
+                    </div>
+                {/each}
+            </div>
+        {/if}
     </div>
 </button>
 

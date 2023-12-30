@@ -12,7 +12,6 @@
         if (window.nostr) {
             const u = await login($ndk, $bunkerNDK, 'nip07');
             if (u) {
-                alert('changing user')
                 $user = u;
                 return;
             }

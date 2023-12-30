@@ -1,5 +1,11 @@
 import { nicelyFormattedMilliSatNumber } from "@kind0/ui-common";
 
+export const possibleCurrencies = [
+    "USD",
+    "EUR",
+    "msat",
+];
+
 export function currencySymbol(currency: string) {
     switch (currency) {
         case "USD":

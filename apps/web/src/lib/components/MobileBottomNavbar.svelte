@@ -5,8 +5,7 @@
 	import { Avatar, user } from "@kind0/ui-common";
 	import UserProfile from "./User/UserProfile.svelte";
 	import SignupModal from "$modals/SignupModal.svelte";
-    import { CompassTool, PlusCircle } from "phosphor-svelte";
-	import { Compass, Inbox, Search, Send, UserCircle } from "lucide-svelte";
+    import { MagnifyingGlass, Compass, PlusCircle, Tray, UserCircle } from "phosphor-svelte";
 	import { afterUpdate, onMount } from "svelte";
 	import Logo from "$icons/Logo.svelte";
 
@@ -44,7 +43,7 @@
         <button
             on:click={() => openModal(SignupModal)}
         >
-            <UserCircle class="w-full h-full" strokeWidth="1.2" />
+            <UserCircle class="w-full h-full" />
         </button>
     {/if}
 
@@ -52,7 +51,7 @@
 		href="/explore"
 		class:active={$page.url.pathname.startsWith('/explore')}
     >
-        <CompassTool class="w-full h-full" />
+        <Compass class="w-full h-full" />
         <span>Explore</span>
 	</a>
 
@@ -66,7 +65,7 @@
     <button
         on:click={() => {alert('Search is not implemented yet!')}}
     >
-        <Search class="w-full h-full" strokeWidth="1.2" />
+        <MagnifyingGlass class="w-full h-full"/>
         <span>Search</span>
     </button>
 
@@ -74,7 +73,7 @@
         href="/inbox"
         class:active={$page.url.pathname === '/inbox'}
     >
-        <Inbox class="w-full h-full" strokeWidth="1.2" />
+        <Tray class="w-full h-full" />
         <span>Inbox</span>
     </a>
 </div>

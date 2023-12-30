@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { userActiveSubscriptions, userSuperFollows } from "$stores/session";
-	import { MagicWand } from 'phosphor-svelte';
+	import { CaretDown, MagicWand } from 'phosphor-svelte';
 	import { page } from '$app/stores';
 	import SuperFollowListItem from './SuperFollowListItem.svelte';
-	import { ChevronDown } from "lucide-svelte";
 
     export let mode: "all" | "paid" = "all";
 
@@ -53,7 +52,7 @@
             ">Inbox</div>
 
             <div class="sm:hiddden transition-all duration-500 sm:hidden" class:rotate-180={open}>
-                <ChevronDown class="w-5 h-5 text-white" />
+                <CaretDown class="w-5 h-5 text-white" />
             </div>
         </button>
         <div class="justify-start items-center flex">

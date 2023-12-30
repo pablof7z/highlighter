@@ -19,7 +19,7 @@ function allowReactionsFromAnyone(event, hTag) {
   if (event.kind === 7)
     return true;
 }
-function reject_event_default(event, relay, connection) {
+export default function reject_event_default(event, relay, connection) {
   var _a;
   console.log(JSON.stringify({ event, relay, connection }));
   if (!connection.pubkey) {
@@ -44,6 +44,3 @@ function reject_event_default(event, relay, connection) {
     return "Not allowed";
   }
 }
-export {
-  reject_event_default as default
-};

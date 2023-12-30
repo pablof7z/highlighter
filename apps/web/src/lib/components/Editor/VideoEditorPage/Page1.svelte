@@ -1,8 +1,8 @@
 <script lang="ts">
-    import Input from '../Input.svelte';
+    import Input from '$components/Forms/Input.svelte';
+	import VideoUploader from '$components/Forms/VideoUploader.svelte';
 	import { Textarea } from '@kind0/ui-common';
 	import type { NDKVideo } from '@nostr-dev-kit/ndk';
-	import VideoUploader from '../VideoUploader.svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let canContinue: boolean;

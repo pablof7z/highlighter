@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { Avatar, ndk } from "@kind0/ui-common";
-	import { NDKKind, type Hexpubkey, NDKUser, type NDKUserProfile, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
-	import { Check, ChevronDown, ChevronDownCircle } from "lucide-svelte";
-	import { onMount, tick } from "svelte";
-	import UserProfile from "$components/User/UserProfile.svelte";
+	import { ndk } from "@kind0/ui-common";
+	import { NDKKind, type Hexpubkey, NDKUser, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import type { NsecBunkerProvider } from "../../../app";
+	import { CaretDown } from "phosphor-svelte";
 
     export let value: NsecBunkerProvider = { pubkey: "", domain: ""};
     export let username: string | undefined;
@@ -70,7 +68,7 @@
         {#if value?.domain}
             <span class="mr-2">@{value.domain}</span>
         {/if}
-        <ChevronDown class="w-5 h-5" />
+        <CaretDown class="w-5 h-5" />
     </button>
 {:else if !onlyButton}
     <h1 class="mt-4 mb-2 text-lg !text-black text-center font-semibold">Choose a provider</h1>

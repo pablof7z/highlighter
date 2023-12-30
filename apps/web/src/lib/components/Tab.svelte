@@ -1,6 +1,7 @@
 <script lang="ts">
     export let title: string;
     export let value: string;
+    export let href: string | undefined = undefined;
 
     let isActive: boolean = false;
 
@@ -12,9 +13,19 @@
 
 </script>
 
-<button
-    role="tab"
-    class="tab {$$props.class??""}"
-    class:tab-active={isActive}
-    on:click={onClick}
->{title}</button>
+{#if !href}
+    <button
+        role="tab"
+        class="tab {$$props.class??""}"
+        class:tab-active={isActive}
+        on:click={onClick}
+    >{title}</button>
+{:else}
+    <a
+        role="tab"
+        class="tab {$$props.class??""}"
+        class:tab-active={isActive}
+        {href}
+        on:click={onClick}
+    >{title}</a>
+{/if}

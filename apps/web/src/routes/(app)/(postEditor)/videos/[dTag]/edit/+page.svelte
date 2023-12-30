@@ -2,7 +2,7 @@
 	import { ndk, newToasterMessage, user } from "@kind0/ui-common";
 	import { NDKVideo, NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
 	import { page } from '$app/stores';
-	import VideoEditPage from "$components/Forms/VideoEditPage.svelte";
+	import VideoEditPage from "$components/Editor/VideoEditPage.svelte";
 
 	let dTag: string;
 

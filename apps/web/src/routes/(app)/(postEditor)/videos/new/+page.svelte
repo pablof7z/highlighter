@@ -1,5 +1,5 @@
 <script lang="ts">
-	import VideoEditPage from "$components/Forms/VideoEditPage.svelte";
+	import VideoEditPage from "$components/Editor/VideoEditPage.svelte";
 	import { ndk } from "@kind0/ui-common";
 	import { NDKVideo } from "@nostr-dev-kit/ndk";
 

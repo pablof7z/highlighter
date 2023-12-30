@@ -14,7 +14,6 @@
         if (!u) {
             alert('Login failed');
         } else {
-            alert('changing user')
             $user = u;
             localStorage.setItem('nostr-key-method', 'nip07');
             localStorage.setItem('nostr-target-npub', $user.npub);
