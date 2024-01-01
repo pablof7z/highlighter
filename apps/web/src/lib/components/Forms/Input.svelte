@@ -14,10 +14,10 @@
     {...$$props}
     class="
         {$$props.color === "black" ?
-            "border-neutral-800 !text-white text-opacity-30 font-medium !bg-transparent"
+            "border-base-300 !text-white text-opacity-30 font-medium !bg-transparent focus:!border-neutral-700"
         :
             "!bg-white text-black !border-neutral-200 focus:!border-neutral-300 "
         }
-        rounded-lg w-full px-4 py-2 shadow border justify-start items-center gap-2 transition-colors placeholder:!text-neutral-400 duration-200 flex {$$props.class??""}
+        rounded-lg w-full px-4 py-2 shadow border justify-start items-center gap-2 placeholder:!text-neutral-400 flex !ring-none {$$props.class??""}
     "
 />

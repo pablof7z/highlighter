@@ -4,8 +4,7 @@ import { authenticateUser } from "$lib/utils/authentication";
 const AUTH_PATHS = [
     "/api/user/nwc",
     "/api/user/pay",
-    "/api/user/create-zap-request",
-    "/api/user/pay-zap-request",
+    "/api/user/subscribe"
 ];
 
 export const handle: Handle = async ({ event, resolve }) => {

@@ -1,4 +1,5 @@
 import { nicelyFormattedMilliSatNumber } from "@kind0/ui-common";
+import type { NDKTag } from "@nostr-dev-kit/ndk";
 
 export const possibleCurrencies = [
     "USD",
@@ -40,4 +41,29 @@ export function currencyFormat(currency: string, amount: number) {
     }
 
     return retval;
+}
+
+export async function getBitcoinPrice(currency: string) {
+    const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies="+currency.toLowerCase());
+    const data = await response.json();
+    return data.bitcoin.usd;
+}
+
+/**
+ * Calculate the amount of sats from an amount tag
+ * @param amountTag
+ * @returns
+ */
+export async function calculateSatAmountFromAmountTag(amountTag: NDKTag): Promise<number> {
+    const value = parseFloat(amountTag[1]);
+    const currency = amountTag[2];
+
+    if (["USD", "EUR"].includes(currency)) {
+        const bitcoinPrice = await getBitcoinPrice(currency);
+        return Math.floor(Number(value) / bitcoinPrice * 100_000_000); // expressed in USD in the tag
+    } else if (currency === "msat") {
+        return value / 1000; // expressed in msats in the tag
+    } else {
+        throw new Error("Currency not supported");
+    }
 }

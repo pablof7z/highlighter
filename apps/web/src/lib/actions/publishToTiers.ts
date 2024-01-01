@@ -1,6 +1,7 @@
 import type NDK from "@nostr-dev-kit/ndk";
 import type { NDKEvent, NDKRelaySet, NDKUser } from "@nostr-dev-kit/ndk";
 import { getDefaultRelaySet } from "$utils/ndk";
+import type { TierSelection } from "$lib/events/tiers";
 
 function getEventRelaySet(hasTeaser: boolean, wideDistribution: boolean, relaySet: NDKRelaySet | undefined) {
     if (!hasTeaser && wideDistribution)
@@ -11,7 +12,7 @@ function getEventRelaySet(hasTeaser: boolean, wideDistribution: boolean, relaySe
 
 export async function publishToTiers(
     event: NDKEvent,
-    tiers: Record<string, boolean>,
+    tiers: TierSelection,
     opts: {
         wideDistribution?: boolean,
         teaserEvent?: NDKEvent,
@@ -23,8 +24,6 @@ export async function publishToTiers(
     const teaser = opts.teaserEvent;
 
     opts.relaySet = getEventRelaySet(!!opts.teaserEvent, !!opts.wideDistribution, opts.relaySet);
-
-    console.log({opts});
 
     const user: NDKUser = await ndk.signer!.user();
 
@@ -53,14 +52,15 @@ export async function publishToTiers(
     // Annotate the tiers
     for (const tier in tiers) {
         if (teaser) {
-            if (tiers[tier]) { // If this tier is required, mark is such
+            debugger
+            if (tiers[tier].selected) { // If this tier is required, mark is such
                 teaser.tags.push(["tier", tier]);
             } else { // Otherwise, mark it for indexing
                 teaser.tags.push(["f", tier]);
             }
         }
 
-        if (!tiers[tier]) continue;
+        if (!tiers[tier].selected) continue;
         event.tags.push(["f", tier]);
     }
 

@@ -34,6 +34,6 @@
     {#if reactedByUser}
         <RepostIcon class="w-7 h-7 text-accent" />
     {:else}
-        <RepostIcon class="w-7 h-7" />
+        <RepostIcon class="w-7 h-7 text-white" weight="regular" />
     {/if}
 </button>

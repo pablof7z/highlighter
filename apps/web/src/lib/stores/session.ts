@@ -92,19 +92,6 @@ export const userFollowHashtags = writable<string[]>([]);
 export const userSupport = writable<NDKEvent[]>([]);
 
 /**
- * Current user's interests lists
- */
-export const userInterestLists = derived(userLists, $userLists => {
-    return Array.from($userLists.values())
-        .filter(list => list.kind === NDKKind.InterestsList);
-});
-
-export const userShelves = derived(userLists, $userLists => {
-    return Array.from($userLists.values())
-        .filter(list => list.kind === NDKKind.CategorizedHighlightList);
-});
-
-/**
  * The user's extended network
  */
 export const networkFollows = persist(

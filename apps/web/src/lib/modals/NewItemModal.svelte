@@ -31,28 +31,33 @@
                 Video
             </a>
 
-            <a href="#">
+            <button disabled>
                 <span>
                     <StreamIcon />
                 </span>
                 Stream
-            </a>
+            </button>
         </div>
     </div>
     </ModalShell>
 
 <style lang="postcss">
-    a {
+    a, button {
         @apply px-4 py-3 rounded-xl justify-start items-start gap-2 inline-flex;
         @apply text-black text-sm font-semibold leading-5;
         @apply flex-col justify-start items-center gap-2 inline-flex;
+    }
 
-        & > span {
-            @apply w-8 h-8 pl-1 pr-0.5 pt-0.5 pb-1 justify-center items-center inline-flex self-center;
-        }
+    button[disabled] {
+        @apply opacity-40;
+        @apply cursor-not-allowed;
+    }
 
-        &:hover {
-            @apply hover:bg-zinc-100;
-        }
+    button > span {
+        @apply w-8 h-8 pl-1 pr-0.5 pt-0.5 pb-1 justify-center items-center inline-flex self-center;
+    }
+
+    button:hover {
+        @apply hover:bg-zinc-100;
     }
 </style>

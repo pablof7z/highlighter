@@ -8,29 +8,25 @@
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import CategorySelector from '../Forms/CategorySelector.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
-	import type { UserProfileType } from '../../../app';
+	import type { TierEntry, UserProfileType } from '../../../app';
 	import DistributionPage from "./Pages/DistributionPage.svelte";
 	import ItemEditShell from "../Forms/ItemEditShell.svelte";
 	import PublishingStep from "./Pages/PublishingStep.svelte";
 	import { fade } from "svelte/transition";
+	import { getSelectedTiers, getTierSelectionFromAllTiers, type TierSelection } from "$lib/events/tiers";
 
     export let article: NDKArticle;
 
     let step = 0;
 
     let previewContent: string;
-    let tiers: Record<string, boolean> = { "Free": true };
+    let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
     let nonSubscribersPreview = true;
     let wideDistribution = true;
     let categories: string[] = [];
 
     const allTiers = getUserSupportPlansStore();
-
-    $: for (const tier of $allTiers) {
-        if (tiers[tier.title!] === undefined) {
-            tiers[tier.title!] = false;
-        }
-    }
+    $: tiers = getTierSelectionFromAllTiers($allTiers);
 
     let previewContentChanged = false;
 
@@ -64,8 +60,10 @@
         publishing = true;
         updatePreviewContent();
 
+        const selectedTiers = getSelectedTiers(tiers);
+
         // Don't create a preview article if all tiers are selected
-        if (Object.keys(tiers).filter(tier => tiers[tier]).length === Object.values(tiers).length) {
+        if (selectedTiers.length === Object.values(tiers).length) {
             nonSubscribersPreview = false;
         }
 
@@ -99,7 +97,7 @@
                 teaserEvent: previewArticle,
                 wideDistribution
             });
-        } catch (e) {
+        } catch (e: any) {
             step--;
             publishing = false;
             newToasterMessage(e.message, "error");
@@ -141,6 +139,10 @@
             canContinue: true,
         }
     ]
+
+    function tiersChanged(e: CustomEvent<TierSelection>) {
+        tiers = e.detail;
+    }
 </script>
 
 <UserProfile user={$user} bind:userProfile bind:authorUrl />
@@ -156,11 +158,12 @@
 
     <div class="flex flex-col gap-10 max-sm:pt-24 max-sm:px-4" class:hidden={step !== 1}>
         <DistributionPage
-            bind:tiers
+            type="article"
+            {tiers}
             bind:nonSubscribersPreview
             bind:wideDistribution
             bind:canContinue={steps[1].canContinue}
-            type="article"
+            on:changed={tiersChanged}
         >
             <div slot="previewEditor">
                 <Textarea

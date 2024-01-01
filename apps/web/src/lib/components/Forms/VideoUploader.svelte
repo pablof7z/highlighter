@@ -1,6 +1,7 @@
 <script lang="ts">
 	import VideoPlayer from "$components/Events/VideoPlayer.svelte";
-	import { UploadButton, Input } from "@kind0/ui-common";
+	import { UploadButton } from "@kind0/ui-common";
+    import Input from "./Input.svelte";
 	import type { NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { Upload, Link } from "phosphor-svelte";
     import { createEventDispatcher } from "svelte";
@@ -9,7 +10,6 @@
     export let videoUrl: string | undefined = undefined;
     export let thumbnail: string | undefined = undefined;
     export let videoFile: File | undefined = undefined;
-
 
     const dispatch = createEventDispatcher();
     let uploadProgress: number | undefined;
@@ -92,7 +92,7 @@
                 <div class="divider">OR</div>
             </div>
             {#if !showExistingUrlInput}
-                <button class="text-white flex px-8 w-fit" on:click={() => showExistingUrlInput = true}>
+                <button class="text-white flex px-8 w-fit whitespace-nowrap" on:click={() => showExistingUrlInput = true}>
                     <Link class="w-6 h-6 mr-2" />
                     Use existing URL
                 </button>
@@ -100,15 +100,15 @@
                 <Input
                     color="black"
                     autofocus={true}
-                    class="border rounded-lg focus:ring-0 text-white font-['InterDisplay'] text-lg placeholder:text-white/50 placeholder:font-normal"
+                    class="text-xs w-[20rem]"
                     placeholder="Enter existing URL"
                     on:keydown={keydownExistingUrl}
                 />
             {/if}
         </div>
     {/if}
-</div>
 
-{#if videoUrl}
-    <button class="font-semibold text-white border rounded-lg px-4 py-2 text-sm my-2 self-start" on:click={() => videoUrl = undefined }>Reset</button>
-{/if}
+    {#if videoUrl}
+        <button class="font-semibold text-white border rounded-lg px-4 py-2 text-sm my-2 self-start absolute bottom-2 left-2 z-50" on:click={() => videoUrl = undefined }>Reset</button>
+    {/if}
+</div>

@@ -1,30 +1,34 @@
 <script lang="ts">
+	import VideoPreviewEditorModal from './../../modals/VideoPreviewEditorModal.svelte';
 	import PublishingStep from './Pages/PublishingStep.svelte';
 	import { fade } from 'svelte/transition';
     import UserProfile from '$components/User/UserProfile.svelte';
 	import { ndk, newToasterMessage, user } from "@kind0/ui-common";
-	import { NDKVideo, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { CaretLeft, CaretRight, Image, Images, Link, Upload, X } from "phosphor-svelte";
+	import { NDKVideo, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { debugMode } from "$stores/session";
     import DistributionPage from "./Pages/DistributionPage.svelte";
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import { publishToTiers } from '$actions/publishToTiers';
     import Page1 from "./VideoEditorPage/Page1.svelte";
     import Page2 from "./VideoEditorPage/Page2.svelte";
-	import { goto } from '$app/navigation';
 	import ItemEditShell from '../Forms/ItemEditShell.svelte';
-	import VideoEditorPreviewEditor from './VideoEditorPreviewEditor.svelte';
+	import { type TierSelection, getSelectedTiers, getTierSelectionFromAllTiers } from '$lib/events/tiers';
+	import { getUserSupportPlansStore } from '$stores/user-view';
+	import { openModal } from 'svelte-modals';
 
     export let video: NDKVideo = new NDKVideo($ndk, {
         content: "",
     } as NostrEvent);
     export let teaser: NDKVideo = new NDKVideo($ndk);
-    export let tiers: Record<string, boolean>;
+
+    let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
+    const allTiers = getUserSupportPlansStore();
+    $: tiers = getTierSelectionFromAllTiers($allTiers);
 
     let videoFile: File | undefined;
     let nonSubscribersPreview: boolean;
 
-    let step = 0;
+    let step = 2;
 
     let publishing = false;
     let shareUrl = "";
@@ -35,8 +39,10 @@
 
         video.relay = Array.from(relaySet.relays)[0];
 
+        const selectedTiers = getSelectedTiers(tiers);
+
         // Don't create a preview video if all tiers are selected
-        if (Object.keys(tiers).filter(tier => tiers[tier]).length === Object.values(tiers).length) {
+        if (selectedTiers.length === Object.values(tiers).length) {
             nonSubscribersPreview = false;
         }
 
@@ -57,7 +63,7 @@
                 teaserEvent: nonSubscribersPreview ? teaser : undefined,
                 wideDistribution
             });
-        } catch (e) {
+        } catch (e: any) {
             step--;
             publishing = false;
             newToasterMessage(e.message, "error");
@@ -104,6 +110,22 @@
             status: undefined,
         }
     ];
+
+    function tiersChanged(e: CustomEvent<TierSelection>) {
+        tiers = e.detail;
+    }
+
+    function editTeaser() {
+        openModal(VideoPreviewEditorModal, {
+            video,
+            teaser,
+            teaserUrl: teaser.url,
+            onUploaded: (teaserUrl) => {
+                teaser.url = teaserUrl;
+                wideDistribution = !!teaserUrl;
+            }
+        });
+    }
 </script>
 
 <UserProfile user={$user} bind:authorUrl />
@@ -134,19 +156,13 @@
     <div class:hidden={step !== 2}>
         <DistributionPage
             type="video"
-            bind:tiers
+            {tiers}
             bind:nonSubscribersPreview
             bind:wideDistribution
             bind:canContinue={steps[2].canContinue}
-        >
-            <div slot="previewEditor">
-                <VideoEditorPreviewEditor
-                    bind:video={video}
-                    bind:teaser={teaser}
-                    bind:wideDistribution
-                />
-            </div>
-        </DistributionPage>
+            on:changed={tiersChanged}
+            on:editPreview={editTeaser}
+        />
     </div>
 
     {#if step === 3}

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { ndk, newToasterMessage, nicelyFormattedSatNumber } from "@kind0/ui-common";
 	import { onMount } from "svelte";
-    import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
+    import { NDKKind, type NDKEvent, type NDKUser } from "@nostr-dev-kit/ndk";
 	import type { Term } from "$utils/term";
-	import { createSubscriptionEvent, createZapRequest } from "./subscription-event";
+	import { createSubscriptionEvent } from "./subscription-event";
 	import { slide } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
 	import { currencyFormat } from "$utils/currency";
@@ -43,20 +43,25 @@
     let subscribing = false;
     let error: string | undefined;
 
-    async function sendZap(zapRequest: NDKEvent) {
-        const res = await fetch("/api/user/pay-zap-request", {
+    async function startSubscription(subscriptionEvent: NDKEvent) {
+        const res = await fetch("/api/user/subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json", },
             body: JSON.stringify({
-                zapRequest: JSON.stringify(zapRequest.rawEvent())
+                subscriptionEvent: JSON.stringify(subscriptionEvent.rawEvent())
             }),
         });
 
         const data = await res.json();
-        const stutus = res.status;
+        const status = res.status;
 
         if (data.error) {
             newToasterMessage(data.error, "error");
+            return;
+        }
+
+        if (status !== 200) {
+            newToasterMessage("Failed to start subscription, try again please", "error");
             return;
         }
 
@@ -74,12 +79,8 @@
 
         try {
             const supportEvent = await createSubscriptionEvent($ndk, amount, currency, term, plan, supportedUser);
-            const zapRequest = await createZapRequest(supportEvent, zapComment);
-            console.log('zaprequest id', zapRequest.id, zapRequest.rawEvent());
-            zapRequest.sig = await $ndk.signer?.sign(zapRequest.rawEvent());
-            console.log('after signing zaprequest id', zapRequest.id, zapRequest.rawEvent());
-            await sendZap(zapRequest);
-            await supportEvent.publish();
+
+            await startSubscription(supportEvent);
         } catch (e: any) {
             console.trace(e.message);
             error = e.message;

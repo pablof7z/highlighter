@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKVideo, type NostrEvent } from "@nostr-dev-kit/ndk";
+    import { NDKVideo } from "@nostr-dev-kit/ndk";
 	import { getUserSupportPlansStore } from "$stores/user-view";
 	import VideoEditor from './VideoEditor.svelte';
 
@@ -11,12 +11,13 @@
     const allTiers = getUserSupportPlansStore();
 
     $: for (const tier of $allTiers) {
-        if (tiers[tier.title] === undefined) {
-            tiers[tier.title] = true;
+        const dTag = tier.tagValue("d");
+        if (dTag && tiers[dTag] === undefined) {
+            tiers[dTag] = false;
         }
     }
 </script>
 
 <div class="flex flex-col gap-10">
-    <VideoEditor bind:video bind:tiers />
+    <VideoEditor bind:video />
 </div>

@@ -16,8 +16,9 @@
     let content: string;
 
     $: for (const tier of $allTiers) {
-        if (tiers[tier.title] === undefined) {
-            tiers[tier.title] = false;
+        const dTag = tier.tagValue("d");
+        if (dTag && tiers[dTag] === undefined) {
+            tiers[dTag] = false;
         }
     }
 

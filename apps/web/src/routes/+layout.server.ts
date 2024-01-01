@@ -12,10 +12,10 @@ if (!RELAY_PRIVATE_KEY) {
 export async function load({ fetch }) {
     const $ndk = get(ndk);
 
-    if ($ndk.explicitRelayUrls.length === 0) {
+    if (!$ndk.explicitRelayUrls || $ndk.explicitRelayUrls.length === 0) {
         console.log("Initializing NDK", {fetch});
         if (!$ndk.explicitRelayUrls || $ndk.explicitRelayUrls.length === 0) {
-            configureBeNDK(RELAY_PRIVATE_KEY, fetch);
+            await configureBeNDK(RELAY_PRIVATE_KEY, fetch);
         }
     }
 }

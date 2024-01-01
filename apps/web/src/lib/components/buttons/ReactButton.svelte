@@ -12,7 +12,7 @@
     );
 
     onDestroy(() => {
-        reactions.unref();
+        reactions.unsubscribe();
     });
 
     let reactedByUser = false;

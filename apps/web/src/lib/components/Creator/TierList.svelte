@@ -6,6 +6,12 @@
 	import type { Readable } from 'svelte/store';
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import { goto } from '$app/navigation';
+	import { Plus } from 'phosphor-svelte';
+    import { createEventDispatcher } from 'svelte';
+
+    export let redirectOnSave = true;
+
+    const dispatch = createEventDispatcher();
 
     let tiers: NDKArticle[] = [];
     let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
@@ -54,7 +60,11 @@
         await tiersList.publish(relaySet);
 
         newToasterMessage("Support tiers correctly saved!", "success")
-        goto("/dashboard");
+
+        dispatch("saved", { tiers: tiersList });
+
+        if (redirectOnSave)
+            goto("/dashboard");
     }
 </script>
 
@@ -72,9 +82,10 @@
 
 <div class="flex flex-row justify-between">
     <button
-        class="text-white font-semibold self-start"
+        class="button button-black px-6 py-3 font-semibold self-start"
         on:click={addTier}
     >
+        <Plus class="w-5 h-5 mr-2" />
         Add Tier
     </button>
 

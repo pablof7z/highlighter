@@ -195,9 +195,9 @@
                         </div>
 
                         <WalletConnect bind:mode={nwcMode} bind:nwcUrl on:connected={onWalletConnected} />
-                    {:else}
+                    {:else if selectedAmount && selectedCurrency}
                         <Subscribe
-                            amount={selectedAmount}
+                            amount={selectedAmount.toString()}
                             currency={selectedCurrency}
                             term={selectedTerm}
                             plan={selected}

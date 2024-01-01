@@ -13,6 +13,7 @@
 	import Tab from "$components/Tab.svelte";
 	import TierList from "$components/Creator/TierList.svelte";
 	import { page } from "$app/stores";
+	import CreatorActivity from "$components/Creator/CreatorActivity.svelte";
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
@@ -78,7 +79,7 @@
         {#if activeTab === "Posts"}
             <CreatorFeed content={getUserContent()} />
         {:else if activeTab === "Activity"}
-            ...
+            <CreatorActivity />
         {:else if activeTab === "Stats"}
             <DashboardStats />
         {:else if activeTab === "Tiers"}

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import ReactButton from "$components/buttons/ReactButton.svelte";
-	import RepostIcon from "$icons/RepostIcon.svelte";
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import { urlSuffixFromEvent } from "$utils/url";
 	import { Avatar, Name, ndk, user } from "@kind0/ui-common";
@@ -11,7 +10,8 @@
 	import { derived } from "svelte/store";
     import Comment from "$components/Forms/Comment.svelte";
 	import { slide } from "svelte/transition";
-	import { ChatCircle } from "phosphor-svelte";
+	import { ChatCircle, Repeat } from "phosphor-svelte";
+	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -23,29 +23,6 @@
 
     const tiers = requiredTiersFor(event);
     const includesFree = tiers.includes("Free");
-
-    const taggedEvents = $ndk.storeSubscribe(
-        { kinds: [NDKKind.GroupReply, NDKKind.Reaction, NDKKind.GenericRepost], ...event.filter() },
-        { subId: "tagged-events" }
-    )
-
-    const replies = derived(taggedEvents, ($taggedEvents) => {
-        return $taggedEvents.filter(e => e.kind === NDKKind.GroupReply);
-    });
-
-    const reposts = derived(taggedEvents, ($taggedEvents) => {
-        return $taggedEvents.filter(e => e.kind === NDKKind.GenericRepost);
-    });
-
-    const reactions = derived(taggedEvents, ($taggedEvents) => {
-        return $taggedEvents.filter(e => e.kind === NDKKind.Reaction);
-    });
-
-    const replyingPubkeys = derived(replies, ($replies) => {
-        const s = new Set<Hexpubkey>();
-        $replies.forEach((e) => { s.add(e.pubkey); });
-        return Array.from(s);
-    });
 
     let showComment = false;
 
@@ -102,32 +79,7 @@
                     </div>
                 </div>
             {/if}
-            <div class="grow shrink basis-0 flex-col justify-start items-end gap-1 inline-flex">
-                <div class="justify-start items-start gap-3 inline-flex">
-                    <ReactButton {event} />
-                    <button
-                        class="w-7 h-7 relative"
-                        on:click|preventDefault|stopPropagation={() => { dispatch('comment'); showComment = !showComment; }}>
-                        <ChatCircle class="w-7 h-7" />
-                    </button>
-                    <div class="w-7 h-7 relative">
-                        <RepostIcon class="w-7 h-7" />
-                    </div>
-                </div>
-                <div class="self-stretch text-right text-white text-opacity-60 text-sm font-normal leading-[21px]">
-                    {#if ($reactions.length > 0)}
-                        {$reactions.length} reactions
-                    {/if}
-
-                    {#if ($replies.length > 0)}
-                        {$replies.length} replies
-                    {/if}
-
-                    {#if ($reposts.length > 0)}
-                        {$reposts.length} boosts
-                    {/if}
-                </div>
-            </div>
+            <EventActionButtons {event} />
         </div>
     </a>
 </UserProfile>

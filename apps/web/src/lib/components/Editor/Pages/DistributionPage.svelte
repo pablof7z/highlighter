@@ -3,17 +3,21 @@
 	import { slide } from "svelte/transition";
 	import SelectTier from "../../Forms/SelectTier.svelte";
 	import Checkbox from "../../Forms/Checkbox.svelte";
-	import { Check, Info } from "phosphor-svelte";
+	import { Info } from "phosphor-svelte";
 	import { openModal } from "svelte-modals";
+	import { getSelectedTiers, type TierSelection } from '$lib/events/tiers';
+    import { createEventDispatcher } from 'svelte';
 
     export let type: "article" | "video";
-    export let tiers: Record<string, boolean>;
+    export let tiers: TierSelection;
     export let nonSubscribersPreview: boolean;
     export let wideDistribution = true;
     export let canContinue: boolean;
 
+    const dispatch = createEventDispatcher();
+
     let hasFree: boolean;
-    $: hasFree = !!tiers["Free"];
+    $: hasFree = !!tiers["Free"]?.selected;
 
     let showTeaser = false;
     let howItWorks = false;
@@ -22,11 +26,13 @@
         wideDistribution = false;
     }
 
-    $: canContinue = tiers && Object.keys(tiers).filter(tier => tiers[tier]).length > 0;
+    $: canContinue = getSelectedTiers(tiers).length > 0;
 
     function showHowItWorks() {
         openModal(HowDoesAccessWorkModal);
     }
+
+    $: tiers = tiers
 </script>
 
 <div class="flex flex-col gap-10">
@@ -59,9 +65,10 @@
     <SelectTier
         subtitle={`Select the tiers that will have access to this ${type}.`}
         bind:tiers
+        on:changed
     />
 
-    <div class="flex flex-col gap-4" class:hidden={tiers["Free"]}>
+    <div class="flex flex-col gap-4" class:hidden={tiers["Free"].selected}>
         <Checkbox bind:value={nonSubscribersPreview} button={nonSubscribersPreview}>
             <div class="text-white">
                 Add a
@@ -69,33 +76,29 @@
                 for
                 <span class="font-bold text-white">non-subscribers</span>
             </div>
-            <div slot="description">
+            <div slot="description" class="text-sm mt-1">
                 {#if nonSubscribersPreview}
                     <div class="text-neutral-500">
                         Non-subscribers will
-                        <span class="text-neutral-400">see a preview</span>
+                        <span class="text-white">see a preview</span>
                         of this {type}.
                     </div>
                 {:else}
                     <div class="text-neutral-500">
                         Non-subscribers will
-                        <span class="text-neutral-400">not know</span>
+                        <span class="text-white">not know</span>
                         this {type} exists.
                     </div>
                 {/if}
             </div>
             <div slot="button" class="flex items-center justify-between transition-all duration-500 w-full">
-                <button class="button w-full" on:click={() => showTeaser = !showTeaser} disabled={!nonSubscribersPreview}>
+                <button
+                    class="button w-full"
+                    on:click={() => dispatch("editPreview")} disabled={!nonSubscribersPreview}>
                     Edit Preview
                 </button>
             </div>
         </Checkbox>
-
-        {#if showTeaser && nonSubscribersPreview}
-            <div class="transition-all duration-300" transition:slide>
-                <slot name="previewEditor" />
-            </div>
-        {/if}
     </div>
 
     {#if hasFree || nonSubscribersPreview}

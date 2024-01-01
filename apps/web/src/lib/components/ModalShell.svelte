@@ -1,8 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { closeModal } from "svelte-modals";
 	import { fade } from "svelte/transition";
 
     export let color: "white" | "black" = "white";
+
+    let url = $page.url.pathname;
+    $: if ($page.url.pathname !== url) closeModal();
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -13,8 +17,9 @@
     flex justify-center items-center
     z-40
     w-screen
+    pointer-events-none
     {color}
-" transition:fade on:click={closeModal}>
+" transition:fade>
     <div class="
         card
         !rounded-3xl
@@ -23,6 +28,7 @@
         z-50
         relative
         overflow-y-hidden
+        pointer-events-auto
         {$$props.class}
     " style="pointer-events: auto; max-height: 92vh;" transition:fade>
         <div class="!rounded-3xl inner shadow-lg p-6 flex flex-col items-center gap-6 {$$props.class}">
@@ -37,6 +43,6 @@
     }
 
     .black .card .inner {
-        @apply bg-black border border-base-300;
+        @apply bg-black border border-base-300 p-10;
     }
 </style>

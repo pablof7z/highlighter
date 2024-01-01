@@ -3,6 +3,9 @@ import { ndk } from "@kind0/ui-common";
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
 import NDKRedisAdapter from "@nostr-dev-kit/ndk-cache-redis";
 import { NDKPrivateKeySigner, NDKRelayAuthPolicies, NDKRelaySet } from "@nostr-dev-kit/ndk";
+import createDebug from "debug";
+
+const debug = createDebug("fans:ndk");
 
 const RELAY = import.meta.env.VITE_RELAY;
 
@@ -13,7 +16,17 @@ const authRelays = [ RELAY ];
 
 export function getDefaultRelaySet() {
     const $ndk = getStore(ndk)
-    return NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
+
+    debug(`Getting default relay set`, {
+        explicitRelayUrls: $ndk.explicitRelayUrls,
+        stats: $ndk.pool.stats(),
+    });
+
+    const relaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
+    for (const relay of relaySet.relays) {
+        debug("default relay set: ", relay.url, relay.status, relay.connectionStats);
+    }
+    return relaySet;
 }
 
 export async function configureDefaultNDK() {
@@ -21,8 +34,6 @@ export async function configureDefaultNDK() {
     $ndk.clientName = "getfaaans";
     $ndk.clientNip89 = "31990:4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce:1703282708172";
     $ndk.relayAuthDefaultPolicy = NDKRelayAuthPolicies.disconnect($ndk.pool);
-    $ndk.pool.on("relay:connect", (r) => console.log('Connect to relay', r.url));
-    $ndk.pool.on("relay:read", (r) => console.log('Relay ready:', r.url));
 
     // add default relays
     for (const relay of defaultRelays) {
@@ -36,6 +47,7 @@ export async function configureDefaultNDK() {
         if (authRelays.includes(relay)) {
             r.authRequired = true;
         }
+        r.connect();
     }
     $ndk.addExplicitRelay('wss://purplepag.es');
     $ndk.addExplicitRelay('wss://relay.damus.io');

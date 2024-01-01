@@ -3,6 +3,11 @@
 
 import type { Hexpubkey } from "@nostr-dev-kit/ndk";
 
+export type TierEntry = {
+	name?: string,
+	selected: boolean,
+}
+
 export type Session = {
 	pubkey: string,
 	nwcAvailable?: boolean,
