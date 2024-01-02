@@ -28,7 +28,7 @@
     let videoFile: File | undefined;
     let nonSubscribersPreview: boolean;
 
-    let step = 2;
+    let step = 0;
 
     let publishing = false;
     let shareUrl = "";

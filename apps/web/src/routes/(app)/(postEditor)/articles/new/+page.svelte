@@ -4,6 +4,7 @@
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
 
     let article = new NDKArticle($ndk);
+	let preview = new NDKArticle($ndk);
 </script>
 
 
@@ -11,4 +12,4 @@
 	<title>New article</title>
 </svelte:head>
 
-<ArticleEditPage {article} />
+<ArticleEditPage {article} {preview} />

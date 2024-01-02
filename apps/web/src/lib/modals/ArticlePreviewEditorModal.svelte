@@ -4,26 +4,24 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import GuideToPreviews from '$lib/drawer/help/guide-to-previews.svelte';
 	import { Avatar, Name, Textarea, ndk, pageDrawerToggle, rightSidebar, user } from "@kind0/ui-common";
-	import type { NDKEvent } from "@nostr-dev-kit/ndk";
+	import type { NDKArticle, NDKEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Check, Info } from "phosphor-svelte";
-	import { Modals, closeModal } from "svelte-modals";
-	import { slide } from "svelte/transition";
+	import { closeModal } from "svelte-modals";
 
-    export let note: NDKEvent;
-    export let preview: NDKEvent;
+    export let article: NDKArticle;
+    export let preview: NDKArticle;
     export let authorLink: string;
 
     $: preview.pubkey = $user?.pubkey;
 
-    let content: string = preview.content || note.content;
-    let includeLink = true;
+    let content: string = preview.content || article.content;
 
     let previewContentReadLink: string;
     $: previewContentReadLink = `\n\n--------------------------\n\nRead more like this on my Faaans page on ${authorLink}`;
 
     function save() {
-        // preview.content = content;
+        preview.content = content;
         preview = preview;
         closeModal();
     }
@@ -39,11 +37,9 @@
             $pageDrawerToggle = false;
         }
     }
-
-    $: { preview.content = content; preview = preview; }
 </script>
 
-<ModalShell color="black" class="max-h-[80vh] overflow-y-auto">
+<ModalShell color="black" class="max-w-3xl w-full max-h-[80vh] overflow-y-auto">
     <div class="flex flex-col gap-1 items-center w-full">
         <div class="font-semibold text-white text-3xl">Teaser Preview</div>
         <div class="text-neutral-500 font-light leading-loose text-center">
@@ -61,39 +57,9 @@
     <div class="flex flex-col items-stretch gap-2 w-full">
         <Textarea
             bind:value={content}
-            on:keyup={() => { preview.content = content; preview = preview; }}
-            autofocus={true}
-            class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-transparent !border-base-300 text-neutral-400 p-6"
-            placeholder="Write your note here..."
+            class="w-full !bg-transparent border border-neutral-800 rounded-xl resize-none min-h-[50vh] text-lg text-white overflow-y-hidden"
         />
-
-        <Checkbox
-            bind:value={includeLink}
-        >
-            Add link to your creator page
-            <div slot="description" class="text-xs text-opacity-50">
-                Embeds a link to your Faaans page for new readers to
-                be able to subscribe.
-            </div>
-        </Checkbox>
     </div>
-
-    {#if content.length > 1}
-        <div class="w-full bg-base-200 p-4 rounded-box scale-90 flex flex-col gap-6">
-            <div class="article">
-                {#key content}
-                    <EventContent ndk={$ndk} event={preview} content={content + (includeLink ? previewContentReadLink : "")} />
-                {/key}
-            </div>
-
-            <UserProfile user={$user} let:fetching let:userProfile>
-                <div class="flex flex-row gap-4 items-center">
-                    <Avatar {userProfile} {fetching} size="small" />
-                    <Name {userProfile} {fetching} class="text-white text-[15px] font-semibold" />
-                </div>
-            </UserProfile>
-        </div>
-    {/if}
 
     <div class="flex flex-row gap-10 items-center justify-end w-full">
         <button class="text-white text-sm" on:click={closeModal}>

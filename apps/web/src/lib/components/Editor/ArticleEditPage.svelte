@@ -14,8 +14,11 @@
 	import PublishingStep from "./Pages/PublishingStep.svelte";
 	import { fade } from "svelte/transition";
 	import { getSelectedTiers, getTierSelectionFromAllTiers, type TierSelection } from "$lib/events/tiers";
+	import ArticlePreviewEditorModal from "$modals/ArticlePreviewEditorModal.svelte";
+	import { openModal } from "svelte-modals";
 
     export let article: NDKArticle;
+    export let preview: NDKArticle;
 
     let step = 0;
 
@@ -70,31 +73,29 @@
         const rs = getDefaultRelaySet();
         article.relay = Array.from(rs.relays)[0];
 
-        let previewArticle: NDKArticle | undefined;
-
         // Create a preview article if necessary
         if (nonSubscribersPreview) {
-            previewArticle = new NDKArticle($ndk, {
+            preview = new NDKArticle($ndk, {
                 content: previewContent,
             } as NostrEvent);
 
-            previewArticle.relay = article.relay;
+            preview.relay = article.relay;
 
-            previewArticle.title = article.title;
-            previewArticle.image = article.image;
-            previewArticle.summary = article.summary;
+            preview.title = article.title;
+            preview.image = article.image;
+            preview.summary = article.summary;
         }
 
         // add categories
         for (const category of categories) {
             article.tags.push(["t", category]);
-            if (previewArticle) previewArticle.tags.push(["t", category]);
+            if (preview) preview.tags.push(["t", category]);
         }
 
         try {
             await publishToTiers(article, tiers, {
                 ndk: $ndk,
-                teaserEvent: previewArticle,
+                teaserEvent: nonSubscribersPreview ? preview : undefined,
                 wideDistribution
             });
         } catch (e: any) {
@@ -104,7 +105,7 @@
             return;
         }
 
-        const shareArticle = previewArticle ?? article;
+        const shareArticle = preview ?? article;
 
         shareUrl = `${domain}${authorUrl}/${shareArticle.tagValue("d")}`;
         publishing = false;
@@ -143,6 +144,13 @@
     function tiersChanged(e: CustomEvent<TierSelection>) {
         tiers = e.detail;
     }
+
+    function editTeaser() {
+        openModal(ArticlePreviewEditorModal, {
+            article,
+            preview,
+        });
+    }
 </script>
 
 <UserProfile user={$user} bind:userProfile bind:authorUrl />
@@ -164,15 +172,8 @@
             bind:wideDistribution
             bind:canContinue={steps[1].canContinue}
             on:changed={tiersChanged}
-        >
-            <div slot="previewEditor">
-                <Textarea
-                    bind:value={previewContent}
-                    on:change={() => previewContentChanged = true}
-                    class="w-full !bg-transparent border border-neutral-800 rounded-xl resize-none min-h-[50vh] text-lg text-white"
-                />
-            </div>
-        </DistributionPage>
+            on:editPreview={editTeaser}
+        />
     </div>
 
     {#if step === 2}

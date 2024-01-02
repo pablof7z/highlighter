@@ -107,12 +107,12 @@
 
 <div class="text-black text-sm font-medium leading-[19px]">
     {#if currency !== 'msat'}
-        {currencyFormat(currency, amount)}
+        {currencyFormat(currency, parseInt(amount))}
         {#if satsAmount}
             ({nicelyFormattedSatNumber(satsAmount)} sats)
         {/if}
     {:else}
-        {currencyFormat(currency, amount)}
+        {currencyFormat(currency, parseInt(amount))}
     {/if}
 </div>
 
