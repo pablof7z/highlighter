@@ -22,11 +22,10 @@ export type UserProfileType = NDKUserProfile & {
 	categories: string[] | undefined;
 };
 
-export type EventType = "article" | "group-note" | "video";
+export type EventType = "article" | "group-note" | "video" | "short-note";
 
 declare global {
 	namespace App {
-		type EventType = "all" | "note" | "article" | "video";
 		type FilterType = "all" | EventType;
 		// interface Error {}
 		// interface Locals {}

@@ -8,7 +8,7 @@
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import CategorySelector from '../Forms/CategorySelector.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
-	import type { TierEntry, UserProfileType } from '../../../app';
+	import type { UserProfileType } from '../../../app';
 	import DistributionPage from "./Pages/DistributionPage.svelte";
 	import ItemEditShell from "../Forms/ItemEditShell.svelte";
 	import PublishingStep from "./Pages/PublishingStep.svelte";

@@ -31,9 +31,7 @@
     }
 </script>
 
-<ModalShell
-    color="black"
->
+<ModalShell color="black">
     <div class="flex flex-col gap-1 items-center w-full">
         <div class="font-semibold text-white text-3xl">Teaser Preview</div>
         <div class="text-neutral-500 font-light leading-loose text-center">
@@ -64,7 +62,6 @@
     </div>
 
     <div class="flex flex-row gap-10 items-center justify-end w-full">
-
         <button class="text-white text-sm" on:click={closeModal}>
             Close
         </button>

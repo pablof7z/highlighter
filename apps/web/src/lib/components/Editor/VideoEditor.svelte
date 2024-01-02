@@ -1,5 +1,5 @@
 <script lang="ts">
-	import VideoPreviewEditorModal from './../../modals/VideoPreviewEditorModal.svelte';
+	import VideoPreviewEditorModal from '$modals/VideoPreviewEditorModal.svelte';
 	import PublishingStep from './Pages/PublishingStep.svelte';
 	import { fade } from 'svelte/transition';
     import UserProfile from '$components/User/UserProfile.svelte';

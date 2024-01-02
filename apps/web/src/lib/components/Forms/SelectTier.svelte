@@ -46,6 +46,21 @@
         dispatch("changed", tiers);
     }
 
+    let onlyFree = false;
+
+    function toggleOnlyFree() {
+        if (onlyFree) {
+            tiers = Object.keys(tiers)
+                .reduce((acc, id) => ({ ...acc, [id]: { name: tiers[id].name, selected: true } }), {});
+            onlyFree = false;
+        } else {
+            tiers = Object.keys(tiers)
+                .reduce((acc, id) => ({ ...acc, [id]: { name: tiers[id].name, selected: false } }), {});
+            tiers["Free"].selected = true;
+            onlyFree = true;
+        }
+    }
+
     onMount(updateSelectedString);
 
     function addNewTier() {
@@ -54,21 +69,35 @@
 </script>
 
 <div class="w-full flex-col justify-start items-start gap-2 inline-flex">
-    {#if !skipTitle}
-        <div class="text-white text-xl font-medium">Content Tier</div>
-    {/if}
-    {#if subtitle}
-        <div class="text-white/50 font-thin">
-            {subtitle}
+    {#if !skipTitle || !!subtitle}
+        <div class="flex flex-col w-full">
+            {#if !skipTitle}
+                <div class="text-white text-xl font-medium">Content Tier</div>
+            {/if}
+            {#if subtitle}
+                <div class="text-white/50 font-thin">
+                    {subtitle}
+                </div>
+            {/if}
         </div>
     {/if}
     <div class="self-stretch rounded-xl border border-neutral-800 items-start inline-flex bg-transparent flex-col justify-start gap-0">
-        <button on:click={() => show = !show} class="text-white text-base px-4 py-3 font-medium w-full text-left flex flex-row justify-between">
-            <div class="flex flex-row items-end gap-4">
-                {selectedString}
+        <button on:click={() => show = !show} class="text-white text-base px-4 py-3 font-medium w-full text-left flex flex-row items-center justify-between">
+            <div class="flex flex-col items-start gap-0">
+                <h1>{selectedString}</h1>
                 {#if selectedString === "Free"}
+                    {#if onlyFree}
                     <div class="font-light text-sm opacity-50">
-                        Content will be publicly visible
+                        Only non-subscribers will see this content
+                    </div>
+                    {:else}
+                        <div class="font-light text-sm opacity-50">
+                            Content will be publicly visible
+                        </div>
+                    {/if}
+                {:else if selectedString !== "Free" && selectedString !== "Select"}
+                    <div class="font-light text-sm opacity-50">
+                        Subscribers need to be on one of these tiers to see this content
                     </div>
                 {/if}
             </div>
@@ -79,8 +108,23 @@
                 {#each Object.keys(tiers) as tier}
                     <li>
                         <label class="w-full flex flex-row gap-4">
-                            <input type="checkbox" class="checkbox" bind:checked={tiers[tier].selected} on:change={(e) => updateSelectedString(tier)} />
-                            <span class="w-full">{tiers[tier].name}</span>
+                            <input type="checkbox" class="checkbox" bind:checked={tiers[tier].selected} on:change={(e) => { updateSelectedString(tier); onlyFree = false; }} />
+                            <span class="w-full"
+                            >{tiers[tier].name}</span>
+
+                            {#if tier === "Free"}
+                                <button
+                                    class="text-xs text-white whitespace-nowrap"
+                                    class:button={!onlyFree}
+                                    class:button-black={!onlyFree}
+                                    on:click={toggleOnlyFree}
+                                >
+                                    Only
+                                    {#if onlyFree}
+                                        non-subscribers will see this content
+                                    {/if}
+                                </button>
+                            {/if}
                         </label>
                     </li>
                 {/each}

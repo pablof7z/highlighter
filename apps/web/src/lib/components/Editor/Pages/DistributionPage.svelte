@@ -1,14 +1,14 @@
 <script lang="ts">
-	import HowDoesAccessWorkModal from '$modals/HowDoesAccessWorkModal.svelte';
 	import { slide } from "svelte/transition";
 	import SelectTier from "../../Forms/SelectTier.svelte";
 	import Checkbox from "../../Forms/Checkbox.svelte";
 	import { Info } from "phosphor-svelte";
-	import { openModal } from "svelte-modals";
 	import { getSelectedTiers, type TierSelection } from '$lib/events/tiers';
     import { createEventDispatcher } from 'svelte';
+	import { pageDrawerToggle, rightSidebar } from '@kind0/ui-common';
+	import HowDoesAccessWork from '$lib/drawer/help/how-does-access-work.svelte';
 
-    export let type: "article" | "video";
+    export let type: "article" | "video" | "note";
     export let tiers: TierSelection;
     export let nonSubscribersPreview: boolean;
     export let wideDistribution = true;
@@ -29,7 +29,11 @@
     $: canContinue = getSelectedTiers(tiers).length > 0;
 
     function showHowItWorks() {
-        openModal(HowDoesAccessWorkModal);
+        $rightSidebar = {
+            component: HowDoesAccessWork,
+            props: {}
+        }
+        $pageDrawerToggle = true;
     }
 
     $: tiers = tiers
@@ -105,25 +109,34 @@
         <div transition:slide>
             <Checkbox bind:value={wideDistribution}>
                 Distribute {#if !hasFree}preview version{/if} widely
-                <div slot="description" class="text-sm mt-1">
-                    {#if wideDistribution}
-                        <div class="text-neutral-500">
-                            {#if type === "article"}
-                                This {!hasFree ? "preview" : "article"} will be published to long-form feeds beyond your Faaans page.
-                                <br>
-                                <span class="text-white">This helps you reach more readers!</span>
-                            {:else if type === "video"}
-                                This {!hasFree ? "preview" : "video"} will be published to video feeds beyond your Faaans page.
-                                <br>
-                                <span class="text-white">This helps you reach more viewers!</span>
-                            {/if}
-
-                        </div>
-                    {:else}
-                        <div class="text-neutral-500">
+                <div slot="description" class="text-sm mt-1 text-neutral-500">
+                    {#if type === "article"}
+                        {#if wideDistribution}
+                            This {!hasFree ? "preview" : "article"} will be seen in long-form feeds beyond your Faaans page.
+                            <br>
+                            <span class="text-white">This helps you reach more readers!</span>
+                        {:else}
                             This {!hasFree ? "preview" : type} will
                             <span class="text-white">only be visible on your Faaans page</span>, not throughout other reading sites.
-                        </div>
+                        {/if}
+                    {:else if type === "video"}
+                        {#if wideDistribution}
+                            This {!hasFree ? "preview" : "video"} will be seen in video feeds beyond your Faaans page.
+                            <br>
+                            <span class="text-white">This helps you reach more viewers!</span>
+                        {:else}
+                            This {!hasFree ? "preview" : type} will
+                            <span class="text-white">only be visible on your Faaans page</span>, not throughout other video sites.
+                        {/if}
+                    {:else if type === "note"}
+                        {#if wideDistribution}
+                            This {!hasFree ? "preview" : "note"} will be seen in twitter-like clients beyond your Faaans page.
+                            <br>
+                            <span class="text-white">This helps you reach a wider audience!</span>
+                        {:else}
+                            This {!hasFree ? "preview" : type} will
+                            <span class="text-white">only be visible on your Faaans page</span>, not throughout twitter-like sites.
+                        {/if}
                     {/if}
                 </div>
             </Checkbox>

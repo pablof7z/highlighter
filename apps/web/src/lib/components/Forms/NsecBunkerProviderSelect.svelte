@@ -91,7 +91,7 @@
                     <div class="flex flex-col gap-1 whitespace-nowrap">
                         <span class="mr-2 font-bold">
                             {#if username}<span class="!font-normal opacity-40">{username}@</span>{/if}{domain}</span>
-                        <div class="text-xs w-full truncate text-ellipsis opacity-50">{nsecBunkerProviderProfiles[pubkey].about}</div>
+                        <div class="text-xs w-full truncate text-ellipsis opacity-50">{nsecBunkerProviderProfiles[pubkey].about ?? ""}</div>
                     </div>
                 </button>
             </li>

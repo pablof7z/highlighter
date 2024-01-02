@@ -5,8 +5,8 @@
 	import { CaretRight, Share } from 'phosphor-svelte';
 
     export let publishing: boolean;
-    export let title: string;
-    export let shareUrl: string;
+    export let title: string | undefined = "undefined";
+    export let shareUrl: string | undefined = "undefined";
 
     let LottiePlayer: any;
 

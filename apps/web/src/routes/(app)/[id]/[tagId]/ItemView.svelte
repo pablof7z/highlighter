@@ -162,7 +162,7 @@
                         />
                     </div>
                 </div>
-            {:else if eventType === "group-note"}
+            {:else if ["group-note", "short-note"].includes(eventType)}
                 <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
                     <div class="w-full flex items-center flex-col justify-center">
                         <div class="w-full">

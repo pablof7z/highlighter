@@ -8,6 +8,8 @@ export function getEventType(event: NDKEvent): EventType | undefined {
         return 'video';
     } else if (event.kind === NDKKind.GroupNote) {
         return "group-note";
+    } else if (event.kind === NDKKind.Text) {
+        return "short-note";
     } else {
         console.trace("Unknown event type", event.rawEvent());
         alert("Unknown event type",);

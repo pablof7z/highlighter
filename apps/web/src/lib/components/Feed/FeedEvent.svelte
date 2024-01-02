@@ -8,7 +8,7 @@
 </script>
 
 <div class="w-full">
-    {#if event.kind === NDKKind.GroupNote}
+    {#if event.kind === NDKKind.GroupNote || event.kind === NDKKind.Text}
         <FeedGroupPost {event} />
     {:else if event.kind === NDKKind.Article}
         <FeedArticle article={NDKArticle.from(event)} />

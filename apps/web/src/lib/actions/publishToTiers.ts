@@ -2,6 +2,7 @@ import type NDK from "@nostr-dev-kit/ndk";
 import type { NDKEvent, NDKRelaySet, NDKUser } from "@nostr-dev-kit/ndk";
 import { getDefaultRelaySet } from "$utils/ndk";
 import type { TierSelection } from "$lib/events/tiers";
+import { urlFromEvent } from "$utils/url";
 
 function getEventRelaySet(hasTeaser: boolean, wideDistribution: boolean, relaySet: NDKRelaySet | undefined) {
     if (!hasTeaser && wideDistribution)
@@ -52,7 +53,6 @@ export async function publishToTiers(
     // Annotate the tiers
     for (const tier in tiers) {
         if (teaser) {
-            debugger
             if (tiers[tier].selected) { // If this tier is required, mark is such
                 teaser.tags.push(["tier", tier]);
             } else { // Otherwise, mark it for indexing
@@ -73,10 +73,16 @@ export async function publishToTiers(
     }
 
     if (teaser) {
-        event.tags.push(["preview", teaser.tagId()]);
+        if (teaser.isParamReplaceable()) {
+            event.tags.push(["preview", teaser.tagId()]);
+        }
 
         if (event.isParamReplaceable()) {
             teaser.tags.push(["full", event.tagId()]);
+        } else {
+            await event.sign();
+            teaser.tags.push(["full", event.tagId()]);
+            teaser.tags.push(["url", urlFromEvent(event)]);
         }
 
         const teaserRelaySet = opts.wideDistribution ? undefined : opts.relaySet;
@@ -89,7 +95,8 @@ export async function publishToTiers(
         console.log({teaserRelaySet: teaserRelaySet ? teaserRelaySet.size() : 'undefined'});
     }
 
-    await event.sign();
+    if (!event.sig) await event.sign();
+
     await event.publish(opts.relaySet);
 
     console.log('event', event.rawEvent());
