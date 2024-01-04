@@ -16,9 +16,14 @@
 	import { getSelectedTiers, getTierSelectionFromAllTiers, type TierSelection } from "$lib/events/tiers";
 	import ArticlePreviewEditorModal from "$modals/ArticlePreviewEditorModal.svelte";
 	import { openModal } from "svelte-modals";
+	import { drafts, type DraftItem, type DraftCheckpoint } from "$stores/drafts";
+	import { goto } from "$app/navigation";
+	import { onDestroy } from "svelte";
 
     export let article: NDKArticle;
     export let preview: NDKArticle;
+    export let draftItem: DraftItem | undefined = undefined;
+    let draftCheckpoints: DraftCheckpoint[] = draftItem?.checkpoints ? JSON.parse(draftItem?.checkpoints) : [];
 
     let step = 0;
 
@@ -39,6 +44,11 @@
     $: authorLink = authorUrl ? `${domain}${authorUrl}` : domain;
     let previewContentReadLink: string;
     $: previewContentReadLink = `\n\n--------------------------\n\nSupport my work and read the rest of this article on my Faaans page: ${authorLink}`;
+
+    function onArticleChange() {
+        contentChangedSinceLastSave++;
+        updatePreviewContent();
+    }
 
     function updatePreviewContent() {
         if (!previewContentChanged) {
@@ -151,6 +161,52 @@
             preview,
         });
     }
+
+    let contentChangedSinceLastSave = 0;
+
+    const saveDraftInterval = setInterval(() => {
+        if (contentChangedSinceLastSave > 5) {
+            saveDraft(false);
+            contentChangedSinceLastSave = 0;
+        }
+    }, 60000);
+
+    onDestroy(() => {
+        clearInterval(saveDraftInterval);
+    })
+
+    function saveDraft(manuallySaved = true) {
+        const checkpoint: DraftCheckpoint = {
+            time: Date.now(),
+            data: {
+                article: JSON.stringify(article.rawEvent()),
+                preview: JSON.stringify(preview?.rawEvent()),
+                tiers,
+            },
+            manuallySaved
+        }
+
+        if (draftItem) {
+            $drafts = $drafts.filter(d => d.id !== draftItem!.id);
+        } else {
+            draftItem = {
+                type: "article",
+                id: Math.random().toString(36).substring(7),
+                checkpoints: "",
+            }
+        }
+
+        draftCheckpoints.unshift(checkpoint);
+        draftItem.checkpoints = JSON.stringify(draftCheckpoints);
+
+        $drafts.unshift(draftItem);
+
+        console.log(`setting drafts`, drafts)
+        $drafts = $drafts
+
+        newToasterMessage("Draft saved", "success");
+        if (manuallySaved) goto("/dashboard/drafts");
+    }
 </script>
 
 <UserProfile user={$user} bind:userProfile bind:authorUrl />
@@ -158,10 +214,11 @@
 <ItemEditShell
     bind:step
     on:publish={publish}
+    on:draft={saveDraft}
     bind:steps={steps}
 >
     <div class="min-h-[70vh]" class:hidden={step !== 0}>
-        <ArticleEditor bind:article on:contentUpdate={updatePreviewContent} textareaClass="" />
+        <ArticleEditor bind:article on:contentUpdate={onArticleChange} textareaClass="" />
     </div>
 
     <div class="flex flex-col gap-10 max-sm:pt-24 max-sm:px-4" class:hidden={step !== 1}>

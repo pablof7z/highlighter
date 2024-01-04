@@ -14,6 +14,7 @@
 	import TierList from "$components/Creator/TierList.svelte";
 	import { page } from "$app/stores";
 	import CreatorActivity from "$components/Creator/CreatorActivity.svelte";
+	import DraftList from "$components/Creator/DraftList.svelte";
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
@@ -37,6 +38,7 @@
         case "stats": activeTab = "Stats"; break;
         case "tiers": activeTab = "Tiers"; break;
         case "faaans": activeTab = "Faaans"; break;
+        case "drafts": activeTab = "Drafts"; break;
         default: activeTab = "Posts";
     }
 </script>
@@ -74,6 +76,7 @@
             <Tab title="Stats" href="/dashboard/stats" bind:value={activeTab} class="text-base sm:px-6" />
             <Tab title="Tiers" href="/dashboard/tiers" bind:value={activeTab} class="text-base sm:px-6" />
             <Tab title="Faaans" href="/dashboard/faaans" bind:value={activeTab} class="text-base sm:px-6" />
+            <Tab title="Drafts" href="/dashboard/drafts" bind:value={activeTab} class="text-base sm:px-6" />
         </div>
 
         {#if activeTab === "Posts"}
@@ -86,6 +89,8 @@
             <TierList />
         {:else if activeTab === "Faaans"}
             <SupporterList />
+        {:else if activeTab === "Drafts"}
+            <DraftList />
         {/if}
     </div>
 </LoadingScreen>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
 	import ArticleGrid from "$components/Events/ArticleGrid.svelte";
 	import VideoGrid from "$components/Events/VideoGrid.svelte";
     import { ndk } from "@kind0/ui-common";
@@ -10,6 +10,9 @@
 	import { page } from '$app/stores';
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import FilterButtons from '$components/FilterButtons.svelte';
+    import createDebug from "debug";
+
+    const debug = createDebug("fans:explore");
 
     let events: NDKEventStore<NDKEvent> | undefined = undefined;
     let activeCategory: string | undefined;
@@ -33,7 +36,8 @@
 
         events = $ndk.storeSubscribe(
             filters,
-        { relaySet, autoStart: true, groupable: false, subId: 'explore' })
+        { relaySet, autoStart: true, groupable: false, subId: 'explore', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
+        debug(filters);
     };
 
     onDestroy(() => {

@@ -15,11 +15,13 @@ export const activeUserViewPubkey = writable<Hexpubkey | undefined>(undefined);
 export let userSubscription: NDKEventStore<NDKEvent> | undefined = undefined;
 export const userTiers = writable<Readable<NDKArticle[]> | undefined>(undefined);
 export const userContent = writable<Readable<NDKEvent[]> | undefined>(undefined);
+export const userGAContent = writable<Readable<NDKEvent[]> | undefined>(undefined);
 export const userSupporters = writable<Readable<never[] | Record<Hexpubkey, string|undefined>> | undefined>(undefined);
 
 export function startUserView(user: NDKUser) {
     const $activeUserViewPubkey = getStore(activeUserViewPubkey);
     d('starting user view', user.pubkey);
+    console.trace("starting userview", user.pubkey)
 
     // if we are already subscribed to this user, do nothing
     if (userSubscription && $activeUserViewPubkey === user.pubkey) return;
@@ -39,11 +41,6 @@ export function startUserView(user: NDKUser) {
     activeUserViewPubkey.set(user.pubkey);
 
     const filters: NDKFilter[] = [
-        {
-            kinds: [ NDKKind.Article ],
-            authors: [user.pubkey],
-            limit: 20
-        },
         // supporting options
         {
             kinds: [ NDKKind.SubscriptionTier as number, NDKKind.TierList ],
@@ -58,7 +55,13 @@ export function startUserView(user: NDKUser) {
             kinds: [ NDKKind.GroupMembers as number ],
             "#d": [ user.pubkey ],
             authors: trustedPubkeys,
-        }
+        },
+        // Non group-exclusive content
+        {
+            kinds: [ NDKKind.Article, NDKKind.HorizontalVideo ],
+            authors: [user.pubkey],
+            limit: 20
+        },
     ];
 
     const groupFilter: NDKFilter = {
@@ -72,16 +75,18 @@ export function startUserView(user: NDKUser) {
 
     filters.push(groupFilter);
 
+    console.log('user view filters', filters);
+
     userSubscription = $ndk.storeSubscribe(filters, {
         subId: 'user-view',
         autoStart: true,
         groupable: false,
         cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY,
-        relaySet: getDefaultRelaySet()
     });
 
     userTiers.set(getUserSupportPlansStore());
     userContent.set(getUserContent());
+    userGAContent.set(getGAUserContent());
     userSupporters.set(getUserSupporters());
 }
 
@@ -162,6 +167,25 @@ export function getUserSupporters(): Readable<Record<Hexpubkey, string|undefined
     });
 }
 
+export function getGAUserContent(): Readable<NDKEvent[]> {
+    if (!userSubscription) return derived([], () => []);
+
+    return derived(
+        [userSubscription],
+        ([$userSubscription]) => {
+            const items = $userSubscription;
+
+            // go through all the items, if there is an item that has a "full" tag with a value that exists in ids, remove it
+            const filteredItems = items.filter((event: NDKEvent) => {
+                // Only non-h-tagged content
+                return !event.tagValue("h");
+            });
+
+            return filteredItems;
+        });
+}
+
+
 export function getUserContent(): Readable<NDKEvent[]> {
     if (!userSubscription) return derived([], () => []);
 
@@ -173,6 +197,10 @@ export function getUserContent(): Readable<NDKEvent[]> {
 
             // go through all the items, if there is an item that has a "full" tag with a value that exists in ids, remove it
             const filteredItems = items.filter((event: NDKEvent) => {
+                // Only h-tagged content
+                const hTag = event.tagValue("h");
+                if (!hTag) return false;
+
                 const fullTag = event.tagValue("full");
                 if (!fullTag) return true;
 
@@ -181,25 +209,4 @@ export function getUserContent(): Readable<NDKEvent[]> {
 
             return filteredItems;
         });
-
-        // if (!$userSubscription || !activeUserView) return [];
-        // return $userSubscription;
-
-        // const items = $userSubscription.filter((event: NDKEvent) => {
-        //     return event.tagValue("h") === activeUserView!.pubkey;
-        // });
-
-        // if we have any active subscriptions, filter out any content that is not
-        // from the active subscriptions
-        // const subscribed = $userActiveSubscriptions.get(activeUserView.pubkey) !== "Free";
-        // if (subscribed) {
-        //     // find the item that belongs to this active subscription
-        //     const rightItems = items.filter((event: NDKEvent) => {
-        //     return items.filter((event: NDKEvent) => {
-        //         return $userActiveSubscriptions.get(event.author) !== "Free";
-        //     });
-        // }
-
-        // return items;
-    // });
 }

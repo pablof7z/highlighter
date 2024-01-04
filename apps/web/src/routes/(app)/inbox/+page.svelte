@@ -2,8 +2,8 @@
 	import SuperFollowList from './SuperFollowList.svelte';
     import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { ndk, Name, Avatar, user } from "@kind0/ui-common";
-    import { userSuperFollows, userCreatorSubscriptionPlans } from "$stores/session";
-    import { NDKRelaySet, type NDKEvent, type NDKFilter, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
+    import { userSuperFollows, userCreatorSubscriptionPlans, userFollows, debugPageFilter } from "$stores/session";
+    import { NDKRelaySet, type NDKEvent, type NDKFilter, NDKSubscriptionCacheUsage, NDKKind } from "@nostr-dev-kit/ndk";
 	import FeedEvent from "$components/Feed/FeedEvent.svelte";
 	import { onMount } from "svelte";
 	import { slide } from 'svelte/transition';
@@ -11,6 +11,7 @@
 
     let activeFilterCount: number | undefined = undefined;
     let activeView = $userSuperFollows;
+    let mode: "all" | "paid"  = 'all';
 
     function getFilters() {
         const filters: NDKFilter[] = [];
@@ -21,6 +22,19 @@
             const plan = $userCreatorSubscriptionPlans.get(pubkey) ?? "Free";
             filters.push({ "#h": [pubkey], "#f": [plan] });
         }
+
+        if (mode === "all") {
+            filters.push({
+                authors: Array.from($userFollows),
+                kinds: [
+                    NDKKind.Article,
+                    NDKKind.HorizontalVideo,
+                ],
+                limit: 50
+            })
+        }
+
+        $debugPageFilter = filters;
 
         return filters;
     }
@@ -58,7 +72,7 @@
         max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:h-screen
         sm:w-[300px] sm:flex-none
     ">
-        <SuperFollowList bind:activeView class="fixed" />
+        <SuperFollowList bind:activeView bind:mode class="fixed" />
     </div>
 
     <div class="

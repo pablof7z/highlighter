@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import CreatorFeed from "$components/Feed/CreatorFeed.svelte";
 	import CurrentSupporters from "$components/CurrentSupporters.svelte";
-	import { userTiers, getUserSupporters, userSubscription, userContent } from "$stores/user-view";
+	import { userTiers, getUserSupporters, userSubscription, userContent, startUserView, userGAContent } from "$stores/user-view";
 	import { Avatar, Name, ndk, user as currentUser } from "@kind0/ui-common";
 	import { NDKArticle, NDKKind, type NDKEventId, NDKEvent, type NostrEvent, serializeProfile } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
@@ -26,6 +26,10 @@
     onMount(() => {
         addReadReceipt(user);
     })
+
+    function startIt() {
+        startUserView(user);
+    }
 
     let articles: Readable<Map<NDKEventId, NDKArticle>>;
 
@@ -82,6 +86,10 @@
     <meta property="og:description" content="Creator profile" />
     <meta property="og:image" content={userProfile?.avatar || defaultBanner} />
 </svelte:head>
+
+<button on:click={startIt} class="button">
+    Start User View
+</button>
 
 <div class="max-w-5xl mx-auto">
     <div class="">
@@ -157,12 +165,12 @@
             {/if}
         </UserProfile>
 
-        {#if $userContent}
+        {#if $userContent && $userGAContent}
             <div
                 class="w-full transition-all duration-300"
                 class:opacity-50={editing}
             >
-                <CreatorFeed content={$userContent} />
+                <CreatorFeed content={$userContent} contentGA={$userGAContent} />
             </div>
         {/if}
     </div>

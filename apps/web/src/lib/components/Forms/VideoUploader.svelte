@@ -47,6 +47,15 @@
         dispatch("uploaded", { tags, url });
     }
 
+    function blurExistingUrl(e: FocusEvent) {
+        showExistingUrlInput = false;
+        if (e.target?.value) {
+            videoUrl = e.target.value!;
+            video.url = videoUrl;
+            dispatch("uploaded", { url: videoUrl });
+        }
+    }
+
     function keydownExistingUrl(e: KeyboardEvent) {
         if (e.key === "Enter") {
             showExistingUrlInput = false;
@@ -103,6 +112,7 @@
                     class="text-xs w-[20rem]"
                     placeholder="Enter existing URL"
                     on:keydown={keydownExistingUrl}
+                    on:blur={blurExistingUrl}
                 />
             {/if}
         </div>

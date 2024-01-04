@@ -29,6 +29,7 @@
 
 	function back() {
         if (step > 0 && step < steps.length - 1) step--;
+        if (step === 0) dispatch("draft");
 	}
 
     let statusToShow: string | undefined = undefined;
@@ -89,15 +90,20 @@
             </ul>
 
             <div class="
-                flex flex-row gap-6
+                grid grid-flow-col
+                gap-6
                 max-sm:w-full justify-between
             ">
                 <button
-                    class="px-4"
-                    class:opacity-0={step === 0 || step === steps.length - 1}
+                    class="px-4 whitespace-nowrap button button-black py-3"
+                    class:opacity-0={step === steps.length - 1}
                     on:click={back}
                 >
-                    Back
+                    {#if step === 0}
+                        Save Draft
+                    {:else}
+                        Back
+                    {/if}
                 </button>
 
                 <button

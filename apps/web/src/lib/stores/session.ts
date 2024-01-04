@@ -19,6 +19,7 @@ export type LoginState = "logging-in" | "logged-in" | "contacting-remote-signer"
 export const loginState = writable<LoginState | null>(null);
 
 export const debugMode = writable<boolean>(false);
+export const debugPageFilter = writable<string|null>(null);
 
 export const loadingScreen = writable<boolean>(false);
 

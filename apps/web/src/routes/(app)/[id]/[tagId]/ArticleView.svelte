@@ -12,9 +12,11 @@
 	import { onDestroy, onMount } from "svelte";
 	import { openModal } from "svelte-modals";
 	import { addReadReceipt } from '$utils/read-receipts';
+	import { MarkerCircle, Quotes, Receipt, X } from 'phosphor-svelte';
 
     export let article: NDKArticle;
     const author = article.author;
+    export let editUrl: string | undefined = undefined;
 
     onMount(() => {
         startUserView(author);
@@ -38,7 +40,7 @@
 
     let content = article.content;
 
-    let editUrl = `/articles/${article.tagValue("d")}/edit`;
+    editUrl ??= `/articles/${article.tagValue("d")}/edit`;
 
     function selectionchange(event: CustomEvent) {
         const d = event.detail;
@@ -47,10 +49,10 @@
 
     onMount(() => {
         document.addEventListener('click', function(event) {
-            // remove the floating element
-            let floatElement = document.querySelector('.float-element');
-            if (floatElement) {
-                floatElement.remove();
+            // if the target is not the container nor a descendant of the container
+            if (!el?.contains(event.target as Node)) {
+                if (el?.classList.contains('opacity-0')) return;
+                el?.classList.add('opacity-0');
             }
         });
         document.addEventListener('mouseup', function(event) {
@@ -60,15 +62,15 @@
                 let rect = range.getBoundingClientRect();
 
                 // Create the floating element
-                let floatElement = document.createElement('div');
-                floatElement.textContent = "Your Content Here";
-                floatElement.className = 'float-element';
-                floatElement.style.position = 'absolute';
-                floatElement.style.top = (rect.top + window.scrollY - 50) + 'px';
-                floatElement.style.left = (rect.right + window.scrollX) + 'px';
+                el.style.top = (rect.top + window.scrollY - 50) + 'px';
+                el.style.left = (rect.right + window.scrollX) + 'px';
+                // remove opacity-0 class
                 setTimeout(() => {
-                    el?.appendChild(floatElement);
-                }, 100)
+                    el?.classList.remove('opacity-0');
+                }, 10)
+                // setTimeout(() => {
+                //     el?.appendChild(floatElement);
+                // }, 100)
             }
         });
 
@@ -76,13 +78,24 @@
     })
 
     let el: HTMLDivElement;
+
+    function createHighlight() {
+    }
 </script>
 
 <svelte:head>
     <title>{article.title}</title>
 </svelte:head>
 
-<div bind:this={el} class="z-50" />
+<div bind:this={el} class="float-element z-50 absolute opacity-0 transition-all duration-300 flex flex-col gap-1">
+    <button class="
+        button
+        transition-all duration-300
+    " on:click={createHighlight}>
+        <Receipt class="w-8 h-8" />
+        Highlight
+    </button>
+</div>
 
 <div class="max-">
     {#if article.image}
@@ -111,10 +124,9 @@
                                     <a href={editUrl} class="button">Edit</a>
                                 {/if}
                             </div>
-                            <div class="text-white text-opacity-60 text-sm font-normal leading-[21px]">32 responses  108 boosts</div>
                         </div>
                     </div>
-                    <div class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative">
+                    <article class="prose flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative">
                         <EventContent ndk={$ndk} event={article} {content} />
 
                         {#if isTeaser}
@@ -122,7 +134,7 @@
                                 <UpgradeButton event={article} />
                             </div>
                         {/if}
-                    </div>
+                    </article>
                 </div>
             </div>
         </div>
@@ -135,10 +147,6 @@
 
 <style lang="postcss">
     :global(.float-element) {
-        background-color: #fff;
-        border: 1px solid #000;
-        padding: 10px;
-        border-radius: 5px;
         box-shadow: 0 0 10px #000;
     }
 
