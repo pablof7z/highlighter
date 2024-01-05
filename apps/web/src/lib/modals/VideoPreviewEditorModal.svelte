@@ -61,12 +61,12 @@
         {/if}
     </div>
 
-    <div class="flex flex-row gap-10 items-center justify-end w-full">
-        <button class="text-white text-sm" on:click={closeModal}>
+    <div class="grid grid-flow-col gap-10 items-center justify-end w-full">
+        <button class="btn btn-ghost px-10 py-3 text-sm" on:click={closeModal}>
             Close
         </button>
         <button class="button text-sm px-10 py-3" on:click={onShowTrailer}>
-            Use a trailer
+            Upload trailer
         </button>
     </div>
 </ModalShell>

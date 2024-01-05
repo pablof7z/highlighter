@@ -10,6 +10,8 @@ export function getEventType(event: NDKEvent): EventType | undefined {
         return "group-note";
     } else if (event.kind === NDKKind.Text) {
         return "short-note";
+    } else if (event.kind === NDKKind.Highlight) {
+        return "highlight";
     } else {
         console.trace("Unknown event type", event.rawEvent());
         alert("Unknown event type",);

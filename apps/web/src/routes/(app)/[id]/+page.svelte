@@ -27,10 +27,6 @@
         addReadReceipt(user);
     })
 
-    function startIt() {
-        startUserView(user);
-    }
-
     let articles: Readable<Map<NDKEventId, NDKArticle>>;
 
     $: if (!articles && userSubscription && $userSubscription) {
@@ -86,10 +82,6 @@
     <meta property="og:description" content="Creator profile" />
     <meta property="og:image" content={userProfile?.avatar || defaultBanner} />
 </svelte:head>
-
-<button on:click={startIt} class="button">
-    Start User View
-</button>
 
 <div class="max-w-5xl mx-auto">
     <div class="">

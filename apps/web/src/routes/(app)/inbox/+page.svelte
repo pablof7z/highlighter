@@ -8,10 +8,11 @@
 	import { onMount } from "svelte";
 	import { slide } from 'svelte/transition';
 	import { Tray } from 'phosphor-svelte';
+	import PageSidebar from '$components/PageSidebar.svelte';
 
     let activeFilterCount: number | undefined = undefined;
     let activeView = $userSuperFollows;
-    let mode: "all" | "paid"  = 'all';
+    let mode: "all" | "paid"  = 'paid';
 
     function getFilters() {
         const filters: NDKFilter[] = [];
@@ -33,8 +34,6 @@
                 limit: 50
             })
         }
-
-        $debugPageFilter = filters;
 
         return filters;
     }
@@ -61,6 +60,8 @@
             events.startSubscription();
         }
     });
+
+    let open = false;
 </script>
 
 <svelte:head>
@@ -68,12 +69,26 @@
 </svelte:head>
 
 <div class="flex flex-row gap-8 mx-auto">
-    <div class="
-        max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:h-screen
-        sm:w-[300px] sm:flex-none
-    ">
-        <SuperFollowList bind:activeView bind:mode class="fixed" />
-    </div>
+    <PageSidebar title="Inbox" bind:open>
+        <div slot="headerRight" class="justify-start items-center flex">
+            <div role="tablist" class="tabs tabs-boxed bg-transparent">
+                <button
+                    role="tab"
+                    class="tab"
+                    class:tab-active={mode === 'all'}
+                    on:click={() => mode = 'all'}
+                >All</button>
+                <button
+                    role="tab"
+                    class="tab"
+                    class:tab-active={mode === 'paid'}
+                    on:click={() => mode = 'paid'}
+                >Paid</button>
+            </div>
+        </div>
+
+        <SuperFollowList bind:activeView bind:mode class="fixed" bind:open />
+    </PageSidebar>
 
     <div class="
         max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
@@ -120,5 +135,17 @@
 
     .item:not(:last-child) {
         margin-bottom: 1rem;
+    }
+
+    .tab-active {
+        @apply !bg-white !text-black;
+    }
+
+    a span.name {
+        @apply text-opacity-60;
+    }
+
+    a.active span.name {
+        @apply text-opacity-100;
     }
 </style>

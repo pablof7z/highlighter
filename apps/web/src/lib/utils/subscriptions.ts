@@ -3,7 +3,7 @@ import NDK, { NDKArticle, NDKEvent, NDKKind, NDKRelay, NDKRelayStatus, PublishEr
 import { getDefaultRelaySet } from "./ndk";
 import createDebug from "debug";
 
-const debug = createDebug("fans:subscriptions");
+const debug = createDebug("highlighter:subscriptions");
 
 export function getTierNameFromSubscriptionEvent(event: NDKEvent): string | undefined {
     const tierEventString = event.tagValue("event");

@@ -8,7 +8,7 @@ import createDebug from "debug";
 
 export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
 
-const d = createDebug("fans:login");
+const d = createDebug("highlighter:login");
 
 /**
  * These are pubkeys managed by the relay running this app, which gates access to content

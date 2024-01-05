@@ -9,7 +9,7 @@ import { calculateSatAmountFromAmountTag } from "$utils/currency";
 import { addToListOfSupporters, getTierNameFromSubscriptionEvent } from "$utils/subscriptions";
 import { validateEvent, verifySignature, type Event } from "nostr-tools";
 
-const debug = createDebug("fans:/api/user/subscribe");
+const debug = createDebug("highlighter:/api/user/subscribe");
 
 type Payload = {
     subscriptionEvent: string;
@@ -72,7 +72,9 @@ export async function POST({request}) {
         }
 
         const recipient = getRecipient(event);
+        debug("getting payment request")
         const pr = await getPaymentRequest(event);
+        debug("payment request", pr);
 
         if (!pr) {
             throw new Error("Unable to generate a payment request");

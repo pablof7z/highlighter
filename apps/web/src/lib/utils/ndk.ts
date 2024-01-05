@@ -5,7 +5,7 @@ import NDKRedisAdapter from "@nostr-dev-kit/ndk-cache-redis";
 import { NDKPrivateKeySigner, NDKRelayAuthPolicies, NDKRelaySet } from "@nostr-dev-kit/ndk";
 import createDebug from "debug";
 
-const debug = createDebug("fans:ndk");
+const debug = createDebug("highlighter:ndk");
 
 const RELAY = import.meta.env.VITE_RELAY;
 
@@ -30,6 +30,7 @@ export function getDefaultRelaySet() {
 }
 
 export async function configureDefaultNDK() {
+    console.log("configureDefaultNDK");
     const $ndk = getStore(ndk);
     $ndk.clientName = "getfaaans";
     $ndk.clientNip89 = "31990:4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce:1703282708172";
@@ -64,6 +65,12 @@ export async function configureFeNDK() {
 
 export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch) {
     const $ndk = getStore(ndk);
+
+    if ($ndk.explicitRelayUrls!.length === 0) {
+        console.log("configureBeNDK: no explicit relays, configuring default");
+        await configureDefaultNDK();
+    }
+
     $ndk.httpFetch = nodeFetch as typeof fetch;
     $ndk.debug.enabled = true;
     $ndk.signer = new NDKPrivateKeySigner(privateKey);
@@ -73,6 +80,7 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
     //         resolve();
     //     });
     // });
+    console.log("calling connect with relays", $ndk.explicitRelayUrls)
     Promise.all([
         $ndk.connect(2000),
         // redisConnected

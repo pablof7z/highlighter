@@ -10,6 +10,7 @@
 	:root {
 		--mobile-nav-bar: 63px;
 		--mobile-body-px: 0.5rem;
+		--tw-prose-quote-borders: #ff0000;
 	}
 
 	html,
@@ -90,5 +91,12 @@
 		@apply text-accent;
 	}
 
+	.highlight .highlight--blockquote {
+		border-left: solid 6px;
+		@apply border-accent pl-4;
+	}
+}
 
+.highlight--reference a {
+	@apply text-accent;
 }

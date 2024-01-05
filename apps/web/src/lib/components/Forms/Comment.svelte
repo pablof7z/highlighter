@@ -84,15 +84,11 @@
         if (event.kind === NDKKind.GroupNote || event.kind === NDKKind.GroupReply) {
             let tagsToCopy = event.tags.filter(t => t[0] === "a" || t[0] === "e");
 
-            console.log("tagsToCopy before", tagsToCopy);
-
             // remove marker if it says "reply"
             tagsToCopy = tagsToCopy.map(t => {
                 if (t[3] === "reply") t[3] = "";
                 return t;
             });
-
-            console.log("tagsToCopy after", tagsToCopy);
 
             reply.tags.push(...tagsToCopy);
         }

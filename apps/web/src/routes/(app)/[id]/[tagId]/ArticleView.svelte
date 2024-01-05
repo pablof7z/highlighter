@@ -7,16 +7,18 @@
 	import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription, userTiers } from "$stores/user-view";
 	import { ndk, pageDrawerToggle, rightSidebar, user, HighlightWrapper } from "@kind0/ui-common";
-	import type { NDKArticle } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
 	import { openModal } from "svelte-modals";
 	import { addReadReceipt } from '$utils/read-receipts';
 	import { MarkerCircle, Quotes, Receipt, X } from 'phosphor-svelte';
+    import { getParagraph, getText } from "get-selection-more";
 
     export let article: NDKArticle;
     const author = article.author;
     export let editUrl: string | undefined = undefined;
+    export let isFullVersion: boolean;
 
     onMount(() => {
         startUserView(author);
@@ -27,7 +29,7 @@
         userSubscription?.unref();
     });
 
-    // Check if this suer has access to the full article and if they do, redirect them to the full article
+    // Check if this user has access to the full article and if they do, redirect them to the full article
     const fullTiers = article.getMatchingTags("tier").map(t => t[1]);
 
     $: if (fullTiers.includes($userActiveSubscriptions.get(article.pubkey))) {
@@ -35,8 +37,6 @@
         const dTag = parts[2] || parts[0];
         goto(`/${author.npub}/${dTag}`);
     }
-
-    const isTeaser = !!article.tagValue("full");
 
     let content = article.content;
 
@@ -79,7 +79,21 @@
 
     let el: HTMLDivElement;
 
-    function createHighlight() {
+    async function createHighlight() {
+        const content = getText();
+
+        if (!content) return;
+
+        const event = new NDKEvent($ndk, {
+            kind: NDKKind.Highlight,
+            content,
+            tags: [
+                [ "context", getParagraph() ]
+            ]
+        } as NostrEvent);
+        event.tag(article);
+        await event.sign();
+        console.log(event.rawEvent());
     }
 </script>
 
@@ -87,13 +101,15 @@
     <title>{article.title}</title>
 </svelte:head>
 
+
+
 <div bind:this={el} class="float-element z-50 absolute opacity-0 transition-all duration-300 flex flex-col gap-1">
     <button class="
         button
         transition-all duration-300
     " on:click={createHighlight}>
         <Receipt class="w-8 h-8" />
-        Highlight
+        Clip
     </button>
 </div>
 
@@ -129,7 +145,7 @@
                     <article class="prose flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative">
                         <EventContent ndk={$ndk} event={article} {content} />
 
-                        {#if isTeaser}
+                        {#if !isFullVersion}
                             <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
                                 <UpgradeButton event={article} />
                             </div>

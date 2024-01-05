@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+  pubkey        String          @id @unique
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  WalletConnect WalletConnect[]
+}
+
+model WalletConnect {
+  uri       String
+  user      User     @relation(fields: [pubkey], references: [pubkey])
+  pubkey    String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id          String @id @default(uuid())
+  payerPubkey String
+  zapRequest  String
+  zappedEvent String
+  zapEndpoint String
+
+  receiverPubkey String
+  satsAmount         Int
+
+  tierName   String?
+  validUntil DateTime
+
+  paid Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

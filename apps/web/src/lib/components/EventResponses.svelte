@@ -9,11 +9,13 @@
 	import { userActiveSubscriptions } from "$stores/session";
 	import { canUserComment, requiredTiersFor } from "$lib/events/tiers";
 	import UpgradeButton from "./buttons/UpgradeButton.svelte";
+    import createDebug from "debug";
 
     export let event: NDKEvent;
     export let autofocusOnNewComment = false;
     export let narrowView = false;
 
+    const debug = createDebug("highlighter:responses");
     const dispatch = createEventDispatcher();
 
     // Ids for filter
@@ -23,6 +25,13 @@
     if (counterpartEvent) {
         filters.push({ kinds: [NDKKind.GroupNote], "#a": [counterpartEvent] });
     }
+
+    filters.push({
+        kinds: [NDKKind.Text, NDKKind.GroupReply],
+        ...event.filter()
+    })
+
+    debug(filters);
 
     const comments = $ndk.storeSubscribe(filters, { subId: "comments", groupable: false });
     comments.onEose(() => fullyLoaded = true )

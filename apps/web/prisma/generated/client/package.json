@@ -1,0 +1,39 @@
+{
+  "name": ".prisma/client",
+  "types": "index.d.ts",
+  "main": "index.js",
+  "module": "index.mjs",
+  "browser": "index-browser.mjs",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./index.d.ts",
+      "require": {
+        "node": "./index.js",
+        "browser": "./index-browser.js"
+      },
+      "import": {
+        "node": "./index.mjs",
+        "browser": "./index-browser.mjs"
+      }
+    },
+    "./index": {
+      "types": "./index.d.ts",
+      "require": {
+        "node": "./index.js",
+        "browser": "./index-browser.js"
+      },
+      "import": {
+        "node": "./index.mjs",
+        "browser": "./index-browser.mjs"
+      }
+    },
+    "./edge": {
+      "types": "./edge.d.ts",
+      "require": "./edge.js",
+      "import": "./edge.mjs"
+    },
+    "./*": "./*"
+  },
+  "sideEffects": false
+}

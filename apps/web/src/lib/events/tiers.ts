@@ -1,5 +1,17 @@
 import type { Hexpubkey, NDKArticle, NDKEvent, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
 
+export function requiredTierNamesFor(event: NDKEvent, userTiers: NDKArticle[], addFreeIfEmpty = true) {
+    const tierIds = requiredTiersFor(event, addFreeIfEmpty);
+    const tierNames: string[] = [];
+
+    for (const tierId of tierIds) {
+        const tier = userTiers.find(t => t.tagValue("d") === tierId);
+        if (tier) tierNames.push(tier.title ?? tierId);
+    }
+
+    return tierNames;
+}
+
 export function requiredTiersFor(event: NDKEvent, addFreeIfEmpty = true) {
     let tiers: NDKTag[] = event.getMatchingTags("tier");
 

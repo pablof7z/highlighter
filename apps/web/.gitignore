@@ -16,3 +16,4 @@ yarn.lock
 
 # Sentry Config File
 .sentryclirc
+.vercel

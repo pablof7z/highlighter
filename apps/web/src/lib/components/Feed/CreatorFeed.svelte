@@ -20,7 +20,6 @@
             <FeedEvent {event} />
         {/each}
     {:else if $contentGA?.length > 0}
-        {$contentGA.length}
         {#each $contentGA as event (event.id)}
             <FeedEvent {event} />
         {/each}

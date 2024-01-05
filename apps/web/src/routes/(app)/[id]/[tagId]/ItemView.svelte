@@ -17,6 +17,10 @@
 	import EventResponses from "$components/EventResponses.svelte";
 	import { getSummary } from "$utils/article";
 	import LoadingScreen from "$components/LoadingScreen.svelte";
+	import EventWrapper from "$components/Feed/EventWrapper.svelte";
+	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import CreatorShell from "$components/Creator/CreatorShell.svelte";
+	import MoreFromUser from "$components/Creator/MoreFromUser.svelte";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -63,11 +67,11 @@
 
     let eventType: EventType | undefined;
     let tiersWithFullAccess: string[] | undefined;
-    let isFullVersion: boolean | undefined;
+    let isFullVersion: boolean;
     let hasAccessToFullVersion: boolean | undefined;
 
     $: if (event && !eventType) eventType = getEventType(event);
-    $: if (event && isFullVersion === undefined) isFullVersion = event.tagValue("full") === undefined;
+    $: if (event && isFullVersion === undefined) isFullVersion = !event.tagValue("full");
     $: if (event && tiersWithFullAccess === undefined) tiersWithFullAccess = requiredTiersFor(event);
     $: if (event && isFullVersion === false && tiersWithFullAccess && hasAccessToFullVersion === undefined) {
         hasAccessToFullVersion = tiersWithFullAccess.includes($userActiveSubscriptions.get(event.pubkey)) || $currentUser?.pubkey === event.pubkey;
@@ -111,16 +115,16 @@
         }, 500);
     }
 
-    function onVideoCommentFocus() {
-        videoCommentFocused = true;
-        clearTimeout(videoCommentBlurTimeout);
-    }
+    // function onVideoCommentFocus() {
+    //     videoCommentFocused = true;
+    //     clearTimeout(videoCommentBlurTimeout);
+    // }
 
-    function onVideoCommentBlur() {
-        const videoCommentBlurTimeout = setTimeout(() => {
-            videoCommentFocused = false;
-        }, 500);
-    }
+    // function onVideoCommentBlur() {
+    //     const videoCommentBlurTimeout = setTimeout(() => {
+    //         videoCommentFocused = false;
+    //     }, 500);
+    // }
 </script>
 
 <svelte:head>
@@ -138,8 +142,11 @@
                 <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
                     <ArticleView
                         article={NDKArticle.from(event)}
+                        {isFullVersion}
                         on:comment={toggleComments}
                     />
+
+                    <MoreFromUser user={event.author} />
 
                     <div class="divider my-0"></div>
 
@@ -149,18 +156,9 @@
                 <div class="flex-col justify-start items-start gap-8 flex mx-auto w-full">
                     <VideoView
                         video={NDKVideo.from(event)}
+                        {isFullVersion}
                         on:comment={toggleComments}
                     />
-
-                    <div class="mx-auto max-w-3xl w-full">
-                        <div class="divider my-0"></div>
-
-                        <EventResponses
-                            {event}
-                            on:comment:focus={onVideoCommentFocus}
-                            on:comment:blur={onVideoCommentBlur}
-                        />
-                    </div>
                 </div>
             {:else if ["group-note", "short-note"].includes(eventType)}
                 <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
@@ -176,7 +174,17 @@
 
                 </div>
             {:else}
-                {event.kind}
+                <CreatorShell user={event.author}>
+                    <div class="mx-auto max-w-3xl">
+                        <EventWrapper {event} class="bg-base-200 p-6 rounded-box">
+                            <EventContent ndk={$ndk} {event} class="prose highlight" />
+                        </EventWrapper>
+                    </div>
+                </CreatorShell>
+            {/if}
+
+            {#if $debugMode}
+                <pre>{JSON.stringify(event.rawEvent(), null, 4)}</pre>
             {/if}
         {:else}
                 Event not found

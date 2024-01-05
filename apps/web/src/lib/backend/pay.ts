@@ -3,7 +3,7 @@ import { webln } from "@getalby/sdk";
 import type { Hexpubkey } from "@nostr-dev-kit/ndk";
 import createDebug from "debug";
 
-const debug = createDebug("fans:payments:pay");
+const debug = createDebug("highlighter:payments:pay");
 
 async function getNwcString(pubkey: string) {
     const wallet = await db.walletConnect.findUnique({

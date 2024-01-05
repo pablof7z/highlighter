@@ -5,7 +5,6 @@
     let tagId: string;
 
     $: tagId = $page.params.tagId;
-
 </script>
 
 {#key tagId}

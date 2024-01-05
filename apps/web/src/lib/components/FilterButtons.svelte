@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Article, Video } from 'phosphor-svelte';
 
-    export let filters: App.FilterType[] = ["all"];
+    export let filters: App.FilterType[];
 
     function handleClick(e: MouseEvent, filter: App.FilterType) {
         if (filters.includes(filter)) {

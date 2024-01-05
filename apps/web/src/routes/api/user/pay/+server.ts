@@ -5,7 +5,7 @@ import createDebug from "debug";
 import type { Session } from "../../../../app.js";
 import { sendPayment } from "$lib/backend/pay.js";
 
-const log = createDebug("shipyard:/api/posts");
+const log = createDebug("highlighter:/api/posts");
 
 type Payload = {
     nwc: string;

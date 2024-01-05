@@ -35,11 +35,11 @@
     });
 </script>
 
-<div class="grow shrink basis-0 flex-col justify-start items-end gap-1 inline-flex">
+<div class="grow shrink basis-0 flex-col justify-start items-end gap-4 inline-flex">
     <div class="justify-start items-start gap-3 inline-flex">
         <ReactButton {event} />
 
-        <button class="w-7 h-7 relative" on:click={() => dispatch("comment")}>
+        <button class="w-7 h-7 relative" on:click|stopPropagation|preventDefault={() => dispatch("comment")}>
             <ChatCircle class="w-7 h-7 text-white" weight="regular" />
         </button>
 

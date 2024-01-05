@@ -5,12 +5,12 @@
 	import CurrentUser from './CurrentUser.svelte';
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { openModal } from 'svelte-modals';
-	import { Compass, Tray, ChatCircle } from 'phosphor-svelte';
+	import { Compass, Tray, ChatCircle, Receipt } from 'phosphor-svelte';
 
 	export let maxSize = "max-w-7xl";
 </script>
 
-<div class="navbar mb-2 bg-base-100 sm:px-8 mx-auto {maxSize} {$$props.class??""} fixed top-0 z-20 bg-opacity-80 backdrop-blur">
+<div class="navbar mb-2 bg-base-100 sm:px-8 mx-auto {maxSize} {$$props.class??""} fixed top-0 z-20 bg-opacity-80 backdrop-blur-[50px]">
 	<div class="navbar-start items-center">
 		<a href="/" class="btn btn-ghost text-xl normal-case px-0 hover:bg-transparent">
 			<Logo />
@@ -41,13 +41,24 @@
 
 			<a
 				href="/chat"
-				class="justify-start items-center gap-2 inline-flex"
+				class="justify-start items-center gap-2 inline-flex hidden"
 				class:active={$page.url.pathname === '/chat'}
 				>
 				<div class="w-6 h-6 relative">
 					<ChatCircle class="w-full h-full" />
 				</div>
-				<span class="">Faaans Chat</span>
+				<span class="">Chat</span>
+			</a>
+
+			<a
+				href="/clips"
+				class="justify-start items-center gap-2 inline-flex"
+				class:active={$page.url.pathname === '/clips'}
+				>
+				<div class="w-6 h-6 relative">
+					<Receipt class="w-full h-full" />
+				</div>
+				<span class="">Clips</span>
 			</a>
 		</div>
 	</div>

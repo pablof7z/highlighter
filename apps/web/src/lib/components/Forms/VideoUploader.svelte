@@ -1,25 +1,38 @@
 <script lang="ts">
 	import VideoPlayer from "$components/Events/VideoPlayer.svelte";
-	import { UploadButton } from "@kind0/ui-common";
+	import { UploadButton, pageDrawerToggle, rightSidebar } from "@kind0/ui-common";
     import Input from "./Input.svelte";
 	import type { NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { Upload, Link } from "phosphor-svelte";
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
+	import UploadPaymentRequired from "$lib/drawer/help/upload-payment-required.svelte";
 
     export let video: NDKVideo;
     export let videoUrl: string | undefined = undefined;
     export let thumbnail: string | undefined = undefined;
     export let videoFile: File | undefined = undefined;
+    export let provider = "satellite";
 
     const dispatch = createEventDispatcher();
     let uploadProgress: number | undefined;
     let showExistingUrlInput = false;
+    let startUpload = false;
 
     function videoSelected(e: CustomEvent<{file: File}>) {
         const {file} = e.detail;
         if (!file) return;
 
         videoFile = file;
+
+        const fileSize = file.size;
+
+        if (fileSize < 25 * 1024 * 1024) {
+            provider = "nostr.build";
+        } else {
+            provider = "satellite";
+        }
+
+        startUpload = true;
 
         dispatch("uploading", { progress: 'starting' });
     }
@@ -29,7 +42,6 @@
     }
 
     function uploadedVideo(e: CustomEvent<{nip94: NDKTag[], url: string}>) {
-        console.log('uploaded video', e.detail);
         const { nip94, url } = e.detail;
         const tags = nip94;
         videoUrl = url;
@@ -68,6 +80,15 @@
             showExistingUrlInput = false;
         }
     }
+
+    function onPaymentRequired() {
+        $pageDrawerToggle = true;
+        $rightSidebar = {
+            component: UploadPaymentRequired,
+            props: {}
+        }
+
+    }
 </script>
 
 <div class="bg-base-300 rounded-md w-full flex flex-col items-center justify-center relative {$$props.wrapperClass}">
@@ -89,10 +110,13 @@
             <UploadButton
                 class="button px-8 py-3 w-fit"
                 progressClass="h-10 w-10"
+                {provider}
                 bind:progress={uploadProgress}
                 type="video"
                 on:uploaded={uploadedVideo}
                 on:fileSelected={videoSelected}
+                on:paymentRequired={onPaymentRequired}
+                {startUpload}
             >
                 <Upload class="w-6 h-6" />
                 Upload
@@ -119,6 +143,6 @@
     {/if}
 
     {#if videoUrl}
-        <button class="font-semibold text-white border rounded-lg px-4 py-2 text-sm my-2 self-start absolute bottom-2 left-2 z-50" on:click={() => videoUrl = undefined }>Reset</button>
+        <button class="font-semibold text-white border rounded-lg px-4 py-2 text-sm my-2 self-start absolute top-2 right-2 z-50" on:click={() => videoUrl = undefined }>Reset</button>
     {/if}
 </div>

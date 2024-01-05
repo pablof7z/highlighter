@@ -11,11 +11,14 @@
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import FilterButtons from '$components/FilterButtons.svelte';
     import createDebug from "debug";
+	import { derived, writable, type Readable } from 'svelte/store';
 
-    const debug = createDebug("fans:explore");
+    const debug = createDebug("highlighter:explore");
 
     let events: NDKEventStore<NDKEvent> | undefined = undefined;
+    let eventsForRender: Readable<NDKEvent[] | undefined> | undefined = undefined;
     let activeCategory: string | undefined;
+    const typeFilter = writable<App.FilterType[]>(["all"]);
 
     $: if (activeCategory !== $page.params.category || !events) {
         activeCategory = $page.params.category;
@@ -38,6 +41,22 @@
             filters,
         { relaySet, autoStart: true, groupable: false, subId: 'explore', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
         debug(filters);
+
+        eventsForRender = derived([events, typeFilter], ([$events, $typeFilter]) => {
+            const events: NDKEvent[] = [];
+
+            for (const event of $events) {
+                if ($typeFilter.includes("all")) {
+                    events.push(event);
+                } else if ($typeFilter.includes("article") && event.kind === NDKKind.Article) {
+                    events.push(event);
+                } else if ($typeFilter.includes("video") && event.kind === NDKKind.HorizontalVideo) {
+                    events.push(event);
+                }
+            }
+
+            return events;
+        });
     };
 
     onDestroy(() => {
@@ -47,8 +66,6 @@
     let selectedCategory: string;
 
     $: selectedCategory = $page.params.category || "All";
-
-    let filters: App.FilterType[] = ["all"];
 </script>
 
 <svelte:head>
@@ -61,7 +78,7 @@
     {/if}
 </svelte:head>
 
-{#if events && $events}
+{#if eventsForRender && $eventsForRender}
     <div class="flex flex-col gap-6 w-full max-w-7xl mx-auto sm:px-4">
         <div class="w-full justify-between items-center flex max-sm:hidden overflow-x-clip flex-nowrap max-w-[calc(100vw-40px)]">
             <div class="justify-start items-start gap-6 flex whitespace-nowrap flex-shrink">
@@ -74,12 +91,12 @@
                         >{category}</a>
                     {/each}
             </div>
-            <FilterButtons bind:filters />
+            <FilterButtons bind:filters={$typeFilter} />
         </div>
 
         <div class="w-full max-2xl">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
-                {#each $events as event (event.id)}
+                {#each $eventsForRender as event (event.id)}
                     {#if event.kind === NDKKind.Article}
                         <ArticleGrid article={NDKArticle.from(event)} />
                     {:else if event.kind === NDKKind.HorizontalVideo}

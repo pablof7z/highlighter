@@ -22,7 +22,12 @@ export type UserProfileType = NDKUserProfile & {
 	categories: string[] | undefined;
 };
 
-export type EventType = "article" | "group-note" | "video" | "short-note";
+export type EventType = "article" | "group-note" | "video" | "short-note" | "highlight";
+
+export interface UserUploadQuota {
+	used: number;
+	total: number;
+}
 
 declare global {
 	namespace App {

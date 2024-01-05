@@ -10,7 +10,7 @@
     }
 </script>
 
-<div class="flex flex-row items-start">
+<div class="flex flex-row items-start hidden">
     <Tab title="Manually Saved" value={"true"} />
     <Tab title="All Saved" value={"false"} />
 </div>

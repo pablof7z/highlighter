@@ -1,7 +1,7 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import ReactButton from "$components/buttons/ReactButton.svelte";
-	import { requiredTiersFor } from "$lib/events/tiers";
+	import { requiredTierNamesFor, requiredTiersFor } from "$lib/events/tiers";
 	import { urlSuffixFromEvent } from "$utils/url";
 	import { Avatar, Name, ndk, user } from "@kind0/ui-common";
     import { NDKKind, type NDKEvent, type Hexpubkey } from "@nostr-dev-kit/ndk";
@@ -12,16 +12,17 @@
 	import { slide } from "svelte/transition";
 	import { ChatCircle, Repeat } from "phosphor-svelte";
 	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
-
-    const dispatch = createEventDispatcher();
+	import { getUserSupportPlansStore, userTiers } from "$stores/user-view";
 
     export let event: NDKEvent;
+    export let urlPrefix: string | undefined = undefined;
     export let skipAuthor: boolean = false;
     const author = event.author;
 
     let suffixUrl = urlSuffixFromEvent(event);
 
     const tiers = requiredTiersFor(event);
+    // const tierNames = requiredTierNamesFor(event, getUserSupportPlansStore);
     const includesFree = tiers.includes("Free");
 
     let showComment = false;
@@ -40,7 +41,7 @@
 </script>
 
 <UserProfile user={author} let:userProfile let:fetching let:authorUrl>
-    <a href="{authorUrl}/{suffixUrl}" class="
+    <a href="{authorUrl}{urlPrefix??""}/{suffixUrl}" class="
         flex flex-col gap-4 pb-6 wrapper w-full {$$props.class??""}
     ">
         {#if $$slots.default}
@@ -58,14 +59,14 @@
             {#if !skipAuthor}
                 <div class="justify-start items-center gap-4 flex">
                     <a href={authorUrl} class="w-12 h-12 relative">
-                        <Avatar {userProfile} user={author} class="w-12 h-12 border border-white" />
+                        <Avatar {userProfile} user={author} size="medium" class="border border-white" />
                     </a>
                     <div class="flex flex-col gap-1 items-start">
                         <a href={authorUrl} class="text-white text-[15px] font-semibold">
                             <Name {userProfile} user={author} />
                         </a>
 
-                        {#if event.pubkey === $user?.pubkey && false}
+                        {#if event.pubkey === $user?.pubkey}
                             <div class="flex flex-row items-center gap-1 text-xs ">
                                 {#if includesFree}
                                     <div class="badge badge-neutral badge-sm">Free</div>
@@ -79,7 +80,7 @@
                     </div>
                 </div>
             {/if}
-            <EventActionButtons {event} />
+            <EventActionButtons {event} on:comment={() => showComment = !showComment} />
         </div>
     </a>
 </UserProfile>

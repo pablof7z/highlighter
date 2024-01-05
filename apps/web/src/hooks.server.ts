@@ -2,9 +2,11 @@ import { redirect, type Handle } from "@sveltejs/kit";
 import { authenticateUser } from "$lib/utils/authentication";
 
 const AUTH_PATHS = [
+    "/api/user",
     "/api/user/nwc",
     "/api/user/pay",
-    "/api/user/subscribe"
+    "/api/user/subscribe",
+    "/api/user/upload"
 ];
 
 export const handle: Handle = async ({ event, resolve }) => {
