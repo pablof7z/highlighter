@@ -50,7 +50,7 @@
     }
 </script>
 
-<ModalShell class="!bg-base-200 text-black w-full max-w-2xl">
+<ModalShell color="black" class="w-full max-w-2xl">
     <div class="justify-start items-center gap-4 flex w-full">
         <UserProfile user={$user} let:userProfile>
             <div class="w-12 h-12 relative">

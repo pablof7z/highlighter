@@ -29,3 +29,9 @@
         on:click={onClick}
     >{title}</a>
 {/if}
+
+<style lang="postcss">
+    .pill.tab-active {
+        @apply !bg-white !text-black;
+    }
+</style>

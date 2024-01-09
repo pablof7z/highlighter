@@ -6,7 +6,7 @@
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription, userTiers } from "$stores/user-view";
-	import { ndk, pageDrawerToggle, rightSidebar, user, HighlightWrapper } from "@kind0/ui-common";
+	import { ndk, pageDrawerToggle, rightSidebar, user, HighlightWrapper, Avatar, Name } from "@kind0/ui-common";
 	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
@@ -14,6 +14,8 @@
 	import { addReadReceipt } from '$utils/read-receipts';
 	import { MarkerCircle, Quotes, Receipt, X } from 'phosphor-svelte';
     import { getParagraph, getText } from "get-selection-more";
+	import { getDefaultRelaySet } from '$utils/ndk';
+	import UserProfile from '$components/User/UserProfile.svelte';
 
     export let article: NDKArticle;
     const author = article.author;
@@ -84,6 +86,7 @@
 
         if (!content) return;
 
+        const groupId = article.tagValue("h");
         const event = new NDKEvent($ndk, {
             kind: NDKKind.Highlight,
             content,
@@ -91,8 +94,15 @@
                 [ "context", getParagraph() ]
             ]
         } as NostrEvent);
+
+        // add h tag if it exists
+        if (groupId) event.tags.push(["h", groupId]);
+
         event.tag(article);
         await event.sign();
+        await event.publish(
+            getDefaultRelaySet()
+        )
         console.log(event.rawEvent());
     }
 </script>
@@ -124,12 +134,20 @@
     <div class="flex-col justify-start items-center gap-10 flex w-full max-sm:px-4">
         <div class="self-stretch justify-center items-start gap-8 inline-flex">
             <div class="grow shrink basis-0 flex-col justify-center items-start gap-10 inline-flex">
-                <div class="self-stretch flex-col justify-center items-start gap-6 flex">
-                    <div class="self-stretch flex-col justify-start items-start gap-6 flex">
+                <div class="self-stretch flex-col justify-center items-start flex">
+                    <div class="self-stretch flex-col justify-start items-start gap-1 flex">
                         <div class="self-stretch text-white text-2xl font-medium">
                             {article.title}
                         </div>
-                        <div class="flex-col justify-start items-start gap-4 flex w-full">
+                        <div class="flex-row justify-between items-center gap-4 flex w-full">
+                            <UserProfile user={article.author} let:userProfile let:fetching>
+                                <div class="flex flex-row items-center gap-4 p-4 h-fit">
+                                    <Avatar {userProfile} {fetching} size="medium" />
+
+                                    <Name  {userProfile} {fetching} />
+                                </div>
+                            </UserProfile>
+
                             <div class="flex flex-row items-center gap-12 w-full">
                                 <EventActionButtons
                                     event={article}
@@ -142,8 +160,8 @@
                             </div>
                         </div>
                     </div>
-                    <article class="prose flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative">
-                        <EventContent ndk={$ndk} event={article} {content} />
+                    <article class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative">
+                        <EventContent ndk={$ndk} event={article} {content} class="prose" />
 
                         {#if !isFullVersion}
                             <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">

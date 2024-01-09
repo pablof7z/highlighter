@@ -2,7 +2,7 @@
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { Avatar, user as currentUser } from "@kind0/ui-common";
 	import type { NDKUser, Hexpubkey, NDKEvent, NDKArticle } from "@nostr-dev-kit/ndk";
-	import { Share } from "phosphor-svelte";
+	import { PencilSimple, Share } from "phosphor-svelte";
 	import { openModal } from "svelte-modals";
 	import type { Readable } from "svelte/motion";
 
@@ -47,7 +47,10 @@
     {/if}
 
     {#if !isSupporter}
-        <button class="whitespace-nowrap button px-6 w-full" on:click={openSupportModal}>Become a Faaan</button>
+        <button class="whitespace-nowrap button px-6 w-full" on:click={openSupportModal}>
+            <PencilSimple class="mr-2" />
+            Subscribe
+        </button>
     {:else}
         <!-- <button class="whitespace-nowrap button px-6" on:click={openShareModal}>
             <Share class="mr-2" />

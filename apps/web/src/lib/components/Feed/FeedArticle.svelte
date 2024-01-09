@@ -9,7 +9,7 @@
     const summary = article.summary || article.content.slice(0, 100);
 </script>
 
-<EventWrapper event={article}>
+<EventWrapper event={article} class={$$props.class??""}>
     {#if article.image}
         <img src={article.image} alt={article.title} class="w-full h-96 object-cover rounded rounded-b-none object-top" />
     {/if}

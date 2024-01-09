@@ -51,7 +51,7 @@
 </script>
 
 <UserProfile user={event.author} let:userProfile let:fetching>
-    <div class="pb-3 border-b border-neutral-800 flex-col justify-start items-start gap-2 inline-flex">
+    <div class="pb-3 flex-col justify-start items-start gap-2 inline-flex">
 
         {#if rootEvent}
             <div class="text-sm font-normal">
@@ -76,7 +76,7 @@
                 </div>
             </div>
         </div>
-        <div class="self-stretch text-white text-sm font-normal leading-[21px]">
+        <div class="self-stretch text-white font-normal prose">
             <EventContent ndk={$ndk} {event} />
         </div>
         <div class="flex w-full flex-row justify-end">

@@ -5,7 +5,7 @@
 	import CurrentUser from './CurrentUser.svelte';
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { openModal } from 'svelte-modals';
-	import { Compass, Tray, ChatCircle, Receipt } from 'phosphor-svelte';
+	import { Compass, Tray, ChatCircle, Receipt, PencilSimple, PencilSimpleLine } from 'phosphor-svelte';
 
 	export let maxSize = "max-w-7xl";
 </script>
@@ -56,9 +56,9 @@
 				class:active={$page.url.pathname === '/clips'}
 				>
 				<div class="w-6 h-6 relative">
-					<Receipt class="w-full h-full" />
+					<PencilSimpleLine class="w-full h-full" />
 				</div>
-				<span class="">Clips</span>
+				<span class="">Highlights</span>
 			</a>
 		</div>
 	</div>

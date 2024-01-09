@@ -8,8 +8,15 @@
     export let event: NDKEvent;
 </script>
 
-<FeedEventWrapper {event}>
-    <EventContent ndk={$ndk} {event} showEntire={true} maxLength={9999} mediaCollectionComponent={MediaCollection} />
+<FeedEventWrapper {event} class={$$props.class??""}>
+    <EventContent
+        class="article prose"
+        ndk={$ndk}
+        {event}
+        showEntire={true}
+        maxLength={9999}
+        mediaCollectionComponent={MediaCollection}
+    />
 </FeedEventWrapper>
 
 <style lang="postcss">

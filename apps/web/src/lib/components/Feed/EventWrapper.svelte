@@ -47,7 +47,7 @@
         {#if $$slots.default}
             <slot />
         {:else}
-            <EventContent ndk={$ndk} {event} />
+            <EventContent ndk={$ndk} {event} class="prose article" />
         {/if}
 
         <!-- <div class="text-white">ID</div>

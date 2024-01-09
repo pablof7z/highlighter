@@ -1,6 +1,6 @@
 import { writable, get as getStore, type Writable, derived } from 'svelte/store';
 import { ndk, user } from "@kind0/ui-common";
-import { NDKEvent, NDKList, NDKSubscriptionCacheUsage, type NDKFilter, type NDKTag, NDKKind, type NDKEventId, NDKDVMJobResult, NDKDVMRequest, NDKListKinds, type Hexpubkey } from '@nostr-dev-kit/ndk';
+import NDK, { NDKEvent, NDKList, NDKSubscriptionCacheUsage, type NDKFilter, type NDKTag, NDKKind, type NDKEventId, NDKDVMJobResult, NDKDVMRequest, NDKListKinds, type Hexpubkey } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from "@macfja/svelte-persistent-store";
 import debug from 'debug';
@@ -75,7 +75,8 @@ export const userDVMRequests = writable<Map<number, NDKDVMRequest[]>>(new Map())
 /**
  * Current user's lists
  */
-export const userLists = writable<Map<string, NDKList>>(new Map());
+export const userArticleCurations = writable<Map<string, NDKList>>(new Map());
+export const userVideoCurations = writable<Map<string, NDKList>>(new Map());
 
 /**
  * Current user labels
@@ -139,16 +140,23 @@ export async function prepareSession(): Promise<void> {
             {
                 followsStore: userFollows,
                 superFollowsStore: userSuperFollows,
+                userArticleCurationsStore: userArticleCurations,
+                userVideoCurationsStore: userVideoCurations,
                 activeSubscriptionsStore: userActiveSubscriptions,
                 appHandlers: userAppHandlers,
                 supportStore: userSupport,
                 waitUntilEoseToResolve: !alreadyKnowFollows,
+                listsKinds: [
+                    NDKKind.CurationSet,
+                    NDKKind.CurationSet+1, // Videos
+                    NDKKind.CategorizedHighlightList
+                ],
             }
         ).then(() => {
             const $userFollows = getStore(userFollows);
 
             console.log(`user follows count: ${$userFollows.size}`);
-            console.log(`user lists count: ${getStore(userLists).size}`);
+            console.log(`user lists count: ${getStore(userArticleCurations).size}`);
             console.log(`user hashtags: ${Object.keys(getStore(userFollowHashtags)).length}`);
 
             resolve();
@@ -162,7 +170,8 @@ interface IFetchDataOptions {
     activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
     supportStore?: Writable<NDKEvent[]>;
     appHandlers?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
-    listsStore?: Writable<Map<string, NDKList>>;
+    userArticleCurationsStore?: Writable<Map<string, NDKList>>;
+    userVideoCurationsStore?: Writable<Map<string, NDKList>>;
     listsKinds?: number[];
     extraKinds?: number[];
     closeOnEose?: boolean;
@@ -214,8 +223,11 @@ async function fetchData(
             processSupport(event);
         } else if (event.kind === NDKKind.AppRecommendation) {
             processAppHandler(event);
-        } else if (NDKListKinds.includes(event.kind!) && opts.listsStore) {
-            processList(event);
+        } else if ([
+            NDKKind.CurationSet,
+            NDKKind.CurationSet+1,
+        ].includes(event.kind!)) {
+            processCurationList(event);
         }
     };
 
@@ -269,17 +281,25 @@ async function fetchData(
         }
     };
 
-    const processList = (event: NDKEvent) => {
+    const processCurationList = (event: NDKEvent) => {
         const list = NDKList.from(event);
 
-        if (!list.name || list.name.startsWith('chats/')) {
-            return;
-        }
+        if (!list.title) return;
 
-        opts.listsStore!.update((lists) => {
-            lists.set(list.tagId(), list);
-            return lists;
-        });
+        switch (event.kind) {
+            case NDKKind.CurationSet:
+                opts.userArticleCurationsStore!.update((lists) => {
+                    lists.set(list.tagId(), list);
+                    return lists;
+                });
+                break;
+            case NDKKind.CurationSet+1:
+                opts.userVideoCurationsStore!.update((lists) => {
+                    lists.set(list.tagId(), list);
+                    return lists;
+                });
+                break;
+        }
     };
 
     const updateFollows = (event: NDKEvent, store: Writable<Set<Hexpubkey>>) => {
@@ -310,7 +330,7 @@ async function fetchData(
 
         const authorPrefixes = authors.map(f => f.slice(0, authorPubkeyLength));
 
-        if (opts.listsStore) {
+        if (opts.userArticleCurationsStore) {
             kinds.push(...opts.listsKinds!);
         }
 

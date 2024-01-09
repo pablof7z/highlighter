@@ -37,8 +37,8 @@ async function getPaymentRequest(event: NDKEvent): Promise<string | null> {
 
     const satsAmount = 10; // await calculateSatAmountFromAmountTag(amountTag);
     const tierName = getTierNameFromSubscriptionEvent(event);
-    let comment = `Faaans subscription`;
-    if (tierName) comment += `to ${tierName}`;
+    let comment = `Highlighter subscription`;
+    if (tierName) comment += ` to ${tierName}`;
 
     const zap = new NDKZap({
         ndk: $ndk,

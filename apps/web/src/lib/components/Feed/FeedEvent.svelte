@@ -9,7 +9,7 @@
 
 <div class="w-full">
     {#if event.kind === NDKKind.GroupNote || event.kind === NDKKind.Text}
-        <FeedGroupPost {event} />
+        <FeedGroupPost {event} class="!py-10" />
     {:else if event.kind === NDKKind.Article}
         <FeedArticle article={NDKArticle.from(event)} />
     {:else if event.kind === NDKKind.HorizontalVideo}

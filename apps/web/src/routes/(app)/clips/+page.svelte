@@ -12,7 +12,7 @@
 	import { onDestroy } from "svelte";
 	import { writable } from "svelte/store";
 
-    const debug = createDebug("highlighter:clips");
+    const debug = createDebug("highlighter:highlights");
 
     const typeFilter = writable<App.FilterType[]>(["all"]);
     let selectedCategory: string;
@@ -29,7 +29,7 @@
 
     const events = $ndk.storeSubscribe(filters, {
         groupable: false,
-        subId: "clips",
+        subId: "highlights",
         autoStart: true,
         cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY
     });
@@ -54,10 +54,10 @@
 </div>
 
 <div class="flex flex-row gap-8 mx-auto mt-8">
-    <PageSidebar title="Clips" bind:open>
+    <PageSidebar title="Highlights" bind:open>
         <a href="/clips/my" class="flex flex-row gap-2 items-center">
             <User class="w-5 h-5" />
-            My clips
+            My Highlights
         </a>
     </PageSidebar>
 
