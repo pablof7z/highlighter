@@ -13,8 +13,8 @@ export default defineConfig({
         SvelteKitPWA({
             strategies: "generateSW",
             manifest: {
-                short_name: "Faaans",
-                name: "Faaans",
+                short_name: "Highlighter",
+                name: "Highlighter",
                 theme_color: "#000000",
                 icons: [
                     {

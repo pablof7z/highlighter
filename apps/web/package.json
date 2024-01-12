@@ -1,6 +1,6 @@
 {
-	"name": "Faaans",
-	"version": "0.1.0",
+	"name": "Highlighter",
+	"version": "3.0.0",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
