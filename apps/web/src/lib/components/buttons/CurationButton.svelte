@@ -87,7 +87,7 @@
             <li class="w-full">
                 <button
                     class="whitespace-nowrap w-full font-normal"
-                    class:text-accent={curationHasEvent(curation)}
+                    class:active={curationHasEvent(curation)}
                     on:click={() => addToCuration(curation)}
                 >
                     {#await curation.encryptedTags() then encryptedTags}
@@ -102,7 +102,7 @@
         {#if $listStore.size > 0}
             <div class="divider my-0"></div>
         {/if}
-        <li class="w-full">
+        <li class="w-full min-w-[16rem]">
             {#if !showCreate}
                 <button
                     class="whitespace-nowrap w-full font-normal text-accent"
@@ -128,10 +128,16 @@
                         on:blur={() => showCreate = false}
                     />
                     <button class="btn btn-ghost join-item" on:click={createNewCuration}>
-                        <PaperPlaneTilt class="w-4 h-4" />
+                        <PaperPlaneTilt class="w-4 h-4 text-accent" />
                     </button>
                 </div>
             {/if}
         </li>
     </ul>
 </div>
+
+<style lang="postcss">
+    button.active {
+        @apply border-l-4 border-accent rounded-l-none !text-white font-semibold;
+    }
+</style>

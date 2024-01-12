@@ -1,16 +1,13 @@
 <script lang="ts">
-	import EventResponses from '$components/EventResponses.svelte';
 	import { goto } from "$app/navigation";
 	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
-	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription, userTiers } from "$stores/user-view";
 	import { ndk, pageDrawerToggle, rightSidebar, user, HighlightWrapper, Avatar, Name } from "@kind0/ui-common";
 	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
-	import { openModal } from "svelte-modals";
 	import { addReadReceipt } from '$utils/read-receipts';
 	import { MarkerCircle, Quotes, Receipt, X } from 'phosphor-svelte';
     import { getParagraph, getText } from "get-selection-more";
@@ -123,7 +120,7 @@
     </button>
 </div>
 
-<div class="max-">
+<div class="w-full">
     {#if article.image}
         <div class="w-full max-h-[50vh] relative overflow-hidden">
             <img class="w-full relative sm:rounded-xl object-cover object-top h-full" src={article.image} />
@@ -140,12 +137,12 @@
                             {article.title}
                         </div>
                         <div class="flex-row justify-between items-center gap-4 flex w-full">
-                            <UserProfile user={article.author} let:userProfile let:fetching>
-                                <div class="flex flex-row items-center gap-4 p-4 h-fit">
+                            <UserProfile user={article.author} let:userProfile let:fetching let:authorUrl>
+                                <a href={authorUrl} class="flex flex-row items-center gap-4 p-4 h-fit">
                                     <Avatar {userProfile} {fetching} size="medium" />
 
                                     <Name  {userProfile} {fetching} />
-                                </div>
+                                </a>
                             </UserProfile>
 
                             <div class="flex flex-row items-center gap-12 w-full">

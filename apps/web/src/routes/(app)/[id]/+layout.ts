@@ -3,6 +3,7 @@ import { NDKUser } from "@nostr-dev-kit/ndk";
 import { nip05 } from "nostr-tools";
 import { get } from "svelte/store";
 import createDebug from "debug";
+import { goto } from "$app/navigation";
 
 const debug = createDebug("highlighter:user-layout.ts");
 

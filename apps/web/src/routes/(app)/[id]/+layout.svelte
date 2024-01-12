@@ -6,18 +6,28 @@
 
     export let user: NDKUser = $page.data.user;
 
+    let npub: string;
+
     // $: npub = $page.data.npub;
 
-    if (user)
-        startUserView(user);
+    try {
+        if (user && user.npub) {
+            npub = user.npub;
+            startUserView(user);
+        }
+    } catch {}
 
     onDestroy(() => {
         userSubscription?.unref();
     })
 </script>
 
-{#if user}
+{#if npub}
     {#key user.pubkey}
         <slot />
     {/key}
+{:else}
+    <div class="flex flex-col items-center justify-center h-full">
+        No user found
+    </div>
 {/if}

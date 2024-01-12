@@ -10,6 +10,7 @@
 	import { Check, Trash } from 'phosphor-svelte';
 
     export let tier: NDKArticle;
+    export let autofocus = false;
 
     const dispatch = createEventDispatcher();
 
@@ -88,6 +89,7 @@
                 placeholder="Tier Name"
                 class="w-full"
                 bind:value={name}
+                {autofocus}
             />
             <Textarea
                 color="black"

@@ -1,7 +1,6 @@
 import { get as getStore } from "svelte/store";
 import { ndk } from "@kind0/ui-common";
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
-import NDKRedisAdapter from "@nostr-dev-kit/ndk-cache-redis";
 import { NDKPrivateKeySigner, NDKRelayAuthPolicies, NDKRelaySet } from "@nostr-dev-kit/ndk";
 import createDebug from "debug";
 
@@ -30,9 +29,8 @@ export function getDefaultRelaySet() {
 }
 
 export async function configureDefaultNDK() {
-    console.log("configureDefaultNDK");
     const $ndk = getStore(ndk);
-    $ndk.clientName = "getfaaans";
+    $ndk.clientName = "highlighter";
     $ndk.clientNip89 = "31990:4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce:1703282708172";
     $ndk.relayAuthDefaultPolicy = NDKRelayAuthPolicies.disconnect($ndk.pool);
 

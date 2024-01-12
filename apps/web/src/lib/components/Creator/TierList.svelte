@@ -35,9 +35,12 @@
         tiers = tiers;
     }
 
+    let autofocus: number;
+
     function addTier() {
         const article = new NDKArticle($ndk);
         article.kind = NDKKind.SubscriptionTier;
+        autofocus = tiers.length;
         tiers.push(article);
         tiers = tiers;
     }
@@ -70,9 +73,18 @@
 
 <div class="text-white text-xl font-semibold">Support Tiers</div>
 
+{#if tiers.length === 0}
+    <div class="alert alert-neutral">
+        <h1 class="text-lg py-12">
+            Create support tiers to allow your fans to support you!
+        </h1>
+    </div>
+{/if}
+
 {#each tiers as tier, i (i)}
     <TierEditor
         bind:tier={tier}
+        autofocus={autofocus === i}
         on:delete={() => {
             if (tier.tagValue("d")) deletedDtags.add(tier.tagValue("d"));
             tiers = tiers.filter((_, j) => i !== j);
@@ -93,3 +105,11 @@
         Save
     </button>
 </div>
+
+<style>
+    .bg {
+        background: rgb(42,42,42);
+        background: linear-gradient(180deg, rgba(42,42,42,1) 0%, rgba(30,30,30,1) 100%);
+    }
+
+</style>

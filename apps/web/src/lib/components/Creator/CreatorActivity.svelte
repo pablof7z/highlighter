@@ -9,6 +9,7 @@
 	import SubscriptionStart from "./ActivityItems/SubscriptionStart.svelte";
 	import HighlightCreated from "./ActivityItems/HighlightCreated.svelte";
 	import SubscriptionZapReceived from "./ActivityItems/SubscriptionZapReceived.svelte";
+	import SupporterList from "$components/Supporters/SupporterList.svelte";
 
     const events = $ndk.storeSubscribe([
         { kinds: [
@@ -82,24 +83,28 @@
     <Tab title="Dissemination" bind:value={selection} class="pill"></Tab>
 </div>
 
-<div class="flex flex-col items-stretch bg-base-200 rounded-box divide-y divide-base-300">
-    {#each $eventsToRender as event (event.id)}
-        <div class="p-6 flex flex-col items-stretch">
-            {#if event.kind === 7001}
-                <SubscriptionStart {event} />
-            {:else if event.kind === NDKKind.Highlight}
-                <HighlightCreated {event} />
-            {:else if event.kind === NDKKind.Zap}
-                <SubscriptionZapReceived {event} />
-            {:else}
-                <CreatorActivityItem {event} creatorUrl={authorUrl} />
-            {/if}
-        </div>
-    {/each}
+<div class="flex flex-col gap-10">
+    <div class="flex flex-col items-stretch bg-base-200 rounded-box divide-y divide-base-300">
+        {#each $eventsToRender as event (event.id)}
+            <div class="p-6 flex flex-col items-stretch">
+                {#if event.kind === 7001}
+                    <SubscriptionStart {event} />
+                {:else if event.kind === NDKKind.Highlight}
+                    <HighlightCreated {event} />
+                {:else if event.kind === NDKKind.Zap}
+                    <SubscriptionZapReceived {event} />
+                {:else}
+                    <CreatorActivityItem {event} creatorUrl={authorUrl} />
+                {/if}
+            </div>
+        {/each}
 
-    {#if $eventsToRender.length === 0}
-        <div class="text-white text-opacity-60 font-normal leading-5">
-            No activity yet
-        </div>
-    {/if}
+        {#if $eventsToRender.length === 0}
+            <div class="text-white text-opacity-60 font-normal leading-5">
+                No activity yet
+            </div>
+        {/if}
+    </div>
+
+    <SupporterList />
 </div>

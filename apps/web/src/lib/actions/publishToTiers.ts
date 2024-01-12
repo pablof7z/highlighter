@@ -54,14 +54,14 @@ export async function publishToTiers(
     for (const tier in tiers) {
         if (teaser) {
             if (tiers[tier].selected) { // If this tier is required, mark is such
-                teaser.tags.push(["tier", tier]);
+                teaser.tag(["tier", tier]);
             } else { // Otherwise, mark it for indexing
-                teaser.tags.push(["f", tier]);
+                teaser.tag(["f", tier]);
             }
         }
 
         if (!tiers[tier].selected) continue;
-        event.tags.push(["f", tier]);
+        event.tag(["f", tier]);
     }
 
     // Add pubkey and `d` tags if appropriate
@@ -74,15 +74,15 @@ export async function publishToTiers(
 
     if (teaser) {
         if (teaser.isParamReplaceable()) {
-            event.tags.push(["preview", teaser.tagId()]);
+            event.tag(["preview", teaser.tagId()]);
         }
 
         if (event.isParamReplaceable()) {
-            teaser.tags.push(["full", event.tagId()]);
+            teaser.tag(["full", event.tagId()]);
         } else {
             await event.sign();
-            teaser.tags.push(["full", event.tagId()]);
-            teaser.tags.push(["url", urlFromEvent(event)]);
+            teaser.tag(["full", event.tagId()]);
+            teaser.tag(["url", urlFromEvent(event)]);
         }
 
         const teaserRelaySet = opts.wideDistribution ? undefined : opts.relaySet;

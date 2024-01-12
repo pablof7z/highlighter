@@ -55,7 +55,12 @@
         ">
             <div class="flex items-end">
                 {#if canEdit}
-                    <EditableAvatar user={user} {userProfile} {fetching} class="w-24 h-24 border-2 border-black" />
+                    <EditableAvatar
+                        user={user}
+                        {userProfile}
+                        {fetching}
+                        class="w-24 h-24 border-2 border-black"
+                    />
                 {:else}
                     <Avatar user={user} {userProfile} {fetching} class="w-24 h-24 border-2 border-black" />
                 {/if}

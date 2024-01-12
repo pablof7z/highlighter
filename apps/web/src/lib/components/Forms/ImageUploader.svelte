@@ -3,8 +3,10 @@
 	import type { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 
-    export let url: string;
-    export let tags: NDKTag[];
+    export let url: string | undefined = undefined;
+    export let tags: NDKTag[] = [];
+    export let alwaysUseSlot = false;
+    export let noImageClass: string | undefined = undefined;
 
     const dispatch = createEventDispatcher();
     let uploadProgress: number | undefined;
@@ -73,15 +75,19 @@
 
 <!-- svelte-ignore a11y-label-has-associated-control -->
 <label class="hover:opacity-80 cursor-pointer {$$props.wrapperClass??""}">
-    {#if url}
+    {#if url && !alwaysUseSlot}
         <!-- svelte-ignore a11y-missing-attribute -->
         <img
             src={url}
             class={$$props.class??""}
             class:animate-pulse={done === false}
         />
-    {:else}
-        <slot />
+    {:else if $$slots.default}
+        <slot onOpen={() => {
+            fileUpload.click();
+        }} />
+    {:else if noImageClass}
+        <div class={noImageClass}></div>
     {/if}
     {#if uploadProgress !== undefined && !done}
         <div class="h-2 bg-accent top-0 absolute z-30 left-0 transition-all duration-300" style="width: {uploadProgress}%;"></div>

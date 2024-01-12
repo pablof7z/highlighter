@@ -35,7 +35,7 @@
     {#if supportingPubkeys?.size > 0}
         <span class="text-sm whitespace-nowrap">
             {supportingPubkeys?.size}
-            Faaans
+            Supporters
         </span>
         <div class="flex -space-x-4 ml-4 w-fit">
             {#each Array.from(supportingPubkeys).slice(0, 10) as supportingPubkey (supportingPubkey)}

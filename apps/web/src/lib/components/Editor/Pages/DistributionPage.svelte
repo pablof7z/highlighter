@@ -112,30 +112,29 @@
                 <div slot="description" class="text-sm mt-1 text-neutral-500">
                     {#if type === "article"}
                         {#if wideDistribution}
-                            This {!hasFree ? "preview" : "article"} will be seen in long-form feeds beyond your Faaans page.
-                            <br>
+                            This {!hasFree ? "preview" : "article"} will be seen in long-form feeds beyond your Highlighter page. <br>
                             <span class="text-white">This helps you reach more readers!</span>
                         {:else}
                             This {!hasFree ? "preview" : type} will
-                            <span class="text-white">only be visible on your Faaans page</span>, not throughout other reading sites.
+                            <span class="text-white">only be visible on your Highlighter page</span>, not throughout other reading sites.
                         {/if}
                     {:else if type === "video"}
                         {#if wideDistribution}
-                            This {!hasFree ? "preview" : "video"} will be seen in video feeds beyond your Faaans page.
+                            This {!hasFree ? "preview" : "video"} will be seen in video feeds beyond your Highlighter page.
                             <br>
                             <span class="text-white">This helps you reach more viewers!</span>
                         {:else}
                             This {!hasFree ? "preview" : type} will
-                            <span class="text-white">only be visible on your Faaans page</span>, not throughout other video sites.
+                            <span class="text-white">only be visible on your Highlighter page</span>, not throughout other video sites.
                         {/if}
                     {:else if type === "note"}
                         {#if wideDistribution}
-                            This {!hasFree ? "preview" : "note"} will be seen in twitter-like clients beyond your Faaans page.
+                            This {!hasFree ? "preview" : "note"} will be seen in twitter-like clients beyond your Highlighter page.
                             <br>
                             <span class="text-white">This helps you reach a wider audience!</span>
                         {:else}
                             This {!hasFree ? "preview" : type} will
-                            <span class="text-white">only be visible on your Faaans page</span>, not throughout twitter-like sites.
+                            <span class="text-white">only be visible on your Highlighter page</span>, not throughout twitter-like sites.
                         {/if}
                     {/if}
                 </div>

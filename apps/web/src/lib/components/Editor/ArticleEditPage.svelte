@@ -96,8 +96,10 @@
             preview.summary = article.summary;
         }
 
-        // add categories
+        // add categories if they are not there
         for (const category of categories) {
+            if (!article.getMatchingTags("t").some(t => t[1] === category)) continue;
+
             article.tags.push(["t", category]);
             if (preview) preview.tags.push(["t", category]);
         }

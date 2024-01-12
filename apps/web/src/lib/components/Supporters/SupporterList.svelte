@@ -57,11 +57,3 @@
         {/each}
     </div>
 {/if}
-
-{#if $payments}
-    <div class="flex flex-col divide-y divide-base-300 {$$props.class??""}">
-        {#each $payments as payment}
-            <pre>{JSON.stringify(payment.rawEvent(), null, 2)}</pre>
-        {/each}
-    </div>
-{/if}

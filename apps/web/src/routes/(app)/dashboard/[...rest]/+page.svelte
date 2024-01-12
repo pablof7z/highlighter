@@ -76,7 +76,6 @@
             <Tab title="Activity" href="/dashboard/activity" bind:value={activeTab} class="text-base sm:px-6" />
             <Tab title="Stats" href="/dashboard/stats" bind:value={activeTab} class="text-base sm:px-6" />
             <Tab title="Tiers" href="/dashboard/tiers" bind:value={activeTab} class="text-base sm:px-6" />
-            <Tab title="Faaans" href="/dashboard/faaans" bind:value={activeTab} class="text-base sm:px-6" />
 
             {#if $drafts.length > 0}
                 <Tab title="Drafts" href="/dashboard/drafts" bind:value={activeTab} class="text-base sm:px-6" />
@@ -91,8 +90,6 @@
             <DashboardStats />
         {:else if activeTab === "Tiers"}
             <TierList />
-        {:else if activeTab === "Faaans"}
-            <SupporterList />
         {:else if activeTab === "Drafts"}
             <DraftList />
         {/if}
