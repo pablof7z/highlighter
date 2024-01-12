@@ -38,3 +38,5 @@ _local_/
 
 **/turbo-build.log
 .vercel
+
+**/prisma/generated
