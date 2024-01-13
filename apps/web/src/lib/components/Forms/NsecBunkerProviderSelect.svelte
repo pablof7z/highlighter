@@ -27,8 +27,6 @@
     async function validateNip05(pubkey: Hexpubkey, domain: string) {
         const user = await NDKUser.fromNip05(domain);
 
-        console.log(`validateNip05`, domain, user?.pubkey, pubkey);
-
         return !!(user && user.pubkey === pubkey);
     }
 

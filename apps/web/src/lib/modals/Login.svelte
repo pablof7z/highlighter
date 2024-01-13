@@ -80,12 +80,6 @@
             console.error(e);
             // nip46ConnectionInfo = e;
         }
-
-
-
-        // nip46ConnectionStatus = localSigner.privateKey;
-
-
     }
 </script>
 

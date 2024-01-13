@@ -5,7 +5,7 @@ import { get } from "svelte/store";
 import createDebug from "debug";
 import { goto } from "$app/navigation";
 
-const debug = createDebug("highlighter:user-layout.ts");
+const debug = createDebug("highlighter:user-layout");
 
 export async function load({ params, fetch }) {
     const {id} = params;
@@ -43,7 +43,7 @@ export async function load({ params, fetch }) {
 
     try {
         const $ndk = get(ndk);
-        user = await $ndk.getUserFromNip05(id);
+        user = await $ndk.getUserFromNip05(id, true);
         if (user) {
             npub = user.npub;
         } else {

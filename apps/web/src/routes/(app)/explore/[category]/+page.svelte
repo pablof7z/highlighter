@@ -69,12 +69,12 @@
 </script>
 
 <svelte:head>
-    {#if selectedCategory}
+    {#if selectedCategory && selectedCategory !== "All"}
         <meta name="description" content={`Explore ${selectedCategory} on Nostr`} />
-        <title>Explore {selectedCategory} | Faaans</title>
+        <title>{selectedCategory} | Highlighter</title>
     {:else}
-        <meta name="description" content="Explore what creators are posting" />
-        <title>Explore | Faaans</title>
+        <meta name="description" content="Explore what creators are publishing" />
+        <title>Highlighter: A sanctuary for creativity</title>
     {/if}
 </svelte:head>
 

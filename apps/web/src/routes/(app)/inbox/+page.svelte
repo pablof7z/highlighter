@@ -87,7 +87,7 @@
             </div>
         </div>
 
-        <SuperFollowList bind:activeView bind:mode class="fixed" bind:open />
+        <SuperFollowList bind:activeView bind:mode bind:open />
     </PageSidebar>
 
     <div class="
@@ -102,7 +102,7 @@
                 </div>
 
                 <a href="/explore" class="text-xl">
-                    Explore Faaans creators
+                    Explore Highlighter creators
                 </a>
             </div>
         {:else if $events?.length === 0}
@@ -113,7 +113,7 @@
             </div>
 
             <a href="/explore" class="text-xl">
-                Explore Faaans creators
+                Explore Highlighter creators
             </a>
         </div>
         {:else}

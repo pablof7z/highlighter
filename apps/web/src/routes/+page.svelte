@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Faaans</title>
+	<title>Highlighter</title>
 </svelte:head>
 
 <Navbar class="!bg-transparent fixed z-40 !backdrop-blur-[0px]" maxSize="" />

@@ -6,8 +6,8 @@
 	import type { Readable } from 'svelte/store';
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import { goto } from '$app/navigation';
-	import { Plus } from 'phosphor-svelte';
-    import { createEventDispatcher } from 'svelte';
+	import { Plus, Check } from 'phosphor-svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
 
     export let redirectOnSave = true;
 
@@ -15,10 +15,18 @@
 
     let tiers: NDKArticle[] = [];
     let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
+    let expandedTiers: number[] = [];
 
     // Tracks the deleted tiers so we don't re-add them
     let deletedDtags = new Set<string>();
-    $: if ($user) currentTiers = getUserSupportPlansStore();
+
+    onMount(() => {
+        currentTiers = getUserSupportPlansStore();
+
+        if ($currentTiers && $currentTiers.length === 0) {
+            addTier();
+        }
+    })
 
     $: if ($currentTiers) {
         for (const tierEvent of $currentTiers) {
@@ -36,12 +44,33 @@
     }
 
     let autofocus: number;
+    let canAddTier = false;
+
+    $: canAddTier = tiers.length === 0 || !!(
+        tiers[tiers.length - 1].title &&
+        tiers[tiers.length - 1].getMatchingTags("amount").length
+    );
 
     function addTier() {
         const article = new NDKArticle($ndk);
         article.kind = NDKKind.SubscriptionTier;
         autofocus = tiers.length;
+
+        // if the last tier is expanded then remove it from the expanded tiers
+        const lastIndex = tiers.length - 1;
+
+        // if there is a last tier and it doesn't have a title or amount tags then return
+        if (lastIndex >= 0 && (
+            !tiers[lastIndex].title ||
+            !tiers[lastIndex].getMatchingTags("amount").length
+        )) return;
+
+        if (expandedTiers.includes(lastIndex)) {
+            expandedTiers = expandedTiers.filter((i) => i !== lastIndex);
+        }
+
         tiers.push(article);
+        expandedTiers = [tiers.length-1]
         tiers = tiers;
     }
 
@@ -71,8 +100,6 @@
     }
 </script>
 
-<div class="text-white text-xl font-semibold">Support Tiers</div>
-
 {#if tiers.length === 0}
     <div class="alert alert-neutral">
         <h1 class="text-lg py-12">
@@ -81,20 +108,60 @@
     </div>
 {/if}
 
-{#each tiers as tier, i (i)}
-    <TierEditor
-        bind:tier={tier}
-        autofocus={autofocus === i}
-        on:delete={() => {
-            if (tier.tagValue("d")) deletedDtags.add(tier.tagValue("d"));
-            tiers = tiers.filter((_, j) => i !== j);
-        }}
-    />
-{/each}
+<div class="flex flex-col">
+    {#each tiers as tier, i (i)}
+        {#if expandedTiers.includes(i)}
+            <div class="my-5">
+                <TierEditor
+                    bind:tier={tier}
+                    autofocus={autofocus === i}
+                    on:delete={() => {
+                        if (tier.tagValue("d")) deletedDtags.add(tier.tagValue("d"));
+                        tiers = tiers.filter((_, j) => i !== j);
+                    }}
+                />
+            </div>
+        {:else}
+            <button
+                class="border border-base-300 p-4 flex flex-col gap-2"
+                on:click={() => {expandedTiers.push(i); expandedTiers = expandedTiers}}
+            >
+                <div class="flex flex-row justify-between whitespace-nowrap truncate w-full">
+                    <h1 class="text-xl font-semibold">
+                        {tier.title}
+                    </h1>
 
-<div class="flex flex-row justify-between">
+                    {#if tier.getMatchingTags("amount")}
+                        <h2 class="text-xl font-semibold">
+                            {tier.getMatchingTags("amount")[0][1]} {tier.getMatchingTags("amount")[0][2]}
+                        </h2>
+                    {/if}
+                </div>
+
+                {#if tier.content.length > 0 || tier.getMatchingTags("perk").length > 0}
+                    <ul class="text-xs flex flex-col items-start gap-2">
+                        {#if tier.content.length > 0}
+                            <li>
+                                {tier.content}
+                            </li>
+                        {/if}
+                        {#each tier.getMatchingTags("perk") as perkTags}
+                            <li class="flex flex-row items-center">
+                                <Check class="w-5 h-5 mr-2 text-success" weight="duotone" />
+                                {perkTags[1]}
+                            </li>
+                        {/each}
+                    </ul>
+                {/if}
+            </button>
+        {/if}
+    {/each}
+</div>
+
+<div class="flex flex-row justify-between items-stretch">
     <button
-        class="button button-black px-6 py-3 font-semibold self-start"
+        class="button button-black px-6 py-3 font-semibold self-start h-fit"
+        disabled={!canAddTier}
         on:click={addTier}
     >
         <Plus class="w-5 h-5 mr-2" />
@@ -102,7 +169,11 @@
     </button>
 
     <button class="button px-6" on:click={save}>
-        Save
+        {#if $$slots.saveButton}
+            <slot name="saveButton" />
+        {:else}
+            Save
+        {/if}
     </button>
 </div>
 

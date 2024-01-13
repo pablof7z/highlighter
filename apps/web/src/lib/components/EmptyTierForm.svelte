@@ -34,7 +34,7 @@
     <div class="card-body lex flex-col gap-4">
         <div class="flex-col justify-start items-start gap-2 flex w-full">
             <h1 class="!text-black text-2xl font-medium w-full items-start flex group flex-row justify-between text-left">
-                Become a Faaan
+                Supporter
             </h1>
 
             <div class="flex group flex-col text-left gap-4 text-black text-base items-center">

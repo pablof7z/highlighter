@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ImageUploader from '$components/Forms/ImageUploader.svelte';
 	import { page } from "$app/stores";
 	import CreatorFeed from "$components/Feed/CreatorFeed.svelte";
 	import CurrentSupporters from "$components/CurrentSupporters.svelte";
@@ -8,6 +9,7 @@
 	import { derived, type Readable } from "svelte/store";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import EditableAvatar from "$components/User/EditableAvatar.svelte";
+    import { Image } from "phosphor-svelte";
     import type { UserProfileType } from "../../../app";
 	import { Pen } from "phosphor-svelte";
 	import CategorySelector from "$components/Forms/CategorySelector.svelte";
@@ -63,7 +65,7 @@
     async function save() {
         userProfile.display_name = userProfile.name;
         const profile = new NDKEvent($ndk, {
-            kind: 37777,
+            kind: 0,
             content: serializeProfile(userProfile)
         } as NostrEvent);
         if (kind37777Event) profile.tags.push(["d", kind37777Event.tagValue("d")!]);
@@ -73,6 +75,8 @@
         await profile.publish();
         editing = false;
     }
+
+    $: if (userProfile && !userProfile.banner) userProfile.banner = defaultBanner;
 </script>
 
 <svelte:head>
@@ -87,7 +91,21 @@
     <div class="">
         <UserProfile {user} bind:userProfile bind:kind37777Event let:fetching>
             <div class="relative w-full overflow-hidden max-sm:pb-[20vh] pb-[25%]">
-                <img src={userProfile?.banner??defaultBanner} class="absolute w-full h-full object-cover object-top lg: rounded" alt={userProfile?.name}>
+                {#if userProfile && editing}
+                    <ImageUploader
+                        class="absolute w-full h-full object-cover object-top lg:rounded"
+                        bind:url={userProfile.banner}
+                        let:onOpen
+                    >
+                        <div class="bg-base-200 w-full h-full items-center justify-center flex flex-row">
+                            <button class="btn btn-lg bg-base-200 border border-neutral-800 btn-circle" on:click={() => onOpen()}>
+                                <Image class="w-8 h-8" />
+                            </button>
+                        </div>
+                    </ImageUploader>
+                {:else}
+                    <img src={userProfile?.banner??defaultBanner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
+                {/if}
             </div>
             <!-- Profile Header -->
             <div class="

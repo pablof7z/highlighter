@@ -1,7 +1,6 @@
 <script lang="ts">
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import CreatorFeed from '$components/Feed/CreatorFeed.svelte';
-    import SupporterList from "$components/Supporters/SupporterList.svelte";
 	import PageTitle from "$components/Page/PageTitle.svelte";
 	import DashboardStats from '$components/dashboard/DashboardStats.svelte';
 	import { getUserContent, getUserSupporters, startUserView } from '$stores/user-view';
@@ -16,6 +15,7 @@
 	import CreatorActivity from "$components/Creator/CreatorActivity.svelte";
 	import DraftList from "$components/Creator/DraftList.svelte";
 	import { drafts } from "$stores/drafts";
+	import OnboardingChecklist from "$components/Creator/OnboardingChecklist.svelte";
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
@@ -42,10 +42,12 @@
         case "drafts": activeTab = "Drafts"; break;
         default: activeTab = "Posts";
     }
+
+    let allOnboardingDone = false;
 </script>
 
 <LoadingScreen ready={!!mounted && !!$user}>
-    <div class="flex flex-col gap-10 mx-auto max-w-prose">
+    <div class="flex flex-col gap-10 mx-auto w-fit">
         <UserProfile user={$user} let:userProfile let:authorUrl let:fetching>
             <PageTitle title="Creator Dashboard">
                 <div class="flex flex-row gap-2">
@@ -54,7 +56,6 @@
                     <a href={authorUrl} class="button">View Profile</a>
                 </div>
             </PageTitle>
-
 
             <a href={authorUrl} class="flex flex-row items-center gap-4 text-left">
                 <Avatar user={$user} {userProfile} {fetching} class="w-32 h-32" />
@@ -71,27 +72,36 @@
             </a>
         </UserProfile>
 
-        <div role="tablist" class="tabs tabs-bordered w-full sm:w-fit">
-            <Tab title="Posts" href="/dashboard/posts" bind:value={activeTab} class="text-base sm:px-6" />
-            <Tab title="Activity" href="/dashboard/activity" bind:value={activeTab} class="text-base sm:px-6" />
-            <Tab title="Stats" href="/dashboard/stats" bind:value={activeTab} class="text-base sm:px-6" />
-            <Tab title="Tiers" href="/dashboard/tiers" bind:value={activeTab} class="text-base sm:px-6" />
+        <div class="flex flex-row gap-10 mx-auto">
+            <div class="flex flex-col gap-10 mx-auto max-w-prose">
+                <div role="tablist" class="tabs tabs-bordered w-full sm:w-fit">
+                    <Tab title="Posts" href="/dashboard/posts" bind:value={activeTab} class="text-base sm:px-6" />
+                    <Tab title="Activity" href="/dashboard/activity" bind:value={activeTab} class="text-base sm:px-6" />
+                    <Tab title="Stats" href="/dashboard/stats" bind:value={activeTab} class="text-base sm:px-6" />
+                    <Tab title="Tiers" href="/dashboard/tiers" bind:value={activeTab} class="text-base sm:px-6" />
 
-            {#if $drafts.length > 0}
-                <Tab title="Drafts" href="/dashboard/drafts" bind:value={activeTab} class="text-base sm:px-6" />
-            {/if}
+                    {#if $drafts.length > 0}
+                        <Tab title="Drafts" href="/dashboard/drafts" bind:value={activeTab} class="text-base sm:px-6" />
+                    {/if}
+                </div>
+
+                {#if activeTab === "Posts"}
+                    <CreatorFeed content={getUserContent()} />
+                {:else if activeTab === "Activity"}
+                    <CreatorActivity />
+                {:else if activeTab === "Stats"}
+                    <DashboardStats />
+                {:else if activeTab === "Tiers"}
+                    <div class="text-white text-xl font-semibold">Support Tiers</div>
+                    <TierList />
+                {:else if activeTab === "Drafts"}
+                    <DraftList />
+                {/if}
+            </div>
+
+            <div class:hidden={allOnboardingDone}>
+                <OnboardingChecklist bind:allDone={allOnboardingDone} />
+            </div>
         </div>
-
-        {#if activeTab === "Posts"}
-            <CreatorFeed content={getUserContent()} />
-        {:else if activeTab === "Activity"}
-            <CreatorActivity />
-        {:else if activeTab === "Stats"}
-            <DashboardStats />
-        {:else if activeTab === "Tiers"}
-            <TierList />
-        {:else if activeTab === "Drafts"}
-            <DraftList />
-        {/if}
     </div>
 </LoadingScreen>

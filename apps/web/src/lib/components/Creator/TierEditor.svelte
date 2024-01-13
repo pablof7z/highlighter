@@ -141,7 +141,7 @@
         </div>
         <div class="self-stretch justify-between items-center inline-flex">
             <button class="button" on:click={addAmountLine}>
-                Add another option
+                Add another pricing option
             </button>
             <div class="px-3 py-1.5 rounded-lg justify-center items-center gap-2 flex">
                 <button

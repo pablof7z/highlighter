@@ -7,7 +7,7 @@
 	import { finalizeLogin, login } from '$utils/login';
 	import { debugMode, prepareSession, jwt, loginState } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
-	import { Bug, Check } from 'phosphor-svelte';
+	import { Bug } from 'phosphor-svelte';
 	import { pwaInfo } from 'virtual:pwa-info';
 
 	let webManifestLink: string;

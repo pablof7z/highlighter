@@ -5,7 +5,7 @@
 	import CurrentUser from './CurrentUser.svelte';
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { openModal } from 'svelte-modals';
-	import { Compass, Tray, ChatCircle, Receipt, PencilSimple, PencilSimpleLine } from 'phosphor-svelte';
+	import { Compass, Tray, ChatCircle, Receipt, PencilSimple, PencilSimpleLine, PlusCircle } from 'phosphor-svelte';
 
 	export let maxSize = "max-w-7xl";
 </script>
@@ -13,7 +13,7 @@
 <div class="navbar mb-2 bg-base-100 sm:px-8 mx-auto {maxSize} {$$props.class??""} fixed top-0 z-20 bg-opacity-80 backdrop-blur-[50px]">
 	<div class="navbar-start items-center">
 		<a href="/" class="btn btn-ghost text-xl normal-case px-0 hover:bg-transparent">
-			<Logo />
+			<Logo class="h-12" />
 		</a>
 
 		<div class="ml-8 sm:ml-14 flex flex-row items-center gap-8 links whitespace-nowrap">
@@ -65,9 +65,10 @@
 
 	<div class="navbar-center hidden flex-row gap-8 xl:flex">
 	</div>
-	<div class="navbar-end flex flex-row items-center gap-4">
+	<div class="navbar-end flex flex-row items-stretch gap-4">
 		{#if $user}
-			<button class="button max-md:hidden" on:click={() => openModal(NewItemModal)}>
+			<button class="button button-black max-md:hidden px-6" on:click={() => openModal(NewItemModal)}>
+				<PlusCircle class="w-6 h-6" />
 				Publish
 			</button>
 		{/if}

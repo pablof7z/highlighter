@@ -8,6 +8,8 @@
     color="black"
     class="w-full max-w-2xl flex flex-col items-stretch overflow-y-auto max-h-[70vh]"
 >
+    <div class="text-white text-xl font-semibold">Support Tiers</div>
+
     <TierList
         redirectOnSave={false}
         on:saved={closeModal}

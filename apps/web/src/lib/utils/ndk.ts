@@ -55,8 +55,8 @@ export async function configureDefaultNDK() {
 
 export async function configureFeNDK() {
     const $ndk = getStore(ndk);
-    $ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: "faaans" });
-    $ndk.clientName = "getfaaans";
+    $ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: "higlighter" });
+    $ndk.clientName = "highlighter";
 
     await $ndk.connect(2000);
 }

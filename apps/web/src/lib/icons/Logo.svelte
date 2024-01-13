@@ -1,4 +1,5 @@
-<script>
+<img src="/images/logo.png" class={$$props.class??""} />
+<!-- <script>
   let rand = Math.floor(Math.random() * 1000000000);
 </script>
 
@@ -15,4 +16,4 @@
   <stop offset="1" stop-color="#FF931E"/>
   </radialGradient>
   </defs>
-  </svg>
+  </svg> -->

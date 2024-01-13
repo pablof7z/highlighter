@@ -21,8 +21,6 @@
 	<div class="drawer-side z-50">
 		<label for="mobile-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
 		<div class="menu w-[40vw] min-h-full bg-base-200 text-base-content p-8">
-
-
 			<button on:click={logout} class="button w-full">Log Out</button>
 
 			{#if $debugMode}
