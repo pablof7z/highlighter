@@ -31,5 +31,12 @@ compile-ndk:
     ./ndk_compile.sh
 
 deploy:
-	rsync -avP -l -t --exclude node_modules --exclude build /Users/pablofernandez/src/kind0/fans/ kind0:/home/pablo/projects/fans/fans
-	ssh pablo@kind0 ./deploy-fans.sh
+	rsync -avP -l -t --exclude .env --exclude .svelte-kit --exclude node_modules --exclude build /Users/pablofernandez/src/kind0/fans/ kind0:/home/pablo/projects/fans/fans
+
+deploy-build:
+	rsync -avP -l -t --exclude .svelte-kit --exclude node_modules /Users/pablofernandez/src/kind0/fans/ kind0:/home/pablo/projects/fans/fans
+
+build-deploy:
+	cd apps/web && pnpm build
+	rsync -avP -l -t --exclude .svelte-kit --exclude node_modules /Users/pablofernandez/src/kind0/fans/ kind0:/home/pablo/projects/fans/fans
+
