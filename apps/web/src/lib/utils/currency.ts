@@ -25,6 +25,7 @@ export function currencyFormat(currency: string, amount: number) {
 
     switch (currency) {
         case "USD":
+        case 'usd':
             retval = `$${amount.toFixed(2)}`;
             break;
         case "EUR":

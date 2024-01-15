@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ArticleView from './../../../routes/(app)/[id]/[tagId]/ArticleView.svelte';
+	import ArticleView from '../ArticleView.svelte';
 	import type { DraftItem } from "$stores/drafts";
 	import { ndk, user } from "@kind0/ui-common";
 	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";

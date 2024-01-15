@@ -1,6 +1,6 @@
 import { writable, get as getStore, type Writable, derived } from 'svelte/store';
 import { ndk, user } from "@kind0/ui-common";
-import NDK, { NDKEvent, NDKList, NDKSubscriptionCacheUsage, type NDKFilter, type NDKTag, NDKKind, type NDKEventId, NDKDVMJobResult, NDKDVMRequest, NDKListKinds, type Hexpubkey } from '@nostr-dev-kit/ndk';
+import NDK, { NDKEvent, NDKList, NDKSubscriptionCacheUsage, type NDKFilter, type NDKTag, NDKKind, type NDKEventId, NDKDVMJobResult, NDKDVMRequest, NDKListKinds, type Hexpubkey, NDKArticle } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from "@macfja/svelte-persistent-store";
 import debug from 'debug';
@@ -37,6 +37,8 @@ export const userSuperFollows = persist(
     createLocalStorage(),
     'user-super-follows'
 );
+
+export const userTiers = writable<NDKArticle[]>([]);
 
 export const userActiveSubscriptions = writable<Map<Hexpubkey, string>>(new Map());
 
@@ -142,6 +144,7 @@ export async function prepareSession(): Promise<void> {
                 superFollowsStore: userSuperFollows,
                 userArticleCurationsStore: userArticleCurations,
                 userVideoCurationsStore: userVideoCurations,
+                userTierStore: userTiers,
                 activeSubscriptionsStore: userActiveSubscriptions,
                 appHandlers: userAppHandlers,
                 supportStore: userSupport,
@@ -172,6 +175,7 @@ interface IFetchDataOptions {
     appHandlers?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
     userArticleCurationsStore?: Writable<Map<string, NDKList>>;
     userVideoCurationsStore?: Writable<Map<string, NDKList>>;
+    userTierStore: Writable<NDKArticle[]>;
     listsKinds?: number[];
     extraKinds?: number[];
     closeOnEose?: boolean;
@@ -223,6 +227,8 @@ async function fetchData(
             processSupport(event);
         } else if (event.kind === NDKKind.AppRecommendation) {
             processAppHandler(event);
+        } else if (event.kind === NDKKind.SubscriptionTier) {
+            processSubscriptionTier(event);
         } else if ([
             NDKKind.CurationSet,
             NDKKind.CurationSet+1,
@@ -252,6 +258,16 @@ async function fetchData(
             return support;
         });
     };
+
+    const processSubscriptionTier = (event: NDKEvent) => {
+        opts.userTierStore.update((tiers) => {
+            const tier = NDKArticle.from(event);
+
+            tiers.push(tier);
+
+            return tiers;
+        });
+    }
 
     const processAppHandler = (event: NDKEvent) => {
         opts.appHandlers!.update((appHandlers) => {
@@ -326,8 +342,6 @@ async function fetchData(
             if (authorPubkeyLength < 5) authorPubkeyLength = 6;
         }
 
-        console.log(`will request authors`, authors.length, authorPubkeyLength);
-
         const authorPrefixes = authors.map(f => f.slice(0, authorPubkeyLength));
 
         if (opts.userArticleCurationsStore) {
@@ -342,6 +356,10 @@ async function fetchData(
 
         if (opts.appHandlers) {
             filters.push({ authors: authorPrefixes, kinds: [NDKKind.AppRecommendation] });
+        }
+
+        if (opts.userTierStore) {
+            kinds.push(NDKKind.SubscriptionTier);
         }
 
         if (opts.followsStore) {
@@ -378,7 +396,6 @@ async function fetchData(
 
         userDataSubscription.on('eose', () => {
             _(`received eose`);
-            console.log(`received eose`, opts.waitUntilEoseToResolve);
 
             // if (kind3Key) {
             //     const mostRecentKind3 = mostRecentEvents.get(kind3Key!);
@@ -392,14 +409,12 @@ async function fetchData(
 
             if (opts.waitUntilEoseToResolve) {
                 _(`resolving`);
-                console.log(`resolving`);
                 resolve();
             }
         });
 
         if (!opts.waitUntilEoseToResolve) {
             _(`resolve without waiting for eose`);
-            console.log(`resolve without waiting for eose`);
             resolve();
         }
     });

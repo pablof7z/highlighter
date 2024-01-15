@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { get as getStore } from 'svelte/store';
+	import { MagnifyingGlass } from 'phosphor-svelte';
 	import { Avatar, CollapsableDropdown, Name, ndk, user } from '@kind0/ui-common';
     import {Plus, PlusCircle, SignOut, SquaresFour, Tray} from 'phosphor-svelte';
 	import { debugMode, loginState, userActiveSubscriptions, userFollows, userSuperFollows } from '$stores/session';
@@ -7,6 +7,7 @@
 	import { logout } from '$utils/login';
 	import { openModal } from 'svelte-modals';
     import NewItemModal from '$modals/NewItemModal.svelte';
+    import { userTiers } from '$stores/session';
 </script>
 
 <UserProfile user={$user} let:userProfile let:fetching>
@@ -29,13 +30,20 @@
                 <PlusCircle size={16} class="mr-2"/>
                 Publish
             </button></li>
-            <li><a href="/dashboard">
-                <SquaresFour size={16} class="mr-2"/>
-                Creator Dashboard
-            </a></li>
-            <li><a href="/dashboard/tiers">
-                <SquaresFour size={16} class="mr-2"/>
-                Tiers
+            {#if $userTiers.length > 0}
+                <li><a href="/dashboard">
+                    <SquaresFour size={16} class="mr-2"/>
+                    Creator Dashboard
+                </a></li>
+            {:else}
+                <li><a href="/dashboard/tiers">
+                    <Plus size={16} class="mr-2"/>
+                    Set up Creator account
+                </a></li>
+            {/if}
+            <li><a href="/search">
+                <MagnifyingGlass size={16} class="mr-2"/>
+                Search
             </a></li>
             <li><button on:click={logout} class="w-full">
                 <SignOut size={16} class="mr-2"/>

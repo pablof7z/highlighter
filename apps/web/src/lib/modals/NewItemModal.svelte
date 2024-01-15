@@ -8,13 +8,13 @@
 
 <ModalShell>
     <div class="">
-        <div class="max-sm:grid max-sm:grid-cols-2 gap-8 flex flex-col md:flex-row sm:gap-16">
+        <div class="max-sm:grid max-sm:grid-cols-2 gap-8 flex flex-col md:flex-row sm:gap-8">
 
             <a href="/notes/new">
                 <span>
                     <NoteIcon />
                 </span>
-                Note
+                Short Note
             </a>
 
             <a href="/articles/new">

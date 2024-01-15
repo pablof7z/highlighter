@@ -55,7 +55,7 @@
 
 <div class="flex flex-row gap-8 mx-auto mt-8">
     <PageSidebar title="Highlights" bind:open>
-        <a href="/clips/my" class="flex flex-row gap-2 items-center">
+        <a href="/highlights/my" class="flex flex-row gap-2 items-center">
             <User class="w-5 h-5" />
             My Highlights
         </a>

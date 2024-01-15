@@ -1,4 +1,5 @@
 <script lang="ts">
+	import HighlightIcon from '../icons/HighlightIcon.svelte';
 	import { goto } from "$app/navigation";
 	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
@@ -40,11 +41,6 @@
     let content = article.content;
 
     editUrl ??= `/articles/${article.tagValue("d")}/edit`;
-
-    function selectionchange(event: CustomEvent) {
-        const d = event.detail;
-        console.log(d);
-    }
 
     onMount(() => {
         document.addEventListener('click', function(event) {
@@ -97,10 +93,7 @@
 
         event.tag(article);
         await event.sign();
-        await event.publish(
-            getDefaultRelaySet()
-        )
-        console.log(event.rawEvent());
+        await event.publish()
     }
 </script>
 
@@ -108,15 +101,13 @@
     <title>{article.title}</title>
 </svelte:head>
 
-
-
 <div bind:this={el} class="float-element z-50 absolute opacity-0 transition-all duration-300 flex flex-col gap-1">
     <button class="
-        button
+        button px-4 py-3
         transition-all duration-300
     " on:click={createHighlight}>
-        <Receipt class="w-8 h-8" />
-        Clip
+        <HighlightIcon class="w-6 h-6" />
+        Highlight
     </button>
 </div>
 
@@ -138,14 +129,14 @@
                         </div>
                         <div class="flex-row justify-between items-center gap-4 flex w-full">
                             <UserProfile user={article.author} let:userProfile let:fetching let:authorUrl>
-                                <a href={authorUrl} class="flex flex-row items-center gap-4 p-4 h-fit">
+                                <a href={authorUrl} class="flex flex-row items-center gap-4 p-4 h-fit flex-grow">
                                     <Avatar {userProfile} {fetching} size="medium" />
 
-                                    <Name  {userProfile} {fetching} />
+                                    <Name  {userProfile} {fetching} class="whitespace-nowrap truncate" />
                                 </a>
                             </UserProfile>
 
-                            <div class="flex flex-row items-center gap-12 w-full">
+                            <div class="flex flex-row items-center gap-12">
                                 <EventActionButtons
                                     event={article}
                                     on:comment

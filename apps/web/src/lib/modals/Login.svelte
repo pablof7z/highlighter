@@ -83,7 +83,7 @@
     }
 </script>
 
-<p class="text-center text-lg">Log in</p>
+<div class="text-center text-black text-base font-light leading-normal">Log in</div>
 
 <div class="flex flex-col gap-4">
     {#if !advanced}

@@ -4,7 +4,6 @@
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { bunkerNDK, ndk, user } from '@kind0/ui-common';
 	import { login } from '$utils/login';
-	import { page } from '$app/stores';
 	import { loginState } from '$stores/session';
 	import { fade } from 'svelte/transition';
 

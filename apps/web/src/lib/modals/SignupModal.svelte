@@ -5,6 +5,7 @@
 	import { fade, slide } from "svelte/transition";
     import Signup from './Signup.svelte';
 	import Login from "./Login.svelte";
+	import Welcome from "./Welcome.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -13,7 +14,11 @@
         dispatch("close");
     }
 
-    export let mode: 'signup' | 'login' = 'signup';
+    export let mode: 'signup' | 'login' | 'welcome' = 'signup';
+
+    function signedUp() {
+        mode = 'welcome';
+    }
 </script>
 
 <div class="
@@ -34,19 +39,23 @@
     " style="pointer-events: auto; max-height: 92vh;" on:click|stopPropagation={()=>{}} transition:fade>
         <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg sm:w-96 max-w-[100vh] flex flex-col gap-0 text-black">
             <div class="flex justify-center">
-                <LogoBlack />
+                <LogoBlack class="max-h-9" />
             </div>
 
             {#if mode === 'signup'}
                 <div class="w-full flex flex-col gap-5" transition:slide>
-                    <Signup />
+                    <Signup on:signed-up={signedUp} />
                     <p class="text-center text-black text-sm my-2">Already have a Nostr account? <button on:click={() => mode = 'login'} class="text-black font-bold underline">Log in</button></p>
                 </div>
-            {:else}
+            {:else if mode === 'login'}
                 <div class="w-full flex flex-col gap-5" transition:slide>
                     <Login />
                     <p class="text-center text-sm my-2 text-black">Don’t have an account? <button on:click={() => mode = 'signup'} class="text-black font-bold underline">Sign Up</button></p>
                 </div>
+            {:else if mode === 'welcome'}
+                <div class="w-full flex flex-col gap-5" transition:slide>
+                    <Welcome />
+            </div>
             {/if}
         </div>
     </div>

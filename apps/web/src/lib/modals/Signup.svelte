@@ -11,6 +11,9 @@
 	import { goto } from "$app/navigation";
 	import { loginState } from '$stores/session';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
+    import { createEventDispatcher } from 'svelte';
+
+    const dispatch = createEventDispatcher();
 
     let email: string;
     let username: string = "";
@@ -97,7 +100,7 @@
             localStorage.setItem('nostr-target-npub', $user.npub);
             $loginState = "logged-in";
             popup?.close();
-            closeModal();
+            dispatch("signed-up");
         } catch (e) {
             console.error(e);
             alert(e);
@@ -125,7 +128,7 @@
     $: username = username.toLowerCase().replace(/[^a-z0-9_]/g, "");
 </script>
 
-<div class="text-center text-black text-lg font-medium leading-normal">Create an account</div>
+<div class="text-center text-black text-base font-light leading-normal">Create an account</div>
 
 <div class="relative">
     <div

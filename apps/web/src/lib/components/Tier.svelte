@@ -9,7 +9,7 @@ import type { NDKEvent } from "@nostr-dev-kit/ndk";
 
     const name = tier.tagValue("title");
     const description = tier.content;
-    const image = tier.tagValue("image") ?? "https://c10.patreonusercontent.com/4/patreon-media/p/reward/5573765/9d074162251943e5ab33aab20473401b/eyJ3Ijo0MDB9/1.jpg?token-time=2145916800&token-hash=cv0bruLHhMqG8H2k18NhN0rjdHmfeOTTifNxVoRYRNw%3D";
+    const image = tier.tagValue("image");
 
     let amount: number | undefined;
     let currency: string;

@@ -27,22 +27,24 @@
 
     let articleImage = article.image;
 
-    // $: if (!articleImage) {
-    //     articleImage = userProfile?.banner;// || defaultUrl;
-    // }
+    $: articleImage = article.image || userProfile?.banner || userProfile?.image;
 </script>
 
 <UserProfile {user} bind:userProfile let:fetching>
     <a href={articleLink} class="flex flex-col items-start gap-4 h-full w-full overflow-hidden">
-        <img class="{size} max-sm:!w-full object-cover bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top flex-none round sm:h-[180px] max-sm:max-h-[60vw] w-full" src={articleImage} alt={article.title} />
+        {#if articleImage}
+            <img class="{size} max-sm:!w-full object-cover bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top flex-none round sm:h-[180px] max-sm:max-h-[60vw] w-full" src={articleImage} alt={article.title} />
+        {:else}
+            <div class="flex-none w-full h-[180px] bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top round sm:h-[180px] max-sm:max-h-[60vw]" />
+        {/if}
         <div class="self-stretch justify-start items-start gap-4 inline-flex max-sm:px-4">
             {#if !skipAuthor}
                 <a href="/{authorId}" class="justify-start flex-none items-start gap-4 flex">
                     <Avatar {user} {userProfile} {fetching} class="w-11 h-11 rounded-full" />
                 </a>
             {/if}
-            <div class="w-full shrink flex-col justify-start items-start gap-2 flex">
-                <div class="self-stretch text-white text-[15px] font-medium max-h-10 overflow-y-clip">
+            <div class="w-full shrink flex-col justify-start items-start flex">
+                <div class="self-stretch text-white text-lg font-medium max-h-10 overflow-y-clip">
                     {article.title}
                 </div>
                 <div class="flex self-stretch h-[38px] flex-row sm:flex-col justify-start items-center
@@ -54,7 +56,7 @@
                         </a>
                     {/if}
                     {#if isFullVersion}
-                        <div class="self-stretch text-white text-opacity-60 text-sm font-medium">
+                        <div class="self-stretch text-white text-opacity-50 text-xs font-medium">
                             {readTime} min read
                         </div>
                     {/if}
@@ -77,6 +79,6 @@
     }
 
     a:hover {
-        transform: scale(1.02);
+        /* transform: scale(1.02); */
     }
 </style>

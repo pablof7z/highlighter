@@ -1,30 +1,40 @@
 <script lang="ts">
-	import CategorySelector from './../../../../lib/components/Forms/CategorySelector.svelte';
+	import CategorySelector from '$components/Forms/CategorySelector.svelte';
 	import Checkbox from '$components/Forms/Checkbox.svelte';
 	import type { UserProfileType } from './../../../../app.d.ts';
     import UserProfile from '$components/User/UserProfile.svelte';
 	import EditableAvatar from '$components/User/EditableAvatar.svelte';
     import Input from '$components/Forms/Input.svelte';
-	import { user } from '@kind0/ui-common';
+	import { ndk, user } from '@kind0/ui-common';
     import { createEventDispatcher } from 'svelte';
     import { ArrowRight } from 'phosphor-svelte';
+	import { NDKEvent, serializeProfile, type NostrEvent } from '@nostr-dev-kit/ndk';
 
     const dispatch = createEventDispatcher();
 
-    let name: string;
-    let about: string;
-    let userProfile: UserProfileType;
+    let userProfile: UserProfileType = {};
     let saveAsAlternativeProfile = false;
     let editingCategories: string[] = [];
 
-    $: name = userProfile?.name ?? '';
-    $: about = userProfile?.about ?? '';
+    async function save() {
+        userProfile.display_name = userProfile.name;
+        const profile = new NDKEvent($ndk, {
+            kind: 0,
+            content: serializeProfile(userProfile)
+        } as NostrEvent);
+        // if (kind37777Event) profile.tags.push(["d", kind37777Event.tagValue("d")!]);
+        for (const category of editingCategories) {
+            profile.tags.push(["t", category]);
+        }
+        await profile.publish();
+    }
 
     function skip() {
         dispatch('saved');
     }
 
-    function saveClicked() {
+    async function saveClicked() {
+        await save();
         dispatch('saved');
     }
 </script>
@@ -38,8 +48,8 @@
                 </div>
 
                 <div class="flex flex-col w-full items-stretch">
-                    <Input bind:value={name} placeholder="Name" color="black" class="text-2xl rounded-b-none !border-b-0" />
-                    <Input bind:value={about} placeholder="About" color="black" class="text-sm rounded-t-none" />
+                    <Input bind:value={userProfile.name} placeholder="Name" color="black" class="text-2xl rounded-b-none !border-b-0" />
+                    <Input bind:value={userProfile.about} placeholder="About" color="black" class="text-sm rounded-t-none" />
                 </div>
             </div>
         </div>
@@ -53,10 +63,10 @@
     </div>
 </div>
 
-<div class="flex flex-row justify-between items-stretch">
-    <Checkbox bind:value={saveAsAlternativeProfile}>
+<div class="flex flex-row justify-end items-stretch">
+    <!-- <Checkbox bind:value={saveAsAlternativeProfile}>
         Save as alternative profile
-    </Checkbox>
+    </Checkbox> -->
 
     <div class="flex flex-row gap-2">
         <button class="button button-primary px-10 py-4" on:click={skip}>

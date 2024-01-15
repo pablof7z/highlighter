@@ -8,8 +8,11 @@
 	import { goto } from '$app/navigation';
 	import { Plus, Check } from 'phosphor-svelte';
     import { createEventDispatcher, onMount } from 'svelte';
+	import { termToShort } from '$utils/term';
+	import { currencyFormat } from '$utils/currency';
 
     export let redirectOnSave = true;
+    export let usePresetButton = false;
 
     const dispatch = createEventDispatcher();
 
@@ -98,6 +101,10 @@
         if (redirectOnSave)
             goto("/dashboard");
     }
+
+    function skip() {
+        dispatch("saved");
+    }
 </script>
 
 {#if tiers.length === 0}
@@ -132,8 +139,11 @@
                     </h1>
 
                     {#if tier.getMatchingTags("amount")}
-                        <h2 class="text-xl font-semibold">
-                            {tier.getMatchingTags("amount")[0][1]} {tier.getMatchingTags("amount")[0][2]}
+                        <h2 class="text-xl font-semibold text-success">
+                            {currencyFormat(
+                                tier.getMatchingTags("amount")[0][2],
+                                parseInt(tier.getMatchingTags("amount")[0][1])
+                            )}/{termToShort(tier.getMatchingTags("amount")[0][3])}
                         </h2>
                     {/if}
                 </div>
@@ -160,7 +170,7 @@
 
 <div class="flex flex-row justify-between items-stretch">
     <button
-        class="button button-black px-6 py-3 font-semibold self-start h-fit"
+        class="button button-black px-6 py-3 font-semibold"
         disabled={!canAddTier}
         on:click={addTier}
     >
@@ -168,13 +178,27 @@
         Add Tier
     </button>
 
-    <button class="button px-6" on:click={save}>
-        {#if $$slots.saveButton}
-            <slot name="saveButton" />
-        {:else}
-            Save
+    <div class="flex flex-row gap-4">
+        {#if usePresetButton}
+            <button
+                class="button button-black flex flex-col items-start gap-0 px-4"
+                on:click={skip}
+            >
+                Skip
+                <span class="text-xs opacity-50">
+                    Use sample tiers
+                </span>
+            </button>
         {/if}
-    </button>
+
+        <button class="button px-6" on:click={save}>
+            {#if $$slots.saveButton}
+                <slot name="saveButton" />
+            {:else}
+                Save
+            {/if}
+        </button>
+    </div>
 </div>
 
 <style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import HighlightIcon from './../icons/HighlightIcon.svelte';
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { Avatar, user as currentUser } from "@kind0/ui-common";
 	import type { NDKUser, Hexpubkey, NDKEvent, NDKArticle } from "@nostr-dev-kit/ndk";
@@ -48,7 +49,6 @@
 
     {#if !isSupporter}
         <button class="whitespace-nowrap button px-6 w-full" on:click={openSupportModal}>
-            <PencilSimple class="mr-2" />
             Subscribe
         </button>
     {:else}

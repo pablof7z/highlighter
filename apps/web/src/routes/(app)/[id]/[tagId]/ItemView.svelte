@@ -6,7 +6,7 @@
 	import { onDestroy } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
-	import ArticleView from "./ArticleView.svelte";
+	import ArticleView from "../../../../lib/components/ArticleView.svelte";
 	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
 	import VideoView from "./VideoView.svelte";
 	import type { EventType } from "../../../../app";
