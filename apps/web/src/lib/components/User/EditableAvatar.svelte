@@ -5,7 +5,7 @@
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
 
     export let user: NDKUser;
-    export let userProfile: UserProfileType | undefined | null = undefined;
+    export let userProfile: UserProfileType | undefined = undefined;
     export let fetching: boolean;
 
     async function uploaded(e: CustomEvent<{url: string}>) {

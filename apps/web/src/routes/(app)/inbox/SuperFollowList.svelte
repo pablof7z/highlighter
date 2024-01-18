@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { userActiveSubscriptions, userSuperFollows } from "$stores/session";
-	import { CaretDown, MagicWand } from 'phosphor-svelte';
+	import { MagicWand } from 'phosphor-svelte';
 	import { page } from '$app/stores';
 	import SuperFollowListItem from './SuperFollowListItem.svelte';
 
@@ -9,11 +9,6 @@
 
     let selectedId: string;
     $: selectedId = $page.url.searchParams.get("id") || "";
-
-    // function resetFollow() {
-    //     const event = new NDKEvent($ndk, {kind: 17001} as NostrEvent);
-    //     event.publish();
-    // }
 
     export let activeView = $userSuperFollows;
 
@@ -29,7 +24,7 @@
         activeView = activeSubscriptions;
     }
 </script>
-
+{mode}
 <a
     href="/inbox"
     class="justify-start items-center gap-2 inline-flex"

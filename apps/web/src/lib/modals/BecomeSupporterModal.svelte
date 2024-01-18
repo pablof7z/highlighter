@@ -18,7 +18,6 @@
 	import { isNwcAvailable } from '$utils/nwc';
 	import { currencyFormat } from '$utils/currency';
 	import type { UserProfileType } from '../../app';
-	import { randomVideoThumbnail } from '$utils/skeleton';
 	import EmptyTierForm from '$components/EmptyTierForm.svelte';
 
     export let user: NDKUser;
@@ -102,7 +101,7 @@
 
         if ($userSuperFollows.has(user.pubkey)) return;
 
-        $loggedInUser.follow(user, undefined, 17001);
+        $loggedInUser.follow(user, undefined);
     }
 
     async function onPaid() {
@@ -145,6 +144,7 @@
                             <EmptyTierForm
                                 bind:selectedAmount
                                 bind:currency={selectedCurrency}
+                                {userProfile}
                                 term={selectedTerm}
                             />
                         {/if}

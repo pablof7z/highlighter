@@ -6,7 +6,7 @@ export function urlFromEvent(event: NDKEvent): string {
     const suffix = urlSuffixFromEvent(event);
     const npub = event.author.npub;
 
-    return `https://getfaaans.com/${npub}/${suffix}`;
+    return `https://highlighter.com/${npub}/${suffix}`;
 }
 
 export function urlSuffixFromEvent(event: NDKEvent): string {

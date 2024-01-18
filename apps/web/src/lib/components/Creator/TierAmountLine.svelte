@@ -6,9 +6,9 @@
 	import { currencySymbol, possibleCurrencies } from "$utils/currency";
 
     export let value: ["amount", string, string, string];
-    export let currency: string = "USD";
+    export let currency: string;
     export let amount: string;
-    export let term: Term = "monthly";
+    export let term: Term = "";
 
     amount = amountFromTag(value[1], value[2]);
     currency = value[2];
@@ -43,16 +43,18 @@
 <div class="self-stretch justify-start items-center gap-2 inline-flex">
     <Input bind:value={amount} color="black" label="Price" placeholder="Price" class="grow basis-0" />
     <select class="select bg-base-200 text-white border border-base-300" bind:value={currency}>
+        <option value="" selected>select currency</option>
         {#each possibleCurrencies as currency}
             <option value={currency}>{currencySymbol(currency)}</option>
         {/each}
     </select>
     <select class="select bg-base-200 text-white border border-base-300 flex-grow" bind:value={term}>
+        <option value="" selected>select interval</option>
         {#each possibleTerms as term}
             <option value={term}>{term}</option>
         {/each}
     </select>
-    <button class="w-6 h-6" on:click={onClick}>
+    <button class="w-6 h-6 text-sm" on:click={onClick}>
         <Trash />
     </button>
 </div>

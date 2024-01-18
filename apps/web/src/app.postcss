@@ -104,3 +104,36 @@
 .highlight--reference a {
 	@apply text-accent;
 }
+
+.article .event-card {
+	@apply bg-base-200 rounded-box w-full;
+}
+
+.article .event-card--header {
+	@apply text-xs;
+}
+
+.article .event-card img.event-card--avatar {
+	@apply flex-none !w-6 !h-6 !my-0;
+}
+
+.event-card--dropdown-button {
+	@apply dropdown-end;
+}
+
+.event-card--dropdown-menu {
+	@apply bg-base-100 border border-base-300 rounded-box menu gap-0;
+}
+
+.tooltip::before {
+	@apply bg-base-200 bg-opacity-80 !backdrop-blur-[50px] px-6 py-3 border-2 border-base-300 rounded-box;
+}
+
+.tooltip::after {
+	@apply hidden;
+}
+
+.highlight--blockquote {
+	@apply prose;
+	@apply !font-normal;
+}

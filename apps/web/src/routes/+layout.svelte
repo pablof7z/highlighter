@@ -83,13 +83,15 @@
 		slot="backdrop"
 		class="backdrop z-20 fixed"
 		on:click={closeModal}
-		transition:fade={{ duration: 100 }}></div>
+		transition:fade={{ duration: 300 }}></div>
 </Modals>
 
 <div class="drawer drawer-end">
 	<input id="my-drawer-4" type="checkbox" class="drawer-toggle" bind:checked={$pageDrawerToggle} />
 	<div class="drawer-content">
-		<slot />
+		{#key $loginState}
+			<slot />
+		{/key}
 	</div>
 	<div class="drawer-side z-50">
 		<label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -107,7 +109,7 @@
 		top: 0;
 		bottom: 0;
 		right: 0;
-		backdrop-filter: blur(0.15rem);
+		backdrop-filter: blur(10px);
 		left: 0;
 		background: rgba(0,0,0,0.50)
 	}
@@ -122,6 +124,6 @@
 	<button
 		on:click={() => $debugMode = !$debugMode}
 		class="max-sm:hidden fixed bottom-2 right-2 z-50 btn btn-circle btn-sm">
-		<Bug size="24" />
+		<Bug size="24" class={$debugMode ? "text-accent2" : "text-neutral-500"} />
 	</button>
 {/if}

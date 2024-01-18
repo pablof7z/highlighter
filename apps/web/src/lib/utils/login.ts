@@ -19,7 +19,6 @@ export const trustedPubkeys = [
 
 export async function finalizeLogin() {
     const hostname = import.meta.env.VITE_HOSTNAME;
-    console.trace("finalizeLogin", {hostname});
     // fetch jwt
     const loginEvent = await generateLoginEvent(hostname);
     if (!loginEvent) return null;

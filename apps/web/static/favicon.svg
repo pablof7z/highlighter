@@ -1,32 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 24.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-<style type="text/css">
-	.st0{opacity:0.16;fill:url(#SVGID_1_);}
-	.st1{fill:url(#SVGID_2_);}
-	.st2{fill:url(#SVGID_3_);}
-</style>
-<rect width="512" height="512"/>
-<radialGradient id="SVGID_1_" cx="949.8182" cy="-350.9104" r="1823.5011" gradientTransform="matrix(1.0012 0 0 1.0025 2.402934e-02 0)" gradientUnits="userSpaceOnUse">
-	<stop  offset="0" style="stop-color:#00FFFF"/>
-	<stop  offset="1" style="stop-color:#FF00FF;stop-opacity:0.93"/>
-</radialGradient>
-<rect y="-0.3" class="st0" width="512" height="512.6"/>
-<g>
-	<radialGradient id="SVGID_2_" cx="545.0208" cy="-208.5394" r="1129.7433" gradientUnits="userSpaceOnUse">
-		<stop  offset="0" style="stop-color:#00FFFF"/>
-		<stop  offset="1" style="stop-color:#FF00FF"/>
-	</radialGradient>
-	<path class="st1" d="M292,146.8c4.8,0,9.2,1.8,12.5,5.1l91.6,91.6c6.9,6.9,6.9,18.1,0,25l-91.6,91.6c-3.3,3.3-7.8,5.1-12.5,5.1
-		c-4.8,0-9.2-1.8-12.5-5.1l-91.6-91.6c-6.9-6.9-6.9-18.1,0-25l91.6-91.6C282.8,148.6,287.3,146.8,292,146.8 M292,126.5
-		c-9.7,0-19.4,3.7-26.8,11.1l-91.6,91.6c-14.7,14.7-14.7,38.9,0,53.6l91.6,91.6c7.4,7.4,17.1,11.1,26.8,11.1
-		c9.7,0,19.4-3.7,26.8-11.1l91.6-91.6c14.7-14.7,14.7-38.9,0-53.6l-91.6-91.6C311.5,130.2,301.7,126.5,292,126.5L292,126.5z"/>
-	<radialGradient id="SVGID_3_" cx="274.1372" cy="57.5356" r="436.0402" gradientUnits="userSpaceOnUse">
-		<stop  offset="0" style="stop-color:#FF00FF"/>
-		<stop  offset="1" style="stop-color:#FF931E"/>
-	</radialGradient>
-	<path class="st2" d="M111.6,392.7c-20.8,0-25.8-12.1-11.1-26.8l33.5-33.5c14.7-14.7,38.9-14.7,53.6,0l33.5,33.5
-		c14.7,14.7,9.7,26.8-11.1,26.8H111.6z"/>
-</g>
+<svg width="224" height="224" viewBox="0 0 224 224" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="224" height="224" fill="black"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M67.4757 101.757C86.5917 82.641 152.19 30.3234 175.934 54.0676C199.678 77.8117 147.361 143.41 128.245 162.526C110.645 180.126 96.968 166.171 83.9164 152.853C82.792 151.706 81.6723 150.564 80.5551 149.446C79.4379 148.329 78.2954 147.21 77.1481 146.085C63.831 133.034 49.8759 119.357 67.4757 101.757ZM111.022 136.752C120.766 136.752 128.666 128.852 128.666 119.108C128.666 109.364 120.766 101.465 111.022 101.465C101.278 101.465 93.379 109.364 93.379 119.108C93.379 128.852 101.278 136.752 111.022 136.752Z" fill="#E3E3E3"/>
+<path d="M61.4127 175.858C45.3949 174.847 35.1085 173.976 47.4726 156.327C50.4863 152.025 52.8295 149.096 54.6013 147.161C56.2727 145.269 59.2359 145.508 60.9909 147.323C63.1948 149.602 65.4936 151.855 67.7767 154.093L67.7778 154.094C69.1693 155.458 70.5551 156.816 71.9101 158.171C73.2657 159.526 74.6244 160.913 75.9887 162.305C78.0233 164.381 80.0704 166.47 82.1386 168.488C83.8521 170.161 83.4546 173.027 81.2336 173.922C76.9942 175.327 69.8802 176.393 61.4127 175.858Z" fill="#E3E3E3"/>
 </svg>

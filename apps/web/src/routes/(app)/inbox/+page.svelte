@@ -5,14 +5,15 @@
     import { userSuperFollows, userCreatorSubscriptionPlans, userFollows, debugPageFilter } from "$stores/session";
     import { NDKRelaySet, type NDKEvent, type NDKFilter, NDKSubscriptionCacheUsage, NDKKind } from "@nostr-dev-kit/ndk";
 	import FeedEvent from "$components/Feed/FeedEvent.svelte";
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import { slide } from 'svelte/transition';
 	import { Tray } from 'phosphor-svelte';
-	import PageSidebar from '$components/PageSidebar.svelte';
+    import { pageSidebar } from "$stores/layout";
+    import InboxSidebar from "$components/PageSidebar/Inbox.svelte";
+	import { mode } from '$stores/inbox-view';
 
     let activeFilterCount: number | undefined = undefined;
     let activeView = $userSuperFollows;
-    let mode: "all" | "paid"  = 'paid';
 
     function getFilters() {
         const filters: NDKFilter[] = [];
@@ -24,7 +25,7 @@
             filters.push({ "#h": [pubkey], "#f": [plan] });
         }
 
-        if (mode === "all") {
+        if ($mode === "all") {
             filters.push({
                 authors: Array.from($userFollows),
                 kinds: [
@@ -61,35 +62,21 @@
         }
     });
 
-    let open = false;
+    $pageSidebar = {
+        component: InboxSidebar,
+        props: {}
+    }
+
+    onDestroy(() => {
+        $pageSidebar = null;
+    })
 </script>
 
 <svelte:head>
     <title>Inbox</title>
 </svelte:head>
 
-<div class="flex flex-row gap-8 mx-auto">
-    <PageSidebar title="Inbox" bind:open>
-        <div slot="headerRight" class="justify-start items-center flex">
-            <div role="tablist" class="tabs tabs-boxed bg-transparent">
-                <button
-                    role="tab"
-                    class="tab"
-                    class:tab-active={mode === 'all'}
-                    on:click={() => mode = 'all'}
-                >All</button>
-                <button
-                    role="tab"
-                    class="tab"
-                    class:tab-active={mode === 'paid'}
-                    on:click={() => mode = 'paid'}
-                >Paid</button>
-            </div>
-        </div>
-
-        <SuperFollowList bind:activeView bind:mode bind:open />
-    </PageSidebar>
-
+<div class="flex flex-row gap-8 mx-auto px-4">
     <div class="
         max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
         flex-col justify-start items-start flex w-full sm:max-w-[680px]
@@ -135,10 +122,6 @@
 
     .item:not(:last-child) {
         margin-bottom: 1rem;
-    }
-
-    .tab-active {
-        @apply !bg-white !text-black;
     }
 
     a span.name {

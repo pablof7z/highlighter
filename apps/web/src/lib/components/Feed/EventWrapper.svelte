@@ -58,12 +58,12 @@
         <div class="w-full justify-between items-center inline-flex">
             {#if !skipAuthor}
                 <div class="justify-start items-center gap-4 flex">
-                    <a href={authorUrl} class="w-12 h-12 relative">
-                        <Avatar {userProfile} user={author} size="medium" class="border border-white" />
+                    <a href={authorUrl} class="relative">
+                        <Avatar {userProfile} {fetching} user={author} size="small" />
                     </a>
                     <div class="flex flex-col gap-1 items-start">
                         <a href={authorUrl} class="text-white text-[15px] font-semibold">
-                            <Name {userProfile} user={author} />
+                            <Name {userProfile} {fetching} user={author} />
                         </a>
 
                         {#if event.pubkey === $user?.pubkey}

@@ -9,7 +9,6 @@
 	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
-	import { addReadReceipt } from '$utils/read-receipts';
 	import { MarkerCircle, Quotes, Receipt, X } from 'phosphor-svelte';
     import { getParagraph, getText } from "get-selection-more";
 	import { getDefaultRelaySet } from '$utils/ndk';

@@ -3,6 +3,7 @@ import { getDefaultRelaySet } from "./ndk";
 import { get } from "svelte/store";
 import { ndk, user } from "@kind0/ui-common";
 import createDebug from "debug";
+import { writeAppHandler } from "./app-handler";
 
 let flushTimer: number | undefined = 10000;
 
@@ -37,6 +38,11 @@ export function addReadReceipt(eventOrUser: NDKEvent | NDKUser): void {
         timeout = setTimeout(() => {
             timeout = undefined;
             flushReadReceipts();
+
+            if (eventOrUser instanceof NDKEvent) {
+                const event = eventOrUser as NDKEvent;
+                writeAppHandler(event.kind!, true);
+            }
         }, flushTimer);
     }
 }
@@ -50,7 +56,6 @@ const signatureTimes: number[] = [];
 export async function flushReadReceipts(): Promise<void> {
     const $ndk = get(ndk);
 
-    console.log("Flushing seen events queue", queue);
     const tags = queue.splice(0, queue.length);
 
     if (timeout) {
@@ -81,7 +86,6 @@ export async function flushReadReceipts(): Promise<void> {
         signer = NDKPrivateKeySigner.generate();
         await event.sign(signer);
     }
-
 
     await event.publish(getDefaultRelaySet());
 }

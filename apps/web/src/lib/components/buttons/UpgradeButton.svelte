@@ -1,10 +1,12 @@
 <script lang="ts">
+	import SignupModal from '$modals/SignupModal.svelte';
 	import BecomeSupporterModal from '$modals/BecomeSupporterModal.svelte';
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
     import { userTiers } from "$stores/user-view";
 	import { LockSimple } from "phosphor-svelte";
 	import { openModal } from "svelte-modals";
+    import { user } from "@kind0/ui-common";
 
     export let event: NDKEvent;
     export let text = "Become a fan to unlock";
@@ -13,7 +15,11 @@
     const author = event.author;
 
     function upgrade() {
-        openModal(BecomeSupporterModal, { user: author, tiers: $userTiers, suggestedTier: requiredTier });
+        if (!$user) {
+            openModal(SignupModal, { redirect: window.location.pathname });
+        } else {
+            openModal(BecomeSupporterModal, { user: author, tiers: $userTiers, suggestedTier: requiredTier });
+        }
     }
 </script>
 

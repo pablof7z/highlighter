@@ -1,7 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 
-import type { Hexpubkey } from "@nostr-dev-kit/ndk";
+import type { Hexpubkey, NDKUserProfile } from "@nostr-dev-kit/ndk";
 
 export type TierEntry = {
 	name?: string,
@@ -19,7 +19,7 @@ export type NsecBunkerProvider = {
 }
 
 export type UserProfileType = NDKUserProfile & {
-	categories: string[] | undefined;
+	categories?: string[];
 };
 
 export type EventType = "article" | "group-note" | "video" | "short-note" | "highlight";

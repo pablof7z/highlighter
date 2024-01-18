@@ -3,7 +3,7 @@
 	import CreatorFeed from '$components/Feed/CreatorFeed.svelte';
 	import PageTitle from "$components/Page/PageTitle.svelte";
 	import DashboardStats from '$components/dashboard/DashboardStats.svelte';
-	import { getUserContent, getUserSupporters, startUserView } from '$stores/user-view';
+	import { getUserContent, getUserSupporters, startUserView, getGAUserContent } from '$stores/user-view';
 	import { Avatar, Name, ndk, user } from "@kind0/ui-common";
 	import type { Hexpubkey } from '@nostr-dev-kit/ndk';
 	import { onMount } from 'svelte';
@@ -15,7 +15,6 @@
 	import CreatorActivity from "$components/Creator/CreatorActivity.svelte";
 	import DraftList from "$components/Creator/DraftList.svelte";
 	import { drafts } from "$stores/drafts";
-	import OnboardingChecklist from "$components/Creator/OnboardingChecklist.svelte";
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
@@ -86,22 +85,24 @@
                 </div>
 
                 {#if activeTab === "Posts"}
-                    <CreatorFeed content={getUserContent()} />
+                    <CreatorFeed content={getUserContent()} contentGA={getGAUserContent()} />
                 {:else if activeTab === "Activity"}
                     <CreatorActivity />
                 {:else if activeTab === "Stats"}
                     <DashboardStats />
                 {:else if activeTab === "Tiers"}
-                    <div class="text-white text-xl font-semibold">Support Tiers</div>
-                    <TierList />
+                    <div class="w-full">
+                        <div class="text-white text-xl font-semibold">Support Tiers</div>
+                        <TierList />
+                    </div>
                 {:else if activeTab === "Drafts"}
                     <DraftList />
                 {/if}
             </div>
-
+<!--
             <div class:hidden={allOnboardingDone}>
                 <OnboardingChecklist bind:allDone={allOnboardingDone} />
-            </div>
+            </div> -->
         </div>
     </div>
 </LoadingScreen>

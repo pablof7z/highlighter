@@ -7,7 +7,7 @@
 	import CurrentUser from './CurrentUser.svelte';
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { openModal } from 'svelte-modals';
-	import { Compass, Tray, ChatCircle, Receipt, PencilSimple, PencilSimpleLine, PlusCircle } from 'phosphor-svelte';
+	import { Compass, Tray, ChatCircle } from 'phosphor-svelte';
 	import { userTiers } from '$stores/session';
 
 	export let maxSize = "max-w-7xl";
@@ -76,6 +76,13 @@
 				</div>
 				<span>Publish</span>
 			</button>
+		{:else if $user}
+			<a class="button button-black !text-white !text-sm items-center gap-2 inline-flex max-md:hidden" href="/welcome/creators">
+				<div class="w-6 h-6 relative">
+					<PaperPlaneTilt class="w-full h-full" />
+				</div>
+				<span>Start Publishing</span>
+			</a>
 		{/if}
 
 		<CurrentUser />

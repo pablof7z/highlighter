@@ -19,7 +19,6 @@
         <div class="flex flex-col gap-2 justify-center items-start text-left">
             <div class="flex flex-col gap-2">
                 <div class="flex flex-row items-center gap-4">
-                    <LogoSmall class="inline w-24 h-24 text-accent" />
                     <h1 class="font-semibold flex-grow">
                         <span class="opacity-90">
                             Let your readers

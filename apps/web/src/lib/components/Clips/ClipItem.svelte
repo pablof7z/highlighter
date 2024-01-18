@@ -7,6 +7,6 @@
     export let event: NDKEvent;
 </script>
 
-<EventWrapper {event} class="border border-base-200 p-6 rounded-box">
+<EventWrapper {event} class="border border-base-200 p-6 rounded-box {$$props.class??""}">
     <EventContent ndk={$ndk} event={event} class="prose highlight" />
 </EventWrapper>

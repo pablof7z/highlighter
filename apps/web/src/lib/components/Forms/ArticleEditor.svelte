@@ -53,7 +53,7 @@
             </div>
         </ImageUploader>
         <div class="absolute bottom-0 w-full h-2/5 bg-gradient-to-b from-transparent to-black"></div>
-        <div class="p-6 absolute bottom-0 w-full">
+        <div class="p-6 pb-0 absolute bottom-0 w-full">
             <Input
                 bind:value={article.title}
                 color="black"

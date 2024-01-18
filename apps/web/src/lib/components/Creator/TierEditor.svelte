@@ -7,7 +7,7 @@
     import { createEventDispatcher } from "svelte";
 	import Tier from '$components/Tier.svelte';
 	import { debugMode } from '$stores/session';
-	import { Check, Trash } from 'phosphor-svelte';
+	import { Check, Trash, Plus } from 'phosphor-svelte';
 
     export let tier: NDKArticle;
     export let autofocus = false;
@@ -25,6 +25,9 @@
     description = tier.content || "";
     amountLines = tier.getMatchingTags("amount");
     perks = tier.getMatchingTags("perk").map((perk) => perk[1]);
+
+
+    if (!perks.length && !tier.dTag) addPerk();
 
     function addPerk () {
         perks.push("");
@@ -59,7 +62,7 @@
     }
 
     function addAmountLine() {
-        let currency = "USD";
+        let currency = "";
         let amount = "5";
 
         if (amountLines.length > 0) {
@@ -67,7 +70,7 @@
             amount = amountLines[amountLines.length - 1][1];
         }
 
-        amountLines.push(["amount", amount, currency, "monthly"]);
+        amountLines.push(["amount", amount, currency, ""]);
         amountLines = amountLines;
     }
 
@@ -98,7 +101,11 @@
                 class="w-full !bg-transparent"
                 bind:value={description}
             />
+            <div class="text-xs opacity-60">
+                What will your fans get by subscribing?
+            </div>
 
+            <div class="text-white font-semibold leading-snug mt-2">Perks</div>
             {#each perks as perk, i}
                 <div class="flex flex-row gap-2 w-full items-center">
                     <div class="relative w-full flex-grow flex flex-row items-center">
@@ -120,34 +127,44 @@
                 </div>
             {/each}
 
-            <button class="self-start text-white font-semibold text-sm flex flex-row gap-2 px-2"
+            <button class="button self-start font-semibold text-sm flex flex-row gap-2 px-2"
                 on:click={addPerk}
             >
+                <Plus />
                 Add Perk
             </button>
         </div>
 
 
-        <div class="text-white font-semibold leading-snug">Pricing Options</div>
-        <div class="self-stretch flex-col justify-start items-start gap-2 flex">
-            {#each amountLines as amount}
-                <TierAmountLine
-                    bind:value={amount}
-                    on:delete={() => {
-                        amountLines = amountLines.filter((a) => a !== amount);
-                    }}
-                />
-            {/each}
-        </div>
-        <div class="self-stretch justify-between items-center inline-flex">
-            <button class="button" on:click={addAmountLine}>
-                Add another pricing option
-            </button>
-            <div class="px-3 py-1.5 rounded-lg justify-center items-center gap-2 flex">
-                <button
-                    class="text-rose-400 text-[15px] font-normal leading-snug"
-                    on:click={deleteTier}
-                >Delete Tier</button>
+        <div class="w-full flex flex-col gap-4">
+            <div class="w-full flex flex-col lg:flex-row items-end gap-2">
+                <div class="text-white font-semibold leading-snug">
+                    Pricing Options
+                </div>
+                <div class="text-xs font-light">
+                    You can use different currencies and paying intervals
+                </div>
+            </div>
+            <div class="self-stretch flex-col justify-start items-start gap-2 flex">
+                {#each amountLines as amount}
+                    <TierAmountLine
+                        bind:value={amount}
+                        on:delete={() => {
+                            amountLines = amountLines.filter((a) => a !== amount);
+                        }}
+                    />
+                {/each}
+            </div>
+            <div class="self-stretch justify-between items-center inline-flex">
+                <button class="button" on:click={addAmountLine}>
+                    Add another pricing option
+                </button>
+                <div class="px-3 py-1.5 rounded-lg justify-center items-center gap-2 flex">
+                    <button
+                        class="text-rose-400 text-[15px] font-normal leading-snug"
+                        on:click={deleteTier}
+                    >Delete Tier</button>
+                </div>
             </div>
         </div>
     </div>

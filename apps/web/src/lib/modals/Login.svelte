@@ -1,21 +1,41 @@
 <script lang="ts">
+	import { login as _login } from '$utils/login';
 	import { ndk, bunkerNDK, user } from "@kind0/ui-common";
 	import { NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
     import Input from "$components/Forms/Input.svelte";
 	import { onMount } from "svelte";
 	import { closeModal } from "svelte-modals";
 	import { slide } from "svelte/transition";
+	import { nip19 } from "nostr-tools";
 
     export let value: string = "";
+    export let nsec: string = "";
 
     let blocking = false;
     let advanced = false;
+
+    advanced = true;
 
     let error: string | undefined;
 
     onMount(async () => {
         $bunkerNDK.connect(2500);
     });
+
+    async function loginWithNsec() {
+        const pk = nip19.decode(nsec);
+        if (!pk.data) {
+            error = "Invalid nsec";
+            return;
+        }
+        const key = pk.data as string;
+        const signer = new NDKPrivateKeySigner(key);
+        $ndk.signer = signer;
+        localStorage.setItem("nostr-key-method", "pk");
+        localStorage.setItem('nostr-key', key);
+
+        _login($ndk, $bunkerNDK, 'pk');
+    }
 
     async function login() {
         if (blocking) {
@@ -124,7 +144,7 @@
                     Continue
                 </button>
                 {#if !window.nostr}
-                    <span class="text-sm text-opacity-50">
+                    <span class="text-xs text-opacity-50">
                         You need to install a Nostr browser extension to use this method.
                     </span>
                 {/if}
@@ -134,10 +154,16 @@
 
             <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
                 <div class="text-black text-base font-medium leading-normal">Private Key Login</div>
-                <Input color="white" bind:value type="text" placeholder="nsec1..." class="w-full px-4 py-3 bg-white rounded-full shadow border border-neutral-200 justify-start items-center gap-2 inline-flex text-black" />
-                <span class="text-sm text-opacity-50">
-                    You shouldn't login with this method!
-                    <button class="text-black text-sm font-normal underline leading-[19px]">Why?</button>
+                <Input color="white" bind:value={nsec} type="text" placeholder="nsec1..." class="w-full px-4 py-3 bg-white rounded-full shadow border border-neutral-200 justify-start items-center gap-2 inline-flex text-black" />
+                {#if nsec}
+                    <button class="button-primary group w-full" on:click={loginWithNsec}>
+                        Continue
+                    </button>
+                {/if}
+                <span class="text-xs text-opacity-50">
+                    This method is not secure:
+                    you shouldn't paste your nsec!
+                    <!-- <button class="text-black text-sm font-normal underline leading-[19px]">Why?</button> -->
                 </span>
             </div>
 

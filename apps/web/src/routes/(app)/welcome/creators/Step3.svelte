@@ -80,7 +80,7 @@
     </div>
 </div>
 
-<style>
+<style lang="postcss">
     h3 {
         @apply text-3xl text-white font-semibold;
     }

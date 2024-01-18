@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { randomVideoThumbnail } from "$utils/skeleton";
 	import { termToShort, type Term, possibleTerms } from "$utils/term";
+	import type { UserProfileType } from "../../app";
     import Input from "./Forms/Input.svelte";
 
     export let currency: string = 'USD';
     export let term: Term;
     export let selectedAmount: number | undefined = 5;
-
-    const image = randomVideoThumbnail();
+    export let userProfile: UserProfileType;
 
     let amount: string = selectedAmount ? selectedAmount.toString() : "";
 
@@ -28,9 +28,11 @@
 <button on:click
     class="card card-compact full-image self-stretch !rounded-3xl border-2 justify-between items-start flex-col w-[300px] min-h-[300px] inline-flex h-full !bg-neutral-100"
 >
-    <figure>
-        <img src={image} />
-    </figure>
+    {#if userProfile?.banner || userProfile?.image}
+        <figure>
+            <img src={userProfile.banner || userProfile?.image} />
+        </figure>
+    {/if}
     <div class="card-body lex flex-col gap-4">
         <div class="flex-col justify-start items-start gap-2 flex w-full">
             <h1 class="!text-black text-2xl font-medium w-full items-start flex group flex-row justify-between text-left">

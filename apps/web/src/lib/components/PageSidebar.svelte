@@ -11,12 +11,12 @@
 
 <div class="
     max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:h-screen
-    sm:w-[300px] sm:flex-none
+    sm:flex-none
 ">
     <div class="
         max-sm:w-full bg-base-100 max-sm:mobile-nav px-[var(--mobile-body-px)] py-2
-        sm:w-[300px] sm:rounded-3xl sm:px-6 sm:pt-4 sm:pb-6
-        border border-neutral-800 flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
+        w-full sm:rounded-3xl sm:px-6 sm:pt-2 sm:pb-6
+        flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
     ">
         <div class="self-stretch justify-between items-center gap-6 inline-flex">
             <button

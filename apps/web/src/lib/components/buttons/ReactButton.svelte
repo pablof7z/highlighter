@@ -8,12 +8,11 @@
 
     const reactions = $ndk.storeSubscribe(
         { kinds: [7], ...event.filter() },
-        { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY}
+        {
+            cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY,
+            groupableDelayType: "at-least",
+        }
     );
-
-    onDestroy(() => {
-        reactions.unsubscribe();
-    });
 
     let reactedByUser = false;
 
@@ -44,6 +43,7 @@
     }
 
     onDestroy(() => {
+        reactions.unsubscribe();
         if (reactionEvent) {
             reactionEvent.publish();
             reactionEvent = undefined;
@@ -55,6 +55,6 @@
     {#if reactedByUser}
         <Heart class="w-7 h-7 text-accent" weight="fill" />
     {:else}
-        <Heart class="w-7 h-7 text-white" weight="regular" />
+        <Heart class="w-7 h-7" weight="regular" />
     {/if}
 </button>

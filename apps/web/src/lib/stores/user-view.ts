@@ -21,7 +21,6 @@ export const userSupporters = writable<Readable<never[] | Record<Hexpubkey, stri
 export function startUserView(user: NDKUser) {
     const $activeUserViewPubkey = getStore(activeUserViewPubkey);
     d('starting user view', user.pubkey);
-    console.trace("starting userview", user.pubkey)
 
     // if we are already subscribed to this user, do nothing
     if (userSubscription && $activeUserViewPubkey === user.pubkey) return;

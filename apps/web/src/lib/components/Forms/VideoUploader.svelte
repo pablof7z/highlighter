@@ -83,6 +83,7 @@
 
     function onPaymentRequired() {
         $pageDrawerToggle = true;
+        startUpload = false;
         $rightSidebar = {
             component: UploadPaymentRequired,
             props: {}

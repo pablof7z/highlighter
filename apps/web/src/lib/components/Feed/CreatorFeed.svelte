@@ -10,8 +10,6 @@
     const rootContent = derived(content, ($content) => {
         return $content.filter(isRootEvent);
     });
-
-    $: console.log('$contentGA', $contentGA?.length);
 </script>
 
 <div class="flex flex-col max-w-xl gap-10">

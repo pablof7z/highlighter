@@ -6,7 +6,7 @@ import { persist, createLocalStorage } from "@macfja/svelte-persistent-store";
 import debug from 'debug';
 import { trustedPubkeys } from '$utils/login';
 
-const d = debug('getfaaans:session');
+const d = debug('highlighter:session');
 
 export const jwt = persist(
     writable<string | null>(null),
@@ -146,7 +146,7 @@ export async function prepareSession(): Promise<void> {
                 userVideoCurationsStore: userVideoCurations,
                 userTierStore: userTiers,
                 activeSubscriptionsStore: userActiveSubscriptions,
-                appHandlers: userAppHandlers,
+                appHandlersStore: userAppHandlers,
                 supportStore: userSupport,
                 waitUntilEoseToResolve: !alreadyKnowFollows,
                 listsKinds: [
@@ -172,7 +172,7 @@ interface IFetchDataOptions {
     superFollowsStore?: Writable<Set<Hexpubkey>>;
     activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
     supportStore?: Writable<NDKEvent[]>;
-    appHandlers?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
+    appHandlersStore?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
     userArticleCurationsStore?: Writable<Map<string, NDKList>>;
     userVideoCurationsStore?: Writable<Map<string, NDKList>>;
     userTierStore: Writable<NDKArticle[]>;
@@ -226,7 +226,7 @@ async function fetchData(
         } else if (event.kind === NDKKind.SubscriptionStart) {
             processSupport(event);
         } else if (event.kind === NDKKind.AppRecommendation) {
-            processAppHandler(event);
+            processAppRecommendation(event);
         } else if (event.kind === NDKKind.SubscriptionTier) {
             processSubscriptionTier(event);
         } else if ([
@@ -269,21 +269,29 @@ async function fetchData(
         });
     }
 
-    const processAppHandler = (event: NDKEvent) => {
-        opts.appHandlers!.update((appHandlers) => {
-            const handlerKind = parseInt(event.tagValue("d")!);
+    const processAppRecommendation = (event: NDKEvent) => {
+        opts.appHandlersStore!.update((appHandlersStore) => {
+            console.log(`app recommendation`, event.dTag);
+            if (!event.dTag) return appHandlersStore;
+            const handlerKind = parseInt(event.dTag!);
+            console.log(`app recommendation`, handlerKind, event.tags);
 
-            if (!appHandlers.has(handlerKind)) {
-                appHandlers.set(handlerKind, new Map());
+            if (!appHandlersStore.has(handlerKind)) {
+                appHandlersStore.set(handlerKind, new Map());
             }
 
             for (const tag of event.getMatchingTags("a")) {
+                console.log(`app recommendation`, tag);
                 const [, eventPointer,, handlerType] = tag;
+                d(`app recommendation`, tag, { eventPointer, handlerType });
 
-                appHandlers.get(handlerKind)!.set(handlerType, eventPointer);
+                appHandlersStore.get(handlerKind)!.set(
+                    handlerType || "default",
+                    eventPointer
+                );
             }
 
-            return appHandlers;
+            return appHandlersStore;
         });
     };
 
@@ -354,8 +362,8 @@ async function fetchData(
             filters.push({ kinds, authors: authorPrefixes, limit: 10 });
         }
 
-        if (opts.appHandlers) {
-            filters.push({ authors: authorPrefixes, kinds: [NDKKind.AppRecommendation] });
+        if (opts.appHandlersStore) {
+            kinds.push(NDKKind.AppRecommendation);
         }
 
         if (opts.userTierStore) {

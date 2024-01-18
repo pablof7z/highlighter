@@ -1,9 +1,7 @@
 <script lang="ts">
-	import HighlightIcon from './../icons/HighlightIcon.svelte';
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { Avatar, user as currentUser } from "@kind0/ui-common";
-	import type { NDKUser, Hexpubkey, NDKEvent, NDKArticle } from "@nostr-dev-kit/ndk";
-	import { PencilSimple, Share } from "phosphor-svelte";
+	import type { NDKUser, Hexpubkey, NDKArticle } from "@nostr-dev-kit/ndk";
 	import { openModal } from "svelte-modals";
 	import type { Readable } from "svelte/motion";
 

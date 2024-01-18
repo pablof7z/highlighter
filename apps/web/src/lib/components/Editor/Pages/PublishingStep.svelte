@@ -18,7 +18,7 @@
     function share() {
         navigator.share({
             title,
-            text: "Check out my new post on Faaans!",
+            text: "Check out my new post on Highlighter!",
             url: shareUrl
         });
     }

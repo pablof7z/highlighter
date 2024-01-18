@@ -60,9 +60,18 @@
     });
     sub.on("eose", () => { fetching = false; });
 
+    let validatedNip05: boolean | undefined;
+
     $: if (userProfile && fetching) fetching = false;
     $: if (userProfile && userProfile.nip05) displayNip05 = prettifyNip05(userProfile.nip05, 999999)
-    $: if (userProfile && user) authorUrl = `/${displayNip05||user.npub}`;
+    $: if (userProfile && user && userProfile.nip05 && validatedNip05 === undefined) {
+        user.validateNip05(userProfile.nip05).then((v) => {
+            validatedNip05 = true;
+            if (v) authorUrl = `/${displayNip05}`;
+        }).catch((e) => {
+            console.error(e);
+        });
+    }
 </script>
 
 <slot {userProfile} {fetching} {authorUrl} {displayNip05} />

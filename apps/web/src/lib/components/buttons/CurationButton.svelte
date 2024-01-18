@@ -3,10 +3,8 @@
 	import { userArticleCurations, userVideoCurations } from "$stores/session";
     import Input from "$components/Forms/Input.svelte";
     import { ndk, user } from "@kind0/ui-common";
-	import { NDKSubscriptionCacheUsage, NDKEvent, NDKList, NDKKind } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKList, NDKKind } from "@nostr-dev-kit/ndk";
 	import { BookmarkSimple, Heart, Lock, PaperPlaneTilt, Plus } from "phosphor-svelte";
-	import { onDestroy, onMount } from "svelte";
-	import { getDefaultRelaySet } from '$utils/ndk';
 
     export let event: NDKEvent;
 
@@ -69,7 +67,7 @@
 </script>
 
 <div
-    class="dropdown"
+    class="dropdown dropdown-top"
     class:dropdown-open={showCreate}
 >
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -77,7 +75,7 @@
     <label tabindex="0" class="cursor-pointer">
         <BookmarkSimple
             class="w-7 h-7
-                {bookmarked ? 'text-accent' : 'text-white'}
+                {bookmarked ? 'text-accent' : ''}
             " weight={bookmarked ? "fill" : "regular"}
         />
     </label>
@@ -138,6 +136,6 @@
 
 <style lang="postcss">
     button.active {
-        @apply border-l-4 border-accent rounded-l-none !text-white font-semibold;
+        @apply border-l-4 border-accent rounded-l-none font-semibold;
     }
 </style>

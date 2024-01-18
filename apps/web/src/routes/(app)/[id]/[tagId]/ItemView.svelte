@@ -1,5 +1,7 @@
 <script lang="ts">
     import { ndk, pageDrawerToggle, rightSidebar, user as currentUser, Avatar, Textarea, Name } from "@kind0/ui-common";
+    import UserProfile from "$components/User/UserProfile.svelte";
+    import CommentsButton from "$components/buttons/CommentsButton.svelte";
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent } from "@nostr-dev-kit/ndk";
@@ -13,14 +15,14 @@
 	import { getEventType } from "./get-event-type";
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import { goto } from "$app/navigation";
-	import { EVENT_ID_SUFFIX_LENGTH } from "$utils/url";
 	import EventResponses from "$components/EventResponses.svelte";
-	import { getSummary } from "$utils/article";
-	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import CreatorShell from "$components/Creator/CreatorShell.svelte";
 	import MoreFromUser from "$components/Creator/MoreFromUser.svelte";
+	import { addReadReceipt } from "$utils/read-receipts";
+	import WithItem from "./WithItem.svelte";
+	import ItemFooter from "./ItemFooter.svelte";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -31,166 +33,61 @@
 
     $: tagId = $page.params.tagId;
 
-    startUserView(user);
+    let readReceiptPosted = false;
 
-    onDestroy(() => {
-        userSubscription?.unref();
-    })
-
-    let events: NDKEventStore<NDKEvent> | undefined;
-    let eosed = false;
-
-    let title: string | undefined;
-    let summary: string | undefined;
-
-    $: if (!events && user.pubkey) {
-        const filters: NDKFilter[] = [{ authors: [user.pubkey], "#d": [tagId] }];
-
-        // 18-char of regex
-        const regex = new RegExp(`^[0-9a-fA-F]{${EVENT_ID_SUFFIX_LENGTH}}$`);
-        if (tagId.match(regex)) {
-            filters.push({ "ids": [tagId] });
-        }
-
-        events = $ndk.storeSubscribe(filters, { groupable: false });
-        events.onEose(() => {
-            eosed = true;
-        });
+    $: if (event && !readReceiptPosted) {
+        readReceiptPosted = true;
+        console.log("Adding read receipt");
+        addReadReceipt(event);
     }
-
-    $: if (events) event = Array.from($events)[0];
-
-    let article = event ? NDKArticle.from(event) : undefined;
-
-    $: if (article) title = article.title;
-    $: if (article) summary = getSummary(article);
-
-    let eventType: EventType | undefined;
-    let tiersWithFullAccess: string[] | undefined;
-    let isFullVersion: boolean;
-    let hasAccessToFullVersion: boolean | undefined;
-
-    $: if (event && !eventType) eventType = getEventType(event);
-    $: if (event && isFullVersion === undefined) isFullVersion = !event.tagValue("full");
-    $: if (event && tiersWithFullAccess === undefined) tiersWithFullAccess = requiredTiersFor(event);
-    $: if (event && isFullVersion === false && tiersWithFullAccess && hasAccessToFullVersion === undefined) {
-        hasAccessToFullVersion = tiersWithFullAccess.includes($userActiveSubscriptions.get(event.pubkey)) || $currentUser?.pubkey === event.pubkey;
-        if (hasAccessToFullVersion) {
-            const parts = event.tagValue("full")?.split(/:/) as string[];
-            const dTag = parts[2] || parts[0];
-            goto(`/${event.author.npub}/${dTag}`);
-        }
-    }
-
-    function toggleComments() {
-        if (!$pageDrawerToggle) {
-            $pageDrawerToggle = true;
-            $rightSidebar = {
-                component: EventResponses,
-                props: {
-                    event,
-                    autofocusOnNewComment: true,
-                }
-            }
-        } else {
-            $pageDrawerToggle = false;
-        }
-    }
-
-    let open = false;
-
-    let videoCommentFocused = false;
-    let videoCommentBlurTimeout: any;
-    let discussionHovered = false;
-    let discussionHoverTimeout: any;
-
-    function onDiscussionHover() {
-        discussionHovered = true;
-        clearTimeout(discussionHoverTimeout);
-    }
-
-    function onDiscussionBlur() {
-        discussionHoverTimeout = setTimeout(() => {
-            discussionHovered = false;
-        }, 500);
-    }
-
-    // function onVideoCommentFocus() {
-    //     videoCommentFocused = true;
-    //     clearTimeout(videoCommentBlurTimeout);
-    // }
-
-    // function onVideoCommentBlur() {
-    //     const videoCommentBlurTimeout = setTimeout(() => {
-    //         videoCommentFocused = false;
-    //     }, 500);
-    // }
 </script>
 
-<svelte:head>
-    <title>{title}</title>
-    <meta name="description" content={summary} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={summary} />
-    <meta property="og:image" content={article?.image} />
-</svelte:head>
+<WithItem let:event let:urlPrefix let:eventType let:isFullVersion>
+    {#if event && eventType}
+        {#if eventType === "article"}
+            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
+                <ArticleView
+                    article={NDKArticle.from(event)}
+                    {isFullVersion}
+                />
 
-<LoadingScreen ready={!!event || eosed}>
-    <main>
-        {#if event}
-            {#if eventType === "article"}
-                <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
-                    <ArticleView
-                        article={NDKArticle.from(event)}
-                        {isFullVersion}
-                        on:comment={toggleComments}
-                    />
+                <MoreFromUser user={event.author} />
+            </div>
 
-                    <MoreFromUser user={event.author} />
+            <ItemFooter {event} {urlPrefix} {eventType} />
+        {:else if eventType === "video"}
+            <div class="flex-col justify-start items-start gap-8 flex mx-auto w-full">
+                <VideoView
+                    video={NDKVideo.from(event)}
+                    {isFullVersion}
+                />
+            </div>
 
-                    <div class="divider my-0"></div>
-
-                    <EventResponses {event} class="max-sm:px-4" />
-                </div>
-            {:else if eventType === "video"}
-                <div class="flex-col justify-start items-start gap-8 flex mx-auto w-full">
-                    <VideoView
-                        video={NDKVideo.from(event)}
-                        {isFullVersion}
-                        on:comment={toggleComments}
-                    />
-                </div>
-            {:else if ["group-note", "short-note"].includes(eventType)}
-                <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
-                    <div class="w-full flex items-center flex-col justify-center">
-                        <div class="w-full">
-                            <FeedGroupPost {event} />
-                        </div>
+            <ItemFooter {event} {urlPrefix} {eventType} />
+        {:else if ["group-note", "short-note"].includes(eventType)}
+            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
+                <div class="w-full flex items-center flex-col justify-center">
+                    <div class="w-full">
+                        <FeedGroupPost {event} class="bg-base-200 rounded-box p-6" />
                     </div>
-
-                    <div class="divider my-0"></div>
-
-                    <EventResponses {event} />
-
                 </div>
-            {:else}
-                <CreatorShell user={event.author}>
-                    <div class="mx-auto max-w-3xl">
-                        <EventWrapper {event} class="bg-base-200 p-6 rounded-box">
-                            <EventContent ndk={$ndk} {event} class="prose highlight" />
-                        </EventWrapper>
-                    </div>
-                </CreatorShell>
-            {/if}
 
-            {#if $debugMode}
-                <pre>{JSON.stringify(event.rawEvent(), null, 4)}</pre>
-            {/if}
+                <div class="divider my-0"></div>
+
+                <EventResponses {event} />
+
+            </div>
         {:else}
-                Event not found
+            <CreatorShell user={event.author}>
+                <div class="mx-auto max-w-3xl">
+                    <EventWrapper {event} class="bg-base-200 p-6 rounded-box">
+                        <EventContent ndk={$ndk} {event} class="prose highlight" />
+                    </EventWrapper>
+                </div>
+            </CreatorShell>
         {/if}
-    </main>
-</LoadingScreen>
+    {/if}
+</WithItem>
 
 <div class="py-24"></div>
 

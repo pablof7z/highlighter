@@ -1,0 +1,48 @@
+<script lang="ts">
+	import CurationWithCountButton from "$components/buttons/CurationWithCountButton.svelte";
+	import ReactionsWithCountButton from "$components/buttons/ReactionsWithCountButton.svelte";
+    import CommentsButton from "$components/buttons/CommentsButton.svelte";
+	import { mainContentKinds } from "$utils/event";
+	import type { NDKEvent } from "@nostr-dev-kit/ndk";
+	import HighlightsWithCountButton from "$components/buttons/HighlightsWithCountButton.svelte";
+	import type { EventType } from "../../../../app";
+	import BoostButton from "$components/buttons/BoostButton.svelte";
+	import { Lightning } from "phosphor-svelte";
+	import { ZapsButton } from "@kind0/ui-common";
+
+    export let event: NDKEvent;
+    export let urlPrefix: string;
+    export let eventType: EventType;
+
+    const eventKind = event.kind!;
+</script>
+
+<footer class="fixed bottom-0 w-full border-t border-base-300 py-4 mobile-nav bg-base-100/10">
+    <div class="mx-auto max-w-3xl">
+        <div class="-ml-12 flex flex-row gap-8 items-center w-full justify-between">
+            <div class="flex flex-row gap-6">
+                {#if mainContentKinds.includes(eventKind)}
+                    <CurationWithCountButton {event} {urlPrefix} />
+                {/if}
+
+                <CommentsButton {event} {urlPrefix} />
+
+                <!-- <ReactionsWithCountButton {event} /> -->
+
+                {#if eventType === "article"}
+                    <HighlightsWithCountButton {event} {urlPrefix} />
+                {/if}
+
+                <BoostButton {event} />
+
+                <ZapsButton {event} />
+            </div>
+
+            <div class="place-self-end">
+                <button class="button">
+                    Memberships
+                </button>
+            </div>
+        </div>
+    </div>
+</footer>

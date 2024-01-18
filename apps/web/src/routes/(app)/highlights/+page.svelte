@@ -11,6 +11,8 @@
 	import { User } from "phosphor-svelte";
 	import { onDestroy } from "svelte";
 	import { writable } from "svelte/store";
+    import { pageSidebar } from "$stores/layout";
+    import HighlightsSidebar from "$components/PageSidebar/Highlights.svelte";
 
     const debug = createDebug("highlighter:highlights");
 
@@ -36,7 +38,13 @@
 
     onDestroy(() => {
         events?.unsubscribe();
+        $pageSidebar = null;
     });
+
+    $pageSidebar = {
+        component: HighlightsSidebar,
+        props: {}
+    }
 </script>
 
 <div class="w-full justify-between items-center flex max-sm:hidden overflow-x-clip flex-nowrap max-w-[calc(100vw-40px)]">
@@ -54,13 +62,6 @@
 </div>
 
 <div class="flex flex-row gap-8 mx-auto mt-8">
-    <PageSidebar title="Highlights" bind:open>
-        <a href="/highlights/my" class="flex flex-row gap-2 items-center">
-            <User class="w-5 h-5" />
-            My Highlights
-        </a>
-    </PageSidebar>
-
     <div class="
         max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
         flex-col justify-start items-start flex w-full sm:max-w-[680px]

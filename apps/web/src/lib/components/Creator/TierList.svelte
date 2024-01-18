@@ -77,7 +77,7 @@
         tiers = tiers;
     }
 
-    async function save() {
+    async function save(emit = true) {
         const relaySet = getDefaultRelaySet();
         const tiersList = new NDKEvent($ndk, {
             kind: NDKKind.TierList,
@@ -96,115 +96,124 @@
 
         newToasterMessage("Support tiers correctly saved!", "success")
 
-        dispatch("saved", { tiers: tiersList });
+        if (emit) dispatch("saved", { tiers: tiersList });
 
         if (redirectOnSave)
             goto("/dashboard");
     }
 
     function skip() {
+        const tier = new NDKArticle($ndk, {
+            kind: NDKKind.SubscriptionTier,
+            content: "Basic tier",
+            tags: [
+                ["perk", "Access to my members-only content"],
+                ["amount", "5", "usd", "month"],
+                ["perk", "Access to my members-only content"],
+                ["perk", "Access to my exclusive community of like-minded people"],
+            ]
+        } as NostrEvent)
+        tier.title = "Supporters";
+        tiers.push(tier);
+
+        save(false);
+
         dispatch("saved");
     }
 </script>
 
-{#if tiers.length === 0}
-    <div class="alert alert-neutral">
-        <h1 class="text-lg py-12">
-            Create support tiers to allow your fans to support you!
-        </h1>
-    </div>
-{/if}
+<div class="flex flex-col gap-4">
+    {#if tiers.length === 0}
+        <div class="alert alert-neutral">
+            <h1 class="text-lg py-12">
+                Create support tiers to allow your fans to support you!
+            </h1>
+        </div>
+    {/if}
 
-<div class="flex flex-col">
-    {#each tiers as tier, i (i)}
-        {#if expandedTiers.includes(i)}
-            <div class="my-5">
-                <TierEditor
-                    bind:tier={tier}
-                    autofocus={autofocus === i}
-                    on:delete={() => {
-                        if (tier.tagValue("d")) deletedDtags.add(tier.tagValue("d"));
-                        tiers = tiers.filter((_, j) => i !== j);
-                    }}
-                />
-            </div>
-        {:else}
-            <button
-                class="border border-base-300 p-4 flex flex-col gap-2"
-                on:click={() => {expandedTiers.push(i); expandedTiers = expandedTiers}}
-            >
-                <div class="flex flex-row justify-between whitespace-nowrap truncate w-full">
-                    <h1 class="text-xl font-semibold">
-                        {tier.title}
-                    </h1>
-
-                    {#if tier.getMatchingTags("amount")}
-                        <h2 class="text-xl font-semibold text-success">
-                            {currencyFormat(
-                                tier.getMatchingTags("amount")[0][2],
-                                parseInt(tier.getMatchingTags("amount")[0][1])
-                            )}/{termToShort(tier.getMatchingTags("amount")[0][3])}
-                        </h2>
-                    {/if}
+    <div class="flex flex-col">
+        {#each tiers as tier, i (i)}
+            {#if expandedTiers.includes(i)}
+                <div class="my-5">
+                    <TierEditor
+                        bind:tier={tier}
+                        autofocus={autofocus === i}
+                        on:delete={() => {
+                            if (tier.tagValue("d")) deletedDtags.add(tier.tagValue("d"));
+                            tiers = tiers.filter((_, j) => i !== j);
+                        }}
+                    />
                 </div>
+            {:else}
+                <button
+                    class="border border-base-300 p-4 flex flex-col gap-2"
+                    on:click={() => {expandedTiers.push(i); expandedTiers = expandedTiers}}
+                >
+                    <div class="flex flex-row justify-between whitespace-nowrap truncate w-full">
+                        <h1 class="text-xl font-semibold">
+                            {tier.title}
+                        </h1>
 
-                {#if tier.content.length > 0 || tier.getMatchingTags("perk").length > 0}
-                    <ul class="text-xs flex flex-col items-start gap-2">
-                        {#if tier.content.length > 0}
-                            <li>
-                                {tier.content}
-                            </li>
+                        {#if tier.getMatchingTags("amount")}
+                            <h2 class="text-xl font-semibold text-success">
+                                {currencyFormat(
+                                    tier.getMatchingTags("amount")[0][2],
+                                    parseInt(tier.getMatchingTags("amount")[0][1])
+                                )}/{termToShort(tier.getMatchingTags("amount")[0][3])}
+                            </h2>
                         {/if}
-                        {#each tier.getMatchingTags("perk") as perkTags}
-                            <li class="flex flex-row items-center">
-                                <Check class="w-5 h-5 mr-2 text-success" weight="duotone" />
-                                {perkTags[1]}
-                            </li>
-                        {/each}
-                    </ul>
+                    </div>
+
+                    {#if tier.content.length > 0 || tier.getMatchingTags("perk").length > 0}
+                        <ul class="text-xs flex flex-col items-start gap-2">
+                            {#if tier.content.length > 0}
+                                <li>
+                                    {tier.content}
+                                </li>
+                            {/if}
+                            {#each tier.getMatchingTags("perk") as perkTags}
+                                <li class="flex flex-row items-center">
+                                    <Check class="w-5 h-5 mr-2 text-success" weight="duotone" />
+                                    {perkTags[1]}
+                                </li>
+                            {/each}
+                        </ul>
+                    {/if}
+                </button>
+            {/if}
+        {/each}
+    </div>
+
+    <div class="flex flex-row justify-between items-stretch">
+        <button
+            class="button button-black px-6 py-3 font-semibold"
+            disabled={!canAddTier}
+            on:click={addTier}
+        >
+            <Plus class="w-5 h-5 mr-2" />
+            Add Tier
+        </button>
+
+        <div class="flex flex-row gap-4">
+            {#if usePresetButton}
+                <button
+                    class="button button-black flex flex-col items-start gap-0 px-4"
+                    on:click={skip}
+                >
+                    Skip
+                    <span class="text-xs opacity-50">
+                        Use sample tiers
+                    </span>
+                </button>
+            {/if}
+
+            <button class="button px-6" on:click={save}>
+                {#if $$slots.saveButton}
+                    <slot name="saveButton" />
+                {:else}
+                    Save
                 {/if}
             </button>
-        {/if}
-    {/each}
-</div>
-
-<div class="flex flex-row justify-between items-stretch">
-    <button
-        class="button button-black px-6 py-3 font-semibold"
-        disabled={!canAddTier}
-        on:click={addTier}
-    >
-        <Plus class="w-5 h-5 mr-2" />
-        Add Tier
-    </button>
-
-    <div class="flex flex-row gap-4">
-        {#if usePresetButton}
-            <button
-                class="button button-black flex flex-col items-start gap-0 px-4"
-                on:click={skip}
-            >
-                Skip
-                <span class="text-xs opacity-50">
-                    Use sample tiers
-                </span>
-            </button>
-        {/if}
-
-        <button class="button px-6" on:click={save}>
-            {#if $$slots.saveButton}
-                <slot name="saveButton" />
-            {:else}
-                Save
-            {/if}
-        </button>
+        </div>
     </div>
 </div>
-
-<style>
-    .bg {
-        background: rgb(42,42,42);
-        background: linear-gradient(180deg, rgba(42,42,42,1) 0%, rgba(30,30,30,1) 100%);
-    }
-
-</style>

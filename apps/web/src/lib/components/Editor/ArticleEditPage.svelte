@@ -38,12 +38,12 @@
 
     let previewContentChanged = false;
 
-    const domain = "https://getfaaans.com";
+    const domain = "https://highlighter.com";
     let authorLink: string = domain;
     let authorUrl: string | undefined;
     $: authorLink = authorUrl ? `${domain}${authorUrl}` : domain;
     let previewContentReadLink: string;
-    $: previewContentReadLink = `\n\n--------------------------\n\nSupport my work and read the rest of this article on my Faaans page: ${authorLink}`;
+    $: previewContentReadLink = `\n\n--------------------------\n\nSupport my work and read the rest of this article on my Highlighter page: ${authorLink}`;
 
     function onArticleChange() {
         contentChangedSinceLastSave++;

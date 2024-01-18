@@ -2,7 +2,7 @@
 	import { MagnifyingGlass } from 'phosphor-svelte';
 	import { Avatar, CollapsableDropdown, Name, ndk, user } from '@kind0/ui-common';
     import {Plus, PlusCircle, SignOut, SquaresFour, Tray} from 'phosphor-svelte';
-	import { debugMode, loginState, userActiveSubscriptions, userFollows, userSuperFollows } from '$stores/session';
+	import { debugMode, loginState, userActiveSubscriptions, userFollows, userSuperFollows, userAppHandlers } from '$stores/session';
     import UserProfile from './User/UserProfile.svelte';
 	import { logout } from '$utils/login';
 	import { openModal } from 'svelte-modals';
@@ -11,7 +11,7 @@
 </script>
 
 <UserProfile user={$user} let:userProfile let:fetching>
-    <div class="dropdown dropdown-end">
+    <div class="dropdown max-sm:dropdown-top">
         <!-- svelte-ignore a11y-label-has-associated-control -->
         <label
             tabindex="-1"
@@ -56,6 +56,12 @@
                         <p>User follows: {$userFollows.size}</p>
                         <p>User super-follows: {$userSuperFollows.size}</p>
                         <p>Active Subscriptions: {$userActiveSubscriptions.size}</p>
+                        <p>App handlers: {$userAppHandlers.size}</p>
+                        <p>
+                            {#each $userAppHandlers.entries() as appHandler}
+                                {JSON.stringify(appHandler)}
+                            {/each}
+                        </p>
                     </div>
                 </li>
             {/if}

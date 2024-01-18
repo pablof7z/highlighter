@@ -3,7 +3,7 @@
 	import { page } from "$app/stores";
 	import CreatorFeed from "$components/Feed/CreatorFeed.svelte";
 	import CurrentSupporters from "$components/CurrentSupporters.svelte";
-	import { userTiers, getUserSupporters, userSubscription, userContent, startUserView, userGAContent } from "$stores/user-view";
+	import { userTiers, getUserSupporters, userSubscription, userContent, startUserView, userGAContent, getUserSupportPlansStore } from "$stores/user-view";
 	import { Avatar, Name, ndk, user as currentUser } from "@kind0/ui-common";
 	import { NDKArticle, NDKKind, type NDKEventId, NDKEvent, type NostrEvent, serializeProfile } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
@@ -15,6 +15,7 @@
 	import CategorySelector from "$components/Forms/CategorySelector.svelte";
 	import { onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
+	import CreatorSidebar from '$components/Creator/CreatorSidebar.svelte';
 
     let id: string;
     let { user } = $page.data;
@@ -80,11 +81,11 @@
 </script>
 
 <svelte:head>
-    <title>{user.npub}</title>
+    <title>{userProfile?.name ?? id} on Highlighter</title>
     <meta name="description" content="Creator profile" />
     <meta property="og:title" content={user.npub} />
     <meta property="og:description" content="Creator profile" />
-    <meta property="og:image" content={userProfile?.avatar || defaultBanner} />
+    <meta property="og:image" content={userProfile?.image || defaultBanner} />
 </svelte:head>
 
 <div class="max-w-5xl mx-auto">
@@ -154,7 +155,7 @@
                     {#if $userTiers}
                         <CurrentSupporters
                             supporters={getUserSupporters()}
-                            tiers={$userTiers}
+                            tiers={getUserSupportPlansStore()}
                             {user}
                         />
                     {/if}
@@ -175,14 +176,22 @@
             {/if}
         </UserProfile>
 
-        {#if $userContent && $userGAContent}
-            <div
-                class="w-full transition-all duration-300"
-                class:opacity-50={editing}
-            >
-                <CreatorFeed content={$userContent} contentGA={$userGAContent} />
-            </div>
-        {/if}
+        <div class="flex flex-row gap-10">
+            {#if $userContent && $userGAContent}
+                <div
+                    class="w-full transition-all duration-300"
+                    class:opacity-50={editing}
+                >
+                    <CreatorFeed content={$userContent} contentGA={$userGAContent} />
+                </div>
+            {/if}
+
+            <CreatorSidebar
+                {user}
+                class="w-2/5"
+                supporters={getUserSupporters()}
+            />
+        </div>
     </div>
 </div>
 

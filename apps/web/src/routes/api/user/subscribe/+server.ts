@@ -35,7 +35,7 @@ async function getPaymentRequest(event: NDKEvent): Promise<string | null> {
     const amountTag = event.getMatchingTags("amount")[0];
     if (!amountTag) throw new Error("Amount not found");
 
-    const satsAmount = 10; // await calculateSatAmountFromAmountTag(amountTag);
+    const satsAmount = await calculateSatAmountFromAmountTag(amountTag);
     const tierName = getTierNameFromSubscriptionEvent(event);
     let comment = `Highlighter subscription`;
     if (tierName) comment += ` to ${tierName}`;
