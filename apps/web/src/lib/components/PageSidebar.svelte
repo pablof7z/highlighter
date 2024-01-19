@@ -18,11 +18,13 @@
     w-full
     max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:h-screen
     sm:flex-none
+    h-full
 ">
     <div class="
         max-sm:w-full bg-base-100 max-sm:mobile-navfixed h-full py-2
         sm:rounded-3xl sm:pt-2 sm:pb-6 w-full
         flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
+        h-full
     ">
         <div class="
             self-stretch justify-between items-center gap-6 inline-flex
@@ -36,6 +38,7 @@
                 <div class="
                     grow shrink basis-0 text-white font-semibold font-['Inter Display']
                     flex flex-row items-center gap-2
+                    text-left
                     max-sm:text-lg
                     sm:text-2xl
                 ">
@@ -56,6 +59,7 @@
             class:max-sm:hidden={!open}
             class="
             max-sm:max-h-[50dvh]
+            h-full
             overflow-y-auto
             flex-col justify-center items-start gap-3 flex w-full
             px-6

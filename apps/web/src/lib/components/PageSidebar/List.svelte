@@ -10,6 +10,7 @@
     export let list: NDKList;
 
     const listTitle = list.title || "List";
+    const listImage = list.tagValue("image");
 
     const filters = list.filterForItems();
     const items = $ndk.storeSubscribe(filters);
@@ -22,13 +23,17 @@
 </svelte:head>
 
 <PageSidebar title={listTitle} bind:open>
+    {#if listImage}
+        <img src={listImage} alt={list.title} class="w-full h-auto object-cover rounded-2xl" />
+    {/if}
+
     {#if list.content.length > 0}
         <div class="prose">
             {list.content}
         </div>
     {/if}
 
-    <div class="flex flex-row items-center w-full justify-between">
+    <div class="flex flex-row items-center w-full justify-between pb-5">
         <AvatarWithName
             user={list.author}
             avatarSize="small"
@@ -37,9 +42,11 @@
         <RelativeTime event={list} class="text-neutral-500 text-sm" />
     </div>
 
-    {#each $items as item}
-        <Article article={NDKArticle.from(item)} />
-    {/each}
+    <div class="h-full overflow-y-auto -mr-5 pr-3">
+        {#each $items as item (item.id)}
+            <Article article={NDKArticle.from(item)} />
+        {/each}
+    </div>
 </PageSidebar>
 
 <style lang="postcss">
