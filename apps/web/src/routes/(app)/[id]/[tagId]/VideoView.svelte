@@ -1,6 +1,7 @@
 <script lang="ts">
 	import EventResponses from "$components/EventResponses.svelte";
 	import VideoPlayer from "$components/Events/VideoPlayer.svelte";
+	import ItemHeader from "$components/ItemHeader.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
@@ -45,6 +46,8 @@
 </svelte:head>
 
 <div class="flex flex-col gap-6 w-full">
+    <ItemHeader item={video} />
+
     {#if videoUrl}
         <div class="w-full flex flex-col items-stretch justify-stretch max-h-[80vh] transition-all duration-100">
             <VideoPlayer title={video.title} url={videoUrl} />
@@ -59,8 +62,7 @@
         </div>
     {/if}
 
-    <div class="grid grid-cols-3 gap-10 w-full flex-grow">
-        <div class="self-stretch flex-col justify-center items-start gap-6 flex col-span-2">
+        <div class="self-stretch flex-col justify-center items-start gap-6 flex w-full flex-grow">
             <div class="self-stretch flex-col justify-start items-start gap-6 flex">
                 <div class="self-stretch text-white text-2xl font-medium">
                     <div class="flex flex-row w-full justify-between items-center">
@@ -81,27 +83,11 @@
                 </div>
             </div>
             {#if content.length > 0}
-                <div class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full px-6 rounded-box bg-base-200 prose">
+                <div class="flex-col justify-start items-start gap-6 flex text-lg font-light leading-7 w-full px-6 rounded-box bg-base-200 prose">
                     <EventContent ndk={$ndk} event={video} {content} />
                 </div>
             {/if}
-
-            <EventResponses event={video} />
         </div>
-
-        <!-- Sidebar that shows creator and upgrade option -->
-        <div class="flex flex-col gap-4 border border-base-300 p-4 w-full h-full rounded-box">
-            <UserProfile user={video.author} let:userProfile let:fetching>
-                <div class="flex flex-row items-center gap-4 p-4 h-fit">
-                    <Avatar {userProfile} {fetching} size="large" />
-
-                    <Name  {userProfile} {fetching} />
-                </div>
-
-                <UpgradeButton event={video} text={`Support ${userProfile?.name??""}`} />
-            </UserProfile>
-        </div>
-    </div>
 </div>
 
 {#if $debugMode}

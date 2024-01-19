@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { derived, type Readable } from 'svelte/store';
+    import { page } from '$app/stores';
 	import SuperFollowList from './SuperFollowList.svelte';
     import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { ndk, Name, Avatar, user } from "@kind0/ui-common";
@@ -14,6 +16,24 @@
 
     let activeFilterCount: number | undefined = undefined;
     let activeView = $userSuperFollows;
+
+    let selectedNip05: string | undefined = undefined;
+    let selectedPubkey: string | undefined = undefined;
+
+    $: {
+        selectedNip05 = $page.url.searchParams.get("id") || undefined;
+        if (selectedNip05) {
+            if (selectedNip05.match(/@/)) {
+                $ndk.getUserFromNip05(selectedNip05).then(user => {
+                    selectedPubkey = user?.pubkey;
+                })
+            } else {
+                selectedPubkey = selectedNip05;
+            }
+        } else {
+            selectedPubkey = undefined;
+        }
+    }
 
     function getFilters() {
         const filters: NDKFilter[] = [];
@@ -41,16 +61,6 @@
 
     let events: NDKEventStore<NDKEvent> | undefined;
 
-    $: if (activeFilterCount !== undefined && activeView.size !== activeFilterCount) {
-        console.log(`change filters from ${activeFilterCount} to ${activeView.size} filters`);
-        events?.changeFilters(getFilters());
-        events = $ndk.storeSubscribe(
-            getFilters(),
-            { groupable: false, subId: 'inbox' }
-        )
-        events.startSubscription();
-    }
-
     onMount(async () => {
         const filters = getFilters();
         events = $ndk.storeSubscribe(
@@ -76,7 +86,7 @@
     <title>Inbox</title>
 </svelte:head>
 
-<div class="flex flex-row gap-8 mx-auto px-4">
+<div class="flex flex-row gap-8 mx-auto px-4 my-6">
     <div class="
         max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
         flex-col justify-start items-start flex w-full sm:max-w-[680px]
@@ -106,9 +116,11 @@
         {:else}
             {#if events && $events}
                 {#each $events as event (event.id)}
-                    <div class="w-full item" transition:slide>
-                        <FeedEvent {event} />
-                    </div>
+                    {#if !selectedPubkey || event.pubkey === selectedPubkey}
+                        <div class="w-full item" transition:slide>
+                            <FeedEvent {event} />
+                        </div>
+                    {/if}
                 {/each}
             {/if}
         {/if}

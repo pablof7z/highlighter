@@ -3,7 +3,7 @@
 	import { ArrowLeft } from "phosphor-svelte";
 
     export let urlPrefix: string;
-    export let article: NDKArticle;
+    export let eventTitle: string;
     export let title: string;
 </script>
 
@@ -16,6 +16,6 @@
     </span>
 
     <span class="truncate font-normal opacity-60 whitespace-nowrap">
-        {article.title}
+        {eventTitle}
     </span>
 </h1>

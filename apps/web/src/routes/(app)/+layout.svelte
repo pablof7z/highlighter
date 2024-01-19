@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SignupModal from '$modals/SignupModal.svelte';
 	import HighlightIcon from './../../lib/icons/HighlightIcon.svelte';
 	import { page } from '$app/stores';
 	import NewItemModal from '$modals/NewItemModal.svelte';
@@ -20,6 +21,8 @@
 	let hasSidebar = false;
 
 	$: hasSidebar = !!$pageSidebar?.component;
+
+	// openModal(SignupModal)
 </script>
 
 <div>
@@ -27,7 +30,7 @@
 
 	<div class="sm:pl-20">
 		{#if $pageSidebar?.component}
-			<div class="fixed border-r border-base-300 flex-col px-3 h-full w-96">
+			<div class="fixed border-r border-base-300 flex-col h-full w-96">
 				<svelte:component this={$pageSidebar.component} {...$pageSidebar.props} />
 			</div>
 		{/if}

@@ -1,32 +1,25 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import ClipItem from "$components/Clips/ClipItem.svelte";
-	import { userFollows } from "$stores/session";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent, NDKArticle, NDKList } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent, NDKList } from "@nostr-dev-kit/ndk";
     import createDebug from "debug";
 	import { onDestroy } from "svelte";
 	import { derived, writable } from "svelte/store";
-	import ArticleGrid from "./Events/ArticleGrid.svelte";
 	import CurationItem from "./CurationItem.svelte";
 
-    export let event: NDKEvent;
+    export let filter: NDKFilter;
 
-    const debug = createDebug("highlighter:highlights");
+    const debug = createDebug("highlighter:curations");
 
     const typeFilter = writable<App.FilterType[]>(["all"]);
     let selectedCategory: string;
 
     $: selectedCategory = $page.params.category || "All";
 
-    const authors = Array.from($userFollows);
     const filters: NDKFilter[] = [ { kinds: [
         NDKKind.ArticleCurationSet,
         NDKKind.VideoCurationSet,
-    ], ...event.filter() } ];
-
-    // If we have authors to filter by, add them to the filter
-    if (authors.length > 0) { filters[0].authors = authors; }
+    ], ...filter } ];
 
     const lists = $ndk.storeSubscribe(filters, {
         groupable: false,
@@ -65,7 +58,7 @@
         flex-col justify-start items-start flex w-full sm:max-w-[680px]
         gap-6
     ">
-        {#each $sortedLists as list}
+        {#each $sortedLists as list (list.id)}
             <CurationItem {list} />
         {/each}
     </div>

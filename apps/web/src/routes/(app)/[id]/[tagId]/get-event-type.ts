@@ -12,6 +12,10 @@ export function getEventType(event: NDKEvent): EventType | undefined {
         return "short-note";
     } else if (event.kind === NDKKind.Highlight) {
         return "highlight";
+    } else if ([
+        NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet
+    ].includes(event.kind!)) {
+        return "curation";
     } else {
         console.trace("Unknown event type", event.rawEvent());
         alert("Unknown event type",);

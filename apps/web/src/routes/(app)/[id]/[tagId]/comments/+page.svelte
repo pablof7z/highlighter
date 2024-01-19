@@ -17,7 +17,7 @@
             <ArticleBannerBackground {article} />
 
             <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
-                <ItemSubpageHeader {urlPrefix} {article} title="Comments" />
+                <ItemSubpageHeader {urlPrefix} eventTitle={article.title} title="Comments" />
 
                 <EventResponses {event} class="max-sm:px-4" />
             </div>

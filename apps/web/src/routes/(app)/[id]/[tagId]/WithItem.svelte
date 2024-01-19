@@ -3,7 +3,7 @@
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import NDK, { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
@@ -56,10 +56,13 @@
     $: if (events) event = Array.from($events)[0];
 
     let article: NDKArticle;
+    let video: NDKVideo;
 
-    $: if (event) article = NDKArticle.from(event);
-    $: if (article) title = article.title;
-    $: if (article) summary = getSummary(article);
+    $: if (event?.kind === NDKKind.Article) article = NDKArticle.from(event);
+    $: if (event?.kind === NDKKind.HorizontalVideo) video = NDKVideo.from(event);
+    $: if (article || video) title = article?.title || video?.title;
+    $: if (article && !summary) summary = getSummary(article);
+    $: if (video && !summary) summary = video.content;
 
     let eventType: EventType | undefined;
     let tiersWithFullAccess: string[] | undefined;
@@ -98,10 +101,14 @@
 
 <svelte:head>
     <title>{title}</title>
-    <meta name="description" content={summary} />
+    {#if summary}
+        <meta name="description" content={summary} />
+        <meta property="og:description" content={summary} />
+    {/if}
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={summary} />
-    <meta property="og:image" content={article?.image} />
+    {#if article?.image || video?.thumbnail}
+        <meta property="og:image" content={article?.image || video?.thumbnail} />
+    {/if}
 </svelte:head>
 
 <LoadingScreen ready={!!event || eosed}>
@@ -109,7 +116,7 @@
         {#if event}
             <UserProfile user={event.author} bind:authorUrl />
 
-            <slot {event} {urlPrefix} {eventType} {article} {isFullVersion} />
+            <slot {event} {urlPrefix} {eventType} {article} {video} {isFullVersion} {authorUrl} />
 
             {#if $debugMode}
                 <pre>{JSON.stringify(event.rawEvent(), null, 4)}</pre>

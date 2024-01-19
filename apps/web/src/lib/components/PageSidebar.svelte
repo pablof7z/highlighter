@@ -9,16 +9,26 @@
     }
 </script>
 
+<!-- <div class="border-b border-base-300 flex flex-row items-center justify-between gap-8 p-6 relative">
+    <h1 class="2xl:absolute">
+        Discover
+    </h1> -->
+
 <div class="
+    w-full
     max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:h-screen
     sm:flex-none
 ">
     <div class="
-        max-sm:w-full bg-base-100 max-sm:mobile-nav px-[var(--mobile-body-px)] py-2
-        w-full sm:rounded-3xl sm:px-6 sm:pt-2 sm:pb-6
+        max-sm:w-full bg-base-100 max-sm:mobile-navfixed h-full py-2
+        sm:rounded-3xl sm:pt-2 sm:pb-6 w-full
         flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
     ">
-        <div class="self-stretch justify-between items-center gap-6 inline-flex">
+        <div class="
+            self-stretch justify-between items-center gap-6 inline-flex
+            py-4 w-full px-6
+            border-b border-base-300
+        ">
             <button
                 class="flex flex-row items-center gap-4 justify-between"
                 on:click={toggleOpen}
@@ -48,6 +58,7 @@
             max-sm:max-h-[50dvh]
             overflow-y-auto
             flex-col justify-center items-start gap-3 flex w-full
+            px-6
         ">
             <slot />
         </div>

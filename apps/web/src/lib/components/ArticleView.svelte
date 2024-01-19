@@ -1,20 +1,14 @@
 <script lang="ts">
-	import HighlightIcon from '../icons/HighlightIcon.svelte';
 	import { goto } from "$app/navigation";
-	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
-	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription, userTiers } from "$stores/user-view";
 	import { ndk, pageDrawerToggle, rightSidebar, user, HighlightWrapper, Avatar, Name, RelativeTime } from "@kind0/ui-common";
 	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent, type NDKEventId } from "@nostr-dev-kit/ndk";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
-	import { Lightning } from 'phosphor-svelte';
     import { getParagraph, getText } from "get-selection-more";
 	import { getDefaultRelaySet } from '$utils/ndk';
-	import UserProfile from '$components/User/UserProfile.svelte';
 	import ArticleRender from './ArticleRender.svelte';
-	import AvatarWithName from './User/AvatarWithName.svelte';
+	import ItemHeader from "$components/ItemHeader.svelte";
 
     export let article: NDKArticle;
     const author = article.author;
@@ -182,10 +176,5 @@
     <title>{article.title}</title>
 </svelte:head>
 
-<div class="flex flex-col gap-4 my-6">
-    <div class="flex flex-row gap-6 items-center">
-        <AvatarWithName user={author} spacing="gap-4" />
-        <RelativeTime event={article} class="text-sm opacity-60" />
-    </div>
-    <ArticleRender {article} {editUrl} {isFullVersion} />
-</div>
+<ItemHeader item={article} />
+<ArticleRender {article} {editUrl} {isFullVersion} />

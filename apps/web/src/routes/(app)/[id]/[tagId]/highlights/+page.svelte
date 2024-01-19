@@ -18,7 +18,7 @@
             <ArticleBannerBackground {article} />
 
             <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
-                <ItemSubpageHeader {urlPrefix} {article} title="Highlights" />
+                <ItemSubpageHeader {urlPrefix} eventTitle={article.title} title="Highlights" />
 
                 <Highlights event={article} />
             </div>

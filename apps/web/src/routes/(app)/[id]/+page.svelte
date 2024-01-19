@@ -16,6 +16,8 @@
 	import { onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
 	import CreatorSidebar from '$components/Creator/CreatorSidebar.svelte';
+	import CreatorProfileTabs from './CreatorProfileTabs.svelte';
+	import Curations from '$components/Curations.svelte';
 
     let id: string;
     let { user } = $page.data;
@@ -78,6 +80,8 @@
     }
 
     $: if (userProfile && !userProfile.banner) userProfile.banner = defaultBanner;
+
+    let activeTab: string = "Publications";
 </script>
 
 <svelte:head>
@@ -88,7 +92,7 @@
     <meta property="og:image" content={userProfile?.image || defaultBanner} />
 </svelte:head>
 
-<div class="max-w-5xl mx-auto">
+<div class="max-w-3xl mx-auto">
     <div class="">
         <UserProfile {user} bind:userProfile bind:kind37777Event let:fetching>
             <div class="relative w-full overflow-hidden max-sm:pb-[20vh] pb-[25%]">
@@ -112,13 +116,13 @@
             <div class="
                 flex
                 max-sm:flex-col max-sm:w-full max-sm:items-start max-sm:gap-4
-                items-end justify-between p-6 relative -top-16
+                items-end justify-between p-6 relative -mt-16
             ">
                 <div class="flex items-end">
                     {#if canEdit}
                         <EditableAvatar user={user} {userProfile} {fetching} class="w-24 h-24 border-2 border-black" />
                     {:else}
-                        <Avatar user={user} {userProfile} {fetching} class="w-24 h-24 border-2 border-black" />
+                        <Avatar user={user} {userProfile} {fetching} class="w-28 h-28 flex-none object-cover mask mask-squircle rounded-none" />
                     {/if}
 
                     <div class="ml-4">
@@ -132,7 +136,7 @@
                                 <Name {userProfile} {fetching} />
                             {/if}
                         </div>
-                        <p class="text-sm truncate max-w-md">
+                        <p class="text-sm truncate max-w-md text-neutral-500">
                             {#if editing && userProfile}
                                 <div class="flex flex-row items-center gap-2">
                                     <Pen class="w-4 h-4" />
@@ -176,22 +180,25 @@
             {/if}
         </UserProfile>
 
-        <div class="flex flex-row gap-10">
-            {#if $userContent && $userGAContent}
-                <div
-                    class="w-full transition-all duration-300"
-                    class:opacity-50={editing}
-                >
-                    <CreatorFeed content={$userContent} contentGA={$userGAContent} />
-                </div>
-            {/if}
+        <CreatorProfileTabs bind:value={activeTab} name={userProfile?.displayName} />
 
-            <CreatorSidebar
-                {user}
-                class="w-2/5"
-                supporters={getUserSupporters()}
+        {#if activeTab === "Publications"}
+            <div class="flex flex-row gap-10">
+                {#if $userContent && $userGAContent}
+                    <div
+                        class="w-full transition-all duration-300"
+                        class:opacity-50={editing}
+                    >
+                        <CreatorFeed content={$userContent} contentGA={$userGAContent} />
+                    </div>
+                {/if}
+
+            </div>
+        {:else if activeTab === "Curations"}
+            <Curations
+                filter={{"authors": [user.pubkey]}}
             />
-        </div>
+        {/if}
     </div>
 </div>
 

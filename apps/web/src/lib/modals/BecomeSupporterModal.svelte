@@ -101,7 +101,7 @@
 
         if ($userSuperFollows.has(user.pubkey)) return;
 
-        $loggedInUser.follow(user, undefined);
+        $loggedInUser.follow(user, undefined, 17001);
     }
 
     async function onPaid() {

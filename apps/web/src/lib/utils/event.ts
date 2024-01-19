@@ -10,4 +10,6 @@ export function isRootEvent(event: NDKEvent): boolean {
 export const mainContentKinds = [
     NDKKind.Article,
     NDKKind.HorizontalVideo,
+    NDKKind.ArticleCurationSet,
+    NDKKind.VideoCurationSet,
 ]

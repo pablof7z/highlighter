@@ -22,7 +22,7 @@ export type UserProfileType = NDKUserProfile & {
 	categories?: string[];
 };
 
-export type EventType = "article" | "group-note" | "video" | "short-note" | "highlight";
+export type EventType = "article" | "group-note" | "video" | "short-note" | "highlight" | "curation";
 
 export interface UserUploadQuota {
 	used: number;

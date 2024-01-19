@@ -5,12 +5,14 @@
 	import FeedVideo from "./FeedVideo.svelte";
 
     export let event: NDKEvent;
+    export let skipAuthor = false;
 
     const supportedKinds = [
         NDKKind.GroupNote,
         NDKKind.Text,
         NDKKind.Article,
-        NDKKind.HorizontalVideo
+        NDKKind.HorizontalVideo,
+        NDKKind.Highlight,
     ];
 </script>
 
@@ -19,7 +21,7 @@
         {#if event.kind === NDKKind.GroupNote || event.kind === NDKKind.Text}
             <FeedGroupPost {event} class="!py-10" />
         {:else if event.kind === NDKKind.Article}
-            <FeedArticle article={NDKArticle.from(event)} />
+            <FeedArticle article={NDKArticle.from(event)} {skipAuthor} />
         {:else if event.kind === NDKKind.HorizontalVideo}
             <FeedVideo video={NDKVideo.from(event)} />
         {/if}

@@ -11,10 +11,6 @@
 	import ArticleView from "../../../../lib/components/ArticleView.svelte";
 	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
 	import VideoView from "./VideoView.svelte";
-	import type { EventType } from "../../../../app";
-	import { getEventType } from "./get-event-type";
-	import { requiredTiersFor } from "$lib/events/tiers";
-	import { goto } from "$app/navigation";
 	import EventResponses from "$components/EventResponses.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
@@ -23,6 +19,7 @@
 	import { addReadReceipt } from "$utils/read-receipts";
 	import WithItem from "./WithItem.svelte";
 	import ItemFooter from "./ItemFooter.svelte";
+	import ListView from "$components/ListView.svelte";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -42,12 +39,12 @@
     }
 </script>
 
-<WithItem let:event let:urlPrefix let:eventType let:isFullVersion>
+<WithItem let:event let:article let:video let:urlPrefix let:eventType let:isFullVersion>
     {#if event && eventType}
-        {#if eventType === "article"}
-            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
+        {#if eventType === "article" && article}
+            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl py-6">
                 <ArticleView
-                    article={NDKArticle.from(event)}
+                    {article}
                     {isFullVersion}
                 />
 
@@ -55,10 +52,10 @@
             </div>
 
             <ItemFooter {event} {urlPrefix} {eventType} />
-        {:else if eventType === "video"}
-            <div class="flex-col justify-start items-start gap-8 flex mx-auto w-full">
+        {:else if eventType === "video" && video}
+            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl py-6">
                 <VideoView
-                    video={NDKVideo.from(event)}
+                    {video}
                     {isFullVersion}
                 />
             </div>
@@ -77,6 +74,8 @@
                 <EventResponses {event} />
 
             </div>
+        {:else if eventType === 'curation'}
+            <ListView {event} {urlPrefix} {eventType} />
         {:else}
             <CreatorShell user={event.author}>
                 <div class="mx-auto max-w-3xl">

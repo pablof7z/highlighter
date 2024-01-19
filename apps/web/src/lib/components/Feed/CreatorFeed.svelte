@@ -12,14 +12,14 @@
     });
 </script>
 
-<div class="flex flex-col max-w-xl gap-10">
+<div class="flex flex-col w-full gap-10">
     {#if $rootContent?.length > 0}
         {#each $rootContent as event (event.id)}
-            <FeedEvent {event} />
+            <FeedEvent {event} skipAuthor={true} />
         {/each}
     {:else if $contentGA?.length > 0}
         {#each $contentGA as event (event.id)}
-            <FeedEvent {event} />
+            <FeedEvent {event} skipAuthor={true} />
         {/each}
     {/if}
 </div>

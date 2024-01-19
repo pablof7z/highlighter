@@ -6,6 +6,7 @@
     export let list: NDKList;
 
     const image = list.tagValue("image");
+    let authorUrl: string;
 </script>
 
 <div class="card w-full">
@@ -17,9 +18,14 @@
 
     <div class="card-body">
         <h3 class="title">
-            <a href="/list/{list.encode()}">{list.title}</a>
+            <a href="{authorUrl}/{list.dTag}">{list.title}</a>
         </h3>
-        <AvatarWithName user={list.author} avatarSize="tiny" nameClass="text-sm text-neutral-500" />
+        <AvatarWithName
+            user={list.author}
+            avatarSize="tiny"
+            nameClass="text-sm text-neutral-500"
+            bind:authorUrl
+        />
     </div>
 </div>
 

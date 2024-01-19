@@ -47,21 +47,7 @@
     }
 </script>
 
-<div class="w-full justify-between items-center flex max-sm:hidden overflow-x-clip flex-nowrap max-w-[calc(100vw-40px)]">
-    <div class="justify-start items-start gap-6 flex whitespace-nowrap flex-shrink">
-        <div class="text-white text-opacity-60 text-sm font-semibold leading-4">Popular Categories</div>
-            {#each categories as category}
-                <a
-                    href="/explore/{category}"
-                    class="text-sm font-semibold leading-4"
-                    class:text-white={category === selectedCategory}
-                >{category}</a>
-            {/each}
-    </div>
-    <FilterButtons bind:filters={$typeFilter} />
-</div>
-
-<div class="flex flex-row gap-8 mx-auto mt-8">
+<div class="flex flex-row gap-8 max-w-3xl mt-8">
     <div class="
         max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
         flex-col justify-start items-start flex w-full sm:max-w-[680px]

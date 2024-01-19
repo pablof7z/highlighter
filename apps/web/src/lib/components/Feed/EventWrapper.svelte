@@ -42,6 +42,7 @@
 
 <UserProfile user={author} let:userProfile let:fetching let:authorUrl>
     <a href="{authorUrl}{urlPrefix??""}/{suffixUrl}" class="
+        bg-base-100 rounded-box p-4
         flex flex-col gap-4 pb-6 wrapper w-full {$$props.class??""}
     ">
         {#if $$slots.default}
@@ -58,11 +59,11 @@
         <div class="w-full justify-between items-center inline-flex">
             {#if !skipAuthor}
                 <div class="justify-start items-center gap-4 flex">
-                    <a href={authorUrl} class="relative">
+                    <a href={authorUrl} class="relative flex-none">
                         <Avatar {userProfile} {fetching} user={author} size="small" />
                     </a>
-                    <div class="flex flex-col gap-1 items-start">
-                        <a href={authorUrl} class="text-white text-[15px] font-semibold">
+                    <div class="flex flex-col gap-1 items-start w-full truncate">
+                        <a href={authorUrl} class="text-white text-[15px] font-semibold truncate">
                             <Name {userProfile} {fetching} user={author} />
                         </a>
 

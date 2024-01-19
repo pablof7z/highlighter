@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getSummary } from '$utils/article';
 	import HighlightIcon from '../icons/HighlightIcon.svelte';
 	import { goto } from "$app/navigation";
 	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
@@ -178,8 +179,7 @@
 
 <div bind:this={paragraphFloat} class="
     float-element z-50 absolute transition-all duration-300 flex flex-col gap-1
-
-">
+" style="top: 99999px">
     <div class="tooltip tooltip-left" data-tip="Zap!">
         <button class="
             transition-all duration-300
@@ -199,7 +199,7 @@
     </div>
 </div>
 
-<div bind:this={el} class="float-element z-50 absolute opacity-0 transition-all duration-300 flex flex-col gap-1">
+<div bind:this={el} class="float-element z-50 absolute opacity-0 transition-all duration-300 flex flex-col gap-1" style="top: 99999px">
     <button class="
         button px-4 py-3
         transition-all duration-300
@@ -209,7 +209,15 @@
     </button>
 </div>
 
-<div class="w-full">
+<div class="w-full flex flex-col gap-4">
+    <div class="self-stretch text-white text-4xl font-semibold">
+        {article.title}
+    </div>
+
+    <div class="prose text-xl">
+        {getSummary(article)}
+    </div>
+
     {#if article.image}
         <div class="w-full max-h-[50vh] relative overflow-hidden">
             <img class="w-full relative sm:rounded-xl object-cover object-top h-full" src={article.image} />
@@ -222,24 +230,7 @@
             <div class="grow shrink basis-0 flex-col justify-center items-start gap-10 inline-flex">
                 <div class="self-stretch flex-col justify-center items-start flex">
                     <div class="self-stretch flex-col justify-start items-start gap-1 flex">
-                        <div class="self-stretch text-white text-2xl font-medium">
-                            {article.title}
-                        </div>
-                        <div class="flex-row justify-between items-center gap-4 flex w-full">
-                            <UserProfile user={article.author} let:userProfile let:fetching let:authorUrl>
-                                <a href={authorUrl} class="flex flex-row items-center gap-4 p-4 h-fit flex-grow">
-                                    <Avatar {userProfile} {fetching} size="medium" />
 
-                                    <Name {userProfile} {fetching} class="whitespace-nowrap truncate" />
-                                </a>
-                            </UserProfile>
-
-                            <div class="flex flex-row items-center gap-12">
-                                {#if article.pubkey === $user?.pubkey}
-                                    <a href={editUrl} class="button">Edit</a>
-                                {/if}
-                            </div>
-                        </div>
                     </div>
                     <article class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative">
                         {#key content}
@@ -287,3 +278,9 @@
 
     }
 </style>
+
+<!-- <div class="flex flex-row items-center gap-12">
+    {#if article.pubkey === $user?.pubkey}
+        <a href={editUrl} class="button">Edit</a>
+    {/if}
+</div> -->

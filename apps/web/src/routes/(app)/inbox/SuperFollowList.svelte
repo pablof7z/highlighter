@@ -24,7 +24,7 @@
         activeView = activeSubscriptions;
     }
 </script>
-{mode}
+
 <a
     href="/inbox"
     class="justify-start items-center gap-2 inline-flex"

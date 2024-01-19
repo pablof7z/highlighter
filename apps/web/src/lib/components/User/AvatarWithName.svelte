@@ -12,9 +12,9 @@
 </script>
 
 <UserProfile {user} bind:userProfile let:fetching bind:authorUrl>
-    <div class="flex flex-row items-center {spacing} {$$props.class}">
+    <a href={authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
         <Avatar {userProfile} {fetching} size={avatarSize} class={$$props.nameClass??""} />
 
         <Name {userProfile} {fetching} {authorUrl} class={$$props.nameClass??""} />
-    </div>
+    </a>
 </UserProfile>
