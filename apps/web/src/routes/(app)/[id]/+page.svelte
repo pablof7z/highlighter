@@ -18,6 +18,7 @@
 	import CreatorSidebar from '$components/Creator/CreatorSidebar.svelte';
 	import CreatorProfileTabs from './CreatorProfileTabs.svelte';
 	import Curations from '$components/Curations.svelte';
+	import Highlights from '$components/Highlights.svelte';
 
     let id: string;
     let { user } = $page.data;
@@ -196,6 +197,10 @@
             </div>
         {:else if activeTab === "Curations"}
             <Curations
+                filter={{"authors": [user.pubkey]}}
+            />
+        {:else if activeTab === "Highlights"}
+            <Highlights
                 filter={{"authors": [user.pubkey]}}
             />
         {/if}

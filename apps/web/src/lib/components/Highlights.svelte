@@ -8,22 +8,15 @@
 	import { onDestroy } from "svelte";
 	import { writable } from "svelte/store";
 
-    export let event: NDKEvent;
+    export let filter: NDKFilter;
 
     const debug = createDebug("highlighter:highlights");
 
-    const typeFilter = writable<App.FilterType[]>(["all"]);
     let selectedCategory: string;
-    let open = false;
 
     $: selectedCategory = $page.params.category || "All";
 
-    const authors = Array.from($userFollows);
-
-    const filters: NDKFilter[] = [ { kinds: [NDKKind.Highlight], ...event.filter() } ];
-
-    // If we have authors to filter by, add them to the filter
-    if (authors.length > 0) { filters[0].authors = authors; }
+    const filters: NDKFilter[] = [ { kinds: [NDKKind.Highlight], ...filter } ];
 
     const events = $ndk.storeSubscribe(filters, {
         groupable: false,

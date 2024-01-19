@@ -4,7 +4,7 @@
 </script>
 
 <div class="py-4 border-t border-b border-neutral-800 justify-start items-start gap-4 inline-flex w-full mb-6">
-    <div class="justify-start items-start gap-4 flex">
+    <div class="justify-start items-start gap-4 flex w-full">
         <button
             on:click={() => value = "Publications"}
             class:active={value === "Publications"}
@@ -15,12 +15,19 @@
                 class:active={value === "Curations"}
             >Curations</button>
         </div>
+        <div class="tooltip" data-tip="Highlights made by {name}">
+            <button
+                on:click={() => value = "Highlights"}
+                class:active={value === "Highlights"}
+            >Highlights</button>
+        </div>
         <div class="tooltip" data-tip="Explore creators {name} supports">
             <button
                 on:click={() => value = "Supported Creators"}
                 class:active={value === "Supported Creators"}
             >Supported Creators</button>
         </div>
+        <div class="flex-grow"></div>
         <div class="tooltip" data-tip="Got premium access? Hangout with the community that surrounds {name}">
             <button
                 on:click={() => value = "Backstage"}
