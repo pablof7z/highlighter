@@ -30,7 +30,7 @@
 
 	<div class="sm:pl-20">
 		{#if $pageSidebar?.component}
-			<div class="fixed border-r border-base-300 flex-col h-full w-96">
+			<div class="fixed border-r border-base-300 flex-col h-full w-96 max-sm:hidden">
 				<svelte:component this={$pageSidebar.component} {...$pageSidebar.props} />
 			</div>
 		{/if}

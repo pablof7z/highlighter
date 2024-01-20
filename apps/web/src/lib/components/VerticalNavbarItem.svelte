@@ -11,30 +11,49 @@
 </script>
 
 <div class="
-    tooltip sm:tooltip-right
+    tooltip tooltip-right
     w-full
     {$$props.class??""}
 " class:active={active} data-tip={tooltip}>
-    <a
-        {href}
-        class="
-            inline-flex items-center justify-center
-            text-neutral-700 hover:text-neutral-300 transition-all duration-300
-            flex-none
-        "
-        class:active={active}
-        on:click
+    {#if href}
+        <a
+            {href}
+            class="
+                inline-flex items-center justify-center
+                text-neutral-700 hover:text-neutral-300 transition-all duration-300
+                flex-none
+            "
+            class:active={active}
+            on:click
         >
-        <slot {active} />
-    </a>
+            <div class="w-full h-full max-w-[32px]">
+                <slot {active} />
+            </div>
+        </a>
+    {:else}
+        <button
+            class="
+                inline-flex items-center justify-center
+                text-neutral-700 hover:text-neutral-300 transition-all duration-300
+                flex-none
+            "
+            class:active={active}
+            on:click
+        >
+            <div class="w-full h-full max-w-[32px]">
+                <slot {active} />
+            </div>
+        </button>
+    {/if}
 </div>
 
 <style lang="postcss">
-    a {
+    a, button {
         @apply py-2.5 px-2 sm:px-5 cursor-pointer w-full;
+        @apply max-sm:px-3 max-sm:pt-3;
     }
 
-    a.active {
+    a.active, button.active {
         @apply text-accent2;
     }
 

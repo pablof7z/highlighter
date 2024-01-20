@@ -60,12 +60,12 @@
     }, 50);
 </script>
 
-<main bind:this={main}>
+<main class="pb-24" bind:this={main}>
     <slot />
 </main>
 
 <footer class="max-sm:bg-base-200 max-sm:bg-opacity-80 backdrop-blur-[50px]" bind:this={footer}>
-    <div class="mx-auto max-w-3xl py-3 sm:py-8 max-sm:px-4">
+    <div class="mx-auto max-w-3xl sm:py-8 max-sm:mobile-nav max-sm:fixed max-sm:w-full max-sm:h-20 max-sm:px-3 z-50">
         {#if statusToShow}
             <div class="text-center pb-4 inline-flex gap-4 items-end justify-center w-full" transition:slide>
                 {statusToShow}
@@ -75,7 +75,7 @@
 
         <div class="flex flex-col sm:flex-row justify-between items-center">
             <progress
-                class="progress progress-accent w-full transition-all duration-1000 sm:hidden mb-4"
+                class="progress progress-accent w-full transition-all duration-1000 sm:hidden mb-2 sm:mb-4"
                 value={(Math.max(step*10, 1))}
                 max={steps.length*10}></progress>
 
@@ -95,7 +95,7 @@
                 max-sm:w-full justify-between
             ">
                 <button
-                    class="px-4 whitespace-nowrap button button-black py-3"
+                    class="px-4 whitespace-nowrap button button-black sm:py-3"
                     class:opacity-0={step === steps.length - 1}
                     on:click={back}
                 >
@@ -107,7 +107,7 @@
                 </button>
 
                 <button
-                    class="button whitespace-nowrap py-2"
+                    class="button whitespace-nowrap sm:py-2"
                     on:click={next}
                     class:px-4={nextIsPublish}
                     disabled={steps[step].canContinue === false}
@@ -124,6 +124,7 @@
             </div>
         </div>
     </div>
+    <div class="sm:hidden h-20"></div>
 </footer>
 
 <style lang="postcss">

@@ -79,7 +79,7 @@
 </svelte:head>
 
 {#if eventsForRender && $eventsForRender}
-    <div class="flex flex-col gap-6 w-full sm:px-4">
+    <div class="flex flex-col gap-6 w-full sm:px-6">
         <div class="w-full justify-between items-center flex max-sm:hidden overflow-x-clip flex-nowrap border-b border-base-300 py-2">
             <div class="justify-start items-start gap-6 flex whitespace-nowrap flex-shrink">
                 <div class="text-white text-opacity-60 text-sm font-semibold leading-4">Popular Categories</div>

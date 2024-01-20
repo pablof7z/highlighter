@@ -1,6 +1,6 @@
 import { ndk, user as currentUser } from "@kind0/ui-common";
 import { NDKKind, NDKEvent, NDKArticle, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
-import type { NDKUser, NDKFilter, Hexpubkey } from "@nostr-dev-kit/ndk";
+import { type NDKUser, type NDKFilter, type Hexpubkey, NDKHighlight } from "@nostr-dev-kit/ndk";
 import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 import { writable, get as getStore, derived, type Readable } from "svelte/store";
 import { userActiveSubscriptions } from "./session";
@@ -15,6 +15,7 @@ export const activeUserViewPubkey = writable<Hexpubkey | undefined>(undefined);
 export let userSubscription: NDKEventStore<NDKEvent> | undefined = undefined;
 export const userTiers = writable<Readable<NDKArticle[]> | undefined>(undefined);
 export const userContent = writable<Readable<NDKEvent[]> | undefined>(undefined);
+export const userHighlights = writable<Readable<NDKHighlight[]> | undefined>(undefined);
 export const userGAContent = writable<Readable<NDKEvent[]> | undefined>(undefined);
 export const userSupporters = writable<Readable<never[] | Record<Hexpubkey, string|undefined>> | undefined>(undefined);
 
@@ -57,7 +58,7 @@ export function startUserView(user: NDKUser) {
         },
         // Non group-exclusive content
         {
-            kinds: [ NDKKind.Article, NDKKind.HorizontalVideo ],
+            kinds: [ NDKKind.Article, NDKKind.HorizontalVideo, NDKKind.Highlight ],
             authors: [user.pubkey],
             limit: 20
         },
@@ -86,6 +87,7 @@ export function startUserView(user: NDKUser) {
     userTiers.set(getUserSupportPlansStore());
     userContent.set(getUserContent());
     userGAContent.set(getGAUserContent());
+    userHighlights.set(getUserHighlights());
     userSupporters.set(getUserSupporters());
 }
 
@@ -207,5 +209,17 @@ export function getUserContent(): Readable<NDKEvent[]> {
             });
 
             return filteredItems;
+        });
+}
+
+export function getUserHighlights(): Readable<NDKHighlight[]> {
+    if (!userSubscription) return derived([], () => []);
+
+    return derived(
+        [userSubscription],
+        ([$userSubscription]) => {
+            return $userSubscription
+                .filter((event: NDKEvent) => event.kind === NDKKind.Highlight)
+                .map((event: NDKEvent) => NDKHighlight.from(event));
         });
 }

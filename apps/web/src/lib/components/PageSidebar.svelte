@@ -16,19 +16,16 @@
 
 <div class="
     w-full
-    max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:h-screen
+    max-sm:!hidden max-sm:top-0 max-sm:left-0 max-sm:h-screen
     sm:flex-none
     h-full
+    bg-base-100 max-sm:mobile-navfixed py-2
+    sm:rounded-3xl sm:pt-2 sm:pb-6
+    flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
 ">
-    <div class="
-        max-sm:w-full bg-base-100 max-sm:mobile-navfixed h-full py-2
-        sm:rounded-3xl sm:pt-2 sm:pb-6 w-full
-        flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
-        h-full
-    ">
         <div class="
             self-stretch justify-between items-center gap-6 inline-flex
-            py-4 w-full px-6
+            py-4 w-full px-4
             border-b border-base-300
         ">
             <button
@@ -61,10 +58,10 @@
             max-sm:max-h-[50dvh]
             h-full
             overflow-y-auto
-            flex-col justify-center items-start gap-3 flex w-full
-            px-6
+            flex-col justify-start items-start gap-3 flex w-full
+            px-4
+            {$$props.innerClass??""}
         ">
             <slot />
         </div>
-    </div>
 </div>

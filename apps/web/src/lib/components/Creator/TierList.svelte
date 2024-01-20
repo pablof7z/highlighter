@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { getUserSupportPlansStore, userTiers } from '$stores/user-view';
-	import { ndk, newToasterMessage, user } from '@kind0/ui-common';
+    import { getUserSupportPlansStore } from '$stores/user-view';
+	import { ndk, newToasterMessage } from '@kind0/ui-common';
 	import { NDKArticle, NDKEvent, NDKKind, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import TierEditor from './TierEditor.svelte';
 	import type { Readable } from 'svelte/store';
@@ -10,9 +10,13 @@
     import { createEventDispatcher, onMount } from 'svelte';
 	import { termToShort } from '$utils/term';
 	import { currencyFormat } from '$utils/currency';
+	import MobileHeader from '$components/Page/MobileHeader.svelte';
 
     export let redirectOnSave = true;
     export let usePresetButton = false;
+    export let mobileBackUrl: string | undefined = undefined;
+    export let saving = false;
+    export let forceSave = false;
 
     const dispatch = createEventDispatcher();
 
@@ -30,6 +34,10 @@
             addTier();
         }
     })
+
+    $: if (forceSave && !saving) {
+        save();
+    }
 
     $: if ($currentTiers) {
         for (const tierEvent of $currentTiers) {
@@ -78,28 +86,33 @@
     }
 
     async function save(emit = true) {
-        const relaySet = getDefaultRelaySet();
-        const tiersList = new NDKEvent($ndk, {
-            kind: NDKKind.TierList,
-        } as NostrEvent);
+        saving = true;
+        try {
+            const relaySet = getDefaultRelaySet();
+            const tiersList = new NDKEvent($ndk, {
+                kind: NDKKind.TierList,
+            } as NostrEvent);
 
-        for (const tier of tiers) {
-            tier.kind = NDKKind.SubscriptionTier;
-            tier.created_at = Math.floor(Date.now() / 1000);
-            tier.id = ""
-            tier.sig = ""
-            await tier.publish(relaySet);
-            tiersList.tags.push(["e", tier.id]);
+            for (const tier of tiers) {
+                tier.kind = NDKKind.SubscriptionTier;
+                tier.created_at = Math.floor(Date.now() / 1000);
+                tier.id = ""
+                tier.sig = ""
+                await tier.publish(relaySet);
+                tiersList.tags.push(["e", tier.id]);
+            }
+
+            await tiersList.publish(relaySet);
+
+            newToasterMessage("Support tiers correctly saved!", "success")
+
+            if (emit) dispatch("saved", { tiers: tiersList });
+
+            if (redirectOnSave)
+                goto("/dashboard");
+        } finally {
+            saving = false;
         }
-
-        await tiersList.publish(relaySet);
-
-        newToasterMessage("Support tiers correctly saved!", "success")
-
-        if (emit) dispatch("saved", { tiers: tiersList });
-
-        if (redirectOnSave)
-            goto("/dashboard");
     }
 
     function skip() {
@@ -121,6 +134,10 @@
         dispatch("saved");
     }
 </script>
+
+{#if mobileBackUrl}
+
+{/if}
 
 <div class="flex flex-col gap-4">
     {#if tiers.length === 0}
@@ -184,7 +201,7 @@
         {/each}
     </div>
 
-    <div class="flex flex-row justify-between items-stretch">
+    <div class="flex flex-col sm:flex-row justify-between items-stretch">
         <button
             class="button button-black px-6 py-3 font-semibold"
             disabled={!canAddTier}
@@ -194,10 +211,10 @@
             Add Tier
         </button>
 
-        <div class="flex flex-row gap-4">
+        <div class="flex flex-col sm:flex-row gap-4">
             {#if usePresetButton}
                 <button
-                    class="button button-black flex flex-col items-start gap-0 px-4"
+                    class="button button-black flex flex-col items-start gap-0 px-4 max-sm:hidden"
                     on:click={skip}
                 >
                     Skip

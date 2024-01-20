@@ -125,6 +125,10 @@
 	@apply bg-base-100 border border-base-300 rounded-box menu gap-0;
 }
 
+.tooltip::before, .tooltip::after {
+	@apply max-sm:hidden;
+}
+
 .tooltip::before {
 	@apply bg-base-200 bg-opacity-80 !backdrop-blur-[50px] px-6 py-3 border-2 border-base-300 rounded-box;
 }

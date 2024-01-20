@@ -9,6 +9,9 @@
 	import { urlSuffixFromEvent } from "$utils/url";
 
     export let article: NDKArticle;
+    export let href: string | undefined = undefined;
+
+    const explicitHref = !!href;
 
     let userProfile: UserProfileType;
     let authorUrl: string;
@@ -17,10 +20,9 @@
 
     let image = article.image;
     let suffixUrl = urlSuffixFromEvent(article);
-    let href: string;
 
     $: if (!image) { image = userProfile?.image || userProfile?.banner }
-    $: href = `${authorUrl}/${suffixUrl}`;
+    $: if (!explicitHref) href = `${authorUrl}/${suffixUrl}`;
 </script>
 
 <a {href} class="flex flex-row gap-6">

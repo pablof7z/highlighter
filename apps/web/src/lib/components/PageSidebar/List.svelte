@@ -8,6 +8,7 @@
     let open = true;
 
     export let list: NDKList;
+    export let urlPrefix: string;
 
     const listTitle = list.title || "List";
     const listImage = list.tagValue("image");
@@ -42,9 +43,12 @@
         <RelativeTime event={list} class="text-neutral-500 text-sm" />
     </div>
 
-    <div class="h-full overflow-y-auto -mr-5 pr-3">
+    <div class="h-full overflow-y-auto flex flex-col gap-4">
         {#each $items as item (item.id)}
-            <Article article={NDKArticle.from(item)} />
+            <Article
+                article={NDKArticle.from(item)}
+                href={`${urlPrefix}/${item.tagValue("d")}`}
+            />
         {/each}
     </div>
 </PageSidebar>

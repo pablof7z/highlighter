@@ -179,7 +179,7 @@
 
 <div bind:this={paragraphFloat} class="
     float-element z-50 absolute transition-all duration-300 flex flex-col gap-1
-" style="top: 99999px">
+" style="top: -100px">
     <div class="tooltip tooltip-left" data-tip="Zap!">
         <button class="
             transition-all duration-300
@@ -199,7 +199,7 @@
     </div>
 </div>
 
-<div bind:this={el} class="float-element z-50 absolute opacity-0 transition-all duration-300 flex flex-col gap-1" style="top: 99999px">
+<div bind:this={el} class="float-element z-50 absolute opacity-0 transition-all duration-300 flex flex-col gap-1" style="top: -100px">
     <button class="
         button px-4 py-3
         transition-all duration-300

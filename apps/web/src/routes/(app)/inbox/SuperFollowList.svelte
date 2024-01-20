@@ -37,7 +37,7 @@
     <span class="text-right text-white text-[15px] font-medium name">All Feeds</span>
 </a>
 {#each activeView as pubkey (pubkey)}
-    <button on:click={() => open = false}>
+    <button class="w-full" on:click={() => open = false}>
         <SuperFollowListItem {pubkey} {selectedId} />
     </button>
 {/each}

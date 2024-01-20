@@ -48,7 +48,7 @@
                 </div>
             </div>
         {:else}
-            <UserProfile user={article.author} bind:authorUrl />
+            <UserProfile bind:userProfile user={article.author} bind:authorUrl />
         {/if}
         <div class="self-stretch text-neutral-200 text-xl font-semibold leading-relaxed">
             {article.title}

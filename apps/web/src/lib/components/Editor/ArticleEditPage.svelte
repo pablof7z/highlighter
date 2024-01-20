@@ -223,7 +223,7 @@
         <ArticleEditor bind:article on:contentUpdate={onArticleChange} textareaClass="" />
     </div>
 
-    <div class="flex flex-col gap-10 max-sm:pt-24 max-sm:px-4" class:hidden={step !== 1}>
+    <div class="flex flex-col gap-10 max-sm:px-4" class:hidden={step !== 1}>
         <DistributionPage
             type="article"
             {tiers}
@@ -236,7 +236,7 @@
     </div>
 
     {#if step === 2}
-        <div class="max-sm:pt-24">
+        <div>
             <CategorySelector bind:categories />
         </div>
     {/if}

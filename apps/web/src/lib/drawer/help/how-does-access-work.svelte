@@ -27,7 +27,7 @@
         Your work speaks for itself.
     </p>
 
-    <button class="self-end button px-10 py-3" on:click={closeDrawer}>
+    <button class="self-end max-sm:w-full button px-10 py-3" on:click={closeDrawer}>
         Close
     </button>
 </div>

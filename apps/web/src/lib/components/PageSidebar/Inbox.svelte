@@ -6,7 +6,7 @@
     let open = true;
 </script>
 
-<PageSidebar title="Inbox" bind:open>
+<PageSidebar title="Inbox" bind:open innerClass="!px-0 !gap-0">
     <div slot="headerRight" class="justify-start items-center flex">
         <div role="tablist" class="tabs tabs-boxed bg-transparent">
             <button
@@ -23,6 +23,7 @@
             >Paid</button>
         </div>
     </div>
+
 
     <SuperFollowList bind:mode={$mode} bind:open />
 </PageSidebar>

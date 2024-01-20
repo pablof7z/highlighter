@@ -16,6 +16,7 @@
 	import { fade } from "svelte/transition";
 	import PublishingStep from "$components/Editor/Pages/PublishingStep.svelte";
 	import { debugMode } from "$stores/session";
+	import MainWrapper from "$components/Page/MainWrapper.svelte";
 
     const allTiers = getUserSupportPlansStore();
     let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
@@ -124,47 +125,49 @@
 
 <UserProfile user={$user} bind:userProfile bind:authorUrl />
 
-<ItemEditShell
-    bind:step
-    on:publish={publish}
-    bind:steps={steps}
->
-    {#if step === 0}
-        <Page1
-            bind:note
-            bind:uploadedFiles
-        />
-    {/if}
-
-    <div class:hidden={step !== 1}>
-        <DistributionPage
-            type="note"
-            {tiers}
-            bind:nonSubscribersPreview
-            bind:wideDistribution
-            bind:canContinue={steps[2].canContinue}
-            on:changed={tiersChanged}
-            on:editPreview={editTeaser}
-        />
-    </div>
-
-    {#if step === 2}
-        {#if $debugMode}
-            <pre>{JSON.stringify({
-                wideDistribution,
-                tiers
-            })}</pre>
-            <pre>{JSON.stringify(note.rawEvent(), null, 2)}</pre>
-            <pre>{JSON.stringify(preview.rawEvent(), null, 2)}</pre>
-        {:else}
-            <div transition:fade={{duration: 1000}}>
-                <PublishingStep
-                    {publishing}
-                />
-            </div>
+<MainWrapper class="p-6">
+    <ItemEditShell
+        bind:step
+        on:publish={publish}
+        bind:steps={steps}
+    >
+        {#if step === 0}
+            <Page1
+                bind:note
+                bind:uploadedFiles
+            />
         {/if}
-    {/if}
-</ItemEditShell>
+
+        <div class:hidden={step !== 1}>
+            <DistributionPage
+                type="note"
+                {tiers}
+                bind:nonSubscribersPreview
+                bind:wideDistribution
+                bind:canContinue={steps[2].canContinue}
+                on:changed={tiersChanged}
+                on:editPreview={editTeaser}
+            />
+        </div>
+
+        {#if step === 2}
+            {#if $debugMode}
+                <pre>{JSON.stringify({
+                    wideDistribution,
+                    tiers
+                })}</pre>
+                <pre>{JSON.stringify(note.rawEvent(), null, 2)}</pre>
+                <pre>{JSON.stringify(preview.rawEvent(), null, 2)}</pre>
+            {:else}
+                <div transition:fade={{duration: 1000}}>
+                    <PublishingStep
+                        {publishing}
+                    />
+                </div>
+            {/if}
+        {/if}
+    </ItemEditShell>
+</MainWrapper>
 
 <style lang="postcss">
     .attachments img {

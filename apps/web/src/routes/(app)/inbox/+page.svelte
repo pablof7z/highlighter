@@ -86,7 +86,7 @@
     <title>Inbox</title>
 </svelte:head>
 
-<div class="flex flex-row gap-8 mx-auto px-4 my-6">
+<div class="flex flex-row gap-8 mx-auto px-4 py-6">
     <div class="
         max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
         flex-col justify-start items-start flex w-full sm:max-w-[680px]
@@ -117,7 +117,7 @@
             {#if events && $events}
                 {#each $events as event (event.id)}
                     {#if !selectedPubkey || event.pubkey === selectedPubkey}
-                        <div class="w-full item" transition:slide>
+                        <div class="w-full item">
                             <FeedEvent {event} />
                         </div>
                     {/if}

@@ -1,32 +1,38 @@
 <script lang="ts">
 	import CategorySelector from '$components/Forms/CategorySelector.svelte';
-	import Checkbox from '$components/Forms/Checkbox.svelte';
 	import type { UserProfileType } from './../../../../app.d.ts';
     import UserProfile from '$components/User/UserProfile.svelte';
 	import EditableAvatar from '$components/User/EditableAvatar.svelte';
     import Input from '$components/Forms/Input.svelte';
 	import { ndk, user } from '@kind0/ui-common';
     import { createEventDispatcher } from 'svelte';
-    import { ArrowRight } from 'phosphor-svelte';
 	import { NDKEvent, serializeProfile, type NostrEvent } from '@nostr-dev-kit/ndk';
+	import MobileHeader from '$components/Page/MobileHeader.svelte';
 
     const dispatch = createEventDispatcher();
 
     let userProfile: UserProfileType = {};
-    let saveAsAlternativeProfile = false;
     let editingCategories: string[] = [];
+    let saving = false;
 
     async function save() {
-        userProfile.display_name = userProfile.name;
-        const profile = new NDKEvent($ndk, {
-            kind: 0,
-            content: serializeProfile(userProfile)
-        } as NostrEvent);
-        // if (kind37777Event) profile.tags.push(["d", kind37777Event.tagValue("d")!]);
-        for (const category of editingCategories) {
-            profile.tags.push(["t", category]);
+        saving = true;
+        try {
+            userProfile.display_name = userProfile.name;
+            const profile = new NDKEvent($ndk, {
+                kind: 0,
+                content: serializeProfile(userProfile)
+            } as NostrEvent);
+            // if (kind37777Event) profile.tags.push(["d", kind37777Event.tagValue("d")!]);
+            for (const category of editingCategories) {
+                profile.tags.push(["t", category]);
+            }
+            await profile.publish();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            saving = false;
         }
-        await profile.publish();
     }
 
     function skip() {
@@ -38,6 +44,16 @@
         dispatch('saved');
     }
 </script>
+
+<MobileHeader backButton={"/welcome"}>
+    <button class="button flex flex-row items-center gap-2 px-6" slot="button" on:click={saveClicked}>
+        {#if saving}
+            <span class="loading loading-sm"></span>
+        {:else}
+            Save
+        {/if}
+    </button>
+</MobileHeader>
 
 <div class="flex flex-col divide-y divide-base-300">
     <UserProfile user={$user} bind:userProfile let:fetching>
@@ -63,21 +79,18 @@
     </div>
 </div>
 
-<div class="flex flex-row justify-end items-stretch">
-    <!-- <Checkbox bind:value={saveAsAlternativeProfile}>
-        Save as alternative profile
-    </Checkbox> -->
+<div class="flex flex-col-reverse sm:flex-row sm:gap-2 max-sm:items-stretch w-full">
+    <button class="max-sm:hidden button button-primary px-10 py-4" on:click={skip}>
+        Skip for now
+    </button>
 
-    <div class="flex flex-row gap-2">
-        <button class="button button-primary px-10 py-4" on:click={skip}>
-            Skip for now
-        </button>
-
-        <button class="button px-10 py-4" on:click={saveClicked}>
-            Continue
-            <ArrowRight class="w-6 h-6 ml-2" />
-        </button>
-    </div>
+    <button class="button px-10 sm:py-4" on:click={saveClicked}>
+        {#if saving}
+            <span class="loading loading-sm"></span>
+        {:else}
+            Save
+        {/if}
+    </button>
 </div>
 
 <style lang="postcss">

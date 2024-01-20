@@ -95,7 +95,7 @@
 	</div>
 	<div class="drawer-side z-50">
 		<label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-		<div class="menu w-[40vw] min-h-full bg-base-200 text-base-content p-8">
+		<div class="menu w-[90vw] sm:w-[40vw] min-h-full bg-base-200 text-base-content p-8">
 			<svelte:component this={$rightSidebar.component} {...$rightSidebar.props} />
 		</div>
 	</div>

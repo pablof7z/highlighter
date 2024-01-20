@@ -31,9 +31,9 @@
             <Name {userProfile} {fetching} />
         </h1>
 
-        <div class="grid grid-flow-col gap-10 overflow-x-auto pb-4 overflow-y-hidden">
+        <div class="grid grid-flow-col gap-10 overflow-x-auto pb-4 overflow-y-hidden snap-x snap-mandatory">
             {#each $events as event (event.id)}
-                <div class="w-80">
+                <div class="w-80 snap-center">
                     {#if event.kind === NDKKind.Article}
                         <ArticleGrid article={NDKArticle.from(event)} skipAuthor={true} />
                     {:else if event.kind === NDKKind.HorizontalVideo}

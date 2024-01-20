@@ -9,17 +9,29 @@
 	import BoostButton from "$components/buttons/BoostButton.svelte";
 	import { Lightning } from "phosphor-svelte";
 	import { ZapsButton } from "@kind0/ui-common";
+	import { onDestroy, onMount } from "svelte";
+	import { hideMobileBottomBar } from "$stores/layout";
 
     export let event: NDKEvent;
     export let urlPrefix: string;
     export let eventType: EventType;
+    export let mxClass = "mx-auto";
+    export let innerMxClass = mxClass === "mx-auto" ? "-ml-12" : "";
 
     const eventKind = event.kind!;
+
+    onMount(() => {
+        $hideMobileBottomBar = true;
+    })
+
+    onDestroy(() => {
+        $hideMobileBottomBar = false;
+    })
 </script>
 
 <footer class="fixed bottom-0 w-full border-t border-base-300 py-4 mobile-nav bg-base-100/10">
-    <div class="mx-auto max-w-3xl">
-        <div class="-ml-12 flex flex-row gap-8 items-center w-full justify-between">
+    <div class="{mxClass} max-w-3xl">
+        <div class="{innerMxClass} flex flex-row gap-8 items-center w-full justify-between">
             <div class="flex flex-row gap-6">
                 {#if mainContentKinds.includes(eventKind)}
                     <CurationWithCountButton {event} {urlPrefix} />

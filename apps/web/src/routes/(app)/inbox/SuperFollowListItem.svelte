@@ -18,7 +18,7 @@
 <UserProfile {user} bind:userProfile let:fetching>
     <a
         href="?id={id}"
-        class="justify-between items-center gap-2 flex w-full"
+        class="justify-between items-center gap-2 flex w-full p-3"
         class:active={selectedId === id}
         transition:slide
     >
@@ -37,6 +37,9 @@
 
 <style lang="postcss">
     .active {
-        @apply text-white;
+        @apply w-full;
+        @apply text-white p-3;
+        background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD948844 0%, #7092A044 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+
     }
 </style>

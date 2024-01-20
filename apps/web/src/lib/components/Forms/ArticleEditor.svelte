@@ -40,9 +40,9 @@
 </script>
 
 <div class="flex flex-col border-none border-neutral-800 sm:rounded-xl">
-    <div class="w-full h-80 relative">
+    <div class="w-full sm:h-80 relative">
         <ImageUploader
-            class="absolute top-0 left-0 w-full h-full object-cover sm:rounded-xl"
+            class="sm:absolute top-0 left-0 w-full h-full object-cover sm:rounded-xl"
             bind:url={article.image}
             let:onOpen
         >
@@ -52,8 +52,8 @@
                 </button>
             </div>
         </ImageUploader>
-        <div class="absolute bottom-0 w-full h-2/5 bg-gradient-to-b from-transparent to-black"></div>
-        <div class="p-6 pb-0 absolute bottom-0 w-full">
+        <div class="max-sm:hidden absolute bottom-0 w-full h-2/5 bg-gradient-to-b from-transparent to-black"></div>
+        <div class="p-6 pb-0 sm:absolute bottom-0 w-full">
             <Input
                 bind:value={article.title}
                 color="black"
@@ -64,8 +64,7 @@
         </div>
     </div>
 
-
-    <div class="p-6 flex flex-col gap-4">
+    <div class="p-6 pt-0 flex flex-col gap-4">
         <Textarea
             bind:value={article.content}
             on:keyup={() => dispatch("contentUpdate", article.content)}
@@ -74,6 +73,7 @@
             class="
                 !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg
                 focus:ring-0
+                text-neutral-500
                 resize-none min-h-[20vh] h-[70vh]
                 {$$props.textareaClass??""}
             "

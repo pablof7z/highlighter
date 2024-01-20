@@ -20,15 +20,14 @@
 	import WithItem from "./WithItem.svelte";
 	import ItemFooter from "./ItemFooter.svelte";
 	import ListView from "$components/ListView.svelte";
+	import MobileHeader from "$components/Page/MobileHeader.svelte";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
+    export let tagId: string | undefined = undefined;
+    export let mxClass = "mx-auto"
 
     let event: NDKEvent | undefined = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
-
-    let tagId: string;
-
-    $: tagId = $page.params.tagId;
 
     let readReceiptPosted = false;
 
@@ -39,10 +38,19 @@
     }
 </script>
 
-<WithItem let:event let:article let:video let:urlPrefix let:eventType let:isFullVersion>
+<WithItem {user} {tagId} let:event let:article let:video let:urlPrefix let:eventType let:isFullVersion>
     {#if event && eventType}
         {#if eventType === "article" && article}
-            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl py-6">
+            <MobileHeader
+                backButton="/explore"
+                title={article.title}
+            >
+                <div slot="button" class="flex-none">
+                    <Avatar user={event.author} size="small" type="square" />
+                </div>
+            </MobileHeader>
+
+            <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl py-6">
                 <ArticleView
                     {article}
                     {isFullVersion}
@@ -51,18 +59,18 @@
                 <MoreFromUser user={event.author} />
             </div>
 
-            <ItemFooter {event} {urlPrefix} {eventType} />
+            <ItemFooter {event} {urlPrefix} {eventType} {mxClass} />
         {:else if eventType === "video" && video}
-            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl py-6">
+            <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl py-6">
                 <VideoView
                     {video}
                     {isFullVersion}
                 />
             </div>
 
-            <ItemFooter {event} {urlPrefix} {eventType} />
+            <ItemFooter {event} {urlPrefix} {eventType} {mxClass} />
         {:else if ["group-note", "short-note"].includes(eventType)}
-            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
+            <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl">
                 <div class="w-full flex items-center flex-col justify-center">
                     <div class="w-full">
                         <FeedGroupPost {event} class="bg-base-200 rounded-box p-6" />
@@ -75,10 +83,10 @@
 
             </div>
         {:else if eventType === 'curation'}
-            <ListView {event} {urlPrefix} {eventType} />
+            <ListView {event} {urlPrefix} />
         {:else}
             <CreatorShell user={event.author}>
-                <div class="mx-auto max-w-3xl">
+                <div class="{mxClass} max-w-3xl">
                     <EventWrapper {event} class="bg-base-200 p-6 rounded-box">
                         <EventContent ndk={$ndk} {event} class="prose highlight" />
                     </EventWrapper>
@@ -87,8 +95,6 @@
         {/if}
     {/if}
 </WithItem>
-
-<div class="py-24"></div>
 
 {#if $debugMode && event}
     <pre>

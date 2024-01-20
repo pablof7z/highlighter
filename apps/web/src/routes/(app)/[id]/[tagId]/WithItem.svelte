@@ -19,12 +19,13 @@
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
+    export let tagId: string | undefined = undefined;
+
+    const tagIdExplicit = !!tagId;
 
     let event: NDKEvent | undefined = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
 
-    let tagId: string;
-
-    $: tagId = $page.params.tagId;
+    $: if (!tagIdExplicit) tagId = $page.params.tagId;
 
     startUserView(user);
 
@@ -38,7 +39,7 @@
     let title: string | undefined;
     let summary: string | undefined;
 
-    $: if (!events && user.pubkey) {
+    $: if (!events && user.pubkey && tagId) {
         const filters: NDKFilter[] = [{ authors: [user.pubkey], kinds: mainContentKinds, "#d": [tagId] }];
 
         // 18-char of regex
@@ -127,4 +128,4 @@
     </main>
 </LoadingScreen>
 
-<div class="py-24"></div>
+<!-- <div class="py-24"></div> -->

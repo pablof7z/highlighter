@@ -1,8 +1,11 @@
 <script lang="ts">
+	import CreatorOnboardingActions from '$components/PageSidebar/CreatorOnboardingActions.svelte';
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { user } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
 	import LoadingScreen from '$components/LoadingScreen.svelte';
+    import { pageSidebar } from "$stores/layout";
+	import MainWrapper from '$components/Page/MainWrapper.svelte';
 
     let startedUserView = false;
     let mounted = false;
@@ -18,9 +21,19 @@
 
     onDestroy(() => {
         userSubscription?.unref();
+        $pageSidebar = null;
     })
+
+    $pageSidebar = {
+        component: CreatorOnboardingActions,
+        props: {
+            sidebarView: true
+        }
+    }
 </script>
 
 <LoadingScreen ready={!!startedUserView}>
-    <slot />
+    <MainWrapper>
+        <slot />
+    </MainWrapper>
 </LoadingScreen>

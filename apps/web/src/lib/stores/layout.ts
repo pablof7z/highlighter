@@ -6,3 +6,4 @@ interface Component {
 }
 
 export const pageSidebar: Writable<Component | null> = writable(null);
+export const hideMobileBottomBar: Writable<boolean> = writable(false);

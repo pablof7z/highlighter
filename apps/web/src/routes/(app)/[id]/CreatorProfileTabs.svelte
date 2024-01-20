@@ -1,6 +1,10 @@
 <script lang="ts">
+    import { getUserHighlights } from "$stores/user-view";
+
     export let value: string = "Publications";
     export let name: string = "this user"
+
+    const highlights = getUserHighlights();
 </script>
 
 <div class="py-4 border-t border-b border-neutral-800 justify-start items-start gap-4 inline-flex w-full mb-6">
@@ -15,12 +19,14 @@
                 class:active={value === "Curations"}
             >Curations</button>
         </div>
-        <div class="tooltip" data-tip="Highlights made by {name}">
-            <button
-                on:click={() => value = "Highlights"}
-                class:active={value === "Highlights"}
-            >Highlights</button>
-        </div>
+        {#if $highlights.length > 0}
+            <div class="tooltip" data-tip="Highlights made by {name}">
+                <button
+                    on:click={() => value = "Highlights"}
+                    class:active={value === "Highlights"}
+                >Highlights</button>
+            </div>
+        {/if}
         <div class="tooltip" data-tip="Explore creators {name} supports">
             <button
                 on:click={() => value = "Supported Creators"}

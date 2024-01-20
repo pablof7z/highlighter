@@ -7,28 +7,14 @@
 	import { loginState } from '$stores/session';
 	import { fade } from 'svelte/transition';
 	import { User } from 'phosphor-svelte';
-
-    async function openSignupModal() {
-        if (window.nostr) {
-            const u = await login($ndk, $bunkerNDK, 'nip07');
-            if (u) {
-                $user = u;
-                return;
-            }
-        }
-
-        openModal(SignupModal);
-    }
 </script>
 
 {#if $loginState}
-    <div transition:fade>
+    <div class="w-full" transition:fade>
         {#if $user}
             <UserDropdown />
         {:else}
-            <button class="btn btn-ghost btn-circle" on:click={openSignupModal}>
-                <User class="w-5 h-5" />
-            </button>
+            <slot />
         {/if}
     </div>
 {/if}
