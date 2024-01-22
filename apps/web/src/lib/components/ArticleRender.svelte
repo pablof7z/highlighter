@@ -2,7 +2,6 @@
 	import { getSummary } from '$utils/article';
 	import HighlightIcon from '../icons/HighlightIcon.svelte';
 	import { goto } from "$app/navigation";
-	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription, userTiers } from "$stores/user-view";
@@ -12,8 +11,6 @@
 	import { onDestroy, onMount } from "svelte";
 	import { Lightning } from 'phosphor-svelte';
     import { getParagraph, getText } from "get-selection-more";
-	import { getDefaultRelaySet } from '$utils/ndk';
-	import UserProfile from '$components/User/UserProfile.svelte';
 
     export let article: NDKArticle;
     const author = article.author;
@@ -171,9 +168,7 @@
 
         event.tag(article);
         await event.sign();
-        await event.publish(
-            getDefaultRelaySet()
-        )
+        await event.publish();
     }
 </script>
 
@@ -278,9 +273,3 @@
 
     }
 </style>
-
-<!-- <div class="flex flex-row items-center gap-12">
-    {#if article.pubkey === $user?.pubkey}
-        <a href={editUrl} class="button">Edit</a>
-    {/if}
-</div> -->

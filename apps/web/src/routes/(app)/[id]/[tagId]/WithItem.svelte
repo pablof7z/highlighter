@@ -40,12 +40,12 @@
     let summary: string | undefined;
 
     $: if (!events && user.pubkey && tagId) {
-        const filters: NDKFilter[] = [{ authors: [user.pubkey], kinds: mainContentKinds, "#d": [tagId] }];
+        const filters: NDKFilter[] = [{ authors: [user.pubkey], "#d": [tagId] }];
 
         // 18-char of regex
         const regex = new RegExp(`^[0-9a-fA-F]{${EVENT_ID_SUFFIX_LENGTH}}$`);
         if (tagId.match(regex)) {
-            filters.push({ "ids": [tagId] });
+            filters.push({ authors: [user.pubkey], "ids": [tagId] });
         }
 
         events = $ndk.storeSubscribe(filters, { groupable: false });

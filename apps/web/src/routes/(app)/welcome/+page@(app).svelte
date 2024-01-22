@@ -3,6 +3,8 @@
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 </script>
 
-<MainWrapper class="mx-auto max-w-3xl p-3 sm:p-6">
+<MainWrapper
+	marginClass="max-w-3xl mx-auto"
+>
     <CreatorOnboardingActions />
 </MainWrapper>

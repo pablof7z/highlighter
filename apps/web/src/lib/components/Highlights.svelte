@@ -32,8 +32,8 @@
 
 <div class="flex flex-row gap-8 mx-auto mt-8 w-full">
     <div class="
-        max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
-        flex-col justify-start items-start flex w-full sm:max-w-[680px]
+        max-sm:px-[var(--mobile-body-px)]
+        flex-col justify-start items-start flex w-full
         gap-6
     ">
         {#each $events as event}

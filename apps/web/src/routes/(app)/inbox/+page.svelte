@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { derived, type Readable } from 'svelte/store';
     import { page } from '$app/stores';
-	import SuperFollowList from './SuperFollowList.svelte';
     import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { ndk, Name, Avatar, user } from "@kind0/ui-common";
     import { userSuperFollows, userCreatorSubscriptionPlans, userFollows, debugPageFilter } from "$stores/session";
@@ -13,6 +11,8 @@
     import { pageSidebar } from "$stores/layout";
     import InboxSidebar from "$components/PageSidebar/Inbox.svelte";
 	import { mode } from '$stores/inbox-view';
+	import PageTitle from '$components/Page/PageTitle.svelte';
+	import MainWrapper from '$components/Page/MainWrapper.svelte';
 
     let activeFilterCount: number | undefined = undefined;
     let activeView = $userSuperFollows;
@@ -86,10 +86,9 @@
     <title>Inbox</title>
 </svelte:head>
 
-<div class="flex flex-row gap-8 mx-auto px-4 py-6">
+<MainWrapper marginClass="max-w-3xl">
     <div class="
-        max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
-        flex-col justify-start items-start flex w-full sm:max-w-[680px]
+        flex-col justify-start items-start flex w-full
     ">
         {#if $userSuperFollows.size === 0}
             <div class="w-full bg-base-200 rounded-xl min-h-[50vh] h-full flex flex-col items-center justify-center gap-6">
@@ -125,7 +124,7 @@
             {/if}
         {/if}
     </div>
-</div>
+</MainWrapper>
 
 <style lang="postcss">
     .item:not(:first-child) {

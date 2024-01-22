@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { CaretLeft } from "phosphor-svelte";
+    import SearchBar from "./SearchBar.svelte";
 
-    export let title: string | undefined = undefined;
+    export let title: string;
     export let back: string | undefined = undefined;
-    export let marginClass = "max-w-3xl mx-auto";
+    export let marginClass = "w-full";
 </script>
 
 
@@ -11,6 +12,7 @@
     flex flex-row justify-between items-center mobile-container mobile-nav
     z-50
     w-full
+    max-sm:p-4
 ">
     <div class="
         w-full flex items-center {marginClass}
@@ -27,16 +29,16 @@
         {/if}
 
         <div
-            class="flex flex-row w-full {$$props.class??""}"
+            class="flex flex-row w-full relative items-center"
             class:has-back-button={!!back}
         >
-            {#if title}
-                <h1>
-                    {title}
-                </h1>
-            {:else if $$slots.default}
-                <slot />
-            {/if}
+            <h1 class="absolute ml-6 flex-none z-50 max-sm:hidden">
+                {title}
+            </h1>
+
+            <div class={marginClass}>
+                <SearchBar />
+            </div>
 
             {#if $$slots.right}
                 <div class="
@@ -58,7 +60,7 @@
     }
 
     h1 {
-        @apply text-white text-lg lg:text-2xl font-semibold w-full text-center whitespace-nowrap truncate;
+        @apply text-white text-2xl font-semibold text-center whitespace-nowrap truncate;
     }
 
     .mobile-container {

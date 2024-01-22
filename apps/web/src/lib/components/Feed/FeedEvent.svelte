@@ -12,12 +12,11 @@
         NDKKind.Text,
         NDKKind.Article,
         NDKKind.HorizontalVideo,
-        NDKKind.Highlight,
     ];
 </script>
 
 {#if supportedKinds.includes(event.kind)}
-    <div class="w-full">
+    <div class="w-full max-sm:max-w-[100vw] max-sm:overflow-hidden">
         {#if event.kind === NDKKind.GroupNote || event.kind === NDKKind.Text}
             <FeedGroupPost {event} class="!py-10" />
         {:else if event.kind === NDKKind.Article}

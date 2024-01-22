@@ -17,6 +17,10 @@
 	import PublishingStep from "$components/Editor/Pages/PublishingStep.svelte";
 	import { debugMode } from "$stores/session";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
+	import PageTitle from "$components/Page/PageTitle.svelte";
+	import SectionHeader from "$components/Page/SectionHeader.svelte";
+	import MobileHeader from "$components/Page/MobileHeader.svelte";
+	import { CaretRight } from "phosphor-svelte";
 
     const allTiers = getUserSupportPlansStore();
     let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
@@ -124,6 +128,19 @@
 </script>
 
 <UserProfile user={$user} bind:userProfile bind:authorUrl />
+
+<PageTitle
+    back="/dashboard"
+    title="New Note"
+    class="px-3"
+>
+    <button slot="right"
+        class="flex flex-row items-center gap-2 text-accent2 sm:hidden"
+    on:click={editTeaser}>
+        Next
+        <CaretRight />
+    </button>
+</PageTitle>
 
 <MainWrapper class="p-6">
     <ItemEditShell

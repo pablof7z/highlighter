@@ -7,14 +7,16 @@
     const highlights = getUserHighlights();
 </script>
 
-<div class="py-4 border-t border-b border-neutral-800 justify-start items-start gap-4 inline-flex w-full mb-6">
+<div class="py-4 border-t border-b border-neutral-800 justify-start items-start gap-4 inline-flex w-full mb-6 max-w-[100vw] overflow-x-auto whitespace-nowrap max-sm:px-3 snap-x">
     <div class="justify-start items-start gap-4 flex w-full">
         <button
+            class="snap-center"
             on:click={() => value = "Publications"}
             class:active={value === "Publications"}
         >Publications</button>
         <div class="tooltip" data-tip="Curations created by {name}">
             <button
+                class="snap-center"
                 on:click={() => value = "Curations"}
                 class:active={value === "Curations"}
             >Curations</button>
@@ -22,6 +24,7 @@
         {#if $highlights.length > 0}
             <div class="tooltip" data-tip="Highlights made by {name}">
                 <button
+                    class="snap-center"
                     on:click={() => value = "Highlights"}
                     class:active={value === "Highlights"}
                 >Highlights</button>
@@ -29,6 +32,7 @@
         {/if}
         <div class="tooltip" data-tip="Explore creators {name} supports">
             <button
+                class="snap-center"
                 on:click={() => value = "Supported Creators"}
                 class:active={value === "Supported Creators"}
             >Supported Creators</button>
@@ -38,7 +42,7 @@
             <button
                 on:click={() => value = "Backstage"}
                 class:active={value === "Backstage"}
-            class="backstage">Backstage</button>
+            class="backstage snap-center">Backstage</button>
         </div>
     </div>
 </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { slide } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
-	import { PaperPlaneTilt } from "phosphor-svelte";
+	import { CaretRight, PaperPlaneTilt } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
 
     const dispatch = createEventDispatcher();
@@ -95,7 +95,7 @@
                 max-sm:w-full justify-between
             ">
                 <button
-                    class="px-4 whitespace-nowrap button button-black sm:py-3"
+                    class="px-4 whitespace-nowrap button button-primary sm:py-3"
                     class:opacity-0={step === steps.length - 1}
                     on:click={back}
                 >
@@ -107,18 +107,22 @@
                 </button>
 
                 <button
-                    class="button whitespace-nowrap sm:py-2"
+                    class="
+                        sm:button whitespace-nowrap sm:py-2
+                        max-sm:text-accent2 h-full
+                    "
                     on:click={next}
                     class:px-4={nextIsPublish}
                     disabled={steps[step].canContinue === false}
                 >
                     {#if nextIsPublish}
-                        <PaperPlaneTilt class="w-7 h-7" />
                         Publish
+                        <PaperPlaneTilt class="w-7 h-7 mr-1 inline" />
                     {:else if step === steps.length - 1}
                         Go to dashboard
                     {:else}
-                        Next: {steps[step + 1].title}
+                        Next<span class="max-sm:hidden font-normal"> {steps[step + 1].title}</span>
+                        <CaretRight class="w-5 h-5 sm:hidden inline" />
                     {/if}
                 </button>
             </div>
@@ -137,6 +141,7 @@
         @apply fixed w-full left-0 z-50 right-0;
         @apply max-sm:top-0 sm:bottom-0;
         @apply max-sm:bg-base-200/50 sm:border-t border-base-300;
+        @apply max-sm:hidden;
     }
 
     .steps .step-white + .step-white:before {

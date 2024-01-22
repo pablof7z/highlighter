@@ -6,6 +6,8 @@
 	import { page } from '$app/stores';
 	import { ndk } from '@kind0/ui-common';
 	import ItemView from '../../routes/(app)/[id]/[tagId]/ItemView.svelte';
+	import ListViewContent from './ListViewContent.svelte';
+	import PageTitle from './Page/PageTitle.svelte';
 
     export let event: NDKEvent;
     export let list = NDKList.from(event);
@@ -26,7 +28,6 @@
         pageSidebar.set(null);
     });
 
-    let eventToRender: NDKEvent;
     let user: NDKUser | null;
 
     $: {
@@ -55,6 +56,18 @@
             {user}
             tagId={id}
             mxClass="mx-6"
+            backUrl={urlPrefix}
+            backTitle={list.title}
         />
     {/key}
+{:else}
+<div class="sm:hidden">
+        <PageTitle
+            title={list.title??"List"}
+        />
+        <ListViewContent
+            {list}
+            {urlPrefix}
+        />
+    </div>
 {/if}

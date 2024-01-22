@@ -17,7 +17,10 @@
         </h2>
 
         <div class="prose text-xl mt-4 opacity-60 font-light">
-            Highlighter, built on Nostr, allows for direct communication between creators and their audience. It's a place where you can share your thoughts, ideas, and opinions with the world.
+            Highlighter, built on Nostr, allows for direct monetization of your content in hundreds
+            of different platform. Your content can be displayed in premium spots. In this area
+            you will be able to configure a voluntary referral program to encourage clients and readers
+            to highlight your content.
         </div>
 
         <div class="text-xl py-6">

@@ -22,7 +22,5 @@
 </script>
 
 <LoadingScreen ready={!!startedUserView}>
-    <div class="mx-auto max-w-3xl">
-        <slot />
-    </div>
+    <slot />
 </LoadingScreen>

@@ -15,6 +15,7 @@
 	import CreatorActivity from "$components/Creator/CreatorActivity.svelte";
 	import DraftList from "$components/Creator/DraftList.svelte";
 	import { drafts } from "$stores/drafts";
+	import MainWrapper from "$components/Page/MainWrapper.svelte";
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
@@ -46,16 +47,16 @@
 </script>
 
 <LoadingScreen ready={!!mounted && !!$user}>
-    <div class="flex flex-col gap-10 mx-auto w-fit">
-        <UserProfile user={$user} let:userProfile let:authorUrl let:fetching>
-            <PageTitle title="Creator Dashboard">
-                <div class="flex flex-row gap-2">
-                    <!-- <button on:click={preview} class="button button-primary">Preview</button>
-                    <button on:click={preview} class="button button-primary">Save Draft</button> -->
-                    <a href={authorUrl} class="button">View Profile</a>
-                </div>
-            </PageTitle>
+    <PageTitle title="Creator Dashboard">
+        <div class="flex flex-row gap-2">
+            <!-- <button on:click={preview} class="button button-primary">Preview</button>
+            <button on:click={preview} class="button button-primary">Save Draft</button> -->
+            <a href={authorUrl} class="button">View Profile</a>
+        </div>
+    </PageTitle>
 
+    <MainWrapper class="flex flex-col gap-10 mx-auto w-fit">
+        <UserProfile user={$user} let:userProfile let:authorUrl let:fetching>
             <a href={authorUrl} class="flex flex-row items-center gap-4 text-left">
                 <Avatar user={$user} {userProfile} {fetching} class="w-32 h-32" />
 
@@ -104,5 +105,5 @@
                 <OnboardingChecklist bind:allDone={allOnboardingDone} />
             </div> -->
         </div>
-    </div>
+    </MainWrapper>
 </LoadingScreen>

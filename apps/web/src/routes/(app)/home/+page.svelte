@@ -1,11 +1,14 @@
 <script lang="ts">
     import MainWrapper from "$components/Page/MainWrapper.svelte";
+	import PageTitle from "$components/Page/PageTitle.svelte";
+	import PageTitleWithSearch from "$components/Page/PageTitleWithSearch.svelte";
 	import SectionHeader from "$components/Page/SectionHeader.svelte";
 	import CreatorOnboardingActions from '$components/PageSidebar/CreatorOnboardingActions.svelte';
 </script>
 
+<PageTitleWithSearch title="Home" />
+
 <MainWrapper>
-    <SectionHeader title="Home" />
 
     <div class="flex flex-col max-w-3xl mx-auto gap-10 w-full my-10">
         <CreatorOnboardingActions />

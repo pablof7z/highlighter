@@ -25,19 +25,17 @@
     $: if (!explicitHref) href = `${authorUrl}/${suffixUrl}`;
 </script>
 
-<a {href} class="flex flex-row gap-6">
-    <div class="w-32 h-18 flex-none overflow-hidden rounded-2xl">
+<a {href} class="flex flex-row gap-6 {$$props.class??""}">
+    <div class="flex-none overflow-hidden">
         {#if image}
-            <img src={image} alt={article.title} class="h-auto w-auto object-cover" />
+            <img src={image} alt={article.title} class="object-cover w-32 h-24 rounded-2xl" />
         {:else}
             <div class="bg-gray-200" />
         {/if}
     </div>
 
     <div class="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex max-h-36 overflow-clip">
-        <div class="self-stretch justify-between items-center inline-flex leading-5">
-        </div>
-        <div class="self-stretch text-white text-base font-normal leading-relaxed">
+        <div class="self-stretch text-white text-base font-medium leading-relaxed">
             {article.title}
         </div>
         <AvatarWithName

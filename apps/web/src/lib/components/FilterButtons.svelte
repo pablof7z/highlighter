@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Article, Video } from 'phosphor-svelte';
+	import { Article, Play, TextAlignLeft, Video } from 'phosphor-svelte';
 
     export let filters: App.FilterType[];
 
@@ -16,29 +16,29 @@
 </script>
 
 <div class="justify-end items-center gap-4 inline-flex flex-none self-end w-fit">
-    <div class="text-white text-opacity-60 text-sm font-semibold leading-4">Filter:</div>
     <div class="justify-start items-center gap-1 flex">
         <button
             class:active={filters.includes("article")}
             on:click={(e) => handleClick(e, "article")}
         >
-            <Article class="w-5 h-5 relative" />
+            <TextAlignLeft class="w-full h-full relative" />
         </button>
         <button
             on:click={(e) => handleClick(e, "video")}
             class:active={filters.includes("video")}
         >
-            <Video class="w-5 h-5 relative" />
+            <Play class="w-full h-full relative" weight="fill" />
         </button>
     </div>
 </div>
 
 <style lang="postcss">
     button {
-        @apply p-2 rounded-lg justify-start items-center gap-1.5 flex;
+        @apply !p-3 !rounded-2xl justify-start items-center gap-1.5 flex;
+        @apply btn bg-base-300 w-12;
     }
 
     button.active {
-        @apply bg-white bg-opacity-10;
+        @apply bg-white bg-opacity-20;
     }
 </style>

@@ -1,12 +1,33 @@
 <script lang="ts">
-	import { CaretRight } from "phosphor-svelte";
+	import { CaretRight, Check } from "phosphor-svelte";
     import User from "./OnboardingCheckingIcons/User.svelte";
     import Tiers from "./OnboardingCheckingIcons/Tiers.svelte";
 	import Post from "./OnboardingCheckingIcons/Post.svelte";
 	import { openModal } from "svelte-modals";
 	import NewItemModal from "$modals/NewItemModal.svelte";
+	import { getUserSupportPlansStore, getContent } from "$stores/user-view";
+	import { onMount } from "svelte";
+	import type { NDKEvent } from "@nostr-dev-kit/ndk";
+	import type { Readable } from "svelte/motion";
 
     export let sidebarView = false;
+
+    let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
+    let content: Readable<NDKEvent[]> | undefined = undefined;
+
+    let hasTiers = false;
+    let hasContent = false;
+    let hasProfileBanner  = true;
+
+    onMount(() => {
+        currentTiers = getUserSupportPlansStore();
+        content = getContent();
+    })
+
+    $: hasTiers = !!currentTiers && !!$currentTiers?.length;
+    $: hasContent = !!content && !!$content?.length;
+
+    $: allDone = hasTiers && hasContent && hasProfileBanner;
 </script>
 
 <div
@@ -22,7 +43,7 @@
         <div>
             <span>
                 <User />
-                Complete your Profile
+                Complete your profile
             </span>
 
             <!-- <span>
@@ -42,7 +63,11 @@
     <a href="/welcome/tiers">
         <div>
             <span>
-                <Tiers />
+                {#if !hasTiers}
+                    <Tiers />
+                {:else}
+                    <Check class="text-success" weight="duotone" />
+                {/if}
                 <div class="flex flex-col items-start">
                     <span>Set up your membership tiers</span>
                     <div class="text-xs text-neutral-500">
@@ -61,7 +86,11 @@
     <button on:click={() => openModal(NewItemModal)}>
         <div>
             <span>
-                <Post />
+                {#if !hasContent}
+                    <Post />
+                {:else}
+                    <Check class="text-success" weight="duotone" />
+                {/if}
                 <span>Publish your first post</span>
             </span>
         </div>

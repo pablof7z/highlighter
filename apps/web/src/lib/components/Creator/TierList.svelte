@@ -201,9 +201,9 @@
         {/each}
     </div>
 
-    <div class="flex flex-col sm:flex-row justify-between items-stretch">
+    <div class="flex flex-col sm:flex-row justify-between items-start max-sm:w-full max-sm:gap-4">
         <button
-            class="button button-black px-6 py-3 font-semibold"
+            class="button button-black px-6 py-3 font-semibold max-sm:w-full"
             disabled={!canAddTier}
             on:click={addTier}
         >
@@ -211,26 +211,26 @@
             Add Tier
         </button>
 
-        <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex flex-col justify-end items-end max-sm:w-full">
             {#if usePresetButton}
                 <button
-                    class="button button-black flex flex-col items-start gap-0 px-4 max-sm:hidden"
+                    class="button button-black flex flex-col items-start gap-0 px-4 max-sm:w-full py-3"
                     on:click={skip}
                 >
-                    Skip
-                    <span class="text-xs opacity-50">
-                        Use sample tiers
-                    </span>
+                    Skip using sample tiers for now
                 </button>
+                <div class="text-sm opacity-60">
+                    You can just add tiers later
+                </div>
             {/if}
-
+<!--
             <button class="button px-6" on:click={save}>
                 {#if $$slots.saveButton}
                     <slot name="saveButton" />
                 {:else}
                     Save
                 {/if}
-            </button>
+            </button> -->
         </div>
     </div>
 </div>

@@ -23,16 +23,16 @@
     $: href = `${authorUrl}/${suffixUrl}`;
 </script>
 
-<a {href} class="flex flex-row gap-6">
-    <div class="w-64 h-36 flex-none overflow-hidden rounded-2xl">
+<a {href} class="flex flex-col md:flex-row gap-2 sm:gap-6">
+    <div class="w-screen max-h-48 sm:w-64 sm:h-36 flex-none overflow-hidden sm:rounded-2xl">
         {#if image}
-            <img src={image} alt={article.title} class="h-auto w-auto object-cover" />
+            <img src={image} alt={article.title} class="w-full object-cover" />
         {:else}
             <div class="bg-gray-200" />
         {/if}
     </div>
 
-    <div class="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex max-h-36 overflow-clip">
+    <div class="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex h-full md:max-h-36 max-sm:px-3 overflow-clip">
         {#if !skipAuthor}
             <div class="self-stretch justify-between items-center inline-flex leading-5">
                 <div class="justify-start items-center gap-3 flex">

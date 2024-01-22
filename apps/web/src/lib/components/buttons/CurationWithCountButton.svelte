@@ -4,7 +4,7 @@
     import Input from "$components/Forms/Input.svelte";
     import { ndk } from "@kind0/ui-common";
 	import { NDKEvent, NDKList, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
-	import { BookmarkSimple, Eye, List, Lock, PaperPlaneTilt, Plus, PlusCircle } from "phosphor-svelte";
+	import { BookBookmark, Bookmark, BookmarkSimple, Bookmarks, Eye, List, Lock, PaperPlaneTilt, Plus, PlusCircle } from "phosphor-svelte";
 	import { onDestroy } from 'svelte';
 
     export let event: NDKEvent;

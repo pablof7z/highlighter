@@ -5,6 +5,8 @@
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import FeedArticle from '$components/Feed/FeedArticle.svelte';
 	import Article from '$components/List/Article.svelte';
+	import { page } from '$app/stores';
+	import ListViewContent from '$components/ListViewContent.svelte';
     let open = true;
 
     export let list: NDKList;
@@ -16,6 +18,10 @@
     const filters = list.filterForItems();
     const items = $ndk.storeSubscribe(filters);
 
+    let selectedItemId: string | undefined = undefined;
+
+    $: selectedItemId = $page.params.subId;
+
     // const items = ;
 </script>
 
@@ -23,34 +29,8 @@
     <title>{listTitle}</title>
 </svelte:head>
 
-<PageSidebar title={listTitle} bind:open>
-    {#if listImage}
-        <img src={listImage} alt={list.title} class="w-full h-auto object-cover rounded-2xl" />
-    {/if}
-
-    {#if list.content.length > 0}
-        <div class="prose">
-            {list.content}
-        </div>
-    {/if}
-
-    <div class="flex flex-row items-center w-full justify-between pb-5">
-        <AvatarWithName
-            user={list.author}
-            avatarSize="small"
-        />
-
-        <RelativeTime event={list} class="text-neutral-500 text-sm" />
-    </div>
-
-    <div class="h-full overflow-y-auto flex flex-col gap-4">
-        {#each $items as item (item.id)}
-            <Article
-                article={NDKArticle.from(item)}
-                href={`${urlPrefix}/${item.tagValue("d")}`}
-            />
-        {/each}
-    </div>
+<PageSidebar title={listTitle} bind:open innerClass="!px-0 !gap-0">
+    <ListViewContent {list} {urlPrefix} />
 </PageSidebar>
 
 <style lang="postcss">

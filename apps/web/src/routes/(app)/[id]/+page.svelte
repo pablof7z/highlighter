@@ -117,7 +117,8 @@
             <div class="
                 flex
                 max-sm:flex-col max-sm:w-full max-sm:items-start max-sm:gap-4
-                items-end justify-between p-6 relative -mt-16
+                overflow-hidden
+                items-end justify-between p-3 sm:p-6 relative -mt-16
             ">
                 <div class="flex items-end">
                     {#if canEdit}

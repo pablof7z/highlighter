@@ -15,8 +15,8 @@
     });
 
     $: if (!!$user && !startedUserView && mounted) {
-        startedUserView = true;
         startUserView($user);
+        startedUserView = true;
     }
 
     onDestroy(() => {
@@ -33,7 +33,5 @@
 </script>
 
 <LoadingScreen ready={!!startedUserView}>
-    <MainWrapper>
-        <slot />
-    </MainWrapper>
+    <slot />
 </LoadingScreen>

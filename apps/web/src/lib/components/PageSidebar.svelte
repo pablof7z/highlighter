@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CaretDown, Receipt } from "phosphor-svelte";
+	import { CaretDown } from "phosphor-svelte";
 
     export let title: string;
     export let open = false;
@@ -17,16 +17,18 @@
 <div class="
     w-full
     max-sm:!hidden max-sm:top-0 max-sm:left-0 max-sm:h-screen
+
     sm:flex-none
     h-full
-    bg-base-100 max-sm:mobile-navfixed py-2
-    sm:rounded-3xl sm:pt-2 sm:pb-6
+    bg-base-100 max-sm:mobile-navfixed
+    sm:rounded-3xl
     flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
 ">
         <div class="
             self-stretch justify-between items-center gap-6 inline-flex
             py-4 w-full px-4
             border-b border-base-300
+            overflow-clip truncate
         ">
             <button
                 class="flex flex-row items-center gap-4 justify-between"
@@ -38,6 +40,7 @@
                     text-left
                     max-sm:text-lg
                     sm:text-2xl
+                    whitespace-nowrap
                 ">
                     {title}
                 </div>

@@ -1,13 +1,8 @@
 <script lang="ts">
     import { ndk, pageDrawerToggle, rightSidebar, user as currentUser, Avatar, Textarea, Name } from "@kind0/ui-common";
-    import UserProfile from "$components/User/UserProfile.svelte";
-    import CommentsButton from "$components/buttons/CommentsButton.svelte";
 	import { page } from "$app/stores";
-	import { startUserView, userSubscription } from "$stores/user-view";
 	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { onDestroy } from "svelte";
-	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-    import { debugMode, userActiveSubscriptions } from "$stores/session";
+    import { debugMode } from "$stores/session";
 	import ArticleView from "../../../../lib/components/ArticleView.svelte";
 	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
 	import VideoView from "./VideoView.svelte";
@@ -21,36 +16,68 @@
 	import ItemFooter from "./ItemFooter.svelte";
 	import ListView from "$components/ListView.svelte";
 	import MobileHeader from "$components/Page/MobileHeader.svelte";
+	import { Export, Share } from "phosphor-svelte";
+	import { goto } from "$app/navigation";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
     export let tagId: string | undefined = undefined;
     export let mxClass = "mx-auto"
+    export let backUrl = "/explore";
+    export let backTitle: string | undefined = undefined;
 
     let event: NDKEvent | undefined = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
 
     let readReceiptPosted = false;
+
+    let hasShareApi = false;
+    let article: NDKArticle | undefined = undefined;
+    let authorUrl: string;
+
+    $: if (typeof navigator !== "undefined") {
+        hasShareApi = !!navigator.share;
+    }
 
     $: if (event && !readReceiptPosted) {
         readReceiptPosted = true;
         console.log("Adding read receipt");
         addReadReceipt(event);
     }
+
+    function buttonClicked() {
+        if (hasShareApi) {
+            navigator.share({
+                text: event?.content,
+                url: window.location.href
+            });
+        } else {
+            goto(authorUrl);
+        }
+    }
 </script>
 
-<WithItem {user} {tagId} let:event let:article let:video let:urlPrefix let:eventType let:isFullVersion>
+<WithItem {user} {tagId} let:event let:article let:video let:urlPrefix let:eventType let:isFullVersion bind:authorUrl>
     {#if event && eventType}
         {#if eventType === "article" && article}
             <MobileHeader
-                backButton="/explore"
+                backButton={backUrl}
+                {backTitle}
                 title={article.title}
             >
-                <div slot="button" class="flex-none">
-                    <Avatar user={event.author} size="small" type="square" />
-                </div>
+                <button
+                    slot="button"
+                    on:click={buttonClicked}
+                    class="w-8 h-8"
+                >
+                    {#if hasShareApi}
+                        <Export class="w-full h-full" />
+                    {:else}
+                        <Avatar user={event.author} size="small" type="square" class="object-cover" />
+                    {/if}
+                </button>
             </MobileHeader>
 
-            <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl py-6">
+            <div class="flex-col justify-start items-start gap-2 sm:gap-8 flex {mxClass} max-w-3xl pb-6 sm:py-6">
                 <ArticleView
                     {article}
                     {isFullVersion}

@@ -20,7 +20,7 @@
     }
 </script>
 
-<div class="min-h-screen flex flex-col items-center justify-center">
+<div class="">
     <div class="w-full">
         <Textarea
             bind:value={note.content}

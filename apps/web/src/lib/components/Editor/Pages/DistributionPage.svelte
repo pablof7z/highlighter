@@ -7,6 +7,7 @@
     import { createEventDispatcher } from 'svelte';
 	import { pageDrawerToggle, rightSidebar } from '@kind0/ui-common';
 	import HowDoesAccessWork from '$lib/drawer/help/how-does-access-work.svelte';
+	import PageTitle from "$components/Page/PageTitle.svelte";
 
     export let type: "article" | "video" | "note";
     export let tiers: TierSelection;

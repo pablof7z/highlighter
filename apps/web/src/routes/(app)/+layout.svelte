@@ -28,9 +28,9 @@
 <div>
 	<VerticalNavbar />
 
-	<div class="sm:pl-20">
+	<div class="md:pl-20">
 		{#if $pageSidebar?.component}
-			<div class="fixed border-r border-base-300 flex-col h-full w-96 max-sm:hidden">
+			<div class="fixed border-r border-base-300 flex-col h-full w-96 max-xl:hidden">
 				<svelte:component this={$pageSidebar.component} {...$pageSidebar.props} />
 			</div>
 		{/if}
@@ -54,6 +54,6 @@
 	}
 
 	.links a span {
-		@apply max-sm:hidden;
+		@apply max-lg:hidden;
 	}
 </style>

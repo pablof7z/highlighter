@@ -29,6 +29,8 @@
     })
 </script>
 
+<div class="my-12"></div>
+
 <footer class="fixed bottom-0 w-full border-t border-base-300 py-4 mobile-nav bg-base-100/10">
     <div class="{mxClass} max-w-3xl">
         <div class="{innerMxClass} flex flex-row gap-8 items-center w-full justify-between">

@@ -13,6 +13,10 @@
 	import { writable } from "svelte/store";
     import { pageSidebar } from "$stores/layout";
     import HighlightsSidebar from "$components/PageSidebar/Highlights.svelte";
+	import PageTitleWithSearch from "$components/Page/PageTitleWithSearch.svelte";
+	import PageTitle from "$components/Page/PageTitle.svelte";
+	import SearchBar from "$components/Page/SearchBar.svelte";
+	import MainWrapper from "$components/Page/MainWrapper.svelte";
 
     const debug = createDebug("highlighter:highlights");
 
@@ -47,14 +51,24 @@
     }
 </script>
 
-<div class="flex flex-row gap-8 max-w-3xl mt-8">
-    <div class="
-        max-sm:px-[var(--mobile-body-px)] max-sm:pt-[var(--mobile-nav-bar)]
-        flex-col justify-start items-start flex w-full sm:max-w-[680px]
-        gap-6
-    ">
-        {#each $events as event}
-            <ClipItem {event} />
-        {/each}
-    </div>
-</div>
+<PageTitle
+    class="h-full"
+    marginClass="max-w-3xl"
+    searchPlaceholder="Search Highlights"
+    searchUrl="/highlights/search"
+>
+    <SearchBar
+        class="!px-0"
+        inputClass="border-none focus:!outline-0 sm:bg-transparent !rounded-none"
+        floatOffset={2}
+    />
+</PageTitle>
+
+<MainWrapper
+    marginClass="max-w-3xl"
+    class="gap-8"
+>
+    {#each $events as event}
+        <ClipItem {event} />
+    {/each}
+</MainWrapper>

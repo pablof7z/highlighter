@@ -21,12 +21,12 @@
             class="
                 inline-flex items-center justify-center
                 text-neutral-700 hover:text-neutral-300 transition-all duration-300
-                flex-none
+                flex-none {$$props.elClass}
             "
             class:active={active}
             on:click
         >
-            <div class="w-full h-full max-w-[32px]">
+            <div class="w-full h-full max-w-[40px]">
                 <slot {active} />
             </div>
         </a>
@@ -35,7 +35,7 @@
             class="
                 inline-flex items-center justify-center
                 text-neutral-700 hover:text-neutral-300 transition-all duration-300
-                flex-none
+                flex-none {$$props.elClass}
             "
             class:active={active}
             on:click
@@ -49,7 +49,7 @@
 
 <style lang="postcss">
     a, button {
-        @apply py-2.5 px-2 sm:px-5 cursor-pointer w-full;
+        @apply py-2.5 px-2 sm:px-4 cursor-pointer w-full;
         @apply max-sm:px-3 max-sm:pt-3;
     }
 
@@ -77,5 +77,9 @@
 
     .button-view a {
         @apply sm:text-white p-3;
+    }
+
+    .highlight {
+        @apply !bg-accent2 p-2 rounded-2xl text-white;
     }
 </style>
