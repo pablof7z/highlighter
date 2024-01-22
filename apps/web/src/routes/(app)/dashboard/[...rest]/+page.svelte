@@ -1,7 +1,6 @@
 <script lang="ts">
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import CreatorFeed from '$components/Feed/CreatorFeed.svelte';
-	import PageTitle from "$components/Page/PageTitle.svelte";
 	import DashboardStats from '$components/dashboard/DashboardStats.svelte';
 	import { getUserContent, getUserSupporters, startUserView, getGAUserContent } from '$stores/user-view';
 	import { Avatar, Name, ndk, user } from "@kind0/ui-common";
@@ -16,6 +15,7 @@
 	import DraftList from "$components/Creator/DraftList.svelte";
 	import { drafts } from "$stores/drafts";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
+	import { pageHeader } from "$stores/layout";
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
@@ -44,17 +44,11 @@
     }
 
     let allOnboardingDone = false;
+
+    $pageHeader = { title: "Dashboard" };
 </script>
 
 <LoadingScreen ready={!!mounted && !!$user}>
-    <PageTitle title="Creator Dashboard">
-        <div class="flex flex-row gap-2">
-            <!-- <button on:click={preview} class="button button-primary">Preview</button>
-            <button on:click={preview} class="button button-primary">Save Draft</button> -->
-            <a href={authorUrl} class="button">View Profile</a>
-        </div>
-    </PageTitle>
-
     <MainWrapper class="flex flex-col gap-10 mx-auto w-fit">
         <UserProfile user={$user} let:userProfile let:authorUrl let:fetching>
             <a href={authorUrl} class="flex flex-row items-center gap-4 text-left">

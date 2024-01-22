@@ -1,12 +1,15 @@
 <script lang="ts">
+	import { pageHeader } from "$stores/layout";
     import { getDefaultRelaySet } from "$utils/ndk";
 	import { ndk } from "@kind0/ui-common";
 	import { RelayList } from "@nostr-dev-kit/ndk-svelte-components";
 
     const creatorRelays = getDefaultRelaySet();
+
+    $pageHeader = { title: "Privacy" };
 </script>
 
-<h1>Network</h1>
+<h1>Privacy</h1>
 
 <section>
     <h2>Creator Relays</h2>
@@ -23,7 +26,6 @@
 <h2>Relays</h2>
 
 <RelayList ndk={$ndk} />
-
 
 <style lang="postcss">
     h1 {

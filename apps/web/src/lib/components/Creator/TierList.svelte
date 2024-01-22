@@ -135,10 +135,6 @@
     }
 </script>
 
-{#if mobileBackUrl}
-
-{/if}
-
 <div class="flex flex-col gap-4">
     {#if tiers.length === 0}
         <div class="alert alert-neutral">

@@ -9,6 +9,7 @@
     import { createEventDispatcher } from 'svelte';
 	import { NDKEvent, serializeProfile, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import PageTitle from '$components/Page/PageTitle.svelte';
+	import { pageHeader } from '$stores/layout.js';
 
     const dispatch = createEventDispatcher();
 
@@ -44,22 +45,15 @@
         await save();
         dispatch('saved');
     }
-</script>
 
-<PageTitle
-	title="Profile"
-	back="/welcome"
-	marginClass="max-w-3xl"
-	class="p-6"
->
-	<button class="button flex flex-row items-center gap-2 px-6" slot="right" on:click={saveClicked}>
-		{#if saving}
-			<span class="loading loading-sm"></span>
-		{:else}
-			Save
-		{/if}
-	</button>
-</PageTitle>
+	$pageHeader = {
+		title: "Profile",
+		leftLabel: "Back",
+		leftUrl: "/welcome",
+		rightLabel: saving ? "loading" : "Save",
+		rightFn: saveClicked
+	};
+</script>
 
 <MainWrapper marginClass="max-w-3xl">
 	<div class="flex flex-col divide-y divide-base-300">

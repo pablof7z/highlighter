@@ -2,8 +2,13 @@
 	import PageSidebar from "$components/PageSidebar.svelte";
 	import SuperFollowList from "../../../routes/(app)/inbox/SuperFollowList.svelte";
     import { mode } from "$stores/inbox-view";
+	import { pageHeader } from "$stores/layout";
 
     let open = true;
+
+    $pageHeader = {
+        title: "Inbox",
+    }
 </script>
 
 <PageSidebar title="Inbox" bind:open innerClass="!px-0 !gap-0">

@@ -1,9 +1,10 @@
 <script lang="ts">
+	import SettingsMenu from '$components/Settings/Menu.svelte';
     import { page } from "$app/stores";
-    import { pageSidebar } from "$stores/layout";
+    import { pageHeader, pageSidebar } from "$stores/layout";
     import Settings from "$components/PageSidebar/Settings.svelte";
-	import NetworkSettings from "./NetworkSettings.svelte";
 	import { onDestroy } from "svelte";
+	import MainWrapper from '$components/Page/MainWrapper.svelte';
 
     let id: string;
 
@@ -17,10 +18,12 @@
     onDestroy(() => {
         $pageSidebar = null;
     })
+
+    $pageHeader = {
+        title: "Settings",
+    }
 </script>
 
-<div class="p-6">
-    {#if id === "network"}
-        <NetworkSettings />
-    {/if}
-</div>
+<MainWrapper class="sm:hidden">
+    <SettingsMenu />
+</MainWrapper>

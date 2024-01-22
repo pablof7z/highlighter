@@ -40,18 +40,18 @@
     $: tiers = tiers
 </script>
 
-<div class="flex flex-col gap-10">
+<div class="flex flex-col gap-10 max-sm:px-3">
     <div
         class="flex flex-col lg:flex-row gap-4 lg:items-end justify-between border-b pb-4 lg:mb-4 border-base-300"
         class:lg:flex-col={howItWorks}
         class:lg:!items-start={howItWorks}
     >
         <div class="flex flex-col items-start gap-2">
-            <h1 class="text-5xl text-white">
-                Access & Reach
+            <h1 class="text-2xl font-semibold text-white max-sm:hidden">
+                Audience & Reach
             </h1>
 
-            <h2 class="text-neutral-500 text-xl">
+            <h2 class="text-neutral-500 text-lg">
                 Choose which tiers can access this {type} and its reach
             </h2>
         </div>

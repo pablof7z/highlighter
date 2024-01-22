@@ -11,7 +11,7 @@
 	import { User } from "phosphor-svelte";
 	import { onDestroy } from "svelte";
 	import { writable } from "svelte/store";
-    import { pageSidebar } from "$stores/layout";
+    import { pageHeader, pageSidebar } from "$stores/layout";
     import HighlightsSidebar from "$components/PageSidebar/Highlights.svelte";
 	import PageTitleWithSearch from "$components/Page/PageTitleWithSearch.svelte";
 	import PageTitle from "$components/Page/PageTitle.svelte";
@@ -49,20 +49,11 @@
         component: HighlightsSidebar,
         props: {}
     }
-</script>
 
-<PageTitle
-    class="h-full"
-    marginClass="max-w-3xl"
-    searchPlaceholder="Search Highlights"
-    searchUrl="/highlights/search"
->
-    <SearchBar
-        class="!px-0"
-        inputClass="border-none focus:!outline-0 sm:bg-transparent !rounded-none"
-        floatOffset={2}
-    />
-</PageTitle>
+    $pageHeader = {
+        title: "Highlights",
+    }
+</script>
 
 <MainWrapper
     marginClass="max-w-3xl"

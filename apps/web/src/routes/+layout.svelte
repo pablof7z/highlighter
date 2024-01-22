@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import '../app.postcss';
-	import { Modals, closeModal } from 'svelte-modals'
-	import { fade } from 'svelte/transition';
 	import { Toaster, bunkerNDK, ndk, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
 	import { finalizeLogin, login } from '$utils/login';
 	import { debugMode, prepareSession, jwt, loginState } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
-	import { Bug } from 'phosphor-svelte';
 	import { pwaInfo } from 'virtual:pwa-info';
+	import AppShell from '$components/PageElements/AppShell.svelte';
 
 	let webManifestLink: string;
 	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
@@ -78,52 +76,6 @@
 	{@html webManifestLink}
 </svelte:head>
 
-<Modals>
-	<div
-		slot="backdrop"
-		class="backdrop z-20 fixed"
-		on:click={closeModal}
-		transition:fade={{ duration: 300 }}></div>
-</Modals>
-
-<div class="drawer drawer-end">
-	<input id="my-drawer-4" type="checkbox" class="drawer-toggle" bind:checked={$pageDrawerToggle} />
-	<div class="drawer-content">
-		{#key $loginState}
-			<slot />
-		{/key}
-	</div>
-	<div class="drawer-side z-50">
-		<label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-		<div class="menu w-[90vw] sm:w-[40vw] min-h-full bg-base-200 text-base-content p-8">
-			<svelte:component this={$rightSidebar.component} {...$rightSidebar.props} />
-		</div>
-	</div>
-</div>
-
-<Toaster />
-
-<style lang="postcss">
-	.backdrop {
-		position: fixed;
-		top: 0;
-		bottom: 0;
-		right: 0;
-		backdrop-filter: blur(10px);
-		left: 0;
-		background: rgba(0,0,0,0.50)
-	}
-
-	:global(.toast) {
-		@apply fixed bottom-2 right-2;
-	}
-
-</style>
-
-{#if import.meta.env.VITE_HOSTNAME === "localhost" || $user?.npub === "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft"}
-	<button
-		on:click={() => $debugMode = !$debugMode}
-		class="max-sm:hidden fixed bottom-2 right-2 z-50 btn btn-circle btn-sm">
-		<Bug size="24" class={$debugMode ? "text-accent2" : "text-neutral-500"} />
-	</button>
-{/if}
+<AppShell>
+	<slot />
+</AppShell>

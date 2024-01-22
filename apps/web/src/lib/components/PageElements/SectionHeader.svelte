@@ -2,19 +2,10 @@
     export let title: string;
 </script>
 
-<!-- <div class="border-b border-base-300 flex flex-row items-center justify-between gap-8 p-6 relative">
-    <h1 class="2xl:absolute">
-        Discover
-    </h1> -->
-
 <div class="
     w-full
-    max-sm:!hidden
-    max-sm:top-0 max-sm:left-0 max-sm:h-screen
-
-    sm:flex-none
     h-full
-    bg-base-100 max-sm:mobile-nav
+    bg-base-100 max-sm:mobile-navfixed
     sm:rounded-3xl
     flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
 ">
@@ -27,20 +18,17 @@
             <h1 class="
                 grow shrink basis-0 text-white font-semibold
                 flex flex-row items-center gap-2
-                text-left
                 max-sm:text-lg
                 sm:text-2xl
                 whitespace-nowrap
-            ">
+            "
+            >
                 {title}
             </h1>
-
-            {#if $$slots.headerRight}
-                <slot name="headerRight" />
-            {/if}
         </div>
 
         <div
+            class:max-sm:hidden={!open}
             class="
             max-sm:max-h-[50dvh]
             h-full

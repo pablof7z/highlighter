@@ -1,3 +1,8 @@
+<script lang="ts">
+    import { pageHeader } from "$stores/layout";
+
+    $pageHeader = { title: "Community" };
+</script>
 
 <div class="w-full h-full min-h-screen flex flex-col justify-center items-center">
     <div class="flex flex-col max-w-prose w-full">

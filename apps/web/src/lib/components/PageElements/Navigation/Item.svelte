@@ -3,7 +3,7 @@
 
     export let href: string | undefined = undefined;
     export let prefix: string | undefined = href;
-    export let tooltip: string;
+    export let tooltip: string | undefined = undefined;
 
     export let active: boolean | undefined = undefined;
 
@@ -11,10 +11,14 @@
 </script>
 
 <div class="
-    tooltip tooltip-right
+    item
     w-full
     {$$props.class??""}
-" class:active={active} data-tip={tooltip}>
+"
+    class:active={active} data-tip={tooltip}
+    class:tooltip={!!tooltip}
+    class:tooltip-right={!!tooltip}
+>
     {#if href}
         <a
             {href}
@@ -55,15 +59,16 @@
 
     a.active, button.active {
         @apply text-accent2;
+        @apply !bg-inherit !bg-opacity-20;
     }
 
-    .tooltip {
+    .item {
         @apply sm:border-r-4;
         @apply max-sm:border-t-4;
         @apply border-transparent;
     }
 
-    .tooltip.active {
+    .item.active {
         @apply border-accent2;
 
     }

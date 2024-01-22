@@ -4,12 +4,15 @@
 	import { ndk } from '@kind0/ui-common';
 	import { nip19 } from 'nostr-tools';
 	import { MagnifyingGlass, PaperPlaneRight } from 'phosphor-svelte';
+    import { createEventDispatcher } from 'svelte';
 
     export let value: string = "";
 
+    const dispatch = createEventDispatcher();
     let searching = false;
 
     function redirectTo(url: string) {
+        dispatch("searched");
         goto(url);
         searching = false;
     }
@@ -66,20 +69,22 @@
 
 <div class="flex flex-col gap-6 w-full mx-auto sm:px-4 relative max-w-3xl {$$props.class??""}">
     {#if !searching}
-        <MagnifyingGlass class="absolute top-1/2 sm:left-4 transform -translate-y-1/2 w-6 h-6 text-neutral-500" />
+        <MagnifyingGlass class="absolute top-1/2 max-sm:hidden sm:left-4 transform -translate-y-1/2 w-6 h-6 text-neutral-500" />
     {:else}
         <div class="absolute top-1/2 sm:left-4 transform -translate-y-1/2 w-6 h-6 text-neutral-500">
             <span class="loading loading-sm text-accent2"></span>
         </div>
     {/if}
+
     <Input
         bind:value
         color="black"
         label="Search"
         placeholder="Search or enter a URL to highlight"
-        class="grow basis-0 sm:bg-base-200 border-none font-normal pl-14 placeholder:!text-neutral-500 !rounded-full !text-neutral-300
+        class="grow basis-0 sm:bg-base-200 border-none font-normal sm:pl-14 placeholder:!text-neutral-500 !rounded-full !text-neutral-300
         sm:focus:outline sm:focus:!outline-base-300 {$$props.inputClass??""}"
         on:keyup={keyup}
+        {...{autofocus: $$props.autofocus}}
     />
     <button class="absolute top-1/2
         right-0 sm:right-4 transform -translate-y-1/2 w-6 h-6 text-neutral-500 hover:!text-accent2 focus:!text-accent2 transition-all duration-300" on:click={search}>

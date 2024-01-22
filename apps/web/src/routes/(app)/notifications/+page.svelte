@@ -1,12 +1,10 @@
 <script lang="ts">
-	import LoadingScreen from "$components/LoadingScreen.svelte";
-import MainWrapper from "$components/Page/MainWrapper.svelte";
-import PageTitle from "$components/Page/PageTitle.svelte";
-</script>
+    import MainWrapper from "$components/Page/MainWrapper.svelte";
+    import PageTitle from "$components/Page/PageTitle.svelte";
+	import { pageHeader } from "$stores/layout";
 
-<PageTitle
-    title="Notifications"
-/>
+    $pageHeader = { title: "Notifications", }
+</script>
 
 <MainWrapper class="flex justify-center items-center h-screen">
     Coming soon

@@ -16,6 +16,7 @@
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { addReadReceipt } from "$utils/read-receipts";
 	import { mainContentKinds } from "$utils/event";
+	import { pageHeader } from "$stores/layout";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -97,6 +98,11 @@
         let eventSuffix = urlSuffixFromEvent(event);
         url.pathname = `${authorUrl}/${eventSuffix}`;
         urlPrefix = url.toString();
+    }
+
+    $: {
+        $pageHeader ??= {};
+        $pageHeader.title = title;
     }
 </script>
 

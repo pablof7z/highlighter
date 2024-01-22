@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { slide } from "svelte/transition";
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
 	import { CaretRight, PaperPlaneTilt } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
+	import { pageHeader, type PageHeader } from "$stores/layout";
 
     const dispatch = createEventDispatcher();
 
@@ -58,6 +59,24 @@
             main.style.marginBottom = "0";
         }
     }, 50);
+
+    $: {
+        const header: PageHeader = {
+            title: steps[step].title,
+            rightLabel: nextIsPublish ? "Publish" : "Next",
+            rightFn: next
+        }
+
+        if (step > 0) {
+            header.leftLabel = "Back";
+            header.leftFn = back;
+        } else {
+            header.leftLabel = "Save Draft";
+            header.leftFn = () => dispatch("draft");
+        }
+
+        $pageHeader = header;
+    }
 </script>
 
 <main class="pb-24" bind:this={main}>

@@ -19,6 +19,7 @@
 	import CreatorProfileTabs from './CreatorProfileTabs.svelte';
 	import Curations from '$components/Curations.svelte';
 	import Highlights from '$components/Highlights.svelte';
+	import { pageHeader } from '$stores/layout';
 
     let id: string;
     let { user } = $page.data;
@@ -83,6 +84,10 @@
     $: if (userProfile && !userProfile.banner) userProfile.banner = defaultBanner;
 
     let activeTab: string = "Publications";
+
+    $: $pageHeader = {
+        title: userProfile?.displayName ?? id
+    }
 </script>
 
 <svelte:head>

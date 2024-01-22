@@ -1,16 +1,13 @@
 <script lang="ts">
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
-	import PageTitle from '$components/Page/PageTitle.svelte';
-	import PageTitleWithSearch from '$components/Page/PageTitleWithSearch.svelte';
-    import SectionHeader from '$components/Page/SectionHeader.svelte';
+	import { pageHeader } from '$stores/layout';
 
     const marginClass ="w-full";
-</script>
 
-<PageTitleWithSearch
-    title="Discover"
-    {marginClass}
-/>
+    $pageHeader = {
+        title: "Discover"
+    }
+</script>
 
 <MainWrapper {marginClass}>
     <slot />
