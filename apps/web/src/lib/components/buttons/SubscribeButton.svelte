@@ -16,7 +16,7 @@
 <button
     on:click={openSupportModal}
     class="
-        flex flex-row items-center !gap-0
+        button flex flex-row items-center !gap-0
     "
 >
     Backstage
@@ -25,7 +25,7 @@
 
 <style lang="postcss">
     button {
-        @apply button font-normal;
+        @apply font-normal;
         background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD9488ee 0%, #7092A0ee 100%);
         @apply transition-all duration-300;
     }

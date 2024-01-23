@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { ndk, pageDrawerToggle, rightSidebar, user as currentUser, Avatar, Textarea, Name } from "@kind0/ui-common";
+    import { ndk, user as currentUser } from "@kind0/ui-common";
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import NDK, { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind } from "@nostr-dev-kit/ndk";
+	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
-	import type { EventType } from "../../../../app";
 	import { getEventType } from "./get-event-type";
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import { goto } from "$app/navigation";
@@ -16,7 +15,7 @@
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { addReadReceipt } from "$utils/read-receipts";
 	import { mainContentKinds } from "$utils/event";
-	import { pageHeader } from "$stores/layout";
+	import type { EventType } from "../../../app";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;

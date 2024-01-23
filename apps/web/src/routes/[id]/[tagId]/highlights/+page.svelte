@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import { ArrowLeft, CaretLeft } from "phosphor-svelte";
+	import { CaretLeft } from "phosphor-svelte";
 	import ItemFooter from "../ItemFooter.svelte";
 	import WithItem from "../WithItem.svelte";
 	import ArticleBannerBackground from "../ArticleBannerBackground.svelte";
-	import ItemSubpageHeader from "../ItemSubpageHeader.svelte";
 	import Highlights from "$components/Highlights.svelte";
 	import { pageHeader } from "$stores/layout";
-	import Article from "$components/List/Article.svelte";
 	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 
     let tagId: string;
