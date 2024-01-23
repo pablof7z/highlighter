@@ -25,7 +25,7 @@
 
     li a {
         @apply flex flex-row items-center justify-between;
-        @apply py-2;
+        @apply py-2 text-lg;
     }
 
     li a:hover {

@@ -1,7 +1,6 @@
 <script lang="ts">
     export let weight: "fill" | "regular" = "fill";
-
-    let strokeWidth = "2";
+    export let strokeWidth = "2";
 </script>
 
 {#if weight === "fill"}

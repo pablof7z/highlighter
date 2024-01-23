@@ -7,7 +7,7 @@
 
     export let active: boolean | undefined = undefined;
 
-    $: active = prefix ? ($page.url.pathname.startsWith(prefix)) : false;
+    $: active = prefix && prefix !== "/" ? ($page.url.pathname.startsWith(prefix)) : prefix === $page.url.pathname;
 </script>
 
 <div class="
@@ -58,7 +58,7 @@
     }
 
     a.active, button.active {
-        @apply text-accent2;
+        @apply text-white;
         @apply !bg-inherit !bg-opacity-20;
     }
 
@@ -69,19 +69,8 @@
     }
 
     .item.active {
-        @apply border-accent2;
+        @apply border-white;
 
-    }
-
-    .button-view {
-        @apply sm:bg-accent2/20 sm:rounded-2xl;
-        @apply sm:hover:bg-accent2;
-        @apply sm:border sm:border-accent2/30;
-        @apply sm:w-14;
-    }
-
-    .button-view a {
-        @apply sm:text-white p-3;
     }
 
     .highlight {

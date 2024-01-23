@@ -21,17 +21,18 @@
 	}
 
 	.button {
-		@apply px-3 py-1.5 bg-white rounded-lg justify-center items-center gap-2 inline-flex;
-		@apply text-black text-base font-semibold;
+		@apply inline-flex items-center justify-center gap-2 rounded-full bg-white px-3 py-1.5;
+		@apply text-base font-semibold text-black;
 	}
 
 	.button:disabled {
-		@apply opacity-80 cursor-not-allowed;
+		@apply cursor-not-allowed opacity-80;
 	}
 
 	.button-primary {
-		@apply px-6 py-3 bg-black rounded-lg justify-center items-center gap-2 inline-flex;
-		@apply text-white text-base font-semibold;
+		@apply inline-flex items-center justify-center gap-2 rounded-full bg-black px-6 py-3;
+		@apply text-lg font-medium;
+		@apply bg-gradient-to-r from-gradient1 to-gradient2 text-white;
 	}
 
 	.button-black:disabled {
@@ -39,7 +40,7 @@
 	}
 
 	.button-black {
-		@apply bg-black border border-base-300;
+		@apply border border-base-300 bg-black;
 		@apply text-white;
 	}
 
@@ -47,28 +48,31 @@
 		@apply bg-gray-400;
 	}
 
-	h1, h2 {
+	h1,
+	h2 {
 		font-family: InterDisplay;
 	}
 
 	.article {
-		@apply text-neutral-500 leading-7 prose;
+		@apply prose leading-7 text-neutral-500;
 	}
 
 	.article h2 {
-		@apply text-xl text-white mt-8 mb-1;
+		@apply mb-1 mt-8 text-xl text-white;
 	}
 
 	.article p {
-		@apply text-lg leading-normal font-normal mb-4;
+		@apply mb-4 text-lg font-normal leading-normal;
 	}
 
-	input, textarea {
-		@apply border-neutral-800 !bg-neutral-800 !border-2 text-white ring-0 rounded-lg;
+	input,
+	textarea {
+		@apply rounded-lg !border-2 border-neutral-800 !bg-neutral-800 text-white ring-0;
 	}
 
-	input:focus, textarea:focus {
-		@apply outline-none !ring-0 border-2 !border-neutral-700;
+	input:focus,
+	textarea:focus {
+		@apply border-2 !border-neutral-700 outline-none !ring-0;
 	}
 
 	.toast {
@@ -80,15 +84,15 @@
 	}
 
 	.mobile-nav {
-        @apply bg-base-200 bg-opacity-80 backdrop-blur-[50px];
-    }
+		@apply bg-base-200 bg-opacity-80 backdrop-blur-[50px];
+	}
 
 	main {
 		@apply px-[var(--mobile-body-px)];
 	}
 
 	.article hr {
-		@apply border-neutral-900 my-6;
+		@apply my-6 border-neutral-900;
 	}
 
 	.article a {
@@ -106,7 +110,7 @@
 }
 
 .article .event-card {
-	@apply bg-base-200 rounded-box w-full;
+	@apply w-full rounded-box bg-base-200;
 }
 
 .article .event-card--header {
@@ -114,7 +118,7 @@
 }
 
 .article .event-card img.event-card--avatar {
-	@apply flex-none !w-6 !h-6 !my-0;
+	@apply !my-0 !h-6 !w-6 flex-none;
 }
 
 .event-card--dropdown-button {
@@ -122,15 +126,16 @@
 }
 
 .event-card--dropdown-menu {
-	@apply bg-base-100 border border-base-300 rounded-box menu gap-0;
+	@apply menu gap-0 rounded-box border border-base-300 bg-base-100;
 }
 
-.tooltip::before, .tooltip::after {
+.tooltip::before,
+.tooltip::after {
 	@apply max-sm:hidden;
 }
 
 .tooltip::before {
-	@apply bg-base-200 bg-opacity-80 !backdrop-blur-[50px] px-6 py-3 border-2 border-base-300 rounded-box;
+	@apply rounded-box border-2 border-base-300 bg-base-200 bg-opacity-80 px-6 py-3 !backdrop-blur-[50px];
 }
 
 .tooltip::after {
@@ -143,5 +148,9 @@
 }
 
 .list-item--active {
-	background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD948844 0%, #7092A044 100%);
+	background: radial-gradient(100.21% 187.14% at 0% 0.15%, #bd948844 0%, #7092a044 100%);
+}
+
+.dropdown-content.menu {
+	@apply rounded-box !bg-base-100 outline outline-white/20 backdrop-blur-[50px];
 }

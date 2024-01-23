@@ -1,18 +1,10 @@
 <script lang="ts">
 	import HighlightIcon from '../icons/HighlightIcon.svelte';
-	import { goto } from "$app/navigation";
-	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
-	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
-	import { debugMode, userActiveSubscriptions } from "$stores/session";
-	import { startUserView, userSubscription, userTiers } from "$stores/user-view";
 	import { ndk, pageDrawerToggle, rightSidebar, user, HighlightWrapper, Avatar, Name } from "@kind0/ui-common";
 	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
-	import { onDestroy, onMount } from "svelte";
-	import { MarkerCircle, Quotes, Receipt, X } from 'phosphor-svelte';
-    import { getParagraph, getText } from "get-selection-more";
-	import { getDefaultRelaySet } from '$utils/ndk';
-	import UserProfile from '$components/User/UserProfile.svelte';
+	import { onMount } from "svelte";
+	import { pageHeader } from '$stores/layout';
+	import { getParagraph, getText } from '$utils/text';
 
     export let article: NDKArticle;
     export let editUrl: string | undefined = undefined;
@@ -29,7 +21,7 @@
         });
         document.addEventListener('mouseup', function(event) {
             let selection = window.getSelection();
-            if (selection.toString().length > 0) {
+            if (selection && selection.toString().length > 0) {
                 let range = selection.getRangeAt(0);
                 let rect = range.getBoundingClientRect();
 
@@ -69,6 +61,8 @@
         await event.sign();
         await event.publish()
     }
+
+    $pageHeader = { title: article?.title }
 </script>
 
 <svelte:head>

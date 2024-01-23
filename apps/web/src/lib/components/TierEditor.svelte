@@ -6,7 +6,7 @@
 	import { NDKKind, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Pencil } from "phosphor-svelte";
     import { createEventDispatcher, onMount } from "svelte";
-	import type { Tier } from "../../routes/(app)/dashboard/tiers/tier";
+	import type { Tier } from "../../routes/dashboard/tiers/tier";
 	import { randomVideoThumbnail } from '$utils/skeleton';
 
     export let event: NDKEvent | undefined = undefined;

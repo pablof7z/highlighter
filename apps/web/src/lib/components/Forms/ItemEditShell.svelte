@@ -4,6 +4,7 @@
 	import { CaretRight, PaperPlaneTilt } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
 	import { pageHeader, type PageHeader } from "$stores/layout";
+	import MainWrapper from "$components/Page/MainWrapper.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -79,9 +80,9 @@
     }
 </script>
 
-<main class="pb-24" bind:this={main}>
+<MainWrapper class="pb-24" bind:el={main}>
     <slot />
-</main>
+</MainWrapper>
 
 <footer class="max-sm:bg-base-200 max-sm:bg-opacity-80 backdrop-blur-[50px]" bind:this={footer}>
     <div class="mx-auto max-w-3xl sm:py-8 max-sm:mobile-nav max-sm:fixed max-sm:w-full max-sm:h-20 max-sm:px-3 z-50">
@@ -114,7 +115,7 @@
                 max-sm:w-full justify-between
             ">
                 <button
-                    class="px-4 whitespace-nowrap button button-primary sm:py-3"
+                    class="px-4 whitespace-nowrap button button-black sm:py-3"
                     class:opacity-0={step === steps.length - 1}
                     on:click={back}
                 >

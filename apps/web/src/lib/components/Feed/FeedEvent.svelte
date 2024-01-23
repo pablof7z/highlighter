@@ -3,6 +3,8 @@
 	import FeedArticle from "./FeedArticle.svelte";
 	import FeedGroupPost from "./FeedGroupPost.svelte";
 	import FeedVideo from "./FeedVideo.svelte";
+	import ArticleLink from "$components/Events/ArticleLink.svelte";
+	import VideoLink from "$components/Events/VideoLink.svelte";
 
     export let event: NDKEvent;
     export let skipAuthor = false;
@@ -20,9 +22,9 @@
         {#if event.kind === NDKKind.GroupNote || event.kind === NDKKind.Text}
             <FeedGroupPost {event} class="!py-10" />
         {:else if event.kind === NDKKind.Article}
-            <FeedArticle article={NDKArticle.from(event)} {skipAuthor} />
+            <ArticleLink article={NDKArticle.from(event)} {skipAuthor} />
         {:else if event.kind === NDKKind.HorizontalVideo}
-            <FeedVideo video={NDKVideo.from(event)} />
+            <VideoLink video={NDKVideo.from(event)} />
         {/if}
     </div>
 {/if}

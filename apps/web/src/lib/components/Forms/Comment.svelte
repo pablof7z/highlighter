@@ -137,7 +137,7 @@
             <div class="flex flex-col gap-4 w-full items-start">
                 <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
                 <Textarea
-                    class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-transparent !border-base-300 focus:!border-base-300 text-neutral-400 p-6"
+                    class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-base-200 !border-base-300 focus:!border-base-300 text-neutral-400 p-6"
                     placeholder="Write a response..."
                     bind:value={content}
                     on:focus

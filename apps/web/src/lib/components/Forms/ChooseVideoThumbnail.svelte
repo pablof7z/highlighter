@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
-	import { ArrowLeft, ArrowRight, Upload } from "phosphor-svelte";
-    import { ndk, newToasterMessage, uploadToSatelliteCDN, user } from "@kind0/ui-common";
-	import ArticleGrid from "$components/Events/ArticleGrid.svelte";
+    import { onMount } from "svelte";
+    import { user } from "@kind0/ui-common";
 	import VideoGrid from "$components/Events/VideoGrid.svelte";
 
     export let title: string;

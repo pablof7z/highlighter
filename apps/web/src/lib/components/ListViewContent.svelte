@@ -18,7 +18,7 @@
     $: selectedItemId = $page.params.subId;
 </script>
 
-<div class="px-4">
+<div class="px-4 w-full">
     {#if listImage}
         <img src={listImage} alt={list.title} class="w-full h-auto object-cover rounded-2xl" />
     {/if}

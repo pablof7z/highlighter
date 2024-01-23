@@ -7,10 +7,31 @@
 	import { fade } from 'svelte/transition';
 	import Navigation from "./Navigation.svelte";
 	import SectionHeader from "./SectionHeader.svelte";
+	import NavMobileTop from "./NavMobileTop.svelte";
+	import { page } from "$app/stores";
+	import SectionHeaderWithButtons from "./SectionHeaderWithButtons.svelte";
 
     let hasSidebar = false;
+	let showSectionHeaderWithButtons = false;
 
 	$: hasSidebar = !!$pageSidebar?.component;
+
+	let pageId: string | null;
+
+	$: {
+		pageId = $page.route.id;
+
+		// if route is /[id]/[tagId]/ and either comments, highlights, collections set showSectionHeaderWithButtons to true
+		if (pageId && pageId.startsWith("/[id]/[tagId]/") && (pageId.endsWith("/comments") || pageId.endsWith("/highlights") || pageId.endsWith("/collections"))) {
+			showSectionHeaderWithButtons = true;
+		} else {
+			showSectionHeaderWithButtons = false;
+		}
+	}
+
+	let checked: boolean;
+
+	$: checked = $pageDrawerToggle;
 </script>
 
 <Modals>
@@ -48,20 +69,26 @@
 		{#key $loginState}
 			<Navigation />
 
-			<div class="md:pl-20">
+			<div class="sm:pl-20">
 				{#if $pageSidebar?.component}
-					<div class="fixed border-r border-base-300 flex-col h-full w-96 max-sm:w-full max-sm:hidden">
+					<div class="fixed border-r border-base-300 flex-col h-full w-96 max-lg:w-full max-lg:hidden">
 						<svelte:component this={$pageSidebar.component} {...$pageSidebar.props} />
 					</div>
 				{/if}
 
 				<div
-					class:md:pl-96={hasSidebar}
+					class:lg:pl-96={hasSidebar}
 				>
 					{#if $pageHeader?.title}
-						<div class="max-sm:hidden">
-							<SectionHeader title={$pageHeader.title} />
-						</div>
+						{#if showSectionHeaderWithButtons}
+							<div class="max-sm:hidden">
+								<SectionHeaderWithButtons title={$pageHeader.title} />
+							</div>
+						{:else}
+							<div class="max-sm:hidden">
+								<SectionHeader title={$pageHeader.title} />
+							</div>
+						{/if}
 					{/if}
 
 					<slot />
@@ -69,9 +96,14 @@
 			</div>
 		{/key}
 	</div>
-	<div class="drawer-side z-50">
+	<div
+		class="drawer-side z-50"
+	>
 		<label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-		<div class="menu w-[80vw] sm:w-[40vw] min-h-full bg-base-200 text-base-content p-4">
+		<div
+			class="menu w-[80vw] sm:w-[40vw] sm:max-w-[25rem] min-h-full bg-base-200 text-base-content p-4"
+			class:max-sm:mt-16={$sidebarPlacement === "left"}
+		>
 			<svelte:component this={$rightSidebar.component} {...$rightSidebar.props} />
 		</div>
 	</div>

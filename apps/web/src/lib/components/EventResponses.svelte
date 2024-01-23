@@ -66,15 +66,15 @@
 </script>
 
 <div class="w-full {$$props.class??""}">
-    <div class="flex flex-row items-center justify-end w-full mb-8">
-        {#if !narrowView}
+    <!-- <div class="flex flex-row items-center justify-end w-full mb-8"> -->
+        <!-- {#if !narrowView}
             {#if canComment}
                 <button class="button" on:click={toggleCommentBox}>Add your thoughts</button>
             {:else}
                 <UpgradeButton {event} text="Join to comment" />
             {/if}
-        {/if}
-    </div>
+        {/if} -->
+    <!-- </div> -->
 
     {#if showComment}
         <div class="w-full" transition:slide>

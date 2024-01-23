@@ -63,7 +63,6 @@
 		"client": "link:@vercel/blob/client",
 		"daisyui": "^4.4.14",
 		"debug": "^4.3.4",
-		"get-selection-more": "^1.1.0",
 		"jsonwebtoken": "^9.0.2",
 		"markdown-truncate": "^1.1.0",
 		"nostr-tools": "^1.14.2",

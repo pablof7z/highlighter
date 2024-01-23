@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Navbar from "$components/Navbar.svelte";
 	import Logo from "$icons/Logo.svelte";
 
 </script>
@@ -7,8 +6,6 @@
 <svelte:head>
     <title>How Highlighter is different</title>
 </svelte:head>
-
-<Navbar class="!bg-transparent fixed z-40 !backdrop-blur-[0px]" maxSize="" />
 
 <div class="hero h-screen relative overflow-x-hidden overflow-y-auto" style="background-image: url(/images/landing-bg.jpg);">
 	<div class="hero-overlay bg-black bg-opacity-80"></div>

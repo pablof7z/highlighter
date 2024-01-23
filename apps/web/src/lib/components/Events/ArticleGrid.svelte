@@ -4,6 +4,7 @@
     import UserProfile from "$components/User/UserProfile.svelte";
     import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
 	import type { UserProfileType } from "../../../app";
+	import { getSummary } from "$utils/article";
 
     export let article: NDKArticle;
     export let size: "small" | "large" = "small";
@@ -31,21 +32,30 @@
 </script>
 
 <UserProfile {user} bind:userProfile let:fetching>
-    <a href={articleLink} class="flex flex-col items-start gap-4 h-full w-full overflow-hidden">
-        {#if articleImage}
-            <img class="{size} max-sm:!w-full object-cover bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top flex-none round sm:h-[180px] max-sm:max-h-[60vw] w-full" src={articleImage} alt={article.title} />
-        {:else}
-            <div class="flex-none w-full h-[180px] bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top round sm:h-[180px] max-sm:max-h-[60vw]" />
-        {/if}
-        <div class="self-stretch justify-start items-start gap-4 inline-flex max-sm:px-4">
+    <a href={articleLink} class="flex flex-row sm:flex-col items-start gap-1 sm:gap-4 h-full w-full overflow-hidden">
+        <figure class="
+            sm:w-full max-sm:w-1/4 max-sm:h-full flex-none
+            !bg-base-300
+        ">
+            {#if articleImage}
+                <img class="{size} object-cover bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top flex-none round sm:h-[180px] max-sm:max-h-[60vw] sm:w-full" src={articleImage} alt={article.title} />
+            {:else}
+                <div class="flex-none w-full h-[180px] bg-gradient-to-r from-base-300/80 to-base-300 border-none object-top round sm:h-[180px] max-sm:max-h-[60vw]" />
+            {/if}
+        </figure>
+
+        <div class="self-stretch justify-start items-start gap-4 inline-flex max-sm:px-4 w-3/4">
             {#if !skipAuthor}
-                <a href="/{authorId}" class="justify-start flex-none items-start gap-4 flex">
+                <a href="/{authorId}" class="justify-start flex-none items-start gap-4 flex max-sm:hidden">
                     <Avatar {user} {userProfile} {fetching} class="w-11 h-11 rounded-full" />
                 </a>
             {/if}
             <div class="w-full shrink flex-col justify-start items-start flex">
                 <div class="self-stretch text-white text-lg font-medium max-h-10 overflow-y-clip">
                     {article.title}
+                </div>
+                <div class="text-sm text-neutral-500">
+                    {getSummary(article)}
                 </div>
                 <div class="flex self-stretch h-[38px] flex-row sm:flex-col justify-start items-center
                     gap-8 sm:gap-1

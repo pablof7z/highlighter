@@ -62,20 +62,20 @@
 </script>
 
 {#if !open}
-    <button on:click={toggleOpen} class="border-0 flex items-center text-sm text-gray-500 focus:ring-0 focus:outline-none pr-2">
+    <button on:click={toggleOpen} class="border-0 flex items-center text-sm text-neutral-300 focus:ring-0 focus:outline-none pr-4 overflow-hidden">
         {#if value?.domain}
-            <span class="mr-2">@{value.domain}</span>
+            <span class="mr-1.5 underline underline-offset-1 bg-black/60 hover:bg-black/70 py-4 px-6 pr-9 -mx-4 -mr-9 rounded-r-full transition-all duration-300">@{value.domain}</span>
         {/if}
         <CaretDown class="w-5 h-5" />
     </button>
 {:else if !onlyButton}
-    <h1 class="mt-4 mb-2 text-lg !text-black text-center font-semibold">Choose a provider</h1>
+    <h1 class="mt-4 mb-2 text-lg !text-white text-center font-medium">Choose a provider</h1>
 
-    <ul class="menu !bg-transparent flex-nowrap border border-black/10 rounded-box p-0 overflow-y-auto h-fit">
+    <ul class="bg-black/50 border border-white/10 flex-nowrap rounded-box p-0 overflow-y-auto h-fit">
         {#each Object.entries(nsecBunkerProviders) as [pubkey, domain]}
             <li class:active={value?.pubkey === pubkey} class="overflow-x-clip">
                 <button
-                    class="border-b rounded-b-none py-2 flex"
+                    class="border-b flex border-white/10 items-start text-left gap-2 px-4 py-3"
                     on:click={() => {
                         selection = pubkey;
                         value.pubkey = selection;
@@ -87,7 +87,7 @@
                 >
                     <img src={nsecBunkerProviderProfiles[pubkey]?.picture??"https://cdn.satellite.earth/fb0e24f6cd8f581c8873e834656163dd497dce47dab8b878d73caf4aae3def89.png"} class="w-12 h-12 object-cover rounded flex-none" alt={domain} />
                     <div class="flex flex-col gap-1 whitespace-nowrap">
-                        <span class="mr-2 font-bold">
+                        <span class="mr-2 font-medium">
                             {#if username}<span class="!font-normal opacity-40">{username}@</span>{/if}{domain}</span>
                         <div class="text-xs w-full truncate text-ellipsis opacity-50">{nsecBunkerProviderProfiles[pubkey].about ?? ""}</div>
                     </div>
@@ -99,6 +99,18 @@
 
 <style>
     li.active {
-        @apply bg-accent/10;
+        @apply bg-black !bg-opacity-100 text-white;
+    }
+
+    li:not(:last-child) {
+        @apply rounded-none;
+    }
+
+    li:first-child {
+        @apply !rounded-t-box;
+    }
+
+    li:last-child {
+        @apply !rounded-b-box;
     }
 </style>

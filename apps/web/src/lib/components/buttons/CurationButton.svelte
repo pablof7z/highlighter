@@ -103,7 +103,7 @@
         <li class="w-full min-w-[16rem]">
             {#if !showCreate}
                 <button
-                    class="whitespace-nowrap w-full font-normal text-accent"
+                    class="whitespace-nowrap w-full font-normal text-accent2"
                     on:click|preventDefault|stopPropagation|stopImmediatePropagation={() => showCreate = true}
                 >
                     <Plus class="w-4 h-4 mr-2" />

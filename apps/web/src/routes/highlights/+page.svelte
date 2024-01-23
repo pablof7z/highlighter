@@ -1,0 +1,110 @@
+<script lang="ts">
+	import { page } from "$app/stores";
+	import ClipItem from "$components/Clips/ClipItem.svelte";
+	import { userFollows } from "$stores/session";
+	import { ndk } from "@kind0/ui-common";
+	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent } from "@nostr-dev-kit/ndk";
+    import createDebug from "debug";
+	import { onDestroy, onMount } from "svelte";
+	import { writable } from "svelte/store";
+    import { pageHeader, pageSidebar, searching } from "$stores/layout";
+    import HighlightsSidebar from "$components/PageSidebar/Highlights.svelte";
+	import MainWrapper from "$components/Page/MainWrapper.svelte";
+	import PageTitle from "$components/Page/PageTitle.svelte";
+	import { getNip50RelaySet } from "$utils/ndk";
+	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
+
+    const debug = createDebug("highlighter:highlights");
+
+    const typeFilter = writable<App.FilterType[]>(["all"]);
+    let selectedCategory: string;
+    let open = false;
+    let events: NDKEventStore<NDKEvent> | undefined = undefined;
+
+    $: selectedCategory = $page.params.category || "All";
+
+    const authors = Array.from($userFollows);
+    let key = new Date();
+
+    function getFilters(query?: string): NDKFilter[] {
+        const filters: NDKFilter[] = [ { kinds: [NDKKind.Highlight], limit: 100 } ];
+
+        query ??= $page.url.searchParams.get("q") ?? "";
+
+        if (query && query.length > 0) {
+            // if query starts with # add it as a #t to the filter
+            if (query.startsWith("#")) {
+                filters[0]["#t"] = [query.slice(1)];
+            } else {
+                filters[0].search = query;
+            }
+        } else if (authors.length > 0) {
+            // if there are authors add them to the filter
+            filters[0].authors = authors;
+        }
+
+        return filters;
+    }
+
+    function getRelaySetForSubscription(filters: NDKFilter[]) {
+        // if (filters[0].search) {
+            return getNip50RelaySet();
+        // }
+
+        return undefined;
+    }
+
+    function startSubscription(query?: string) {
+        events?.unsubscribe();
+        $searching = true;
+        const filters = getFilters(query);
+        events = $ndk.storeSubscribe(filters, {
+            groupable: false,
+            subId: "highlights",
+            autoStart: true,
+            cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY,
+            relaySet: getRelaySetForSubscription(filters),
+        });
+        key = new Date();
+        events.onEose(() => { $searching = false; });
+    }
+
+    startSubscription();
+
+    onDestroy(() => {
+        events?.unsubscribe();
+        $pageSidebar = null;
+    });
+
+    $pageSidebar = {
+        component: HighlightsSidebar,
+        props: {}
+    }
+
+    function searchFn(query: string) {
+        // set q in the url
+        const url = new URL(window.location.href);
+        url.searchParams.set("q", query);
+        window.history.replaceState({}, "", url.toString());
+
+        startSubscription(query);
+    }
+
+    $pageHeader = {
+        title: "Highlights",
+        searchBar: true,
+        searchFn,
+    }
+</script>
+
+<MainWrapper
+    marginClass="max-w-3xl"
+    class="gap-8"
+    paddingClass="p-6"
+>
+    {#key key}
+        {#each $events as event (event.id)}
+            <ClipItem {event} />
+        {/each}
+    {/key}
+</MainWrapper>

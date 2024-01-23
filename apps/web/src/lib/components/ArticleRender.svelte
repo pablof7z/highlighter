@@ -10,7 +10,7 @@
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
 	import { Lightning } from 'phosphor-svelte';
-    import { getParagraph, getText } from "get-selection-more";
+	import { getParagraph, getText } from '$utils/text';
 
     export let article: NDKArticle;
     const author = article.author;

@@ -1,9 +1,8 @@
 <script lang="ts">
-	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { Avatar, user as currentUser } from "@kind0/ui-common";
 	import type { NDKUser, Hexpubkey, NDKArticle } from "@nostr-dev-kit/ndk";
-	import { openModal } from "svelte-modals";
 	import type { Readable } from "svelte/motion";
+	import SubscribeButton from "./buttons/SubscribeButton.svelte";
 
     export let user: NDKUser;
     export let tiers: Readable<NDKArticle[]>;
@@ -13,10 +12,6 @@
 
     $: if (supporters && $supporters) {
         supportingPubkeys = new Set(Object.keys($supporters));
-    }
-
-    function openSupportModal() {
-        openModal(BecomeSupporterModal, { user, tiers });
     }
 
     function openShareModal() {
@@ -46,9 +41,7 @@
     {/if}
 
     {#if !isSupporter}
-        <button class="whitespace-nowrap button px-6 w-full" on:click={openSupportModal}>
-            Subscribe
-        </button>
+        <SubscribeButton {user} {tiers} />
     {:else}
         <!-- <button class="whitespace-nowrap button px-6" on:click={openShareModal}>
             <Share class="mr-2" />

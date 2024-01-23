@@ -5,6 +5,7 @@
     import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
     import type { UserProfileType } from "../../../app";
 	import { niceDuration } from "$utils/video";
+	import ItemLink from "./ItemLink.svelte";
 
     export let video: NDKvideo;
     export let size: "small" | "large" = "small";
@@ -25,6 +26,16 @@
     const defaultUrl = "https://cdn.satellite.earth/01a8a5f5162a90fd7e6d3af6bc86d975e08a98f1852864c8ae7d8ba547bad669.png";
 </script>
 
+<ItemLink
+    event={video}
+    {skipAuthor}
+    image={video.thumbnail}
+    title={video.title}
+    description={video.description}
+    durationTag={niceDuration(video.duration)}
+    {skipLink}
+/>
+<!--
 <UserProfile {user} bind:userProfile let:fetching>
     <a href={videoLink} class="flex flex-col items-start gap-4 h-full {size}">
         <div class="relative max-sm:{size} !w-full h-fit flex-none rounded-xl">
@@ -82,4 +93,4 @@
     a:hover {
         transform: scale(1.02);
     }
-</style>
+</style> -->

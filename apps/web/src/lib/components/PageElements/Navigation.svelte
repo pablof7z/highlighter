@@ -30,58 +30,67 @@
     <NavMobileTop />
 
     <!-- Navigation Bottom -->
-    <div class="btm-nav bg-base-200 bg-opacity-80 mobile-nav z-50">
-        <Item href="/home" tooltip="Home" let:active>
+    <div
+        class="btm-nav bg-base-200 bg-opacity-80 mobile-nav z-50"
+        class:forceHidden={$hideMobileBottomBar}
+    >
+        <Item href="/home" let:active>
             <House class="w-full h-full" weight={active ? "fill" : "regular"} />
         </Item>
 
-        <Item href="/explore" tooltip="Explore" let:active>
+        <Item href="/" let:active>
             <Fire class="w-full h-full" weight={active ? "fill" : "regular"} />
         </Item>
 
         {#if $user && $userTiers && $userTiers.length > 0}
-            <Item tooltip="Create something new" let:active on:click={() => openModal(NewItemModal)}>
+            <Item let:active on:click={() => openModal(NewItemModal)}>
                 <PaperPlane class="w-full h-full text-white" weight={active ? "fill" : "regular"} />
             </Item>
         {:else if $user}
-            <Item tooltip="Start publishing on Nostr" href="/welcome/creators">
+            <Item href="/welcome/creators">
+                <PaperPlane class="w-full h-full text-white" weight="fill" />
+            </Item>
+        {:else if !$user}
+            <Item on:click={openSignupModal}>
                 <PaperPlane class="w-full h-full text-white" weight="fill" />
             </Item>
         {/if}
 
-        <Item href="/inbox" tooltip="Inbox" let:active>
+        <Item href="/inbox" let:active>
             <Tray class="w-full h-full" weight={active ? "fill" : "regular"} />
         </Item>
 
-        <Item href="/highlights" tooltip="Highlights" let:active>
-            <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} />
+        <Item href="/highlights" let:active>
+            <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} strokeWidth="1.4" />
         </Item>
     </div>
 </div>
 
 <div class="
     justify-between items-stretch inline-flex fixed border-r border-base-300 flex-col h-full mobile-nav !bg-base-100 mobile-nav
-    md:w-20 w-full
-    max-md:btm-nav max-md:btm-nav-lg
+    sm:w-20 w-full
+    max-sm:btm-nav max-sm:btm-nav-lg
     z-50
     max-sm:hidden
-" class:forceHidden={$hideMobileBottomBar}>
+">
     <div class="
-        lg:pt-6
-        flex max-md:flex-row md:flex-col justify-between items-center gap-3 flex-nowrap
+        lg:pt-3
+        flex max-sm:flex-row sm:flex-col justify-between items-center gap-3 flex-nowrap
         h-full
     ">
         <div class="
             items-center flex flex-nowrap
-            md:flex-col
-            justify-between md:justify-start
+            sm:flex-col
+            justify-between sm:justify-start
             w-full
             lg:gap-2
             max-sm:hidden
         ">
-            <Item tooltip="Signup" class="p-0" elClass="p-0">
+            <Item class="p-0" elClass="p-0">
                 <CurrentUser>
-                    <UserCircle class="w-full h-full" />
+                    <button on:click={openSignupModal} class="w-full h-full">
+                        <UserCircle class="w-full h-full" />
+                    </button>
                 </CurrentUser>
             </Item>
 
@@ -89,7 +98,7 @@
                 <House class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
 
-            <Item href="/explore" tooltip="Explore" let:active>
+            <Item href="/" tooltip="Explore" let:active>
                 <Fire class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
 
@@ -97,8 +106,8 @@
                 <Tray class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
 
-            <Item href="/highlights" tooltip="Highlights" let:active class="max-md:hidden">
-                <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} />
+            <Item href="/highlights" tooltip="Highlights" let:active class="max-sm:hidden">
+                <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} strokeWidth="1.4" />
             </Item>
 
             <Item href="/chat" tooltip="Chat" let:active class="max-sm:hidden">
@@ -112,15 +121,19 @@
                 <Item tooltip="Start publishing on Nostr" href="/welcome/creators">
                     <PaperPlane class="w-full h-full text-white" weight="fill" />
                 </Item>
+            {:else if !$user}
+                <Item on:click={openSignupModal}>
+                    <PaperPlane class="w-full h-full text-white" weight="fill" />
+                </Item>
             {/if}
         </div>
 
 
         <div class="
-            max-md:hidden
+            max-sm:hidden
             items-center flex flex-nowrap
-            md:flex-col
-            justify-between md:justify-start
+            sm:flex-col
+            justify-between sm:justify-start
             w-full
             gap-4
         ">
@@ -134,3 +147,8 @@
     </div>
 </div>
 
+<style lang="postcss">
+    .forceHidden {
+        @apply max-lg:hidden;
+    }
+</style>

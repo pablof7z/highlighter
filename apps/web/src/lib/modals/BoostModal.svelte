@@ -74,8 +74,8 @@
         <ArticleCard {article} />
     </UserProfile>
 
-    <div class="flex flex-row justify-between gap-8 w-full">
-        <button class="button button-primary" on:click={() => closeModal()}>Cancel</button>
-        <button class="button px-10" on:click={publish}>Publish</button>
+    <div class="flex flex-row items-stretch justify-between gap-8 w-full">
+        <button class="button button-black" on:click={() => closeModal()}>Cancel</button>
+        <button class="button button-primary px-10" on:click={publish}>Publish</button>
     </div>
 </ModalShell>

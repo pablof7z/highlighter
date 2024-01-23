@@ -1,30 +1,18 @@
 <script lang="ts">
-    import { Bell, CaretLeft, CaretRight, List, MagnifyingGlass, PaperPlaneTilt, X } from "phosphor-svelte";
-    import { pageDrawerToggle, rightSidebar } from "@kind0/ui-common";
+    import { Bell, CaretLeft, List, MagnifyingGlass, X } from "phosphor-svelte";
+    import { Avatar, pageDrawerToggle, rightSidebar, user } from "@kind0/ui-common";
 	import { pageHeader, sidebarPlacement } from "$stores/layout";
-	import Logo from "$icons/Logo.svelte";
 	import LogoSmall from "$icons/LogoSmall.svelte";
 	import UserDrawer from "$components/PageSidebar/UserDrawer.svelte";
 	import SearchBar from "$components/Page/SearchBar.svelte";
+	import HeaderLeftButton from "./HeaderLeftButton.svelte";
+	import HeaderRightButton from "./HeaderRightButton.svelte";
 
     function showMenu() {
-        pageDrawerToggle.set(true);
         $sidebarPlacement = "left";
         $rightSidebar = {
             component: UserDrawer,
             props: {}
-        }
-    }
-
-    function leftClicked() {
-        if ($pageHeader?.leftFn) {
-            $pageHeader.leftFn();
-        }
-    }
-
-    function rightClicked() {
-        if ($pageHeader?.rightFn) {
-            $pageHeader.rightFn();
         }
     }
 
@@ -33,30 +21,31 @@
     function toggleSearch() {
         searchBar = !searchBar;
     }
+
+    // function onChange(e:
+
+    // }
 </script>
 
-<div class="navbar fixed z-50 mobile-nav h-16 px-3">
+<div class="navbar fixed z-50 mobile-nav h-16 px-3 w-full">
     {#if !searchBar}
         <div class="navbar-start">
             {#if $pageHeader?.leftLabel}
-                <a
-                    href={$pageHeader?.leftUrl??"#"}
-                    on:click={leftClicked}
-                    class="text-accent2 whitespace-nowrap"
-                >
-                    {#if $pageHeader.leftLabel === "Back"}
-                        <CaretLeft class="w-5 h-5 inline" />
-                    {/if}
-                {$pageHeader.leftLabel}
-                </a>
+                <HeaderLeftButton />
             {:else}
-                <button on:click={showMenu}>
-                    <List class="w-8 h-8" />
-                </button>
+                <label for="draw" class="swap" on:click={showMenu}>
+                    <input id="draw" type="checkbox" class="hidden" bind:checked={$pageDrawerToggle} />
+                    {#if $user}
+                        <Avatar user={$user} size="tiny" type="square" class="swap-off" />
+                    {:else}
+                        <List class="swap-off w-8 h-8" />
+                    {/if}
+                    <X class="swap-on w-8 h-8" />
+                </label>
             {/if}
         </div>
-        <div class="navbar-center">
-            <span class="btn btn-ghost text-xl text-white">
+        <div class="navbar-center max-w-[60vw] overflow-hidden">
+            <span class="btn btn-ghost text-xl text-white truncate">
                 {#if $pageHeader?.title}
                     {$pageHeader.title}
                 {:else}
@@ -66,31 +55,15 @@
         </div>
         <div class="navbar-end">
             {#if $pageHeader?.rightLabel}
-                <a
-                    href={$pageHeader?.rightUrl??"#"}
-                    on:click={rightClicked}
-                    class="text-accent2 whitespace-nowrap"
-                >
-                    {#if $pageHeader.rightLabel === "loading"}
-                        <span class="loading loading-sm" />
-                    {:else}
-                        {$pageHeader.rightLabel}
-
-                        {#if $pageHeader.rightLabel === "Next"}
-                            <CaretRight class="w-5 h-5 inline" />
-                        {:else if $pageHeader.rightLabel === "Publish"}
-                            <PaperPlaneTilt class="w-5 h-5 inline" />
-                        {/if}
-                    {/if}
-                </a>
+                <HeaderRightButton />
             {:else}
                 <button class="btn btn-ghost btn-circle" on:click={toggleSearch}>
                     <MagnifyingGlass class="w-5 h-5" />
                 </button>
                 <a href="/notifications" class="btn btn-ghost btn-circle">
-                    <div class="indicator">
+                    <div class="indicato__r">
                         <Bell class="w-5 h-5" />
-                        <span class="badge badge-xs bg-accent2 indicator-item"></span>
+                        <span class="hidden badge badge-xs bg-accent2 indicator-item"></span>
                     </div>
                 </a>
             {/if}
@@ -101,7 +74,7 @@
                 <CaretLeft class="w-5 h-5" />
             </button>
 
-            <SearchBar autofocus={true} on:searched={toggleSearch} />
+            <SearchBar autofocus={true} on:searched={toggleSearch} on:dismiss={() => searchBar = false} />
         </div>
     {/if}
 </div>

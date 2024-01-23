@@ -14,8 +14,6 @@
     let blocking = false;
     let advanced = false;
 
-    advanced = true;
-
     let error: string | undefined;
 
     onMount(async () => {

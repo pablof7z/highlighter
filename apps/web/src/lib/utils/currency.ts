@@ -1,53 +1,52 @@
-import { nicelyFormattedMilliSatNumber } from "@kind0/ui-common";
-import type { NDKTag } from "@nostr-dev-kit/ndk";
+import { nicelyFormattedMilliSatNumber } from '@kind0/ui-common';
+import type { NDKTag } from '@nostr-dev-kit/ndk';
 
-export const possibleCurrencies = [
-    "USD",
-    "EUR",
-    "msat",
-];
+export const possibleCurrencies = ['USD', 'EUR', 'msat'];
 
 export function currencySymbol(currency: string) {
-    switch (currency) {
-        case "USD":
-            return "$";
-        case "EUR":
-            return "€";
-        case "msat":
-            return "sats";
-        default:
-            return currency;
-    }
+	switch (currency) {
+		case 'USD':
+			return '$';
+		case 'EUR':
+			return '€';
+		case 'msat':
+			return 'sats';
+		default:
+			return currency;
+	}
 }
 
 export function currencyFormat(currency: string, amount: number) {
-    let retval: string;
+	let retval: string;
 
-    switch (currency) {
-        case "USD":
-        case 'usd':
-            retval = `$${amount.toFixed(2)}`;
-            break;
-        case "EUR":
-            retval = `${amount.toFixed(2)}€`;
-            break;
-        case "msat":
-            return nicelyFormattedMilliSatNumber(amount) + ' sats';
-        default:
-            return `${amount} ${currency}`;
-    }
+	switch (currency) {
+		case 'USD':
+		case 'usd':
+			retval = `$${amount.toFixed(2)}`;
+			break;
+		case 'EUR':
+			retval = `${amount.toFixed(2)}€`;
+			break;
+		case 'msat':
+			return nicelyFormattedMilliSatNumber(amount) + ' sats';
+		default:
+			return `${amount} ${currency}`;
+	}
 
-    if (retval.endsWith('.00')) {
-        retval = retval.slice(0, -3);
-    }
+	if (retval.endsWith('.00')) {
+		retval = retval.slice(0, -3);
+	}
 
-    return retval;
+	return retval;
 }
 
 export async function getBitcoinPrice(currency: string) {
-    const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies="+currency.toLowerCase());
-    const data = await response.json();
-    return data.bitcoin.usd;
+	const response = await fetch(
+		'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=' +
+			currency.toLowerCase()
+	);
+	const data = await response.json();
+	return data.bitcoin.usd;
 }
 
 /**
@@ -56,15 +55,15 @@ export async function getBitcoinPrice(currency: string) {
  * @returns
  */
 export async function calculateSatAmountFromAmountTag(amountTag: NDKTag): Promise<number> {
-    const value = parseFloat(amountTag[1]);
-    const currency = amountTag[2];
+	const value = parseFloat(amountTag[1]);
+	const currency = amountTag[2];
 
-    if (["USD", "EUR"].includes(currency)) {
-        const bitcoinPrice = await getBitcoinPrice(currency);
-        return Math.floor(Number(value) / bitcoinPrice * 100_000_000); // expressed in USD in the tag
-    } else if (currency === "msat") {
-        return value / 1000; // expressed in msats in the tag
-    } else {
-        throw new Error("Currency not supported");
-    }
+	if (['USD', 'EUR'].includes(currency)) {
+		const bitcoinPrice = await getBitcoinPrice(currency);
+		return Math.floor((Number(value) / bitcoinPrice) * 100_000_000); // expressed in USD in the tag
+	} else if (currency === 'msat') {
+		return value / 1000; // expressed in msats in the tag
+	} else {
+		throw new Error('Currency not supported');
+	}
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ArticleGrid from "$components/Events/ArticleGrid.svelte";
+	import ArticleLink from "$components/Events/ArticleLink.svelte";
 	import PostGrid from "$components/Events/PostGrid.svelte";
 	import VideoGrid from "$components/Events/VideoGrid.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
@@ -35,7 +35,7 @@
             {#each $events as event (event.id)}
                 <div class="w-80 snap-center">
                     {#if event.kind === NDKKind.Article}
-                        <ArticleGrid article={NDKArticle.from(event)} skipAuthor={true} />
+                        <ArticleLink article={NDKArticle.from(event)} skipAuthor={true} grid={true} />
                     {:else if event.kind === NDKKind.HorizontalVideo}
                         <VideoGrid video={NDKVideo.from(event)} />
                     {:else if event.kind === NDKKind.GroupNote}

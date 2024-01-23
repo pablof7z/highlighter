@@ -21,7 +21,7 @@
         if (!await login($ndk, $bunkerNDK, 'nip46')) {
             logging = false;
         } else {
-            const intendedUrl = localStorage.getItem('intended-url') || '/explore';
+            const intendedUrl = localStorage.getItem('intended-url') || '/';
             goto(intendedUrl);
         }
     });

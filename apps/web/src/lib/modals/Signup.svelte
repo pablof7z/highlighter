@@ -1,17 +1,14 @@
 <script lang="ts">
-	import { redirect } from '@sveltejs/kit';
-    import { NDKKind, NDKPrivateKeySigner, type Hexpubkey, type NostrEvent, NDKRelaySet, NDKNostrRpc, NDKUser, type NDKRpcResponse, NDKNip46Signer, NDKEvent } from "@nostr-dev-kit/ndk";
+    import { NDKPrivateKeySigner, NDKUser, NDKNip46Signer, NDKEvent } from "@nostr-dev-kit/ndk";
     import Input from "$components/Forms/Input.svelte";
 	import { bunkerNDK, ndk, user } from "@kind0/ui-common";
-    import createDebug from "debug";
-	import { closeModal } from "svelte-modals";
 	import NsecBunkerProviderSelect from "$components/Forms/NsecBunkerProviderSelect.svelte";
 	import type { NsecBunkerProvider } from "../../app";
-	import { fade, slide } from "svelte/transition";
-	import { goto } from "$app/navigation";
+	import { slide } from "svelte/transition";
 	import { loginState } from '$stores/session';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { createEventDispatcher } from 'svelte';
+	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -34,7 +31,7 @@
         const callbackUrl = new URL(callbackPath, currentUrl.origin);
         redirectUrl.searchParams.set("callbackUrl", callbackUrl.toString());
         localStorage.setItem("intended-url", window.location.href);
-        goto(redirectUrl.toString());
+        window.location.href = redirectUrl.toString();
     }
 
     async function signup() {
@@ -128,19 +125,17 @@
     $: username = username.toLowerCase().replace(/[^a-z0-9_]/g, "");
 </script>
 
-<div class="text-center text-black text-base font-light leading-normal">Create an account</div>
-
 <div class="relative">
     <div
         class="flex flex-col gap-4 transition-opacity duration-0"
         class:opacity-0={providerOpen}
     >
-        <div class="flex flex-col gap-1">
-            <div class="font-semibold">
-                Choose your username
-            </div>
+        <div class="field">
+            <label>
+                Choose a username
+            </label>
             <div class="relative">
-                <Input
+                <GlassyInput
                     tabindex={1}
                     bind:value={username}
                     type="text"
@@ -154,21 +149,18 @@
                     <NsecBunkerProviderSelect {username} bind:allNsecBunkerProviders bind:value={nsecBunker} bind:open={providerOpen} onlyButton={true} />
                 </div>
             </div>
-            <div
-                class="text-xs opacity-50 transition-all duration-300"
-            >
-                This is the username you will use to log in and how
-                others will find you on Nostr.
+            <div class="text-sm opacity-60 transition-all duration-300 -mt-1">
+                <span class="text-white">Don't worry you can change it later.</span>
             </div>
 
             {#if usernameTaken}
-            <div class="alert alert-warning text-sm font-medium" transition:slide>
-                This username is already taken
+            <div class="alert alert-error bg-error/20 text-white/80 py-3 my-3 text-sm font-medium" transition:slide>
+                This username is already taken.
             </div>
         {/if}
         </div>
 
-        <div class="flex flex-col gap-1">
+        <div class="flex flex-col gap-1 hidden">
             <div class="font-semibold">
                 Email
                 <span class="font-normal opacity-50">(optional)</span>
@@ -189,12 +181,14 @@
             </div>
         </div>
         {#if !popupNotOpened}
-            <button class="button button-primary transition duration-300 flex flex-col gap-1" on:click={signup} disabled={username?.length === 0 || !nsecBunker?.pubkey || creating} transition:slide>
+            <button class="
+                button button-primary transition duration-300 flex flex-col
+                py-4 font-medium rounded-box leading-none
+            " on:click={signup} disabled={username?.length === 0 || !nsecBunker?.pubkey || creating} transition:slide>
                 {#if !creating}
                     Create account
                     {#if username?.length > 0 && nsecBunker.domain}
-                        <span class="text-sm font-light">
-
+                        <span class="text-sm font-light opacity-80" transition:slide>
                             {username}@{nsecBunker.domain}
                         </span>
                     {:else}
@@ -206,9 +200,7 @@
             </button>
         {:else}
             <a href={authUrl} target="_blank" class="button button-primary transition duration-300 flex flex-col gap-1" transition:slide>
-                <span class="text-sm font-light">
-                    Continue
-                </span>
+                Continue
             </a>
         {/if}
     </div>
@@ -219,3 +211,13 @@
         </div>
     {/if}
 </div>
+
+<style lang="postcss">
+    .field {
+        @apply flex flex-col gap-2;
+    }
+
+    label {
+        @apply text-white text-lg;
+    }
+</style>

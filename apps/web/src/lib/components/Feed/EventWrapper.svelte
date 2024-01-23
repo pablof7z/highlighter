@@ -44,6 +44,7 @@
     <a href="{authorUrl}{urlPrefix??""}/{suffixUrl}" class="
         bg-base-100 rounded-box p-4
         flex flex-col gap-4 pb-6 wrapper w-full {$$props.class??""}
+        overflow-clip
     ">
         {#if $$slots.default}
             <slot />

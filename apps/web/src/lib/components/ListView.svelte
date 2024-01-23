@@ -1,17 +1,19 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { pageSidebar } from "$stores/layout";
+	import { pageHeader, pageSidebar } from "$stores/layout";
 	import { NDKList, type NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
     import ListSidebar from "$components/PageSidebar/List.svelte";
 	import { page } from '$app/stores';
 	import { ndk } from '@kind0/ui-common';
-	import ItemView from '../../routes/(app)/[id]/[tagId]/ItemView.svelte';
+	import ItemView from '../../routes/[id]/[tagId]/ItemView.svelte';
 	import ListViewContent from './ListViewContent.svelte';
 	import PageTitle from './Page/PageTitle.svelte';
+	import { CaretLeft } from 'phosphor-svelte';
 
     export let event: NDKEvent;
     export let list = NDKList.from(event);
     export let urlPrefix: string;
+    export let authorUrl: string;
 
     let id: string;
 
@@ -48,6 +50,13 @@
             }
         }
     }
+
+    $: if (id || !id) $pageHeader = {
+        title: list.title,
+        leftIcon: CaretLeft,
+        leftUrl: authorUrl,
+        leftLabel: "Lists"
+    }
 </script>
 
 {#if id}
@@ -55,16 +64,13 @@
         <ItemView
             {user}
             tagId={id}
-            mxClass="mx-6"
+            mxClass="lg:mx-6"
             backUrl={urlPrefix}
             backTitle={list.title}
         />
     {/key}
 {:else}
-<div class="sm:hidden">
-        <PageTitle
-            title={list.title??"List"}
-        />
+<div class="lg:hidden">
         <ListViewContent
             {list}
             {urlPrefix}

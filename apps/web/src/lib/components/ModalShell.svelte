@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { closeModal } from "svelte-modals";
-	import { fade } from "svelte/transition";
+	import { fade, slide } from "svelte/transition";
 
-    export let color: "white" | "black" = "white";
+    export let color: "white" | "black" | "glassy" = "white";
 
     let url = $page.url.pathname;
     $: if ($page.url.pathname !== url) closeModal();
@@ -19,7 +19,7 @@
     w-screen
     pointer-events-none
     {color}
-" transition:fade>
+">
     <div class="
         card
         !rounded-3xl
@@ -44,5 +44,10 @@
 
     .black .card .inner {
         @apply bg-black border border-base-300 p-10;
+    }
+
+    .glassy .card {
+        @apply bg-zinc-800 bg-opacity-20 backdrop-blur-[48px];
+        @apply border border-white/10;
     }
 </style>

@@ -1,62 +1,61 @@
 <script lang="ts">
-    import LogoBlack from '$icons/LogoBlack.svelte';
-	import { closeModal } from "svelte-modals";
-    import { createEventDispatcher } from "svelte";
-	import { fade, slide } from "svelte/transition";
+	import { slide } from "svelte/transition";
     import Signup from './Signup.svelte';
 	import Login from "./Login.svelte";
 	import Welcome from "./Welcome.svelte";
-
-    const dispatch = createEventDispatcher();
-
-    async function onClose() {
-        closeModal()
-        dispatch("close");
-    }
+	import ModalShell from '$components/ModalShell.svelte';
+	import LogoGradient from '$icons/LogoGradient.svelte';
 
     export let mode: 'signup' | 'login' | 'welcome' = 'signup';
 
     function signedUp() {
         mode = 'welcome';
     }
+
+    let title: string;
+
+    $: switch (mode) {
+        case 'signup':
+            title = 'Sign Up';
+            break;
+        case 'login':
+            title = 'Log In';
+            break;
+        case 'welcome':
+            title = 'Welcome!';
+            break;
+    }
 </script>
 
-<div class="
-    fixed
-    h-screen top-0 bottom-0 left-0 px-4 lg:px-0
-    flex justify-center items-center
-    z-50
-    w-screen
-" transition:fade on:click={onClose}>
-    <div class="
-    card
-    rounded-3xl
-    shadow-xl
-    flex flex-col
-    relative
-    overflow-y-hidden
-    {$$props.class}
-    " style="pointer-events: auto; max-height: 92vh;" on:click|stopPropagation={()=>{}} transition:fade>
-        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg sm:w-96 max-w-[100vh] flex flex-col gap-0 text-black">
-            <div class="flex justify-center">
-                <LogoBlack class="max-h-9" />
+<ModalShell
+    color="glassy"
+    class="w-full py-4 sm:p-6 sm:max-w-md"
+>
+    <div class="flex flex-col gap-4 w-full">
+        <div class="flex flex-row items-center justify-between">
+            <div class="justify-between items-center inline-flex">
+                <div class="text-neutral-200 text-[32px] font-semibold leading-[40.96px]">
+                    {title}
+                </div>
             </div>
 
-            {#if mode === 'signup'}
-                <div class="w-full flex flex-col gap-5" transition:slide>
-                    <Signup on:signed-up={signedUp} />
-                    <p class="text-center text-black text-sm my-2">Already have a Nostr account? <button on:click={() => mode = 'login'} class="text-black font-bold underline">Log in</button></p>
-                </div>
-            {:else if mode === 'login'}
-                <div class="w-full flex flex-col gap-5" transition:slide>
-                    <Login />
-                    <p class="text-center text-sm my-2 text-black">Don’t have an account? <button on:click={() => mode = 'signup'} class="text-black font-bold underline">Sign Up</button></p>
-                </div>
-            {:else if mode === 'welcome'}
-                <div class="w-full flex flex-col gap-5" transition:slide>
-                    <Welcome />
-            </div>
-            {/if}
+            <LogoGradient />
         </div>
+
+        {#if mode === 'signup'}
+            <div class="w-full flex flex-col gap-5" transition:slide>
+                <Signup on:signed-up={signedUp} />
+                <p class="text-center text-white/30 text-sm my-2">Already have a Nostr account? <button on:click={() => mode = 'login'} class="text-white/50 font-semibold underline">Log in</button></p>
+            </div>
+        {:else if mode === 'login'}
+            <div class="w-full flex flex-col gap-5" transition:slide>
+                <Login />
+                <p class="text-center text-sm my-2 text-black">Don’t have an account? <button on:click={() => mode = 'signup'} class="text-black font-bold underline">Sign Up</button></p>
+            </div>
+        {:else if mode === 'welcome'}
+            <div class="w-full flex flex-col gap-5" transition:slide>
+                <Welcome />
+        </div>
+        {/if}
     </div>
-</div>
+</ModalShell>

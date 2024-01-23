@@ -1,20 +1,26 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
     import Input from '$components/Forms/Input.svelte';
+	import { pageHeader, searching } from '$stores/layout';
 	import { ndk } from '@kind0/ui-common';
 	import { nip19 } from 'nostr-tools';
 	import { MagnifyingGlass, PaperPlaneRight } from 'phosphor-svelte';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
+	import { fade, slide } from 'svelte/transition';
 
     export let value: string = "";
 
+    onMount(() => {
+        value = $page.url.searchParams.get("q") ?? "";
+    })
+
     const dispatch = createEventDispatcher();
-    let searching = false;
 
     function redirectTo(url: string) {
         dispatch("searched");
         goto(url);
-        searching = false;
+        $searching = false;
     }
 
     function looksLikeEmail(str: string) {
@@ -44,7 +50,7 @@
     }
 
     function search() {
-        searching = true;
+        $searching = true;
         if (looksLikeEmail(value)) {
             $ndk.getUserFromNip05(value).then(user => {
                 if (user) return redirectTo(`/${value}`);
@@ -58,18 +64,25 @@
         if (looksLikeUrl(value)) {
             return redirectTo(`/load?url=${encodeURIComponent(value)}`);
         }
+
+        if ($pageHeader?.searchFn) {
+            return $pageHeader.searchFn(value);
+        }
     }
 
     async function keyup(event: KeyboardEvent) {
         if (event.key === "Enter") {
             search();
+            (event.target as HTMLInputElement).blur();
         }
     }
+
+    let noFocus = true;
 </script>
 
 <div class="flex flex-col gap-6 w-full mx-auto sm:px-4 relative max-w-3xl {$$props.class??""}">
-    {#if !searching}
-        <MagnifyingGlass class="absolute top-1/2 max-sm:hidden sm:left-4 transform -translate-y-1/2 w-6 h-6 text-neutral-500" />
+    {#if !$searching}
+        <MagnifyingGlass class="absolute top-1/2 max-sm:hidden sm:left-6 transform -translate-y-1/2 w-6 h-6 text-neutral-500" />
     {:else}
         <div class="absolute top-1/2 sm:left-4 transform -translate-y-1/2 w-6 h-6 text-neutral-500">
             <span class="loading loading-sm text-accent2"></span>
@@ -84,6 +97,8 @@
         class="grow basis-0 sm:bg-base-200 border-none font-normal sm:pl-14 placeholder:!text-neutral-500 !rounded-full !text-neutral-300
         sm:focus:outline sm:focus:!outline-base-300 {$$props.inputClass??""}"
         on:keyup={keyup}
+        on:focus={() => noFocus = false}
+        on:blur={() => noFocus = true}
         {...{autofocus: $$props.autofocus}}
     />
     <button class="absolute top-1/2
@@ -91,3 +106,14 @@
         <PaperPlaneRight class="w-full h-full" />
     </button>
 </div>
+
+{#if !noFocus}
+    <button
+        class="
+            fixed top-16 left-0 w-screen h-screen bg-base-100 opacity-80 z-40
+            sm:ml-20
+        "
+        on:click={() => dispatch("dismiss")}
+        transition:fade={{duration: 300}}
+    />
+{/if}

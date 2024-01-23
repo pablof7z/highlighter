@@ -9,13 +9,13 @@
 
 <div class="
     w-full
-    max-sm:!hidden
-    max-sm:top-0 max-sm:left-0 max-sm:h-screen
+    max-lg:!hidden
+    max-lg:top-0 max-lg:left-0 max-lg:h-screen
 
-    sm:flex-none
+    lg:flex-none
     h-full
-    bg-base-100 max-sm:mobile-nav
-    sm:rounded-3xl
+    bg-base-100 max-lg:mobile-nav
+    lg:rounded-3xl
     flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
 ">
         <div class="
@@ -28,8 +28,8 @@
                 grow shrink basis-0 text-white font-semibold
                 flex flex-row items-center gap-2
                 text-left
-                max-sm:text-lg
-                sm:text-2xl
+                max-lg:text-lg
+                lg:text-2xl
                 whitespace-nowrap
             ">
                 {title}
@@ -42,7 +42,7 @@
 
         <div
             class="
-            max-sm:max-h-[50dvh]
+            max-lg:max-h-[50dvh]
             h-full
             overflow-y-auto
             flex-col justify-start items-start gap-3 flex w-full

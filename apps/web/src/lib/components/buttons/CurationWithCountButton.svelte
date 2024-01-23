@@ -86,9 +86,9 @@
 <div
     class="flex flex-row items-center gap-2 group {bookmarked ? 'text-white' : ''}"
 >
-    <div
-        class="dropdown dropdown-top"
-        class:dropdown-open={showCreate}
+<div
+    class="dropdown dropdown-top"
+    class:dropdown-open={showCreate}
     >
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <!-- svelte-ignore a11y-label-has-associated-control -->
@@ -98,7 +98,7 @@
             />
         </label>
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow rounded-box overflow-x-clip truncate flex-nowrap">
+        <ul tabindex="0" class="dropdown-content z-50 menu p-2 rounded-box overflow-x-clip truncate flex-nowrap">
             {#each $listStore.values() as curation (curation.id)}
                 <li class="w-full">
                     <button
@@ -121,7 +121,7 @@
             <li class="w-full min-w-[16rem]">
                 {#if !showCreate}
                     <button
-                        class="whitespace-nowrap w-full font-normal text-accent"
+                        class="whitespace-nowrap w-full font-normal text-accent2"
                         on:click|preventDefault|stopPropagation|stopImmediatePropagation={() => showCreate = true}
                     >
                         <Plus class="w-4 h-4 mr-2" />

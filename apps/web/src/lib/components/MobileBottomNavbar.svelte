@@ -48,8 +48,8 @@
     {/if}
 
 	<a
-		href="/explore"
-		class:active={$page.url.pathname.startsWith('/explore')}
+		href="/"
+		class:active={$page.url.pathname.startsWith('/')}
     >
         <Compass class="w-full h-full" />
         <span>Explore</span>
