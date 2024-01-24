@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import ClipItem from "$components/Clips/ClipItem.svelte";
-	import { userFollows } from "$stores/session";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
     import createDebug from "debug";
 	import { onDestroy } from "svelte";
-	import { writable } from "svelte/store";
+	import Highlight from "./Highlight.svelte";
+	import HighlightNote from "./HighlightNote.svelte";
 
-    export let filter: NDKFilter;
+    export let filter: NDKFilter | undefined = undefined;
 
     const debug = createDebug("highlighter:highlights");
 
@@ -16,7 +16,9 @@
 
     $: selectedCategory = $page.params.category || "All";
 
-    const filters: NDKFilter[] = [ { kinds: [NDKKind.Highlight], ...filter } ];
+    export let filters: NDKFilter[] | undefined = undefined;
+
+    if (!filters) filters = [ { kinds: [NDKKind.Highlight], ...filter } ];
 
     const events = $ndk.storeSubscribe(filters, {
         groupable: false,
@@ -30,14 +32,20 @@
     });
 </script>
 
-<div class="flex flex-row gap-8 mx-auto mt-8 w-full">
+<div class="flex flex-row gap-8 mx-auto w-full">
     <div class="
         max-sm:px-[var(--mobile-body-px)]
         flex-col justify-start items-start flex w-full
         gap-6
     ">
         {#each $events as event}
-            <ClipItem {event} class="bg-base-100/60" />
+            {#if event.kind === NDKKind.Highlight}
+                <Highlight highlight={NDKHighlight.from(event)} class="bg-base-100/60" />
+            {:else if event.kind === NDKKind.Text}
+                <HighlightNote note={event} class="bg-base-100/60" />
+            {:else}
+                <ClipItem {event} class="bg-base-100/60" />
+            {/if}
         {/each}
     </div>
 </div>

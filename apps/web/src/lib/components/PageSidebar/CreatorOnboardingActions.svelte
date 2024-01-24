@@ -28,97 +28,113 @@
     $: hasContent = !!content && !!$content?.length;
 
     $: allDone = hasTiers && hasContent && hasProfileBanner;
+
+    let hiddenOrCompleted = undefined;
+
+    onMount(() => {
+        hiddenOrCompleted = !!localStorage.getItem("creator-onboarding-done");
+    })
+
+    function hide() {
+        hiddenOrCompleted = true;
+        localStorage.setItem("creator-onboarding-done", "true");
+    }
 </script>
 
-<div
-    class="flex flex-col gap-5"
-    class:py-6={sidebarView}
-    class:px-4={sidebarView}
->
-    <div class="flex flex-row justify-between">
-        <h2 class="text-2xl text-white">What's next?</h2>
-    </div>
-
-    <a href="/welcome/profile">
-        <div>
-            <span>
-                <User />
-                Complete your profile
-            </span>
-
-            <!-- <span>
-                {#if !sidebarView}
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#BD9488] to-[#7092A0]">
-                        2 of 4 Completed
-                    </span>
-                {/if}
-            </span> -->
+{#if hiddenOrCompleted === false}
+    <div
+        class="flex flex-col gap-5"
+        class:py-6={sidebarView}
+        class:px-4={sidebarView}
+    >
+        <div class="flex flex-row justify-between items-end">
+            <h2 class="text-2xl text-white">What's next?</h2>
+            <button class="btn btn-base-300 text-sm" on:click={hide}>
+                Hide
+            </button>
         </div>
 
-        <span class="caret">
-            <CaretRight class="w-6 h-6" />
-        </span>
-    </a>
+        <a href="/welcome/profile">
+            <div>
+                <span>
+                    <User />
+                    Complete your profile
+                </span>
 
-    <a href="/welcome/tiers">
-        <div>
-            <span>
-                {#if !hasTiers}
-                    <Tiers />
-                {:else}
-                    <Check class="text-success" weight="duotone" />
-                {/if}
-                <div class="flex flex-col items-start">
-                    <span>Set up your membership tiers</span>
-                    <div class="text-xs text-neutral-500">
-                        <span>
-                            Manage membership prices and perks
+                <!-- <span>
+                    {#if !sidebarView}
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#BD9488] to-[#7092A0]">
+                            2 of 4 Completed
                         </span>
-                </div>
+                    {/if}
+                </span> -->
+            </div>
+
+            <span class="caret">
+                <CaretRight class="w-6 h-6" />
             </span>
-        </div>
+        </a>
 
-        <span class="caret">
-            <CaretRight class="w-6 h-6" />
-        </span>
-    </a>
+        <a href="/welcome/tiers">
+            <div>
+                <span>
+                    {#if !hasTiers}
+                        <Tiers />
+                    {:else}
+                        <Check class="text-success" weight="duotone" />
+                    {/if}
+                    <div class="flex flex-col items-start">
+                        <span>Set up your membership tiers</span>
+                        <div class="text-xs text-neutral-500">
+                            <span>
+                                Manage membership prices and perks
+                            </span>
+                    </div>
+                </span>
+            </div>
 
-    <button on:click={() => openModal(NewItemModal)}>
-        <div>
-            <span>
-                {#if !hasContent}
+            <span class="caret">
+                <CaretRight class="w-6 h-6" />
+            </span>
+        </a>
+
+        <button on:click={() => openModal(NewItemModal)}>
+            <div>
+                <span>
+                    {#if !hasContent}
+                        <Post />
+                    {:else}
+                        <Check class="text-success" weight="duotone" />
+                    {/if}
+                    <span>Publish your first post</span>
+                </span>
+            </div>
+
+            <span class="caret">
+                <CaretRight class="w-6 h-6" />
+            </span>
+        </button>
+
+        <a href="/welcome/referrals">
+            <div>
+                <span>
                     <Post />
-                {:else}
-                    <Check class="text-success" weight="duotone" />
-                {/if}
-                <span>Publish your first post</span>
+                    <div class="flex flex-col items-start">
+                        <span>Set up a referral program</span>
+                        <div class="text-xs text-neutral-500">
+                            <span>
+                                Incentivize your subscribers to share your content
+                            </span>
+                    </div>
+                </span>
+            </div>
+
+            <span class="caret">
+                <CaretRight class="w-6 h-6" />
             </span>
-        </div>
-
-        <span class="caret">
-            <CaretRight class="w-6 h-6" />
-        </span>
-    </button>
-
-    <a href="/welcome/referrals">
-        <div>
-            <span>
-                <Post />
-                <div class="flex flex-col items-start">
-                    <span>Set up a referral program</span>
-                    <div class="text-xs text-neutral-500">
-                        <span>
-                            Incentivize your subscribers to share your content
-                        </span>
-                </div>
-            </span>
-        </div>
-
-        <span class="caret">
-            <CaretRight class="w-6 h-6" />
-        </span>
-    </a>
-</div>
+        </a>
+    </div>
+{/if}
 
 <style>
     a, button {

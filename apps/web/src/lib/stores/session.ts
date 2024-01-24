@@ -235,7 +235,7 @@ async function fetchData(
 			processAppRecommendation(event);
 		} else if (event.kind === NDKKind.SubscriptionTier) {
 			processSubscriptionTier(event);
-		} else if ([NDKKind.CurationSet, NDKKind.CurationSet + 1].includes(event.kind!)) {
+		} else if ([NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet].includes(event.kind!)) {
 			processCurationList(event);
 		}
 	};
@@ -274,20 +274,15 @@ async function fetchData(
 
 	const processAppRecommendation = (event: NDKEvent) => {
 		opts.appHandlersStore!.update((appHandlersStore) => {
-			console.log(`app recommendation`, event.dTag);
 			if (!event.dTag) return appHandlersStore;
 			const handlerKind = parseInt(event.dTag!);
-			console.log(`app recommendation`, handlerKind, event.tags);
 
 			if (!appHandlersStore.has(handlerKind)) {
 				appHandlersStore.set(handlerKind, new Map());
 			}
 
 			for (const tag of event.getMatchingTags('a')) {
-				console.log(`app recommendation`, tag);
 				const [, eventPointer, , handlerType] = tag;
-				d(`app recommendation`, tag, { eventPointer, handlerType });
-
 				appHandlersStore.get(handlerKind)!.set(handlerType || 'default', eventPointer);
 			}
 
@@ -308,16 +303,18 @@ async function fetchData(
 	const processCurationList = (event: NDKEvent) => {
 		const list = NDKList.from(event);
 
+		console.log(`processing list ${list.title}`, event.rawEvent());
+
 		if (!list.title) return;
 
 		switch (event.kind) {
-			case NDKKind.CurationSet:
+			case NDKKind.ArticleCurationSet:
 				opts.userArticleCurationsStore!.update((lists) => {
 					lists.set(list.tagId(), list);
 					return lists;
 				});
 				break;
-			case NDKKind.CurationSet + 1:
+			case NDKKind.VideoCurationSet:
 				opts.userVideoCurationsStore!.update((lists) => {
 					lists.set(list.tagId(), list);
 					return lists;

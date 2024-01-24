@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKList } from '@nostr-dev-kit/ndk';
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
 	import VideoLink from "$components/Events/VideoLink.svelte";
     import { ndk } from "@kind0/ui-common";
@@ -14,31 +14,65 @@
 	import { derived, writable, type Readable } from 'svelte/store';
 	import { pageHeader } from '$stores/layout';
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
+	import ExploreFilters from './ExploreFilters.svelte';
+	import CurationItem from '$components/CurationItem.svelte';
+	import ListContentDvms from './ListContentDvms.svelte';
 
     const debug = createDebug("highlighter:explore");
 
     let events: NDKEventStore<NDKEvent> | undefined = undefined;
     let eventsForRender: Readable<NDKEvent[] | undefined> | undefined = undefined;
-    let activeCategory: string | undefined;
+    let activeFilter: string | undefined;
     const typeFilter = writable<App.FilterType[]>(["all"]);
+    let filters: NDKFilter[] | undefined;
 
-    $: if (activeCategory !== $page.params.category || !events) {
-        activeCategory = $page.params.category;
+    let filter = $page.params.category ?? "All";
 
-        if (events) events.unsubscribe();
+    async function getFilters(filter: string, filters?: NDKFilter[]) {
+        const kinds = [ NDKKind.Article, NDKKind.HorizontalVideo ];
+        let newFilters: NDKFilter[];
 
-        const relaySet = getDefaultRelaySet();
-        const filters: NDKFilter[] = [
-            { kinds: [
-                NDKKind.Article,
-                NDKKind.HorizontalVideo,
-            ]},
-        ];
+        if (filters) return filters;
 
-        if (activeCategory) {
-            filters[0]["#t"] = [activeCategory];
+        switch (filter) {
+            case "Curated":
+                if ($typeFilter.includes("curation")) {
+                    return [{
+                        kinds: [NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet]
+                    }]
+                }
+
+                newFilters = []
+
+                const lists = await $ndk.fetchEvents({ kinds: [NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet, NDKKind.BookmarkSet], limit: 100 });
+
+                for (const event of lists) {
+                    const list = NDKList.from(event);
+                    newFilters.push(...list.filterForItems())
+                }
+
+                break;
+            default:
+                newFilters = [ { kinds, limit: 10, "#f": ["Free"] } ];
         }
 
+        return newFilters;
+    }
+
+    $: if (activeFilter !== filter || !events) {
+        activeFilter = filter;
+
+        getFilters(filter, filters).then(subscribe);
+    };
+
+    onDestroy(() => {
+        events?.unsubscribe();
+    })
+
+    function subscribe(filters: NDKFilter[]) {
+        events?.unsubscribe();
+
+        const relaySet = undefined;//getDefaultRelaySet();
         events = $ndk.storeSubscribe(
             filters,
         { relaySet, autoStart: true, groupable: false, subId: 'explore', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
@@ -47,6 +81,7 @@
         eventsForRender = derived([events, typeFilter], ([$events, $typeFilter]) => {
             const events: NDKEvent[] = [];
 
+
             for (const event of $events) {
                 if ($typeFilter.includes("all")) {
                     events.push(event);
@@ -54,16 +89,16 @@
                     events.push(event);
                 } else if ($typeFilter.includes("video") && event.kind === NDKKind.HorizontalVideo) {
                     events.push(event);
+                } else if ($typeFilter.includes("curation") && (
+                    event.kind === NDKKind.ArticleCurationSet || event.kind === NDKKind.VideoCurationSet
+                )) {
+                    events.push(event);
                 }
             }
 
             return events;
         });
-    };
-
-    onDestroy(() => {
-        events?.unsubscribe();
-    })
+    }
 
     let selectedCategory: string;
 
@@ -73,6 +108,10 @@
         title: "Discover",
         searchBar: true
     };
+
+    $: if (filter) {
+
+    }
 </script>
 
 <svelte:head>
@@ -88,32 +127,39 @@
 <MainWrapper marginClass="w-full">
     {#if eventsForRender && $eventsForRender}
         <div class="flex flex-col gap-6 w-full">
-            <div class="w-full justify-between items-center flex max-sm:hidden overflow-x-clip flex-nowrap border-b border-base-300 py-2">
-                <div class="justify-start items-start gap-6 flex whitespace-nowrap flex-shrink">
-                    <div class="text-white text-opacity-60 text-sm font-semibold leading-4">Popular Categories</div>
-                        {#each categories as category}
-                            <a
-                                href="/explore/{category}"
-                                class="text-sm font-semibold leading-4"
-                                class:text-white={category === selectedCategory}
-                            >{category}</a>
-                        {/each}
-                </div>
-                <FilterButtons bind:filters={$typeFilter} />
-            </div>
+            <ExploreFilters bind:value={filter} bind:typeFilter={$typeFilter} bind:filters />
 
-            <div class="w-full max-2xl">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-10">
-                    {#each $eventsForRender as event (event.id)}
-                        {#if event.kind === NDKKind.Article}
-                            <ArticleLink article={NDKArticle.from(event)} grid={true} />
-                        {:else if event.kind === NDKKind.HorizontalVideo}
-                            <VideoLink video={NDKVideo.from(event)} grid={true} />
-                        {:else if event.kind === NDKKind.GroupNote}
-                            <PostGrid {event} />
-                        {/if}
-                    {/each}
-                </div>
+            <div class="w-full">
+                {#if filter === "add"}
+                    <ListContentDvms />
+                {:else if filter === "Controversial"}
+                    <div class="max-w-3xl mx-auto flex flex-col items-start text-lg">
+                        <div class="flex flex-col justify-between items-start w-full">
+                            <h1 class="text-white text-5xl font-bold mb-2">Controversial</h1>
+                            <div class="badge badge-lg bg-base-300 mb-4 text-xl text-white/80 p-4">Coming soon</div>
+                        </div>
+
+                        <h2 class="text-xl">
+                            Explore controversial content.
+                        </h2>
+                    </div>
+                {:else}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-10">
+                        {#key filter}
+                            {#each $eventsForRender as event (event.id)}
+                                {#if event.kind === NDKKind.Article}
+                                    <ArticleLink article={NDKArticle.from(event)} grid={true} />
+                                {:else if event.kind === NDKKind.HorizontalVideo}
+                                    <VideoLink video={NDKVideo.from(event)} grid={true} />
+                                {:else if event.kind === NDKKind.GroupNote}
+                                    <PostGrid {event} />
+                                {:else if event.kind === NDKKind.ArticleCurationSet || event.kind === NDKKind.VideoCurationSet}
+                                    <CurationItem list={NDKList.from(event)} />
+                                {/if}
+                            {/each}
+                        {/key}
+                    </div>
+                {/if}
             </div>
         </div>
     {/if}

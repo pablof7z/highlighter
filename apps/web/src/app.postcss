@@ -100,13 +100,12 @@
 	}
 
 	.highlight .highlight--blockquote {
-		border-left: solid 6px;
-		@apply border-accent pl-4;
+		border-left: 0;
 	}
 }
 
-.highlight--reference a {
-	@apply text-accent;
+.highlight--reference {
+	@apply hidden;
 }
 
 .article .event-card {
@@ -143,7 +142,7 @@
 }
 
 .highlight--blockquote {
-	@apply prose;
+	@apply p-0;
 	@apply !font-normal;
 }
 
@@ -153,4 +152,8 @@
 
 .dropdown-content.menu {
 	@apply rounded-box !bg-base-100 outline outline-white/20 backdrop-blur-[50px];
+}
+
+.prose {
+	@apply font-serif leading-8;
 }

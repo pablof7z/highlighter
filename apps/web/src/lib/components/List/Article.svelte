@@ -2,11 +2,12 @@
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { getSummary } from "$utils/article";
-	import { RelativeTime, ndk } from "@kind0/ui-common";
+	import { Name, RelativeTime, ndk } from "@kind0/ui-common";
 	import type { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import type { UserProfileType } from "../../../app";
 	import { urlSuffixFromEvent } from "$utils/url";
+	import UserProfile from "$components/User/UserProfile.svelte";
 
     export let article: NDKArticle;
     export let href: string | undefined = undefined;
@@ -35,15 +36,21 @@
     </div>
 
     <div class="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex max-h-36 overflow-clip">
-        <div class="self-stretch text-white text-base font-medium leading-relaxed">
+        <div class="self-stretch text-white text-base font-medium leading-relaxed max-h-12 overflow-clip">
             {article.title}
         </div>
-        <AvatarWithName
+        <UserProfile
             user={article.author}
-            spacing="gap-4"
-            avatarSize="tiny"
             bind:userProfile
             bind:authorUrl
-        />
+        >
+            <Name
+                user={article.author}
+                spacing="gap-4"
+                avatarSize="tiny"
+                bind:userProfile
+                bind:authorUrl
+            />
+        </UserProfile>
     </div>
 </a>

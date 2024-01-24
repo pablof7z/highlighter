@@ -1,5 +1,5 @@
 import { type NDKEvent, NDKKind } from '@nostr-dev-kit/ndk';
-import type { EventType } from '../../../../app';
+import type { EventType } from '../../../app';
 
 export function getEventType(event: NDKEvent): EventType | undefined {
 	if (event.kind === NDKKind.Article) {
@@ -12,7 +12,11 @@ export function getEventType(event: NDKEvent): EventType | undefined {
 		return 'short-note';
 	} else if (event.kind === NDKKind.Highlight) {
 		return 'highlight';
-	} else if ([NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet].includes(event.kind!)) {
+	} else if ([
+		NDKKind.ArticleCurationSet,
+		NDKKind.VideoCurationSet,
+		NDKKind.BookmarkSet,
+	].includes(event.kind!)) {
 		return 'curation';
 	} else {
 		console.trace('Unknown event type', event.rawEvent());

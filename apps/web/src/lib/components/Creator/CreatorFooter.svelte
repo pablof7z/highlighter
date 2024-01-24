@@ -1,12 +1,17 @@
 <script lang="ts">
-	import { mainWrapperMargin, pageSidebar } from "$stores/layout";
-    import type { NDKUser } from "@nostr-dev-kit/ndk";
+	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
+    import { mainWrapperMargin, pageSidebar } from "$stores/layout";
+    import type { NDKArticle, NDKUser } from "@nostr-dev-kit/ndk";
+	import type { Readable } from "svelte/store";
 
     export let user: NDKUser;
+    export let tiers: Readable<NDKArticle[]>;
 
     let hasSidebar = false;
     $: hasSidebar = !!$pageSidebar?.component;
 </script>
+
+tiers = {tiers}
 
 <div class="
     fixed bottom-0
@@ -24,8 +29,6 @@
     ">
         <div></div>
 
-        <button class="button">
-            Subscribe
-        </button>
+        <SubscribeButton {user} {tiers} />
     </div>
 </div>

@@ -13,6 +13,8 @@ import { mainWrapperMargin, pageHeader, pageSidebar } from "$stores/layout";
     bg-base-100 max-sm:mobile-nav
     p-4
     border-b border-base-300
+    mobile-nav
+    bg-opacity-80
     flex-row justify-between items-center inline-flex shrink-0 {$$props.class??""}
 ">
     <div class="

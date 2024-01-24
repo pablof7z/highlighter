@@ -9,8 +9,7 @@
 	import { derived, type Readable } from "svelte/store";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import EditableAvatar from "$components/User/EditableAvatar.svelte";
-    import { Image } from "phosphor-svelte";
-    import type { UserProfileType } from "../../../app";
+    import Image from "phosphor-svelte/lib/Image";
 	import { Pen } from "phosphor-svelte";
 	import CategorySelector from "$components/Forms/CategorySelector.svelte";
 	import { onMount } from "svelte";
@@ -21,6 +20,9 @@
 	import { pageHeader } from '$stores/layout';
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import CreatorFooter from '$components/Creator/CreatorFooter.svelte';
+	import type { UserProfileType } from '../../app';
+	import { openModal } from 'svelte-modals';
+	import BecomeSupporterModal from '$modals/BecomeSupporterModal.svelte';
 
     let id: string;
     let { user } = $page.data;
@@ -33,6 +35,7 @@
 
     onMount(() => {
         addReadReceipt(user);
+        openModal(BecomeSupporterModal, { user, tiers: getUserSupportPlansStore() })
     })
 
     let articles: Readable<Map<NDKEventId, NDKArticle>>;
@@ -97,7 +100,7 @@
     <meta property="og:image" content={userProfile?.image || defaultBanner} />
 </svelte:head>
 
-<MainWrapper marginClass="max-w-3xl mx-auto">
+<MainWrapper class="sm:px-6" marginClass="max-w-3xl mx-auto">
     <UserProfile {user} bind:userProfile bind:kind37777Event let:fetching>
         <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%]">
             {#if userProfile && editing}
@@ -186,7 +189,9 @@
         {/if}
     </UserProfile>
 
-    <CreatorProfileTabs bind:value={activeTab} name={userProfile?.displayName} />
+    <div class="border-t border-b border-neutral-800 py-3 mb-6">
+        <CreatorProfileTabs bind:value={activeTab} name={userProfile?.displayName} />
+    </div>
 
     {#if activeTab === "Publications"}
         <div class="flex flex-row gap-10">
@@ -211,7 +216,7 @@
     {/if}
 </MainWrapper>
 
-<CreatorFooter {user} />
+<CreatorFooter {user} tiers={userTiers} />
 
 <style lang="postcss">
     .name {

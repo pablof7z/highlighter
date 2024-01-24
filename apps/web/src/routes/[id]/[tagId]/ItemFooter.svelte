@@ -11,6 +11,7 @@
 	import { ZapsButton } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
 	import { hideMobileBottomBar } from "$stores/layout";
+	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
 
     export let event: NDKEvent;
     export let urlPrefix: string;
@@ -56,9 +57,7 @@
             </div>
 
             <div class="place-self-end max-sm:hidden">
-                <button class="button">
-                    Memberships
-                </button>
+                <SubscribeButton user={event.author} />
             </div>
         </div>
     </div>

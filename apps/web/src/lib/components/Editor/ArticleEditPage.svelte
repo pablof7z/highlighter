@@ -223,7 +223,7 @@
         <ArticleEditor bind:article on:contentUpdate={onArticleChange} textareaClass="" />
     </div>
 
-    <div class="flex flex-col gap-10 max-sm:px-4" class:hidden={step !== 1}>
+    <div class="flex flex-col gap-10" class:hidden={step !== 1}>
         <DistributionPage
             type="article"
             {tiers}

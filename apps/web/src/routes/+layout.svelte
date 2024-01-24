@@ -7,6 +7,7 @@
 	import { configureFeNDK } from '$utils/ndk';
 	import { pwaInfo } from 'virtual:pwa-info';
 	import AppShell from '$components/PageElements/AppShell.svelte';
+	import "@fontsource/lora";
 
 	let webManifestLink: string;
 	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''

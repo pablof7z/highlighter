@@ -69,7 +69,7 @@
                         <div>{video.title}</div>
                     </div>
                 </div>
-                <div class="flex-row items-start gap-4 flex w-full justify-between">
+                <!-- <div class="flex-row items-start gap-4 flex w-full justify-between">
                     <div class="flex flex-row items-center gap-12">
                         <EventActionButtons
                             event={video}
@@ -80,7 +80,7 @@
                             <a href={editUrl} class="button">Edit</a>
                         {/if}
                     </div>
-                </div>
+                </div> -->
             </div>
             {#if content.length > 0}
                 <div class="flex-col justify-start items-start gap-6 flex text-lg font-light leading-7 w-full px-6 rounded-box bg-base-200 prose">

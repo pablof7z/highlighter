@@ -4,7 +4,7 @@
     export let currency: string;
 </script>
 
-<select class="select bg-base-200 text-white border border-base-300 {$$props.class??""}" bind:value={currency}>
+<select class="select pr-10 pl-0 text-right bg-base-200 text-white border border-base-300 {$$props.class??""}" bind:value={currency}>
     {#if !currency}
         <option value="" selected>select currency</option>
     {/if}

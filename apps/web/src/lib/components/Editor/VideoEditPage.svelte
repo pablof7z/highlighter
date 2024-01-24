@@ -2,6 +2,7 @@
     import { NDKVideo } from "@nostr-dev-kit/ndk";
 	import { getUserSupportPlansStore } from "$stores/user-view";
 	import VideoEditor from './VideoEditor.svelte';
+	import MainWrapper from "$components/Page/MainWrapper.svelte";
 
     export let video: NDKVideo;
     export let teaser: NDKVideo | undefined = undefined;
@@ -18,6 +19,6 @@
     }
 </script>
 
-<div class="flex flex-col gap-10">
+<MainWrapper class="flex flex-col gap-10">
     <VideoEditor bind:video />
-</div>
+</MainWrapper>

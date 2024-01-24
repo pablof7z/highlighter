@@ -59,7 +59,9 @@
         gap-6
     ">
         {#each $sortedLists as list (list.id)}
-            <CurationItem {list} />
+            {#if list.items.length > 0}
+                <CurationItem {list} />
+            {/if}
         {/each}
     </div>
 </div>

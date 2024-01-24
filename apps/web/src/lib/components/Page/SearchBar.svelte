@@ -27,6 +27,10 @@
         return str.includes("@") && str.includes(".");
     }
 
+    function looksLikeNpub(str: string) {
+        return !!str.match(/^(npub1|nprofile1)/);
+    }
+
     function looksLikeNpub19(str: string) {
         if (str.match(/^(nevent1|note1|naddr1)/)) {
             try {
@@ -55,6 +59,10 @@
             $ndk.getUserFromNip05(value).then(user => {
                 if (user) return redirectTo(`/${value}`);
             });
+        }
+
+        if (looksLikeNpub(value)) {
+            return redirectTo(`/${value}`);
         }
 
         if (looksLikeNpub19(value)) {
@@ -110,8 +118,8 @@
 {#if !noFocus}
     <button
         class="
-            fixed top-16 left-0 w-screen h-screen bg-base-100 opacity-80 z-40
-            sm:ml-20
+            absolute sm:fixed top-16 left-0 w-screen h-screen bg-base-100 opacity-80 z-40
+            sm:pl-20
         "
         on:click={() => dispatch("dismiss")}
         transition:fade={{duration: 300}}

@@ -10,7 +10,6 @@
 
 <FeedEventWrapper {event} class={$$props.class??""}>
     <EventContent
-        class="article prose"
         ndk={$ndk}
         {event}
         showEntire={true}

@@ -11,7 +11,7 @@ export function urlFromEvent(event: NDKEvent): string {
 
 export function urlSuffixFromEvent(event: NDKEvent): string {
 	if (event.isParamReplaceable() && event.tagValue('d')) {
-		return event.tagValue('d')!;
+		return encodeURIComponent(event.tagValue('d')!);
 	}
 
 	return event.id.slice(0, EVENT_ID_SUFFIX_LENGTH);

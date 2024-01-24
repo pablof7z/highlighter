@@ -26,7 +26,7 @@ export async function load({ params, fetch }) {
 				status: 404,
 				json: async () => {
 					return {
-						error: 'User not found'
+						error: `User ${id} not found`
 					};
 				}
 			};

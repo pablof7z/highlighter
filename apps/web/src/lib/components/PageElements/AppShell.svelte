@@ -103,6 +103,7 @@
 		<div
 			class="menu w-[80vw] sm:w-[40vw] sm:max-w-[25rem] min-h-full bg-base-200 text-base-content p-4"
 			class:max-sm:mt-16={$sidebarPlacement === "left"}
+			on:click={() => $pageDrawerToggle = false}
 		>
 			<svelte:component this={$rightSidebar.component} {...$rightSidebar.props} />
 		</div>

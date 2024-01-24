@@ -111,7 +111,7 @@
     }
 </script>
 
-<ModalShell>
+<ModalShell color="glassy">
     <TierHeader
         {user}
         bind:userProfile

@@ -8,6 +8,7 @@
     import type { UserProfileType } from "../../../app";
 	import { Pen } from "phosphor-svelte";
 	import CategorySelector from "$components/Forms/CategorySelector.svelte";
+	import MainWrapper from "$components/Page/MainWrapper.svelte";
 
 
     export let user: NDKUser;
@@ -42,7 +43,7 @@
     }
 </script>
 
-<div class="max-w-5xl mx-auto">
+<MainWrapper marginClass="max-w-5xl mx-auto">
     <UserProfile {user} bind:userProfile bind:kind37777Event let:fetching>
         <div class="relative w-full overflow-hidden max-sm:pb-[20vh] pb-[25%]">
             <img src={userProfile?.banner??defaultBanner} class="absolute w-full h-full object-cover object-top lg: rounded" alt={userProfile?.name}>
@@ -121,7 +122,7 @@
     </UserProfile>
 
     <slot />
-</div>
+</MainWrapper>
 
 <style lang="postcss">
     .name {

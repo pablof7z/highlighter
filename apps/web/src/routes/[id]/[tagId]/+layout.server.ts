@@ -5,7 +5,10 @@ import type { NDKEvent, NDKFilter } from '@nostr-dev-kit/ndk';
 import { get } from 'svelte/store';
 
 export async function load({ params }) {
-	const { id, tagId } = params;
+	const { id } = params;
+	let { tagId } = params;
+
+	tagId = decodeURIComponent(tagId);
 
 	const $ndk = get(ndk);
 	$ndk.debug.enabled = true;

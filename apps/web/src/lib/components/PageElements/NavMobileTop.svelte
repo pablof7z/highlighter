@@ -45,7 +45,7 @@
             {/if}
         </div>
         <div class="navbar-center max-w-[60vw] overflow-hidden">
-            <span class="btn btn-ghost text-xl text-white truncate">
+            <span class="btn btn-ghost text-base text-white truncate">
                 {#if $pageHeader?.title}
                     {$pageHeader.title}
                 {:else}

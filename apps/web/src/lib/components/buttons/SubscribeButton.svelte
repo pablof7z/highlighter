@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { NDKArticle, NDKUser } from "@nostr-dev-kit/ndk";
-	import { CaretRight } from "phosphor-svelte";
+	import CaretRight from "phosphor-svelte/lib/CaretRight";
     import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { openModal } from "svelte-modals";
 	import type { Readable } from "svelte/store";
@@ -19,7 +19,11 @@
         button flex flex-row items-center !gap-0
     "
 >
-    Backstage
+    {#if tiers && $tiers.length > 0}
+        Go Backstage
+    {:else}
+        Support
+    {/if}
     <CaretRight class="w-5 h-5 inline" />
 </button>
 

@@ -2,7 +2,7 @@
 	import { mainWrapperMargin } from "$stores/layout";
 
     export let mobilePadded = true;
-    export let paddingClass = "pt-0 pb-24 sm:px-3";
+    export let paddingClass = "pt-0 pb-24 sm:px-4";
     export let marginClass = "max-w-3xl mx-auto";
     export let el: HTMLElement | undefined = undefined;
 
@@ -11,7 +11,7 @@
 
 <div class="
     {paddingClass}
-    min-h-screen]
+    min-h-screen
     flex flex-col w-full {$$props.class??""}
     {marginClass}
 "

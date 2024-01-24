@@ -44,5 +44,8 @@ export default defineConfig({
 		}),
 		nodePolyfills(),
 		mkcert()
-	]
+	],
+	optimizeDeps: {
+		exclude: ["phosphor-svelte"],
+	}
 });

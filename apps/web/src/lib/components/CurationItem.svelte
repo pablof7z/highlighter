@@ -2,14 +2,25 @@
 	import type { NDKList } from "@nostr-dev-kit/ndk";
 	import UserProfile from "./User/UserProfile.svelte";
 	import AvatarWithName from "./User/AvatarWithName.svelte";
+	import ItemLink from "./Events/ItemLink.svelte";
 
     export let list: NDKList;
 
     const image = list.tagValue("image");
     let authorUrl: string;
+
+    const durationTag = `${list.items.length} items`;
 </script>
 
-<div class="card w-full">
+<ItemLink
+    event={list}
+    {durationTag}
+    image={list.image}
+    title={list.title}
+    grid={true}
+/>
+
+<!-- <div class="card w-full">
     {#if image}
         <figure class="card-image">
             <img src={image} alt="" />
@@ -33,4 +44,4 @@
     h3.title {
         @apply text-white text-xl font-semibold;
     }
-</style>
+</style> -->

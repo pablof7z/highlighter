@@ -3,20 +3,18 @@
 	import ClipItem from "$components/Clips/ClipItem.svelte";
 	import { userFollows } from "$stores/session";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
     import createDebug from "debug";
 	import { onDestroy, onMount } from "svelte";
-	import { writable } from "svelte/store";
     import { pageHeader, pageSidebar, searching } from "$stores/layout";
     import HighlightsSidebar from "$components/PageSidebar/Highlights.svelte";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
-	import PageTitle from "$components/Page/PageTitle.svelte";
 	import { getNip50RelaySet } from "$utils/ndk";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
+	import Highlight from "$components/Highlight.svelte";
 
     const debug = createDebug("highlighter:highlights");
 
-    const typeFilter = writable<App.FilterType[]>(["all"]);
     let selectedCategory: string;
     let open = false;
     let events: NDKEventStore<NDKEvent> | undefined = undefined;
@@ -104,7 +102,11 @@
 >
     {#key key}
         {#each $events as event (event.id)}
-            <ClipItem {event} />
+            {#if event.kind === NDKKind.Highlight}
+                <Highlight highlight={NDKHighlight.from(event)} class="bg-base-100/60" />
+            {:else}
+                <ClipItem {event} />
+            {/if}
         {/each}
     {/key}
 </MainWrapper>

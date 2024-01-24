@@ -209,7 +209,7 @@
         {article.title}
     </div>
 
-    <div class="prose text-xl">
+    <div class="text-xl text-white/70 font-normal">
         {getSummary(article)}
     </div>
 
@@ -229,7 +229,7 @@
                     </div>
                     <article class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative">
                         {#key content}
-                            <EventContent ndk={$ndk} event={article} bind:content class="prose" />
+                            <EventContent ndk={$ndk} event={article} bind:content class="prose !max-w-none" />
                         {/key}
 
                         {#if !isFullVersion}

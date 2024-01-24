@@ -1,7 +1,7 @@
 <script lang="ts">
     import { ndk, pageDrawerToggle, rightSidebar, user as currentUser, Avatar, Textarea, Name } from "@kind0/ui-common";
 	import { page } from "$app/stores";
-	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
     import { debugMode } from "$stores/session";
 	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
 	import VideoView from "./VideoView.svelte";
@@ -19,6 +19,7 @@
 	import { pageHeader } from "$stores/layout";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { CaretLeft, Lightning } from "phosphor-svelte";
+	import Highlight from "$components/Highlight.svelte";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -109,6 +110,12 @@
             </div>
         {:else if eventType === 'curation'}
             <ListView {event} {urlPrefix} {authorUrl} />
+        {:else if eventType === 'highlight'}
+            <CreatorShell user={event.author}>
+                <div class="max-w-2xl mx-auto w-full">
+                    <Highlight highlight={NDKHighlight.from(event)} {urlPrefix} {authorUrl} />
+                </div>
+            </CreatorShell>
         {:else}
             <CreatorShell user={event.author}>
                 <div class="{mxClass} max-w-3xl">

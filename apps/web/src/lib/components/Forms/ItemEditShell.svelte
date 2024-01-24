@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { slide } from "svelte/transition";
     import { createEventDispatcher, onMount } from "svelte";
-	import { CaretRight, PaperPlaneTilt } from "phosphor-svelte";
+	import { CaretRight, DownloadSimple, PaperPlaneTilt } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
 	import { pageHeader, type PageHeader } from "$stores/layout";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
@@ -72,7 +72,8 @@
             header.leftLabel = "Back";
             header.leftFn = back;
         } else {
-            header.leftLabel = "Save Draft";
+            header.leftIcon = DownloadSimple;
+            header.leftLabel = "Draft";
             header.leftFn = () => dispatch("draft");
         }
 
@@ -80,7 +81,7 @@
     }
 </script>
 
-<MainWrapper class="pb-24" bind:el={main}>
+<MainWrapper mobilePadded={false} class="pb-24" bind:el={main}>
     <slot />
 </MainWrapper>
 

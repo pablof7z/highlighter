@@ -3,9 +3,9 @@
 	import ReactButton from "$components/buttons/ReactButton.svelte";
 	import { requiredTierNamesFor, requiredTiersFor } from "$lib/events/tiers";
 	import { urlSuffixFromEvent } from "$utils/url";
-	import { Avatar, Name, ndk, user } from "@kind0/ui-common";
+	import { Avatar, EventCardActions, Name, RelativeTime, ndk, user } from "@kind0/ui-common";
     import { NDKKind, type NDKEvent, type Hexpubkey } from "@nostr-dev-kit/ndk";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import { EventCardDropdownMenu, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
     import { createEventDispatcher } from "svelte";
 	import { derived } from "svelte/store";
     import Comment from "$components/Forms/Comment.svelte";
@@ -13,10 +13,12 @@
 	import { ChatCircle, Repeat } from "phosphor-svelte";
 	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
 	import { getUserSupportPlansStore, userTiers } from "$stores/user-view";
+	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 
     export let event: NDKEvent;
     export let urlPrefix: string | undefined = undefined;
     export let skipAuthor: boolean = false;
+    export let reverse = false;
     const author = event.author;
 
     let suffixUrl = urlSuffixFromEvent(event);
@@ -46,19 +48,26 @@
         flex flex-col gap-4 pb-6 wrapper w-full {$$props.class??""}
         overflow-clip
     ">
+        {#if reverse}
+            <div class="flex flex-row w-full justify-between items-stretch">
+                <AvatarWithName user={author} {UserProfile} />
+
+                <div class="flex flex-row gap-2 items-center" on:click|preventDefault|stopPropagation|stopImmediatePropagation>
+                    <RelativeTime {event} class="text-neutral-500 text-sm font-normal" />
+
+                    <!-- <EventCardDropdownMenu {event} /> -->
+                </div>
+            </div>
+        {/if}
+
         {#if $$slots.default}
             <slot />
         {:else}
             <EventContent ndk={$ndk} {event} class="prose article" />
         {/if}
 
-        <!-- <div class="text-white">ID</div>
-        {event.id}
-        <div class="text-white">Tags</div>
-        <pre>{JSON.stringify(event.tags, null, 2)}</pre> -->
-
         <div class="w-full justify-between items-center inline-flex">
-            {#if !skipAuthor}
+            {#if !skipAuthor && !reverse}
                 <div class="justify-start items-center gap-4 flex">
                     <a href={authorUrl} class="relative flex-none">
                         <Avatar {userProfile} {fetching} user={author} size="small" />

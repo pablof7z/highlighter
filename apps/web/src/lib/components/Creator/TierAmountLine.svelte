@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { possibleTerms, type Term } from "$utils/term";
+	import type { Term } from "$utils/term";
     import Input from "$components/Forms/Input.svelte";
-	import { Trash } from "phosphor-svelte";
+	import Trash from "phosphor-svelte/lib/Trash";
     import { createEventDispatcher } from "svelte";
-	import { currencySymbol, possibleCurrencies } from "$utils/currency";
 	import CurrencySelect from "./CurrencySelect.svelte";
 	import TermSelect from "./TermSelect.svelte";
-	import GlassyInput from "$components/Forms/GlassyInput.svelte";
 
     export let value: ["amount", string, string, string];
     export let currency: string;
@@ -14,6 +12,13 @@
     export let term: Term | "" = "";
     export let forceOpen = false;
     export let complete: boolean;
+
+    function blurInput() {
+        // if the currency is USD or EUR, make it into a float with 2 decimals
+        if (currency === "USD" || currency === "EUR") {
+            amount = parseFloat(amount).toFixed(2);
+        }
+    }
 
     amount = amountFromTag(value[1], value[2]);
     currency = value[2];
@@ -51,9 +56,11 @@
 </script>
 
 <div
-    class="self-stretch justify-start items-center gap-2 inline-flex border-base-300 rounded-box"
+    class="
+        self-stretch justify-start items-center gap-2 inline-flex border-base-300 rounded-box
+        {open ? "!bg-white/10 " : ""}
+    "
     class:border={open}
-    class:bg-base-300={open}
     class:p-4={open}
 >
     {#if !currency || !term || forceOpen}
@@ -62,13 +69,13 @@
                 <div class="text-sm font-medium text-white w-full">Tier price</div>
                 <div
                     class="
-                        flex flex-row gap-2 bg-base-200 rounded-2xl
-                        {(!amount || !currency) ? "border border-red-800/50" : ""}
+                        flex flex-row bg-base-200 rounded-2xl
+                        {(!amount || !currency) ? "shadow shadow-red-800/50" : ""}
                     "
                 >
-                    <Input bind:value={amount} color="black" label="Price" placeholder="Price" class="grow basis-0 text-sm text-right !w-20 shrink !border-none" />
+                    <Input on:blur={blurInput} bind:value={amount} color="black" label="Price" placeholder="Price" class="grow basis-0 text-sm text-right !w-20 !bg-white/10 shrink !border-none rounded-l-2xl rounded-r-none" />
                     <div class="flex-grow">
-                        <CurrencySelect bind:currency class="bg-transparent !border-none !outline-none" />
+                        <CurrencySelect bind:currency class="!bg-black/10 rounded-l-none border-0 pl-2 ml-0 !outline-none" />
                     </div>
                 </div>
             </div>
@@ -78,9 +85,9 @@
                     How often should supporters pay you?
                 </div>
                 <div class="
-                    {!term ? "border border-red-800/50" : ""}
+
                 ">
-                    <TermSelect bind:term />
+                    <TermSelect bind:term class={!term ? "shadow shadow-red-800/50 rounded-box" : ""} />
                 </div>
             </div>
 
@@ -89,7 +96,7 @@
             </button>
         </div>
     {:else}
-        <Input bind:value={amount} color="black" label="Price" placeholder="Price" class="basis-0 text-right w-[100px]" />
+        <Input bind:value={amount} on:blur={blurInput} color="black" label="Price" placeholder="Price" class="basis-0 text-right flex-none !w-[100px]" />
         <div class="shrink">
             <CurrencySelect bind:currency />
         </div>
