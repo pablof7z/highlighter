@@ -36,6 +36,8 @@ module.exports = {
 					'base-100': '#000000',
 					'base-200': '#111111',
 					'base-300': '#232323',
+					'white': '#E3E3E3',
+					'neutral-200': '#E3E3E3',
 					'neutral-800': '#232323',
 					'neutral-900': '#111111',
 					'.menu': {
