@@ -3,9 +3,9 @@
     export let button: boolean = false;
 </script>
 
-<label class="text-white text-base font-medium flex flex-row gap-2 items-center justify-between">
+<label class="text-white text-base font-medium flex flex-row gap-2 items-center justify-between {$$props.class??""}">
     <div class="flex flex-row items-start w-full">
-        <input type="checkbox" class="checkbox mr-3" bind:checked={value} />
+        <input type="checkbox" class="checkbox mr-3" bind:checked={value} on:change />
         <div class="flex flex-col sm:flex-row gap-2 justify-stretch w-full">
             <div class="flex flex-col items-start grow w-full">
                 <slot />

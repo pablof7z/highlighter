@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { slide } from "svelte/transition";
-    import { createEventDispatcher, onMount } from "svelte";
+    import { createEventDispatcher } from "svelte";
 	import { CaretRight, DownloadSimple, PaperPlaneTilt } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
 	import { pageHeader, type PageHeader } from "$stores/layout";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
+	import PageHeaderComponent from "$components/PostEditor/Toolbar.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -30,7 +31,7 @@
     }
 
 	function back() {
-        if (step > 0 && step < steps.length - 1) step--;
+        if (step > 0) step--;
         if (step === 0) dispatch("draft");
 	}
 
@@ -63,29 +64,31 @@
 
     $: {
         const header: PageHeader = {
+            component: PageHeaderComponent,
             title: steps[step].title,
-            rightLabel: nextIsPublish ? "Publish" : "Next",
-            rightFn: next
+            right: {
+                label: nextIsPublish ? "Publish" : "Next",
+                fn: next
+            }
         }
 
         if (step > 0) {
-            header.leftLabel = "Back";
-            header.leftFn = back;
+            header.left = { label: "Back", fn: back };
         } else {
-            header.leftIcon = DownloadSimple;
-            header.leftLabel = "Draft";
-            header.leftFn = () => dispatch("draft");
+            header.left = { icon: DownloadSimple, label: "Draft", fn: () => dispatch("draft") };
         }
 
         $pageHeader = header;
     }
+
+
 </script>
 
 <MainWrapper mobilePadded={false} class="pb-24" bind:el={main}>
     <slot />
 </MainWrapper>
 
-<footer class="max-sm:bg-base-200 max-sm:bg-opacity-80 backdrop-blur-[50px]" bind:this={footer}>
+<!-- <footer class="max-sm:bg-base-200 max-sm:bg-opacity-80 backdrop-blur-[50px]" bind:this={footer}>
     <div class="mx-auto max-w-3xl sm:py-8 max-sm:mobile-nav max-sm:fixed max-sm:w-full max-sm:h-20 max-sm:px-3 z-50">
         {#if statusToShow}
             <div class="text-center pb-4 inline-flex gap-4 items-end justify-center w-full" transition:slide>
@@ -117,7 +120,6 @@
             ">
                 <button
                     class="px-4 whitespace-nowrap button button-black sm:py-3"
-                    class:opacity-0={step === steps.length - 1}
                     on:click={back}
                 >
                     {#if step === 0}
@@ -150,9 +152,9 @@
         </div>
     </div>
     <div class="sm:hidden h-20"></div>
-</footer>
+</footer> -->
 
-<style lang="postcss">
+<!-- <style lang="postcss">
     main {
         @apply flex flex-col gap-10;
         @apply max-sm:mt-24;
@@ -183,4 +185,4 @@
   color: hsl(var(--cc, var(--nc)) / var(--tw-text-opacity));
 }
 
-</style>
+</style> -->

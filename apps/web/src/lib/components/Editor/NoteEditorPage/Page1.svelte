@@ -25,13 +25,13 @@
         <Textarea
             bind:value={note.content}
             autofocus={true}
-            class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-transparent !border-base-300 text-neutral-400 p-6"
+            class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-transparent !border-base-300 text-neutral-400 p-6 min-h-[15rem]"
             placeholder="Write your note here..."
         />
 
         <div class="flex flex-col gap-4 max-sm:px-4">
             <div class="flex flex-row items-center text-white gap-4">
-                <UploadButton class="button button-primary px-4 bg-base-300" on:uploaded={uploaded}>
+                <UploadButton class="button w-10 h-10 !rounded-full p-1" on:uploaded={uploaded}>
                     <Image class="w-6 h-6" />
                 </UploadButton>
                 Attachments

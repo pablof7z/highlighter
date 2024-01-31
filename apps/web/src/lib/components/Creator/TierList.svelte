@@ -200,7 +200,7 @@
         {/each}
     </div>
 
-    <div class="flex flex-col sm:flex-row justify-between items-start max-sm:w-full max-sm:gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-stretch max-sm:w-full max-sm:gap-4">
         <button
             class="button button-black px-6 py-3 font-medium max-sm:w-full"
             disabled={!canAddTier}
@@ -210,7 +210,7 @@
             Add Tier
         </button>
 
-        <div class="flex flex-col sm:flex-row gap-4 max-sm:items-stretch justify-end items-end max-sm:w-full">
+        <div class="flex flex-col sm:flex-row gap-4 max-sm:items-stretch justify-end items-stretch max-sm:w-full">
             {#if usePresetButton}
                 <button
                     class="button button-black flex flex-col font-medium items-center gap-0 px-4 max-sm:w-full py-3"
@@ -220,7 +220,7 @@
                 </button>
             {/if}
 
-            <button class="button button-primary px-6" on:click={save}>
+            <button class="button px-6" on:click={() => save()}>
                 {#if $$slots.saveButton}
                     <slot name="saveButton" />
                 {:else}

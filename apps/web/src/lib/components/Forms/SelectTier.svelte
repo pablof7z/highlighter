@@ -1,16 +1,14 @@
 <script lang="ts">
 	import TiersModal from '$modals/TiersModal.svelte';
-    import { CaretDown, PlusCircle } from "phosphor-svelte";
+    import { CaretDown } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
 	import type { TierSelection } from "$lib/events/tiers";
     import { createEventDispatcher, onMount } from "svelte";
 	import { openModal } from "svelte-modals";
+	import TiersLabel from './TiersLabel.svelte';
 
     export let show = false;
-    export let skipTitle = false;
-    export let subtitle: string | undefined = undefined;
     export let tiers: TierSelection;
-    let selectedString = "";
 
     const dispatch = createEventDispatcher();
 
@@ -30,17 +28,6 @@
             console.log("Free is selected, selecting all")
             tiers = Object.keys(tiers)
                 .reduce((acc, id) => ({ ...acc, [id]: { name: tiers[id].name, selected: true } }), {});
-        }
-
-        if (Object.keys(tiers).filter(tier => tiers[tier].selected).length === Object.keys(tiers).length) {
-            selectedString = "Free";
-        } else if (Object.keys(tiers).filter(tier => tiers[tier].selected).length === 0) {
-            selectedString = "Select";
-        } else {
-            selectedString = Object.keys(tiers)
-                .filter(tier => tiers[tier].selected)
-                .map(tier => tiers[tier].name)
-                .join(", ");
         }
 
         dispatch("changed", tiers);
@@ -66,25 +53,19 @@
     function addNewTier() {
         openModal(TiersModal);
     }
+
+    let selectedString: string;
 </script>
 
-<div class="w-full flex-col justify-start items-start gap-2 inline-flex">
-    {#if !skipTitle || !!subtitle}
-        <div class="flex flex-col w-full">
-            {#if !skipTitle}
-                <div class="text-white text-xl font-medium">Content Tier</div>
-            {/if}
-            {#if subtitle}
-                <div class="text-white/50 font-thin">
-                    {subtitle}
-                </div>
-            {/if}
-        </div>
-    {/if}
+<div class="w-full flex-col justify-start items-start gap-2 inline-flex {$$props.class??""}">
     <div class="self-stretch rounded-xl border border-neutral-800 items-start inline-flex bg-transparent flex-col justify-start gap-0">
         <button on:click={() => show = !show} class="text-white text-base px-4 py-3 font-medium w-full text-left flex flex-row items-center justify-between">
             <div class="flex flex-col items-start gap-0">
-                <h1>{selectedString}</h1>
+                {#key tiers}
+                    <h1>
+                        <TiersLabel {tiers} bind:value={selectedString} />
+                    </h1>
+                {/key}
                 {#if selectedString === "Free"}
                     {#if onlyFree}
                     <div class="font-light text-sm opacity-50">

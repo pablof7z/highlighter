@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let title: string;
+    export let title: string | undefined = undefined;
 </script>
 
 <!-- <div class="border-b border-base-300 flex flex-row items-center justify-between gap-8 p-6 relative">
@@ -18,6 +18,7 @@
     lg:rounded-3xl
     flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
 ">
+    {#if title}
         <div class="
             self-stretch justify-between items-center gap-6 inline-flex
             py-4 w-full px-4
@@ -39,16 +40,17 @@
                 <slot name="headerRight" />
             {/if}
         </div>
+    {/if}
 
-        <div
-            class="
-            max-lg:max-h-[50dvh]
-            h-full
-            overflow-y-auto
-            flex-col justify-start items-start gap-3 flex w-full
-            px-4
-            {$$props.innerClass??""}
-        ">
-            <slot />
-        </div>
+    <div
+        class="
+        max-lg:max-h-[50dvh]
+        h-full
+        overflow-y-auto
+        flex-col justify-start items-start gap-3 flex w-full
+        px-4
+        {$$props.innerClass??""}
+    ">
+        <slot />
+    </div>
 </div>

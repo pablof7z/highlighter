@@ -4,7 +4,7 @@
 	import UserProfile from "./UserProfile.svelte";
 	import { Avatar, Name } from "@kind0/ui-common";
 
-    export let user: NDKUser;
+    export let user: NDKUser | undefined = undefined;
     export let userProfile: UserProfileType | undefined = undefined;
     export let authorUrl: string | undefined = undefined;
     export let spacing = "gap-2";
@@ -12,10 +12,24 @@
     export let avatarSize: 'tiny' | 'small' | 'medium' | 'large' | undefined = "medium";
 </script>
 
-<UserProfile {user} bind:userProfile let:fetching bind:authorUrl>
-    <a href={authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
-        <Avatar {userProfile} {fetching} size={avatarSize} class={$$props.avatarClass??""} type={avatarType} />
+{#if !userProfile}
+    <UserProfile {user} bind:userProfile let:fetching bind:authorUrl>
+        <a href={authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
+            <Avatar {userProfile} {fetching} size={avatarSize} class={$$props.avatarClass??""} type={avatarType} />
 
-        <Name {userProfile} {fetching} {authorUrl} class={$$props.nameClass??""} />
+            <div class="flex flex-col items-start gap-0">
+                <Name {userProfile} {fetching} {authorUrl} class={$$props.nameClass??""} />
+                <slot />
+            </div>
+        </a>
+    </UserProfile>
+{:else}
+    <a href={authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
+        <Avatar {userProfile} size={avatarSize} class={$$props.avatarClass??""} type={avatarType} />
+
+        <div class="flex flex-col items-start gap-0">
+            <Name {userProfile} {authorUrl} class={$$props.nameClass??""} />
+            <slot />
+        </div>
     </a>
-</UserProfile>
+{/if}

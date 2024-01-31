@@ -48,10 +48,14 @@
 
 	$pageHeader = {
 		title: "Profile",
-		leftLabel: "Back",
-		leftUrl: "/welcome",
-		rightLabel: saving ? "loading" : "Save",
-		rightFn: saveClicked
+		left: {
+			label: "Back",
+			url: "/welcome",
+		},
+		right: {
+			label: saving ? "loading" : "Save",
+			fn: saveClicked
+		}
 	};
 </script>
 
@@ -72,12 +76,12 @@
 			</div>
 		</UserProfile>
 
-		<div class="py-10 flex flex-col gap-2">
-			<h3>Categories</h3>
-			<h4>Choose the categories that best describe your content</h4>
+		<section class="settings">
+			<div class="title">Categories</div>
+			<div class="description">Choose the categories that best describe your content</div>
 
 			<CategorySelector bind:categories={editingCategories} skipTitle={true} />
-		</div>
+		</section>
 	</div>
 
 	<div class="flex flex-col-reverse sm:flex-row sm:gap-2 max-sm:items-stretch w-full justify-end">

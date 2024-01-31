@@ -14,3 +14,8 @@ export function getSummary(article: NDKArticle) {
 
 	return summary;
 }
+
+
+export function countWords(content: string) {
+	return content.split(/\s+/).length;
+}

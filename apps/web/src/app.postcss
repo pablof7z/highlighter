@@ -21,7 +21,7 @@
 	}
 
 	.button {
-		@apply inline-flex items-center justify-center gap-2 rounded-full bg-white px-3 py-1.5;
+		@apply inline-flex items-center justify-center gap-2 rounded-full bg-neutral-200 px-3 py-1.5;
 		@apply text-base font-semibold text-black;
 	}
 
@@ -32,7 +32,7 @@
 	.button-primary {
 		@apply inline-flex items-center justify-center gap-2 rounded-full bg-black px-6 py-3;
 		@apply text-lg font-medium;
-		@apply bg-gradient-to-r from-gradient1 to-gradient2 text-white;
+		@apply bg-gradient-to-r from-gradient1 to-gradient2 text-neutral-200;
 	}
 
 	.button-black:disabled {
@@ -41,7 +41,7 @@
 
 	.button-black {
 		@apply border border-base-300 bg-black;
-		@apply text-white;
+		@apply text-neutral-200;
 	}
 
 	.button-primary:disabled {
@@ -58,7 +58,7 @@
 	}
 
 	.article h2 {
-		@apply mb-1 mt-8 text-xl text-white;
+		@apply mb-1 mt-8 text-xl text-neutral-200;
 	}
 
 	.article p {
@@ -67,7 +67,7 @@
 
 	input,
 	textarea {
-		@apply rounded-lg !border-2 border-neutral-800 !bg-neutral-800 text-white ring-0;
+		@apply rounded-lg !border-2 border-neutral-800 !bg-neutral-800 text-neutral-200 ring-0;
 	}
 
 	input:focus,
@@ -138,7 +138,7 @@
 }
 
 .tooltip::after {
-	@apply hidden;
+	@apply rounded-box border-2 border-base-300 bg-base-200 bg-opacity-80 px-6 py-3 !backdrop-blur-[50px];
 }
 
 .highlight--blockquote {
@@ -151,9 +151,43 @@
 }
 
 .dropdown-content.menu {
-	@apply rounded-box !bg-base-100 outline outline-white/20 backdrop-blur-[50px];
+	@apply rounded-box !bg-base-100 outline outline-neutral-200/20 backdrop-blur-[50px];
 }
 
 .prose {
 	@apply font-serif leading-8;
+}
+
+section.settings {
+	@apply flex flex-col gap-10;
+	@apply bg-white/5 rounded-box p-6;
+}
+
+section.settings > .title {
+	@apply text-2xl font-semibold text-neutral-200 w-full flex flex-col sm:flex-row justify-between;
+}
+
+section.settings > .title .right {
+	@apply text-base text-neutral-500 sm:self-end;
+}
+
+section.settings > .description {
+	@apply text-base text-neutral-200 -mt-8;
+}
+
+section.settings .field .title {
+	@apply text-neutral-400 uppercase;
+	@apply tracking-wider;
+}
+
+section.settings .field {
+	@apply flex flex-col gap-1 items-stretch;
+}
+
+.input-background {
+	@apply bg-gradient-to-r from-white/10 to-white/5;
+}
+
+.gradient-text {
+	@apply bg-clip-text bg-gradient-to-r text-transparent from-[#BD9488] to-[#7092A0];
 }

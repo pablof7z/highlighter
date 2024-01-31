@@ -6,10 +6,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import PostGrid from '$components/Events/PostGrid.svelte';
-	import { categories } from '$utils/categories';
 	import { page } from '$app/stores';
-	import { getDefaultRelaySet } from '$utils/ndk';
-	import FilterButtons from '$components/FilterButtons.svelte';
     import createDebug from "debug";
 	import { derived, writable, type Readable } from 'svelte/store';
 	import { pageHeader } from '$stores/layout';
@@ -17,6 +14,12 @@
 	import ExploreFilters from './ExploreFilters.svelte';
 	import CurationItem from '$components/CurationItem.svelte';
 	import ListContentDvms from './ListContentDvms.svelte';
+	import { mainContentKinds } from '$utils/event';
+	import { browser } from '$app/environment';
+
+    const blacklistedPubkeys = [
+        "a2155842128093cac2c5120c9830d568c8556b95f6e03eeca3946bcd4309b43b", // marinalunes@nostr.me
+    ];
 
     const debug = createDebug("highlighter:explore");
 
@@ -28,10 +31,26 @@
 
     let filter = $page.params.category ?? "All";
 
-    async function getFilters(filter: string, filters?: NDKFilter[]) {
+    function getFiltersWithQuery(query: string) {
+        let kinds: NDKKind[] = []
+
+        if ($typeFilter.includes("all")) kinds = mainContentKinds;
+        if ($typeFilter.includes("article")) kinds.push(NDKKind.Article);
+        if ($typeFilter.includes("video")) kinds.push(NDKKind.HorizontalVideo);
+        if ($typeFilter.includes("curation")) kinds.push(NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet);
+
+        filters = [
+            { search: query, kinds }
+        ]
+
+        return filters;
+    }
+
+    async function getFilters(filter: string, filters?: NDKFilter[], query?: string) {
         const kinds = [ NDKKind.Article, NDKKind.HorizontalVideo ];
         let newFilters: NDKFilter[];
 
+        if (query) return getFiltersWithQuery(query);
         if (filters) return filters;
 
         switch (filter) {
@@ -61,6 +80,11 @@
 
     $: if (activeFilter !== filter || !events) {
         activeFilter = filter;
+        let query: string | undefined;
+
+        if (browser) {
+            query = $page.url.searchParams.get("q") ?? undefined;
+        }
 
         getFilters(filter, filters).then(subscribe);
     };
@@ -81,8 +105,11 @@
         eventsForRender = derived([events, typeFilter], ([$events, $typeFilter]) => {
             const events: NDKEvent[] = [];
 
-
             for (const event of $events) {
+                // There is a bug in the relay, for now filter out events with a tier tag
+                if (event.tagValue("tier")) continue;
+                if (blacklistedPubkeys.includes(event.pubkey)) continue;
+
                 if ($typeFilter.includes("all")) {
                     events.push(event);
                 } else if ($typeFilter.includes("article") && event.kind === NDKKind.Article) {
@@ -104,14 +131,21 @@
 
     $: selectedCategory = $page.params.category || "All";
 
+    function searchFn(query: string) {
+        // set q in the url
+        const url = new URL(window.location.href);
+        url.searchParams.set("q", query);
+        window.history.replaceState({}, "", url.toString());
+
+        getFilters(filter, filters, query).then(subscribe);
+    }
+
     $pageHeader = {
+        searchBar: true,
         title: "Discover",
-        searchBar: true
+        searchFn,
     };
 
-    $: if (filter) {
-
-    }
 </script>
 
 <svelte:head>
@@ -131,6 +165,12 @@
 
             <div class="w-full">
                 {#if filter === "add"}
+                    <h1 class="text-5xl mb-2 font-bold">
+                        Coming Soon
+                    </h1>
+                    <h2 class="text-2xl !text-white/70 mb-4">
+                        Content Discovery DVMs
+                    </h2>
                     <ListContentDvms />
                 {:else if filter === "Controversial"}
                     <div class="max-w-3xl mx-auto flex flex-col items-start text-lg">
@@ -144,7 +184,7 @@
                         </h2>
                     </div>
                 {:else}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-10">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 sm:gap-10">
                         {#key filter}
                             {#each $eventsForRender as event (event.id)}
                                 {#if event.kind === NDKKind.Article}
@@ -154,7 +194,7 @@
                                 {:else if event.kind === NDKKind.GroupNote}
                                     <PostGrid {event} />
                                 {:else if event.kind === NDKKind.ArticleCurationSet || event.kind === NDKKind.VideoCurationSet}
-                                    <CurationItem list={NDKList.from(event)} />
+                                    <CurationItem list={NDKList.from(event)} grid={true} />
                                 {/if}
                             {/each}
                         {/key}

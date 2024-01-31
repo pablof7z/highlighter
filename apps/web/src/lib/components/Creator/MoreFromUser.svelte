@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
 	import PostGrid from "$components/Events/PostGrid.svelte";
-	import VideoGrid from "$components/Events/VideoGrid.svelte";
+	import VideoLink from "$components/Events/VideoLink.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { Name, ndk } from "@kind0/ui-common";
     import { NDKKind, type NDKFilter, type NDKUser, NDKSubscriptionCacheUsage, NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
@@ -37,7 +37,7 @@
                     {#if event.kind === NDKKind.Article}
                         <ArticleLink article={NDKArticle.from(event)} skipAuthor={true} grid={true} />
                     {:else if event.kind === NDKKind.HorizontalVideo}
-                        <VideoGrid video={NDKVideo.from(event)} />
+                        <VideoLink video={NDKVideo.from(event)} skipAuthor={true} grid={true} />
                     {:else if event.kind === NDKKind.GroupNote}
                         <PostGrid {event} />
                     {/if}

@@ -12,6 +12,13 @@ export const searching: Writable<boolean> = writable(false);
 
 export type PageHeader = {
 	/**
+	 * Component to be displayed on the main content area. If this is set, all other options will be ignored
+	 */
+	component?: ConstructorOfATypedSvelteComponent | "post-editor";
+	props?: { [key: string]: any };
+	on?: { [key: string]: (e: any) => void };
+
+	/**
 	 * Title to be displayed
 	 */
 	title?: string;
@@ -25,18 +32,22 @@ export type PageHeader = {
 	/**
 	 * Left button options
 	 */
-	leftIcon?: any;
-	leftLabel?: string;
-	leftUrl?: string;
-	leftFn?: () => void;
+	left?: {
+		icon?: any;
+		label?: string;
+		url?: string;
+		fn?: () => void;
+	};
 
 	/**
 	 * Right button options
 	 */
-	rightIcon?: any;
-	rightLabel?: string;
-	rightUrl?: string;
-	rightFn?: () => void;
+	right?: {
+		icon?: any;
+		label?: string;
+		url?: string;
+		fn?: () => void;
+	};
 };
 
 export const pageHeader = writable<PageHeader | null>(null);

@@ -4,6 +4,7 @@
     import { pageHeader, pageSidebar } from "$stores/layout";
 	import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from "svelte";
+	import MainWrapper from '$components/Page/MainWrapper.svelte';
 
     $pageSidebar = { component: Settings, props: {} }
     onDestroy(() => { $pageSidebar = null; })
@@ -17,14 +18,16 @@
     let announceClient = !!$ndk.clientNip89;
 </script>
 
-<Checkbox
-    bind:value={announceClient}
->
-    Enable client identity
-    <span class="text-sm" slot="description">
-        If this is turned on, public notes you create will have a "client" tag added. This helps with troubleshooting, and allows other people to find out about Highlighter.
-    </span>
-</Checkbox>
+<MainWrapper>
+    <Checkbox
+        bind:value={announceClient}
+    >
+        Enable client identity
+        <span class="text-sm" slot="description">
+            If this is turned on, public notes you create will have a "client" tag added. This helps with troubleshooting, and allows other people to find out about Highlighter.
+        </span>
+    </Checkbox>
+</MainWrapper>
 
 <style lang="postcss">
     h1 {

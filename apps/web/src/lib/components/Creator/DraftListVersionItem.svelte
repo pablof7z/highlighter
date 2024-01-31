@@ -2,6 +2,7 @@
 	import type { DraftCheckpoint } from "$stores/drafts";
 	import { newToasterMessage } from "@kind0/ui-common";
 	import DraftItem from "./DraftItem.svelte";
+	import { countWords } from "$utils/article";
 
     export let draft: DraftItem;
     export let checkpoint: DraftCheckpoint;
@@ -9,18 +10,7 @@
     let wordCount: number;
     let url: string;
 
-    switch (draft.type) {
-        case "article":
-            url = "/articles/new?draft=";
-            wordCount = JSON.parse(checkpoint.data.article).content?.split(" ")?.length;
-            break;
-        default: {
-            url = `/articles/new?unknown-type=${draft.type}&draft=`;
-            newToasterMessage("Unknown draft type", "error");
-        }
-    }
-
-    url += draft.id + "&checkpoint=" + checkpoint.time;
+    url = `/drafts/${draft.id}&checkpoint=` + checkpoint.time;
 
 </script>
 

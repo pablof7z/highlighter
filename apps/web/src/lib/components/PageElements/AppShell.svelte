@@ -7,7 +7,6 @@
 	import { fade } from 'svelte/transition';
 	import Navigation from "./Navigation.svelte";
 	import SectionHeader from "./SectionHeader.svelte";
-	import NavMobileTop from "./NavMobileTop.svelte";
 	import { page } from "$app/stores";
 	import SectionHeaderWithButtons from "./SectionHeaderWithButtons.svelte";
 
@@ -69,24 +68,29 @@
 		{#key $loginState}
 			<Navigation />
 
+			{#if !$pageSidebar?.component}
+				<div class="max-sm:hidden">
+					<SectionHeader />
+				</div>
+			{/if}
+
 			<div class="sm:pl-20">
 				{#if $pageSidebar?.component}
 					<div class="fixed border-r border-base-300 flex-col h-full w-96 max-lg:w-full max-lg:hidden">
 						<svelte:component this={$pageSidebar.component} {...$pageSidebar.props} />
 					</div>
 				{/if}
-
 				<div
 					class:lg:pl-96={hasSidebar}
 				>
-					{#if $pageHeader?.title}
+					{#if $pageHeader?.title && $pageHeader?.component}
 						{#if showSectionHeaderWithButtons}
-							<div class="max-sm:hidden">
+							<div class="max-sm:hidden w-full">
 								<SectionHeaderWithButtons title={$pageHeader.title} />
 							</div>
 						{:else}
-							<div class="max-sm:hidden">
-								<SectionHeader title={$pageHeader.title} />
+							<div class="max-sm:hidden w-full flex flex-col items-stretch justify-stretch">
+								<SectionHeader title={$pageHeader.title} {hasSidebar} />
 							</div>
 						{/if}
 					{/if}

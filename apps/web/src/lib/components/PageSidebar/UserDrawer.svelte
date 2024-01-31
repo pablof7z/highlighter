@@ -5,10 +5,12 @@
 	import { user } from "@kind0/ui-common";
 	import { Gear, SignOut, SquaresFour, User } from "phosphor-svelte";
 	import { openModal } from "svelte-modals";
+    import SettingsMenu from "../Settings/Menu.svelte";
 </script>
 
 {#if $user}
-    <ul class="menu menu-lg bg-base-200 rounded-box">
+    <SettingsMenu />
+    <!-- <ul class="menu menu-lg bg-base-200 rounded-box">
         <li>
             <AvatarWithName user={$user} class="" spacing="gap-4" nameClass="text-white font-semibold" avatarType="square" />
         </li>
@@ -25,7 +27,7 @@
             <SignOut class="mr-2"/>
             Log Out
         </button></li>
-    </ul>
+    </ul> -->
 {:else}
     <ul class="menu menu-lg bg-base-200 rounded-box">
         <li>

@@ -1,16 +1,7 @@
-<script lang="ts">
-	import MobileHeader from "$components/Page/MobileHeader.svelte";
-
-
-</script>
-
-<MobileHeader backButton={"/welcome"} title="Referrals">
-</MobileHeader>
-
 <div class="flex flex-col p-6">
     <div class="flex flex-col max-w-prose w-full">
         <h1 class="text-[80px] font-semibold ">
-            Rerrals.
+            Referrals.
         </h1>
         <h2 class="text-3xl">
             Like never before

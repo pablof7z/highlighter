@@ -25,10 +25,10 @@
     }
 </script>
 
-<div class="justify-start items-start gap-4 inline-flex w-full max-w-[100vw] whitespace-nowrap max-sm:px-3">
-    <div class="justify-start items-start gap-4 flex w-full">
+<div class="justify-start items-start gap-4 inline-flex whitespace-nowrap max-sm:px-3">
+    <div class="justify-start items-start gap-4 flex">
         {#each options as option (option.name)}
-            <div class:sm:tooltip={option.tooltip} data-tip={option.tooltip}>
+            <div class:tooltip={option.tooltip} data-tip={option.tooltip}>
                 <button
                     class="snap-center {option.class??""}"
                     on:click={() => clicked(option)}

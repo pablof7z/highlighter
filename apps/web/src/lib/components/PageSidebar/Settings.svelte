@@ -3,6 +3,6 @@
     import SettingsMenu from "$components/Settings/Menu.svelte";
 </script>
 
-<PageSidebar title="Settings">
+<PageSidebar innerClass="mt-6">
     <SettingsMenu />
 </PageSidebar>

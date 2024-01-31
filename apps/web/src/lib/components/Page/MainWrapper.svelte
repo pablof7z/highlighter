@@ -2,7 +2,7 @@
 	import { mainWrapperMargin } from "$stores/layout";
 
     export let mobilePadded = true;
-    export let paddingClass = "pt-0 pb-24 sm:px-4";
+    export let paddingClass = "sm:p-4 pb-24";
     export let marginClass = "max-w-3xl mx-auto";
     export let el: HTMLElement | undefined = undefined;
 

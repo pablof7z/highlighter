@@ -4,11 +4,11 @@
     import { user as loggedInUser } from '@kind0/ui-common';
     import { userSuperFollows } from '$stores/session';
     import Tier from "$components/Tier.svelte";
-	import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
+	import type { NDKArticle, NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 	import type { Readable } from "svelte/motion";
 	import { derived } from "svelte/store";
 	import { termToShort, type Term } from "$utils/term";
-	import { fade, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { Name } from '@kind0/ui-common';
 	import WalletConnect from '$components/Payment/WalletConnect.svelte';
 	import Subscribe from '$components/Payment/Subscribe.svelte';
@@ -19,16 +19,22 @@
 	import { currencyFormat } from '$utils/currency';
 	import type { UserProfileType } from '../../app';
 	import EmptyTierForm from '$components/EmptyTierForm.svelte';
+	import { getUserSupportPlansStore } from '$stores/user-view';
 
     export let user: NDKUser;
-    export let tiers: Readable<NDKEvent[]>;
+    export let tiers: Readable<NDKArticle[]> | undefined = undefined;
+
+    if (!tiers) {
+        tiers = getUserSupportPlansStore();
+    }
+
+    console.log("tiers", $tiers);
 
     let bitcoin = false;
     let paid = false;
     let nwcMode: any;
     let userHasWalletConnected = false;
     let nwcUrl: string;
-    let currency: string;
     let userProfile: UserProfileType;
 
     let selected: NDKEvent | undefined;

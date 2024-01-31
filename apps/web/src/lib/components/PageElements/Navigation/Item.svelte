@@ -2,12 +2,12 @@
 	import { page } from "$app/stores";
 
     export let href: string | undefined = undefined;
-    export let prefix: string | undefined = href;
+    export let matches: RegExp = new RegExp(`^${href}$`);
     export let tooltip: string | undefined = undefined;
 
     export let active: boolean | undefined = undefined;
 
-    $: active = prefix && prefix !== "/" ? ($page.url.pathname.startsWith(prefix)) : prefix === $page.url.pathname;
+    $: active = matches.test($page.url.pathname);
 </script>
 
 <div class="
@@ -58,7 +58,7 @@
     }
 
     a.active, button.active {
-        @apply text-white;
+        @apply text-neutral-200;
         @apply !bg-inherit !bg-opacity-20;
     }
 
@@ -69,11 +69,11 @@
     }
 
     .item.active {
-        @apply border-white;
+        @apply border-neutral-200;
 
     }
 
     .highlight {
-        @apply !bg-accent2 p-2 rounded-2xl text-white;
+        @apply !bg-accent2 p-2 rounded-2xl text-neutral-200;
     }
 </style>

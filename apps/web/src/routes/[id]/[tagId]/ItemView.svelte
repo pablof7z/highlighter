@@ -60,12 +60,16 @@
     let video: NDKVideo | undefined;
 
     $: $pageHeader = {
-        leftIcon: CaretLeft,
-        leftLabel: backTitle ?? "Back",
-        leftUrl: backUrl,
+        left: {
+            icon: CaretLeft,
+            url: backUrl,
+            label: backTitle ?? "Back"
+        },
         title: article?.title ?? video?.title,
-        rightIcon: Lightning,
-        rightLabel: "Subscribe",
+        right: {
+            icon: Lightning,
+            label: "Subscribe",
+        }
     };
 </script>
 
@@ -125,5 +129,10 @@
                 </div>
             </CreatorShell>
         {/if}
+
+        {#if $debugMode}
+            <pre>{JSON.stringify(event.rawEvent(), null, 4)}</pre>
+        {/if}
     {/if}
+
 </WithItem>

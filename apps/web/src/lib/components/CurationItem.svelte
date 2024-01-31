@@ -1,47 +1,42 @@
 <script lang="ts">
-	import type { NDKList } from "@nostr-dev-kit/ndk";
-	import UserProfile from "./User/UserProfile.svelte";
-	import AvatarWithName from "./User/AvatarWithName.svelte";
+    import { ndk } from "@kind0/ui-common";
+	import { NDKSubscriptionCacheUsage, type NDKList } from "@nostr-dev-kit/ndk";
 	import ItemLink from "./Events/ItemLink.svelte";
 
     export let list: NDKList;
-
-    const image = list.tagValue("image");
-    let authorUrl: string;
+    export let grid: boolean;
 
     const durationTag = `${list.items.length} items`;
+
+    const itemsFilter = list.filterForItems();
+
+    const items = $ndk.storeSubscribe(itemsFilter, {
+        groupable: true,
+        autoStart: true,
+        cacheUsage: NDKSubscriptionCacheUsage.PARALLEL
+    });
 </script>
 
 <ItemLink
     event={list}
     {durationTag}
-    image={list.image}
+    image={list.tagValue("image")}
     title={list.title}
-    grid={true}
-/>
-
-<!-- <div class="card w-full">
-    {#if image}
-        <figure class="card-image">
-            <img src={image} alt="" />
-        </figure>
+    {grid}
+    useProfileAsDefaultImage={false}
+>
+    {#if !grid}
+        <ul class="overflow-clip self-stretch max-h-24">
+            {#each $items as item}
+                <li class="py-1 truncate">
+                    <a
+                        href="/{""}/{list.dTag}/{item.dTag}"
+                        class="text-neutral-500"
+                    >
+                        {item.tagValue("title")}
+                    </a>
+                </li>
+            {/each}
+        </ul>
     {/if}
-
-    <div class="card-body">
-        <h3 class="title">
-            <a href="{authorUrl}/{list.dTag}">{list.title}</a>
-        </h3>
-        <AvatarWithName
-            user={list.author}
-            avatarSize="tiny"
-            nameClass="text-sm text-neutral-500"
-            bind:authorUrl
-        />
-    </div>
-</div>
-
-<style>
-    h3.title {
-        @apply text-white text-xl font-semibold;
-    }
-</style> -->
+</ItemLink>

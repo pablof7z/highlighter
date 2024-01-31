@@ -3,6 +3,7 @@ import type { NDKEvent, NDKRelaySet, NDKUser } from '@nostr-dev-kit/ndk';
 import { getDefaultRelaySet } from '$utils/ndk';
 import type { TierSelection } from '$lib/events/tiers';
 import { urlFromEvent } from '$utils/url';
+import { dvmScheduleEvent } from '$lib/dvm';
 
 function getEventRelaySet(
 	hasTeaser: boolean,
@@ -13,57 +14,36 @@ function getEventRelaySet(
 	else return relaySet || getDefaultRelaySet();
 }
 
-export async function publishToTiers(
-	event: NDKEvent,
-	tiers: TierSelection,
-	opts: {
-		wideDistribution?: boolean;
-		teaserEvent?: NDKEvent;
-		ndk?: NDK;
-		relaySet?: NDKRelaySet;
-	} = {}
-) {
-	const ndk = opts.ndk ?? event.ndk!;
-	const teaser = opts.teaserEvent;
-
-	opts.relaySet = getEventRelaySet(!!opts.teaserEvent, !!opts.wideDistribution, opts.relaySet);
-
-	const user: NDKUser = await ndk.signer!.user();
-
-	// remove signature
-	event.sig = undefined;
-	if (teaser) teaser.sig = undefined;
-
-	// update created_at date
-	event.created_at = Math.floor(Date.now() / 1000);
-	if (teaser) teaser.created_at = Math.floor(Date.now() / 1000);
-
+function addHTag(event: NDKEvent, user: NDKUser) {
 	if (!event.tagValue('h')) {
 		// Add NIP-29 group `h` tag
 		event.tags.push(['h', user.pubkey]);
 	}
+}
 
-	if (teaser && !teaser.tagValue('h')) {
-		// Add NIP-29 group `h` tag
-		teaser.tags.push(['h', user.pubkey]);
-	}
-
+function addTierTags(event: NDKEvent, tiers: TierSelection, teaser?: NDKEvent) {
 	// Annotate the tiers
 	for (const tier in tiers) {
 		if (teaser) {
 			if (tiers[tier].selected) {
 				// If this tier is required, mark is such
 				teaser.tag(['tier', tier]);
+				console.log(`adding required tier ${tier} to teaser ${teaser.tagValue("title")}`)
 			} else {
 				// Otherwise, mark it for indexing
 				teaser.tag(['f', tier]);
+				console.log(`adding f tier ${tier} to teaser ${teaser.tagValue("title")}`)
 			}
 		}
 
-		if (!tiers[tier].selected) continue;
-		event.tag(['f', tier]);
+		if (tiers[tier].selected) {
+			event.tag(['f', tier]);
+			console.log(`adding f tier ${tier} to event ${event.tagValue("title")}`)
+		}
 	}
+}
 
+async function addPubkeyAndDTag(event: NDKEvent, user: NDKUser, teaser?: NDKEvent) {
 	// Add pubkey and `d` tags if appropriate
 	event.pubkey = user.pubkey;
 	if (event.isParamReplaceable() && !event.tagValue('d')) await event.generateTags();
@@ -71,7 +51,9 @@ export async function publishToTiers(
 		teaser.pubkey = user.pubkey;
 		if (teaser.isParamReplaceable() && !teaser.tagValue('d')) await teaser.generateTags();
 	}
+}
 
+async function addPointerTags(event: NDKEvent, teaser?: NDKEvent) {
 	if (teaser) {
 		if (teaser.isParamReplaceable()) {
 			event.tag(['preview', teaser.tagId()]);
@@ -85,20 +67,85 @@ export async function publishToTiers(
 			teaser.tag(['url', urlFromEvent(event)]);
 		}
 
-		const teaserRelaySet = opts.wideDistribution ? undefined : opts.relaySet;
+		await teaser.sign();
+	}
+}
 
+export async function prepareEventsForTierPublish(
+	event: NDKEvent,
+	tiers: TierSelection,
+	opts: {
+		wideDistribution?: boolean;
+		teaserEvent?: NDKEvent;
+		ndk?: NDK;
+		relaySet?: NDKRelaySet;
+		publishAt?: Date;
+	} = {}
+) {
+	const ndk = opts.ndk ?? event.ndk!;
+	const teaser = opts.teaserEvent;
+	const publishAt = opts.publishAt ?? new Date();
+	const user: NDKUser = await ndk.signer!.user();
+
+	// remove signature
+	event.sig = undefined;
+	if (teaser) teaser.sig = undefined;
+
+	// update created_at date
+	console.log(`publishAt: ${publishAt}`);
+	event.created_at = Math.floor(publishAt.getTime() / 1000);
+	if (teaser) teaser.created_at = Math.floor(publishAt.getTime() / 1000);
+	console.log(`event.created_at: ${event.created_at}`);
+
+	addHTag(event, user);
+	if (teaser) addHTag(teaser, user);
+
+	addTierTags(event, tiers, teaser);
+
+	await addPubkeyAndDTag(event, user, teaser);
+
+	await addPointerTags(event, teaser);
+
+	if (teaser) await teaser.sign();
+
+	return [ event, teaser ];
+}
+
+async function publishOrSchedule(
+	event: NDKEvent,
+	relaySet: NDKRelaySet | undefined,
+	publishAt?: Date,
+) {
+	if (!publishAt) {
+		await event.publish(relaySet);
+	} else {
+		const relays = relaySet ? Array.from(relaySet.relays).map(r => r.url) : undefined;
+		await dvmScheduleEvent(event, relays);
+	}
+}
+
+export async function publishToTiers(
+	event: NDKEvent,
+	opts: {
+		wideDistribution?: boolean;
+		teaserEvent?: NDKEvent;
+		ndk?: NDK;
+		relaySet?: NDKRelaySet;
+		publishAt?: Date;
+	} = {}
+) {
+	const teaser = opts.teaserEvent;
+
+	opts.relaySet = getEventRelaySet(!!opts.teaserEvent, !!opts.wideDistribution, opts.relaySet);
+
+	if (teaser) {
+		const teaserRelaySet = opts.wideDistribution ? undefined : opts.relaySet;
 		await teaser.sign();
 
-		await teaser.publish(teaserRelaySet);
-
-		console.log('teaser', teaser.rawEvent());
-		console.log({ teaserRelaySet: teaserRelaySet ? teaserRelaySet.size() : 'undefined' });
+		await publishOrSchedule(teaser, teaserRelaySet, opts.publishAt);
 	}
 
 	if (!event.sig) await event.sign();
 
-	await event.publish(opts.relaySet);
-
-	console.log('event', event.rawEvent());
-	console.log({ relaySet: opts.relaySet ? opts.relaySet.size() : 'undefined' });
+	await publishOrSchedule(event, opts.relaySet, opts.publishAt);
 }

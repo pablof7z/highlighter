@@ -16,12 +16,16 @@
 </script>
 
 {#if $loginState}
-    <div class="w-full" transition:fade>
+    <div class="w-full flex-none" transition:fade>
         {#if $user}
             <UserProfile user={$user} let:userProfile let:fetching>
-                <button on:click={clicked}>
-                    <Avatar user={$user} {userProfile} {fetching} />
+                <button on:click={clicked} class="sm:hidden">
+                    <Avatar user={$user} {userProfile} {fetching} class="flex-none" />
                 </button>
+
+                <a href="/settings" class="max-sm:hidden">
+                    <Avatar user={$user} {userProfile} {fetching} class="flex-none" />
+                </a>
             </UserProfile>
         {:else}
             <slot />

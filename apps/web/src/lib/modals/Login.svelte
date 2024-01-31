@@ -7,6 +7,7 @@
 	import { closeModal } from "svelte-modals";
 	import { slide } from "svelte/transition";
 	import { nip19 } from "nostr-tools";
+	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 
     export let value: string = "";
     export let nsec: string = "";
@@ -101,17 +102,15 @@
     }
 </script>
 
-<div class="text-center text-black text-base font-light leading-normal">Log in</div>
-
 <div class="flex flex-col gap-4">
     {#if !advanced}
         <div class="w-full" transition:slide>
             <div class="w-full flex flex-col gap-8">
                 <div class="flex-col justify-start items-start gap-3 inline-flex">
                     <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                        <div class="text-black text-base font-medium leading-normal">Username / Nostr address</div>
-                        <Input color="white" bind:value type="text" placeholder="eg. bob@nostr.me" class="w-full px-4 py-3 bg-white rounded-full shadow border border-neutral-200 justify-start items-center gap-2 inline-flex text-black" />
-                        <button class="text-black text-sm font-normal underline leading-[19px]">Forgot username?</button>
+                        <div class="text-white text-base font-medium leading-normal">Username / Nostr address</div>
+                        <GlassyInput bind:value type="text" placeholder="eg. bob@nostr.me" />
+                        <!-- <button class="text-white text-sm font-normal underline leading-[19px]">Forgot username?</button> -->
                     </div>
                 </div>
 
@@ -119,7 +118,7 @@
                     <span class="text-danger">{error}</span>
                 {/if}
 
-                <button class="button-primary group" on:click={login}>
+                <button class="button py-4 group" on:click={login}>
                     {#if !blocking}
                         Continue
                     {:else}
@@ -128,7 +127,7 @@
                     {/if}
                 </button>
 
-                <button class="text-black text-sm text-opacity-50" on:click={() => advanced = !advanced}>
+                <button class="text-white text-sm text-opacity-50" on:click={() => advanced = !advanced}>
                     Advanced
                 </button>
             </div>
@@ -137,8 +136,8 @@
     <div class="w-full" transition:slide>
         <div class="w-full flex flex-col gap-4">
             <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                <div class="text-black text-base font-medium leading-normal">Browser Extension Login</div>
-                <button class="button-primary group w-full" disabled={!window.nostr}>
+                <div class="text-white text-base font-medium leading-normal">Browser Extension Login</div>
+                <button class="button py-4 group w-full" disabled={!window.nostr}>
                     Continue
                 </button>
                 {#if !window.nostr}
@@ -151,21 +150,21 @@
             <div class="divider my-0"></div>
 
             <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                <div class="text-black text-base font-medium leading-normal">Private Key Login</div>
-                <Input color="white" bind:value={nsec} type="text" placeholder="nsec1..." class="w-full px-4 py-3 bg-white rounded-full shadow border border-neutral-200 justify-start items-center gap-2 inline-flex text-black" />
+                <div class="text-white text-base font-medium leading-normal">Private Key Login</div>
+                <GlassyInput bind:value={nsec} type="text" placeholder="nsec1..." />
                 {#if nsec}
-                    <button class="button-primary group w-full" on:click={loginWithNsec}>
+                    <button class="button py-4 group w-full" on:click={loginWithNsec}>
                         Continue
                     </button>
                 {/if}
                 <span class="text-xs text-opacity-50">
                     This method is not secure:
                     you shouldn't paste your nsec!
-                    <!-- <button class="text-black text-sm font-normal underline leading-[19px]">Why?</button> -->
+                    <!-- <button class="text-white text-sm font-normal underline leading-[19px]">Why?</button> -->
                 </span>
             </div>
 
-            <button class="text-black text-sm text-opacity-50" on:click={() => advanced = !advanced}>
+            <button class="text-white text-sm text-opacity-50" on:click={() => advanced = !advanced}>
                 Back
             </button>
         </div>

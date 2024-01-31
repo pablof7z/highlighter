@@ -39,12 +39,13 @@ export function getDefaultRelaySet() {
 	return relaySet;
 }
 
-export async function configureDefaultNDK() {
+export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	const $ndk = getStore(ndk);
 	$ndk.clientName = 'highlighter';
 	$ndk.clientNip89 =
 		'31990:4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce:1703282708172';
 	$ndk.relayAuthDefaultPolicy = NDKRelayAuthPolicies.disconnect($ndk.pool);
+	$ndk.httpFetch = nodeFetch as typeof fetch;
 
 	// add default relays
 	for (const relay of defaultRelays) {
@@ -76,7 +77,7 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 
 	if ($ndk.explicitRelayUrls!.length === 0) {
 		console.log('configureBeNDK: no explicit relays, configuring default');
-		await configureDefaultNDK();
+		await configureDefaultNDK(nodeFetch);
 	}
 
 	$ndk.httpFetch = nodeFetch as typeof fetch;

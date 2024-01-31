@@ -16,7 +16,6 @@
     const debug = createDebug("highlighter:highlights");
 
     let selectedCategory: string;
-    let open = false;
     let events: NDKEventStore<NDKEvent> | undefined = undefined;
 
     $: selectedCategory = $page.params.category || "All";
@@ -45,9 +44,9 @@
     }
 
     function getRelaySetForSubscription(filters: NDKFilter[]) {
-        // if (filters[0].search) {
+        if (filters[0].search) {
             return getNip50RelaySet();
-        // }
+        }
 
         return undefined;
     }
@@ -103,7 +102,7 @@
     {#key key}
         {#each $events as event (event.id)}
             {#if event.kind === NDKKind.Highlight}
-                <Highlight highlight={NDKHighlight.from(event)} class="bg-base-100/60" />
+                <Highlight highlight={NDKHighlight.from(event)} />
             {:else}
                 <ClipItem {event} />
             {/if}

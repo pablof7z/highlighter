@@ -16,6 +16,7 @@
 	import { drafts } from "$stores/drafts";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { pageHeader } from "$stores/layout";
+	import NewPost from "$components/Creator/NewPost.svelte";
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
@@ -43,12 +44,15 @@
         default: activeTab = "Posts";
     }
 
-    let allOnboardingDone = false;
-
     $pageHeader = { title: "Dashboard" };
 </script>
 
-<LoadingScreen ready={!!mounted && !!$user}>
+<MainWrapper class="max-w-3xl mx-auto">
+    <NewPost />
+</MainWrapper>
+
+{#if false}
+<LoadingScreen ready={!!mounted && !!$user} class="hidden">
     <MainWrapper class="flex flex-col gap-10 mx-auto w-fit">
         <UserProfile user={$user} let:userProfile let:authorUrl let:fetching>
             <a href={authorUrl} class="flex flex-row items-center gap-4 text-left">
@@ -101,3 +105,4 @@
         </div>
     </MainWrapper>
 </LoadingScreen>
+{/if}

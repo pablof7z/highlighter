@@ -3,6 +3,7 @@
 	import { getUserSupportPlansStore } from "$stores/user-view";
 	import VideoEditor from './VideoEditor.svelte';
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
+	import Shell from "$components/PostEditor/Shell.svelte";
 
     export let video: NDKVideo;
     export let teaser: NDKVideo | undefined = undefined;
@@ -19,6 +20,6 @@
     }
 </script>
 
-<MainWrapper class="flex flex-col gap-10">
+<Shell type="video" {video}>
     <VideoEditor bind:video />
-</MainWrapper>
+</Shell>

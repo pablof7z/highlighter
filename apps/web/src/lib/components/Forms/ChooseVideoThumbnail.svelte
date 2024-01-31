@@ -1,9 +1,11 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { user } from "@kind0/ui-common";
-	import VideoGrid from "$components/Events/VideoGrid.svelte";
+	import VideoLink from "$components/Events/VideoLink.svelte";
+	import type { NDKVideo } from "@nostr-dev-kit/ndk";
 
     export let title: string;
+    export let content: string;
     export let duration: number | undefined;
     export let videoFile: File | undefined = undefined;
     export let currentThumbnail: string | undefined = undefined;
@@ -32,10 +34,6 @@
     let selectedIndex: number | undefined = undefined;
     let selectedThumbnail: Thumbnail | undefined = undefined;
     let mounted = false;
-
-    onMount(() => {
-        mounted = true;
-    })
 
     $: if (mounted && selectedIndex !== undefined) {
         selectedThumbnail = thumbnails[selectedIndex];
@@ -151,6 +149,7 @@
 
     onMount(() => {
         try {
+            mounted = true;
             generate();
         }  finally {
             generatingThumbnails = false;
@@ -160,15 +159,18 @@
     let fileUpload: HTMLInputElement;
 
     const videoMock = {
+        content,
         title,
         thumbnail: "https://i.imgur.com/3Zo7z3u.png",
         duration,
         author: $user,
         tagValue: () => "",
-    };
+    } as NDKVideo;
 
+    $: videoMock.author ??= $user;
     $: videoMock.thumbnail = currentThumbnail ?? selectedThumbnail?.dataUrl!;
     $: videoMock.title = title ?? "Untitled";
+    $: videoMock.content = content ?? "";
 
     $: selectedBlob = selectedThumbnail?.blob;
 </script>
@@ -183,8 +185,8 @@
 {/if}
 
 {#if currentThumbnail || selectedIndex !== undefined}
-    <div class="flex">
-        <VideoGrid
+    <div class="flex mb-8">
+        <VideoLink
             video={videoMock}
             skipLink={true}
         />
@@ -212,7 +214,7 @@
 <div class="flex flex-row items-center">
     <div class="text-sm flex flex-col gap-1 items-center w-full">
         <div class="flex flex-row w-full justify-between gap-2">
-            <label class="button button-primary text-sm cursor-pointer">
+            <label class="button cursor-pointer">
                 {#if thumbnails.length > 0}
                     or upload an image
                 {:else}

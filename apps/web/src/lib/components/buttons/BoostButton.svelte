@@ -3,7 +3,7 @@
 	import RepostIcon from "$icons/RepostIcon.svelte";
 	import { ndk, user } from "@kind0/ui-common";
 	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
-	import { onDestroy, onMount } from "svelte";
+	import { onDestroy } from "svelte";
 	import { openModal } from "svelte-modals";
 
     export let event: NDKEvent;

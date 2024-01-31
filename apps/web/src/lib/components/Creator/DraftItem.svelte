@@ -3,6 +3,7 @@
 	import type { DraftItem } from "$stores/drafts";
 	import { ndk, user } from "@kind0/ui-common";
 	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import ArticleLink from '$components/Events/ArticleLink.svelte';
 
     export let item: DraftItem;
 
@@ -23,8 +24,10 @@
 </script>
 
 {#if item.type === "article"}
-    <ArticleView
+    <ArticleLink
         article={article}
-        editUrl="/articles/new?draft={item.id}"
+        size="small"
+        grid={true}
+        href="/drafts/{item.id}"
     />
 {/if}

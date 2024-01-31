@@ -5,10 +5,9 @@
 	import type { NDKVideo } from '@nostr-dev-kit/ndk';
     import { createEventDispatcher } from 'svelte';
 
-    export let canContinue: boolean;
     export let video: NDKVideo;
     export let videoFile: File | undefined;
-    export let pendingStatus: string | undefined;
+    let pendingStatus: string | undefined;
 
     const dispatch = createEventDispatcher();
 
@@ -26,7 +25,6 @@
     $: {
         const haveVideo = !!videoFile || !!videoUrl;
         const haveTitle = !!video.title && video.title.length > 0;
-        canContinue = haveVideo && haveTitle;
     }
 
     function uploading(e: CustomEvent<{progress: number | string}>) {
@@ -85,7 +83,7 @@
 
     <Textarea
         bind:value={video.content}
-        on:keyup={() => dispatch("contentUpdate", video.content)}
+        on:keyup={() => {dispatch("contentUpdate", video.content); video = video}}
         bind:element={contentAreaElement}
         class="
             !bg-transparent border-none !px-4 -mx-4 rounded-lg text-white

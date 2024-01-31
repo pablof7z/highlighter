@@ -3,30 +3,32 @@
 	import { PaperPlaneTilt, CaretRight } from "phosphor-svelte";
 
     function rightClicked() {
-        if ($pageHeader?.rightFn) {
-            $pageHeader.rightFn();
+        if ($pageHeader?.right?.fn) {
+            $pageHeader.right.fn();
         }
     }
 </script>
 
-{#if $pageHeader?.rightLabel}
+{#if $pageHeader?.right}
     <a
-        href={$pageHeader?.rightUrl??"#"}
+        href={$pageHeader?.right.url??"#"}
         on:click={rightClicked}
         class="text-accent2 whitespace-nowrap"
     >
-        {#if $pageHeader.rightLabel === "loading"}
+        {#if $pageHeader.right.label === "loading"}
             <span class="loading loading-sm" />
         {:else}
-            {$pageHeader.rightLabel}
+            {#if !$pageHeader.title || $pageHeader.title.length < 10}
+                {$pageHeader.right.label}
+            {/if}
 
-            {#if $pageHeader.rightIcon}
+            {#if $pageHeader.right.icon}
                 <span class="w-5 h-5 inline">
-                    <svelte:component this={$pageHeader.rightIcon} class="inline" />
+                    <svelte:component this={$pageHeader.right.icon} class="inline" />
                 </span>
-            {:else if $pageHeader.rightLabel === "Next"}
+            {:else if $pageHeader.right.label === "Next"}
                 <CaretRight class="w-5 h-5 inline" />
-            {:else if $pageHeader.rightLabel === "Publish"}
+            {:else if $pageHeader.right.label === "Publish"}
                 <PaperPlaneTilt class="w-5 h-5 inline" />
             {/if}
         {/if}

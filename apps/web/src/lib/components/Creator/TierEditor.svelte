@@ -96,6 +96,7 @@
     let perkWithFocus: number | undefined;
 </script>
 
+<section class="settings">
 <div class="w-full p-6 rounded-xl flex-col border border-base-200">
     <div class="self-stretch flex-col justify-start items-start gap-6 flex">
         <section>
@@ -243,6 +244,7 @@
         </div>
     </div>
 </div>
+</section>
 
 <style lang="postcss">
     section {

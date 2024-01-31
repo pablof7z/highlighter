@@ -6,9 +6,7 @@
 
     export let videoFile: File | undefined = undefined;
     export let video: NDKVideo;
-    export let canContinue: boolean;
-    export let pendingStatus: string | undefined;
-    export let step: number;
+    let pendingStatus: string | undefined;
 
     const debug = createDebug("highlighter:video-uploader");
 
@@ -60,31 +58,27 @@
         }
     }
 
-    $: canContinue = !!selectedBlob || !!video.thumbnail;
-
     let uploadedBlob: Blob | undefined = undefined;
     let selectedBlob: Blob | undefined = undefined;
 
-    $: if (uploadedBlob !== selectedBlob && step === 2) {
+    $: if (uploadedBlob !== selectedBlob) {
         uploadedBlob = selectedBlob;
         upload();
     }
 </script>
 
-<div class="flex flex-col gap-4">
-    <div class="flex flex-col gap-1">
-        <div class="font-semibold text-white text-xl">Cover Image</div>
-        <div class="text-white/50 font-thin">
-            This image will be shown on the video page and in the feed.
-        </div>
-    </div>
+<section class="settings">
+    <div class="field">
+        <div class="title">Cover Image</div>
 
-    <ChooseVideoThumbnail
-        {videoFile}
-        currentThumbnail={video.thumbnail}
-        on:uploaded={thumbnailUploaded}
-        title={video.title??"Untitled"}
-        duration={video.duration}
-        bind:selectedBlob
-    />
-</div>
+        <ChooseVideoThumbnail
+            {videoFile}
+            currentThumbnail={video.thumbnail}
+            on:uploaded={thumbnailUploaded}
+            title={video.title??"Untitled"}
+            content={video.content??""}
+            duration={video.duration}
+            bind:selectedBlob
+        />
+    </div>
+</section>

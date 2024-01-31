@@ -3,14 +3,15 @@
 	import HighlightIcon from '../icons/HighlightIcon.svelte';
 	import { goto } from "$app/navigation";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
-	import { debugMode, userActiveSubscriptions } from "$stores/session";
-	import { startUserView, userSubscription, userTiers } from "$stores/user-view";
-	import { ndk, pageDrawerToggle, rightSidebar, user, HighlightWrapper, Avatar, Name } from "@kind0/ui-common";
+	import { userActiveSubscriptions } from "$stores/session";
+	import { startUserView, userSubscription } from "$stores/user-view";
+	import { ndk } from "@kind0/ui-common";
 	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent, type NDKEventId } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
 	import { Lightning } from 'phosphor-svelte';
 	import { getParagraph, getText } from '$utils/text';
+	import LogoGradient from '$icons/LogoGradient.svelte';
 
     export let article: NDKArticle;
     const author = article.author;
@@ -69,9 +70,28 @@
             }
         });
 
+        document.addEventListener('selectionchange', function(event) {
+            let selection = window.getSelection();
+            if (selection && selection.toString().length > 0) {
+                let range = selection.getRangeAt(0);
+                let rect = range.getBoundingClientRect();
+
+                // Create the floating element
+                el.style.top = (rect.top + window.scrollY - 50) + 'px';
+                el.style.left = (rect.right + window.scrollX) + 'px';
+                // remove opacity-0 class
+                setTimeout(() => {
+                    el?.classList.remove('opacity-0');
+                }, 10)
+                // setTimeout(() => {
+                //     el?.appendChild(floatElement);
+                // }, 100)
+            }
+        });
+
         document.addEventListener('mouseup', function(event) {
             let selection = window.getSelection();
-            if (selection.toString().length > 0) {
+            if (selection && selection.toString().length > 0) {
                 let range = selection.getRangeAt(0);
                 let rect = range.getBoundingClientRect();
 
@@ -118,6 +138,44 @@
                         // }, 100)
                 // })
             // }
+        })
+
+        // create a listener that fires when the document scrolls, when the user scrolls move the active paragraph float
+        // to the first visible paragraph
+        document.addEventListener('scroll', function(event) {
+            // find the first visible paragraph
+            const paragraphs = document.querySelectorAll('.article > p');
+            let firstVisibleParagraph: HTMLElement | null = null;
+
+            for (let i = 0; i < paragraphs.length; i++) {
+                const paragraph = paragraphs[i] as HTMLElement;
+                const rect = paragraph.getBoundingClientRect();
+                if (rect.top > 64) {
+                    console.log(paragraph);
+                    firstVisibleParagraph = paragraph;
+                    break;
+                }
+            }
+
+            if (!firstVisibleParagraph) return;
+
+            const activeParagraphs = document.querySelectorAll('.active-paragraph');
+
+            // remove active-paragraph class from all paragraphs
+            activeParagraphs.forEach((activeParagraph) => {
+                activeParagraph.classList.remove('active-paragraph');
+            })
+
+            firstVisibleParagraph.classList.add('active-paragraph');
+
+            const rect = firstVisibleParagraph.getBoundingClientRect();
+            const toolRect = paragraphFloat.getBoundingClientRect();
+
+            if (toolRect.height > rect.height) return;
+
+            // Create the floating element
+            paragraphFloat.style.top = (rect.top + window.scrollY) + 'px';
+            paragraphFloat.style.left = (rect.left + window.scrollX - paragraphFloat.offsetWidth - 20) + 'px';
         })
     })
 
@@ -173,23 +231,28 @@
 </script>
 
 <div bind:this={paragraphFloat} class="
-    float-element z-50 absolute transition-all duration-300 flex flex-col gap-1
+    float-element z-40 absolute transition-all duration-300 flex
+    flex-row sm:flex-col gap-1
+    max-sm:ml-10 max-sm:-mt-10
 " style="top: -100px">
-    <div class="tooltip tooltip-left" data-tip="Zap!">
+    <!-- <div class="sm:tooltip tooltip-left" data-tip="Zap!">
         <button class="
             transition-all duration-300
+            max-sm:text-white
             text-neutral-800 hover:text-accent2
         " on:click={() => {}}>
-            <Lightning class="w-6 h-6" weight="fill" />
+            <Lightning class="max-sm:w-8 max-sm:h-8 w-6 h-6" weight="fill" />
         </button>
-    </div>
+    </div> -->
 
     <div class="tooltip tooltip-left" data-tip="Highlight paragraph">
         <button class="
             transition-all duration-300
+            max-sm:text-white
             text-neutral-800 hover:text-accent2
         " on:click={createParagraphHighlight}>
-            <HighlightIcon class="w-6 h-6" />
+            <LogoGradient class="max-sm:w-8 max-sm:h-8 w-6 h-6" />
+            <!-- <HighlightIcon class="max-sm:w-8 max-sm:h-8 w-6 h-6" /> -->
         </button>
     </div>
 </div>
@@ -227,9 +290,9 @@
                     <div class="self-stretch flex-col justify-start items-start gap-1 flex">
 
                     </div>
-                    <article class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative">
+                    <article class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative">
                         {#key content}
-                            <EventContent ndk={$ndk} event={article} bind:content class="prose !max-w-none" />
+                            <EventContent ndk={$ndk} event={article} bind:content class="prose !max-w-none leading-8" />
                         {/key}
 
                         {#if !isFullVersion}

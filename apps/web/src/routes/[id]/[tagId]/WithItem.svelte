@@ -100,7 +100,7 @@
         addReadReceipt(event);
     }
 
-    const url = new URL(window.location.href);
+    const url = new URL($page.url.toString());
     $: if (event) {
         let eventSuffix = urlSuffixFromEvent(event);
         url.pathname = `${authorUrl}/${eventSuffix}`;

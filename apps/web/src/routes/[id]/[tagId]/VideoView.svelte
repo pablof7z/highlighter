@@ -41,7 +41,7 @@
     <meta property="og:title" content={video.title} />
     <meta property="og:description" content={video.summary} />
     <meta property="og:thumbnail" content={video.thumbnail} />
-    <meta property="og:url" content={`https://getfaaans.com/${video.encode()}`} />
+    <meta property="og:url" content={`https://highlighter.com/e/${video.encode()}`} />
     <meta property="og:type" content="video" />
 </svelte:head>
 

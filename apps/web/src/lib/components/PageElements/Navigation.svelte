@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { userTiers } from "$stores/session";
-	import { Tray, PaperPlane, ChatCircle, House, Funnel, Fire, User, Gear, UserCircle, Bell } from "phosphor-svelte";
+	import { Tray, PaperPlane, ChatCircle, House, Funnel, Fire, User, Gear, UserCircle, Bell, Gauge } from "phosphor-svelte";
     import { bunkerNDK, ndk, user } from "@kind0/ui-common";
 	import { openModal } from "svelte-modals";
     import NewItemModal from '$modals/NewItemModal.svelte';
@@ -43,16 +43,16 @@
         </Item>
 
         {#if $user && $userTiers && $userTiers.length > 0}
-            <Item let:active on:click={() => openModal(NewItemModal)}>
-                <PaperPlane class="w-full h-full text-white" weight={active ? "fill" : "regular"} />
+            <Item let:active on:click={() => openModal(NewItemModal)} matches={/\/(articles|notes|videos)\/new/}>
+                <PaperPlane class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
         {:else if $user}
-            <Item href="/welcome/creators">
-                <PaperPlane class="w-full h-full text-white" weight="fill" />
+            <Item href="/home">
+                <PaperPlane class="w-full h-full" weight="fill" />
             </Item>
         {:else if !$user}
             <Item on:click={openSignupModal}>
-                <PaperPlane class="w-full h-full text-white" weight="fill" />
+                <PaperPlane class="w-full h-full" weight="fill" />
             </Item>
         {/if}
 
@@ -94,6 +94,10 @@
                 </CurrentUser>
             </Item>
 
+            <Item href="/dashboard" tooltip="Dashboard" let:active>
+                <Gauge class="w-full h-full" weight={active ? "fill" : "regular"} />
+            </Item>
+
             <Item href="/home" tooltip="Home" let:active>
                 <House class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
@@ -110,20 +114,24 @@
                 <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} strokeWidth="1.4" />
             </Item>
 
-            <Item href="/chat" tooltip="Chat" let:active class="max-sm:hidden">
+            <!-- <Item href="/chat" tooltip="Chat" let:active class="max-sm:hidden">
                 <ChatCircle class="w-full h-full" weight={active ? "fill" : "regular"} />
-            </Item>
+            </Item> -->
             {#if $user && $userTiers && $userTiers.length > 0}
-                <Item tooltip="Create something new" let:active on:click={() => openModal(NewItemModal)}>
-                    <PaperPlane class="w-full h-full text-white" weight={active ? "fill" : "regular"} />
+                <Item
+                    tooltip="Create something new"
+                    let:active on:click={() => openModal(NewItemModal)}
+                    matches={/\/(articles|notes|videos)\/new/}
+                >
+                    <PaperPlane class="w-full h-full" weight={active ? "fill" : "regular"} />
                 </Item>
             {:else if $user}
-                <Item tooltip="Start publishing on Nostr" href="/welcome/creators">
-                    <PaperPlane class="w-full h-full text-white" weight="fill" />
+                <Item tooltip="Start publishing on Nostr" href="/home">
+                    <PaperPlane class="w-full h-full" weight="fill" />
                 </Item>
             {:else if !$user}
                 <Item on:click={openSignupModal}>
-                    <PaperPlane class="w-full h-full text-white" weight="fill" />
+                    <PaperPlane class="w-full h-full" weight="fill" />
                 </Item>
             {/if}
         </div>

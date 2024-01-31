@@ -35,7 +35,6 @@
 
     onMount(() => {
         addReadReceipt(user);
-        openModal(BecomeSupporterModal, { user, tiers: getUserSupportPlansStore() })
     })
 
     let articles: Readable<Map<NDKEventId, NDKArticle>>;

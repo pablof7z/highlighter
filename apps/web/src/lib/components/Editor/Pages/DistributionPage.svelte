@@ -2,32 +2,35 @@
 	import { slide } from "svelte/transition";
 	import SelectTier from "../../Forms/SelectTier.svelte";
 	import Checkbox from "../../Forms/Checkbox.svelte";
-	import { Info } from "phosphor-svelte";
+	import { CaretDown, Info } from "phosphor-svelte";
 	import { getSelectedTiers, type TierSelection } from '$lib/events/tiers';
-    import { createEventDispatcher } from 'svelte';
 	import { pageDrawerToggle, rightSidebar } from '@kind0/ui-common';
 	import HowDoesAccessWork from '$lib/drawer/help/how-does-access-work.svelte';
-	import PageTitle from "$components/Page/PageTitle.svelte";
+	import { makePublicAfter, nonSubscribersPreview, view, wideDistribution } from "$stores/post-editor";
 
     export let type: "article" | "video" | "note";
     export let tiers: TierSelection;
-    export let nonSubscribersPreview: boolean;
-    export let wideDistribution = true;
-    export let canContinue: boolean;
 
-    const dispatch = createEventDispatcher();
+    let makeFreeCheck = $makePublicAfter !== undefined && Number($makePublicAfter) > 0;
 
-    let hasFree: boolean;
-    $: hasFree = !!tiers["Free"]?.selected;
+    $: if (!makeFreeCheck) $makePublicAfter = false;
 
-    let showTeaser = false;
-    let howItWorks = false;
-
-    $: if (!hasFree && !nonSubscribersPreview) {
-        wideDistribution = false;
+    function updateMakePublic() {
+        if ($makePublicAfter === undefined || $makePublicAfter === false) {
+            makeFreeCheck = false;
+        } else {
+            makeFreeCheck = true;
+        }
     }
 
-    $: canContinue = getSelectedTiers(tiers).length > 0;
+    let hasFree: boolean;
+    $: {
+        hasFree = !!tiers["Free"]?.selected;
+    }
+
+    $: if (!hasFree && !$nonSubscribersPreview && $wideDistribution === undefined) {
+        $wideDistribution = false;
+    }
 
     function showHowItWorks() {
         $rightSidebar = {
@@ -38,108 +41,147 @@
     }
 
     $: tiers = tiers
+
+    let showAdvanced = false;
 </script>
 
 <div class="flex flex-col gap-10 max-sm:px-3">
-    <div
-        class="flex flex-col lg:flex-row gap-4 lg:items-end justify-between border-b pb-4 lg:mb-4 border-base-300"
-        class:lg:flex-col={howItWorks}
-        class:lg:!items-start={howItWorks}
-    >
-        <div class="flex flex-col items-start gap-2">
-            <h1 class="text-2xl font-semibold text-white max-sm:hidden">
-                Audience & Reach
-            </h1>
+    <section class="settings">
+        <div class="title">
+            Audience & Reach
 
-            <h2 class="text-neutral-500 text-lg">
-                Choose which tiers can access this {type} and its reach
-            </h2>
-        </div>
-
-        <div class="max-sm:w-full">
             <button
-                class="bdutton text-sm flex text-white gap-2 flex-row items-center max-sm:w-full max-sm:py-2"
+                class="flex gap-2 flex-row items-center max-sm:w-full max-sm:py-2 right"
                 on:click={showHowItWorks}
             >
                 <Info class="text-lg text-info" />
                 How does this work?
             </button>
         </div>
-    </div>
+        <div class="description">
+            Choose which tiers can access this {type} and its reach
+        </div>
 
-    <SelectTier
-        subtitle={`Select the tiers that will have access to this ${type}.`}
-        bind:tiers
-        on:changed
-    />
+        <div class="field">
+            <div class="title">
+                Content Tier
+            </div>
+            <SelectTier
+                subtitle={`Select the tiers that will have access to this ${type}.`}
+                bind:tiers
+                on:changed
+                class="input-background"
+            />
+        </div>
 
-    <div class="flex flex-col gap-4" class:hidden={tiers["Free"].selected}>
-        <Checkbox bind:value={nonSubscribersPreview} button={nonSubscribersPreview}>
-            <div class="text-white">
-                Add a
-                <span class="font-bold text-white">preview version</span>
-                for
-                <span class="font-bold text-white">non-subscribers</span>
+        <div class="field" class:!hidden={tiers["Free"].selected}>
+            <div class="title">
+                Preview for non-subscribers
             </div>
-            <div slot="description" class="text-sm mt-1">
-                {#if nonSubscribersPreview}
-                    <div class="text-neutral-500">
-                        Non-subscribers will
-                        <span class="text-white">see a preview</span>
-                        of this {type}.
-                    </div>
-                {:else}
-                    <div class="text-neutral-500">
-                        Non-subscribers will
-                        <span class="text-white">not know</span>
-                        this {type} exists.
-                    </div>
-                {/if}
-            </div>
-            <div slot="button" class="flex items-center justify-between transition-all duration-500 w-full">
-                <button
-                    class="button w-full"
-                    on:click={() => dispatch("editPreview")} disabled={!nonSubscribersPreview}>
-                    Edit Preview
-                </button>
-            </div>
-        </Checkbox>
-    </div>
-
-    {#if hasFree || nonSubscribersPreview}
-        <div transition:slide>
-            <Checkbox bind:value={wideDistribution}>
-                Distribute {#if !hasFree}preview version{/if} widely
-                <div slot="description" class="text-sm mt-1 text-neutral-500">
-                    {#if type === "article"}
-                        {#if wideDistribution}
-                            This {!hasFree ? "preview" : "article"} will be seen in long-form feeds beyond your Highlighter page. <br>
-                            <span class="text-white">This helps you reach more readers!</span>
-                        {:else}
-                            This {!hasFree ? "preview" : type} will
-                            <span class="text-white">only be visible on your Highlighter page</span>, not throughout other reading sites.
-                        {/if}
-                    {:else if type === "video"}
-                        {#if wideDistribution}
-                            This {!hasFree ? "preview" : "video"} will be seen in video feeds beyond your Highlighter page.
-                            <br>
-                            <span class="text-white">This helps you reach more viewers!</span>
-                        {:else}
-                            This {!hasFree ? "preview" : type} will
-                            <span class="text-white">only be visible on your Highlighter page</span>, not throughout other video sites.
-                        {/if}
-                    {:else if type === "note"}
-                        {#if wideDistribution}
-                            This {!hasFree ? "preview" : "note"} will be seen in twitter-like clients beyond your Highlighter page.
-                            <br>
-                            <span class="text-white">This helps you reach a wider audience!</span>
-                        {:else}
-                            This {!hasFree ? "preview" : type} will
-                            <span class="text-white">only be visible on your Highlighter page</span>, not throughout twitter-like sites.
-                        {/if}
+            <Checkbox bind:value={$nonSubscribersPreview} button={$nonSubscribersPreview} class="input-background">
+                <div class="text-white">
+                    Add a
+                    <span class="font-bold text-white">preview version</span>
+                    for
+                    <span class="font-bold text-white">non-subscribers</span>
+                </div>
+                <div slot="description" class="text-sm mt-1">
+                    {#if $nonSubscribersPreview}
+                        <div class="text-neutral-500">
+                            Non-subscribers will
+                            <span class="text-white">see a preview</span>
+                            of this {type}.
+                        </div>
+                    {:else}
+                        <div class="text-neutral-500">
+                            Non-subscribers will
+                            <span class="text-white">not know</span>
+                            this {type} exists.
+                        </div>
                     {/if}
+                </div>
+                <div slot="button" class="flex items-center justify-between transition-all duration-500 w-full">
+                    <button
+                        class="button w-full"
+                        on:click={() => $view = "preview"} disabled={!$nonSubscribersPreview}>
+                        Edit Preview
+                    </button>
                 </div>
             </Checkbox>
         </div>
-    {/if}
+
+        <div class="field" class:!hidden={tiers["Free"].selected}>
+            <Checkbox
+                bind:value={makeFreeCheck}
+                button={true}
+                class="input-background"
+                on:change={() => $makePublicAfter = 7}
+            >
+                Release full-version for free after
+                <div slot="description" class="text-sm">
+                    The full version of this {type} will be available for free after the selected time.
+                </div>
+                <select class="select rounded-full text-black self-center text-base bg-neutral-200 pl-4 py-0" slot="button" bind:value={$makePublicAfter} on:change={updateMakePublic}>
+                    <option value={false}>never</option>
+                    <option value={1}>1 day</option>
+                    <option value={7}>1 week</option>
+                    <option value={14}>2 weeks</option>
+                    <option value={30}>1 month</option>
+                </select>
+            </Checkbox>
+        </div>
+
+        {#if hasFree || nonSubscribersPreview}
+            <div class="field">
+                <button class="text-left text-white text-sm" on:click={() => showAdvanced = !showAdvanced}>
+                    Advanced
+                    <CaretDown class="inline-block ml-2" />
+                </button>
+
+                {#if showAdvanced}
+                    <div class="pt-4" transition:slide>
+                        <div class="title">
+                            Publication targets
+                        </div>
+                        <Checkbox bind:value={$wideDistribution} class="input-background">
+                            Distribute {#if !hasFree}preview version{/if} widely
+                            <div slot="description" class="text-sm mt-1 text-neutral-500">
+                                {#if type === "article"}
+                                    {#if $wideDistribution}
+                                        This {!hasFree ? "preview" : "article"} will be seen in long-form feeds beyond your Highlighter page. <br>
+                                        <span class="text-white">This helps you reach more readers!</span>
+                                    {:else}
+                                        This {!hasFree ? "preview" : type} will
+                                        <span class="text-white">only be visible on your Highlighter page</span>, not throughout other reading sites.
+                                    {/if}
+                                {:else if type === "video"}
+                                    {#if $wideDistribution}
+                                        This {!hasFree ? "preview" : "video"} will be seen in video feeds beyond your Highlighter page.
+                                        <br>
+                                        <span class="text-white">This helps you reach more viewers!</span>
+                                    {:else}
+                                        This {!hasFree ? "preview" : type} will
+                                        <span class="text-white">only be visible on your Highlighter page</span>, not throughout other video sites.
+                                    {/if}
+                                {:else if type === "note"}
+                                    {#if $wideDistribution}
+                                        This {!hasFree ? "preview" : "note"} will be seen in twitter-like clients beyond your Highlighter page.
+                                        <br>
+                                        <span class="text-white">This helps you reach a wider audience!</span>
+                                    {:else}
+                                        This {!hasFree ? "preview" : type} will
+                                        <span class="text-white">only be visible on your Highlighter page</span>, not throughout twitter-like sites.
+                                    {/if}
+                                {/if}
+                            </div>
+                        </Checkbox>
+                    </div>
+                {/if}
+            </div>
+        {/if}
+    </section>
+
+
+
+
 </div>

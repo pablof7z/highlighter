@@ -18,11 +18,11 @@
     onDestroy(() => {
         $pageSidebar = null;
     })
-
-    $pageHeader = {
-        title: "Settings",
-    }
 </script>
+
+<svelte:head>
+    <title>Settings</title>
+</svelte:head>
 
 <MainWrapper class="sm:hidden">
     <SettingsMenu />

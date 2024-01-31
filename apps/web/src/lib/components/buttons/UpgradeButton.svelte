@@ -18,7 +18,7 @@
         if (!$user) {
             openModal(SignupModal, { redirect: window.location.pathname });
         } else {
-            openModal(BecomeSupporterModal, { user: author, tiers: $userTiers, suggestedTier: requiredTier });
+            openModal(BecomeSupporterModal, { user: author, suggestedTier: requiredTier });
         }
     }
 </script>

@@ -91,7 +91,9 @@
                     </div>
                 </div>
             {/if}
-            <EventActionButtons {event} on:comment={() => showComment = !showComment} />
+            {#if event.sig && event.id}
+                <EventActionButtons {event} on:comment={() => showComment = !showComment} />
+            {/if}
         </div>
     </a>
 </UserProfile>

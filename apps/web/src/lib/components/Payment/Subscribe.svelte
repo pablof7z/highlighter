@@ -20,7 +20,7 @@
 
     const dispatch = createEventDispatcher();
 
-    const zapComment = "Getfaaans.com supporter";
+    const zapComment = "Highlighter.com supporter";
 
     let bitcoinPrice: number | undefined;
     let satsAmount: number | undefined;

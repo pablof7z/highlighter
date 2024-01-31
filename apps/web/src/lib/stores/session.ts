@@ -276,15 +276,14 @@ async function fetchData(
 		opts.appHandlersStore!.update((appHandlersStore) => {
 			if (!event.dTag) return appHandlersStore;
 			const handlerKind = parseInt(event.dTag!);
-
-			if (!appHandlersStore.has(handlerKind)) {
-				appHandlersStore.set(handlerKind, new Map());
-			}
+			const val = appHandlersStore.get(handlerKind) || new Map();
 
 			for (const tag of event.getMatchingTags('a')) {
 				const [, eventPointer, , handlerType] = tag;
-				appHandlersStore.get(handlerKind)!.set(handlerType || 'default', eventPointer);
+				val.set(handlerType || 'default', eventPointer);
 			}
+
+			appHandlersStore.set(handlerKind, val);
 
 			return appHandlersStore;
 		});

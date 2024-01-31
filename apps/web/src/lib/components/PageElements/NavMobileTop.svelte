@@ -7,6 +7,7 @@
 	import SearchBar from "$components/Page/SearchBar.svelte";
 	import HeaderLeftButton from "./HeaderLeftButton.svelte";
 	import HeaderRightButton from "./HeaderRightButton.svelte";
+	import SectionHeader from "./SectionHeader.svelte";
 
     function showMenu() {
         $sidebarPlacement = "left";
@@ -27,10 +28,13 @@
     // }
 </script>
 
-<div class="navbar fixed z-50 mobile-nav h-16 px-3 w-full">
+<div class="navbar fixed z-50 mobile-nav h-16 px-3 w-full grid grid-cols-5 gap-1">
+    {#if $pageHeader?.component}
+        <SectionHeader />
+    {:else}
     {#if !searchBar}
         <div class="navbar-start">
-            {#if $pageHeader?.leftLabel}
+            {#if $pageHeader?.left}
                 <HeaderLeftButton />
             {:else}
                 <label for="draw" class="swap" on:click={showMenu}>
@@ -44,8 +48,8 @@
                 </label>
             {/if}
         </div>
-        <div class="navbar-center max-w-[60vw] overflow-hidden">
-            <span class="btn btn-ghost text-base text-white truncate">
+        <div class="navbar-center max-w-[60vw] overflow-clip truncate col-span-3">
+            <span class="btn btn-ghost text-base text-white truncate overflow-clip">
                 {#if $pageHeader?.title}
                     {$pageHeader.title}
                 {:else}
@@ -53,18 +57,17 @@
                 {/if}
             </span>
         </div>
-        <div class="navbar-end">
-            {#if $pageHeader?.rightLabel}
+        <div class="navbar-end w-full"
+            class:overflow-hidden={$pageHeader?.title}
+        >
+            {#if $pageHeader?.right}
                 <HeaderRightButton />
             {:else}
                 <button class="btn btn-ghost btn-circle" on:click={toggleSearch}>
                     <MagnifyingGlass class="w-5 h-5" />
                 </button>
                 <a href="/notifications" class="btn btn-ghost btn-circle">
-                    <div class="indicato__r">
-                        <Bell class="w-5 h-5" />
-                        <span class="hidden badge badge-xs bg-accent2 indicator-item"></span>
-                    </div>
+                    <Bell class="w-5 h-5" />
                 </a>
             {/if}
         </div>
@@ -76,6 +79,7 @@
 
             <SearchBar autofocus={true} on:searched={toggleSearch} on:dismiss={() => searchBar = false} />
         </div>
+    {/if}
     {/if}
 </div>
 

@@ -43,7 +43,7 @@
     $: { preview.content = content; preview = preview; }
 </script>
 
-<ModalShell color="black" class="max-h-[80vh] overflow-y-auto">
+<ModalShell color="glassy" class="max-h-[80vh] overflow-y-auto">
     <div class="flex flex-col gap-1 items-center w-full">
         <div class="font-semibold text-white text-3xl">Teaser Preview</div>
         <div class="text-neutral-500 font-light leading-loose text-center">
@@ -63,16 +63,17 @@
             bind:value={content}
             on:keyup={() => { preview.content = content; preview = preview; }}
             autofocus={true}
-            class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-transparent !border-base-300 text-neutral-400 p-6"
+            class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-white/5 !border-base-300 text-neutral-400 p-6"
             placeholder="Write your note here..."
         />
 
         <Checkbox
             bind:value={includeLink}
+            class="input-background"
         >
             Add link to your creator page
             <div slot="description" class="text-xs text-opacity-50">
-                Embeds a link to your Faaans page for new readers to
+                Embeds a link to your Highlighter page for new readers to
                 be able to subscribe.
             </div>
         </Checkbox>
@@ -96,10 +97,10 @@
     {/if}
 
     <div class="flex flex-row gap-10 items-center justify-end w-full">
-        <button class="text-white text-sm" on:click={closeModal}>
+        <button class="text-white text-base" on:click={closeModal}>
             Close
         </button>
-        <button class="button text-sm px-6 py-3" on:click={save}>
+        <button class="button text-base px-6 py-3" on:click={save}>
             <Check class="w-4 h-4 mr-2" />
             Save
         </button>

@@ -8,6 +8,7 @@
 	import SaveForLaterButton from "$components/SaveForLaterButton.svelte";
     import { debugMode } from "$stores/session";
 	import Bug from "phosphor-svelte/lib/Bug";
+	import DurationTag from "$components/DurationTag.svelte";
 
     export let event: NDKEvent;
     export let description: string | undefined = undefined;
@@ -18,36 +19,34 @@
     export let skipAuthor = false;
     export let skipLink = false;
     export let size: "small" | "normal" = "normal";
+    export let useProfileAsDefaultImage = false;
+    export let href: string | undefined = undefined;
+
+    const hrefSet = !!href;
+
+    $: title ??= "Untitled";
 
     const author = event.author;
 
     let userProfile: UserProfileType;
-    let authorUrl: string;
+    let authorUrl: string = author.npub;
 
     let suffixUrl = skipLink ? "#" : urlSuffixFromEvent(event);
-    let href: string;
 
-    $: if (!image) { image = userProfile?.image || userProfile?.banner }
-    $: href = `${authorUrl}/${suffixUrl}`;
+    $: if (!image && useProfileAsDefaultImage) { image = userProfile?.image || userProfile?.banner }
+    $: if (!hrefSet) {
+        href = `${authorUrl}/${suffixUrl}`;
+    }
 
     let timestamp = (event?.published_at || event?.created_at)*1000;
-
-    function clicked(e: MouseEvent) {
-        // if a button was clicked, don't trigger the link
-        console.log("clicked", e.target);
-        debugger
-        if ((e.target as HTMLElement).closest("button")) {
-            e.preventDefault();
-        }
-    }
 </script>
 
 <a class="
-    flex gap-2 flex-nowrap relative group
-    {grid ? "sm:flex-col" : "flex-row sm:gap-6"}
+    flex gap-2 flex-nowrap relative group w-full overflow-clip
+    {grid ? "flex-col sm:flex-col" : "flex-row sm:gap-6"}
 
 " {href}>
-    {#if !grid && $user}
+    {#if !grid && $user && event.sig}
         <!-- Create a div so that clicks on the save button don't trigger the link -->
         <SaveForLaterButton {event} class="absolute top-0 right-0" />
     {/if}
@@ -55,31 +54,33 @@
         flex-none overflow-hidden sm:rounded-2xl relative
         {grid ? "sm:w-full h-[100px] sm:h-[180px]" : (
             (size === "small" && "sm:w-20 sm:h-fit") ||
-            (size === "normal" && "sm:w-64 sm:h-36")
+            (size === "normal" && "sm:w-64 sm:h-44")
         )}
     ">
         {#if image}
-            <img src={image} alt={title} class="w-full object-cover" />
+            <img src={image} alt={title} class="w-full h-full self-stretch object-cover place-self-stretch" />
         {:else}
-            <div class="bg-gray-200" />
+            <div class="bg-base-200 w-full overflow-clip h-full">
+                <div class="text-lg sm:text-3xl font-semibold gradient-text whitespace-normal w-full p-2 sm:p-6 leading-relaxed flex h-full items-end">
+                    {title}
+                </div>
+            </div>
         {/if}
         {#if durationTag && size === "normal"}
-            <div class="max-sm:hidden self-stretch text-white text-xs font-medium absolute top-3 right-3 bg-base-300/80 py-1 px-2 rounded-lg">
-                {durationTag}
-            </div>
+            <DurationTag value={durationTag} class="absolute top-3 right-3" />
         {/if}
     </a>
 
     <div class="
-        w-5/6 sm:w-full grow shrink basis-0 flex-col justify-start items-start md:gap-1 inline-flex md:max-h-36 max-sm:px-3 h-full
-        {grid ? "sm:flex-col-reverse" : ""}
+        w-full grow shrink basis-0 flex-col justify-start items-start md:gap-1 inline-flex h-full
+        {grid ? "flex-col-reverse max-sm:items-stretch" : ""}
     ">
         {#if !skipAuthor}
             <!-- Pushes the content up (since this is a flex-col-reverse) -->
-            <div class="sm:flex-grow" class:hidden={!grid}></div>
+            <div class="flex-grow" class:hidden={!grid}></div>
             <div class="self-stretch justify-between items-center inline-flex leading-5">
                 <div class="
-                    gap-3 flex w-full  whitespace-nowrap truncate items-end
+                    gap-3 flex w-full whitespace-nowrap truncate items-end
                     {grid ? "" : "sm:mb-2"}
                 ">
                     <AvatarWithName
@@ -107,11 +108,12 @@
         </a>
         {#if description}
             <a {href} class="self-stretch text-neutral-500 text-sm font-normal overflow-y-clip
-                {grid ? "sm:hidden max-h-[1.5rem]" : ""}
+                {grid ? "hidden max-h-[1.5rem]" : "md:max-h-20"}
             ">
                 {description}
             </a>
         {/if}
+        <slot />
     </div>
 
     {#if $debugMode}

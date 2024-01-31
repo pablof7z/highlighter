@@ -9,7 +9,7 @@
     export let tiers: Readable<NDKArticle[]>;
 
     function openSupportModal() {
-        openModal(BecomeSupporterModal, { user, tiers });
+        openModal(BecomeSupporterModal, { user });
     }
 </script>
 
@@ -17,6 +17,7 @@
     on:click={openSupportModal}
     class="
         button flex flex-row items-center !gap-0
+        whitespace-nowrap
     "
 >
     {#if tiers && $tiers.length > 0}

@@ -56,11 +56,11 @@
     <div class="
         max-sm:px-[var(--mobile-body-px)]
         flex-col justify-start items-start flex
-        gap-6
+        gap-6 w-full
     ">
         {#each $sortedLists as list (list.id)}
             {#if list.items.length > 0}
-                <CurationItem {list} />
+                <CurationItem {list} grid={false} />
             {/if}
         {/each}
     </div>

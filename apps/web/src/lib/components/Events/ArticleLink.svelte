@@ -7,6 +7,7 @@
     export let grid = false;
     export let skipAuthor = false;
     export let size: "small" | "normal" | undefined = undefined;
+    export let href: string | undefined = undefined;
 
     const summary = article.summary || getSummary(article);
     const isFullVersion = !article.tagValue("full");
@@ -17,6 +18,7 @@
 <ItemLink
     event={article}
     {size}
+    {href}
     {grid}
     {skipAuthor}
     image={article.image}

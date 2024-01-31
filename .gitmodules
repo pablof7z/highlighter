@@ -2,3 +2,11 @@
 	path = packages
 	url = git@github.com:kind-0/packages.git
 	branch = master
+[submodule "apps/nsecbunkerd"]
+	path = apps/nsecbunkerd
+	url = git@github.com:kind-0/nsecbunkerd
+	branch = master
+[submodule "apps/nostdress"]
+	path = apps/nostdress
+	url = https://github.com/believethehype/nostdress.git
+	branch = master

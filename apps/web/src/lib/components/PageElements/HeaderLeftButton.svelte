@@ -3,28 +3,28 @@
 	import { X, CaretLeft } from "phosphor-svelte";
 
     function leftClicked() {
-        if ($pageHeader?.leftFn) {
-            $pageHeader.leftFn();
+        if ($pageHeader?.left?.fn) {
+            $pageHeader.left.fn();
         }
     }
 </script>
 
-{#if $pageHeader?.leftLabel}
+{#if $pageHeader?.left}
     <a
-        href={$pageHeader?.leftUrl??"#"}
+        href={$pageHeader.left.url??"#"}
         on:click={leftClicked}
         class="text-accent2 whitespace-nowrap flex flex-nowrap items-center max-w-[15vw]"
     >
-        {#if $pageHeader.leftIcon}
+        {#if $pageHeader.left.icon}
             <span class="w-5 h-5 inline">
-                <svelte:component this={$pageHeader.leftIcon} />
+                <svelte:component this={$pageHeader.left.icon} />
             </span>
-        {:else if $pageHeader.leftLabel === "Close"}
+        {:else if $pageHeader.left.label === "Close"}
             <X class="w-5 h-5 inline" />
-        {:else if $pageHeader.leftLabel === "Back"}
+        {:else if $pageHeader.left.label === "Back"}
             <CaretLeft class="w-5 h-5 inline" />
         {/if}
 
-        <span class="truncate">{$pageHeader.leftLabel}</span>
+        <span class="truncate">{$pageHeader.left.label}</span>
     </a>
 {/if}

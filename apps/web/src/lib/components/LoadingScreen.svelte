@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Logo from '$icons/Logo.svelte';
 	import { fade } from 'svelte/transition';
 	import { onDestroy, onMount } from 'svelte';
+	import LoadLogo from '$icons/LoadLogo.svelte';
 
     export let ready = false;
 
@@ -39,7 +39,9 @@
             <slot name="loading" />
         {/if}
         <div class="loading-container">
-            <Logo />
+            <div class="w-[150px] sm:h-[20vh] sm:max-h-[300px] mb-6">
+                <LoadLogo class="w-full h-full" />
+            </div>
             <div class="shadow" style="width: {shadowWidth}px; height: {shadowHeight}px;" />
         </div>
     </div>

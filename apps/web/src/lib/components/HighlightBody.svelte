@@ -27,11 +27,12 @@
 </script>
 
 <div class="border-2 border-white/20 rounded-box bg-base-100 w-full">
-    <EventContent ndk={$ndk} event={highlight} class="highlight font-serif p-6 leading-8 {$$props.class??""}" />
+    <EventContent ndk={$ndk} event={highlight} class="highlight font-serif p-6 leading-8 text-lg {$$props.class??""}" />
     {#key highlightedArticle}
         {#if highlightedArticle}
             <a href={highlightedArticleLink} class="
                 flex bg-base-200 border-t-2 border-white/20 p-4 text-neutral-500
+                hover:bg-base-300/60
                 hover:text-neutral-400 transition-all duration-200
                 rounded-b-box
             ">
@@ -44,18 +45,18 @@
                                 <Avatar {userProfile} {fetching} class="w-12 h-12 object-cover" type="square" />
                             {/if}
 
-                            <div class="flex flex-col items-start overflow-hidden whitespace-nowrap truncate flex-grow">
-                                <Name user={highlightedArticle.author} class="font-medium text-white" />
-                                <div class="w-full truncate">
+                            <div class="flex flex-col items-start justify-between overflow-hidden whitespace-nowrap truncate flex-grow">
+                                <div class="w-full truncate text-neutral-200 font-medium">
                                     {highlightedArticle.title}
                                 </div>
+                                <Name user={highlightedArticle.author} class="text-neutral-500 text-sm" />
                             </div>
 
                             <CaretRight class="w-8 h-8 self-center" />
                         </div>
                     </UserProfile>
                 {:else if typeof highlightedArticle === "string"}
-                    <span class="text-accent2">{highlightedArticle}</span>
+                    <a href="/load?url={encodeURIComponent(highlightedArticle)}" class="text-accent2">{highlightedArticle}</a>
                 {/if}
             </a>
         {/if}

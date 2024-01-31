@@ -1,11 +1,8 @@
 <script lang="ts">
-    import Checkbox from "$components/Forms/Checkbox.svelte";
     import ModalShell from "$components/ModalShell.svelte";
-	import UserProfile from "$components/User/UserProfile.svelte";
 	import GuideToPreviews from '$lib/drawer/help/guide-to-previews.svelte';
-	import { Avatar, Name, Textarea, ndk, pageDrawerToggle, rightSidebar, user } from "@kind0/ui-common";
-	import type { NDKArticle, NDKEvent } from "@nostr-dev-kit/ndk";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import { Textarea, pageDrawerToggle, rightSidebar, user } from "@kind0/ui-common";
+	import type { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { Check, Info } from "phosphor-svelte";
 	import { closeModal } from "svelte-modals";
 
@@ -18,7 +15,7 @@
     let content: string = preview.content || article.content;
 
     let previewContentReadLink: string;
-    $: previewContentReadLink = `\n\n--------------------------\n\nRead more like this on my Faaans page on ${authorLink}`;
+    $: previewContentReadLink = `\n\n--------------------------\n\nRead more like this on my Highlighter page on ${authorLink}`;
 
     function save() {
         preview.content = content;
@@ -39,7 +36,7 @@
     }
 </script>
 
-<ModalShell color="black" class="max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+<ModalShell color="glassy" class="max-w-3xl w-full max-h-[80vh] overflow-y-auto">
     <div class="flex flex-col gap-1 items-center w-full">
         <div class="font-semibold text-white text-3xl">Teaser Preview</div>
         <div class="text-neutral-500 font-light leading-loose text-center">

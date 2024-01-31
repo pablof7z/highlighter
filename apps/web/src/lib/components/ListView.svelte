@@ -53,9 +53,11 @@
 
     $: if (id || !id) $pageHeader = {
         title: list.title,
-        leftIcon: CaretLeft,
-        leftUrl: authorUrl,
-        leftLabel: "Lists"
+        left: {
+            icon: CaretLeft,
+            url: authorUrl,
+            label: "Lists"
+        }
     }
 </script>
 
