@@ -14,7 +14,7 @@
 
 <div class="flex flex-row gap-6 justify-between items-center w-full">
     <div class="flex flex-row gap-6 items-center max-sm:justify-between max-sm:w-full">
-        <AvatarWithName user={author} spacing="gap-4" />
+        <AvatarWithName user={author} spacing="gap-4" avatarType="square" />
         <RelativeTime event={item} class="text-sm opacity-60" />
     </div>
 

@@ -7,7 +7,7 @@
     export let highlightedArticle: NDKArticle | NDKEvent | string | undefined = undefined;
 </script>
 
-<EventWrapper event={highlight} reverse={true}>
+<EventWrapper event={highlight} reverse={true} class={$$props.class??""}>
     <div class="pl-12">
         <HighlightBody {highlight} {highlightedArticle} />
     </div>

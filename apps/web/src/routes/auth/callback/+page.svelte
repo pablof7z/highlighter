@@ -15,10 +15,10 @@
         if (!pubkey) return goto('/');
 
         const user = $ndk.getUser({pubkey});
-        localStorage.setItem('nostr-target-npub', user.npub);
+        localStorage.setItem('pubkey', user.pubkey);
         localStorage.setItem("nostr-key-method", 'nip46');
 
-        if (!await login($ndk, $bunkerNDK, 'nip46')) {
+        if (!await login('nip46', pubkey)) {
             logging = false;
         } else {
             const intendedUrl = localStorage.getItem('intended-url') || '/';

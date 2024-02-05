@@ -1,8 +1,11 @@
 <script lang="ts">
-	import { userActiveSubscriptions, userSuperFollows } from "$stores/session";
+	import { NDKKind, type Hexpubkey } from '@nostr-dev-kit/ndk';
+	import { userActiveSubscriptions, userFollows, userSuperFollows } from "$stores/session";
 	import { MagicWand } from 'phosphor-svelte';
 	import { page } from '$app/stores';
 	import SuperFollowListItem from './SuperFollowListItem.svelte';
+	import { ndk } from '@kind0/ui-common';
+	import { derived } from 'svelte/store';
 
     export let mode: "all" | "paid" = "all";
     export let open: boolean;
@@ -12,8 +15,24 @@
 
     export let activeView = $userSuperFollows;
 
+    let allAuthors: Hexpubkey[] = [];
+
+    allAuthors = Array.from($userFollows)
+
+    const contentFromAllFollows = $ndk.storeSubscribe({
+        kinds: [ NDKKind.Article, NDKKind.HorizontalVideo ],
+        authors: allAuthors,
+        limit: 5,
+    });
+
+    const pubkeysWithContent = derived(contentFromAllFollows, ($contentFromAllFollows) => {
+        const pubkeys = new Set<string>();
+        for (const content of $contentFromAllFollows) { pubkeys.add(content.pubkey); }
+        return pubkeys;
+    });
+
     $: if (mode === "all") {
-        activeView = $userSuperFollows;
+        activeView = $pubkeysWithContent;
     } else if (mode === "paid") {
         // turn useractiveSubscriptions into a set
         const activeSubscriptions = new Set<string>();

@@ -5,7 +5,6 @@
 	import { onDestroy, onMount } from "svelte";
 	import LoadingScreen from '$components/LoadingScreen.svelte';
     import { pageSidebar } from "$stores/layout";
-	import MainWrapper from '$components/Page/MainWrapper.svelte';
 
     let startedUserView = false;
     let mounted = false;

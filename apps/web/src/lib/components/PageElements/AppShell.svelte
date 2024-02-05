@@ -68,7 +68,7 @@
 		{#key $loginState}
 			<Navigation />
 
-			{#if !$pageSidebar?.component}
+			{#if $pageHeader?.title || $pageHeader?.component}
 				<div class="max-sm:hidden">
 					<SectionHeader />
 				</div>

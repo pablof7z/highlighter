@@ -21,9 +21,9 @@
 <style lang="postcss">
     :global(.event-content .note-media--wrapper) {
         @apply flex grid-flow-col gap-6 overflow-x-auto h-96 justify-start items-start flex-nowrap w-full pb-4;
+    }
 
-        & > * {
-            @apply !w-96 h-full object-cover object-left-top rounded-lg;
-        }
+    :global(.event-content .note-media--wrapper > *) {
+        @apply !w-96 h-full object-cover object-left-top rounded-lg;
     }
 </style>

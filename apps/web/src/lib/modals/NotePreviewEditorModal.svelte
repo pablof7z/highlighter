@@ -20,7 +20,7 @@
     let includeLink = true;
 
     let previewContentReadLink: string;
-    $: previewContentReadLink = `\n\n--------------------------\n\nRead more like this on my Faaans page on ${authorLink}`;
+    $: previewContentReadLink = `\n\n--------------------------\n\nRead more like this on my Highlighter page on ${authorLink}`;
 
     function save() {
         // preview.content = content;

@@ -1,6 +1,6 @@
-import { writable, get as getStore, type Writable, derived } from 'svelte/store';
+import { writable, get as getStore, type Writable, derived, get } from 'svelte/store';
 import { ndk, user } from '@kind0/ui-common';
-import NDK, {
+import {
 	NDKEvent,
 	NDKList,
 	NDKSubscriptionCacheUsage,
@@ -12,16 +12,21 @@ import NDK, {
 	NDKDVMRequest,
 	NDKListKinds,
 	type Hexpubkey,
-	NDKArticle
+	NDKArticle,
+	profileFromEvent,
+	NDKSubscriptionTier,
 } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import debug from 'debug';
 import { trustedPubkeys } from '$utils/login';
+import type { UserProfileType } from '../../app';
 
 const d = debug('highlighter:session');
 
 export const jwt = persist(writable<string | null>(null), createLocalStorage(), 'jwt');
+
+export const userProfile = writable<UserProfileType | undefined>(undefined);
 
 export type LoginState = 'logging-in' | 'logged-in' | 'contacting-remote-signer' | 'logged-out';
 
@@ -47,7 +52,7 @@ export const userSuperFollows = persist(
 	'user-super-follows'
 );
 
-export const userTiers = writable<NDKArticle[]>([]);
+export const userTiers = writable<NDKSubscriptionTier[]>([]);
 
 export const userActiveSubscriptions = writable<Map<Hexpubkey, string>>(new Map());
 
@@ -91,16 +96,6 @@ export const userArticleCurations = writable<Map<string, NDKList>>(new Map());
 export const userVideoCurations = writable<Map<string, NDKList>>(new Map());
 
 /**
- * Current user labels
- */
-export const userLabels = writable<Set<string>>(new Set());
-
-/**
- * Current user's followed hashtags
- */
-export const userFollowHashtags = writable<string[]>([]);
-
-/**
  * Current user's supported people
  */
 export const userSupport = writable<NDKEvent[]>([]);
@@ -113,17 +108,6 @@ export const networkFollows = persist(
 	createLocalStorage(),
 	'network-follows'
 );
-
-/**
- * The user's extended network lists
- */
-export const networkLists = writable<Map<string, NDKList>>(new Map());
-
-export const networkShelves = derived(networkLists, ($networkLists) => {
-	return Array.from($networkLists.values()).filter(
-		(list) => list.kind === NDKKind.CategorizedHighlightList
-	);
-});
 
 /**
  * Network's supported people
@@ -147,6 +131,7 @@ export async function prepareSession(): Promise<void> {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
 
 		fetchData('user', $ndk, [$user.pubkey], {
+			profileStore: userProfile,
 			followsStore: userFollows,
 			superFollowsStore: userSuperFollows,
 			userArticleCurationsStore: userArticleCurations,
@@ -166,7 +151,6 @@ export async function prepareSession(): Promise<void> {
 
 			console.log(`user follows count: ${$userFollows.size}`);
 			console.log(`user lists count: ${getStore(userArticleCurations).size}`);
-			console.log(`user hashtags: ${Object.keys(getStore(userFollowHashtags)).length}`);
 
 			resolve();
 		});
@@ -174,6 +158,7 @@ export async function prepareSession(): Promise<void> {
 }
 
 interface IFetchDataOptions {
+	profileStore?: Writable<UserProfileType | undefined>;
 	followsStore?: Writable<Set<Hexpubkey>>;
 	superFollowsStore?: Writable<Set<Hexpubkey>>;
 	activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
@@ -225,11 +210,13 @@ async function fetchData(
 
 		if (event.kind === 3 && opts.followsStore) {
 			processContactList(event, opts.followsStore);
-		} else if (event.kind === NDKKind.SuperFollowList && opts.superFollowsStore) {
+		} else if (event.kind === 0 && opts.profileStore) {
+			processUserProfile(event, opts.profileStore);
+		} else if (event.kind === 17001 && opts.superFollowsStore) {
 			processContactList(event, opts.superFollowsStore);
 		} else if (event.kind === NDKKind.GroupMembers && opts.activeSubscriptionsStore) {
 			processSubscriptionList(event, authors[0]);
-		} else if (event.kind === NDKKind.SubscriptionStart) {
+		} else if (event.kind === NDKKind.Subscribe) {
 			processSupport(event);
 		} else if (event.kind === NDKKind.AppRecommendation) {
 			processAppRecommendation(event);
@@ -239,6 +226,19 @@ async function fetchData(
 			processCurationList(event);
 		}
 	};
+
+	const processUserProfile = (event: NDKEvent, store: Writable<UserProfileType | undefined>) => {
+		const $store = get(store);
+
+		if (event.created_at && (
+			!$store?.created_at ||
+			event.created_at > $store.created_at
+		)) {
+			const profile = profileFromEvent(event) as UserProfileType;
+			profile.created_at = event.created_at;
+			store.set(profile);
+		}
+	}
 
 	const processSubscriptionList = (event: NDKEvent, author: string) => {
 		opts.activeSubscriptionsStore!.update((activeSubscriptions) => {
@@ -302,8 +302,6 @@ async function fetchData(
 	const processCurationList = (event: NDKEvent) => {
 		const list = NDKList.from(event);
 
-		console.log(`processing list ${list.title}`, event.rawEvent());
-
 		if (!list.title) return;
 
 		switch (event.kind) {
@@ -344,6 +342,8 @@ async function fetchData(
 		}
 
 		const authorPrefixes = authors.map((f) => f.slice(0, authorPubkeyLength));
+
+		if (opts.profileStore) { kinds.push(NDKKind.Metadata); }
 
 		if (opts.userArticleCurationsStore) {
 			kinds.push(...opts.listsKinds!);

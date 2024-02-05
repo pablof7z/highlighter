@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import { finalizeLogin } from '$utils/login';
     import { createEventDispatcher } from 'svelte';
+	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 
     type Mode = "alby" | "mutiny" | "nwc";
 
@@ -15,8 +16,6 @@
     const dispatch = createEventDispatcher();
 
     let nwc: string;
-
-    const hostname = $page.url.hostname;
 
     async function nwcConnect(url: string) {
         await fetch("/api/user/nwc", {
@@ -40,30 +39,30 @@
 
 {#if !mode}
     <div class="flex-col justify-start items-center gap-3 inline-flex flex-nowrap" transition:slide>
-        <button class="button button-primary w-full"
+        <button class="button w-full"
             on:click={() => mode = "alby"}
         >
             Connect with Alby
         </button>
 
-        <button class="button button-primary w-full" on:click={() => mode = "mutiny"}>
+        <button class="button w-full" on:click={() => mode = "mutiny"}>
             Connect with Mutiny
         </button>
 
         <div class="self-stretch justify-center items-center gap-3 inline-flex">
-            <div class="grow shrink basis-0 h-[0px] border border-neutral-200"></div>
-            <div class="text-zinc-400 text-sm font-normal leading-5">OR</div>
-            <div class="grow shrink basis-0 h-[0px] border border-neutral-200"></div>
+            <div class="grow shrink basis-0 h-[0px] border border-neutral-700"></div>
+            <div class="text-neutral-500 text-sm font-normal leading-5">OR</div>
+            <div class="grow shrink basis-0 h-[0px] border border-neutral-700"></div>
         </div>
         <div class="self-stretch h-[123px] flex-col justify-start items-start gap-1.5 flex">
-            <div class="w-72 text-black text-base font-medium leading-normal">Nostr Wallet Connect</div>
-            <Input
+            <div class="text-whiet text-base font-medium leading-normal">Nostr Wallet Connect</div>
+            <GlassyInput
                 class="w-full"
                 placeholder="Wallet connect URL / pairing secret"
                 bind:value={nwc}
             />
             <div class="self-stretch h-[93px] flex-col justify-start items-start gap-1.5 flex">
-                <button class="button button-primary w-full" on:click={() => nwcConnect(nwc)}>
+                <button class="button w-full" on:click={() => nwcConnect(nwc)}>
                     Connect
                 </button>
             </div>
@@ -71,7 +70,7 @@
     </div>
 {:else if mode === "mutiny"}
     <div class="flex-col justify-start items-center gap-3 inline-flex flex-nowrap" transition:slide>
-        <div class="text-black">
+        <div class="text-white">
 
             Add a new Wallet Connection from:
             <div class="text-center flex flex-col items-center">

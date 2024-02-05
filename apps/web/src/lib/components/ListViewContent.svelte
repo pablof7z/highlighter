@@ -56,7 +56,7 @@
                 <button
                     class="cursor-pointer w-full hover:bg-base-300"
                     on:click={() => editDescription = list.content??""}>
-                    <div class="items-start text-left">
+                    <div class="items-start text-left text-lg">
                         {#if list.content.length > 0}
                             {list.content}
                         {:else}
@@ -77,7 +77,7 @@
                 </div>
             {/if}
         {:else if list.content.length > 0}
-            <div class="items-start">
+            <div class="items-start text-lg">
                 {list.content}
             </div>
         {/if}

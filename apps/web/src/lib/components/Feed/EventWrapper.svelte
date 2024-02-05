@@ -1,41 +1,35 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import ReactButton from "$components/buttons/ReactButton.svelte";
-	import { requiredTierNamesFor, requiredTiersFor } from "$lib/events/tiers";
+	import { requiredTiersFor } from "$lib/events/tiers";
 	import { urlSuffixFromEvent } from "$utils/url";
-	import { Avatar, EventCardActions, Name, RelativeTime, ndk, user } from "@kind0/ui-common";
-    import { NDKKind, type NDKEvent, type Hexpubkey } from "@nostr-dev-kit/ndk";
-	import { EventCardDropdownMenu, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
-    import { createEventDispatcher } from "svelte";
-	import { derived } from "svelte/store";
+	import { Avatar, AvatarWithName, Name, RelativeTime, ndk, user } from "@kind0/ui-common";
+    import { type NDKEvent } from "@nostr-dev-kit/ndk";
+	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
     import Comment from "$components/Forms/Comment.svelte";
 	import { slide } from "svelte/transition";
-	import { ChatCircle, Repeat } from "phosphor-svelte";
 	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
-	import { getUserSupportPlansStore, userTiers } from "$stores/user-view";
-	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 
     export let event: NDKEvent;
     export let urlPrefix: string | undefined = undefined;
     export let skipAuthor: boolean = false;
+    export let skipActions = false;
     export let reverse = false;
     const author = event.author;
 
     let suffixUrl = urlSuffixFromEvent(event);
 
     const tiers = requiredTiersFor(event);
-    // const tierNames = requiredTierNamesFor(event, getUserSupportPlansStore);
+    // const tierNames = requiredTierNamesFor(event, getUserSubscriptionTiersStore);
     const includesFree = tiers.includes("Free");
 
     let showComment = false;
 
     /**
      * Whether the event author is different from the current user.
-     * This is used to indent the comment form.
+     * This is used tothe comment form.
      */
     let differentAuthor = true;
-
-    $: differentAuthor = event.author.pubkey !== $user?.pubkey;
+    $: differentAuthor = event.pubkey !== $user?.pubkey;
 
     function reset() {
         showComment = false;
@@ -44,13 +38,13 @@
 
 <UserProfile user={author} let:userProfile let:fetching let:authorUrl>
     <a href="{authorUrl}{urlPrefix??""}/{suffixUrl}" class="
-        bg-base-100 rounded-box p-4
+        bg-base-200 rounded-box p-4
         flex flex-col gap-4 pb-6 wrapper w-full {$$props.class??""}
         overflow-clip
     ">
         {#if reverse}
             <div class="flex flex-row w-full justify-between items-stretch">
-                <AvatarWithName user={author} {UserProfile} />
+                <AvatarWithName user={author} {userProfile} {fetching} />
 
                 <div class="flex flex-row gap-2 items-center" on:click|preventDefault|stopPropagation|stopImmediatePropagation>
                     <RelativeTime {event} class="text-neutral-500 text-sm font-normal" />
@@ -63,7 +57,7 @@
         {#if $$slots.default}
             <slot />
         {:else}
-            <EventContent ndk={$ndk} {event} class="prose article" />
+            <EventContent ndk={$ndk} {event} class="text-lg" />
         {/if}
 
         <div class="w-full justify-between items-center inline-flex">
@@ -91,7 +85,7 @@
                     </div>
                 </div>
             {/if}
-            {#if event.sig && event.id}
+            {#if event.sig && event.id && !skipActions}
                 <EventActionButtons {event} on:comment={() => showComment = !showComment} />
             {/if}
         </div>

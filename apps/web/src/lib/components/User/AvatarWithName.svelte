@@ -10,12 +10,17 @@
     export let spacing = "gap-2";
     export let avatarType: 'circle' | 'square' | undefined = "circle";
     export let avatarSize: 'tiny' | 'small' | 'medium' | 'large' | undefined = "medium";
+
+    function newProfileAfterEose(e: CustomEvent<UserProfileType>) {
+        console.log('newProfileAfterEose');
+        userProfile = e.detail;
+    }
 </script>
 
 {#if !userProfile}
-    <UserProfile {user} bind:userProfile let:fetching bind:authorUrl>
+    <UserProfile {user} bind:userProfile let:fetching bind:authorUrl on:newProfileAfterEose={newProfileAfterEose}>
         <a href={authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
-            <Avatar {userProfile} {fetching} size={avatarSize} class={$$props.avatarClass??""} type={avatarType} />
+            <Avatar {userProfile} {fetching} size={avatarSize} class="flex-none {$$props.avatarClass??""}" type={avatarType} />
 
             <div class="flex flex-col items-start gap-0">
                 <Name {userProfile} {fetching} {authorUrl} class={$$props.nameClass??""} />

@@ -1,14 +1,31 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
+	import { userProfile } from "$stores/session";
+	import { welcomeScreenSeen } from "$stores/settings";
+	import { fillInSkeletonProfile } from "$utils/login";
+	import { ndk, user } from "@kind0/ui-common";
 	import { onMount } from "svelte";
+	import { closeModal } from "svelte-modals";
 
     onMount(() => {
-        goto("/home");
+        $welcomeScreenSeen = true;
     })
+
+    // double-check this is a new account
+    $ndk.fetchEvents({
+        authors: [$user.pubkey], limit: 10
+    }).then((events) => {
+        const cutOff = Math.floor(Date.now() / 1000) - 3600;
+        // This account created less than 5 total events
+        if (events.size < 50 && $userProfile && $userProfile.created_at > cutOff) {
+            $ndk.signer?.blockUntilReady().then(() => {
+                fillInSkeletonProfile($userProfile!);
+            });
+        }
+    });
 </script>
 
-<div class="flex flex-col gap-4 max-w-sm">
-    <div class="prose text-white/90 flex flex-col gap-2">
+<div class="flex flex-col gap-4 max-w-sm text-neutral-300 leading-7 font-light">
+    <div class="flex flex-col gap-4">
         <p class="">
             Finally, you can focus on your work while your fans give you the exposure you deserve.
         </p>
@@ -55,7 +72,7 @@
         </div>
     </div>
 
-    <a href="/home" class="button button-primary font-normal w-full">
+    <a href="/welcome" class="button text-lg font-normal w-full" on:click={() => closeModal() }>
         Start publishing & earning
     </a>
     <button class="button bg-white/5 text-white/70 font-normal py-3">

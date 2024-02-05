@@ -1,8 +1,8 @@
-export const possibleTerms: Term[] = ['daily', 'weekly', 'monthly', 'quarterly', 'yearly'];
+import { calculateTermDurationInSeconds, type NDKIntervalFrequency } from "@nostr-dev-kit/ndk";
 
-export type Term = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+export const possibleTerms: NDKIntervalFrequency[] = ['daily', 'weekly', 'monthly', 'quarterly', 'yearly'];
 
-export function termToShort(term: Term): string {
+export function termToShort(term: NDKIntervalFrequency): string {
 	switch (term) {
 		case 'daily':
 			return 'day';
@@ -17,4 +17,13 @@ export function termToShort(term: Term): string {
 		default:
 			return term;
 	}
+}
+
+export function calculateEndOfTerm(
+	term: NDKIntervalFrequency,
+	startTime: Date,
+): Date {
+	const duration = calculateTermDurationInSeconds(term);
+
+	return new Date(startTime.getTime() + duration * 1000);
 }

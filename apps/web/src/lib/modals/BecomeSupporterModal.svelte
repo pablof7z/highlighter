@@ -1,10 +1,9 @@
 <script lang="ts">
 	import ModalShell from '$components/ModalShell.svelte';
-    import TierHeader from "$components/TierHeader.svelte";
     import { user as loggedInUser } from '@kind0/ui-common';
     import { userSuperFollows } from '$stores/session';
     import Tier from "$components/Tier.svelte";
-	import type { NDKArticle, NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
+	import type { NDKEvent, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
 	import type { Readable } from "svelte/motion";
 	import { derived } from "svelte/store";
 	import { termToShort, type Term } from "$utils/term";
@@ -16,19 +15,19 @@
 	import { onMount } from 'svelte';
 	import ThankYou from '$components/Payment/ThankYou.svelte';
 	import { isNwcAvailable } from '$utils/nwc';
-	import { currencyFormat } from '$utils/currency';
+	import { currencyCode, currencyFormat, currencySymbol } from '$utils/currency';
 	import type { UserProfileType } from '../../app';
 	import EmptyTierForm from '$components/EmptyTierForm.svelte';
-	import { getUserSupportPlansStore } from '$stores/user-view';
+	import { getUserSubscriptionTiersStore } from '$stores/user-view';
+    import createDebug from 'debug';
 
     export let user: NDKUser;
-    export let tiers: Readable<NDKArticle[]> | undefined = undefined;
 
-    if (!tiers) {
-        tiers = getUserSupportPlansStore();
-    }
+    const d = createDebug('HL:become-supporter-modal');
 
-    console.log("tiers", $tiers);
+    let tiers: Readable<NDKSubscriptionTier[]> | undefined = getUserSubscriptionTiersStore();
+
+    $: d("tiers", $tiers);
 
     let bitcoin = false;
     let paid = false;
@@ -37,10 +36,14 @@
     let nwcUrl: string;
     let userProfile: UserProfileType;
 
-    let selected: NDKEvent | undefined;
+    let selected: NDKSubscriptionTier | undefined;
     let selectedTerm: Term = "monthly";
     let selectedAmount: number | undefined;
-    let selectedCurrency: string | undefined = 'USD'
+    let selectedCurrency: string | undefined;
+
+    let hasTiers: boolean;
+
+    $: hasTiers = $tiers.length > 0;
 
     onMount(() => {
         userHasWalletConnected = isNwcAvailable();
@@ -50,65 +53,45 @@
         userHasWalletConnected = true;
     }
 
-    const availableTerms = derived(tiers, ($tiers) => {
-        const terms = new Set<Term>();
-        $tiers.forEach((tier: NDKEvent) => {
-            const amountTags = tier.getMatchingTags("amount")
-            for (const amountTag of amountTags) {
-                if (amountTag[3]) terms.add(amountTag[3] as Term);
+    const availableCurrencies = derived(tiers, ($tiers) => {
+        const currencies = new Set<string>();
+        $tiers.forEach((tier: NDKSubscriptionTier) => {
+            for (const amount of tier.amounts) {
+                currencies.add(amount.currency);
             }
         });
 
-        if (terms.size === 0) {
-            terms.add("weekly");
-            terms.add("monthly");
-            terms.add("yearly");
+        if (!selectedCurrency) {
+            if (currencies.has('msat')) {
+                selectedCurrency = 'msat';
+            } else {
+                selectedCurrency = Array.from(currencies)[0];
+            }
         }
 
-        return Array.from(terms);
+        return Array.from(currencies);
     });
 
     const sortedTiers = derived(tiers, $tiers => {
-        const t = $tiers.sort((a, b) => {
-            const aAmount = a.getMatchingTags("amount").find((tag) => tag[3] === selectedTerm)![1];
-            const bAmount = b.getMatchingTags("amount").find((tag) => tag[3] === selectedTerm)![1];
-            return Number(aAmount) - Number(bAmount);
-        });
+        const t = $tiers
+            .sort((a, b) => {
+                const aAmount = a.amounts.find((amount) => amount.currency === selectedCurrency);
+                const bAmount = b.amounts.find((amount) => amount.currency === selectedCurrency);
 
-        if (!selected && t[0]) selectTier(t[0]);
+                if (aAmount && bAmount) return aAmount.amount - bAmount.amount;
+
+                return 0;
+            });
+
+        if (!selected && t[0]) {
+            selected = t[0];
+            const amount = t[0].amounts[0];
+            selectedAmount = amount.amount;
+            selectedTerm = amount.term;
+        }
 
         return t;
     });
-
-    function selectTier(tier: NDKEvent) {
-        selected = tier;
-        const t = tier.getMatchingTags("amount").find((tag) => tag[3] === selectedTerm)!;
-        selectedAmount = parseFloat(t[1]);
-        selectedCurrency = t[2]!;
-    }
-
-    function selectTerm(term: Term) {
-        selectedTerm = term;
-        if (selected) selectTier(selected);
-    }
-
-    function backClicked() {
-        if (bitcoin) {
-            if (nwcMode) {
-                nwcMode = undefined;
-            } else {
-                bitcoin = false;
-            }
-        }
-    }
-
-    async function follow() {
-        closeModal();
-
-        if ($userSuperFollows.has(user.pubkey)) return;
-
-        $loggedInUser.follow(user, undefined, 17001);
-    }
 
     async function onPaid() {
         paid = true;
@@ -117,35 +100,30 @@
     }
 </script>
 
-<ModalShell color="glassy">
-    <TierHeader
-        {user}
-        bind:userProfile
-        showBackArrow={bitcoin}
-        on:back={backClicked}
-    />
-
+<ModalShell color="glassy" class="max-sm:w-full">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div on:click|preventDefault|stopPropagation={() => {}} class="w-full relative">
         {#if !paid}
             {#if !bitcoin}
-                <div class="flex flex-col flex-nowrap gap-6 items-center" transition:slide>
-                    {#if $availableTerms.length > 1}
-                        <div class="justify-center items-center inline-flex">
-                            {#each $availableTerms as term}
-                                <button
-                                    class="px-2.5 py-1 rounded-full justify-center items-center flex"
-                                    class:bg-zinc-100={term === selectedTerm}
-                                    on:click={() => selectTerm(term)}
-                                >
-                                    <div class="text-center text-black text-[15px] font-medium">{term}</div>
-                                </button>
-                            {/each}
+                <div class="flex flex-col flex-nowrap gap-6 items-stretch sm:items-center" transition:slide>
+                    {#if $availableCurrencies.length > 0}
+                        <div class="w-full self-end">
+                            <select class="select !bg-white/10" bind:value={selectedCurrency}>
+                                {#each $availableCurrencies as currency}
+                                    <option value={currency}>
+                                        {currencyCode(currency)}
+                                    </option>
+                                {/each}
+                            </select>
                         </div>
                     {/if}
 
-                    <div class="flex flex-col md:flex-row gap-4">
+                    <div class="
+                        flex flex-col md:flex-row gap-4 items-start overflow-y-auto max-sm:max-h-[50vh]
+                        sm:max-w-[60vw] sm:overflow-x-auto overscroll-contain max-sm:snap-y sm:snap-x
+                        snap-mandatory
+                    ">
                         {#if $sortedTiers.length === 0}
                             <EmptyTierForm
                                 bind:selectedAmount
@@ -154,47 +132,52 @@
                                 term={selectedTerm}
                             />
                         {/if}
-                        {#each $sortedTiers as tier}
-                            <Tier
-                                {tier}
-                                on:click={() => selectTier(tier)}
-                                selected={selected === tier}
-                                term={selectedTerm}
-                            />
+                        {#each $sortedTiers as tier (tier.id)}
+                            {#if tier.amounts.some(amount => amount.currency === selectedCurrency)}
+                                <Tier
+                                    {tier}
+                                    currency={selectedCurrency}
+                                    selected={selected === tier}
+                                    term={selectedTerm}
+                                    on:changed={(e) => {
+                                        const amount = e.detail;
+                                        console.log(amount);
+                                        selected = tier;
+                                        selectedAmount = amount.amount;
+                                        selectedTerm = amount.term;
+                                    }}
+                                />
+                            {/if}
                         {/each}
                     </div>
 
                     <div
-                        class="justify-center items-start gap-5 inline-flex"
+                        class="justify-center items-stretch gap-5 flex-col-reverse sm:flex-row flex w-full"
                     >
+                        <button
+                            class="button !bg-white/10 text-neutral-400 font-normal btn-rounded px-6"
+                            on:click={() => closeModal() }
+                        >Cancel</button>
                         {#if selectedAmount && selectedCurrency}
                             <button
-                                class="button button-primary"
-                                class:opacity-0={selectedCurrency === "msat"}
-                                disabled={!selectedAmount || selectedCurrency === "msat"}
+                                class="button button-primary px-10 text-lg grow"
+                                disabled={!selectedAmount}
+                                on:click={() => bitcoin = true}
                             >
-                                Support for {currencyFormat(selectedCurrency, selectedAmount)}/{termToShort(selectedTerm)}
+                                {#if hasTiers}
+                                    Go backstage
+                                {:else}
+                                    Subscribe
+                                {/if}
+                                for {currencyFormat(selectedCurrency, selectedAmount)}/{termToShort(selectedTerm)}
                             </button>
                         {/if}
-
-                        <button
-                            class="button button-primary"
-                            on:click={() => bitcoin = true}
-                            disabled={!selectedAmount}
-                        >
-                            Pay in Bitcoin
-                        </button>
                     </div>
-
-                    <button
-                        class="text-center text-black text-opacity-50 text-sm font-normal leading-5"
-                        on:click={follow}
-                    >No thanks, basic follow for free</button>
                 </div>
             {:else}
                 <div class="flex flex-col flex-nowrap gap-6 items-center" transition:slide>
                     {#if !userHasWalletConnected}
-                        <div class="text-center text-black text-base font-normal leading-normal">
+                        <div class="text-center text-white text-base font-normal leading-normal">
                             Connect a lightning wallet to subscribe to
                             <Name {user} />'s
                             content.
@@ -206,7 +189,7 @@
                             amount={selectedAmount.toString()}
                             currency={selectedCurrency}
                             term={selectedTerm}
-                            plan={selected}
+                            tier={selected}
                             supportedUser={user}
                             on:paid={onPaid}
                             on:disconnectWallet={() => userHasWalletConnected = false}
@@ -219,19 +202,3 @@
         {/if}
     </div>
 </ModalShell>
-
-<!-- <style lang="postcss">
-    a {
-        @apply px-4 py-3 rounded-xl justify-start items-start gap-2 inline-flex;
-        @apply text-black text-sm font-semibold leading-5;
-        @apply flex-col justify-start items-center gap-2 inline-flex;
-
-        & > span {
-            @apply w-8 h-8 pl-1 pr-0.5 pt-0.5 pb-1 justify-center items-center inline-flex self-center;
-        }
-
-        &:hover {
-            @apply hover:bg-zinc-100;
-        }
-    }
-</style> -->

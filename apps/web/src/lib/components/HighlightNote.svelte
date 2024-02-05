@@ -25,7 +25,7 @@
 </script>
 
 {#if quotedHighlight}
-    <EventWrapper event={note} reverse={true}>
+    <EventWrapper event={note} reverse={true} class={$$props.class??""}>
         <div class="pl-12 flex flex-col gap-4">
             <HighlightBody highlight={quotedHighlight} class="leading-5" />
 

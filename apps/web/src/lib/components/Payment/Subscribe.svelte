@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { ndk, newToasterMessage, nicelyFormattedSatNumber } from "@kind0/ui-common";
 	import { onMount } from "svelte";
-    import { NDKKind, type NDKEvent, type NDKUser } from "@nostr-dev-kit/ndk";
-	import type { Term } from "$utils/term";
+    import { NDKSubscriptionTier, type NDKEvent, type NDKIntervalFrequency, type NDKUser, NDKSubscriptionStart } from "@nostr-dev-kit/ndk";
+	import { termToShort } from "$utils/term";
 	import { createSubscriptionEvent } from "./subscription-event";
 	import { slide } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
@@ -10,32 +10,34 @@
 
     export let amount: string;
     export let currency: string;
-    export let term: Term;
-    export let plan: NDKEvent | undefined = undefined;
+    export let term: NDKIntervalFrequency;
+    export let tier: NDKSubscriptionTier | undefined = undefined;
 
     /**
      * User that is being supported, passed in when no plan is provided
      */
-    export let supportedUser: NDKUser | undefined = plan?.author;
+    export let supportedUser: NDKUser | undefined = tier?.author;
 
     const dispatch = createEventDispatcher();
-
-    const zapComment = "Highlighter.com supporter";
 
     let bitcoinPrice: number | undefined;
     let satsAmount: number | undefined;
 
     onMount(async () => {
-        const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
-        const data = await response.json();
-        bitcoinPrice = data.bitcoin.usd;
+        if (currency === 'msat') {
+            satsAmount = Math.floor(Number(amount) / 1000);
+        } else {
+            const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
+            const data = await response.json();
+            bitcoinPrice = data.bitcoin.usd;
 
-        if (!bitcoinPrice) {
-            newToasterMessage("Failed to fetch bitcoin price, try again please", "error");
-            return;
+            if (!bitcoinPrice) {
+                newToasterMessage("Failed to fetch bitcoin price, try again please", "error");
+                return;
+            }
+
+            satsAmount = Math.floor(Number(amount) / 100 / bitcoinPrice * 100_000_000);
         }
-
-        satsAmount = Math.floor(Number(amount) / bitcoinPrice * 100_000_000);
         // XXX HARDCODE
         // satsAmount = 10;
     });
@@ -43,7 +45,7 @@
     let subscribing = false;
     let error: string | undefined;
 
-    async function startSubscription(subscriptionEvent: NDKEvent) {
+    async function startSubscription(subscriptionEvent: NDKSubscriptionStart) {
         const res = await fetch("/api/user/subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json", },
@@ -52,16 +54,20 @@
             }),
         });
 
-        const data = await res.json();
         const status = res.status;
 
-        if (data.error) {
-            newToasterMessage(data.error, "error");
+        if (status !== 200) {
+            const text = await res.text();
+            newToasterMessage("Failed to start subscription: " + text, "error");
+            subscribing = false;
             return;
         }
 
-        if (status !== 200) {
-            newToasterMessage("Failed to start subscription, try again please", "error");
+        const data = await res.json();
+
+        if (data.error) {
+            subscribing = false;
+            newToasterMessage(data.error, "error");
             return;
         }
 
@@ -78,7 +84,7 @@
         }
 
         try {
-            const supportEvent = await createSubscriptionEvent($ndk, amount, currency, term, plan, supportedUser);
+            const supportEvent = await createSubscriptionEvent($ndk, amount, currency, term, supportedUser, tier);
 
             await startSubscription(supportEvent);
         } catch (e: any) {
@@ -87,29 +93,17 @@
             subscribing = false;
             return;
         }
-        // const invoice = await supportEvent.zap(satsAmount*1000, zapComment, undefined, supportedUser);
-
-        // if (!invoice) {
-        //     newToasterMessage("Failed to fetch an invoice, try again please", "error");
-        //     return;
-        // }
-
-        // try {
-        //     preimage = await nwcPay(invoice);
-        //     dispatch("paid", { preimage });
-        // } catch (e: any) {
-        //     error = e.message;
-        //     subscribing = false;
-        //     return;
-        // }
     }
 </script>
 
-<div class="text-black text-sm font-medium leading-[19px]">
+<div class="text-lg font-medium flex flex-col items-center gap-1">
     {#if currency !== 'msat'}
-        {currencyFormat(currency, parseInt(amount))}
+        <div class="text-4xl gradient-text ">
+            {currencyFormat(currency, parseInt(amount))}/{termToShort(term)}
+        </div>
+
         {#if satsAmount}
-            ({nicelyFormattedSatNumber(satsAmount)} sats)
+            <div class="opacity-60">({nicelyFormattedSatNumber(satsAmount)} sats)</div>
         {/if}
     {:else}
         {currencyFormat(currency, parseInt(amount))}

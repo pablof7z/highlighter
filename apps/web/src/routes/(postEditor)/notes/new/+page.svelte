@@ -3,14 +3,14 @@
     import UserProfile from "$components/User/UserProfile.svelte";
 	import Page1 from "$components/Editor/NoteEditorPage/Page1.svelte";
 	import { type TierSelection, getTierSelectionFromAllTiers, getSelectedTiers } from "$lib/events/tiers";
-	import { getUserSupportPlansStore } from "$stores/user-view";
+	import { getUserSubscriptionTiersStore } from "$stores/user-view";
 	import { ndk, newToasterMessage, user } from "@kind0/ui-common";
 	import { NDKEvent, NDKKind, type NostrEvent } from "@nostr-dev-kit/ndk";
 
 	import type { UserProfileType } from "../../../../app.d.ts";
 	import Shell from "$components/PostEditor/Shell.svelte";
 
-    const allTiers = getUserSupportPlansStore();
+    const allTiers = getUserSubscriptionTiersStore();
     let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
     $: tiers = getTierSelectionFromAllTiers($allTiers);
 
@@ -98,46 +98,6 @@
         bind:uploadedFiles
     />
 </Shell>
-
-<!-- <MainWrapper class="p-6">
-    <ItemEditShell
-        bind:step
-        bind:steps={steps}
-    >
-        {#if step === 0}
-
-        {/if}
-
-        <div class:hidden={step !== 1}>
-            <DistributionPage
-                type="note"
-                {tiers}
-                bind:nonSubscribersPreview
-                bind:wideDistribution
-                bind:canContinue={steps[2].canContinue}
-                on:changed={tiersChanged}
-                on:editPreview={editTeaser}
-            />
-        </div>
-
-        {#if step === 2}
-            {#if $debugMode}
-                <pre>{JSON.stringify({
-                    wideDistribution,
-                    tiers
-                })}</pre>
-                <pre>{JSON.stringify(note.rawEvent(), null, 2)}</pre>
-                <pre>{JSON.stringify(preview.rawEvent(), null, 2)}</pre>
-            {:else}
-                <PublishingStep {publishing}>
-                    <div slot="preview">
-                        <FeedGroupPost event={note} class="!py-5 border border-base-300" />
-                    </div>
-                </PublishingStep>
-            {/if}
-        {/if}
-    </ItemEditShell>
-</MainWrapper> -->
 
 <style lang="postcss">
     .attachments img {

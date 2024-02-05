@@ -5,7 +5,6 @@
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import ServiceItem from './ServiceItem.svelte';
 	import { NDKEvent, NDKKind, NDKPrivateKeySigner, type NostrEvent } from '@nostr-dev-kit/ndk';
-	import { ndk } from '@kind0/ui-common';
 
     $pageSidebar = { component: Settings, props: {} }
     onDestroy(() => { $pageSidebar = null; })
@@ -26,7 +25,7 @@
             <ServiceItem
                 kind={5905}
                 title="Post Schedule"
-                eventId="naddr1qqxnzdesxccnwde4xqenvdf4qgs04xzt6ldm9qhs0ctw0t58kf4z57umjzmjg6jywu0seadwtqqc75srqsqqql8k4ukxl8"
+                eventId="naddr1qqy8x6rfwpukzunyqgsgtssdxasw7nsewcr3545lkd3lflcgdj5swe5lh9gk0nw9xpvnf5grqsqqql8kvkq450"
             >
                 <div slot="about">
                     <span class="text-white inline">Highlighter</span>

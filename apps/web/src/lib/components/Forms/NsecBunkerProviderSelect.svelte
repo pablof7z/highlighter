@@ -12,8 +12,6 @@
 
     let selection = value.pubkey;
 
-    export let onlyButton = false;
-
     export let allNsecBunkerProviders = $ndk.storeSubscribe(
         { kinds: [NDKKind.AppHandler], "#k": [NDKKind.NostrConnect.toString()] },
         { closeOnEose: true, subId: 'nsec-bunker-providers' }

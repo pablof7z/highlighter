@@ -7,7 +7,6 @@
 	import { ndk } from '@kind0/ui-common';
 	import ItemView from '../../routes/[id]/[tagId]/ItemView.svelte';
 	import ListViewContent from './ListViewContent.svelte';
-	import PageTitle from './Page/PageTitle.svelte';
 	import { CaretLeft } from 'phosphor-svelte';
 
     export let event: NDKEvent;

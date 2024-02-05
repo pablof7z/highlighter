@@ -25,13 +25,18 @@
     >
         <div class="flex flex-row gap-2 items-center">
             <Avatar {userProfile} {fetching} class="w-11 h-11 mask mask-squircle rounded-none" />
-            <span class="truncate name">
-                <Name
-                    {userProfile}
-                    {fetching}
-                    class="text-right text-[15px] font-normal"
-                />
-            </span>
+            <div class="flex flex-col items-start gap-1">
+                <span class="truncate name">
+                    <Name
+                        {userProfile}
+                        {fetching}
+                        class="text-right text-white text-[15px] font-medium"
+                    />
+                </span>
+                <div class="truncate text-xs font-light text-neutral-500">
+                    {userProfile?.about??""}
+                </div>
+            </div>
         </div>
     </a>
 </UserProfile>

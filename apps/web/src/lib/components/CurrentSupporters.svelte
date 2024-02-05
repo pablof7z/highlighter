@@ -5,17 +5,12 @@
 	import SubscribeButton from "./buttons/SubscribeButton.svelte";
 
     export let user: NDKUser;
-    export let tiers: Readable<NDKArticle[]>;
-    export let supporters: Readable<Record<Hexpubkey, string | undefined>>;
+    export let supporters: Record<Hexpubkey, string | undefined>;
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 
-    $: if (supporters && $supporters) {
-        supportingPubkeys = new Set(Object.keys($supporters));
-    }
-
-    function openShareModal() {
-        // openModal(ShareModal, { user });
+    $: if (supporters) {
+        supportingPubkeys = new Set(Object.keys(supporters));
     }
 
     let isCurrentUser: boolean;
@@ -27,10 +22,6 @@
 
 <div class="flex items-center gap-4 max-sm:w-full">
     {#if supportingPubkeys?.size > 0}
-        <span class="text-sm whitespace-nowrap">
-            {supportingPubkeys?.size}
-            Supporters
-        </span>
         <div class="flex -space-x-4 ml-4 w-fit">
             {#each Array.from(supportingPubkeys).slice(0, 10) as supportingPubkey (supportingPubkey)}
                 <div class="flex-none w-10">
@@ -38,10 +29,14 @@
                 </div>
             {/each}
         </div>
+        <span class="text-sm whitespace-nowrap">
+            {supportingPubkeys?.size}
+            Supporter{supportingPubkeys?.size > 1 ? "s" : ""}
+        </span>
     {/if}
 
     {#if !isSupporter}
-        <SubscribeButton {user} {tiers} />
+
     {:else}
         <!-- <button class="whitespace-nowrap button px-6" on:click={openShareModal}>
             <Share class="mr-2" />

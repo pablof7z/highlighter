@@ -1,13 +1,14 @@
 import { get as getStore } from 'svelte/store';
-import { ndk } from '@kind0/ui-common';
+import { ndk, newToasterMessage } from '@kind0/ui-common';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
-import { NDKPrivateKeySigner, NDKRelayAuthPolicies, NDKRelaySet } from '@nostr-dev-kit/ndk';
+import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 
-const debug = createDebug('highlighter:ndk');
+const debug = createDebug('HL:ndk');
 
 const RELAY = import.meta.env.VITE_RELAY;
 
+export const defaultVerifierPubkey = '73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63';
 export const defaultRelays = [RELAY];
 export const nip50Relays = ['wss://relay.noswhere.com', 'wss://relay.nostr.band'];
 
@@ -43,9 +44,9 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	const $ndk = getStore(ndk);
 	$ndk.clientName = 'highlighter';
 	$ndk.clientNip89 =
-		'31990:4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce:1703282708172';
+		'31990:73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63:1704502265408';
 	$ndk.relayAuthDefaultPolicy = NDKRelayAuthPolicies.disconnect($ndk.pool);
-	$ndk.httpFetch = nodeFetch as typeof fetch;
+	// $ndk.httpFetch = nodeFetch as typeof fetch;
 
 	// add default relays
 	for (const relay of defaultRelays) {
@@ -62,12 +63,19 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	$ndk.addExplicitRelay('wss://nos.lol');
 	$ndk.addExplicitRelay('wss://relay.noswhere.com');
 	$ndk.addExplicitRelay('wss://relay.nostr.band');
+
+	$ndk.connect();
 }
 
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'higlighter' });
 	$ndk.clientName = 'highlighter';
+
+	$ndk.on("notice", (relay: NDKRelay, notice: string) => {
+		console.log('NDK notice', relay.url, notice);
+		newToasterMessage(`${relay.url}: ${notice}`);
+	});
 
 	await $ndk.connect(2000);
 }
@@ -80,7 +88,21 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 		await configureDefaultNDK(nodeFetch);
 	}
 
-	$ndk.httpFetch = nodeFetch as typeof fetch;
+	// debug(`Configuring BE NDK`, { nodeFetch: !!nodeFetch });
+
+	const fetchWrapper = async (url: string, options: RequestInit) => {
+		console.log('fetchWrapper', url, options);
+		try {
+			return await fetch(url, options);
+		} catch (error) {
+			console.error('fetch error', error);
+			throw error;
+		}
+	}
+
+	$ndk.httpFetch = fetchWrapper as typeof fetch;
+
+	// $ndk.httpFetch = nodeFetch as typeof fetch;
 	$ndk.debug.enabled = true;
 	$ndk.signer = new NDKPrivateKeySigner(privateKey);
 	// const redisAdapter = new NDKRedisAdapter({path: "redis://localhost:6379"});
@@ -89,7 +111,6 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 	//         resolve();
 	//     });
 	// });
-	console.log('calling connect with relays', $ndk.explicitRelayUrls);
 	Promise.all([
 		$ndk.connect(2000)
 		// redisConnected
@@ -97,27 +118,4 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 
 	// $ndk.cacheAdapter = redisAdapter;
 	// console.log(`redis status: ${redisAdapter.redis.status}`);
-
-	setInterval(() => {
-		console.log(`NDK, pool stats`, $ndk.pool.stats());
-		for (const relay of $ndk.pool.relays.values()) {
-			const stat = relay.connectionStats;
-			const subs = relay.activeSubscriptions();
-			console.log(
-				`[${relay.url}] stats (${stat.attempts} attempts, ${stat.success} successes -- ${subs.size} active subscriptions`
-			);
-			for (const [filter, subscriptions] of subs.entries()) {
-				let text = `${JSON.stringify(filter)}`;
-
-				if (subscriptions.length === 1 && subscriptions[0].subId) {
-					const subId = subscriptions[0].subId;
-					text = subId + ': ' + text;
-				} else {
-					text += ` (${subscriptions.length} subscriptions})`;
-				}
-
-				console.log(`\t${text}`);
-			}
-		}
-	}, 30000);
 }

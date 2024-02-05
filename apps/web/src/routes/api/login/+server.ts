@@ -2,7 +2,7 @@ import { JWT_ACCESS_SECRET } from '$env/static/private';
 import { verifySignature, type Event } from 'nostr-tools';
 import db from '$lib/db.js';
 import { NDKEvent } from '@nostr-dev-kit/ndk';
-import { json } from '@sveltejs/kit';
+import { json, text } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
 import type { Session } from '../../../app';
 const { sign } = jwt;
@@ -20,7 +20,7 @@ export async function POST({ request }) {
 
 	try {
 		const jwt = await generateJWTFromEvent(e);
-		return json({ jwt });
+		return text(jwt);
 	} catch (error: any) {
 		console.log(error);
 		return json({ error }, { status: 401 });

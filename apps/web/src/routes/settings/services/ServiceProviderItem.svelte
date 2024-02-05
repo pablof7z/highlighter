@@ -9,6 +9,7 @@
     export let kind: number;
     export let event: NDKEvent;
     export let profile: NDKUserProfile | null | undefined = undefined;
+    export let forceDisplay = false;
 
     const dispatch = createEventDispatcher();
 
@@ -92,7 +93,7 @@
     }
 </script>
 
-{#if emittedReady}
+{#if emittedReady || forceDisplay}
     <div class="flex flex-col gap-4 py-4 border-b border-base-300 px-4" transition:slide>
         <AvatarWithName
             userProfile={profile}

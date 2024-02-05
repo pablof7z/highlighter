@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { openModal } from 'svelte-modals';
-	import { getContent, getUserSupportPlansStore } from "$stores/user-view";
+	import { getContent, getUserSubscriptionTiersStore } from "$stores/user-view";
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
 	import type { Readable } from "svelte/store";
@@ -17,7 +17,7 @@
     let hasProfileBanner  = true;
 
     onMount(() => {
-        currentTiers = getUserSupportPlansStore();
+        currentTiers = getUserSubscriptionTiersStore();
         content = getContent();
     })
 

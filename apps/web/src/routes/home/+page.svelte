@@ -6,6 +6,7 @@
 	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
+	import CreatorsSection from "./CreatorsSection.svelte";
 
     $pageHeader = {
         title: "Home",
@@ -33,7 +34,11 @@
 </script>
 
 <MainWrapper class="flex flex-col gap-10 w-full sm:my-10">
-    <CreatorOnboardingActions />
+    <section>
+        <h1>Creators</h1>
+
+        <CreatorsSection />
+    </section>
 
     <section>
         <h1>Highlights & Notes</h1>

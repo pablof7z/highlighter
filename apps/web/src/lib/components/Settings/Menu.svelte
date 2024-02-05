@@ -2,22 +2,55 @@
 	import { user } from "@kind0/ui-common";
     import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { CaretRight, Keyhole, Package, ShareNetwork } from "phosphor-svelte";
+	import { logout } from "$utils/login";
+
+    let authorUrl: string;
 </script>
 
 {#if $user}
-    <AvatarWithName user={$user} nameClass="text-xl text-white font-semibold"
+    <AvatarWithName user={$user} bind:authorUrl nameClass="text-xl text-white font-semibold"
         spacing="gap-4"
-        avatarSize="large"
+        avatarSize="large" avatarClass="w-16 h-16"
     />
 
-    <div class="flex flex-row gap-4 items-stretch justify-evenly w-full">
-        <button class="btn btn-neutral w-1/2">
-            Switch account
-        </button>
-        <button class="btn btn-neutral w-1/2">
+    <div class="flex flex-col sm:flex-row gap-4 items-stretch justify-evenly w-full">
+        <a href="/settings/profile" class="btn btn-neutral sm:w-1/2">
+            Edit Profile
+        </a>
+        <button class="btn btn-neutral sm:w-1/2" on:click={logout}>
             Log out
         </button>
     </div>
+
+    <section class="w-full">
+        <div class="text-neutral-400 uppercase tracking-wider">
+            Account
+        </div>
+
+        <ul class="w-full">
+            <li>
+                <a href="/settings/tiers">
+                    <span>
+                        <ShareNetwork class="w-5 h-5" />
+                        Tiers
+                    </span>
+                    <CaretRight class="w-5 h-5" />
+                </a>
+            </li>
+
+            <li>
+                <a href="/settings/subscriptions">
+                    <span>
+                        <ShareNetwork class="w-5 h-5" />
+                        Subscriptions
+                    </span>
+                    <CaretRight class="w-5 h-5" />
+                </a>
+            </li>
+        </ul>
+    </section>
+
+    <div class="divider my-0"></div>
 
     <ul class="w-full">
         <li>

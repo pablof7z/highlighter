@@ -32,46 +32,13 @@
             t[3] === "reply"
         ));
     }
-
-    const extraItemsFetcher = (desiredEvent: NDKEvent) => {
-        console.log("extraItemsFetcher", desiredEvent.content);
-        return derived(allReplies, ($allReplies) => {
-            const a = Array.from($allReplies)
-                .filter((e) => eventIsReplyTo(e, desiredEvent))
-                .map((e) => {
-                    return {
-                        component: EventWrapper,
-                        props: {
-                            event: e,
-                            key: e.id,
-                        }
-                    }
-                });
-
-            console.log(`returning from ${desiredEvent.content}`, a);
-
-            return a;
-        });
-    }
 </script>
-
-<!-- All replies to root event with content <code>{event.content}</code>
-<pre>{JSON.stringify(allReplies.filters, null, 4)}</pre>
-<p>all replies count: {$allReplies.length}</p> -->
-
-<!-- <EventWrapper
-    {event}
-    on:comment={() => showComment = !showComment}
->
-    {event.content}
-</EventWrapper> -->
-
-<!-- <Replies replies={allReplies} /> -->
 
 <EventThread
     ndk={$ndk}
     {event}
     eventComponent={EventWrapper}
+    eventComponentProps={{class: "!bg-white"}}
 />
 
 <!-- {#if showComment}

@@ -44,7 +44,7 @@
 
         <!-- <ArticleCard {article} skipSummary={true} imageClass="w-1/12" /> -->
         {#if event.content.length > 0}
-            <EventContent ndk={$ndk} {event} showEntire={true} maxLength={9999} class="text-lg text-white !font-light prose" />
+            <EventContent ndk={$ndk} {event} showEntire={true} maxLength={9999} class="text-lg text-white !font-light" />
         {/if}
     </div>
     </UserProfile>

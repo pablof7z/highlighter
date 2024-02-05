@@ -2,7 +2,7 @@
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import { page } from "$app/stores";
 	import EventResponses from "$components/EventResponses.svelte";
-	import { CaretLeft, ChatCircle } from "phosphor-svelte";
+	import { CaretLeft } from "phosphor-svelte";
 	import ArticleBannerBackground from "../ArticleBannerBackground.svelte";
 	import ItemFooter from "../ItemFooter.svelte";
 	import WithItem from "../WithItem.svelte";
@@ -20,14 +20,17 @@
     $pageHeader = {};
 
     $: $pageHeader = {
-        leftIcon: CaretLeft,
-        leftLabel: article?.title ?? "Back",
-        leftUrl: urlPrefix,
+        left: {
+            label: article?.title ?? "Back",
+            url: urlPrefix,
+            icon: CaretLeft
+        },
         title: "Comments",
-
-        rightLabel: "New Comment",
-        rightFn: () => {
-            showComment = !showComment
+        right: {
+            label: "New Comment",
+            fn: () => {
+                showComment = !showComment
+            }
         }
     };
 </script>

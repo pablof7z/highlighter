@@ -1,22 +1,20 @@
 <script lang="ts">
 	import CurrentSupporters from "$components/CurrentSupporters.svelte";
-	import { userTiers, getUserSupporters } from "$stores/user-view";
-	import { Avatar, Name, ndk, user as currentUser } from "@kind0/ui-common";
-	import { NDKEvent, type NostrEvent, serializeProfile, NDKUser } from "@nostr-dev-kit/ndk";
+	import { getUserSubscriptionTiersStore, getUserSupporters } from "$stores/user-view";
+	import { Avatar, Name, user as currentUser } from "@kind0/ui-common";
+	import { NDKUser } from "@nostr-dev-kit/ndk";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import EditableAvatar from "$components/User/EditableAvatar.svelte";
     import type { UserProfileType } from "../../../app";
 	import { Pen } from "phosphor-svelte";
-	import CategorySelector from "$components/Forms/CategorySelector.svelte";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
-
 
     export let user: NDKUser;
 
+    const userTiers = getUserSubscriptionTiersStore();
     const defaultBanner = 'https://tonygiorgio.com/content/images/2023/03/cypherpunk-ostrach--copy--2.png';
 
     let userProfile: UserProfileType;
-    let kind37777Event: NDKEvent | undefined;
     let canEdit = false;
     let editing = false;
     let editingCategories: string[] = [];
@@ -30,11 +28,6 @@
 
     async function save() {
         userProfile.display_name = userProfile.name;
-        const profile = new NDKEvent($ndk, {
-            kind: 37777,
-            content: serializeProfile(userProfile)
-        } as NostrEvent);
-        if (kind37777Event) profile.tags.push(["d", kind37777Event.tagValue("d")!]);
         for (const category of editingCategories) {
             profile.tags.push(["t", category]);
         }
@@ -44,7 +37,7 @@
 </script>
 
 <MainWrapper marginClass="max-w-5xl mx-auto">
-    <UserProfile {user} bind:userProfile bind:kind37777Event let:fetching>
+    <UserProfile {user} bind:userProfile let:fetching>
         <div class="relative w-full overflow-hidden max-sm:pb-[20vh] pb-[25%]">
             <img src={userProfile?.banner??defaultBanner} class="absolute w-full h-full object-cover object-top lg: rounded" alt={userProfile?.name}>
         </div>
@@ -115,10 +108,6 @@
                 {/if}
             {/if}
         </div>
-
-        {#if editing}
-            <CategorySelector bind:categories={editingCategories} />
-        {/if}
     </UserProfile>
 
     <slot />

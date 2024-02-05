@@ -15,6 +15,14 @@
         props: {}
     }
 
+    $pageHeader = {
+        title: "Settings",
+        left: {
+            label: "Back",
+            url: "/",
+        }
+    };
+
     onDestroy(() => {
         $pageSidebar = null;
     })
@@ -24,6 +32,6 @@
     <title>Settings</title>
 </svelte:head>
 
-<MainWrapper class="sm:hidden">
+<MainWrapper class="lg:hidden">
     <SettingsMenu />
 </MainWrapper>

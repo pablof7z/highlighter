@@ -93,7 +93,7 @@
             $user = u;
             $ndk.signer = remoteSigner;
             localStorage.setItem("nostr-key-method", 'nip46');
-            localStorage.setItem('nostr-target-npub', $user.npub);
+            localStorage.setItem('pubkey', $user.pubkey);
             $loginState = "logged-in";
             popup?.close();
             dispatch("signed-up");

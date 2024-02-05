@@ -1,29 +1,25 @@
 import { ndk, user as currentUser } from '@kind0/ui-common';
-import { NDKKind, NDKEvent, NDKArticle, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
+import { NDKKind, NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
 import { type NDKUser, type NDKFilter, type Hexpubkey, NDKHighlight } from '@nostr-dev-kit/ndk';
 import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 import { writable, get as getStore, derived, type Readable } from 'svelte/store';
 import { userActiveSubscriptions } from './session';
-import { getDefaultRelaySet } from '$utils/ndk';
 import { trustedPubkeys } from '$utils/login';
 import createDebug from 'debug';
+import { mainContentKinds } from '$utils/event';
 
-const d = createDebug('fans:user-view');
+const d = createDebug('HL:user-view');
 
 export const activeUserViewPubkey = writable<Hexpubkey | undefined>(undefined);
 
 export let userSubscription: NDKEventStore<NDKEvent> | undefined = undefined;
-export const userTiers = writable<Readable<NDKArticle[]> | undefined>(undefined);
-export const userContent = writable<Readable<NDKEvent[]> | undefined>(undefined);
-export const userHighlights = writable<Readable<NDKHighlight[]> | undefined>(undefined);
-export const userGAContent = writable<Readable<NDKEvent[]> | undefined>(undefined);
 export const userSupporters = writable<
 	Readable<never[] | Record<Hexpubkey, string | undefined>> | undefined
 >(undefined);
 
 export function startUserView(user: NDKUser) {
 	const $activeUserViewPubkey = getStore(activeUserViewPubkey);
-	d('starting user view', user.pubkey);
+	d('start', user.pubkey);
 
 	// if we are already subscribed to this user, do nothing
 	if (userSubscription && $activeUserViewPubkey === user.pubkey) return;
@@ -33,7 +29,7 @@ export function startUserView(user: NDKUser) {
 	const tier = $userActiveSubscriptions.get(user.pubkey) || 'Free';
 	const $currentUser = getStore(currentUser);
 
-	d(`subscribing with tier ${tier} for user ${user.pubkey}`);
+	d(`using tier ${tier}`);
 
 	if (userSubscription && $activeUserViewPubkey !== user.pubkey) {
 		d(`unsubscribing from user ${$activeUserViewPubkey} to subscribe to ${user.pubkey}`);
@@ -50,7 +46,7 @@ export function startUserView(user: NDKUser) {
 		},
 		// supporters
 		{
-			kinds: [NDKKind.SubscriptionStart as number],
+			kinds: [NDKKind.Subscribe as number],
 			'#p': [user.pubkey]
 		},
 		{
@@ -60,9 +56,9 @@ export function startUserView(user: NDKUser) {
 		},
 		// Non group-exclusive content
 		{
-			kinds: [NDKKind.Article, NDKKind.HorizontalVideo, NDKKind.Highlight],
+			kinds: [...mainContentKinds, NDKKind.Highlight],
 			authors: [user.pubkey],
-			limit: 20
+			limit: 200
 		}
 	];
 
@@ -86,10 +82,6 @@ export function startUserView(user: NDKUser) {
 		cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY
 	});
 
-	userTiers.set(getUserSupportPlansStore());
-	userContent.set(getUserContent());
-	userGAContent.set(getGAUserContent());
-	userHighlights.set(getUserHighlights());
 	userSupporters.set(getUserSupporters());
 }
 
@@ -109,10 +101,10 @@ export function getContent() {
 	});
 }
 
-export function getUserSupportPlansStore() {
+export function getUserSubscriptionTiersStore() {
 	const $activeUserViewPubkey = getStore(activeUserViewPubkey);
 
-	if (!userSubscription) return derived<[], NDKArticle[]>([], () => []);
+	if (!userSubscription) return derived<[], NDKSubscriptionTier[]>([], () => []);
 
 	return derived(userSubscription, ($userSubscription) => {
 		if (!$userSubscription || !$activeUserViewPubkey) return [];
@@ -123,7 +115,7 @@ export function getUserSupportPlansStore() {
 
 		if (!tierList) return [];
 
-		const tiers: NDKArticle[] = [];
+		const tiers: NDKSubscriptionTier[] = [];
 
 		for (const tag of tierList.getMatchingTags('e')) {
 			const tier = $userSubscription.find((event: NDKEvent) => {
@@ -133,9 +125,11 @@ export function getUserSupportPlansStore() {
 
 			if (!tier) {
 				d(`could not find tier ${tag[1]}`);
+				continue;
 			}
 
-			if (tier) tiers.push(NDKArticle.from(tier));
+			const t = NDKSubscriptionTier.from(tier);
+			if (t.isValid) tiers.push(t);
 		}
 
 		return tiers;
@@ -148,7 +142,7 @@ export function getUserSupporters(): Readable<Record<Hexpubkey, string | undefin
 	if (!userSubscription) return derived([], () => {});
 
 	return derived(userSubscription, ($userSubscription) => {
-		if (!$userSubscription || !$activeUserViewPubkey) return [];
+		if (!$userSubscription || !$activeUserViewPubkey) return {};
 
 		const supportersList: NDKEvent | undefined = $userSubscription.find(
 			(e) => e.kind === NDKKind.GroupMembers
@@ -172,6 +166,24 @@ export function getUserSupporters(): Readable<Record<Hexpubkey, string | undefin
 	});
 }
 
+export function getUserCurations(): Readable<NDKEvent[]> {
+	if (!userSubscription) return derived([], () => []);
+
+	return derived([userSubscription], ([$userSubscription]) => {
+		const items = $userSubscription;
+
+		// go through all the items, if there is an item that has a "full" tag with a value that exists in ids, remove it
+		const filteredItems = items.filter((event: NDKEvent) => {
+			if (![NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet].includes(event.kind!)) return false;
+
+			// Only non-h-tagged content
+			return !event.tagValue('h');
+		});
+
+		return filteredItems;
+	});
+}
+
 export function getGAUserContent(): Readable<NDKEvent[]> {
 	if (!userSubscription) return derived([], () => []);
 
@@ -180,6 +192,8 @@ export function getGAUserContent(): Readable<NDKEvent[]> {
 
 		// go through all the items, if there is an item that has a "full" tag with a value that exists in ids, remove it
 		const filteredItems = items.filter((event: NDKEvent) => {
+			if (!mainContentKinds.includes(event.kind!)) return false;
+
 			// Only non-h-tagged content
 			return !event.tagValue('h');
 		});
@@ -197,6 +211,8 @@ export function getUserContent(): Readable<NDKEvent[]> {
 
 		// go through all the items, if there is an item that has a "full" tag with a value that exists in ids, remove it
 		const filteredItems = items.filter((event: NDKEvent) => {
+			if (!mainContentKinds.includes(event.kind!)) return false;
+
 			// Only h-tagged content
 			const hTag = event.tagValue('h');
 			if (!hTag) return false;

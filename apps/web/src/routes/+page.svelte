@@ -3,7 +3,7 @@
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
 	import VideoLink from "$components/Events/VideoLink.svelte";
     import { ndk } from "@kind0/ui-common";
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import PostGrid from '$components/Events/PostGrid.svelte';
 	import { page } from '$app/stores';
@@ -16,12 +16,10 @@
 	import ListContentDvms from './ListContentDvms.svelte';
 	import { mainContentKinds } from '$utils/event';
 	import { browser } from '$app/environment';
+	import WelcomeGridItem from '$components/WelcomeGridItem.svelte';
+	import { blacklistedPubkeys } from '$utils/const';
 
-    const blacklistedPubkeys = [
-        "a2155842128093cac2c5120c9830d568c8556b95f6e03eeca3946bcd4309b43b", // marinalunes@nostr.me
-    ];
-
-    const debug = createDebug("highlighter:explore");
+    const debug = createDebug("HL:explore");
 
     let events: NDKEventStore<NDKEvent> | undefined = undefined;
     let eventsForRender: Readable<NDKEvent[] | undefined> | undefined = undefined;
@@ -29,7 +27,7 @@
     const typeFilter = writable<App.FilterType[]>(["all"]);
     let filters: NDKFilter[] | undefined;
 
-    let filter = $page.params.category ?? "All";
+    let filter = $page.params.category ?? "All Creators";
 
     function getFiltersWithQuery(query: string) {
         let kinds: NDKKind[] = []
@@ -70,6 +68,9 @@
                     newFilters.push(...list.filterForItems())
                 }
 
+                break;
+            case "Global":
+                newFilters = [ { kinds, limit: 30 } ];
                 break;
             default:
                 newFilters = [ { kinds, limit: 10, "#f": ["Free"] } ];
@@ -184,21 +185,22 @@
                         </h2>
                     </div>
                 {:else}
-                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 sm:gap-10">
-                        {#key filter}
-                            {#each $eventsForRender as event (event.id)}
-                                {#if event.kind === NDKKind.Article}
-                                    <ArticleLink article={NDKArticle.from(event)} grid={true} />
-                                {:else if event.kind === NDKKind.HorizontalVideo}
-                                    <VideoLink video={NDKVideo.from(event)} grid={true} />
-                                {:else if event.kind === NDKKind.GroupNote}
-                                    <PostGrid {event} />
-                                {:else if event.kind === NDKKind.ArticleCurationSet || event.kind === NDKKind.VideoCurationSet}
-                                    <CurationItem list={NDKList.from(event)} grid={true} />
-                                {/if}
-                            {/each}
-                        {/key}
-                    </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-10">
+                            {#key filter}
+                                <WelcomeGridItem />
+                                {#each $eventsForRender as event (event.id)}
+                                    {#if event.kind === NDKKind.Article}
+                                        <ArticleLink article={NDKArticle.from(event)} grid={true} />
+                                    {:else if event.kind === NDKKind.HorizontalVideo}
+                                        <VideoLink video={NDKVideo.from(event)} grid={true} />
+                                    {:else if event.kind === NDKKind.GroupNote}
+                                        <PostGrid {event} />
+                                    {:else if event.kind === NDKKind.ArticleCurationSet || event.kind === NDKKind.VideoCurationSet}
+                                        <CurationItem list={NDKList.from(event)} grid={true} />
+                                    {/if}
+                                {/each}
+                            {/key}
+                        </div>
                 {/if}
             </div>
         </div>

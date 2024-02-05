@@ -4,9 +4,12 @@ import {
 	NDKNip07Signer,
 	NDKNip46Signer,
 	NDKPrivateKeySigner,
-	NDKUser
+	NDKUser,
+	type NDKSigner,
+	type Hexpubkey,
+	type NDKUserProfile
 } from '@nostr-dev-kit/ndk';
-import { ndk, newToasterMessage, user } from '@kind0/ui-common';
+import { bunkerNDK, ndk, newToasterMessage, user } from '@kind0/ui-common';
 import { generateLoginEvent } from '$actions/signLoginEvent';
 import { get } from 'svelte/store';
 import { jwt as jwtStore, loginState } from '$stores/session';
@@ -14,13 +17,16 @@ import createDebug from 'debug';
 
 export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
 
-const d = createDebug('highlighter:login');
+const d = createDebug('HL:login');
+const $ndk = get(ndk);
+const $bunkerNDK = get(bunkerNDK);
 
 /**
  * These are pubkeys managed by the relay running this app, which gates access to content
  */
 export const trustedPubkeys = [
-	'4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce' // faaans
+	'73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63', // Highlighter
+	"83f42a3d76b3f3261a8da54fe41fc3067c001a51d9bd90d140b0b3852ea8001e" // Temp
 ];
 
 export async function finalizeLogin() {
@@ -35,15 +41,44 @@ export async function finalizeLogin() {
 	}
 }
 
+async function pkLogin(key: string) {
+	const signer = new NDKPrivateKeySigner(key);
+	const u = await signer.user();
+	if (u) loggedIn(signer, u!, 'pk');
+}
+
+async function nip46Login(remotePubkey?: Hexpubkey) {
+	const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
+	let remoteUser: NDKUser | undefined;
+
+	d({ existingPrivateKey, remotePubkey });
+
+	if (!existingPrivateKey) return;
+
+	// If we already a pubkey
+	if (remotePubkey) remoteUser = $ndk.getUser({ pubkey: remotePubkey! });
+
+	if (!remoteUser) return;
+
+	user.set(remoteUser);
+	$bunkerNDK.pool.on('relay:ready', async () => {
+		d('bunker relay ready');
+		loginState.set('contacting-remote-signer');
+
+		await nip46SignIn(existingPrivateKey, remoteUser!);
+	});
+	d('connecting to nsecbunker relay');
+	$bunkerNDK.connect(2500);
+}
+
 /**
  * This function attempts to sign in using whatever method was previously
  * used, or a NIP-07 extension.
  */
 export async function login(
-	ndk: NDK,
-	bunkerNDK: NDK,
-	method: LoginMethod
-): Promise<NDKUser | null> {
+	method: LoginMethod,
+	userPubkey?: string,
+) {
 	d(`running with method ${method}`);
 
 	// Check if there is a localStorage item with the key "nostr-key-method"
@@ -57,70 +92,15 @@ export async function login(
 		}
 		case 'pk': {
 			const key = localStorage.getItem('nostr-key');
-
 			if (!key) return null;
-
-			const signer = new NDKPrivateKeySigner(key);
-			ndk.signer = signer;
-			const u = await signer.user();
-			if (u) u.ndk = ndk;
-
-			loginState.set('logged-in');
-			break;
+			return pkLogin(key);
 		}
 		case 'nip07':
-			u = await nip07SignIn(ndk);
+			u = await nip07SignIn($ndk);
 			loginState.set('logged-in');
 			break;
 		case 'nip46': {
-			const promise = new Promise<NDKUser | null>((resolve) => {
-				const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
-				const storedNpub = localStorage.getItem('nostr-target-npub');
-
-				if (storedNpub) {
-					u = ndk.getUser({ npub: storedNpub! });
-				}
-
-				if (!bunkerNDK) bunkerNDK = ndk;
-
-				if (existingPrivateKey && u) {
-					user.set(u);
-					bunkerNDK.pool.on('relay:ready', async () => {
-						console.log('relay ready');
-						loginState.set('contacting-remote-signer');
-
-						const completeNip46SignIn = async () => {
-							const signedInUser = await nip46SignIn(ndk, bunkerNDK!, existingPrivateKey);
-							if (!signedInUser) {
-								user.set(null);
-								loginState.set('logged-out');
-								return;
-							}
-
-							await finalizeLogin();
-							loginState.set('logged-in');
-							resolve(signedInUser);
-						};
-
-						await Promise.race([
-							new Promise<void>((resolve) =>
-								setTimeout(() => {
-									if (get(loginState) !== 'contacting-remote-signer') return;
-									newToasterMessage('Failed to connect to remote signer', 'error');
-									resolve();
-								}, 5000)
-							),
-							new Promise((resolve) => {
-								completeNip46SignIn().then(resolve);
-							})
-						]);
-					});
-					console.log('connecting to nsecbunker relay');
-					bunkerNDK.connect(2500);
-				}
-			});
-
-			return promise;
+			return nip46Login(userPubkey);
 		}
 		default: {
 			const promise = new Promise<NDKUser | null>((resolve) => {
@@ -142,16 +122,6 @@ export async function login(
 			return promise;
 		}
 	}
-
-	console.log('login', { u });
-
-	if (!u) return null;
-
-	const $jwt = get(jwtStore);
-	if (!$jwt) await finalizeLogin();
-
-	user.set(u);
-	return u;
 }
 
 export async function fetchJWT(event: NDKEvent) {
@@ -176,7 +146,7 @@ export async function fetchJWT(event: NDKEvent) {
 		return false;
 	}
 
-	const { jwt } = await res.json();
+	const jwt = await res.text();
 
 	return jwt;
 }
@@ -185,12 +155,11 @@ export async function fetchJWT(event: NDKEvent) {
  * This function attempts to sign in using a NIP-07 extension.
  */
 async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
-	console.trace(`localStorage access`);
-	const storedNpub = localStorage.getItem('nostr-target-npub');
+	const storedPubkey = localStorage.getItem('pubkey');
 	let user: NDKUser | null = null;
 
-	if (storedNpub) {
-		user = new NDKUser({ npub: storedNpub });
+	if (storedPubkey) {
+		user = new NDKUser({ npub: storedPubkey });
 		user.ndk = ndk;
 	}
 
@@ -202,7 +171,7 @@ async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
 			if (user) {
 				localStorage.setItem('nostr-key-method', 'nip07');
 			}
-			localStorage.setItem('nostr-target-npub', user.npub);
+			localStorage.setItem('pubkey', user.pubkey);
 		} catch (e) {}
 	}
 
@@ -213,14 +182,10 @@ async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
  * This function attempts to sign in using a NIP-46 extension.
  */
 async function nip46SignIn(
-	ndk: NDK,
-	bunkerNDK: NDK,
-	existingPrivateKey: string
-): Promise<NDKUser | null> {
-	const npub = localStorage.getItem('nostr-target-npub')!;
-	const remoteUser = new NDKUser({ npub });
-	let user: NDKUser | null = null;
-	remoteUser.ndk = bunkerNDK;
+	existingPrivateKey: string,
+	remoteUser: NDKUser
+) {
+	remoteUser.ndk = $bunkerNDK;
 
 	// check if there is a private key stored in localStorage
 	let localSigner: NDKPrivateKeySigner | null = null;
@@ -234,17 +199,24 @@ async function nip46SignIn(
 		return null;
 	}
 
-	const remoteSigner = new NDKNip46Signer(bunkerNDK, remoteUser.pubkey, localSigner!);
+	const remoteSigner = new NDKNip46Signer($bunkerNDK, remoteUser.pubkey, localSigner!);
 
-	console.log('nip46 blockUntilReady');
+	d(`Contacting remote signer`);
 	await remoteSigner.blockUntilReady();
-	console.log('nip46 blockUntilReady done');
-	ndk.signer = remoteSigner;
-	console.log('setting signer on nip46SignIn');
-	user = remoteUser;
-	user.ndk = ndk;
+	d(`Remote signer came back`);
 
-	return user;
+	localStorage.setItem('nostr-nsecbunker-key', localSigner.privateKey!);
+	loggedIn(remoteSigner, remoteUser, 'nip46');
+}
+
+export function loggedIn(signer: NDKSigner, u: NDKUser, method: LoginMethod) {
+	$ndk.signer = signer;
+    u.ndk = $ndk;
+    user.set(u)
+    loginState.set("logged-in");
+
+    localStorage.setItem('pubkey', u.pubkey);
+    localStorage.setItem('nostr-key-method', method);
 }
 
 export function logout(): void {
@@ -259,11 +231,30 @@ export function logout(): void {
 	localStorage.removeItem('network-follows');
 	localStorage.removeItem('network-follows-updated-t');
 	localStorage.removeItem('currentUserNpub');
-	localStorage.removeItem('nostr-target-npub');
+	localStorage.removeItem('pubkey');
 	localStorage.removeItem('jwt');
 
 	document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
 	// explicitly prevent auto-login with NIP-07
 	localStorage.setItem('nostr-key-method', 'none');
+}
+
+export async function fillInSkeletonProfile(profile: NDKUserProfile) {
+	const images = [
+        "https://cdn.satellite.earth/aaf65dd621667c75162ce3ee845a8202bdf2aee8d70ec0f1d25fe92ecd881675.png",
+        "https://cdn.satellite.earth/c50267d41d5874cb4e949e7bd472c2d06e1b297ffffac19b2f53c291a3e052d2.png",
+        "https://cdn.satellite.earth/011dc8958f86dc12c5c3a477de3551c3077fb8e71a730b7cec4a678f5c021550.png",
+    ];
+	const randImage = images[Math.floor(Math.random() * images.length)];
+
+	profile.image = randImage;
+	profile.about = `Hi! I'm a brand new nostr user trying things out. Be nice!`;
+	profile.website = "";
+
+	console.log('fillInSkeletonProfile', profile);
+
+	const $user = get(user);
+	$user.profile = profile;
+    await $user.publish();
 }

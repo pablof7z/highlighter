@@ -1,13 +1,14 @@
 <script lang="ts">
 	import TierAmountLine from './TierAmountLine.svelte';
-    import type { NDKArticle, NDKTag } from "@nostr-dev-kit/ndk";
+    import type { NDKSubscriptionAmount, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
 	import Input from "$components/Forms/Input.svelte";
 	import { Textarea } from "@kind0/ui-common";
     import { createEventDispatcher } from "svelte";
 	import { Check, Trash, Plus } from 'phosphor-svelte';
 	import { slide } from 'svelte/transition';
+	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 
-    export let tier: NDKArticle;
+    export let tier: NDKSubscriptionTier;
     export let autofocus = false;
 
     const dispatch = createEventDispatcher();
@@ -15,19 +16,18 @@
     let name: string;
     let description: string;
 
-    let amountLines: NDKTag[] = [];
+    let amounts: NDKSubscriptionAmount[] = [];
 
     let perks: string[] = [];
 
     name = tier.title || "";
     description = tier.content || "";
-    amountLines = tier.getMatchingTags("amount");
+    amounts = tier.amounts;
     perks = tier.getMatchingTags("perk").map((perk) => perk[1]);
-
 
     if (!perks.length && !tier.dTag) addPerk();
 
-    function addPerk () {
+    function addPerk() {
         perks.push("");
         perks = perks;
     }
@@ -55,24 +55,33 @@
                 "perk"
             ]),
             ...cleanOutPerks(perks),
-            ...amountLines];
+        ];
+        for (const amount of amounts) {
+            let value = amount.amount;
+            switch (amount.currency) {
+                case 'msat': value *= 1000; break;
+                case 'usd', 'eur', 'USD', 'EUR': value *= 100; break;
+            }
+            tier.addAmount(value, amount.currency, amount.term);
+        }
+
         tier = tier;
     }
 
     function addAmountLine() {
         let currency = "";
-        let amount = "5";
+        let amount = 5;
 
-        if (amountLines.length > 0) {
-            currency = amountLines[amountLines.length - 1][2];
-            amount = amountLines[amountLines.length - 1][1];
+        if (amounts.length > 0) {
+            currency = amounts[amounts.length - 1].currency;
+            amount = amounts[amounts.length - 1].amount;
         }
 
-        amountLines.push(["amount", amount, currency, ""]);
-        amountLines = amountLines;
+        amounts.push({ amount, currency, term: "monthly" });
+        amounts = amounts;
     }
 
-    if (amountLines.length === 0) {
+    if (amounts.length === 0) {
         addAmountLine();
     }
 
@@ -80,14 +89,25 @@
         dispatch("delete");
     }
 
-    let allAmountLinesAreComplete = false;
+    function perkKeyDown(e: KeyboardEvent) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addPerk();
+        } else if (e.key === "Backspace" && e.target.value === "") {
+            e.preventDefault();
+            deletePerk(perkWithFocus!);
+
+        }
+    }
+
+    let allamountsAreComplete = false;
 
     $: {
-        allAmountLinesAreComplete = true;
+        allamountsAreComplete = true;
 
-        for (const amount of amountLines) {
-            if (amount[1] === "" || amount[2] === "" || amount[3] === "") {
-                allAmountLinesAreComplete = false;
+        for (const amount of amounts) {
+            if (!(amount.amount > 0 && amount.currency && amount.term)) {
+                allamountsAreComplete = false;
                 break;
             }
         }
@@ -97,55 +117,37 @@
 </script>
 
 <section class="settings">
-<div class="w-full p-6 rounded-xl flex-col border border-base-200">
+<div class="w-full sm:p-6 rounded-xl flex-col border border-base-200">
     <div class="self-stretch flex-col justify-start items-start gap-6 flex">
-        <section>
-            <div class="section-info">
-                <div class="title">
-                    Basic Details
-                </div>
-                <div class="description">
-                    Your potential subscribers will see this
-                    before deciding to support your work.
-                </div>
+        <section class="settings">
+            <h1 class="title">Basic details</h1>
+            <div class="description">
+                Your potential subscribers will see this before deciding to support your work.
             </div>
-            <div class="main gap-2 flex">
-                <Input
-                    color="black"
+
+            <div class="field">
+                <div class="title">
+                    Name & Description
+                </div>
+                <GlassyInput
                     label="Tier Name"
                     placeholder="Tier Name"
-                    class="w-full !bg-white/10 !rounded-2xl placeholder:!text-neutral-500 text-normal font-medium border-none"
+                    class="w-full !bg-white/10 !rounded-2xl placeholder:!text-neutral-500 !text-base font-normal border-none"
                     bind:value={name}
                     {autofocus}
                 />
                 <Textarea
                     color="black"
-                    label="Description"
-                    placeholder="Description"
-                    class="w-full !rounded-2xl !bg-white/10 placeholder:!text-neutral-500 text-sm text-white/80 border-none"
+                    class="w-full !rounded-2xl !bg-white/10 placeholder:!text-neutral-500 border-none"
                     bind:value={description}
                 />
             </div>
-        </section>
-
-        <section>
-            <div class="section-info">
-                <div class="title-and-description">
-                    <div class="title">Perks</div>
-                    <div class="description">
-                        Want to show an itemized list of perks
-                        subscribers of this tier get?
-                    </div>
+            <div class="field">
+                <div class="title">Perks</div>
+                <div class="description">
+                    Want to show an itemized list of perks subscribers of this tier get?
                 </div>
-                <button class="button self-start font-semibold text-sm flex flex-row gap-2 px-2"
-                    on:click={addPerk}
-                    class:hidden={perks.length === 0}
-                >
-                    <Plus />
-                    Add Perk
-                </button>
-            </div>
-            <div class="main">
+
                 <div class="
                     flex flex-col gap-2 rounded-box p-2
                     {perks.length > 0 ? "bg-white/10" : ""}
@@ -153,13 +155,14 @@
                     {#each perks as perk, i}
                         <div class="flex flex-row gap-2 w-full items-center group perk-item" transition:slide>
                             <div class="relative w-full flex-grow flex flex-row items-center">
-                                <Input
-                                    color="black"
+                                <GlassyInput
                                     tabindex={i+1}
+                                    autofocus={i === perks.length - 1}
                                     bind:value={perk}
                                     on:focus={() => perkWithFocus = i}
                                     on:blur={() => perkWithFocus = undefined}
-                                    class="w-full pl-12 text-sm !rounded-2xl !bg-transparent border-none !text-white/80"
+                                    on:keydown={perkKeyDown}
+                                    class="w-full pl-12 text-sm !rounded-2xl !bg-transparent border-none font-normal !py-1"
                                 />
                                 <Check
                                     class="w-8 absolute left-2 text-success"
@@ -175,65 +178,49 @@
                             </button>
                         </div>
                     {/each}
-
-                    {#if perks.length === 0}
-                        <button class="button font-semibold text-sm flex flex-row gap-2 px-2"
-                            on:click={addPerk}
-                            transition:slide
-                        >
-                            <Plus />
-                            Add Perk
-                        </button>
-                    {/if}
                 </div>
             </div>
+
+            <button class="button font-semibold text-sm flex flex-row gap-2 px-6 self-start"
+                    on:click={addPerk}
+                    transition:slide
+                >
+                    <Plus />
+                    Add Perk
+                </button>
         </section>
 
-        <section>
-            <div class="section-info">
-                <div class="title-and-description">
-                    <div class="title">Pricing Options</div>
-                    <div class="description flex flex-col gap-2">
-                        <p>
-                            You can use different currencies and paying intervals.
-                        </p>
-                        <p class="max-sm:hidden">
-                            E.g. $5/mo, $50/year or 50k sats/month
-                        </p>
+        <section class="settings w-full">
+            <div class="title">Pricing Options</div>
+            <div class="description flex flex-col gap-2">
+                <p>
+                    You can use different currencies and paying intervals.
+                </p>
+                <p class="max-sm:hidden text-xs">
+                    E.g. $5/mo, $50/year or 50k sats/month
+                </p>
+            </div>
+
+            <div class="field self-stretch flex-col justify-start items-stretch w-full gap-2 flex">
+                {#each amounts as amount, i}
+                    <div class="w-full" transition:slide>
+                        <TierAmountLine
+                            bind:value={amount}
+                            on:delete={() => {
+                                amounts = amounts.filter((a) => a !== amount);
+                            }}
+                        />
                     </div>
-                </div>
-                <button
-                    class="button text-xs max-sm:!mt-0"
-                    disabled={!allAmountLinesAreComplete}
-                    class:hidden={amountLines.length === 0}
+                {/each}
+            </div>
+
+            <button class="button font-semibold text-sm flex flex-row gap-2 px-6 self-start"
+                    transition:slide
                     on:click={addAmountLine}
                 >
                     <Plus class="w-5 h-5 ml-2" />
-                    Add
+                    Add pricing option
                 </button>
-            </div>
-            <div class="main">
-                <div class="self-stretch flex-col justify-start items-stretch w-full gap-2 flex">
-                    {#each amountLines as amount, i}
-                        <div class="w-full" transition:slide>
-                            <TierAmountLine
-                                bind:value={amount}
-                                on:delete={() => {
-                                    amountLines = amountLines.filter((a) => a !== amount);
-                                }}
-                            />
-                        </div>
-                    {/each}
-                    <button class="button font-semibold text-sm flex flex-row gap-2 px-2"
-                        class:hidden={amountLines.length !== 0}
-                        transition:slide
-                        on:click={addAmountLine}
-                    >
-                        <Plus class="w-5 h-5 ml-2" />
-                        Add pricing option
-                    </button>
-                </div>
-            </div>
         </section>
 
         <div class="px-3 py-1.5 rounded-lg justify-center items-center gap-2 flex">
@@ -247,6 +234,20 @@
 </section>
 
 <style lang="postcss">
+    section.settings {
+        @apply gap-4;
+    }
+
+    section > .description {
+        @apply text-neutral-500 -mt-4;
+    }
+
+    section .field .description {
+        @apply text-neutral-500 text-sm;
+    }
+</style>
+
+<!-- <style lang="postcss">
     section {
         @apply flex flex-col lg:flex-row lg:gap-6 w-full;
     }
@@ -265,7 +266,7 @@
     }
 
     section .section-info .title {
-        @apply text-white font-medium text-lg;
+        @apply text-white font-medium text-lg whitespace-nowrap;
     }
 
     section .section-info .description {
@@ -283,4 +284,4 @@
     button[disabled] {
         @apply !opacity-40;
     }
-</style>
+</style> -->

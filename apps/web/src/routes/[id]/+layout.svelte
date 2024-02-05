@@ -1,21 +1,30 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import type { NDKUser } from "@nostr-dev-kit/ndk";
-    import { onDestroy, onMount } from "svelte";
+    import { onDestroy } from "svelte";
 	import { startUserView, userSubscription } from "$stores/user-view";
 
     export let user: NDKUser = $page.data.user;
+
+    $: {
+        console.log('$: user in layout.svelte', user);
+        user = $page.data.user;
+
+        try {
+            if (user && user.npub) {
+                npub = user.npub;
+                startUserView(user);
+            }
+        } catch {}
+    }
 
     let npub: string;
 
     // $: npub = $page.data.npub;
 
-    try {
-        if (user && user.npub) {
-            npub = user.npub;
-            startUserView(user);
-        }
-    } catch {}
+
+
+    console.log('user in layout.svelte', user);
 
     onDestroy(() => {
         userSubscription?.unref();

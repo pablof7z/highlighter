@@ -6,12 +6,17 @@ import NDK, {
 	NDKRelay,
 	NDKRelayStatus,
 	PublishError,
-	type NostrEvent
+	type NostrEvent,
+	NDKSubscriptionStart,
+	NDKSubscriptionReceipt
 } from '@nostr-dev-kit/ndk';
 import { getDefaultRelaySet } from './ndk';
 import createDebug from 'debug';
+import { get } from 'svelte/store';
+import { ndk } from '@kind0/ui-common';
+import { calculateEndOfTerm } from './term';
 
-const debug = createDebug('highlighter:subscriptions');
+const d = createDebug('HL:subscriptions');
 
 export function getTierNameFromSubscriptionEvent(event: NDKEvent): string | undefined {
 	const tierEventString = event.tagValue('event');
@@ -39,6 +44,29 @@ export function getTierIdFromSubscriptionEvent(event: NDKEvent): string | undefi
 	}
 }
 
+export async function recordValidSubscriptionPayment(
+	subscription: NDKSubscriptionStart
+) {
+	const $ndk = get(ndk);
+
+	const amount = subscription.amount;
+	if (!amount) {
+		throw new Error('No amount in subscription');
+	}
+	const term = amount.term;
+
+	const receipt = new NDKSubscriptionReceipt($ndk);
+	receipt.subscriptionStart = subscription;
+	receipt.validPeriod = {
+		start: new Date(),
+		end: calculateEndOfTerm(term, new Date())
+	};
+	await receipt.sign();
+	await receipt.publish();
+
+	d(`subscription receipt`, JSON.stringify(receipt.rawEvent()));
+}
+
 /**
  * Creates a list of pubkeys that are currently supporting a creator.
  * The "d" tag is the pubkey of the creator.
@@ -49,15 +77,15 @@ export async function addToListOfSupporters(
 	creatorPubkey: string,
 	subscriptionEvent: NDKEvent
 ) {
-	debug('addToListOfSupporters', {
+	d('addToListOfSupporters', {
 		creatorPubkey,
 		subscriptionEvent: subscriptionEvent.rawEvent()
 	});
 	const subscriberPubkey = subscriptionEvent.pubkey;
 	const tierDTag = getTierIdFromSubscriptionEvent(subscriptionEvent);
-	debug('tierDTag', tierDTag);
+	d('tierDTag', tierDTag);
 	const relaySet = getDefaultRelaySet();
-	debug('will fetch events', { creatorPubkey });
+	d('will fetch events', { creatorPubkey });
 	const relayUser = await ndk.signer?.user();
 
 	if (!relayUser) {
@@ -73,17 +101,17 @@ export async function addToListOfSupporters(
 		undefined
 	);
 	let event = Array.from(events)[0];
-	debug('fetched event', event?.rawEvent());
+	d('fetched event', event?.rawEvent());
 
 	if (!event) {
-		debug('creating new list of supporters event');
+		d('creating new list of supporters event');
 		event = new NDKEvent(ndk, {
 			kind: NDKKind.GroupMembers,
 			content: '',
 			tags: [['d', creatorPubkey]]
 		} as NostrEvent);
 	} else {
-		debug('found existing list of supporters event', event.rawEvent());
+		d('found existing list of supporters event', event.rawEvent());
 	}
 
 	// check that we don't have a p tag with t
@@ -92,11 +120,11 @@ export async function addToListOfSupporters(
 		.find(([, pubkey, tier]) => pubkey === subscriberPubkey && tier === tierDTag);
 
 	if (alreadyPresent) {
-		debug('supporter was already present', { subscriberPubkey, tierDTag });
+		d('supporter was already present', { subscriberPubkey, tierDTag });
 		return;
 	}
 
-	debug('adding supporter', { subscriberPubkey, tierDTag });
+	d('adding supporter', { subscriberPubkey, tierDTag });
 
 	const tag = ['p', subscriberPubkey];
 	if (tierDTag) tag.push(tierDTag);
@@ -104,20 +132,20 @@ export async function addToListOfSupporters(
 	event.id = '';
 	event.sig = '';
 
-	debug('adding subcriber tag', tag);
-	debug('creator has a total of ', event.getMatchingTags('p').length, 'subscribers');
+	d('adding subcriber tag', tag);
+	d('creator has a total of ', event.getMatchingTags('p').length, 'subscribers');
 
 	const publishAttempt = async (event: NDKEvent) => {
 		try {
 			// go through the relays and see if they are connected, if they are not, attempt to connect
 			for (const relay of relaySet.relays) {
 				if (relay.status === NDKRelayStatus.DISCONNECTED) {
-					debug('connecting to relay', relay.url, relay.status);
+					d('connecting to relay', relay.url, relay.status);
 					await relay.connect();
 				}
 			}
 
-			debug('publishing list of supporters event', event.rawEvent());
+			d('publishing list of supporters event', event.rawEvent());
 			await event.publish(relaySet);
 		} catch (error) {
 			console.log('Error publishing event', error);
@@ -125,17 +153,17 @@ export async function addToListOfSupporters(
 			if (error instanceof PublishError) {
 				// error.errors is a map of relay url to error
 				for (const [relay, error] of error.errors as Map<NDKRelay, Error>) {
-					debug(relay.url, error);
+					d(relay.url, error);
 				}
 			}
 
 			for (const relay of relaySet.relays) {
-				debug(relay.url, relay.status);
-				debug(relay.url, relay.connectionStats);
+				d(relay.url, relay.status);
+				d(relay.url, relay.connectionStats);
 			}
 			for (const relay of relaySet.relays) {
-				debug(relay.url, relay.status);
-				debug(relay.url, relay.connectionStats);
+				d(relay.url, relay.status);
+				d(relay.url, relay.connectionStats);
 			}
 			setTimeout(() => publishAttempt(event), 5000);
 		}

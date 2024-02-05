@@ -1,8 +1,8 @@
 <script lang="ts">
 	import SignupModal from '$modals/SignupModal.svelte';
-	import { userTiers } from "$stores/session";
+	import { userActiveSubscriptions, userTiers } from "$stores/session";
 	import { Tray, PaperPlane, ChatCircle, House, Funnel, Fire, User, Gear, UserCircle, Bell, Gauge } from "phosphor-svelte";
-    import { bunkerNDK, ndk, user } from "@kind0/ui-common";
+    import { Avatar, bunkerNDK, ndk, user } from "@kind0/ui-common";
 	import { openModal } from "svelte-modals";
     import NewItemModal from '$modals/NewItemModal.svelte';
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
@@ -11,6 +11,9 @@
 	import NavMobileTop from './NavMobileTop.svelte';
 	import Item from './Navigation/Item.svelte';
 	import CurrentUser from '$components/CurrentUser.svelte';
+	import { get } from 'svelte/store';
+	import UserProfile from '$components/User/UserProfile.svelte';
+	import DashboardIcon from '$icons/DashboardIcon.svelte';
 
     async function openSignupModal() {
         if (window.nostr) {
@@ -56,9 +59,9 @@
             </Item>
         {/if}
 
-        <Item href="/inbox" let:active>
+        <!-- <Item href="/inbox" let:active>
             <Tray class="w-full h-full" weight={active ? "fill" : "regular"} />
-        </Item>
+        </Item> -->
 
         <Item href="/highlights" let:active>
             <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} strokeWidth="1.4" />
@@ -95,29 +98,29 @@
             </Item>
 
             <Item href="/dashboard" tooltip="Dashboard" let:active>
-                <Gauge class="w-full h-full" weight={active ? "fill" : "regular"} />
+                <DashboardIcon class="w-full h-full transition-all duration-300 {active ? "" : "brightness-75 hover:brightness-100"}" />
             </Item>
 
             <Item href="/home" tooltip="Home" let:active>
                 <House class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
 
-            <Item href="/" tooltip="Explore" let:active>
+            <Item href="/" tooltip="Discover" let:active>
                 <Fire class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
 
-            <Item href="/inbox" tooltip="Inbox" let:active>
+            <!-- <Item href="/inbox" tooltip="Inbox" let:active>
                 <Tray class="w-full h-full" weight={active ? "fill" : "regular"} />
-            </Item>
+            </Item> -->
 
-            <Item href="/highlights" tooltip="Highlights" let:active class="max-sm:hidden">
+            <!-- <Item href="/highlights" tooltip="Highlights" let:active class="max-sm:hidden">
                 <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} strokeWidth="1.4" />
-            </Item>
+            </Item> -->
 
             <!-- <Item href="/chat" tooltip="Chat" let:active class="max-sm:hidden">
                 <ChatCircle class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item> -->
-            {#if $user && $userTiers && $userTiers.length > 0}
+            {#if $user}
                 <Item
                     tooltip="Create something new"
                     let:active on:click={() => openModal(NewItemModal)}
@@ -125,14 +128,24 @@
                 >
                     <PaperPlane class="w-full h-full" weight={active ? "fill" : "regular"} />
                 </Item>
-            {:else if $user}
-                <Item tooltip="Start publishing on Nostr" href="/home">
-                    <PaperPlane class="w-full h-full" weight="fill" />
-                </Item>
             {:else if !$user}
                 <Item on:click={openSignupModal}>
                     <PaperPlane class="w-full h-full" weight="fill" />
                 </Item>
+            {/if}
+
+            {#if $userActiveSubscriptions.size > 0}
+                <div class="flex flex-col transition-all duration-1000 group pt-16 flex-grow overflow-y-auto brightness-90 hover:brightness-100 hover:pt-4">
+                    {#each $userActiveSubscriptions.keys() as pubkey}
+                        <div class="-mt-16 group-hover:-mt-4 transition-all duration-1000 ">
+                            <UserProfile pubkey={pubkey} let:userProfile let:fetching let:authorUrl>
+                                <Item href={authorUrl}>
+                                    <Avatar {userProfile} {fetching} size="medium" />
+                                </Item>
+                            </UserProfile>
+                        </div>
+                    {/each}
+                </div>
             {/if}
         </div>
 

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { debugMode, userActiveSubscriptions } from "$stores/session";
-	import { startUserView, userSubscription, userTiers } from "$stores/user-view";
-	import { ndk, pageDrawerToggle, rightSidebar, user, HighlightWrapper, Avatar, Name, RelativeTime } from "@kind0/ui-common";
-	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent, type NDKEventId } from "@nostr-dev-kit/ndk";
+	import { userActiveSubscriptions } from "$stores/session";
+	import { startUserView, userSubscription } from "$stores/user-view";
+	import { ndk } from "@kind0/ui-common";
+	import { type NDKArticle, NDKKind, type NDKEventId } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import ArticleRender from './ArticleRender.svelte';
 	import ItemHeader from "$components/ItemHeader.svelte";

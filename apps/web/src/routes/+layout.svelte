@@ -1,63 +1,62 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import '../app.postcss';
-	import { Toaster, bunkerNDK, ndk, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
-	import { finalizeLogin, login } from '$utils/login';
-	import { debugMode, prepareSession, jwt, loginState } from '$stores/session';
+	import { RelativeTime, Toaster, bunkerNDK, ndk, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
+	import { fillInSkeletonProfile, finalizeLogin, login } from '$utils/login';
+	import { debugMode, prepareSession, jwt, userProfile } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
 	import { pwaInfo } from 'virtual:pwa-info';
 	import AppShell from '$components/PageElements/AppShell.svelte';
 	import "@fontsource/lora";
+	import { browser } from '$app/environment';
+	import { browserSetup } from './browser-session-setup';
+	import createDebug from 'debug';
+	import LoadingScreen from '$components/LoadingScreen.svelte';
+	import { openModal } from 'svelte-modals';
+	import SignupModal from '$modals/SignupModal.svelte';
+	import { welcomeScreenSeen } from '$stores/settings';
+
+	const d = createDebug('HL:layout');
 
 	let webManifestLink: string;
 	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
 
+	let hasJwt = false;
 	let mounted = false;
+
+	$: if (!$user && browser) {
+		const browserSetupPromise = browserSetup();
+		configureFeNDK().then(async () => {
+			await browserSetupPromise;
+		});
+
+		hasJwt = !!$jwt;
+	}
 
 	onMount(async () => {
 		mounted = true;
-		hasJwt = !!$jwt;
-		await configureFeNDK();
-
-        try {
-			const keyMethod = localStorage.getItem('nostr-key-method');
-			loginState.set("logging-in");
-
-			if (keyMethod === 'nip07') {
-				await login($ndk, $bunkerNDK, 'nip07');
-			} else if (keyMethod === 'nip46') {
-				await login($ndk, $bunkerNDK, 'nip46');
-			} else if (!keyMethod) {
-				let nip07Attempts = 0;
-				const nip07Attempt = setInterval(() => {
-					if (nip07Attempts > 10) {
-						clearInterval(nip07Attempt);
-						return;
-					}
-
-					if ($ndk.signer) {
-						clearInterval(nip07Attempt);
-						return;
-					}
-
-					nip07Attempts++;
-					if (window.nostr) {
-						login($ndk, $bunkerNDK, 'nip07');
-						clearInterval(nip07Attempt);
-					}
-				}, 20);
-			}
-        } catch (e) {
-            console.error(`layout error`, e);
-        }
     });
 
-	let hasJwt = false;
 	let finalizingLogin = false;
+
+	let shouldOpenWelcomeModal: boolean | undefined = undefined;
+	$: if (mounted && $userProfile && !$welcomeScreenSeen) {
+		const date = Math.floor(Date.now() / 1000) - 600;
+		if ($userProfile.created_at >= date) {
+			shouldOpenWelcomeModal = true;
+		} else {
+			// Not a new nostr user; no need to welcome them since they didn't create their account just now
+			$welcomeScreenSeen = true;
+		}
+	}
+
+	$: if (shouldOpenWelcomeModal) {
+		openModal(SignupModal, { mode: 'welcome' });
+	}
 
 	$: if (mounted && !hasJwt) {
 		hasJwt = !!$jwt;
-		console.log(`hasJwt`, hasJwt);
+		d(`hasJwt`, hasJwt);
 	}
 
 	$: if (mounted && $user && $ndk.signer && !hasJwt && !finalizingLogin) {
@@ -77,6 +76,8 @@
 	{@html webManifestLink}
 </svelte:head>
 
-<AppShell>
-	<slot />
-</AppShell>
+<LoadingScreen ready={mounted}>
+	<AppShell>
+		<slot />
+	</AppShell>
+</LoadingScreen>

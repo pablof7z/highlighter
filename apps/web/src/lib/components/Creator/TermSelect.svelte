@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { possibleTerms, type Term } from "$utils/term";
+    import { possibleTerms } from "$utils/term";
+	import type { NDKIntervalFrequency } from "@nostr-dev-kit/ndk";
 
-    export let term: Term;
+    export let term: NDKIntervalFrequency;
 </script>
 
 <select class="select bg-base-200 text-white border border-base-300 flex-grow {$$props.class}" bind:value={term}>

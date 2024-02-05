@@ -10,13 +10,23 @@ import { get } from 'svelte/store';
 import { ndk, user } from '@kind0/ui-common';
 import createDebug from 'debug';
 import { writeAppHandler } from './app-handler';
+import { browser } from '$app/environment';
 
 let flushTimer: number | undefined = 10000;
+let disabledReceipts = false;
+
+if (browser) {
+	const stored = localStorage.getItem('read-receipts-flush-timer')
+	if (stored) flushTimer = parseInt(stored);
+
+	const disabled = localStorage.getItem('read-receipts-disabled');
+	if (disabled) disabledReceipts = true;
+}
 
 const queue: NDKTag[] = [];
 let timeout: NodeJS.Timeout | undefined = undefined;
 
-const d = createDebug('highlighter:read-receipts');
+const d = createDebug('HL:read-receipts');
 
 let signer: NDKPrivateKeySigner | undefined = undefined;
 
@@ -24,6 +34,7 @@ let signer: NDKPrivateKeySigner | undefined = undefined;
  * Adds a kind:15 event tagging seen events.
  */
 export function addReadReceipt(eventOrUser: NDKEvent | NDKUser): void {
+	if (disabledReceipts) return;
 	const $user = get(user);
 
 	if ($user?.pubkey === eventOrUser.pubkey) return;
@@ -99,12 +110,15 @@ export async function flushReadReceipts(): Promise<void> {
 function adjustFlushTimer() {
 	if (!flushTimer) return;
 
-	// If it took 3 times longer than 5 seconds to sign events, increase the flush timer
+	console.log('Adjusting flush timer', signatureTimes);
+
+	// If it took 2 times longer than 3 seconds to sign events, increase the flush timer
 	if (
-		signatureTimes.length >= 3 && // Only start adjusting after 3 events
-		signatureTimes.slice(-3).every((time) => time >= 5000) && // All 3 events took longer than 5 seconds
-		signatureTimes.slice(-1)[0] >= 5000 // The last event took longer than 5 seconds
+		signatureTimes.length >= 2 && // Only start adjusting after 2 events
+		signatureTimes.slice(-2).every((time) => time >= 3000) && // All 2 events took longer than 3 seconds
+		signatureTimes.slice(-1)[0] >= 3000 // The last event took longer than 3 seconds
 	) {
-		flushTimer = Math.min(30000, flushTimer * 2);
+		flushTimer = Math.min(30000, (600000 + flushTimer * 2));
+		if (browser) localStorage.setItem('read-receipts-flush-timer', flushTimer.toString());
 	}
 }

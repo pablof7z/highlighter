@@ -20,7 +20,7 @@
     async function openAlby() {
         try {
             const a = await nwc.initNWC({
-                name: "Faaans"
+                name: "Highlighter"
             });
             url = await nwc.getNostrWalletConnectUrl(true);
             connecting = false;

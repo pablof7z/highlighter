@@ -13,7 +13,6 @@ export async function load({ fetch }) {
 	const $ndk = get(ndk);
 
 	if (!$ndk.explicitRelayUrls || $ndk.explicitRelayUrls.length === 0) {
-		console.log('Initializing NDK', { fetch });
 		if (!$ndk.explicitRelayUrls || $ndk.explicitRelayUrls.length === 0) {
 			await configureBeNDK(RELAY_PRIVATE_KEY, fetch);
 		}

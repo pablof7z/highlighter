@@ -1,84 +1,108 @@
 <script lang="ts">
-	import { currencyFormat, currencySymbol } from "$utils/currency";
-import type { NDKEvent } from "@nostr-dev-kit/ndk";
-	import { Check, Pencil } from "phosphor-svelte";
+	import { currencyFormat, } from "$utils/currency";
+    import type { NDKSubscriptionTier, NDKSubscriptionAmount } from "@nostr-dev-kit/ndk";
+	import { Check } from "phosphor-svelte";
+    import { createEventDispatcher } from "svelte";
 
-    export let tier: NDKEvent;
+
+    export let tier: NDKSubscriptionTier;
     export let selected: boolean;
-    export let term: string = "monthly";
+    export let currency: string;
+    export let term: string;
 
-    const name = tier.tagValue("title");
+    let activeCurrency = currency;
+
+    const dispatch = createEventDispatcher();
+
+    const name = tier.title ?? tier.dTag;
     const description = tier.content;
     // const image = tier.tagValue("image");
 
+    let amounts = tier.amounts;
+
     let amount: number | undefined;
-    let currency: string;
-    let perks = tier.getMatchingTags("perk");
+
+    let selectedAmountTag: NDKSubscriptionAmount;
 
     $: {
-        const t = tier.getMatchingTags("amount").find((tag) => tag[3] === term)!;
-        amount = parseFloat(t[1]);
-        currency = t[2];
+        let changingCurrency = false;
+
+        if (activeCurrency !== currency) {
+            activeCurrency = currency;
+            selectedAmountTag = undefined;
+            term = undefined;
+            amount = undefined;
+            changingCurrency = true;
+        }
+
+        if (selectedAmountTag) {
+            term = selectedAmountTag.term;
+            amount = selectedAmountTag.amount;
+        }
+
+        selectedAmountTag =
+            amounts.find((a) => a.currency === currency && a.term === term)
+            ?? amounts.find((a) => a.currency === currency )
+            ?? amounts[0];
+
+        if (!term) term = selectedAmountTag.term;
+        if (!amount) amount = selectedAmountTag.amount;
+
+        if (changingCurrency) {
+            dispatch("changed", selectedAmountTag);
+        }
+    }
+
+    let availableAmounts: NDKSubscriptionAmount[];
+
+    $: availableAmounts = amounts.filter((a) => a.currency === currency);
+
+    function onChange() {
+        dispatch("changed", selectedAmountTag);
     }
 </script>
 
-<button on:click
-    class="self-stretch !rounded-box justify-between items-start flex-col w-[300px] min-h-[300px] inline-flex h-full bg-base-300"
-    class:selected={selected}
->
-    <!-- {#if image}
-        <figure>
-            <img src={image} />
-        </figure>
-    {/if} -->
-    <div class="flex flex-col gap-4 text-neutral-300">
-        <div class="flex-col justify-start items-start gap-2 flex w-full">
-            <div class="text-2xl font-medium w-full items-start flex group flex-row justify-between text-left title text-neutral-200">
-                {name}
-            </div>
+<div class="tier-container snap-center" class:selected={selected}>
+    <button on:click={onChange}
+        class="tier"
+        class:selected={selected}
+    >
+        <div class="title">{name}</div>
 
-            <div class="flex group flex-row justify-between items-center w-full border-t border-y py-3 border-white/20 price gap-1">
-                <div class="flex flex-row gap-2 items-center">
-                    <div class="font-medium text-lg">
-                        {currencyFormat(currency, amount)}
-                    </div>
-                    <span>/</span>
-                    <span>{term}</span>
-                </div>
-            </div>
-
+        <div class="price">
+            <span class="price">
+                {currencyFormat(currency, amount)}
+            </span>
+            {#if availableAmounts.length > 1}
+                <select bind:value={selectedAmountTag} on:change={onChange}>
+                    {#each availableAmounts as amount}
+                        <option value={amount}>
+                            {amount.term}
+                        </option>
+                    {/each}
+                </select>
+            {:else}
+                <span class="term">{term}</span>
+            {/if}
         </div>
-        {#if description}
-            <div class="flex-col justify-start items-start gap-4 flex w-full text-left whitespace-pre-line description">
-                {description}
-            </div>
-        {/if}
 
-        {#if perks?.length > 0}
-            <div class="flex flex-col gap-2 perks !py-0">
-                {#each perks as perk}
-                    <div class="flex flex-row gap-2 items-start text-left">
-                        <Check class="text-neutral-500 w-6 h-6" weight="bold" />
-                        <div>
-                            {perk[1]}
+        <div class="description-and-perks">
+            {#if description}
+                <div class="description">
+                    {description}
+                </div>
+            {/if}
+
+            {#if tier.perks?.length > 0}
+                <div class="flex flex-col gap-2 perks">
+                    {#each tier.perks as perk}
+                        <div class="perk">
+                            <i><Check class="w-5 h-5" weight="bold" /></i>
+                            <span>{perk}</span>
                         </div>
-                    </div>
-                {/each}
-            </div>
-        {/if}
-    </div>
-</button>
-
-<style lang="postcss">
-    button.selected {
-        @apply  border-black;
-    }
-
-    .title, .price, .description, .perks {
-        @apply py-3 px-5;
-    }
-
-    .perks {
-        @apply text-sm;
-    }
-</style>
+                    {/each}
+                </div>
+            {/if}
+        </div>
+    </button>
+</div>

@@ -149,15 +149,16 @@
 
             for (let i = 0; i < paragraphs.length; i++) {
                 const paragraph = paragraphs[i] as HTMLElement;
+                if (!paragraph) continue;
                 const rect = paragraph.getBoundingClientRect();
-                if (rect.top > 64) {
-                    console.log(paragraph);
+                if (rect.top > 120) {
                     firstVisibleParagraph = paragraph;
                     break;
                 }
             }
 
             if (!firstVisibleParagraph) return;
+            if (!paragraphFloat) return;
 
             const activeParagraphs = document.querySelectorAll('.active-paragraph');
 
@@ -169,7 +170,8 @@
             firstVisibleParagraph.classList.add('active-paragraph');
 
             const rect = firstVisibleParagraph.getBoundingClientRect();
-            const toolRect = paragraphFloat.getBoundingClientRect();
+            const toolRect = paragraphFloat?.getBoundingClientRect();
+            if (!toolRect) return;
 
             if (toolRect.height > rect.height) return;
 
@@ -231,7 +233,7 @@
 </script>
 
 <div bind:this={paragraphFloat} class="
-    float-element z-40 absolute transition-all duration-300 flex
+    float-element z-20 absolute transition-all duration-300 flex
     flex-row sm:flex-col gap-1
     max-sm:ml-10 max-sm:-mt-10
 " style="top: -100px">

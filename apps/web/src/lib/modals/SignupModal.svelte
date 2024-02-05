@@ -57,7 +57,7 @@
         {/if}
     </div>
 
-    <div slot="after" class="mt-4 relative z-50">
+    <div slot="after" class="mt-4 relative z-50" class:hidden={mode === 'welcome'}>
         {#if mode === 'signup'}
             <p class="text-center text-neutral-500 text-sm my-2">
                 Already have a Nostr account?

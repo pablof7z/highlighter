@@ -1,17 +1,15 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
-    import { ndk, Name, Avatar, user } from "@kind0/ui-common";
+    import { ndk } from "@kind0/ui-common";
     import { userSuperFollows, userCreatorSubscriptionPlans, userFollows, debugPageFilter } from "$stores/session";
-    import { NDKRelaySet, type NDKEvent, type NDKFilter, NDKSubscriptionCacheUsage, NDKKind } from "@nostr-dev-kit/ndk";
+    import { type NDKEvent, type NDKFilter, NDKSubscriptionCacheUsage, NDKKind } from "@nostr-dev-kit/ndk";
 	import FeedEvent from "$components/Feed/FeedEvent.svelte";
 	import { onDestroy, onMount } from "svelte";
-	import { slide } from 'svelte/transition';
 	import { Tray } from 'phosphor-svelte';
     import { pageHeader, pageSidebar } from "$stores/layout";
     import InboxSidebar from "$components/PageSidebar/Inbox.svelte";
 	import { mode } from '$stores/inbox-view';
-	import PageTitle from '$components/Page/PageTitle.svelte';
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 
     let activeFilterCount: number | undefined = undefined;
@@ -107,16 +105,16 @@
                 </a>
             </div>
         {:else if $events?.length === 0}
-        <div class="w-full bg-base-200 rounded-xl min-h-[50vh] h-full flex flex-col items-center justify-center gap-6">
-            <Tray size="64" class="text-base-300" />
-            <div class="text-xl opacity-60">
-                No posts to show
-            </div>
+            <div class="w-full bg-base-200 rounded-xl min-h-[50vh] h-full flex flex-col items-center justify-center gap-6">
+                <Tray size="64" class="text-base-300" />
+                <div class="text-xl opacity-60">
+                    No posts to show
+                </div>
 
-            <a href="/" class="text-xl">
-                Explore Highlighter creators
-            </a>
-        </div>
+                <a href="/" class="text-xl">
+                    Explore Highlighter creators
+                </a>
+            </div>
         {:else}
             {#if events && $events}
                 {#each $events as event (event.id)}

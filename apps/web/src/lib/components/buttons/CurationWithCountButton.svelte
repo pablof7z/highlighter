@@ -4,7 +4,7 @@
     import Input from "$components/Forms/Input.svelte";
     import { ndk } from "@kind0/ui-common";
 	import { NDKEvent, NDKList, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
-	import { BookBookmark, Bookmark, BookmarkSimple, Bookmarks, Eye, List, Lock, PaperPlaneTilt, Plus, PlusCircle } from "phosphor-svelte";
+	import { BookmarkSimple, List, Lock, PaperPlaneTilt, Plus, PlusCircle } from "phosphor-svelte";
 	import { onDestroy } from 'svelte';
 
     export let event: NDKEvent;
@@ -172,6 +172,6 @@
 
 <style lang="postcss">
     button.active {
-        @apply border-l-4 border-accent rounded-l-none !text-white font-semibold;
+        @apply border-l-4 border-accent2 rounded-l-none !text-white font-semibold;
     }
 </style>

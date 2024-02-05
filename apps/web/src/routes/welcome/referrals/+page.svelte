@@ -7,7 +7,7 @@
             Like never before
         </h2>
 
-        <div class="prose text-xl mt-4 opacity-60 font-light">
+        <div class="text-xl mt-4 opacity-60 font-light">
             Highlighter, built on Nostr, allows for direct monetization of your content in hundreds
             of different platform. Your content can be displayed in premium spots. In this area
             you will be able to configure a voluntary referral program to encourage clients and readers

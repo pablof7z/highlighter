@@ -1,23 +1,24 @@
-import type { Term } from '$utils/term';
-import NDK, { NDKEvent, NDKUser, type NostrEvent } from '@nostr-dev-kit/ndk';
+import NDK, { NDKEvent, NDKUser, type NDKIntervalFrequency, type NostrEvent, NDKSubscriptionStart, NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
 
 export async function createSubscriptionEvent(
 	ndk: NDK,
 	amount: string,
 	currency: string,
-	term: Term,
-	plan?: NDKEvent,
-	supportedUser?: NDKUser
+	term: NDKIntervalFrequency,
+	supportedUser?: NDKUser,
+	tier?: NDKSubscriptionTier,
 ) {
-	const supportEvent = new NDKEvent(ndk, {
-		kind: 7001,
+	const supportEvent = new NDKSubscriptionStart(ndk, {
 		tags: [['amount', amount, currency, term]]
 	} as NostrEvent);
+	supportEvent.amount = {
+		amount: parseFloat(amount),
+		currency,
+		term
+	};
+	supportEvent.tier = tier;
 
-	if (plan) {
-		supportEvent.tags.push(['event', JSON.stringify(plan.rawEvent())]);
-		supportEvent.tag(plan);
-	} else {
+	if (!tier) {
 		supportEvent.tag(supportedUser!);
 	}
 

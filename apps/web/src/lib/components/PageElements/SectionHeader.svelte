@@ -2,6 +2,8 @@
     import SearchBar from "$components/Page/SearchBar.svelte";
 	import Toolbar from "$components/PostEditor/Toolbar.svelte";
     import { mainWrapperMargin, pageHeader, pageSidebar } from "$stores/layout";
+	import HeaderLeftButton from "./HeaderLeftButton.svelte";
+	import HeaderRightButton from "./HeaderRightButton.svelte";
 
     let hasSidebar = false;
     $: hasSidebar = !!$pageSidebar?.component;
@@ -42,39 +44,55 @@
                     <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
                 {/if}
             </div>
+        {:else if $pageHeader?.searchBar}
+            {#if $pageHeader?.title}
+                <h1 class="
+                    text-white font-semibold
+                    flex flex-row items-center gap-2
+                    text-center w-full
+                    max-sm:text-lg
+                    sm:text-2xl
+                    whitespace-nowrap
+                    lg:absolute sm:left-24
+                ">
+                    {$pageHeader?.title}
+                </h1>
+            {/if}
+            <div class="
+                max-w-3xl w-full
+                {!hasSidebar ? "mx-auto" : ""}
+            ">
+                <SearchBar inputClass="focus:!outline-none focus:!border-none" />
+            </div>
         {:else}
-            <div class="flex items-center justify-between">
-                <!-- {#if $pageHeader?.left}
+            <div class="grid grid-cols-7 items-center justify-between px-4 w-full">
+                {#if $pageHeader?.left}
                     <HeaderLeftButton />
-                {/if} -->
+                {/if}
 
                 <!-- If we have a sidebar, don't show the title on desktop -->
                 {#if $pageHeader?.title}
                     <h1 class="
                         text-white font-semibold
-                        flex flex-row items-center gap-2
-                        text-center w-full
+                        !items-left
+                        flex flex-row
+                        {$pageHeader.title.length > 15 ? "justify-left" : "justify-center"}
+                        gap-2
+                        w-full
                         max-sm:text-lg
                         sm:text-2xl
                         whitespace-nowrap
-                        {$pageHeader?.searchBar ? "sm:absolute sm:left-24" : "justify-center"}
+                        col-span-5
+                        text-center
                     ">
-                        {$pageHeader?.title}
+                        <span class="truncate">{$pageHeader?.title}</span>
                     </h1>
                 {/if}
-            </div>
 
-            {#if $pageHeader?.searchBar}
-                <div class="
-                    max-w-3xl w-full
-                    {!hasSidebar ? "mx-auto" : ""}
-                ">
-                    <SearchBar inputClass="focus:!outline-none focus:!border-none" />
-                </div>
-            {/if}
-            <!-- {#if $pageHeader?.right}
-                <HeaderRightButton />
-            {/if} -->
+                {#if $pageHeader?.right}
+                    <HeaderRightButton />
+                {/if}
+            </div>
         {/if}
     </div>
 </div>

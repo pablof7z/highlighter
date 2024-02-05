@@ -15,20 +15,18 @@
     }
 </script>
 
-{#if $loginState}
-    <div class="w-full flex-none" transition:fade>
-        {#if $user}
-            <UserProfile user={$user} let:userProfile let:fetching>
-                <button on:click={clicked} class="sm:hidden">
-                    <Avatar user={$user} {userProfile} {fetching} class="flex-none" />
-                </button>
+<div class="w-full flex-none" transition:fade>
+    {#if $user}
+        <UserProfile user={$user} let:userProfile let:fetching>
+            <button on:click={clicked} class="sm:hidden">
+                <Avatar user={$user} {userProfile} {fetching} class="flex-none" />
+            </button>
 
-                <a href="/settings" class="max-sm:hidden">
-                    <Avatar user={$user} {userProfile} {fetching} class="flex-none" />
-                </a>
-            </UserProfile>
-        {:else}
-            <slot />
-        {/if}
-    </div>
-{/if}
+            <a href="/settings" class="max-sm:hidden">
+                <Avatar user={$user} {userProfile} {fetching} class="flex-none" />
+            </a>
+        </UserProfile>
+    {:else}
+        <slot />
+    {/if}
+</div>

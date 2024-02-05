@@ -6,35 +6,54 @@
 	import { ndk } from "@kind0/ui-common";
 	import { RelayList } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy } from 'svelte';
+	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 
     $pageSidebar = { component: Settings, props: {} }
     onDestroy(() => { $pageSidebar = null; })
 
     $pageHeader = {
         title: "Network Settings",
-        leftLabel: "Back",
-        leftUrl: "/settings",
+        left: {
+            label: "Back",
+            url: "/settings",
+        }
     };
 
     const creatorRelays = getDefaultRelaySet();
 </script>
 
 <MainWrapper>
-    <section>
-        <h2>Creator Relays</h2>
+    <section class="settings">
+        <div class="title">
+            Relays
+        </div>
 
-        <ul class="menu w-fit">
-            {#each creatorRelays.relays as relay}
-                <li class="px-3">
-                    {relay.url}
-                </li>
-            {/each}
-        </ul>
+        <div class="field">
+            <div class="title">
+                Creator Relays
+            </div>
+
+                {#each creatorRelays.relays as relay}
+                    <GlassyInput
+                        type="text"
+                        readonly={true}
+                        value={relay.url}
+                        placeholder="Relay URL"
+                        class="text-sm"
+                    />
+                    <div class="text-xs text-neutral-500">
+                        This URL can't be changed yet.
+                    </div>
+                {/each}
+        </div>
+
+        <div class="field">
+            <div class="ttile">
+                Connections
+                <RelayList ndk={$ndk} />
+            </div>
+        </div>
     </section>
-
-    <h2>Relays</h2>
-
-    <RelayList ndk={$ndk} />
 </MainWrapper>
 
 <style lang="postcss">

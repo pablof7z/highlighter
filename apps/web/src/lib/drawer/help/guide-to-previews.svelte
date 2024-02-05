@@ -39,7 +39,7 @@
     </div>
 
     <div class="leading-relaxed max-w-prose text-lg">
-        You should reserve publishing previews beyond your Faaans page to high-quality, valuable content. If you publish too much low-effort previews your followers in other platforms might feel like your free content is not worth keeping up with.
+        You should reserve publishing previews beyond your Highlighter page to high-quality, valuable content. If you publish too much low-effort previews your followers in other platforms might feel like your free content is not worth keeping up with.
     </div>
 
     <button class="self-end button px-10 py-3" on:click={closeDrawer}>

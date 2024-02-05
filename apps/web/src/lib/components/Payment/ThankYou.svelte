@@ -25,7 +25,7 @@
 </script>
 
 <div class="min-w-[300px] flex-col justify-center items-center gap-6 inline-flex">
-<div class="text-black text-[21px] font-medium">Thank you for your support!</div>
+<div class="text-white text-[21px] font-medium">Thank you for your support!</div>
     <img src="/images/thank-you.png" />
     <div class="self-stretch h-[42px] flex-col justify-start items-center gap-3 flex">
         <div class="self-stretch h-[42px] flex-col justify-start items-center gap-3 flex">

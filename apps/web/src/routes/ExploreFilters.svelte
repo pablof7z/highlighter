@@ -1,7 +1,9 @@
 <script lang="ts">
 	import FilterButtons from "$components/FilterButtons.svelte";
 	import OptionsList from "$components/OptionsList.svelte";
+	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter } from "@nostr-dev-kit/ndk";
+	import { Globe } from "phosphor-svelte";
     import BookmarkSimple from "phosphor-svelte/lib/BookmarkSimple";
     import Hash from "phosphor-svelte/lib/Hash";
     import Plus from "phosphor-svelte/lib/Plus";
@@ -11,7 +13,12 @@
     export let filters: NDKFilter[] | undefined = undefined;
 
     let options = [
-        { name: "All" },
+        { name: "All Creators" },
+        { name: "Network", icon: Globe, filters: [{
+            kinds: [NDKKind.Article, NDKKind.HorizontalVideo],
+            authors: Array.from($userFollows),
+            limit: 100,
+        }] },
         { name: "Art", icon: Hash, filters: [{
             kinds: [NDKKind.Article, NDKKind.HorizontalVideo],
             "#t": [ "photography", "art", "artstr"],
@@ -36,8 +43,6 @@
 
     function changed(e: CustomEvent) {
         const selectedOption = e.detail;
-
-        debugger;
 
         value = selectedOption.value;
         filters = selectedOption.filters;

@@ -1,20 +1,14 @@
 <script lang="ts">
-	import { ndk, newToasterMessage, user } from "@kind0/ui-common";
-	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { publishToTiers } from "$actions/publishToTiers";
+	import { newToasterMessage, user } from "@kind0/ui-common";
+	import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
     import truncateMarkdown from 'markdown-truncate';
-	import { getUserSupportPlansStore } from "$stores/user-view";
-	import CategorySelector from '../Forms/CategorySelector.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import type { UserProfileType } from '../../../app';
-	import { getSelectedTiers, getTierSelectionFromAllTiers, type TierSelection } from "$lib/events/tiers";
-	import ArticlePreviewEditorModal from "$modals/ArticlePreviewEditorModal.svelte";
-	import { openModal } from "svelte-modals";
+	import { type TierSelection } from "$lib/events/tiers";
 	import { drafts, type DraftItem, type DraftCheckpoint } from "$stores/drafts";
 	import { goto } from "$app/navigation";
 	import { onDestroy } from "svelte";
-	import ArticleLink from "$components/Events/ArticleLink.svelte";
 	import Shell from "$components/PostEditor/Shell.svelte";
 
     export let article: NDKArticle;
@@ -57,9 +51,6 @@
     $: if (article.content) {
         updatePreviewContent();
     }
-
-    let publishing = false;
-    let shareUrl = "";
 
     let userProfile: UserProfileType;
 

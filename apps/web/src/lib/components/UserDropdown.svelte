@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { MagnifyingGlass } from 'phosphor-svelte';
-	import { Avatar, CollapsableDropdown, Name, ndk, user } from '@kind0/ui-common';
+	import { Avatar, user } from '@kind0/ui-common';
     import {Plus, PlusCircle, SignOut, SquaresFour, Tray} from 'phosphor-svelte';
 	import { debugMode, loginState, userActiveSubscriptions, userFollows, userSuperFollows, userAppHandlers } from '$stores/session';
     import UserProfile from './User/UserProfile.svelte';
 	import { logout } from '$utils/login';
 	import { openModal } from 'svelte-modals';
     import NewItemModal from '$modals/NewItemModal.svelte';
-    import { userTiers } from '$stores/session';
+	import { getUserSubscriptionTiersStore } from '$stores/user-view';
+
+    const userTiers = getUserSubscriptionTiersStore();
 </script>
 
 <UserProfile user={$user} let:userProfile let:fetching>

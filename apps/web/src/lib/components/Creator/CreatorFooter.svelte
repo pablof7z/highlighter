@@ -1,17 +1,19 @@
 <script lang="ts">
+	import CurrentSupporters from "$components/CurrentSupporters.svelte";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
     import { mainWrapperMargin, pageSidebar } from "$stores/layout";
-    import type { NDKArticle, NDKUser } from "@nostr-dev-kit/ndk";
+    import type { Hexpubkey, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
 	import type { Readable } from "svelte/store";
 
     export let user: NDKUser;
-    export let tiers: Readable<NDKArticle[]>;
+    export let tiers: Readable<NDKSubscriptionTier[]>;
+    export let userSupporters: Readable<Record<Hexpubkey, string | undefined>>;
 
     let hasSidebar = false;
     $: hasSidebar = !!$pageSidebar?.component;
 </script>
 
-tiers = {tiers}
+<div class="h-16">&nbsp;</div>
 
 <div class="
     fixed bottom-0
@@ -27,7 +29,12 @@ tiers = {tiers}
         w-full
         flex items-center justify-between
     ">
-        <div></div>
+        <div>
+            <CurrentSupporters
+                supporters={$userSupporters}
+                {user}
+            />
+        </div>
 
         <SubscribeButton {user} {tiers} />
     </div>

@@ -20,6 +20,7 @@ export type NsecBunkerProvider = {
 
 export type UserProfileType = NDKUserProfile & {
 	categories?: string[];
+	created_at: number;
 };
 
 export type EventType =

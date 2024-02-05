@@ -2,10 +2,10 @@
 	import { selectedTiers, type as postType, view, nonSubscribersPreview } from '$stores/post-editor.js';
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { pageHeader } from "$stores/layout";
-	import { getUserSupportPlansStore } from "$stores/user-view";
-	import { getSelectedTiers, getTierSelectionFromAllTiers } from '$lib/events/tiers';
+	import { getUserSubscriptionTiersStore } from "$stores/user-view";
+	import { getTierSelectionFromAllTiers } from '$lib/events/tiers';
 	import ArticleMetaPage from '$components/Editor/ArticleMetaPage.svelte';
-	import { NDKArticle, NDKEvent, NDKVideo, type NostrEvent } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKEvent, NDKVideo } from '@nostr-dev-kit/ndk';
 	import DistributionPage from '$components/Editor/Pages/DistributionPage.svelte';
 	import Publish from './Publish.svelte';
 	import ArticlePreviewEditor from './ArticlePreviewEditor.svelte';
@@ -19,13 +19,12 @@
     $selectedTiers ??= { "Free": { name: "Free", selected: false } };
     $postType = type;
 
-    const allTiers = getUserSupportPlansStore();
+    const allTiers = getUserSubscriptionTiersStore();
     $: $selectedTiers = getTierSelectionFromAllTiers($allTiers);
 
     $pageHeader = { component: "post-editor" }
 
     function tiersChanged() {
-        console.log("tiers changed");
         if ($nonSubscribersPreview === undefined) {
             console.log("nonSubscribersPreview is undefined, setting to true", $selectedTiers["Free"]?.selected);
             if (!$selectedTiers["Free"]?.selected) {

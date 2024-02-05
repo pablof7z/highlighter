@@ -13,7 +13,7 @@
     <a
         href={$pageHeader?.right.url??"#"}
         on:click={rightClicked}
-        class="text-accent2 whitespace-nowrap"
+        class="text-accent2 whitespace-nowrap text-right self-end"
     >
         {#if $pageHeader.right.label === "loading"}
             <span class="loading loading-sm" />

@@ -12,6 +12,7 @@
 	import { onDestroy, onMount } from "svelte";
 	import { hideMobileBottomBar } from "$stores/layout";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
+	import { getUserSubscriptionTiersStore } from "$stores/user-view";
 
     export let event: NDKEvent;
     export let urlPrefix: string;
@@ -33,7 +34,7 @@
 <div class="my-12"></div>
 
 <footer class="
-    fixed bottom-0 w-full max-sm:px-3 py-6 mobile-nav bg-base-100/10
+    fixed bottom-0 w-full max-sm:px-3 py-3 mobile-nav bg-base-100/10
     border-t border-white/20
 ">
     <div class="{mxClass} max-w-3xl">
@@ -57,7 +58,7 @@
             </div>
 
             <div class="place-self-end max-sm:hidden">
-                <SubscribeButton user={event.author} />
+                <SubscribeButton user={event.author} tiers={getUserSubscriptionTiersStore()} />
             </div>
         </div>
     </div>

@@ -1,15 +1,15 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { currencyFormat, currencySymbol } from "$utils/currency";
-	import { termToShort, type Term } from "$utils/term";
+	import { termToShort } from "$utils/term";
 	import { Avatar, Name, RelativeTime, ndk } from "@kind0/ui-common";
-import { NDKArticle, NDKEvent, profileFromEvent, type NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKArticle, NDKEvent, profileFromEvent, type NDKUserProfile, type NDKIntervalFrequency } from "@nostr-dev-kit/ndk";
 	import { ArrowDown } from "phosphor-svelte";
 
     export let event: NDKEvent;
     const amountTag = event.getMatchingTags("amount")[0];
     const [ _, amount, currency, _term ] = amountTag||[];
-    const term = _term as Term;
+    const term = _term as NDKIntervalFrequency;
 
     const embeddedEvent = event.tagValue("event");
     let tierEvent: NDKArticle;

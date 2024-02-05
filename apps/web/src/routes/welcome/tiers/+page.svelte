@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { goto } from "$app/navigation";
 	import TierList from "$components/Creator/TierList.svelte";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
@@ -9,13 +9,17 @@
 
 	$pageHeader = {
 		title: "Tiers",
-		leftLabel: "Back",
-		leftUrl: "/welcome",
-		rightLabel: saving ? "loading" : "Save",
-		rightFn: () => {forceSave = true}
+		left: {
+			label: "Back",
+			url: "/welcome",
+		},
+		right: {
+			label: saving ? "loading" : "Save",
+			fn: () => {forceSave = true}
+		}
 	};
 
-	$: $pageHeader.rightLabel = saving ? "loading" : "Save";
+	$: $pageHeader!.right!.label = saving ? "loading" : "Save";
 
 	$: if (forceSave && saving) {
 		forceSave = false;

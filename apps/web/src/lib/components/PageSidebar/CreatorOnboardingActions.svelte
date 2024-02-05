@@ -5,14 +5,15 @@
 	import Post from "./OnboardingCheckingIcons/Post.svelte";
 	import { openModal } from "svelte-modals";
 	import NewItemModal from "$modals/NewItemModal.svelte";
-	import { getUserSupportPlansStore, getContent } from "$stores/user-view";
+	import { getUserSubscriptionTiersStore, getContent } from "$stores/user-view";
 	import { onMount } from "svelte";
-	import type { NDKEvent } from "@nostr-dev-kit/ndk";
+	import type { NDKEvent, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
 	import type { Readable } from "svelte/motion";
 
     export let sidebarView = false;
+    export let forceView = sidebarView;
 
-    let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
+    let currentTiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
     let content: Readable<NDKEvent[]> | undefined = undefined;
 
     let hasTiers = false;
@@ -20,16 +21,14 @@
     let hasProfileBanner  = true;
 
     onMount(() => {
-        currentTiers = getUserSupportPlansStore();
+        currentTiers = getUserSubscriptionTiersStore();
         content = getContent();
     })
 
     $: hasTiers = !!currentTiers && !!$currentTiers?.length;
     $: hasContent = !!content && !!$content?.length;
 
-    $: allDone = hasTiers && hasContent && hasProfileBanner;
-
-    let hiddenOrCompleted = undefined;
+    let hiddenOrCompleted: boolean | undefined = undefined;
 
     onMount(() => {
         hiddenOrCompleted = !!localStorage.getItem("creator-onboarding-done");
@@ -41,7 +40,7 @@
     }
 </script>
 
-{#if hiddenOrCompleted === false}
+{#if hiddenOrCompleted === false || forceView}
     <div
         class="flex flex-col gap-5"
         class:py-6={sidebarView}
@@ -49,9 +48,11 @@
     >
         <div class="flex flex-row justify-between items-end">
             <h2 class="text-2xl text-white">What's next?</h2>
-            <button class="btn btn-base-300 text-sm" on:click={hide}>
-                Hide
-            </button>
+            {#if !sidebarView}
+                <button class="btn btn-base-300 text-sm" on:click={hide}>
+                    Hide
+                </button>
+            {/if}
         </div>
 
         <a href="/welcome/profile">
@@ -89,6 +90,7 @@
                             <span>
                                 Manage membership prices and perks
                             </span>
+                        </div>
                     </div>
                 </span>
             </div>

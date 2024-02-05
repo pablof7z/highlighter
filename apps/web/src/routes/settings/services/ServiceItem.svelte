@@ -41,6 +41,13 @@
     async function fetchProviders(): Promise<Set<NDKEvent>> {
         loading = true;
 
+        setTimeout(() => {
+            if (loading) {
+                loading = false;
+                forceDisplay = true;
+            }
+        }, 2500)
+
         return new Promise((resolve) => {
             $ndk.fetchEvents({kinds: [NDKKind.AppHandler], "#k": [kind.toString()]}).then(r => {
                 console.log(r);
@@ -55,6 +62,8 @@
     function readyToDisplay() {
         loading = false;
     }
+
+    let forceDisplay = false;
 </script>
 
 {#if profile}
@@ -103,7 +112,7 @@
             {#await fetchProviders() then events}
                 <ul class="border-2 border-base-300" class:hidden={loading}>
                     {#each events as event}
-                        <ServiceProviderItem {event} {kind} on:ready={readyToDisplay} />
+                        <ServiceProviderItem {event} {kind} on:ready={readyToDisplay} {forceDisplay} />
                     {/each}
                 </ul>
             {/await}

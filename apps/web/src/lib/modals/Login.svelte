@@ -90,7 +90,7 @@
             $user = await remoteSigner.user();
             $user.ndk = $ndk;
             localStorage.setItem('nostr-key-method', 'nip46');
-            localStorage.setItem('nostr-target-npub', $user.npub);
+            localStorage.setItem('pubkey', $user.pubkey);
 
             // loginNip46();
 

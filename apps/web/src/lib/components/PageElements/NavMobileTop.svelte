@@ -31,8 +31,7 @@
 <div class="navbar fixed z-50 mobile-nav h-16 px-3 w-full grid grid-cols-5 gap-1">
     {#if $pageHeader?.component}
         <SectionHeader />
-    {:else}
-    {#if !searchBar}
+    {:else if !searchBar}
         <div class="navbar-start">
             {#if $pageHeader?.left}
                 <HeaderLeftButton />
@@ -48,8 +47,8 @@
                 </label>
             {/if}
         </div>
-        <div class="navbar-center max-w-[60vw] overflow-clip truncate col-span-3">
-            <span class="btn btn-ghost text-base text-white truncate overflow-clip">
+        <div class="navbar-center max-w-[60vw] overflow-clip col-span-3 max-sm:flex-col">
+            <span class="text-base text-white text-center w-full whitespace-nowrap overflow-clip font-medium">
                 {#if $pageHeader?.title}
                     {$pageHeader.title}
                 {:else}
@@ -66,20 +65,19 @@
                 <button class="btn btn-ghost btn-circle" on:click={toggleSearch}>
                     <MagnifyingGlass class="w-5 h-5" />
                 </button>
-                <a href="/notifications" class="btn btn-ghost btn-circle">
+                <!-- <a href="/notifications" class="btn btn-ghost btn-circle">
                     <Bell class="w-5 h-5" />
-                </a>
+                </a> -->
             {/if}
         </div>
     {:else}
-        <div class="flex flex-row items-center w-full gap-2">
+        <div class="flex flex-row items-center w-full gap-2 col-span-5">
             <button class="flex-none" on:click={toggleSearch}>
                 <CaretLeft class="w-5 h-5" />
             </button>
 
             <SearchBar autofocus={true} on:searched={toggleSearch} on:dismiss={() => searchBar = false} />
         </div>
-    {/if}
     {/if}
 </div>
 

@@ -3,7 +3,6 @@
 	import BecomeSupporterModal from '$modals/BecomeSupporterModal.svelte';
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
-    import { userTiers } from "$stores/user-view";
 	import { LockSimple } from "phosphor-svelte";
 	import { openModal } from "svelte-modals";
     import { user } from "@kind0/ui-common";
@@ -18,7 +17,7 @@
         if (!$user) {
             openModal(SignupModal, { redirect: window.location.pathname });
         } else {
-            openModal(BecomeSupporterModal, { user: author, suggestedTier: requiredTier });
+            openModal(BecomeSupporterModal, { user: author });
         }
     }
 </script>

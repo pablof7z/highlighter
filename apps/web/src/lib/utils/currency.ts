@@ -3,6 +3,19 @@ import type { NDKTag } from '@nostr-dev-kit/ndk';
 
 export const possibleCurrencies = ['USD', 'EUR', 'msat'];
 
+export function currencyCode(currency: string) {
+	switch (currency) {
+		case 'USD':
+			return '$ - USD';
+		case 'EUR':
+			return '€ - Euros';
+		case 'msat':
+			return 'sats - Bitcoin';
+		default:
+			return currency;
+	}
+}
+
 export function currencySymbol(currency: string) {
 	switch (currency) {
 		case 'USD':
@@ -22,9 +35,11 @@ export function currencyFormat(currency: string, amount: number) {
 	switch (currency) {
 		case 'USD':
 		case 'usd':
+			if (amount > 0) amount /= 100;
 			retval = `$${amount.toFixed(2)}`;
 			break;
 		case 'EUR':
+			if (amount > 0) amount /= 100;
 			retval = `${amount.toFixed(2)}€`;
 			break;
 		case 'msat':

@@ -14,8 +14,8 @@
     </div>
 
     <p>
-        Since Faaans is not a platform but rather a tool to interact with Nostr,
-        your content can be seen way beyond Faaans in a myriad of different platforms.
+        Since Highlighter is not a platform but rather a tool to interact with Nostr,
+        your content can be seen way beyond Highlighter in a myriad of different platforms.
     </p>
 
     <p>

@@ -68,10 +68,10 @@
         @apply border-transparent;
     }
 
-    .item.active {
+    /* .item.active {
         @apply border-neutral-200;
 
-    }
+    } */
 
     .highlight {
         @apply !bg-accent2 p-2 rounded-2xl text-neutral-200;
