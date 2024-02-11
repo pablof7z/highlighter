@@ -1,23 +1,21 @@
 <script lang="ts">
 	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKList } from '@nostr-dev-kit/ndk';
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
-	import VideoLink from "$components/Events/VideoLink.svelte";
     import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from 'svelte';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
-	import PostGrid from '$components/Events/PostGrid.svelte';
 	import { page } from '$app/stores';
     import createDebug from "debug";
 	import { derived, writable, type Readable } from 'svelte/store';
 	import { pageHeader } from '$stores/layout';
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import ExploreFilters from './ExploreFilters.svelte';
-	import CurationItem from '$components/CurationItem.svelte';
 	import ListContentDvms from './ListContentDvms.svelte';
 	import { mainContentKinds } from '$utils/event';
 	import { browser } from '$app/environment';
 	import WelcomeGridItem from '$components/WelcomeGridItem.svelte';
 	import { blacklistedPubkeys } from '$utils/const';
+	import { Funnel } from 'phosphor-svelte';
 
     const debug = createDebug("HL:explore");
 
@@ -73,7 +71,7 @@
                 newFilters = [ { kinds, limit: 30 } ];
                 break;
             default:
-                newFilters = [ { kinds, limit: 10, "#f": ["Free"] } ];
+                newFilters = [ { kinds, limit: 100, "#f": ["Free"] } ];
         }
 
         return newFilters;
@@ -108,7 +106,7 @@
 
             for (const event of $events) {
                 // There is a bug in the relay, for now filter out events with a tier tag
-                if (event.tagValue("tier")) continue;
+                // if (event.tagValue("tier") && ) continue;
                 if (blacklistedPubkeys.includes(event.pubkey)) continue;
 
                 if ($typeFilter.includes("all")) {
@@ -159,7 +157,7 @@
     {/if}
 </svelte:head>
 
-<MainWrapper marginClass="w-full">
+<MainWrapper marginClass="w-full" mobilePadded={false}>
     {#if eventsForRender && $eventsForRender}
         <div class="flex flex-col gap-6 w-full">
             <ExploreFilters bind:value={filter} bind:typeFilter={$typeFilter} bind:filters />
@@ -185,18 +183,18 @@
                         </h2>
                     </div>
                 {:else}
-                        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-10">
+                        <div class="flex flex-col sm:grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10">
                             {#key filter}
                                 <WelcomeGridItem />
                                 {#each $eventsForRender as event (event.id)}
                                     {#if event.kind === NDKKind.Article}
                                         <ArticleLink article={NDKArticle.from(event)} grid={true} />
-                                    {:else if event.kind === NDKKind.HorizontalVideo}
+                                    <!-- {:else if event.kind === NDKKind.HorizontalVideo}
                                         <VideoLink video={NDKVideo.from(event)} grid={true} />
                                     {:else if event.kind === NDKKind.GroupNote}
                                         <PostGrid {event} />
                                     {:else if event.kind === NDKKind.ArticleCurationSet || event.kind === NDKKind.VideoCurationSet}
-                                        <CurationItem list={NDKList.from(event)} grid={true} />
+                                        <CurationItem list={NDKList.from(event)} grid={true} /> -->
                                     {/if}
                                 {/each}
                             {/key}

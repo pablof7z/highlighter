@@ -3,22 +3,18 @@
 	import { ndk, user } from "@kind0/ui-common";
 	import { NDKVideo, type NostrEvent } from "@nostr-dev-kit/ndk";
     import Page1 from "./VideoEditorPage/Page1.svelte";
-    import Page2 from "./VideoEditorPage/Page2.svelte";
 	import { type TierSelection, getTierSelectionFromAllTiers } from '$lib/events/tiers';
 	import { getUserSubscriptionTiersStore } from '$stores/user-view';
 
     export let video: NDKVideo = new NDKVideo($ndk, {
         content: "",
     } as NostrEvent);
+    export let videoFile: File | undefined;
     export let teaser: NDKVideo = new NDKVideo($ndk);
 
     let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
     const allTiers = getUserSubscriptionTiersStore();
     $: tiers = getTierSelectionFromAllTiers($allTiers);
-
-    let videoFile: File | undefined;
-
-    let step = 0;
 
     const domain = "https://highlighter.com";
     let authorUrl: string | undefined;
@@ -32,9 +28,3 @@
     bind:video={video}
     bind:videoFile={videoFile}
 />
-{#if videoFile || video.url}
-    <Page2
-        {videoFile}
-        bind:video
-    />
-{/if}

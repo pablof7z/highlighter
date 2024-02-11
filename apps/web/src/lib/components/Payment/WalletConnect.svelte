@@ -7,8 +7,9 @@
 	import { finalizeLogin } from '$utils/login';
     import { createEventDispatcher } from 'svelte';
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
+	import WalletConnectNwa from './WalletConnectNWA.svelte';
 
-    type Mode = "alby" | "mutiny" | "nwc";
+    type Mode = "alby" | "mutiny" | "nwc" | "nwa";
 
     export let mode: Mode | undefined;
     export let nwcUrl: string;
@@ -31,9 +32,10 @@
     }
 
     const onSuccess = async (e: CustomEvent<{url: string, nwc: any}>) => {
-        const { url, nwc } = e.detail;
+        const { url, nwc } = e?.detail || {};
 
-        nwcConnect(url);
+        if (url) nwcConnect(url);
+        else dispatch('connected', {url});
     }
 </script>
 
@@ -47,6 +49,10 @@
 
         <button class="button w-full" on:click={() => mode = "mutiny"}>
             Connect with Mutiny
+        </button>
+
+        <button class="button w-full" on:click={() => mode = "nwa"}>
+            Connect with NWA
         </button>
 
         <div class="self-stretch justify-center items-center gap-3 inline-flex">
@@ -95,4 +101,6 @@
         on:success={onSuccess}
         on:cancel={() => mode = undefined}
     />
+{:else if mode === "nwa"}
+    <WalletConnectNwa on:success={onSuccess} />
 {/if}

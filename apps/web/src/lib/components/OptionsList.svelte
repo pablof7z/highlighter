@@ -26,19 +26,38 @@
 </script>
 
 <div class="justify-start items-start gap-4 inline-flex whitespace-nowrap max-sm:px-3">
-    <div class="justify-start items-start gap-4 flex">
+    <div class="justify-start items-center gap-4 flex">
         {#each options as option (option.name)}
             <div class:tooltip={option.tooltip} data-tip={option.tooltip}>
-                <button
-                    class="snap-center {option.class??""}"
-                    on:click={() => clicked(option)}
-                    class:active={value === (option.value || option.name)}
-                >
-                    {#if option.icon}
-                        <svelte:component this={option.icon} class="w-5 h-5 mr-1 inline" />
-                    {/if}
-                    {option.name}
-                </button>
+                {#if option.class?.includes("gradient")}
+                    <div
+                        class="rounded-full p-[2px] bg-gradient"
+                    >
+                    <button
+                        class="snap-center border-2 border-base-100 gradient {option.class??""}"
+                        on:click={() => clicked(option)}
+                        class:active={value === (option.value || option.name)}
+                    >
+                        {#if option.icon}
+                            <svelte:component this={option.icon} class="w-5 h-5 mr-1 inline" />
+                        {/if}
+                        {option.name}
+                    </button>
+                    </div>
+                {:else}
+                    <div class="rounded-full p-[2px]" class:bg-white={value === (option.value || option.name)}>
+                        <button
+                            class="snap-center border-2 border-base-100 {option.class??""}"
+                            on:click={() => clicked(option)}
+                            class:active={value === (option.value || option.name)}
+                        >
+                            {#if option.icon}
+                                <svelte:component this={option.icon} class="w-5 h-5 mr-1 inline" />
+                            {/if}
+                            {option.name}
+                        </button>
+                    </div>
+                {/if}
             </div>
         {/each}
     </div>
@@ -60,7 +79,11 @@
         @apply !bg-white !text-black;
     }
 
-    button.backstage {
-        @apply bg-accent2 text-white;
+    button.gradient {
+        @apply bg-zinc-800;
+    }
+
+    button.gradient.active {
+        @apply !bg-base-100/40 !text-white !border m-[1px];
     }
 </style>

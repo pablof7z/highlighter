@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { defaultVerifierPubkey } from '$utils/ndk.js';
     import { getUserSubscriptionTiersStore } from '$stores/user-view';
-	import { ndk, newToasterMessage, user } from '@kind0/ui-common';
-	import { NDKArticle, NDKEvent, NDKKind, NDKSubscriptionTier, type NostrEvent } from '@nostr-dev-kit/ndk';
+	import { ndk, user } from '@kind0/ui-common';
+	import { NDKEvent, NDKKind, NDKSubscriptionTier, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import TierEditor from './TierEditor.svelte';
 	import type { Readable } from 'svelte/store';
 	import { getDefaultRelaySet } from '$utils/ndk';
@@ -12,6 +12,8 @@
 	import { termToShort } from '$utils/term';
 	import { currencyFormat } from '$utils/currency';
 	import LoadingScreen from '$components/LoadingScreen.svelte';
+	import { allUserTiers, inactiveUserTiers, userTiers } from '$stores/session';
+	import CollapsedTierListItem from './CollapsedTierListItem.svelte';
 
     export let redirectOnSave: string | false = "/dashboard";
     export let usePresetButton = false;
@@ -30,7 +32,7 @@
     let autofocus: number | undefined = undefined;
     let ready = false;
 
-    currentTiers = getUserSubscriptionTiersStore();
+    currentTiers = userTiers;
 
     onMount(async () => {
         if ($currentTiers && $currentTiers.length === 0) {
@@ -135,16 +137,14 @@
     }
 
     function skip() {
-        const tier = new NDKArticle($ndk, {
+        const tier = new NDKSubscriptionTier($ndk, {
             kind: NDKKind.SubscriptionTier,
             content: "Basic tier",
-            tags: [
-                ["perk", "Access to my members-only content"],
-                ["amount", "5", "usd", "month"],
-                ["perk", "Access to my members-only content"],
-                ["perk", "Access to my exclusive community of like-minded people"],
-            ]
         } as NostrEvent)
+        tier.addPerk("Access to my members-only content");
+        tier.addPerk("Access to my exclusive community of like-minded people");
+        tier.addAmount(500, "usd", "monthly");
+        tier.addAmount(100000, "msat", "monthly");
         tier.title = "Supporters";
         tiers.push(tier);
 
@@ -170,47 +170,23 @@
                     <TierEditor
                         bind:tier={tier}
                         autofocus={autofocus === i}
+                        on:close={() => {
+                            expandedTiers = expandedTiers.filter((j) => i !== j);
+                        }}
                         on:delete={() => {
                             if (tier.tagValue("d")) deletedDtags.add(tier.tagValue("d"));
                             tiers = tiers.filter((_, j) => i !== j);
                         }}
                     />
                 {:else}
-                    <button
-                        class="border border-base-300 p-4 flex flex-col gap-2"
+                    <CollapsedTierListItem {tier}
                         on:click={() => {expandedTiers.push(i); expandedTiers = expandedTiers}}
-                    >
-                        <div class="flex flex-row justify-between whitespace-nowrap truncate w-full">
-                            <h1 class="text-xl font-semibold">
-                                {tier.title}
-                            </h1>
-
-                            {#if tier.getMatchingTags("amount")}
-                                <h2 class="text-xl font-semibold text-success">
-                                    {currencyFormat(
-                                        tier.getMatchingTags("amount")[0][2],
-                                        parseInt(tier.getMatchingTags("amount")[0][1])
-                                    )}/{termToShort(tier.getMatchingTags("amount")[0][3])}
-                                </h2>
-                            {/if}
-                        </div>
-
-                        {#if tier.content.length > 0 || tier.getMatchingTags("perk").length > 0}
-                            <ul class="text-xs flex flex-col items-start gap-2">
-                                {#if tier.content.length > 0}
-                                    <li>
-                                        {tier.content}
-                                    </li>
-                                {/if}
-                                {#each tier.getMatchingTags("perk") as perkTags}
-                                    <li class="flex flex-row items-center">
-                                        <Check class="w-5 h-5 mr-2 text-success" weight="duotone" />
-                                        {perkTags[1]}
-                                    </li>
-                                {/each}
-                            </ul>
-                        {/if}
-                    </button>
+                    />
+                    <!-- <button class="text-red-500 text-xs" on:click={() => {
+                        tier.delete();
+                    }}>
+                        Delete
+                    </button> -->
                 {/if}
             {/each}
         </div>
@@ -246,5 +222,16 @@
                 </button>
             </div>
         </div>
+
+        <!-- {#if $inactiveUserTiers.length > 0}
+            <h1>
+                Inactive subscription tiers
+            </h1>
+
+            {#each $inactiveUserTiers as tier}
+                <CollapsedTierListItem {tier} />
+                Restore
+            {/each}
+        {/if} -->
     </div>
 </LoadingScreen>

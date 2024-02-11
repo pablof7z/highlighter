@@ -10,6 +10,9 @@
 	import { goto } from "$app/navigation";
 	import { onDestroy } from "svelte";
 	import Shell from "$components/PostEditor/Shell.svelte";
+	import ArticleMetaPage from "./ArticleMetaPage.svelte";
+	import { view } from "$stores/post-editor";
+	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
 
     export let article: NDKArticle;
     export let preview: NDKArticle;
@@ -132,4 +135,10 @@
 
 <Shell type="article" {article}>
     <ArticleEditor bind:article on:contentUpdate={onArticleChange} textareaClass="" />
+    <div slot="meta">
+        <ArticleMetaPage {article} on:done={() => $view = "edit"}/>
+    </div>
+    <div slot="editPreview">
+        <ArticlePreviewEditor {article} {authorUrl} />
+    </div>
 </Shell>

@@ -70,18 +70,19 @@
     <meta property="og:image" content={userProfile?.image || defaultBanner} />
 </svelte:head>
 
-<MainWrapper class="sm:px-6" marginClass="max-w-3xl mx-auto">
-    <UserProfile {user} bind:userProfile let:fetching>
+<MainWrapper class="sm:px-6" marginClass="max-w-3xl mx-auto" mobilePadded={false}>
+    <UserProfile {user} bind:userProfile let:fetching let:authorUrl>
         <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%]">
             <img src={userProfile?.banner??defaultBanner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
         </div>
         <!-- Profile Header -->
         <div class="
             flex
-            max-sm:flex-col max-sm:w-full max-sm:items-start max-sm:gap-4
-            overflow-hidden
+            max-sm:flex-col max-sm:items-start max-sm:gap-4
+            overflow-clip
             items-end justify-between p-3 sm:p-6 relative -mt-16
             gap-4
+            w-full max-sm:w-screen
         ">
             <div class="flex items-end">
                 <Avatar user={user} {userProfile} {fetching} class="w-28 h-28 flex-none object-cover mask mask-squircle rounded-none" />
@@ -90,7 +91,7 @@
                     <div class="name text-xl font-semibold text-base-100-content">
                         <Name {userProfile} {fetching} />
                     </div>
-                    <p class="text-sm truncate max-w-md text-neutral-500">
+                    <p class="text-sm truncate max-w-md text-neutral-500 w-full basis-0 shrink">
                         {#if fetching && !userProfile?.about}
                             <div class="skeleton h-15 w-48">&nbsp;</div>
                         {:else if userProfile?.about}
@@ -103,17 +104,19 @@
             </div>
 
             {#if $userTiers}
-                <SubscribeButton {user} tiers={userTiers} />
+                <SubscribeButton {user} {userProfile} tiers={userTiers} />
             {/if}
+        </div>
+
+        <div class="border-t border-b border-neutral-800 py-3 mb-6">
+            <CreatorProfileTabs
+                bind:value={activeTab}
+                name={userProfile?.name}
+                {authorUrl}
+            />
         </div>
     </UserProfile>
 
-    <div class="border-t border-b border-neutral-800 py-3 mb-6">
-        <CreatorProfileTabs
-            bind:value={activeTab}
-            name={userProfile?.name}
-        />
-    </div>
 
     {#if activeTab === "Publications"}
         <div class="flex flex-row gap-10">

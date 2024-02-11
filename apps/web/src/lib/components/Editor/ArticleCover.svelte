@@ -1,30 +1,64 @@
 <script lang="ts">
 	import { NDKArticle, NDKKind } from '@nostr-dev-kit/ndk';
-    import Image from "phosphor-svelte/lib/Image"
-
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
 	import DvmGenerateButton from '$components/Dvm/DvmGenerateButton.svelte';
+	import AiIcon from '$icons/AiIcon.svelte';
+	import ImageIcon from '$icons/ImageIcon.svelte';
+	import ArticleLink from '$components/Events/ArticleLink.svelte';
 
     export let article: NDKArticle;
+
+    function uploaded(event: CustomEvent<{url: string}>) {
+        const {url} = event.detail;
+        article.image = url;
+    }
 </script>
 
-<div class="field">
-    <div class="title">
-        Cover Image
-    </div>
-    <ImageUploader
-        class="w-full h-full max-h-80 object-cover sm:rounded-xl"
-        bind:url={article.image}
-        let:onOpen
-    >
-        <div class="bg-white/5 w-full h-full items-center justify-center flex flex-row p-6 rounded-box">
-            <button class="btn btn-lg bg-white/5 border border-neutral-800 btn-circle" on:click={() => onOpen()}>
-                <Image class="w-8 h-8" />
+<section class="settings">
+    <div class="field">
+        <div class="title">
+            Cover Image
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+            <div class="relative rounded-box bg-base-100 col-span-2 row-span-2 flex items-stretch justify-stretch">
+                {#if article.image}
+                    <img class="w-full md:!h-72 object-cover" src={article.image} />
+                {/if}
+            </div>
+
+            <div class="relative">
+                <ImageUploader
+                    wrapperClass="w-full"
+                    bind:url={article.image}
+                    alwaysUseSlot={true}
+                    let:onOpen
+                    on:uploaded={uploaded}
+                >
+                    <button class="side-button w-full" on:click={onOpen}>
+                        <ImageIcon class="w-12 h-12" />
+                        Upload a cover image
+                    </button>
+                </ImageUploader>
+            </div>
+
+            <button class="side-button" disabled>
+                <AiIcon class="w-12 h-12" />
+
+                Generate Image
+                <div class="badge">
+                    Coming soon
+                </div>
             </button>
         </div>
-    </ImageUploader>
 
-    {#if article.title}
-        <DvmGenerateButton kind={NDKKind.DVMReqImageGeneration} inputs={[[article.title, "text"]]} />
-    {/if}
-</div>
+        <!-- {#if article.title}
+            <DvmGenerateButton kind={NDKKind.DVMReqImageGeneration} inputs={[[article.title, "text"]]} />
+        {/if} -->
+    </div>
+</section>
+
+<style lang="postcss">
+    .side-button {
+        @apply py-6 rounded-box flex flex-col justify-center items-center gap-2 bg-white/5 text-white whitespace-nowrap;
+    }
+</style>

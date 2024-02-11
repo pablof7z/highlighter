@@ -72,23 +72,20 @@
     let hasFocus = false;
 </script>
 
-<section class="settings">
-    <div class="field">
-        <div class="title">
-            Tags ({tagCount})
-        </div>
-
-        <Textarea
-            class="w-full !bg-white/5 rounded-box focus:!border-white/20"
-            bind:value={tagString}
-            on:focus={() => hasFocus = true}
-            on:blur={() => hasFocus = false}
-        />
-        <div class="text-xs text-neutral-500">
-            Separate tags with commas
-        </div>
+<div class="field">
+    <div class="title">
+        Tags ({tagCount})
     </div>
 
+    <Textarea
+        class="w-full !bg-white/5 rounded-box focus:!border-white/20"
+        bind:value={tagString}
+        on:focus={() => hasFocus = true}
+        on:blur={() => hasFocus = false}
+    />
+    <div class="text-xs text-neutral-500">
+        Separate tags with commas
+    </div>
     <div class="flex flex-row gap-1 w-full flex-wrap" class:hiddsen={!lastWord}>
         {#each $tags.filter(t => t.includes(lastWord)) as tag}
             <button class="badge bg-white/10 !p-4" on:click={() => addTag(tag)}>
@@ -96,4 +93,4 @@
             </button>
         {/each}
     </div>
-</section>
+</div>

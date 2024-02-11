@@ -5,15 +5,14 @@
 	import CurrencySelect from "./CurrencySelect.svelte";
 	import TermSelect from "./TermSelect.svelte";
 	import type { NDKSubscriptionAmount } from "@nostr-dev-kit/ndk";
-	import GlassyInput from "$components/Forms/GlassyInput.svelte";
 
     export let value: NDKSubscriptionAmount;
     export let forceOpen = false;
-    export let complete: boolean;
+    export let complete: boolean | undefined = undefined;
 
-    let amount = value.amount.toString();
+    let amount = ((value.currency === 'msat') ? (value.amount/1000) : (value.amount/100)).toString();
 
-    $: value.amount = parseFloat(amount);
+    $: value.amount = parseFloat(amount) * (value.currency === 'msat' ? 1000 : 100);
 
     function blurInput() {
         // if the currency is USD or EUR, make it into a float with 2 decimals

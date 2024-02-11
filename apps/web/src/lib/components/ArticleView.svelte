@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { userActiveSubscriptions } from "$stores/session";
+	import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { ndk } from "@kind0/ui-common";
 	import { type NDKArticle, NDKKind, type NDKEventId } from "@nostr-dev-kit/ndk";

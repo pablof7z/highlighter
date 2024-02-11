@@ -1,10 +1,8 @@
 <script lang="ts">
 	import Settings from '$components/PageSidebar/Settings.svelte';
-	import { goto } from "$app/navigation";
 	import TierList from "$components/Creator/TierList.svelte";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { pageHeader, pageSidebar } from "$stores/layout";
-	import { onMount } from 'svelte';
 	import { startUserView } from '$stores/user-view';
 	import { user } from '@kind0/ui-common';
 
@@ -34,7 +32,7 @@
 	}
 </script>
 
-<MainWrapper>
+<MainWrapper marginClass="max-w-3xl">
     <TierList
         redirectOnSave="/settings"
         usePresetButton={false}

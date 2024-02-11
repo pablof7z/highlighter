@@ -1,5 +1,4 @@
 <script lang="ts">
-	import PublishButton from './../buttons/PublishButton.svelte';
 	import { prepareEventsForTierPublish, publishToTiers } from "$actions/publishToTiers";
 	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
 	import TiersLabel from "$components/Forms/TiersLabel.svelte";

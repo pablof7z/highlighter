@@ -9,6 +9,9 @@
 
     export let show = false;
     export let tiers: TierSelection;
+    export let alwaysOpen = false;
+
+    if (alwaysOpen) show = true;
 
     const dispatch = createEventDispatcher();
 
@@ -58,8 +61,8 @@
 </script>
 
 <div class="w-full flex-col justify-start items-start gap-2 inline-flex {$$props.class??""}">
-    <div class="self-stretch rounded-xl border border-neutral-800 items-start inline-flex bg-transparent flex-col justify-start gap-0">
-        <button on:click={() => show = !show} class="text-white text-base px-4 py-3 font-medium w-full text-left flex flex-row items-center justify-between">
+        {#if !alwaysOpen}
+            <button on:click={() => show = !show} class="text-base px-4 py-3 font-medium w-full text-left flex flex-row items-center justify-between">
             <div class="flex flex-col items-start gap-0">
                 {#key tiers}
                     <h1>
@@ -84,18 +87,25 @@
             </div>
             <CaretDown color="white"/>
         </button>
+        {/if}
         {#if show}
-            <div class="flex flex-col gap-3 justify-stretch w-full menu flex-nowrap" transition:slide>
+            <ul class="flex flex-col gap-2 justify-stretch w-full flex-nowrap" transition:slide>
                 {#each Object.keys(tiers) as tier}
-                    <li>
-                        <label class="w-full flex flex-row gap-4">
+                    <li
+                        class="
+                            rounded-box px-4
+                            { tiers[tier].selected ? 'bg-white/10' : 'bg-white/5' }
+                            { tier === "Free" ? 'border-t border-base-300' : '' }
+                        "
+                    >
+                        <label class="w-full flex flex-row gap-4 py-3">
                             <input type="checkbox" class="checkbox" bind:checked={tiers[tier].selected} on:change={(e) => { updateSelectedString(tier); onlyFree = false; }} />
                             <span class="w-full"
                             >{tiers[tier].name}</span>
 
                             {#if tier === "Free"}
                                 <button
-                                    class="text-xs text-white whitespace-nowrap"
+                                    class="text-xs whitespace-nowrap"
                                     class:button={!onlyFree}
                                     class:button-black={!onlyFree}
                                     on:click={toggleOnlyFree}
@@ -114,7 +124,6 @@
                         Add a new tier
                     </button>
                 </li>
-            </div>
+            </ul>
         {/if}
-    </div>
 </div>

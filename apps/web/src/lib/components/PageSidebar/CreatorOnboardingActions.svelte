@@ -55,6 +55,10 @@
             {/if}
         </div>
 
+        <div class="settings-like-section-title -mb-4">
+            First steps
+        </div>
+
         <a href="/welcome/profile">
             <div>
                 <span>
@@ -117,7 +121,68 @@
             </span>
         </button>
 
-        <a href="/welcome/referrals">
+        <div class="divider"></div>
+
+        <div class="mt-5 -mb-4 settings-like-section-title opacity-30">
+            Subscribers
+        </div>
+
+        <a href="#" class="relative opacity-30 pointer-events-none cursor-not-allowed">
+            <div class="coming-soon">
+                <span class="coming-soon">
+                    Coming soon
+                </span>
+            </div>
+            <div>
+                <span>
+                    <User />
+                    <div class="flex flex-col items-start">
+                        <span>Import</span>
+                        <div class="text-xs text-neutral-500">
+                            <span>
+                                Import your list of email subscribers
+                            </span>
+                        </div>
+                    </div>
+                </span>
+            </div>
+
+            <span class="caret">
+                <CaretRight class="w-6 h-6" />
+            </span>
+        </a>
+
+        <a href="#" class="relative opacity-30 pointer-events-none cursor-not-allowed">
+            <div class="coming-soon">
+                <span class="coming-soon">
+                    Coming soon
+                </span>
+            </div>
+            <div>
+                <span>
+                    <User />
+                    <div class="flex flex-col items-start">
+                        <span>Get your first subscribers</span>
+                        <div class="text-xs text-neutral-500">
+                            <span>
+                                How do you bootstrap an audience?
+                            </span>
+                        </div>
+                    </div>
+                </span>
+            </div>
+
+            <span class="caret">
+                <CaretRight class="w-6 h-6" />
+            </span>
+        </a>
+
+        <a href="/welcome/referrals" class="relative opacity-30 pointer-events-none cursor-not-allowed">
+            <div class="coming-soon">
+                <span class="coming-soon">
+                    Coming soon
+                </span>
+            </div>
             <div>
                 <span>
                     <Post />
@@ -127,6 +192,35 @@
                             <span>
                                 Incentivize your subscribers to share your content
                             </span>
+                    </div>
+                </span>
+            </div>
+
+            <span class="caret">
+                <CaretRight class="w-6 h-6" />
+            </span>
+        </a>
+
+        <div class="mt-5 -mb-4 settings-like-section-title opacity-30">
+            Content Dissemination
+        </div>
+
+        <a href="#" class="relative opacity-30 pointer-events-none cursor-not-allowed">
+            <div class="coming-soon">
+                <span class="coming-soon">
+                    Coming soon
+                </span>
+            </div>
+            <div>
+                <span>
+                    <User />
+                    <div class="flex flex-col items-start">
+                        <span>How do subscribers amplify me?</span>
+                        <div class="text-xs text-neutral-500">
+                            <span>
+                                Learn how your subscribers disseminate your content by naturally interacting with it
+                            </span>
+                        </div>
                     </div>
                 </span>
             </div>

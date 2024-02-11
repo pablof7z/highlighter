@@ -1,7 +1,6 @@
 <script lang="ts">
 	import TierAmountLine from './TierAmountLine.svelte';
     import type { NDKSubscriptionAmount, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
-	import Input from "$components/Forms/Input.svelte";
 	import { Textarea } from "@kind0/ui-common";
     import { createEventDispatcher } from "svelte";
 	import { Check, Trash, Plus } from 'phosphor-svelte';
@@ -58,10 +57,6 @@
         ];
         for (const amount of amounts) {
             let value = amount.amount;
-            switch (amount.currency) {
-                case 'msat': value *= 1000; break;
-                case 'usd', 'eur', 'USD', 'EUR': value *= 100; break;
-            }
             tier.addAmount(value, amount.currency, amount.term);
         }
 
@@ -70,7 +65,7 @@
 
     function addAmountLine() {
         let currency = "";
-        let amount = 5;
+        let amount = 500;
 
         if (amounts.length > 0) {
             currency = amounts[amounts.length - 1].currency;
@@ -153,7 +148,7 @@
                     {perks.length > 0 ? "bg-white/10" : ""}
                 ">
                     {#each perks as perk, i}
-                        <div class="flex flex-row gap-2 w-full items-center group perk-item" transition:slide>
+                        <div class="flex flex-row gap-2 w-full items-center group perk-item" in:slide>
                             <div class="relative w-full flex-grow flex flex-row items-center">
                                 <GlassyInput
                                     tabindex={i+1}
@@ -183,7 +178,7 @@
 
             <button class="button font-semibold text-sm flex flex-row gap-2 px-6 self-start"
                     on:click={addPerk}
-                    transition:slide
+                    in:slide
                 >
                     <Plus />
                     Add Perk
@@ -203,7 +198,7 @@
 
             <div class="field self-stretch flex-col justify-start items-stretch w-full gap-2 flex">
                 {#each amounts as amount, i}
-                    <div class="w-full" transition:slide>
+                    <div class="w-full" in:slide>
                         <TierAmountLine
                             bind:value={amount}
                             on:delete={() => {
@@ -215,7 +210,7 @@
             </div>
 
             <button class="button font-semibold text-sm flex flex-row gap-2 px-6 self-start"
-                    transition:slide
+                    in:slide
                     on:click={addAmountLine}
                 >
                     <Plus class="w-5 h-5 ml-2" />
@@ -223,11 +218,15 @@
                 </button>
         </section>
 
-        <div class="px-3 py-1.5 rounded-lg justify-center items-center gap-2 flex">
+        <div class="px-3 py-1.5 rounded-lg justify-between w-full items-center gap-2 flex">
             <button
                 class="text-rose-400 text-[15px] font-normal leading-snug"
                 on:click={deleteTier}
             >Delete Tier</button>
+
+            <button class="button" on:click={() => dispatch('close')}>
+                Continue
+            </button>
         </div>
     </div>
 </div>

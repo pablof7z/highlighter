@@ -1,6 +1,7 @@
 import { calculateTermDurationInSeconds, type NDKIntervalFrequency } from "@nostr-dev-kit/ndk";
 
-export const possibleTerms: NDKIntervalFrequency[] = ['daily', 'weekly', 'monthly', 'quarterly', 'yearly'];
+// export const possibleTerms: NDKIntervalFrequency[] = ['daily', 'weekly', 'monthly', 'quarterly', 'yearly'];
+export const possibleTerms: NDKIntervalFrequency[] = ['monthly', 'quarterly', 'yearly'];
 
 export function termToShort(term: NDKIntervalFrequency): string {
 	switch (term) {

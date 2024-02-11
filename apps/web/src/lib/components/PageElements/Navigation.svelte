@@ -11,7 +11,6 @@
 	import NavMobileTop from './NavMobileTop.svelte';
 	import Item from './Navigation/Item.svelte';
 	import CurrentUser from '$components/CurrentUser.svelte';
-	import { get } from 'svelte/store';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import DashboardIcon from '$icons/DashboardIcon.svelte';
 
@@ -58,14 +57,6 @@
                 <PaperPlane class="w-full h-full" weight="fill" />
             </Item>
         {/if}
-
-        <!-- <Item href="/inbox" let:active>
-            <Tray class="w-full h-full" weight={active ? "fill" : "regular"} />
-        </Item> -->
-
-        <Item href="/highlights" let:active>
-            <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} strokeWidth="1.4" />
-        </Item>
     </div>
 </div>
 
@@ -117,9 +108,9 @@
                 <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} strokeWidth="1.4" />
             </Item> -->
 
-            <!-- <Item href="/chat" tooltip="Chat" let:active class="max-sm:hidden">
+            <Item href="/chat" tooltip="Chat" let:active class="max-sm:hidden">
                 <ChatCircle class="w-full h-full" weight={active ? "fill" : "regular"} />
-            </Item> -->
+            </Item>
             {#if $user}
                 <Item
                     tooltip="Create something new"

@@ -1,5 +1,13 @@
 <script lang="ts">
+    import {startTyping} from "@sveu/actions"
+
     export let value: string = "";
+    export let captureTyping = false;
+
+    function fn(element, event){
+        if (!captureTyping) return;
+        if (element !== document.activeElement) element.focus()
+    }
 </script>
 
 <input
@@ -18,4 +26,5 @@
         border-white
         {$$props.class??""}
     "
+    use:startTyping="{fn}"
 />

@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { PaperPlaneTilt } from 'phosphor-svelte';
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { CaretRight, DownloadSimple, Question, UserList } from 'phosphor-svelte';
@@ -66,42 +66,6 @@
             Subscribers
         </div>
 
-        <div class="section-links">
-            <a class="opt" href="#">
-                <span class="icon">
-                    <UserList class="w-full h-full" />
-                </span>
-                <div>
-                    <span class="title">
-                        Import
-                    </span>
-                    <span class="description">
-                        Import your list of email subscribers
-                    </span>
-                </div>
-
-                <span class="flex flex-row items-center flex-nowrap gap-0">
-                    <span class="badge badge-sm opacity-50">Coming soon</span>
-                    <CaretRight class="w-6 h-6" />
-                </span>
-            </a>
-            <a class="opt" href="#">
-                <span class="icon">
-                    <Question class="w-full h-full" />
-                </span>
-                <div>
-                    <span class="title">Get your first subscribers</span>
-                    <span class="description">
-                        How do you bootstrap an audience?
-                    </span>
-                </div>
-
-                <span class="flex flex-row items-center flex-nowrap gap-0">
-                    <span class="badge badge-sm opacity-50">Coming soon</span>
-                    <CaretRight class="w-6 h-6" />
-                </span>
-            </a>
-        </div>
     </div>
 
     <div class="section">
@@ -109,33 +73,8 @@
             Content Dissemination
         </div>
 
-        <div class="section-links">
-            <a class="opt" href="#">
-                <span class="icon">
-                    <Question class="w-full h-full" />
-                </span>
-                <div>
-                    <span class="title">
-                        How do subscribers share my content?
-                    </span>
-                    <span class="description">
-                        Learn how your subscribers pollinate your content
-                    </span>
-                </div>
-
-                <span class="flex flex-row items-center flex-nowrap gap-0">
-                    <span class="badge badge-sm opacity-50">Coming soon</span>
-                    <CaretRight class="w-6 h-6" />
-                </span>
-            </a>
-        </div>
     </div>
 </div>
-
-<!--
-        </div>
-    </div>
-</div> -->
 
 <style lang="postcss">
     .section {
@@ -208,4 +147,4 @@
     .opt:hover .description, .opt.default .description {
         @apply opacity-80;
     }
-</style>
+</style> -->

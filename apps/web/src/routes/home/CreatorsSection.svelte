@@ -28,7 +28,6 @@ import { Avatar, ndk } from "@kind0/ui-common";
                     const tier = NDKSubscriptionTier.from(event);
                     if (tier.isValid) {
                         creators.add(event.pubkey);
-                        console.log(`valid for ${event.pubkey}`, tier.rawEvent())
                     }
                     break;
 
@@ -50,7 +49,7 @@ import { Avatar, ndk } from "@kind0/ui-common";
 </script>
 
 <div class="flex flex-row gap-1 overflow-x-auto scrollable-content scrollable scrollbar-hide snap-x w-full -space-x-4">
-    {#each $creators as pubkey}
+    {#each $creators as pubkey (pubkey)}
         <UserProfile {pubkey} let:userProfile let:fetching let:authorUrl>
             {#if !fetching && userProfile}
                 <a href={authorUrl} class="snap-center flex-none hover:pr-8 transition-all duration-300 group">

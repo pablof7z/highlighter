@@ -15,8 +15,11 @@
 	import { openModal } from 'svelte-modals';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { welcomeScreenSeen } from '$stores/settings';
+	import NetworkHandler from '$components/NetworkHandler.svelte';
 
 	const d = createDebug('HL:layout');
+
+	$: d(`profile in layout`, $userProfile);
 
 	let webManifestLink: string;
 	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
@@ -75,6 +78,8 @@
 <svelte:head>
 	{@html webManifestLink}
 </svelte:head>
+
+<NetworkHandler />
 
 <LoadingScreen ready={mounted}>
 	<AppShell>

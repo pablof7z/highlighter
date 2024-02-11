@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { ndk, newToasterMessage, nicelyFormattedSatNumber } from "@kind0/ui-common";
 	import { onMount } from "svelte";
-    import { NDKSubscriptionTier, type NDKEvent, type NDKIntervalFrequency, type NDKUser, NDKSubscriptionStart } from "@nostr-dev-kit/ndk";
+    import { NDKSubscriptionTier, type NDKEvent, type NDKIntervalFrequency, type NDKUser, NDKSubscriptionStart, type NDKTag } from "@nostr-dev-kit/ndk";
 	import { termToShort } from "$utils/term";
 	import { createSubscriptionEvent } from "./subscription-event";
 	import { slide } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
 	import { currencyFormat } from "$utils/currency";
+	import { trustedPubkeys } from "$utils/login";
+	import SubscribeStatusInfo from "./SubscribeStatusInfo.svelte";
 
     export let amount: string;
     export let currency: string;
@@ -74,6 +76,8 @@
         dispatch("paid", { preimage: data.preimage });
     }
 
+    let subscribeEvent: NDKSubscriptionStart | undefined;
+
     async function subscribe() {
         error = undefined;
         subscribing = true;
@@ -84,9 +88,9 @@
         }
 
         try {
-            const supportEvent = await createSubscriptionEvent($ndk, amount, currency, term, supportedUser, tier);
+            subscribeEvent = await createSubscriptionEvent($ndk, amount, currency, term, supportedUser, tier);
 
-            await startSubscription(supportEvent);
+            await startSubscription(subscribeEvent);
         } catch (e: any) {
             console.trace(e.message);
             error = e.message;
@@ -115,6 +119,10 @@
         <div class="alert alert-error" transition:slide>
             {error}
         </div>
+    {/if}
+
+    {#if subscribeEvent && subscribing}
+        <SubscribeStatusInfo {subscribeEvent} />
     {/if}
 
     <button class="button button-primary w-full" on:click={subscribe} disabled={subscribing}>

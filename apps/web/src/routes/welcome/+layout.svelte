@@ -1,5 +1,4 @@
 <script lang="ts">
-	import CreatorOnboardingActions from '$components/PageSidebar/CreatorOnboardingActions.svelte';
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { user } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
@@ -22,13 +21,6 @@
         userSubscription?.unref();
         $pageSidebar = null;
     })
-
-    $pageSidebar = {
-        component: CreatorOnboardingActions,
-        props: {
-            sidebarView: true
-        }
-    }
 </script>
 
 <LoadingScreen ready={!!startedUserView}>

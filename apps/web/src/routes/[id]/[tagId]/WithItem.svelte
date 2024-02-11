@@ -24,10 +24,11 @@
     export let video: NDKVideo | undefined = undefined;
     export let authorUrl: string | undefined = undefined;
     export let urlPrefix: string | undefined = undefined;
+    export let event: NDKEvent | undefined = undefined;
 
     const tagIdExplicit = !!tagId;
 
-    let event: NDKEvent | undefined = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
+    event = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
 
     $: if (!tagIdExplicit) tagId = $page.params.tagId;
 

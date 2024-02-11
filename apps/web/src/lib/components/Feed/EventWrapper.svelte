@@ -57,7 +57,7 @@
         {#if $$slots.default}
             <slot />
         {:else}
-            <EventContent ndk={$ndk} {event} class="text-lg" />
+            <EventContent ndk={$ndk} {event} class="text-lg !font-light" />
         {/if}
 
         <div class="w-full justify-between items-center inline-flex">
@@ -67,12 +67,12 @@
                         <Avatar {userProfile} {fetching} user={author} size="small" />
                     </a>
                     <div class="flex flex-col gap-1 items-start w-full truncate">
-                        <a href={authorUrl} class="text-white text-[15px] font-semibold truncate">
+                        <a href={authorUrl} class="text-white text-[15px] font-medium truncate">
                             <Name {userProfile} {fetching} user={author} />
                         </a>
 
                         {#if event.pubkey === $user?.pubkey}
-                            <div class="flex flex-row items-center gap-1 text-xs ">
+                            <!-- <div class="flex flex-row items-center gap-1 text-xs ">
                                 {#if includesFree}
                                     <div class="badge badge-neutral badge-sm">Free</div>
                                 {:else}
@@ -80,7 +80,7 @@
                                         <div class="badge badge-neutral badge-sm">{tier}</div>
                                     {/each}
                                 {/if}
-                            </div>
+                            </div> -->
                         {/if}
                     </div>
                 </div>

@@ -9,7 +9,7 @@
     }
 </script>
 
-{#if $pageHeader?.right}
+{#if $pageHeader?.right?.label}
     <a
         href={$pageHeader?.right.url??"#"}
         on:click={rightClicked}
@@ -17,6 +17,8 @@
     >
         {#if $pageHeader.right.label === "loading"}
             <span class="loading loading-sm" />
+        {:else if ($pageHeader.right.component)}
+            <svelte:component this={$pageHeader.right.component} />
         {:else}
             {#if !$pageHeader.title || $pageHeader.title.length < 10}
                 {$pageHeader.right.label}

@@ -3,6 +3,7 @@ import { authenticateUser } from '$lib/utils/authentication';
 
 const AUTH_PATHS = [
 	'/api/user',
+	'/api/user/nwa',
 	'/api/user/nwc',
 	'/api/user/pay',
 	'/api/user/subscribe',

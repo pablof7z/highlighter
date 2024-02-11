@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
     import OptionsList from "$components/OptionsList.svelte";
     import { getUserHighlights, getUserSupporters, getGAUserContent, getUserCurations, getUserContent } from "$stores/user-view";
 	import { user } from "@kind0/ui-common";
 
     export let value: string = "Publications";
     export let name: string = "this user"
+    export let authorUrl: string;
 
     const highlights = getUserHighlights();
     const gaContent = getGAUserContent();
@@ -23,6 +25,10 @@
         if (!hasPublications && ($gaContent.length > 0 || $userContent.length > 0)) { hasPublications = true; }
         if (!hasCurations && $curations.length > 0) { hasCurations = true; }
         if (!hasHighlights && $highlights.length > 0) { hasHighlights = true; }
+        if (hasBackstage)
+            options.push({ name: "Backstage", tooltip: `Backstage content by ${name}`, class: 'gradient' },)
+        if (hasBackstage)
+            options.push({ name: "Community", tooltip: `${name}'s Community'`, class: 'gradient', href: `${authorUrl}/chat` },)
         if (hasPublications)
             options.push({ name: "Publications", tooltip: `Publications by ${name}` },)
         if (hasCurations)
@@ -36,7 +42,17 @@
     let hasBackstage = false;
     let currentUserSubscriberTier: string | undefined;
     const supporters = getUserSupporters();
-    $: currentUserSubscriberTier = ($user && $supporters[$user.pubkey]) || undefined;
+    $: {
+        currentUserSubscriberTier = ($user && $supporters[$user.pubkey]) || undefined;
+        hasBackstage = !!currentUserSubscriberTier;
+    }
+
+    function changed(e: CustomEvent) {
+        const {value} = e.detail;
+        if (value === 'Community') {
+            goto(`${authorUrl}/chat`);
+        }
+    }
 </script>
 
-<OptionsList {options} bind:value />
+<OptionsList {options} bind:value on:changed={changed} />

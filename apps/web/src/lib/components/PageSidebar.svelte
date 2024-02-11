@@ -22,7 +22,6 @@
         <div class="
             self-stretch justify-between items-center gap-6 inline-flex
             py-4 w-full px-4
-            border-b border-base-300
             overflow-clip truncate
         ">
             <h1 class="

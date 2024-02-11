@@ -9,14 +9,14 @@
     export let label: string;
     export let open: string | undefined = undefined;
 
-    let valueRender: string | number | undefined;
+    let valueRender: string | number | undefined = value;
 
     const updateValue = debounce((v: string | number) => {
         valueRender = v;
-    }, 0.001);
+    }, 0.1);
 
     $: {
-        if (value) { updateValue(value); }
+        if (value !== undefined) { updateValue(value); }
     }
 
     let showInfo = false;
@@ -39,9 +39,9 @@
 {#if !open || open === label}
     <div class="snap-center">
         <Box class={$$slots.default ? "hover:bg-white/10 transition-all duration-300" : ""} innerClass="!flex-row items-center px-6 {$$props.class??""}">
-            <button class="flex flex-col items-center" on:click={toggleOpen}>
+            <button class="flex flex-col items-center gap-2" on:click={toggleOpen}>
                 <h1>
-                    {#if loading || !valueRender}
+                    {#if loading || valueRender === undefined}
                         <div class="loading loading-lg"></div>
                     {:else}
                         {valueRender}

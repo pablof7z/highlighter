@@ -5,14 +5,24 @@
 	import TagInput from "./TagInput.svelte";
 
     export let article: NDKArticle;
+
+    let modified = Math.random();
+
+    $: if (article.summary) {
+        modified = Math.random();
+    }
 </script>
 
 <border class="w-full h-full flex flex-col gap-6">
+    <!-- {#key modified}
+        <ArticleLink {article} skipLink={true} skipAuthor={true} />
+    {/key} -->
+
+    <ArticleCover bind:article />
+
     <section class="settings">
-        <ArticleCover bind:article />
+        <ArticleSummary bind:article />
+
+        <TagInput event={article} />
     </section>
-
-    <ArticleSummary bind:article />
-
-    <TagInput event={article} />
 </border>

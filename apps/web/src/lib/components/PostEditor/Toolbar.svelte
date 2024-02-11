@@ -1,48 +1,52 @@
-<script lang="ts">
-	import { CaretDown, CaretLeft, Notches, PaperPlane, Timer } from "phosphor-svelte";
-    import { selectedTiers, type, view } from "$stores/post-editor";
-	import TiersLabel from "$components/Forms/TiersLabel.svelte";
+    <script lang="ts">
+	import PublishConfirmationModal from './PublishConfirmationModal.svelte';
+	import { CaretDown, CaretLeft, CaretRight, Notches, PaperPlane, Timer } from "phosphor-svelte";
+    import { view } from "$stores/post-editor";
+	import { openModal } from "svelte-modals";
+
+    function previewAndPublish() {
+        openModal(PublishConfirmationModal)
+    }
+
+    type Entry = { label: string, value: string };
+
+    let back: Entry | undefined;
+    let next: Entry | undefined;
+
+    $: switch ($view) {
+        case "edit": back = undefined; next = {label: "Continue", value: "meta"}; break;
+        case "meta": back = {label: "Back to Edit", value: "edit"}; next = {label: 'Continue', value: "audience"}; break;
+        case "edit-preview": back = {label: 'Back', value: "audience"}; next = {label: 'Continue', value: "schedule"}; break;
+        case "audience": back = {label: 'Back', value: "meta"}; next = {label: 'Continue', value: "schedule"}; break;
+    }
+
+    function backClicked() {
+        if (back) $view = back.value as any;
+    }
+
+    function nextClicked() {
+        if (next?.value === "schedule") {
+            previewAndPublish();
+        } else if (next) $view = next.value as any;
+    }
 </script>
 
-<div class="flex flex-row justify-between w-full items-center">
-    {#if $view !== "edit"}
-        <button class="button button-black" on:click={() => $view = 'edit'}>
+<div class="flex flex-row justify-between h-full w-full items-center">
+    {#if back}
+        <button class="button button-black" on:click={backClicked}>
             <CaretLeft size={24} />
-            Back
+            {back.label}
         </button>
     {:else}
-        <div class="flex flex-row gap-4 w-full flex-nowrap truncate items-stretch">
-            <button class="button" on:click={() => $view = "distribution"}>
-                <span class="whitespace-nowrap truncate">
-                    <TiersLabel tiers={$selectedTiers} />
-                </span>
-                <CaretDown size={24} class="ml-1 max-sm:hidden" />
-            </button>
-            {#if $type === "article"}
-                <button on:click={() => $view = "meta"} class="button button-black">
-                    <Notches size={24} />
-                    <span class="max-sm:hidden">
-                        Attributes
-                    </span>
-                </button>
-            {/if}
-
-        </div>
-
-        <div class="flex flex-row gap-4">
-            <button
-                class="button button-black !rounded-full"
-                on:click={() => $view = "schedule"}
-            >
-                <Timer size={24} />
-                <span class="max-sm:hidden">
-                    Schedule
-                </span>
-            </button>
-
-            <button class="button btn-circle" on:click={() => $view = "publish"}>
-                <PaperPlane size={24} />
-            </button>
-        </div>
+        <div></div>
     {/if}
+
+    <div class="flex flex-row gap-4 self-end">
+        {#if next}
+            <button class="button" on:click={nextClicked}>
+                {next.label}
+                <CaretRight size={24} />
+            </button>
+        {/if}
+    </div>
 </div>

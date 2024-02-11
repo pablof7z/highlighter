@@ -1,8 +1,12 @@
 <script lang="ts">
+	import AiIcon from './../../icons/AiIcon.svelte';
     import { onMount } from "svelte";
     import { user } from "@kind0/ui-common";
-	import VideoLink from "$components/Events/VideoLink.svelte";
 	import type { NDKVideo } from "@nostr-dev-kit/ndk";
+	import ImageIcon from "$icons/ImageIcon.svelte";
+	import { CaretLeft, CaretRight } from 'phosphor-svelte';
+	import Carousel from '$components/Page/Carousel.svelte';
+	import { slide } from 'svelte/transition';
 
     export let title: string;
     export let content: string;
@@ -108,6 +112,7 @@
         });
     }
 
+
     function dataURLToBlob(dataURL: string) {
         const byteString = atob(dataURL.split(',')[1]);
         const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
@@ -173,61 +178,78 @@
     $: videoMock.content = content ?? "";
 
     $: selectedBlob = selectedThumbnail?.blob;
+
+    let pickFromTimeline = false;
+
+    function useTimeline() {
+        pickFromTimeline = true;
+    }
 </script>
 
 <canvas bind:this={canvas} class="hidden"></canvas>
 
-{#if generatingThumbnails}
-    <div class="flex w-full flex-row items-center justify-center gap-4">
-        Generating thumbnails...
-        <span class="loading"></span>
-    </div>
-{/if}
-
-{#if currentThumbnail || selectedIndex !== undefined}
-    <div class="flex mb-8">
-        <VideoLink
-            video={videoMock}
-            skipLink={true}
-        />
-    </div>
-{/if}
-
-<div class="flex flex-row gap-4 flex-nowrap overflow-x-auto overflow-y-hidden w-full pb-10">
-    {#if thumbnails.length > 1}
-        {#each thumbnails as thumbnail, index}
-            <button
-                class="object-cover rounded-xl flex-none opacity-50"
-                class:opacity-100={selectedIndex === index}
-                on:click={() => selectedIndex = index}
-            >
-                <img src={thumbnail.dataUrl} class="w-full h-full object-cover rounded-xl" />
+<div class="grid grid-cols-3 grid-rows-2 overflow-hidden gap-4">
+    <div class="relative rounded-box bg-base-100 col-span-2 row-span-2 flex items-stretch justify-stretch">
+        {#if generatingThumbnails}
+            <div class="flex w-full flex-row items-center justify-center gap-4">
+                Generating thumbnails...
+                <span class="loading loading-sm"></span>
+            </div>
+        {:else if !pickFromTimeline && thumbnails.length > 0}
+            <button class="absolute top-3 right-3 button button-neutral text-sm px-6 font-normal" on:click={useTimeline}>
+                Pick from timeline
             </button>
-        {/each}
-    {/if}
+        {/if}
 
-    {#if !selectedThumbnail}
-        <button class="image-placeholder w-fit h-full object-cover rounded-xl bg-base-300" on:click={() => fileUpload.click()} />
-    {/if}
-</div>
-
-<div class="flex flex-row items-center">
-    <div class="text-sm flex flex-col gap-1 items-center w-full">
-        <div class="flex flex-row w-full justify-between gap-2">
-            <label class="button cursor-pointer">
-                {#if thumbnails.length > 0}
-                    or upload an image
-                {:else}
-                    Upload a cover image
-                {/if}
-                <input type="file" bind:this={fileUpload} id="fileUploader" accept="image/*" class="hidden" on:change={handleFileUpload}>
-            </label>
-        </div>
+        {#if currentThumbnail ?? selectedThumbnail?.dataUrl}
+            <img src={currentThumbnail ?? selectedThumbnail?.dataUrl} class="!w-full md:!h-72 object-cover rounded-xl" />
+        {/if}
     </div>
+
+    <label class="cursor-pointer side-button">
+        <ImageIcon class="w-12 h-12" />
+        {#if thumbnails.length > 0}
+            or upload an image
+        {:else}
+            Upload a cover image
+        {/if}
+        <input type="file" bind:this={fileUpload} id="fileUploader" accept="image/*" class="hidden" on:change={handleFileUpload}>
+    </label>
+
+    <button class="side-button brightness-75">
+        <AiIcon class="w-12 h-12" />
+
+        Generate Image
+        <div class="badge">
+            Coming soon
+        </div>
+    </button>
 </div>
+
+{#if pickFromTimeline && thumbnails.length > 1}
+    <div class="w-full" transition:slide>
+        <Carousel class="space-x-4" itemCount={thumbnails.length}>
+            {#each thumbnails as thumbnail, index}
+                <div class="carousel-item">
+                    <button
+                        class="object-cover rounded-xl flex-none opacity-50"
+                        class:opacity-100={selectedIndex === index}
+                        on:click={() => selectedIndex = index}
+                    >
+                        <img src={thumbnail.dataUrl} class="w-full h-full object-cover rounded-xl" alt="" />
+                    </button>
+                </div>
+            {/each}
+        </Carousel>
+    </div>
+{/if}
 
 <style lang="postcss">
     img, .image-placeholder {
         @apply w-[321px] h-[180px] object-cover;
+    }
+
+    .side-button {
+        @apply py-6 rounded-box flex flex-col justify-center items-center gap-2 bg-white/5 text-white whitespace-nowrap;
     }
 </style>

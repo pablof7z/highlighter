@@ -68,12 +68,6 @@
 		{#key $loginState}
 			<Navigation />
 
-			{#if $pageHeader?.title || $pageHeader?.component}
-				<div class="max-sm:hidden">
-					<SectionHeader />
-				</div>
-			{/if}
-
 			<div class="sm:pl-20">
 				{#if $pageSidebar?.component}
 					<div class="fixed border-r border-base-300 flex-col h-full w-96 max-lg:w-full max-lg:hidden">
@@ -83,6 +77,11 @@
 				<div
 					class:lg:pl-96={hasSidebar}
 				>
+					{#if $pageHeader?.title || $pageHeader?.component}
+						<div class="max-sm:hidden">
+							<SectionHeader />
+						</div>
+					{/if}
 					{#if $pageHeader?.title && $pageHeader?.component}
 						{#if showSectionHeaderWithButtons}
 							<div class="max-sm:hidden w-full">
@@ -118,7 +117,7 @@
 {#if import.meta.env.VITE_HOSTNAME === "localhost" || $user?.npub === "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft"}
 	<button
 		on:click={() => $debugMode = !$debugMode}
-		class="max-sm:hidden fixed bottom-2 right-2 z-50 btn btn-circle btn-sm">
+		class="max-sm:hidden fixed bottom-2 right-2 z-50 btn btn-circle btn-sm opacity-0 hover:opacity-100">
 		<Bug size="24" class={$debugMode ? "text-accent2" : "text-neutral-500"} />
 	</button>
 {/if}

@@ -2,7 +2,6 @@
 	import SettingsMenu from '$components/Settings/Menu.svelte';
     import { page } from "$app/stores";
     import { pageHeader, pageSidebar } from "$stores/layout";
-    import Settings from "$components/PageSidebar/Settings.svelte";
 	import { onDestroy } from "svelte";
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 
@@ -10,18 +9,16 @@
 
     $: id = $page.url.search?.substring(1);
 
-    $pageSidebar = {
-        component: Settings,
-        props: {}
-    }
-
     $pageHeader = {
         title: "Settings",
         left: {
             label: "Back",
             url: "/",
+        },
+        right: {
         }
     };
+    $pageSidebar = null;
 
     onDestroy(() => {
         $pageSidebar = null;
@@ -32,6 +29,6 @@
     <title>Settings</title>
 </svelte:head>
 
-<MainWrapper class="lg:hidden">
+<MainWrapper marginClass="max-w-3xl mx-auto">
     <SettingsMenu />
 </MainWrapper>

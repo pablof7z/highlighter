@@ -11,6 +11,8 @@ export async function dvmScheduleEvent(event: NDKEvent, relays: string[] = []) {
     const dvmPubkey = getDvmSchedulerPubkey();
     const dvm = $ndk.getUser({pubkey: dvmPubkey})
 
+    console.log("Scheduling event", event.rawEvent(), {relays});
+
     await dvmSchedule(
         event,
         dvm,

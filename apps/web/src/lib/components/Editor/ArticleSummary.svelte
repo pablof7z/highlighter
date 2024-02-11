@@ -16,22 +16,20 @@
     }
 </script>
 
-<section class="settings">
-    <div class="field">
-        <div class="title">
-            Summary
-        </div>
-        <div class="relative">
-            <Textarea
-                bind:value={article.summary}
-                class="min-h-[10rem] w-full !bg-white/5 rounded-box focus:!border-white/20"
-            />
-            {#if duration}
-                <DurationTag value={duration} class="absolute bottom-2 right-2" />
-            {/if}
-        </div>
-
-        <DvmGenerateButton kind={5001} inputs={[[article.content, "text"]]} />
-
+<div class="field">
+    <div class="title">
+        Summary
     </div>
-</section>
+    <div class="relative">
+        <Textarea
+            bind:value={article.summary}
+            class="min-h-[10rem] w-full !bg-white/5 rounded-box focus:!border-white/20"
+        />
+        {#if duration}
+            <DurationTag value={duration} class="absolute bottom-2 right-2" />
+        {/if}
+    </div>
+
+    <!-- <DvmGenerateButton kind={5001} inputs={[[article.content, "text"]]} /> -->
+
+</div>

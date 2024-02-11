@@ -62,7 +62,7 @@
         }
     }
 
-    let subscriberRate: number | undefined;
+    let subscriberRate: number | undefined = 0;
     $: {
         if (supporterCount && $views?.length > 0) {
             subscriberRate = (supporterCount / $views.length) * 100;

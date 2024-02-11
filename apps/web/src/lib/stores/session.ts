@@ -52,7 +52,49 @@ export const userSuperFollows = persist(
 	'user-super-follows'
 );
 
-export const userTiers = writable<NDKSubscriptionTier[]>([]);
+export const allUserTiers = writable<NDKSubscriptionTier[]>([]);
+export const tierList = writable<NDKList|undefined>(undefined);
+export const userTiers = derived(
+	[allUserTiers, tierList],
+	([$allUserTiers, $tierList]) => {
+		const tiers: NDKSubscriptionTier[] = [];
+		if (!tierList || !$tierList) return tiers;
+		const eTags = $tierList.getMatchingTags('e').map((t: NDKTag) => t[1]);
+
+		d(`tier list eTags`, eTags);
+
+		for (const tier of $allUserTiers) {
+			const inList = eTags.includes(tier.id);
+			const valid = tier.isValid;
+
+			if (valid && inList) {
+				tiers.push(tier);
+			}
+		}
+
+		d(`return # ${tiers.length}`)
+
+		return tiers;
+	});
+export const inactiveUserTiers = derived(
+	[allUserTiers, userTiers],
+	([$allUserTiers, $userTiers]) => {
+		const tiers: NDKSubscriptionTier[] = [];
+
+		for (const tier of $allUserTiers) {
+			let active = false;
+			for (const t of $userTiers) {
+				if (t.tagId() === tier.tagId()) {
+					active = true;
+					break;
+				}
+			}
+
+			if (!active) tiers.push(tier);
+		}
+
+		return tiers;
+	});
 
 export const userActiveSubscriptions = writable<Map<Hexpubkey, string>>(new Map());
 
@@ -136,7 +178,8 @@ export async function prepareSession(): Promise<void> {
 			superFollowsStore: userSuperFollows,
 			userArticleCurationsStore: userArticleCurations,
 			userVideoCurationsStore: userVideoCurations,
-			userTierStore: userTiers,
+			userTierStore: allUserTiers,
+			tierListStore: tierList,
 			activeSubscriptionsStore: userActiveSubscriptions,
 			appHandlersStore: userAppHandlers,
 			supportStore: userSupport,
@@ -166,7 +209,8 @@ interface IFetchDataOptions {
 	appHandlersStore?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
 	userArticleCurationsStore?: Writable<Map<string, NDKList>>;
 	userVideoCurationsStore?: Writable<Map<string, NDKList>>;
-	userTierStore: Writable<NDKArticle[]>;
+	userTierStore: Writable<NDKSubscriptionTier[]>;
+	tierListStore: Writable<NDKList | undefined>;
 	listsKinds?: number[];
 	extraKinds?: number[];
 	closeOnEose?: boolean;
@@ -220,6 +264,8 @@ async function fetchData(
 			processSupport(event);
 		} else if (event.kind === NDKKind.AppRecommendation) {
 			processAppRecommendation(event);
+		} else if (event.kind === NDKKind.TierList) {
+			processTierList(event);
 		} else if (event.kind === NDKKind.SubscriptionTier) {
 			processSubscriptionTier(event);
 		} else if ([NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet].includes(event.kind!)) {
@@ -237,6 +283,10 @@ async function fetchData(
 			const profile = profileFromEvent(event) as UserProfileType;
 			profile.created_at = event.created_at;
 			store.set(profile);
+			d(`updating profile`, event.created_at, $store?.created_at, profile.lud16, profile);
+			d(`profile is now`, get(store))
+		} else {
+			d(`skipping profile update`, event.created_at, $store?.created_at);
 		}
 	}
 
@@ -262,9 +312,18 @@ async function fetchData(
 		});
 	};
 
+	const processTierList = (event: NDKEvent) => {
+		opts.tierListStore.update((tierList) => {
+			if (tierList && event.created_at! < tierList.created_at!) return tierList;
+			return NDKList.from(event);
+		});
+	}
+
 	const processSubscriptionTier = (event: NDKEvent) => {
 		opts.userTierStore.update((tiers) => {
-			const tier = NDKArticle.from(event);
+			const tier = NDKSubscriptionTier.from(event);
+
+			d(`Found tier ${tier.title}`, tier.isValid);
 
 			tiers.push(tier);
 
@@ -361,6 +420,7 @@ async function fetchData(
 
 		if (opts.userTierStore) {
 			kinds.push(NDKKind.SubscriptionTier);
+			kinds.push(NDKKind.TierList);
 		}
 
 		if (opts.followsStore) {

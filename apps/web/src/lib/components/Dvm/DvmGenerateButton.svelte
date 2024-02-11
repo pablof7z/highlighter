@@ -72,32 +72,21 @@
         </div>
     </div>
 {:else}
-    {#if $feedbacks}
-        {#each $feedbacks as feedback}
-            <DvmProfile event={feedback} let:dvmProfile let:fetching>
-                {fetching}
-                {#if !fetching}
-                    <div class="flex flex-row gap-2">
-                        <Avatar userProfile={dvmProfile} type="square" size="small"/>
-                        <div class="text-neutral-500">
-                            {feedback.content}
-                            {feedback.status}
-                        </div>
-                    </div>
-                {/if}
-            </DvmProfile>
-        {/each}
-    {/if}
+{$responses.length}
+    {#each $responses as r}
+        {JSON.stringify(r.rawEvent(), null, 2)}
+    {/each}
     {#if $results}
         {#each $results as result}
-            <DvmProfile event={result} let:dvmProfile let:fetching>
+        {JSON.stringify(result.rawEvent(), null, 2)}
+            <!-- <DvmProfile event={result} let:dvmProfile let:fetching>
                 <div class="flex flex-row gap-2">
                     <Avatar userProfile={dvmProfile} {fetching} type="square" size="small"/>
                     <div class="text-neutral-500">
                         {result.content}
                     </div>
                 </div>
-            </DvmProfile>
+            </DvmProfile> -->
         {/each}
     {/if}
 {/if}

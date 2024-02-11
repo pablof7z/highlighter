@@ -7,12 +7,13 @@
 	import { onMount } from "svelte";
 	import { openModal } from "svelte-modals";
 	import { userTiers } from '$stores/session';
+	import { slide } from 'svelte/transition';
 
     let display: boolean | undefined;
 
     onMount(async () => {
         if (!$user) {
-            display = true;
+            display = $seenOnboardingPromptGridItem !== true;
         } else {
             display = $userTiers.length === 0;
         }
@@ -26,6 +27,7 @@
 
     function dismiss() {
         $seenOnboardingPromptGridItem = true;
+        display = false;
     }
 
     function getStarted() {
@@ -35,7 +37,7 @@
 </script>
 
 {#if display}
-<div class="w-fit sm:rounded-box bg-gradient p-[1px] flex max-lg:col-span-2 lg:row-span-2 transition-all duration-300">
+<div class="w-fit sm:rounded-box bg-gradient p-[1px] flex max-lg:col-span-2 lg:row-span-2 transition-all duration-300" transition:slide>
     <div class="bg-base-100/30 w-fit sm:rounded-box p-6 text-lg flex flex-col gap-4">
         <h1 class="text-2xl font-medium">
             Are you a creator?

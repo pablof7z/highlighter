@@ -8,15 +8,28 @@
     $pageSidebar = { component: Settings, props: {} }
     onDestroy(() => { $pageSidebar = null; })
 
+    let forceSave = false;
+    let saving = false;
+
     $pageHeader = {
         title: "Profile",
         left: {
             label: "Back",
             url: "/settings",
+        },
+        right: {
+            label: "Save",
+            fn: () => forceSave = true
         }
     };
+
+    $: if (saving) {
+        $pageHeader!.right!.label = "loading";
+    } else {
+        $pageHeader!.right!.label = "Save";
+    }
 </script>
 
 <MainWrapper>
-    <ProfileEditPage />
+    <ProfileEditPage bind:saving bind:forceSave />
 </MainWrapper>

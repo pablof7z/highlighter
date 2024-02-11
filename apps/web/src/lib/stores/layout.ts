@@ -43,6 +43,7 @@ export type PageHeader = {
 	 * Right button options
 	 */
 	right?: {
+		component?: any;
 		icon?: any;
 		label?: string;
 		url?: string;

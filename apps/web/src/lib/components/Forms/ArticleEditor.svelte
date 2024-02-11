@@ -26,7 +26,7 @@
         <Input
             bind:value={article.title}
             color="black"
-            class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
+            class="!bg-transparent !text-3xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] placeholder:text-white/50 placeholder:font-normal"
             placeholder="Add a title"
             on:keydown={onTitleKeyDown}
             on:change={() => dispatch("titleChanged")}
@@ -41,7 +41,7 @@
             fixedHeight={true}
             class="
                 !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg
-                focus:ring-0
+                focus:ring-0 text-neutral-400
                 resize-none min-h-[20vh] h-[70vh]
                 {$$props.textareaClass??""}
             "

@@ -34,7 +34,7 @@
     let suffixUrl = skipLink ? "#" : urlSuffixFromEvent(event);
 
     $: if (!image && useProfileAsDefaultImage) { image = userProfile?.image || userProfile?.banner }
-    $: if (!hrefSet) {
+    $: if (!hrefSet && !skipLink) {
         href = `${authorUrl}/${suffixUrl}`;
     }
 
@@ -45,14 +45,14 @@
     flex gap-2 flex-nowrap relative group w-full overflow-clip
     {grid ? "flex-col sm:flex-col" : "flex-row sm:gap-6"}
 
-" {href}>
+" {href} class:!cursor-default={skipLink}>
     {#if !grid && $user && event.sig}
         <!-- Create a div so that clicks on the save button don't trigger the link -->
         <SaveForLaterButton {event} class="absolute top-0 right-0" />
     {/if}
     <a {href} class="
         flex-none overflow-hidden sm:rounded-2xl relative
-        {grid ? "sm:w-full h-[100px] sm:h-[180px]" : (
+        {grid ? "sm:w-full h-[30vh] sm:h-[180px]" : (
             (size === "small" && "sm:w-20 sm:h-fit") ||
             (size === "normal" && "sm:w-64 sm:h-44")
         )}
@@ -73,6 +73,7 @@
 
     <div class="
         w-full grow shrink basis-0 flex-col justify-start items-start md:gap-1 inline-flex h-full
+        max-sm:px-4
         {grid ? "flex-col-reverse max-sm:items-stretch" : ""}
     ">
         {#if !skipAuthor}
@@ -88,7 +89,6 @@
                         spacing="gap-2"
                         avatarSize="tiny"
                         avatarType="square"
-                        avatarClass="max-sm:hidden"
                         nameClass="font-normal text-sm"
                         bind:userProfile
                         bind:authorUrl

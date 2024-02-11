@@ -20,6 +20,8 @@
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { CaretLeft, Lightning } from "phosphor-svelte";
 	import Highlight from "$components/Highlight.svelte";
+	import { openModal } from "svelte-modals";
+	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -69,11 +71,16 @@
         right: {
             icon: Lightning,
             label: "Subscribe",
+            fn: () => {
+                if (event?.author) {
+                    openModal(BecomeSupporterModal, { user: event.author });
+                }
+            }
         }
     };
 </script>
 
-<WithItem {user} {tagId} let:event bind:article bind:video let:urlPrefix let:eventType let:isFullVersion bind:authorUrl>
+<WithItem {user} {tagId} bind:event bind:article bind:video let:urlPrefix let:eventType let:isFullVersion bind:authorUrl>
     {#if event && eventType}
         {#if eventType === "article" && article}
             <MainWrapper

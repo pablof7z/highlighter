@@ -2,6 +2,7 @@
 	import FilterButtons from "$components/FilterButtons.svelte";
 	import OptionsList from "$components/OptionsList.svelte";
 	import { userFollows } from "$stores/session";
+	import { user } from "@kind0/ui-common";
 	import { NDKKind, type NDKFilter } from "@nostr-dev-kit/ndk";
 	import { Globe } from "phosphor-svelte";
     import BookmarkSimple from "phosphor-svelte/lib/BookmarkSimple";
@@ -12,11 +13,10 @@
     export let typeFilter: App.FilterType[];
     export let filters: NDKFilter[] | undefined = undefined;
 
-    let options = [
-        { name: "All Creators" },
+    let options: { name:string, icon?:any, filters?:NDKFilter[], value?:string, class?:string }[] = [
+        { name: "All Creators", class: 'gradient' },
         { name: "Network", icon: Globe, filters: [{
             kinds: [NDKKind.Article, NDKKind.HorizontalVideo],
-            authors: Array.from($userFollows),
             limit: 100,
         }] },
         { name: "Art", icon: Hash, filters: [{
@@ -41,6 +41,10 @@
         { name: "", value: 'add', icon: Plus, class: "!bg-zinc-800 !text-white" },
     ]
 
+    $: if ($user && !options[1]!.filters![0].authors) {
+        options[1]!.filters![0].authors = Array.from($userFollows);
+    }
+
     function changed(e: CustomEvent) {
         const selectedOption = e.detail;
 
@@ -49,24 +53,25 @@
     }
 </script>
 
-<div class="w-full justify-between flex flex-nowrap py-2
+<div class="w-full justify-between flex flex-nowrap
     items-start sm:items-center overflow-x-auto
     max-sm:flex-col
 ">
     <div class="justify-start gap-6 flex whitespace-nowrap flex-shrink flex-grow
-        max-sm:max-w-[calc(100vw-25px)] overflow-x-auto
-        max-sm:border-t border-white/20 py-2
+        max-sm:max-w-[100vw] overflow-x-auto
+        max-sm:border-y border-white/10 max-sm:py-2
         max-sm:w-full
     ">
 
         <OptionsList {options} bind:value on:changed={changed} />
     </div>
     <div class="
+    max-sm:hidden
     flex justify-end
     overflow-clip
     flex-shrink
         bg-base-100 max-sm:py-2
-        max-sm:border-y border-white/20 py-2
+        max-sm:border-y border-white/20
         max-sm:w-full
     ">
         <FilterButtons bind:filters={typeFilter} />

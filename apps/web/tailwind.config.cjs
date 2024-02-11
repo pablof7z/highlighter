@@ -17,6 +17,7 @@ module.exports = {
 				main: '700px'
 			},
 			spacing: {
+				116: '29rem',
 				'mobile-nav-bar': 'var(--mobile-nav-bar, 63px)',
 				'mobile-body-padding': 'var(--mobile-body-padding, 4px)'
 			}

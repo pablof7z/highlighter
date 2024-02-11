@@ -3,10 +3,10 @@
     import { user as loggedInUser } from '@kind0/ui-common';
     import { userSuperFollows } from '$stores/session';
     import Tier from "$components/Tier.svelte";
-	import type { NDKEvent, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
+	import type { NDKIntervalFrequency, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
 	import type { Readable } from "svelte/motion";
 	import { derived } from "svelte/store";
-	import { termToShort, type Term } from "$utils/term";
+	import { termToShort } from "$utils/term";
 	import { slide } from 'svelte/transition';
 	import { Name } from '@kind0/ui-common';
 	import WalletConnect from '$components/Payment/WalletConnect.svelte';
@@ -15,11 +15,12 @@
 	import { onMount } from 'svelte';
 	import ThankYou from '$components/Payment/ThankYou.svelte';
 	import { isNwcAvailable } from '$utils/nwc';
-	import { currencyCode, currencyFormat, currencySymbol } from '$utils/currency';
+	import { currencyCode, currencyFormat } from '$utils/currency';
 	import type { UserProfileType } from '../../app';
 	import EmptyTierForm from '$components/EmptyTierForm.svelte';
 	import { getUserSubscriptionTiersStore } from '$stores/user-view';
     import createDebug from 'debug';
+    import {requestProvider} from 'webln';
 
     export let user: NDKUser;
 
@@ -37,7 +38,7 @@
     let userProfile: UserProfileType;
 
     let selected: NDKSubscriptionTier | undefined;
-    let selectedTerm: Term = "monthly";
+    let selectedTerm: NDKIntervalFrequency = "monthly";
     let selectedAmount: number | undefined;
     let selectedCurrency: string | undefined;
 
@@ -45,8 +46,13 @@
 
     $: hasTiers = $tiers.length > 0;
 
+    let isWeblnAvailable = false;
+
     onMount(() => {
         userHasWalletConnected = isNwcAvailable();
+        requestProvider().then((provider) => {
+            isWeblnAvailable = !!provider;
+        });
     });
 
     function onWalletConnected() {
@@ -87,6 +93,7 @@
             selected = t[0];
             const amount = t[0].amounts[0];
             selectedAmount = amount.amount;
+            selectedCurrency = amount.currency;
             selectedTerm = amount.term;
         }
 

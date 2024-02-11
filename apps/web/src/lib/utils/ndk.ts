@@ -3,6 +3,7 @@ import { ndk, newToasterMessage } from '@kind0/ui-common';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
 import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
+import { debugMode } from '$stores/session';
 
 const debug = createDebug('HL:ndk');
 
@@ -65,16 +66,26 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	$ndk.addExplicitRelay('wss://relay.nostr.band');
 
 	$ndk.connect();
+
+	$ndk.pool.on('relay:ready', (relay) => {
+		debug('relay ready', relay.url);
+	});
+	$ndk.pool.on('relay.disconnect', (relay) => {
+		debug('relay disconnect', relay.url);
+	});
 }
 
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
+	const $debugMode = getStore(debugMode);
 	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'higlighter' });
 	$ndk.clientName = 'highlighter';
 
-	$ndk.on("notice", (relay: NDKRelay, notice: string) => {
-		console.log('NDK notice', relay.url, notice);
-		newToasterMessage(`${relay.url}: ${notice}`);
+	$ndk.pool.on("notice", (relay: NDKRelay, notice: string) => {
+		debug('Relay notice', relay.url, notice);
+		if ($debugMode) {
+			newToasterMessage(`${relay.url}: ${notice}`);
+		}
 	});
 
 	await $ndk.connect(2000);

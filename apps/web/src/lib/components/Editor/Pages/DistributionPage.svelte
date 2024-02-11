@@ -3,7 +3,7 @@
 	import SelectTier from "../../Forms/SelectTier.svelte";
 	import Checkbox from "../../Forms/Checkbox.svelte";
 	import { CaretDown, Info } from "phosphor-svelte";
-	import { getSelectedTiers, type TierSelection } from '$lib/events/tiers';
+	import { type TierSelection } from '$lib/events/tiers';
 	import { pageDrawerToggle, rightSidebar } from '@kind0/ui-common';
 	import HowDoesAccessWork from '$lib/drawer/help/how-does-access-work.svelte';
 	import { makePublicAfter, nonSubscribersPreview, view, wideDistribution } from "$stores/post-editor";
@@ -74,41 +74,7 @@
             />
         </div>
 
-        <div class="field" class:!hidden={tiers["Free"].selected}>
-            <div class="title">
-                Preview for non-subscribers
-            </div>
-            <Checkbox bind:value={$nonSubscribersPreview} button={$nonSubscribersPreview} class="input-background">
-                <div class="text-white">
-                    Add a
-                    <span class="font-bold text-white">preview version</span>
-                    for
-                    <span class="font-bold text-white">non-subscribers</span>
-                </div>
-                <div slot="description" class="text-sm mt-1">
-                    {#if $nonSubscribersPreview}
-                        <div class="text-neutral-500">
-                            Non-subscribers will
-                            <span class="text-white">see a preview</span>
-                            of this {type}.
-                        </div>
-                    {:else}
-                        <div class="text-neutral-500">
-                            Non-subscribers will
-                            <span class="text-white">not know</span>
-                            this {type} exists.
-                        </div>
-                    {/if}
-                </div>
-                <div slot="button" class="flex items-center justify-between transition-all duration-500 w-full">
-                    <button
-                        class="button w-full"
-                        on:click={() => $view = "preview"} disabled={!$nonSubscribersPreview}>
-                        Edit Preview
-                    </button>
-                </div>
-            </Checkbox>
-        </div>
+
 
         <div class="field" class:!hidden={tiers["Free"].selected}>
             <Checkbox

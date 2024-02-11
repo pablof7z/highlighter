@@ -32,7 +32,7 @@
             provider = "satellite";
         }
 
-        // startUpload = true;
+        startUpload = true;
 
         dispatch("uploading", { progress: 'starting' });
     }

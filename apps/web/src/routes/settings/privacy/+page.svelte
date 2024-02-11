@@ -18,7 +18,7 @@
     let announceClient = !!$ndk.clientNip89;
 </script>
 
-<MainWrapper>
+<MainWrapper marginClass="max-w-3xl">
     <Checkbox
         bind:value={announceClient}
     >

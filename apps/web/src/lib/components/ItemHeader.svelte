@@ -3,8 +3,11 @@
 	import { NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
     import { Headphones, TextAlignLeft } from 'phosphor-svelte';
+	import UpgradeButton from './buttons/UpgradeButton.svelte';
+	import SubscribeButton from './buttons/SubscribeButton.svelte';
 
     export let item: NDKArticle | NDKVideo;
+    export let isFullVersion: boolean | undefined = undefined;
 
     const author = item.author;
 
@@ -18,19 +21,23 @@
         <RelativeTime event={item} class="text-sm opacity-60" />
     </div>
 
-    {#if isVideo}
-        <div class="tooltip tooltip-left max-sm:hidden" data-tip="Coming soon">
-            <button class="btn btn-neutral !rounded-full">
-                <TextAlignLeft size={24} />
-                Transcript
-            </button>
-        </div>
-    {:else if isArticle}
-        <div class="tooltip tooltip-left max-sm:hidden" data-tip="Coming soon">
-            <button class="btn btn-neutral !rounded-full">
-                <Headphones size={24} />
-                Listen
-            </button>
-        </div>
+    {#if isFullVersion === false}
+        <SubscribeButton user={author} />
+    {:else}
+        {#if isVideo}
+            <div class="tooltip tooltip-left max-sm:hidden" data-tip="Coming soon">
+                <button class="btn btn-neutral !rounded-full">
+                    <TextAlignLeft size={24} />
+                    Transcript
+                </button>
+            </div>
+        {:else if isArticle}
+            <div class="tooltip tooltip-left max-sm:hidden" data-tip="Coming soon">
+                <button class="btn btn-neutral !rounded-full">
+                    <Headphones size={24} />
+                    Listen
+                </button>
+            </div>
+        {/if}
     {/if}
 </div>

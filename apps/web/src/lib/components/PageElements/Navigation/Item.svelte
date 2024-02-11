@@ -24,7 +24,7 @@
             {href}
             class="
                 inline-flex items-center justify-center
-                text-neutral-700 hover:text-neutral-300 transition-all duration-300
+                text-neutral-500 hover:text-neutral-300 transition-all duration-300
                 flex-none {$$props.elClass}
             "
             class:active={active}
@@ -38,7 +38,7 @@
         <button
             class="
                 inline-flex items-center justify-center
-                text-neutral-700 hover:text-neutral-300 transition-all duration-300
+                text-neutral-500 hover:text-neutral-300 transition-all duration-300
                 flex-none {$$props.elClass}
             "
             class:active={active}

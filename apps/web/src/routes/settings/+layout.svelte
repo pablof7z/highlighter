@@ -1,18 +1,28 @@
 <script lang="ts">
-    import { page } from "$app/stores";
-    import { pageSidebar } from "$stores/layout";
-    import Settings from "$components/PageSidebar/Settings.svelte";
-	import { onDestroy } from "svelte";
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
+	import LoadingScreen from "$components/LoadingScreen.svelte";
+	import { pageSidebar } from "$stores/layout";
+	import { startUserView, userSubscription } from "$stores/user-view";
+	import { user } from "@kind0/ui-common";
+	import { onMount, onDestroy } from "svelte";
 
-    let id: string;
+    let startedUserView = false;
+    let mounted = false;
 
-    $: id = $page.url.search?.substring(1);
+    onMount(() => {
+        mounted = true;
+    });
 
-    $pageSidebar = { component: Settings, props: {} }
-    onDestroy(() => { $pageSidebar = null; })
+    $: if (!!$user && !startedUserView && mounted) {
+        startUserView($user);
+        startedUserView = true;
+    }
+
+    onDestroy(() => {
+        userSubscription?.unref();
+        $pageSidebar = null;
+    })
 </script>
 
-<MainWrapper marginClass="max-w-3xl">
+<LoadingScreen ready={!!startedUserView}>
     <slot />
-</MainWrapper>
+</LoadingScreen>

@@ -1,9 +1,8 @@
 <script lang="ts">
-	import EventResponses from "$components/EventResponses.svelte";
 	import VideoPlayer from "$components/Events/VideoPlayer.svelte";
 	import ItemHeader from "$components/ItemHeader.svelte";
-	import UserProfile from "$components/User/UserProfile.svelte";
-	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
+	import MainWrapper from "$components/Page/MainWrapper.svelte";
+	import Box from "$components/PageElements/Box.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import { debugMode } from "$stores/session";
@@ -11,7 +10,6 @@
 	import { Avatar, Name, ndk, user } from "@kind0/ui-common";
 	import type { NDKVideo } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
-	import { Lock } from "phosphor-svelte";
 	import { onDestroy, onMount } from "svelte";
 
     export let video: NDKVideo;
@@ -45,29 +43,31 @@
     <meta property="og:type" content="video" />
 </svelte:head>
 
-<div class="flex flex-col gap-6 w-full">
-    <ItemHeader item={video} />
+<MainWrapper class="flex flex-col gap-6 w-full">
+    <ItemHeader item={video} {isFullVersion} />
 
-    {#if videoUrl}
-        <div class="w-full flex flex-col items-stretch justify-stretch max-h-[80vh] transition-all duration-100">
-            <VideoPlayer title={video.title} url={videoUrl} />
-        </div>
-    {:else if video.thumbnail && !isFullVersion}
+    {#if !isFullVersion && !videoUrl}
         <div class="relative w-full max-h-[70vh]">
             <!-- svelte-ignore a11y-missing-attribute -->
-            <img class="w-fit rounded-[20px] max-h-[70vh] mx-auto" src={video.thumbnail} />
+            {#if video.thumbnail}
+                <img class="w-full rounded-[20px] max-h-[70vh] h-[30rem] mx-auto object-cover" src={video.thumbnail} />
+            {:else}
+                <div class="w-full bg-base-300 rounded-xl h-[50vh] mx-auto" />
+            {/if}
             <div class="absolute top-0 left-0 w-full h-full bg-black/50 flex flex-col items-center justify-center">
                 <UpgradeButton event={video} />
             </div>
         </div>
+    {:else if videoUrl}
+        <div class="w-full flex flex-col items-stretch justify-stretch max-h-[80vh] transition-all duration-100">
+            <VideoPlayer title={video.title} url={videoUrl} />
+        </div>
     {/if}
 
-        <div class="self-stretch flex-col justify-center items-start gap-6 flex w-full flex-grow">
+        <div class="self-stretch flex-col justify-center items-start gap-6 flex w-full">
             <div class="self-stretch flex-col justify-start items-start gap-6 flex">
-                <div class="self-stretch text-white text-2xl font-medium">
-                    <div class="flex flex-row w-full justify-between items-center">
-                        <div>{video.title}</div>
-                    </div>
+                <div class="flex flex-row w-full justify-between items-center text-white text-2xl font-medium">
+                    <div>{video.title}</div>
                 </div>
                 <!-- <div class="flex-row items-start gap-4 flex w-full justify-between">
                     <div class="flex flex-row items-center gap-12">
@@ -83,12 +83,12 @@
                 </div> -->
             </div>
             {#if content.length > 0}
-                <div class="flex-col justify-start items-start gap-6 flex text-lg font-light leading-7 w-full px-6 rounded-box bg-base-200 prose">
+                <Box class="text-lg font-light leading-8 w-full px-6">
                     <EventContent ndk={$ndk} event={video} {content} />
-                </div>
+                </Box>
             {/if}
         </div>
-</div>
+</MainWrapper>
 
 {#if $debugMode}
     <pre>{JSON.stringify(video.rawEvent(), null, 4)}</pre>

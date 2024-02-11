@@ -31,8 +31,8 @@
     {#key highlightedArticle}
         {#if highlightedArticle}
             <a href={highlightedArticleLink} class="
-                flex bg-base-200 border-t-2 border-white/20 p-4 text-neutral-500
-                hover:bg-base-300/60
+                flex bg-white/5 border-t-2 border-white/20 p-4 text-neutral-500
+                hover:bg-white/10
                 hover:text-neutral-400 transition-all duration-200
                 rounded-b-box
             ">
@@ -56,7 +56,7 @@
                         </div>
                     </UserProfile>
                 {:else if typeof highlightedArticle === "string"}
-                    <a href="/load?url={encodeURIComponent(highlightedArticle)}" class="text-accent2">{highlightedArticle}</a>
+                    <a href="/load?url={encodeURIComponent(highlightedArticle)}" class="text-white truncate">{highlightedArticle}</a>
                 {/if}
             </a>
         {/if}

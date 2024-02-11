@@ -1,7 +1,7 @@
 <script lang="ts">
     import { ndk, user as currentUser } from "@kind0/ui-common";
     import { userProfile as currentUserProfile } from "$stores/session";
-    import { profileFromEvent, type Hexpubkey, type NDKEvent, type NDKSubscriptionOptions, type NDKUserProfile, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
+    import { profileFromEvent, type Hexpubkey, type NDKEvent, type NDKSubscriptionOptions, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
     import type { NDKRelay, NDKUser } from "@nostr-dev-kit/ndk";
     import type { UserProfileType } from "../../../app";
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
@@ -12,6 +12,7 @@
     export let user: NDKUser | undefined = undefined;
     export let subsOptions: NDKSubscriptionOptions | undefined = undefined;
     export let displayNip05: string | undefined = undefined;
+    export let forceFetch: boolean = false;
 
     const dispatch = createEventDispatcher();
 
@@ -21,6 +22,7 @@
 
     export let authorUrl: string = `/${user?.npub}`;
     export let userProfile: UserProfileType | undefined | null = undefined;
+    export let fetching: boolean = !userProfile;
 
     let sameUser: boolean = user?.pubkey === $currentUser?.pubkey;
 
@@ -30,14 +32,15 @@
 
     $: if (sameUser) {
         if ($currentUserProfile) {
-            userProfile = $currentUserProfile;
+            console.log("getting from currentUserProfile", $currentUserProfile);
+            userProfile = {...$currentUserProfile};
             fetching = false;
         } else {
+            console.log("fetching from currentUser", $currentUser);
             fetching = true;
         }
     }
 
-    let fetching: boolean = !userProfile;
     let kind0Event: NDKEvent | undefined = undefined;
 
     // if ($ndk.cacheAdapter?.fetchProfile) {
@@ -49,10 +52,12 @@
     // }
 
     const closeOnEose = user?.pubkey !== $currentUser?.pubkey;
+    const cacheUsage = forceFetch ? NDKSubscriptionCacheUsage.ONLY_RELAY : NDKSubscriptionCacheUsage.PARALLEL;
+    const groupable = !forceFetch;
 
     const sub = fetching && user && $ndk.subscribe([
         { kinds: [0], authors: [user.pubkey] },
-    ], { closeOnEose, cacheUsage: NDKSubscriptionCacheUsage.PARALLEL, ...subsOptions});
+    ], { groupable, closeOnEose, cacheUsage, ...subsOptions});
 
     onDestroy(() => {
         if (sub) sub.stop();
@@ -90,9 +95,4 @@
     }
 </script>
 
-<!-- <br>
-<br>
-sub = {!!sub}
-<br>
-userProfile = {JSON.stringify(userProfile, null, 2)} -->
 <slot {userProfile} {fetching} {authorUrl} {displayNip05} />

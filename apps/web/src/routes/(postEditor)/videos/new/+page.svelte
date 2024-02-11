@@ -4,6 +4,7 @@
 	import { NDKVideo } from "@nostr-dev-kit/ndk";
 
     let video = new NDKVideo($ndk);
+	let teaser = new NDKVideo($ndk);
 </script>
 
-<VideoEditPage {video} />
+<VideoEditPage {video} {teaser} />

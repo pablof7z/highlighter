@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import { userProfile } from "$stores/session";
 	import { welcomeScreenSeen } from "$stores/settings";
 	import { fillInSkeletonProfile } from "$utils/login";
@@ -72,10 +73,10 @@
         </div>
     </div>
 
-    <a href="/welcome" class="button text-lg font-normal w-full" on:click={() => closeModal() }>
+    <a href="/welcome" class="button text-lg font-normal w-full" on:click={() => { goto("/welcome"); closeModal()} }>
         Start publishing & earning
     </a>
-    <button class="button bg-white/5 text-white/70 font-normal py-3">
+    <button class="button bg-white/5 text-white/70 font-normal py-3" on:click={() => closeModal() }>
         Join as a fan
     </button>
 </div>

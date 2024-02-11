@@ -2,13 +2,20 @@
     import { NDKVideo } from "@nostr-dev-kit/ndk";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
 	import VideoEditor from './VideoEditor.svelte';
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import Shell from "$components/PostEditor/Shell.svelte";
+	import VideoMetaPage from "./VideoMetaPage.svelte";
+	import VideoPreviewEditor from "$components/PostEditor/VideoPreviewEditor.svelte";
+	import { preview } from "$stores/post-editor";
+	import UserProfile from "$components/User/UserProfile.svelte";
+	import { user } from "@kind0/ui-common";
 
     export let video: NDKVideo;
-    export let teaser: NDKVideo | undefined = undefined;
+    export let videoFile: File | undefined = undefined;
+    export let teaser: NDKVideo;
 
     let tiers: Record<string, boolean> = { "Free": true };
+
+    $preview = teaser;
 
     const allTiers = getUserSubscriptionTiersStore();
 
@@ -20,6 +27,14 @@
     }
 </script>
 
-<Shell type="video" {video}>
-    <VideoEditor bind:video />
-</Shell>
+<UserProfile user={$user} let:authorUrl>
+    <Shell type="video" {video}>
+        <VideoEditor bind:video bind:videoFile />
+        <div slot="meta">
+            <VideoMetaPage bind:video bind:videoFile />
+        </div>
+        <div slot="editPreview">
+            <VideoPreviewEditor bind:video bind:teaser {authorUrl} />
+        </div>
+    </Shell>
+</UserProfile>

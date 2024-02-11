@@ -28,7 +28,7 @@
     // }
 </script>
 
-<div class="navbar fixed z-50 mobile-nav h-16 px-3 w-full grid grid-cols-5 gap-1">
+<div class="navbar fixed z-50 mobile-nav px-3 w-full grid grid-cols-5 gap-1 !py-0 mb-0 min-h-0 h-12">
     {#if $pageHeader?.component}
         <SectionHeader />
     {:else if !searchBar}
@@ -39,7 +39,7 @@
                 <label for="draw" class="swap" on:click={showMenu}>
                     <input id="draw" type="checkbox" class="hidden" bind:checked={$pageDrawerToggle} />
                     {#if $user}
-                        <Avatar user={$user} size="tiny" type="square" class="swap-off" />
+                        <Avatar user={$user} size="small" type="circle" class="swap-off" />
                     {:else}
                         <List class="swap-off w-8 h-8" />
                     {/if}
@@ -56,14 +56,14 @@
                 {/if}
             </span>
         </div>
-        <div class="navbar-end w-full"
+        <div class="navbar-end justify-self-end"
             class:overflow-hidden={$pageHeader?.title}
         >
             {#if $pageHeader?.right}
                 <HeaderRightButton />
             {:else}
-                <button class="btn btn-ghost btn-circle" on:click={toggleSearch}>
-                    <MagnifyingGlass class="w-5 h-5" />
+                <button class="" on:click={toggleSearch}>
+                    <MagnifyingGlass class="w-6 h-6" />
                 </button>
                 <!-- <a href="/notifications" class="btn btn-ghost btn-circle">
                     <Bell class="w-5 h-5" />
@@ -81,4 +81,4 @@
     {/if}
 </div>
 
-<div class="h-16"></div>
+<div class="h-12"></div>

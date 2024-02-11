@@ -129,7 +129,11 @@ export function getUserSubscriptionTiersStore() {
 			}
 
 			const t = NDKSubscriptionTier.from(tier);
-			if (t.isValid) tiers.push(t);
+			if (t.isValid) {
+				tiers.push(t);
+			} else {
+				d(`tier ${t.title} is not valid`, t.rawEvent());
+			}
 		}
 
 		return tiers;

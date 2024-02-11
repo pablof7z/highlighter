@@ -1,6 +1,6 @@
 import { sendPayment } from '$lib/backend/pay';
 import { ndk } from '@kind0/ui-common';
-import { NDKEvent, NDKSubscriptionStart, NDKUser, NDKZap } from '@nostr-dev-kit/ndk';
+import { NDKEvent, NDKSubscriptionStart, NDKUser, NDKZap, type Hexpubkey, type NostrEvent, type NDKTag } from '@nostr-dev-kit/ndk';
 import { json, text } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import createDebug from 'debug';
@@ -29,8 +29,6 @@ function getRecipient(event: NDKEvent): NDKUser {
 }
 
 async function getPaymentRequest(event: NDKEvent): Promise<string | null> {
-
-
 	const $ndk = get(ndk);
 
 	const recipient = getRecipient(event);
@@ -51,7 +49,7 @@ async function getPaymentRequest(event: NDKEvent): Promise<string | null> {
 	let pr: string;
 
 	try {
-		pr = await zap.createZapRequest(satsAmount * 1000, comment);
+		pr = await zap.createZapRequest(satsAmount * 1000, comment, undefined, ["wss://relay.damus.io/"]);
 	} catch (error) {
 		debug('error creating zap request', error);
 		throw error;
@@ -62,15 +60,29 @@ async function getPaymentRequest(event: NDKEvent): Promise<string | null> {
 	return pr;
 }
 
+async function reportToClient(statusTags: NDKTag[], event: NDKEvent) {
+	const $ndk = get(ndk);
+	const e = new NDKEvent($ndk, {
+		content: "",
+		kind: 24001,
+		tags: [
+			[ "p", event.pubkey ],
+			[ "e", event.id ],
+			...statusTags
+		]
+	} as NostrEvent);
+	await e.publish();
+}
+
 export async function POST({ request }) {
-	console.log('POST /api/user/subscribe');
+	const payload = await request.json();
+	const { subscriptionEvent } = payload as Payload;
+	console.log('POST /api/user/subscribe', {subscriptionEvent});
 	// const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
 
 	// return json(response.json());
 
 	// await new Promise((resolve) => setTimeout(resolve, 2500));
-	const payload = await request.json();
-	const { subscriptionEvent } = payload as Payload;
 	const $ndk = get(ndk);
 
 	try {
@@ -83,6 +95,10 @@ export async function POST({ request }) {
 			throw new Error('Invalid signature');
 		}
 
+		reportToClient([
+			[ "status", "Fetching creator payment details" , "processing"]
+		], event);
+
 		const recipient = event.targetUser
 		debug('getting payment request');
 		const pr = await getPaymentRequest(event);
@@ -92,9 +108,20 @@ export async function POST({ request }) {
 			throw new Error('Unable to generate a payment request');
 		}
 
+		reportToClient([
+			[ "status", "Fetching creator payment details" , "done"],
+			[ "status", "Sending payment" , "processing"]
+		], event);
+
 		// const paymentResult = { mocked: 'yup!' };
 		const paymentResult = await sendPayment(pr, event.pubkey);
 		debug('payment result', paymentResult);
+
+		reportToClient([
+			[ "status", "Fetching creator payment details" , "done"],
+			[ "status", "Sending payment" , "done"],
+			[ "status", "Confirming payments" , "processing"]
+		], event);
 
 		await Promise.all([
 			new Promise((resolve) => {
@@ -121,11 +148,17 @@ export async function POST({ request }) {
 			})
 		]);
 
+		reportToClient([
+			[ "status", "Fetching creator payment details" , "done"],
+			[ "status", "Sending payment" , "done"],
+			[ "status", "Confirming payments" , "done"]
+		], event);
+
 		console.log('paymentResult', paymentResult);
 		return json(paymentResult);
 	} catch (error: any) {
 		console.log(JSON.stringify(error))
 		debug('err', { error });
-		return text(error.message, { status: 400 });
+		return text(error.message ?? error.error ?? JSON.stringify(error), { status: 400 });
 	}
 }
