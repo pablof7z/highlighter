@@ -1,6 +1,6 @@
 import { sendPayment } from '$lib/backend/pay';
 import { ndk } from '@kind0/ui-common';
-import { NDKEvent, NDKSubscriptionStart, NDKUser, NDKZap, type Hexpubkey, type NostrEvent, type NDKTag } from '@nostr-dev-kit/ndk';
+import NDK, { NDKEvent, NDKSubscriptionStart, NDKUser, NDKZap, type Hexpubkey, type NostrEvent, type NDKTag } from '@nostr-dev-kit/ndk';
 import { json, text } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import createDebug from 'debug';
@@ -100,13 +100,18 @@ export async function POST({ request }) {
 		], event);
 
 		const recipient = event.targetUser
-		debug('getting payment request');
-		const pr = await getPaymentRequest(event);
-		debug('payment request', pr);
 
-		if (!pr) {
-			throw new Error('Unable to generate a payment request');
+		if (!recipient) {
+			return text('Recipient not found', { status: 400 });
 		}
+
+		debug('getting payment request');
+		// const pr = await getPaymentRequest(event);
+		// debug('payment request', pr);
+
+		// if (!pr) {
+		// 	throw new Error('Unable to generate a payment request');
+		// }
 
 		reportToClient([
 			[ "status", "Fetching creator payment details" , "done"],
@@ -114,8 +119,8 @@ export async function POST({ request }) {
 		], event);
 
 		// const paymentResult = { mocked: 'yup!' };
-		const paymentResult = await sendPayment(pr, event.pubkey);
-		debug('payment result', paymentResult);
+		// const paymentResult = await sendPayment(pr, event.pubkey);
+		// debug('payment result', paymentResult);
 
 		reportToClient([
 			[ "status", "Fetching creator payment details" , "done"],
@@ -123,30 +128,7 @@ export async function POST({ request }) {
 			[ "status", "Confirming payments" , "processing"]
 		], event);
 
-		await Promise.all([
-			new Promise((resolve) => {
-				event.publish().then((relays) => {
-					debug(`event published to ${relays.size} relays`);
-					resolve(null);
-				});
-			}),
-			new Promise((resolve) => {
-				addToListOfSupporters($ndk, recipient.pubkey, event)
-					.then(resolve)
-					.catch((e) => {
-						debug('error adding to list of supporters', e);
-						resolve(null);
-					});
-			}),
-			new Promise((resolve) => {
-				recordValidSubscriptionPayment(event)
-					.then(resolve)
-					.catch((e) => {
-						debug('error recording valid subscription payment', e);
-						resolve(null);
-					})
-			})
-		]);
+		await processNewSubscription(event, recipient, $ndk);
 
 		reportToClient([
 			[ "status", "Fetching creator payment details" , "done"],
@@ -154,11 +136,40 @@ export async function POST({ request }) {
 			[ "status", "Confirming payments" , "done"]
 		], event);
 
-		console.log('paymentResult', paymentResult);
-		return json(paymentResult);
+		return json({ success: true });
+
+		// console.log('paymentResult', paymentResult);
+		// return json(paymentResult);
 	} catch (error: any) {
 		console.log(JSON.stringify(error))
 		debug('err', { error });
 		return text(error.message ?? error.error ?? JSON.stringify(error), { status: 400 });
 	}
+}
+
+async function processNewSubscription(event: NDKSubscriptionStart, recipient: NDKUser, ndk: NDK) {
+	await Promise.all([
+		new Promise((resolve) => {
+			event.publish().then((relays) => {
+				debug(`event published to ${relays.size} relays`);
+				resolve(null);
+			});
+		}),
+		new Promise((resolve) => {
+			addToListOfSupporters(ndk, recipient.pubkey, event)
+				.then(resolve)
+				.catch((e) => {
+					debug('error adding to list of supporters', e);
+					resolve(null);
+				});
+		}),
+		new Promise((resolve) => {
+			recordValidSubscriptionPayment(event)
+				.then(resolve)
+				.catchexp(e) => {
+					debug('error recording valid subscription payment', e);
+					resolve(null);
+				})
+		})
+	]);
 }

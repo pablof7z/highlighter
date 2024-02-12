@@ -4,9 +4,12 @@
 	import ArticleEditPage from "$components/Editor/ArticleEditPage.svelte";
 	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
+	import { nonSubscribersPreview } from "$stores/post-editor";
 
     let article = new NDKArticle($ndk);
 	let preview = new NDKArticle($ndk);
+
+	$nonSubscribersPreview = true;
 
 	const draftId = $page.url.searchParams.get("draft") || undefined;
 	let draftItem: DraftItem | undefined;

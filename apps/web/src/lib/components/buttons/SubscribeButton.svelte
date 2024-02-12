@@ -19,7 +19,7 @@
 
     let currentUserSubscriberTier: string | undefined;
     const supporters = getUserSupporters();
-    $: currentUserSubscriberTier = ($currentUser && $supporters[$currentUser.pubkey]) || undefined;
+    // $: currentUserSubscriberTier = ($currentUser && $supporters[$currentUser.pubkey]) || undefined;
 
     function openSupportModal() {
         if ($currentUser) {

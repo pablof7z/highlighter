@@ -14,6 +14,7 @@
 	import LoadingScreen from '$components/LoadingScreen.svelte';
 	import { allUserTiers, inactiveUserTiers, userTiers } from '$stores/session';
 	import CollapsedTierListItem from './CollapsedTierListItem.svelte';
+    import nip29 from '$lib/nip29';
 
     export let redirectOnSave: string | false = "/dashboard";
     export let usePresetButton = false;
@@ -126,6 +127,7 @@
             }
 
             await tiersList.publish();
+            await nip29.createGroup();
 
             if (emit) dispatch("saved", { tiers: tiersList });
 
@@ -143,7 +145,7 @@
         } as NostrEvent)
         tier.addPerk("Access to my members-only content");
         tier.addPerk("Access to my exclusive community of like-minded people");
-        tier.addAmount(500, "usd", "monthly");
+        tier.addAmount(500, "USD", "monthly");
         tier.addAmount(100000, "msat", "monthly");
         tier.title = "Supporters";
         tiers.push(tier);

@@ -29,11 +29,12 @@
         }
         const key = pk.data as string;
         const signer = new NDKPrivateKeySigner(key);
+        const user = await signer.user();
         $ndk.signer = signer;
         localStorage.setItem("nostr-key-method", "pk");
         localStorage.setItem('nostr-key', key);
 
-        _login($ndk, $bunkerNDK, 'pk');
+        _login('pk', user.pubkey);
     }
 
     async function login() {

@@ -1,4 +1,4 @@
-import type { Hexpubkey, NDKArticle, NDKEvent, NDKTag, NDKUser } from '@nostr-dev-kit/ndk';
+import { Hexpubkey, NDKArticle, NDKEvent, NDKTag, NDKUser } from '@nostr-dev-kit/ndk';
 
 export function requiredTierNamesFor(
 	event: NDKEvent,
@@ -90,4 +90,17 @@ export function getTierSelectionFromAllTiers(allTiers: NDKArticle[]) {
 	}
 
 	return tiers;
+}
+
+export function getTierIdFromSubscriptionEvent(event: NDKEvent): string | undefined {
+	const tierEventString = event.tagValue('event');
+
+	if (!tierEventString) return undefined;
+
+	try {
+		const tierEvent = new NDKArticle(undefined, JSON.parse(tierEventString));
+		return tierEvent.tagValue('d');
+	} catch (error) {
+		return undefined;
+	}
 }

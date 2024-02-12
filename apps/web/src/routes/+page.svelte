@@ -16,6 +16,7 @@
 	import WelcomeGridItem from '$components/WelcomeGridItem.svelte';
 	import { blacklistedPubkeys } from '$utils/const';
 	import { Funnel } from 'phosphor-svelte';
+	import { getDefaultRelaySet } from '$utils/ndk';
 
     const debug = createDebug("HL:explore");
 
@@ -95,7 +96,8 @@
     function subscribe(filters: NDKFilter[]) {
         events?.unsubscribe();
 
-        const relaySet = undefined;//getDefaultRelaySet();
+        // const relaySet = undefined;//getDefaultRelaySet();
+        const relaySet = getDefaultRelaySet();
         events = $ndk.storeSubscribe(
             filters,
         { relaySet, autoStart: true, groupable: false, subId: 'explore', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })

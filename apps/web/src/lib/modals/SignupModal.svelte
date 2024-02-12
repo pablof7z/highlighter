@@ -57,14 +57,14 @@
         {/if}
     </div>
 
-    <div slot="after" class="mt-4 relative z-50" class:hidden={mode === 'welcome'}>
+    <div slot="after" class="mt-4 relative z-50 pointer-events-auto" class:hidden={mode === 'welcome'}>
         {#if mode === 'signup'}
-            <p class="text-center text-neutral-500 text-sm my-2">
+            <p class="text-center text-neutral-500 text-base my-2">
                 Already have a Nostr account?
-                <button on:click={() => mode = 'login'} class="text-white/50 font-semibold underline">Log in</button>
+                <button on:click={() => mode = 'login'} class="text-white font-semibold underline">Log in</button>
             </p>
         {:else}
-            <p class="text-center text-neutral-500 text-sm my-2">
+            <p class="text-center text-neutral-500 text-base my-2">
                 Don’t have an account?
                 <button on:click={() => mode = 'signup'} class="text-white/50 font-semibold underline">Sign Up</button>
             </p>

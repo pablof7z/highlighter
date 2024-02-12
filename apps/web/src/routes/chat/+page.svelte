@@ -1,7 +1,16 @@
 <script lang="ts">
     import { pageHeader } from "$stores/layout";
+	import { getDefaultRelaySet } from "$utils/ndk";
+	import { ndk } from "@kind0/ui-common";
+	import { NDKKind } from "@nostr-dev-kit/ndk";
 
     $pageHeader = { title: "Community" };
+
+    const relaySet = getDefaultRelaySet();
+    const chatGroups = $ndk.storeSubscribe(
+        { kinds: [NDKKind.GroupChat], limit: 300 },
+        { relaySet, groupable: false, closeOnEose: true }
+    )
 </script>
 
 <div class="w-full h-full min-h-screen flex flex-col justify-center items-center">

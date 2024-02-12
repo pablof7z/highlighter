@@ -2,7 +2,7 @@
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
     import ChatInput from "$components/Chat/Input.svelte";
 	import { page } from "$app/stores";
-	import { NDKKind, type NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKRelay, NDKRelaySet, type NDKTag } from "@nostr-dev-kit/ndk";
 	import { ndk } from "@kind0/ui-common";
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { onDestroy } from "svelte";
@@ -36,6 +36,12 @@
     });
 
     $: $pageHeader.title = userProfile?.displayName;
+
+    const allRelays = Array.from($ndk.pool.relays.values());
+    for (const relay of allRelays) {
+        const relaySet = new NDKRelaySet(new Set([relay]), $ndk);
+
+    }
 </script>
 
 <UserProfile {user} bind:userProfile />

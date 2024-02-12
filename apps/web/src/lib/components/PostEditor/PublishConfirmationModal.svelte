@@ -27,6 +27,8 @@
     let makePublicScheduled = false;
     let publishAtVal: string | undefined = $publishAt?.toISOString().slice(0, -1);
 
+    $: $wideDistribution = false;
+
     $: if (publishAtVal) {
         try {
             const date = new Date(publishAtVal);
