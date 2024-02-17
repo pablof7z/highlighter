@@ -31,5 +31,5 @@ compile-ndk:
     ./ndk_compile.sh
 
 deploy:
-	rsync -avP -l -t --exclude dist --exclude relay/db --exclude nostdress/nostdress --exclude relay/relay29 --exclude .env --exclude .svelte-kit --exclude node_modules --exclude build --exclude prisma/generated /Users/pablofernandez/work/projects/highlighter/ kind0:/home/pablo/projects/highlighter
+	rsync -avP -l -t --exclude dist --exclude db --exclude nostdress/nostdress --exclude relay/relay29/relay29 --exclude .env --exclude .svelte-kit --exclude node_modules --exclude build --exclude prisma/generated /Users/pablofernandez/work/projects/highlighter/ kind0:/home/pablo/projects/highlighter
 

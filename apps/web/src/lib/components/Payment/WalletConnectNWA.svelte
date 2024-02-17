@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { finalizeLogin, trustedPubkeys } from "$utils/login";
-	import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
     import { qrcode } from "@sveu/extend/qrcode";
 	import { onMount } from "svelte";
     import { createEventDispatcher } from "svelte";
@@ -9,41 +7,29 @@
 
     let LottiePlayer: any;
 
-    const key = NDKPrivateKeySigner.generate();
-    const secret = key.privateKey!;
-    console.log(secret, secret.length);
-    const value = new URL(`nostr+walletauth://${trustedPubkeys[0]}`);
-    value.protocol = "nostr+walletauth";
-    value.searchParams.set("secret", secret);
-    value.searchParams.set("required_commands", "pay_invoice make_invoice lookup_invoice");
-    value.searchParams.set("relay", "wss://relay.damus.io");
-    value.searchParams.set("budget", "1000000/month");
-    value.searchParams.set("identity", trustedPubkeys[0]);
-
-    $: ({ output, pending, error } = qrcode(value.toString()))
-
     let paired = false;
+    let uri: string;
+
+    $: ({ output, pending, error } = qrcode(uri??""))
 
     onMount(async () => {
         const module = await import("@lottiefiles/svelte-lottie-player");
         LottiePlayer = module.LottiePlayer;
 
-        fetch("/api/user/nwa", {
-            method: "POST",
+        const res = await fetch("/api/user/nwa", {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ secret })
-        }).then(() => {
-            console.log("done");
-            paired = true;
-            finalizeLogin().then(() => {
-                dispatch("success");
-            })
         })
+
+        const data = await res.json();
+        console.log(data);
+        uri = data.url;
     })
 </script>
 
+{#if uri}
 <div class="grid place-items-center">
     {#if paired}
     <div class="max-w-lg mx-auto w-full">
@@ -59,7 +45,7 @@
     </div>
     {:else if $pending}
         <p>Pending.........</p>
-    {:else}
+    {:else if uri}
         <img src="{$output}" alt="qrcode" />
 
         <br />
@@ -71,3 +57,4 @@
         <br />
     {/if}
 </div>
+{/if}

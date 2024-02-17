@@ -21,15 +21,6 @@ const d = createDebug('HL:login');
 const $ndk = get(ndk);
 const $bunkerNDK = get(bunkerNDK);
 
-/**
- * These are pubkeys managed by the relay running this app, which gates access to content
- */
-export const trustedPubkeys = [
-	'73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63', // Highlighter
-	'4f7bd9c066a7b21d750b4e8dbf4440ef1e80c64864341550200b8481d530c5ce', // Faaans
-	"83f42a3d76b3f3261a8da54fe41fc3067c001a51d9bd90d140b0b3852ea8001e", // Temp
-];
-
 export async function finalizeLogin() {
 	const hostname = import.meta.env.VITE_HOSTNAME;
 	// fetch jwt

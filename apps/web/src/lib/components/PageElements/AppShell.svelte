@@ -1,8 +1,7 @@
 <script lang="ts">
     import { pageSidebar, pageHeader, sidebarPlacement } from "$stores/layout";
-	import { debugMode, loginState } from '$stores/session';
+	import { loginState } from '$stores/session';
 	import { Toaster, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
-	import { Bug } from 'phosphor-svelte';
     import { Modals, closeModal } from 'svelte-modals'
 	import { fade } from 'svelte/transition';
 	import Navigation from "./Navigation.svelte";
@@ -112,12 +111,3 @@
 		</div>
 	</div>
 </div>
-
-
-{#if import.meta.env.VITE_HOSTNAME === "localhost" || $user?.npub === "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft"}
-	<button
-		on:click={() => $debugMode = !$debugMode}
-		class="max-sm:hidden fixed bottom-2 right-2 z-50 btn btn-circle btn-sm opacity-0 hover:opacity-100">
-		<Bug size="24" class={$debugMode ? "text-accent2" : "text-neutral-500"} />
-	</button>
-{/if}

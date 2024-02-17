@@ -6,6 +6,7 @@
     import type { UserProfileType } from "../../../app";
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
     import { createEventDispatcher, onDestroy } from "svelte";
+    import createDebug from "debug";
 
     export let pubkey: Hexpubkey | undefined = undefined;
     export let npub: string | undefined = undefined;
@@ -14,6 +15,7 @@
     export let displayNip05: string | undefined = undefined;
     export let forceFetch: boolean = false;
 
+    const d = createDebug("HL:UserProfile");
     const dispatch = createEventDispatcher();
 
     if (!user && (npub || pubkey)) {
@@ -25,6 +27,7 @@
     export let fetching: boolean = !userProfile;
 
     let sameUser: boolean = user?.pubkey === $currentUser?.pubkey;
+    let checkedCache = false;
 
     if (sameUser) {
         user = $currentUser;
@@ -32,24 +35,34 @@
 
     $: if (sameUser) {
         if ($currentUserProfile) {
-            console.log("getting from currentUserProfile", $currentUserProfile);
             userProfile = {...$currentUserProfile};
             fetching = false;
         } else {
-            console.log("fetching from currentUser", $currentUser);
             fetching = true;
         }
     }
 
     let kind0Event: NDKEvent | undefined = undefined;
 
-    // if ($ndk.cacheAdapter?.fetchProfile) {
-    //     $ndk.cacheAdapter?.fetchProfile(user.pubkey).then((p) => {
-    //         userProfile ??= p;
-    //     }).catch((e: any) => {
-    //         console.error(e);
-    //     });
-    // }
+    if ($ndk.cacheAdapter?.fetchProfile && user?.pubkey && !checkedCache) {
+        checkedCache = true
+        $ndk.cacheAdapter?.fetchProfile(user.pubkey).then((p) => {
+            if (p) {
+                d(`Fetched profile for ${p.displayName} from cache`);
+                userProfile ??= p;
+            } else {
+                d(`No profile found for ${user.pubkey} in cache`);
+            }
+        }).catch((e: any) => {
+            console.error(e);
+        });
+    } else {
+        d(`Not hitting cache code`, {
+            fetchProfile: !!$ndk.cacheAdapter?.fetchProfile,
+            pubkey: !!user?.pubkey,
+            fetching: !!fetching
+        })
+    }
 
     const closeOnEose = user?.pubkey !== $currentUser?.pubkey;
     const cacheUsage = forceFetch ? NDKSubscriptionCacheUsage.ONLY_RELAY : NDKSubscriptionCacheUsage.PARALLEL;

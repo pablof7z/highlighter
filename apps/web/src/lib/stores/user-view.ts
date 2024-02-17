@@ -4,9 +4,9 @@ import { type NDKUser, type NDKFilter, type Hexpubkey, NDKHighlight } from '@nos
 import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 import { writable, get as getStore, derived, type Readable } from 'svelte/store';
 import { userActiveSubscriptions } from './session';
-import { trustedPubkeys } from '$utils/login';
 import createDebug from 'debug';
 import { mainContentKinds } from '$utils/event';
+import { creatorRelayPubkey } from '$utils/const';
 
 const d = createDebug('HL:user-view');
 
@@ -52,7 +52,7 @@ export function startUserView(user: NDKUser) {
 		{
 			kinds: [NDKKind.GroupMembers as number],
 			'#d': [user.pubkey],
-			authors: trustedPubkeys
+			authors: [creatorRelayPubkey]
 		},
 		// Non group-exclusive content
 		{
@@ -160,8 +160,6 @@ export function getUserSupporters(): Readable<Record<Hexpubkey, string | undefin
 				const tier = pTag[2];
 				supporters[pubkey] = tier;
 			}
-
-			console.log(`found ${Object.keys(supporters).length} supporters`);
 
 			return supporters;
 		}

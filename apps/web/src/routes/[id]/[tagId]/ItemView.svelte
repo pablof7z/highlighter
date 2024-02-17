@@ -136,10 +136,6 @@
                 </div>
             </CreatorShell>
         {/if}
-
-        {#if $debugMode}
-            <pre>{JSON.stringify(event.rawEvent(), null, 4)}</pre>
-        {/if}
     {/if}
 
 </WithItem>

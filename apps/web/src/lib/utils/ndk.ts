@@ -1,20 +1,17 @@
 import { get as getStore } from 'svelte/store';
 import { ndk, newToasterMessage } from '@kind0/ui-common';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
-import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet } from '@nostr-dev-kit/ndk';
+import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
-import { debugMode } from '$stores/session';
+import { userFollows, debugMode } from '$stores/session';
+import { defaultRelays } from './const';
 
 const debug = createDebug('HL:ndk');
 
-const RELAY = import.meta.env.VITE_RELAY;
-
-export const defaultVerifierPubkey = '73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63';
-export const defaultRelays = [RELAY];
 export const nip50Relays = ['wss://relay.noswhere.com', 'wss://relay.nostr.band'];
 
 // Relays we are going to send a request to check if we need to auth
-const authRelays = [RELAY];
+const authRelays = defaultRelays;
 
 export function getNip50RelaySet() {
 	const $ndk = getStore(ndk);
@@ -78,7 +75,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	// $ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'higlighter' });
+	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'higlighter2' });
 	$ndk.clientName = 'highlighter';
 
 	$ndk.pool.on("notice", (relay: NDKRelay, notice: string) => {
@@ -89,6 +86,14 @@ export async function configureFeNDK() {
 	});
 
 	await $ndk.connect(2000);
+
+	setTimeout(() => {
+		const $userFollows = getStore(userFollows)
+		$ndk.fetchEvents([
+			{ kinds: [0], authors: Array.from($userFollows), limit: 1000 },
+			{ kinds: [30023], authors: Array.from($userFollows), limit: 1000 }
+		], { groupable: false, cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY });
+	}, 1000);
 }
 
 export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch) {

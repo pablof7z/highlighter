@@ -3,7 +3,7 @@
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind } from "@nostr-dev-kit/ndk";
+	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
@@ -32,19 +32,17 @@
 
     $: if (!tagIdExplicit) tagId = $page.params.tagId;
 
+    let needsToLoad: boolean;
+
     startUserView(user);
 
     onDestroy(() => {
         userSubscription?.unref();
+        events?.unsubscribe();
     })
 
-    let events: NDKEventStore<NDKEvent> | undefined;
-    let eosed = false;
-
-    let title: string | undefined;
-    let summary: string | undefined;
-
-    $: if (!events && user.pubkey && tagId) {
+    function getFilter(): NDKFilter[] {
+        if (!user.pubkey || !tagId) return [{limit:0}];
         const filters: NDKFilter[] = [{ authors: [user.pubkey], "#d": [tagId] }];
 
         // 18-char of regex
@@ -53,7 +51,26 @@
             filters.push({ authors: [user.pubkey], "ids": [tagId] });
         }
 
-        events = $ndk.storeSubscribe(filters, { groupable: false });
+        return filters;
+    }
+
+    let events: NDKEventStore<NDKEvent> | undefined;
+    let eosed = false;
+
+    let title: string | undefined;
+    let summary: string | undefined;
+
+    // if (!event) {
+    //     // check the cache for this event exclusively and only set needsToLoad to true if it's not there
+    //     $ndk.fetchEvents(getFilter(), { cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE }).then(e => {
+    //         if (e.size === 0) {
+    //             needsToLoad = true;
+    //         }
+    //     });
+    // }
+
+    $: if (!events && user.pubkey && tagId) {
+        events = $ndk.storeSubscribe(getFilter(), { subId: 'with-item', groupable: false });
         events.onEose(() => {
             eosed = true;
         });
@@ -121,20 +138,18 @@
     {/if}
 </svelte:head>
 
-<LoadingScreen ready={!!event || eosed}>
-    <main>
-        {#if event}
-            <UserProfile user={event.author} bind:authorUrl />
+{#if needsToLoad || (!!event || eosed)}
+    <LoadingScreen ready={!!event || eosed}>
+        <main>
+            {#if event}
+                <UserProfile user={event.author} bind:authorUrl />
 
-            <slot {event} {urlPrefix} {eventType} {article} {video} {isFullVersion} {authorUrl} />
-
-            {#if $debugMode}
-                <pre>{JSON.stringify(event.rawEvent(), null, 4)}</pre>
+                <slot {event} {urlPrefix} {eventType} {article} {video} {isFullVersion} {authorUrl} />
+            {:else}
+                Event not found
             {/if}
-        {:else}
-            Event not found
-        {/if}
-    </main>
-</LoadingScreen>
+        </main>
+    </LoadingScreen>
+{/if}
 
 <!-- <div class="py-24"></div> -->

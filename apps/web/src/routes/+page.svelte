@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKList } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKList, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
     import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from 'svelte';
@@ -15,8 +15,12 @@
 	import { browser } from '$app/environment';
 	import WelcomeGridItem from '$components/WelcomeGridItem.svelte';
 	import { blacklistedPubkeys } from '$utils/const';
-	import { Funnel } from 'phosphor-svelte';
 	import { getDefaultRelaySet } from '$utils/ndk';
+	import VideoLink from '$components/Events/VideoLink.svelte';
+	import PostGrid from '$components/Events/PostGrid.svelte';
+	import CurationItem from '$components/CurationItem.svelte';
+	import { wot, wotFiltered } from '$stores/wot';
+	import { event } from '$stores/post-editor';
 
     const debug = createDebug("HL:explore");
 
@@ -25,6 +29,7 @@
     let activeFilter: string | undefined;
     const typeFilter = writable<App.FilterType[]>(["all"]);
     let filters: NDKFilter[] | undefined;
+    let relaySet: NDKRelaySet | undefined;
 
     let filter = $page.params.category ?? "All Creators";
 
@@ -66,13 +71,20 @@
                     const list = NDKList.from(event);
                     newFilters.push(...list.filterForItems())
                 }
+                relaySet = undefined;
 
                 break;
-            case "Global":
-                newFilters = [ { kinds, limit: 30 } ];
+            case "Network":
+                newFilters = [ { kinds, limit: 100 } ];
+                relaySet = undefined;
                 break;
+            case "All Creators":
+                newFilters = [ { kinds, limit: 100 } ];
+                relaySet = getDefaultRelaySet();
             default:
-                newFilters = [ { kinds, limit: 100, "#f": ["Free"] } ];
+                newFilters = [ { kinds, limit: 100 } ];
+                console.log("filter", filter);
+                relaySet = undefined;
         }
 
         return newFilters;
@@ -96,15 +108,13 @@
     function subscribe(filters: NDKFilter[]) {
         events?.unsubscribe();
 
-        // const relaySet = undefined;//getDefaultRelaySet();
-        const relaySet = getDefaultRelaySet();
         events = $ndk.storeSubscribe(
             filters,
         { relaySet, autoStart: true, groupable: false, subId: 'explore', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
         debug(filters);
 
         eventsForRender = derived([events, typeFilter], ([$events, $typeFilter]) => {
-            const events: NDKEvent[] = [];
+            let events: NDKEvent[] = [];
 
             for (const event of $events) {
                 // There is a bug in the relay, for now filter out events with a tier tag
@@ -124,8 +134,27 @@
                 }
             }
 
+            if (filter === "All Creators") {
+                events = events.filter((event) => {
+                    return !!event.tagValue("h")
+                });
+            }
+
+            if (filter === "Network") {
+                events = events.filter(hasImage);
+                return wotFiltered(events);
+            }
+
             return events;
         });
+    }
+
+    const hasImage = (event: NDKEvent) => {
+        if (event.kind === NDKKind.Article || event.kind === NDKKind.HorizontalVideo) {
+            return !!event.tagValue("image");
+        }
+
+        return false;
     }
 
     let selectedCategory: string;
@@ -191,12 +220,12 @@
                                 {#each $eventsForRender as event (event.id)}
                                     {#if event.kind === NDKKind.Article}
                                         <ArticleLink article={NDKArticle.from(event)} grid={true} />
-                                    <!-- {:else if event.kind === NDKKind.HorizontalVideo}
+                                    {:else if event.kind === NDKKind.HorizontalVideo}
                                         <VideoLink video={NDKVideo.from(event)} grid={true} />
                                     {:else if event.kind === NDKKind.GroupNote}
                                         <PostGrid {event} />
                                     {:else if event.kind === NDKKind.ArticleCurationSet || event.kind === NDKKind.VideoCurationSet}
-                                        <CurationItem list={NDKList.from(event)} grid={true} /> -->
+                                        <CurationItem list={NDKList.from(event)} grid={true} />
                                     {/if}
                                 {/each}
                             {/key}

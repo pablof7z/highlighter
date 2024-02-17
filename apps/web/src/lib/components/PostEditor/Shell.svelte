@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, wideDistribution } from '$stores/post-editor.js';
+	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, wideDistribution, preview } from '$stores/post-editor.js';
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { pageHeader } from "$stores/layout";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
+    import { type as _type } from "$stores/post-editor";
 	import { getTierSelectionFromAllTiers } from '$lib/events/tiers';
 	import { NDKArticle, NDKEvent, NDKVideo } from '@nostr-dev-kit/ndk';
 	import Publish from './Publish.svelte';
@@ -17,9 +18,14 @@
 
     onMount(() => {
         $view = 'edit';
+        $_type = type;
     });
 
-    $event = article ?? video ?? note;
+    $event = article ?? video ?? note!;
+
+    if (type === "note") {
+        $preview = undefined;
+    }
 
     $selectedTiers ??= { "Free": { name: "Free", selected: false } };
     $postType = type;
@@ -28,26 +34,19 @@
     $: $selectedTiers = getTierSelectionFromAllTiers($allTiers);
 
     $pageHeader = { component: "post-editor" }
-
-    function tiersChanged() {
-        if ($nonSubscribersPreview === undefined) {
-            console.log("nonSubscribersPreview is undefined, setting to true", $selectedTiers["Free"]?.selected);
-            if (!$selectedTiers["Free"]?.selected) {
-                console.log("Free is not selected, setting to true", $postType);
-                if ($postType === "article") $nonSubscribersPreview = true;
-            }
-        }
-    }
 </script>
 
 <MainWrapper mobilePadded={false} class="pb-24">
-    {#if $view === 'edit'}
+    <div class="w-full" class:hidden={$view !== 'edit'}>
         <slot />
-    {:else if $view === "edit-preview" && $$slots.editPreview}
+    </div>
+    <div class="w-full" class:hidden={!($view === "edit-preview" && $$slots.editPreview)}>
         <slot name="editPreview" />
-    {:else if $view === "meta" && $$slots.meta}
+    </div>
+    <div class="w-full" class:hidden={!($view === "meta" && $$slots.meta)}>
         <slot name="meta" />
-    {:else if $view === "audience"}
+    </div>
+    {#if $view === "audience"}
         <AudiencePage />
     {:else if $view === "schedule"}
         <Publish {article} {note} schedule={true} />

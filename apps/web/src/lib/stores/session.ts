@@ -12,17 +12,18 @@ import {
 	NDKDVMRequest,
 	NDKListKinds,
 	type Hexpubkey,
-	NDKArticle,
 	profileFromEvent,
 	NDKSubscriptionTier,
+	NDKRelaySet,
 } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import debug from 'debug';
-import { trustedPubkeys } from '$utils/login';
 import type { UserProfileType } from '../../app';
+import { getDefaultRelaySet } from '$utils/ndk';
+import { creatorRelayPubkey } from '$utils/const';
 
-const d = debug('highlighter:session');
+const d = debug('HL:session');
 
 export const jwt = persist(writable<string | null>(null), createLocalStorage(), 'jwt');
 
@@ -146,10 +147,15 @@ export const userSupport = writable<NDKEvent[]>([]);
  * The user's extended network
  */
 export const networkFollows = persist(
-	writable<Set<string>>(new Set()),
+	writable<Map<Hexpubkey, number>>(new Map()),
 	createLocalStorage(),
-	'network-follows'
+	'network-follows-map'
 );
+export const networkFollowsUpdatedAt = persist(
+	writable<number>(0),
+	createLocalStorage(),
+	'network-follows-updated-at'
+)
 
 /**
  * Network's supported people
@@ -185,32 +191,49 @@ export async function prepareSession(): Promise<void> {
 			supportStore: userSupport,
 			waitUntilEoseToResolve: !alreadyKnowFollows,
 			listsKinds: [
-				NDKKind.CurationSet,
-				NDKKind.CurationSet + 1, // Videos
+				NDKKind.ArticleCurationSet,
+				NDKKind.VideoCurationSet,
 				NDKKind.CategorizedHighlightList
 			]
 		}).then(() => {
 			const $userFollows = getStore(userFollows);
 
-			console.log(`user follows count: ${$userFollows.size}`);
-			console.log(`user lists count: ${getStore(userArticleCurations).size}`);
-
 			resolve();
+
+			const $networkFollows = get(networkFollows);
+			const $networkFollowsUpdatedAt = get(networkFollowsUpdatedAt);
+			const twoWeeksAgo = Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 14;
+
+			if ($networkFollows.size < 1000 || $networkFollowsUpdatedAt < twoWeeksAgo) {
+				const kind3RelaySet = NDKRelaySet.fromRelayUrls(["wss://purplepag.es"], $ndk);
+
+				fetchData('wot', $ndk, Array.from($userFollows), {
+					followsStore: networkFollows,
+					closeOnEose: true
+				}, kind3RelaySet).then(() => {
+					networkFollowsUpdatedAt.set(Math.floor(Date.now() / 1000));
+				})
+
+				fetchData('network-support', $ndk, Array.from($userFollows), {
+					supportStore: networkSupport,
+					closeOnEose: true
+				}, getDefaultRelaySet())
+			}
 		});
 	});
 }
 
 interface IFetchDataOptions {
 	profileStore?: Writable<UserProfileType | undefined>;
-	followsStore?: Writable<Set<Hexpubkey>>;
+	followsStore?: Writable<Set<Hexpubkey>> | Writable<Map<Hexpubkey, number>>;
 	superFollowsStore?: Writable<Set<Hexpubkey>>;
 	activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
 	supportStore?: Writable<NDKEvent[]>;
 	appHandlersStore?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
 	userArticleCurationsStore?: Writable<Map<string, NDKList>>;
 	userVideoCurationsStore?: Writable<Map<string, NDKList>>;
-	userTierStore: Writable<NDKSubscriptionTier[]>;
-	tierListStore: Writable<NDKList | undefined>;
+	userTierStore?: Writable<NDKSubscriptionTier[]>;
+	tierListStore?: Writable<NDKList | undefined>;
 	listsKinds?: number[];
 	extraKinds?: number[];
 	closeOnEose?: boolean;
@@ -229,7 +252,8 @@ async function fetchData(
 	name: string,
 	$ndk: NDKSvelte,
 	authors: string[],
-	opts: IFetchDataOptions
+	opts: IFetchDataOptions,
+	relaySet?: NDKRelaySet
 ): Promise<void> {
 	// set defaults
 	opts.waitUntilEoseToResolve ??= true;
@@ -313,14 +337,14 @@ async function fetchData(
 	};
 
 	const processTierList = (event: NDKEvent) => {
-		opts.tierListStore.update((tierList) => {
+		opts.tierListStore!.update((tierList) => {
 			if (tierList && event.created_at! < tierList.created_at!) return tierList;
 			return NDKList.from(event);
 		});
 	}
 
 	const processSubscriptionTier = (event: NDKEvent) => {
-		opts.userTierStore.update((tiers) => {
+		opts.userTierStore!.update((tiers) => {
 			const tier = NDKSubscriptionTier.from(event);
 
 			d(`Found tier ${tier.title}`, tier.isValid);
@@ -351,7 +375,7 @@ async function fetchData(
 	/**
 	 * Called when a newer event of kind 3 is received.
 	 */
-	const processContactList = (event: NDKEvent, store: Writable<Set<Hexpubkey>>) => {
+	const processContactList = (event: NDKEvent, store: Writable<Set<Hexpubkey> | Map<Hexpubkey, number>>) => {
 		if (event.id !== processedIdForKind[event.kind!]) {
 			processedIdForKind[event.kind!] = event.id;
 			updateFollows(event, store);
@@ -379,13 +403,20 @@ async function fetchData(
 		}
 	};
 
-	const updateFollows = (event: NDKEvent, store: Writable<Set<Hexpubkey>>) => {
+	const updateFollows = (event: NDKEvent, store: Writable<Set<Hexpubkey> | Map<Hexpubkey, number>>) => {
 		const follows = event.tags.filter((t: NDKTag) => t[0] === 'p').map((t: NDKTag) => t[1]);
 
 		// if authors has more than one, add the current data, otherwise replace
 		if (authors.length > 1) {
-			opts.followsStore!.update((existingFollows) => {
-				follows.forEach((f) => existingFollows.add(f));
+			opts.followsStore!.update((existingFollows: Set<Hexpubkey> | Map<Hexpubkey, number>) => {
+				follows.forEach((f) => {
+					if (existingFollows instanceof Map) {
+						const current = existingFollows.get(f) || 0;
+						existingFollows.set(f, current + 1);
+					} else if (existingFollows instanceof Set) {
+						existingFollows.add(f)
+					}
+				});
 				return existingFollows;
 			});
 		} else store!.set(new Set(follows));
@@ -434,7 +465,7 @@ async function fetchData(
 		if (opts.activeSubscriptionsStore) {
 			filters.push({
 				kinds: [NDKKind.GroupMembers],
-				authors: trustedPubkeys,
+				authors: [creatorRelayPubkey],
 				'#p': authorPrefixes
 			});
 		}
@@ -448,7 +479,7 @@ async function fetchData(
 			groupable: false,
 			cacheUsage: NDKSubscriptionCacheUsage.PARALLEL,
 			subId: `session:${name}`
-		});
+		}, relaySet);
 
 		userDataSubscription.on('event', processEvent);
 

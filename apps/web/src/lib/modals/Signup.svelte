@@ -13,10 +13,15 @@
 
     let email: string;
     let username: string = "";
+    // let nsecBunker: NsecBunkerProvider = {
+    //     pubkey: "73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63",
+    //     domain: "highlighter.com"
+    // };
     let nsecBunker: NsecBunkerProvider = {
-        pubkey: "73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63",
-        domain: "highlighter.com"
+        pubkey: "545e7ec4528938b895281d032e9d68afd2c4c30fc26897a00b1dfa1ab25d7257",
+        domain: "5b4fde7acaac.ngrok.app"
     };
+
     let creating: boolean;
     let usernameTaken = false;
     let popupNotOpened = false;

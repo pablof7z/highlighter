@@ -1,20 +1,17 @@
 <script lang="ts">
-	import { defaultVerifierPubkey } from '$utils/ndk.js';
-    import { getUserSubscriptionTiersStore } from '$stores/user-view';
 	import { ndk, user } from '@kind0/ui-common';
-	import { NDKEvent, NDKKind, NDKSubscriptionTier, type NostrEvent } from '@nostr-dev-kit/ndk';
+	import { NDKEvent, NDKKind, NDKRelay, NDKSubscriptionTier, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import TierEditor from './TierEditor.svelte';
 	import type { Readable } from 'svelte/store';
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import { goto } from '$app/navigation';
-	import { Plus, Check } from 'phosphor-svelte';
+	import { Plus } from 'phosphor-svelte';
     import { createEventDispatcher, onMount, tick } from 'svelte';
-	import { termToShort } from '$utils/term';
-	import { currencyFormat } from '$utils/currency';
 	import LoadingScreen from '$components/LoadingScreen.svelte';
-	import { allUserTiers, inactiveUserTiers, userTiers } from '$stores/session';
+	import { inactiveUserTiers, userProfile, userTiers } from '$stores/session';
 	import CollapsedTierListItem from './CollapsedTierListItem.svelte';
     import nip29 from '$lib/nip29';
+	import { defaultVerifierPubkey } from '$utils/const';
 
     export let redirectOnSave: string | false = "/dashboard";
     export let usePresetButton = false;
@@ -107,6 +104,8 @@
                 kind: NDKKind.TierList,
             } as NostrEvent);
 
+            const promises: Promise<Set<NDKRelay>>[] = [];
+
             for (const tier of tiers) {
                 tier.kind = NDKKind.SubscriptionTier;
                 tier.created_at = Math.floor(Date.now() / 1000);
@@ -120,14 +119,19 @@
                 tier.verifierPubkey = defaultVerifierPubkey;
                 for (const relay of relaySet.relays) { tier.tags.push(["r", relay.url]); }
 
-                console.log('tier event', tier.rawEvent());
-
-                await tier.publish();
+                await tier.sign();
+                promises.push(tier.publish());
                 tiersList.tags.push(["e", tier.id]);
             }
 
-            await tiersList.publish();
-            await nip29.createGroup();
+            await Promise.all([
+                tiersList.publish(),
+                ...promises
+            ]);
+
+            const name = $userProfile?.displayName || undefined;
+
+            await nip29.createGroup($ndk, $user, name, undefined, relaySet);
 
             if (emit) dispatch("saved", { tiers: tiersList });
 
@@ -153,6 +157,20 @@
         save(false);
 
         dispatch("saved");
+    }
+
+    async function restore(tier: NDKSubscriptionTier) {
+        let tierList = await $ndk.fetchEvent({ kinds: [NDKKind.TierList], authors: [$user.pubkey] });
+        if (!tierList) {
+            tierList = new NDKEvent($ndk, {
+                kind: NDKKind.TierList,
+            } as NostrEvent);
+        } else {
+            tierList.id = ""; tierList.sig = "";
+        }
+
+        tierList.tags.push(["e", tier.id]);
+        await tierList.publish();
     }
 </script>
 
@@ -225,15 +243,15 @@
             </div>
         </div>
 
-        <!-- {#if $inactiveUserTiers.length > 0}
+        {#if $inactiveUserTiers.length > 0}
             <h1>
                 Inactive subscription tiers
             </h1>
 
             {#each $inactiveUserTiers as tier}
                 <CollapsedTierListItem {tier} />
-                Restore
+                <button on:click={() => restore(tier)}>Restore</button>
             {/each}
-        {/if} -->
+        {/if}
     </div>
 </LoadingScreen>

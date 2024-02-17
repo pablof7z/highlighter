@@ -1,41 +1,37 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
-	import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+	import UserProfile from "$components/User/UserProfile.svelte";
+	import { getUserSupporters } from "$stores/user-view";
+	import { Avatar } from "@kind0/ui-common";
+	import type { Hexpubkey, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+	import { onMount } from "svelte";
 	import { closeModal } from "svelte-modals";
+	import { Readable } from "svelte/store";
 
     export let user: NDKUser;
-    let profile: NDKUserProfile | undefined | null = undefined;
-
-    user.fetchProfile().then((p) => profile = p);
-
-    let link = `/${user.npub}`;
-
-    $: if (profile?.nip05) link = `/${profile.nip05}`;
+    let userProfile: NDKUserProfile;
+    let authorUrl: string;
 
     function seeContentClicked() {
         closeModal();
-        if ($page.url.pathname === link) {
+        if ($page.url.pathname === authorUrl) {
             window.location.reload();
             return;
         } else {
-            goto(link, { invalidateAll: true });
+            goto(authorUrl, { invalidateAll: true });
         }
     }
 </script>
 
-<div class="min-w-[300px] flex-col justify-center items-center gap-6 inline-flex">
-<div class="text-white text-[21px] font-medium">Thank you for your support!</div>
-    <img src="/images/thank-you.png" />
-    <div class="self-stretch h-[42px] flex-col justify-start items-center gap-3 flex">
-        <div class="self-stretch h-[42px] flex-col justify-start items-center gap-3 flex">
-            <div class="self-stretch h-[42px] flex-col justify-start items-center gap-[8.30px] flex">
-                <div class="self-stretch h-[42px] flex-col justify-center items-start gap-4 flex">
-                    <button on:click={seeContentClicked} class="button button-primary w-full">
-                        See content
-                    </button>
-                </div>
-            </div>
-        </div>
+<UserProfile {user} bind:userProfile bind:authorUrl let:fetching>
+    <div class="flex flex-col items-center gap-6 p-6">
+        <Avatar {userProfile} {fetching} class="w-32 h-32" type="square" />
+        <h1 class="text-white text-7xl font-black">Hooray!</h1>
+        <h1 class="text-white text-2xl font-medium grow">Thank you for your support!</h1>
+
+        <button on:click={seeContentClicked} class="button button-primary w-full place-self-end">
+            Go backstage
+        </button>
     </div>
-</div>
+</UserProfile>

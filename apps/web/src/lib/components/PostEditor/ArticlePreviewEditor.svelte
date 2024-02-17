@@ -2,7 +2,7 @@
 	import { slide } from 'svelte/transition';
     import Input from "$components/Forms/Input.svelte";
 	import GuideToPreviews from './../../drawer/help/guide-to-previews.svelte';
-    import { makePublicAfter, previewExtraContent, wideDistribution } from "$stores/post-editor";
+    import { makePublicAfter, previewExtraContent, selectedTiers, wideDistribution } from "$stores/post-editor";
 	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
 	import Box from "$components/PageElements/Box.svelte";
 	import { preview, previewContentChanged, previewTitleChanged } from "$stores/post-editor";
@@ -65,7 +65,10 @@
         }
     }
 
-    $: $wideDistribution = true;
+    $: $wideDistribution = !!(
+        $selectedTiers["Free"]?.selected ||
+        $preview && $preview.content.length > 50
+    )
 </script>
 
 <Box innerClass="">

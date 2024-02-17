@@ -13,6 +13,7 @@
 	import { publishAt, makePublicAfter, preview, view, selectedTiers, wideDistribution } from "$stores/post-editor";
 	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { debugMode } from "$stores/session";
 
     $: if ($event && $user) {
         $event.pubkey = $user?.pubkey;
@@ -26,8 +27,6 @@
     let previewPublished = false;
     let makePublicScheduled = false;
     let publishAtVal: string | undefined = $publishAt?.toISOString().slice(0, -1);
-
-    $: $wideDistribution = false;
 
     $: if (publishAtVal) {
         try {
@@ -71,9 +70,6 @@
             }
         )
 
-        console.log("eventForPublish", eventForPublish?.rawEvent());
-        console.log("teaserForPublish", teaserForPublish?.rawEvent());
-
         try {
             await publishToTiers(
                 eventForPublish!, {
@@ -115,9 +111,10 @@
             makePublicScheduled = true;
         }
 
-        closeModal();
-        reset("published");
         publishing = false;
+        $view = "published";
+        closeModal();
+        // reset("published");
     }
 
     let timeToPublish = 0;
@@ -132,7 +129,7 @@
         Ready to publish?
     </h1>
 
-    <div class="md:min-w-[40rem]">
+    <div class="md:min-w-[40rem] bg-white/5 border border-white/20 rounded-box p-3">
         {#if $event && $user}
             {#if $event.kind === NDKKind.Article}
                 <ArticleLink article={$event} skipLink={true} />
@@ -152,14 +149,16 @@
 
             <RadioButton bind:currentValue={mode} value="schedule" class="flex-1 bg-white/10 !text-white font-normal text-xl" on:click={() => dateInput.focus()}>
                 Schedule
-                <div slot="description">
+                <div slot="description" class:hidden={mode !== "schedule"}>
                     <input type="datetime-local" bind:value={publishAtVal} class="border-none !bg-transparent" bind:this={dateInput} />
                 </div>
             </RadioButton>
         </div>
     </section>
 
-    <div>wideDistribution: {$wideDistribution}</div>
+    {#if $debugMode}
+        <div>wideDistribution: {$wideDistribution}</div>
+    {/if}
 
     <div class="flex flex-row gap-4 w-full">
         <button on:click={() => closeModal()}>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import MainWrapper from "$components/Page/MainWrapper.svelte";
     import { pageHeader } from "$stores/layout";
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { ndk } from "@kind0/ui-common";
@@ -13,7 +14,7 @@
     )
 </script>
 
-<div class="w-full h-full min-h-screen flex flex-col justify-center items-center">
+<MainWrapper marginClass="max-w-3xl">
     <div class="flex flex-col max-w-prose w-full">
         <h1 class="text-[80px] font-semibold ">
             Community.
@@ -22,7 +23,7 @@
             Like never before
         </h2>
 
-        <div class="prose text-xl mt-4 opacity-60 font-light">
+        <div class="text-xl mt-4 opacity-60 font-light">
             Highlighter, built on Nostr, allows for direct communication between creators and their audience. It's a place where you can share your thoughts, ideas, and opinions with the world.
         </div>
 
@@ -30,7 +31,7 @@
             Coming soon
         </div>
     </div>
-</div>
+</MainWrapper>
 
 <style>
     h1 {

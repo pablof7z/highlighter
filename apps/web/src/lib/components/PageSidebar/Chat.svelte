@@ -18,7 +18,7 @@
 
     let nonSelectedCommunities: Readable<NDKEvent[]>;
 
-    $: if (activeUser) {
+    $: {
         nonSelectedCommunities = derived(followsWithCommunities, $followsWithCommunities => {
             const dTag = new Map<Hexpubkey, NDKEvent>();
 

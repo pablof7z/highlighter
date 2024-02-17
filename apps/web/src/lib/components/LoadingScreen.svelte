@@ -27,8 +27,6 @@
     });
 </script>
 
-
-
 {#if ready}
     <div class={$$props.class??""} transition:fade>
         <slot />

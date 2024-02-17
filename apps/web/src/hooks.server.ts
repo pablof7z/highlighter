@@ -5,6 +5,7 @@ const AUTH_PATHS = [
 	'/api/user',
 	'/api/user/nwa',
 	'/api/user/nwc',
+	'/api/user/wallet/balance',
 	'/api/user/pay',
 	'/api/user/subscribe',
 	'/api/user/upload'

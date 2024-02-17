@@ -46,10 +46,16 @@ async function getPaymentRequest(event: NDKEvent): Promise<string | null> {
 		zappedUser: recipient
 	});
 
-	let pr: string;
+	let pr: string | null;
 
 	try {
-		pr = await zap.createZapRequest(satsAmount * 1000, comment, undefined, ["wss://relay.damus.io/"]);
+		// pr = await zap.createZapRequest(satsAmount * 1000, comment, undefined, ["wss://relay.damus.io/"]);
+		pr = await zap.createZapRequest(5000, comment);
+
+		if (!pr) {
+			throw new Error('Unable to generate a payment request');
+		}
+
 	} catch (error) {
 		debug('error creating zap request', error);
 		throw error;
@@ -106,12 +112,12 @@ export async function POST({ request }) {
 		}
 
 		debug('getting payment request');
-		// const pr = await getPaymentRequest(event);
-		// debug('payment request', pr);
+		const pr = await getPaymentRequest(event);
+		debug('payment request', pr);
 
-		// if (!pr) {
-		// 	throw new Error('Unable to generate a payment request');
-		// }
+		if (!pr) {
+			throw new Error('Unable to generate a payment request');
+		}
 
 		reportToClient([
 			[ "status", "Fetching creator payment details" , "done"],
@@ -119,8 +125,8 @@ export async function POST({ request }) {
 		], event);
 
 		// const paymentResult = { mocked: 'yup!' };
-		// const paymentResult = await sendPayment(pr, event.pubkey);
-		// debug('payment result', paymentResult);
+		const paymentResult = await sendPayment(pr, event.pubkey);
+		debug('payment result', paymentResult);
 
 		reportToClient([
 			[ "status", "Fetching creator payment details" , "done"],
@@ -136,10 +142,10 @@ export async function POST({ request }) {
 			[ "status", "Confirming payments" , "done"]
 		], event);
 
-		return json({ success: true });
+		// return json({ success: true });
 
-		// console.log('paymentResult', paymentResult);
-		// return json(paymentResult);
+		console.log('paymentResult', paymentResult);
+		return json(paymentResult);
 	} catch (error: any) {
 		console.log(JSON.stringify(error))
 		debug('err', { error });
@@ -166,7 +172,7 @@ async function processNewSubscription(event: NDKSubscriptionStart, recipient: ND
 		new Promise((resolve) => {
 			recordValidSubscriptionPayment(event)
 				.then(resolve)
-				.catchexp(e) => {
+				.catch(e => {
 					debug('error recording valid subscription payment', e);
 					resolve(null);
 				})

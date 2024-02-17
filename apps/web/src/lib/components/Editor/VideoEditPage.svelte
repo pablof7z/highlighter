@@ -5,7 +5,7 @@
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import VideoMetaPage from "./VideoMetaPage.svelte";
 	import VideoPreviewEditor from "$components/PostEditor/VideoPreviewEditor.svelte";
-	import { preview } from "$stores/post-editor";
+	import { nonSubscribersPreview, preview, selectedTiers, wideDistribution } from "$stores/post-editor";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { user } from "@kind0/ui-common";
 
@@ -16,6 +16,11 @@
     let tiers: Record<string, boolean> = { "Free": true };
 
     $preview = teaser;
+    $nonSubscribersPreview = true;
+
+    $: $wideDistribution = !!(
+        $preview && ($preview as NDKVideo).url || $selectedTiers["Free"]?.selected
+    )
 
     const allTiers = getUserSubscriptionTiersStore();
 

@@ -2,6 +2,7 @@
 	import VideoUploader from '$components/Forms/VideoUploader.svelte';
 	import type { NDKVideo } from '@nostr-dev-kit/ndk';
 	import TitleInput from './TitleInput.svelte';
+    import { status } from '$stores/post-editor';
 
     export let video: NDKVideo;
     export let videoFile: File | undefined;
@@ -13,9 +14,12 @@
         const haveTitle = !!video.title && video.title.length > 0;
     }
 
+    const st = "Uploading video";
+
     function uploading(e: CustomEvent<{progress: number | string}>) {
-        console.log('uploading', e.detail);
         const { progress } = e.detail;
+
+        $status.push(st);
 
         // if progress is a number
         if (typeof progress === 'number') {
@@ -34,6 +38,10 @@
 
     function uploaded() {
         pendingStatus = "Video uploaded!";
+
+        // remove from status
+        $status = $status.filter((s) => s !== st);
+
         setTimeout(() => {
             pendingStatus = undefined;
         }, 1500);

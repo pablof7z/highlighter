@@ -19,8 +19,6 @@
 
 	const d = createDebug('HL:layout');
 
-	$: d(`profile in layout`, $userProfile);
-
 	let webManifestLink: string;
 	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
 

@@ -9,7 +9,7 @@
 	import { onMount } from "svelte";
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
-	import { makePublicAfter, previewExtraContent, wideDistribution } from "$stores/post-editor";
+	import { makePublicAfter, previewExtraContent, status, wideDistribution } from "$stores/post-editor";
 	import { slide } from "svelte/transition";
 	import MakePublicAfter from "$components/Editor/Audience/MakePublicAfter.svelte";
 
@@ -44,12 +44,12 @@
         teaser.url = teaserUrl;
         showUploadTrailer = false;
 
+        $status = $status.filter((s) => s !== "Uploading teaser");
+
         // onUploaded(e);
 	}
 
     let showUploadTrailer = false;
-
-    $: $wideDistribution = !!teaserUrl;
 
     $previewExtraContent ??= { before: undefined, after: previewContentReadLink};
 
@@ -59,6 +59,10 @@
 
     function makePublicNotice() {
         return `This is a subscribers-first video. The full version will be made public in ${$makePublicAfter} days.`;
+    }
+
+    function teaserUploading() {
+        $status.push("Uploading teaser");
     }
 </script>
 
@@ -80,6 +84,7 @@
             wrapperClass="min-h-[12rem]"
             bind:video={teaser}
             bind:videoUrl={teaserUrl}
+            on:uploading={teaserUploading}
             on:uploaded={teaserUploaded}
         />
     {/if}

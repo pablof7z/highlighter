@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-	import { trustedPubkeys } from "$utils/login";
 	import { ndk } from "@kind0/ui-common";
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Check } from "phosphor-svelte";
 	import { onDestroy } from "svelte";
+	import { creatorRelayPubkey } from '$utils/const';
 
     export let subscribeEvent: NDKEvent;
     let statusEvent: NDKEvent;
 
     const sub = $ndk.subscribe({
         kinds: [24001],
-        authors: trustedPubkeys,
+        authors: [creatorRelayPubkey],
         ...subscribeEvent.filter()
     });
     sub.on("event", (e) => statusEvent = e);

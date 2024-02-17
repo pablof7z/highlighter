@@ -7,7 +7,6 @@
 	import { slide } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
 	import { currencyFormat } from "$utils/currency";
-	import { trustedPubkeys } from "$utils/login";
 	import SubscribeStatusInfo from "./SubscribeStatusInfo.svelte";
 
     export let amount: string;

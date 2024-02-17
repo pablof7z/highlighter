@@ -1,11 +1,13 @@
 import db from '$lib/db';
-import { webln } from '@getalby/sdk';
+import { ndk } from '@kind0/ui-common';
 import type { Hexpubkey } from '@nostr-dev-kit/ndk';
+import { NDKNwc } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
+import { get } from 'svelte/store';
 
 const debug = createDebug('HL:payments:pay');
 
-async function getNwcString(pubkey: string) {
+export async function getNwcString(pubkey: string) {
 	const wallet = await db.walletConnect.findUnique({
 		where: { pubkey }
 	});
@@ -18,21 +20,39 @@ async function getNwcString(pubkey: string) {
 }
 
 export async function sendPayment(invoice: string, pubkey: Hexpubkey): Promise<string> {
-	console.log('sendPayment', invoice, pubkey);
-	let nwcUri = await getNwcString(pubkey);
-	nwcUri = 'nostr+walletconnect://2c43c25ed6462e9a2cf91abd692080730abebc1af394402d56ce5625f59d31b1?relay=wss%3A%2F%2Frelay.mutinywallet.com%2F&secret=b8ba8a96802a254e63c2a723ae754ee74ecbfe312d8f028d7fd4f898704dadaf';
-	debug(`Sending payment for ${pubkey}`, nwcUri);
-	const nwc = new webln.NWC({ nostrWalletConnectUrl: nwcUri });
+	const $ndk = get(ndk);
+	const nwcUri = await getNwcString(pubkey);
+	debug('sendPayment', {invoice, pubkey, nwcUri});
 
-	debug('enabling nwc');
-	const a = await nwc.enable();
-	debug('ret', a)
-	debug('connected', nwc.connected);
+	let nwc: NDKNwc
+	try {
+		nwc = await $ndk.nwc(nwcUri, 5000);
+	} catch (error) {
+		debug('error connecting to wallet service', error);
+		throw error;
+	}
 
-	// const balance = await nwc.getBalance();
-	// console.log('balance', balance);
+	nwc.getInfo().then((info) => {
+		console.log('info', info);
+	}).catch((error) => {
+		console.error('error getting info', error);
+		debug('error getting info', error);
+	});
+
+	nwc.getBalance().then((balance) => {
+		console.log('balance', balance);
+	}).catch((error) => {
+		console.error('error getting balance', error);
+		debug('error getting balance', error);
+	});
+
 	debug('sending payment');
-	const res = await nwc.sendPayment(invoice);
-	debug('payment sent', res);
-	return res;
+	try {
+		const res = await nwc.payInvoice(invoice);
+		debug('payment sent', res);
+		return res?.preimage || "";
+	} catch (error) {
+		debug('error sending payment', error);
+		throw error;
+	}
 }

@@ -23,7 +23,6 @@
 
     let previewContent: string;
     let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
-    let categories: string[] = [];
 
     let previewContentChanged = false;
 
@@ -56,33 +55,6 @@
     }
 
     let userProfile: UserProfileType;
-
-    $: if (userProfile?.categories?.length > 0 && categories.length === 0) {
-        categories = userProfile.categories;
-    }
-
-    let steps = [
-        {
-            title: "Write",
-            description: "Write to your heart's content",
-            canContinue: true,
-        },
-        {
-            title: "Meta",
-            description: "Add an image, categories, and summary",
-            canContinue: true,
-        },
-        {
-            title: "Audience",
-            description: "Define this article's visibility",
-            canContinue: true,
-        },
-        {
-            title: "Publish",
-            description: "Publish this article",
-            canContinue: true,
-        }
-    ]
 
     let contentChangedSinceLastSave = 0;
 

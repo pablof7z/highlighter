@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { user } from "@kind0/ui-common";
     import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import { CaretRight, Keyhole, Package, ShareNetwork } from "phosphor-svelte";
+	import { CaretRight, Code, Keyhole, Package, ShareNetwork } from "phosphor-svelte";
 	import { logout } from "$utils/login";
 
     let authorUrl: string;
+
+
 </script>
 
 {#if $user}
@@ -78,6 +80,18 @@
                 <span>
                     <Package class="w-5 h-5" />
                     Services
+                </span>
+                <CaretRight class="w-5 h-5" />
+            </a>
+        </li>
+
+        <div class="divider my-0"></div>
+
+        <li>
+            <a href="/settings/developer">
+                <span>
+                    <Code class="w-5 h-5" />
+                    Developer
                 </span>
                 <CaretRight class="w-5 h-5" />
             </a>

@@ -117,7 +117,7 @@ async function publishOrSchedule(
 	publishAt?: Date,
 ) {
 	if (!publishAt) {
-		console.log('publishing event', event.rawEvent(), relaySet?.size());
+		console.log('publishing event', event.rawEvent(), relaySet?.size);
 		await event.publish(relaySet);
 	} else {
 		const relays = relaySet ? Array.from(relaySet.relays).map(r => r.url) : undefined;

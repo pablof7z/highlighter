@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SignupModal from '$modals/SignupModal.svelte';
-	import { userActiveSubscriptions, userTiers } from "$stores/session";
-	import { Tray, PaperPlane, ChatCircle, House, Funnel, Fire, User, Gear, UserCircle, Bell, Gauge } from "phosphor-svelte";
+	import { debugMode, userActiveSubscriptions, userTiers } from "$stores/session";
+	import { Tray, PaperPlane, ChatCircle, House, Funnel, Fire, User, Gear, UserCircle, Bell, Gauge, Bug } from "phosphor-svelte";
     import { Avatar, bunkerNDK, ndk, user } from "@kind0/ui-common";
 	import { openModal } from "svelte-modals";
     import NewItemModal from '$modals/NewItemModal.svelte';
@@ -13,6 +13,7 @@
 	import CurrentUser from '$components/CurrentUser.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import DashboardIcon from '$icons/DashboardIcon.svelte';
+	import { RelayList } from '@nostr-dev-kit/ndk-svelte-components';
 
     async function openSignupModal() {
         if (window.nostr) {
@@ -25,6 +26,8 @@
 
         openModal(SignupModal);
     }
+
+    let showRelayList = false;
 </script>
 
 <!-- Mobile navigation -->
@@ -149,6 +152,22 @@
             w-full
             gap-4
         ">
+            {#if import.meta.env.VITE_HOSTNAME === "localhost" || $user?.npub === "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft"}
+                <Item on:click={() => $debugMode = !$debugMode} tooltip="Notifications" active={$debugMode}>
+                    <Bug class="w-full h-full {$debugMode ? "text-accent2" : "text-inherit"}" weight={$debugMode ? "fill" : "regular"} />
+                </Item>
+
+                <Item on:click={() => showRelayList = !showRelayList} tooltip="Relay List" active={showRelayList}>
+                    <Gauge class="w-full h-full {showRelayList ? "text-accent2" : "text-inherit"}" weight={showRelayList ? "fill" : "regular"} />
+                </Item>
+
+                {#if showRelayList}
+                    <div class="fixed top-0 left-20 w-[50vw] bg-base-200/80 backdrop-blur-[50px] h-screen overflow-y-auto pr-6">
+                        <RelayList ndk={$ndk} />
+                    </div>
+                {/if}
+            {/if}
+
             <Item tooltip="Notifications" href="/notifications">
                 <Bell class="w-full h-full" />
             </Item>

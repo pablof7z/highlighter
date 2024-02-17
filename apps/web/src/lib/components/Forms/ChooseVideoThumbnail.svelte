@@ -178,12 +178,6 @@
     $: videoMock.content = content ?? "";
 
     $: selectedBlob = selectedThumbnail?.blob;
-
-    let pickFromTimeline = false;
-
-    function useTimeline() {
-        pickFromTimeline = true;
-    }
 </script>
 
 <canvas bind:this={canvas} class="hidden"></canvas>
@@ -195,10 +189,6 @@
                 Generating thumbnails...
                 <span class="loading loading-sm"></span>
             </div>
-        {:else if !pickFromTimeline && thumbnails.length > 0}
-            <button class="absolute top-3 right-3 button button-neutral text-sm px-6 font-normal" on:click={useTimeline}>
-                Pick from timeline
-            </button>
         {/if}
 
         {#if currentThumbnail ?? selectedThumbnail?.dataUrl}
@@ -226,14 +216,17 @@
     </button>
 </div>
 
-{#if pickFromTimeline && thumbnails.length > 1}
+{#if thumbnails.length > 1}
+    <div class="settings-like-section-title">
+        Pick from timeline
+    </div>
     <div class="w-full" transition:slide>
         <Carousel class="space-x-4" itemCount={thumbnails.length}>
             {#each thumbnails as thumbnail, index}
                 <div class="carousel-item">
                     <button
-                        class="object-cover rounded-xl flex-none opacity-50"
-                        class:opacity-100={selectedIndex === index}
+                        class="object-cover rounded-xl flex-none opacity-50 transition-all duration-300"
+                        class:!opacity-100={selectedIndex === index}
                         on:click={() => selectedIndex = index}
                     >
                         <img src={thumbnail.dataUrl} class="w-full h-full object-cover rounded-xl" alt="" />
