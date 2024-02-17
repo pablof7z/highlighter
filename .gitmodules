@@ -10,3 +10,6 @@
 	path = apps/nostdress
 	url = https://github.com/believethehype/nostdress.git
 	branch = master
+[submodule "apps/relay/go-nostr"]
+	path = apps/relay/go-nostr
+	url = git@github.com:pablof7z/go-nostr.git
