@@ -16,10 +16,13 @@
     />
 
     <div class="flex flex-col sm:flex-row gap-4 items-stretch justify-evenly w-full">
-        <a href="/settings/profile" class="btn btn-neutral sm:w-1/2">
+        <a href={authorUrl} class="btn btn-neutral sm:w-1/3">
+            View Profile
+        </a>
+        <a href="/settings/profile" class="btn btn-neutral sm:w-1/3">
             Edit Profile
         </a>
-        <button class="btn btn-neutral sm:w-1/2" on:click={logout}>
+        <button class="btn btn-neutral sm:w-1/3" on:click={logout}>
             Log out
         </button>
     </div>

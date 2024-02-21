@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TierAmountLine from './TierAmountLine.svelte';
     import type { NDKSubscriptionAmount, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
-	import { Textarea } from "@kind0/ui-common";
+	import { Textarea, ndk, user } from "@kind0/ui-common";
     import { createEventDispatcher } from "svelte";
 	import { Check, Trash, Plus } from 'phosphor-svelte';
 	import { slide } from 'svelte/transition';
@@ -111,10 +111,9 @@
     let perkWithFocus: number | undefined;
 </script>
 
-<section class="settings">
-<div class="w-full sm:p-6 rounded-xl flex-col border border-base-200">
+<div class="w-full rounded-xl flex-col border border-base-200">
     <div class="self-stretch flex-col justify-start items-start gap-6 flex">
-        <section class="settings">
+        <section class="settings w-full">
             <h1 class="title">Basic details</h1>
             <div class="description">
                 Your potential subscribers will see this before deciding to support your work.
@@ -230,7 +229,6 @@
         </div>
     </div>
 </div>
-</section>
 
 <style lang="postcss">
     section.settings {

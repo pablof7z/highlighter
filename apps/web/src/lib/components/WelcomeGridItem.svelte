@@ -12,11 +12,13 @@
     let display: boolean | undefined;
 
     onMount(async () => {
-        if (!$user) {
-            display = $seenOnboardingPromptGridItem !== true;
-        } else {
-            display = $userTiers.length === 0;
-        }
+        setTimeout(() => {
+            if (!$user) {
+                display = $seenOnboardingPromptGridItem !== true;
+            } else {
+                display = $userTiers.length === 0;
+            }
+        }, 5000);
     })
 
     $: if (browser && $seenOnboardingPromptGridItem === true) {

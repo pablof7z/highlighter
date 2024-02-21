@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { mode } from '$stores/inbox-view';
 	import { ndk, user } from '@kind0/ui-common';
-	import { NDKEvent, NDKKind, NDKRelay, NDKSubscriptionTier, type NostrEvent } from '@nostr-dev-kit/ndk';
+	import { NDKEvent, NDKKind, NDKRelay, NDKSubscriptionCacheUsage, NDKSubscriptionTier, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import TierEditor from './TierEditor.svelte';
 	import type { Readable } from 'svelte/store';
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import { goto } from '$app/navigation';
-	import { Plus } from 'phosphor-svelte';
+	import { CaretDown, CaretUp, Plus, Trash } from 'phosphor-svelte';
     import { createEventDispatcher, onMount, tick } from 'svelte';
 	import LoadingScreen from '$components/LoadingScreen.svelte';
 	import { inactiveUserTiers, userProfile, userTiers } from '$stores/session';
@@ -15,7 +16,6 @@
 
     export let redirectOnSave: string | false = "/dashboard";
     export let usePresetButton = false;
-    export let mobileBackUrl: string | undefined = undefined;
     export let saving = false;
     export let forceSave = false;
 
@@ -23,7 +23,7 @@
 
     let tiers: NDKSubscriptionTier[] = [];
     let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
-    let expandedTiers: number[] = [];
+    let expandedTierIndex: number | undefined = undefined;
 
     // Tracks the deleted tiers so we don't re-add them
     let deletedDtags = new Set<string>();
@@ -34,7 +34,7 @@
 
     onMount(async () => {
         if ($currentTiers && $currentTiers.length === 0) {
-            const userTiers = await $ndk.fetchEvent({ kinds: [NDKKind.SubscriptionTier], authors: [$user.pubkey], limit: 1})
+            const userTiers = await $ndk.fetchEvent({ kinds: [NDKKind.SubscriptionTier], authors: [$user.pubkey], limit: 1}, { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
 
             if (!userTiers && $currentTiers.length === 0) {
                 addTier();
@@ -87,12 +87,8 @@
             !tiers[lastIndex].getMatchingTags("amount").length
         )) return;
 
-        if (expandedTiers.includes(lastIndex)) {
-            expandedTiers = expandedTiers.filter((i) => i !== lastIndex);
-        }
-
         tiers.push(tier);
-        expandedTiers = [tiers.length-1]
+        expandedTierIndex = tiers.length-1;
         tiers = tiers;
     }
 
@@ -172,10 +168,33 @@
         tierList.tags.push(["e", tier.id]);
         await tierList.publish();
     }
+
+    let showInactive = false;
+
+    function moveUp(i: number) {
+        if (i === 0) return;
+        const temp = tiers[i];
+        tiers[i] = tiers[i - 1];
+        tiers[i - 1] = temp;
+        tiers = tiers;
+    }
+
+    function moveDown(i: number) {
+        if (i === tiers.length - 1) return;
+        const temp = tiers[i];
+        tiers[i] = tiers[i + 1];
+        tiers[i + 1] = temp;
+        tiers = tiers;
+    }
+
+    function deletTier(tier: NDKSubscriptionTier) {
+        if (tier.dTag) deletedDtags.add(tier.dTag);
+        tiers = tiers.filter((t) => t !== tier);
+    }
 </script>
 
 <LoadingScreen {ready}>
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4 items-stretch w-full">
         {#if tiers.length === 0}
             <div class="alert alert-neutral">
                 <h1 class="text-lg py-12">
@@ -184,34 +203,48 @@
             </div>
         {/if}
 
-        <div class="flex flex-col">
-            {#each tiers as tier, i (i)}
-                {#if expandedTiers.includes(i)}
-                    <TierEditor
-                        bind:tier={tier}
-                        autofocus={autofocus === i}
-                        on:close={() => {
-                            expandedTiers = expandedTiers.filter((j) => i !== j);
-                        }}
-                        on:delete={() => {
-                            if (tier.tagValue("d")) deletedDtags.add(tier.tagValue("d"));
-                            tiers = tiers.filter((_, j) => i !== j);
-                        }}
-                    />
-                {:else}
-                    <CollapsedTierListItem {tier}
-                        on:click={() => {expandedTiers.push(i); expandedTiers = expandedTiers}}
-                    />
-                    <!-- <button class="text-red-500 text-xs" on:click={() => {
-                        tier.delete();
-                    }}>
-                        Delete
-                    </button> -->
-                {/if}
-            {/each}
-        </div>
+        <ul class="flex flex-col w-full gap-4">
+            {#if expandedTierIndex !== undefined}
+                <TierEditor
+                    bind:tier={tiers[expandedTierIndex]}
+                    autofocus={true}
+                    on:close={() => {
+                        expandedTierIndex = undefined;
+                    }}
+                    on:delete={() => {
+                        if (tiers[expandedTierIndex]?.dTag) deletedDtags.add(tiers[expandedTierIndex].dTag);
+                        tiers = tiers.filter((_, j) => expandedTierIndex !== j);
+                        expandedTierIndex = undefined;
+                    }}
+                />
+            {:else}
+                {#each tiers as tier, i (i)}
+                    <div class="w-full group flex flex-row items-stretch">
+                        <div class="flex flex-col gpa-2 transition-all duration-300 self-stretch opacity-10 group-hover:opacity-100">
+                            <button class="" on:click={() => {moveUp(i)}} disabled={i === 0}>
+                                <CaretUp class="w-5 h-5" />
+                            </button>
 
-        <div class="flex flex-col sm:flex-row justify-between items-stretch max-sm:w-full max-sm:gap-4">
+                            <button class="" on:click={() => moveDown(i)} disabled={i === tiers.length - 1}>
+                                <CaretDown class="w-5 h-5" />
+                            </button>
+
+                            <button class="text-red-500 mt-2" on:click={() => deletTier(tier)}>
+                                <Trash class="w-5 h-5" />
+                            </button>
+                        </div>
+                        <CollapsedTierListItem {tier}
+                            on:click={() => {expandedTierIndex = i}}
+                        />
+                    </div>
+                {/each}
+            {/if}
+        </ul>
+
+        <div
+            class="flex flex-col sm:flex-row justify-between items-stretch max-sm:w-full max-sm:gap-4"
+            class:hidden={expandedTierIndex !== undefined}
+        >
             <button
                 class="button button-black px-6 py-3 font-medium max-sm:w-full"
                 disabled={!canAddTier}
@@ -244,14 +277,18 @@
         </div>
 
         {#if $inactiveUserTiers.length > 0}
-            <h1>
-                Inactive subscription tiers
-            </h1>
+            <div class="divider"></div>
 
-            {#each $inactiveUserTiers as tier}
-                <CollapsedTierListItem {tier} />
-                <button on:click={() => restore(tier)}>Restore</button>
-            {/each}
+            <button class="self-start button" on:click={() => showInactive = !showInactive}>
+                Inactive subscription tiers
+            </button>
+
+            {#if showInactive}
+                {#each $inactiveUserTiers as tier}
+                    <CollapsedTierListItem {tier} />
+                    <button class="self-end button button-black" on:click={() => restore(tier)}>Restore</button>
+                {/each}
+            {/if}
         {/if}
     </div>
 </LoadingScreen>

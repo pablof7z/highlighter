@@ -1,5 +1,5 @@
 import { ndk, user as currentUser } from '@kind0/ui-common';
-import { NDKKind, NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
+import { NDKKind, NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionTier, NDKSubscriptionReceipt } from '@nostr-dev-kit/ndk';
 import { type NDKUser, type NDKFilter, type Hexpubkey, NDKHighlight } from '@nostr-dev-kit/ndk';
 import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 import { writable, get as getStore, derived, type Readable } from 'svelte/store';
@@ -7,6 +7,7 @@ import { userActiveSubscriptions } from './session';
 import createDebug from 'debug';
 import { mainContentKinds } from '$utils/event';
 import { creatorRelayPubkey } from '$utils/const';
+import { getDefaultRelaySet } from '$utils/ndk';
 
 const d = createDebug('HL:user-view');
 
@@ -14,7 +15,7 @@ export const activeUserViewPubkey = writable<Hexpubkey | undefined>(undefined);
 
 export let userSubscription: NDKEventStore<NDKEvent> | undefined = undefined;
 export const userSupporters = writable<
-	Readable<never[] | Record<Hexpubkey, string | undefined>> | undefined
+	Readable<never[] | Record<Hexpubkey, string | boolean>> | undefined
 >(undefined);
 
 export function startUserView(user: NDKUser) {
@@ -44,9 +45,9 @@ export function startUserView(user: NDKUser) {
 			kinds: [NDKKind.SubscriptionTier as number, NDKKind.TierList],
 			authors: [user.pubkey]
 		},
-		// supporters
 		{
-			kinds: [NDKKind.Subscribe as number],
+			kinds: [NDKKind.SubscriptionReceipt as number],
+			authors: [creatorRelayPubkey],
 			'#p': [user.pubkey]
 		},
 		{
@@ -79,7 +80,7 @@ export function startUserView(user: NDKUser) {
 		subId: 'user-view',
 		autoStart: true,
 		groupable: false,
-		cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY
+		relaySet: getDefaultRelaySet(),
 	});
 
 	userSupporters.set(getUserSupporters());
@@ -140,7 +141,7 @@ export function getUserSubscriptionTiersStore() {
 	});
 }
 
-export function getUserSupporters(): Readable<Record<Hexpubkey, string | undefined>> {
+export function getUserCommunityMembers(): Readable<Record<Hexpubkey, string | undefined>> {
 	const $activeUserViewPubkey = getStore(activeUserViewPubkey);
 
 	if (!userSubscription) return derived([], () => {});
@@ -165,6 +166,72 @@ export function getUserSupporters(): Readable<Record<Hexpubkey, string | undefin
 		}
 
 		return {};
+	});
+}
+
+export function getUserSupporters(): Readable<Record<Hexpubkey, string | true>> {
+	const $activeUserViewPubkey = getStore(activeUserViewPubkey);
+
+	if (!userSubscription) return derived([], () => {});
+
+	return derived(userSubscription, ($userSubscription) => {
+		if (!$userSubscription || !$activeUserViewPubkey) return {};
+
+		const supporters: Record<Hexpubkey, string | true> = {};
+
+		$userSubscription
+			.filter((event: NDKEvent) => event.kind === NDKKind.SubscriptionReceipt)
+			.map((event: NDKEvent) => NDKSubscriptionReceipt.from(event))
+			.filter((receipt: NDKSubscriptionReceipt) => receipt.isActive() && receipt.isValid)
+			.forEach((receipt: NDKSubscriptionReceipt) => {
+				const subscriber = receipt.subscriber;
+				if (!subscriber) {
+					d(`receipt has no subscriber`, receipt.rawEvent());
+					return;
+				}
+				supporters[subscriber.pubkey] = receipt.tierName || true;
+			});
+
+		return supporters;
+	});
+}
+
+export function getReceipts(): Readable<NDKSubscriptionReceipt[]> {
+	if (!userSubscription) {
+		console.log('no userSubscription');
+		return derived([], () => []);
+	}
+
+	return derived([userSubscription], ([$userSubscription]) => {
+		const items = $userSubscription;
+
+		return items
+			.filter((event: NDKEvent) => event.kind === NDKKind.SubscriptionReceipt)
+			.map((event: NDKEvent) => NDKSubscriptionReceipt.from(event));
+	});
+}
+
+export function getSortedSupporters(): Readable<Hexpubkey[]> {
+	const receipts = getReceipts();
+
+	return derived(receipts, ($receipts) => {
+		const pubkey: Record<Hexpubkey, number> = {};
+
+		// go through the receipts, get the recipient's pubkey and put the lowest created_at in the pubkey object
+		for (const receipt of $receipts) {
+			const subscriber = receipt.subscriber?.pubkey;
+			if (!subscriber) continue;
+			if (!pubkey[subscriber] || pubkey[subscriber] > receipt.created_at!) {
+				pubkey[subscriber] = receipt.created_at!;
+			}
+		}
+
+		const sorted: Hexpubkey[] = Object.keys(pubkey).sort((a, b) => {
+			if (pubkey[a] < pubkey[b]) return -1;
+			if (pubkey[a] > pubkey[b]) return 1;
+			return 0;
+		});
+		return sorted;
 	});
 }
 

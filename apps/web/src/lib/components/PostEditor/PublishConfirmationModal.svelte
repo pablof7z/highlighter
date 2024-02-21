@@ -5,7 +5,7 @@
     import ModalShell from "$components/ModalShell.svelte";
     import { event, previewExtraContent, reset } from "$stores/post-editor";
 	import { user } from "@kind0/ui-common";
-	import { NDKKind } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKKind, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { closeModal } from "svelte-modals";
     import { prepareEventsForTierPublish, publishToTiers } from "$actions/publishToTiers";
 	import { dvmScheduleEvent } from "$lib/dvm";
@@ -14,6 +14,8 @@
 	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { debugMode } from "$stores/session";
+	import ItemLink from "$components/Events/ItemLink.svelte";
+	import PostGrid from "$components/Events/PostGrid.svelte";
 
     $: if ($event && $user) {
         $event.pubkey = $user?.pubkey;
@@ -71,6 +73,7 @@
         )
 
         try {
+            console.log('publishing');
             await publishToTiers(
                 eventForPublish!, {
                     ndk: $ndk,
@@ -79,6 +82,7 @@
                     publishAt: $publishAt
                 }
             )
+            console.log('done with publish');
             eventPublished = true;
             if ($preview) previewPublished = true;
         } catch (e: any) {
@@ -111,6 +115,8 @@
             makePublicScheduled = true;
         }
 
+        console.log('after')
+        debugger
         publishing = false;
         $view = "published";
         closeModal();
@@ -122,6 +128,26 @@
     $: timeToPublish = $publishAt ? new Date($publishAt).getTime() - Date.now() : 0;
 
     let dateInput: HTMLInputElement;
+
+    // Fill in preview fields if they are empty
+    $: if ($preview) {
+        if ($event instanceof NDKArticle && $preview instanceof NDKArticle) {
+            const title = $event.title;
+            const summary = $event.summary;
+            const image = $event.image;
+
+            if (title && !$preview.title) $preview.title = title;
+            if (summary && !$preview.summary) $preview.summary = summary;
+            if (image && !$preview.image) $preview.image = image;
+        } else if ($event instanceof NDKVideo && $preview instanceof NDKVideo) {
+            const title = $event.title;
+            const thumbnail = $event.thumbnail;
+
+            if (title && !$preview.title) $preview.title = title;
+            if ($event.content && !$preview.content) $preview.content = $event.content;
+            if (thumbnail && !$preview.thumbnail) $preview.thumbnail = thumbnail;
+        }
+    }
 </script>
 
 <ModalShell color="glassy" class="max-w-3xl">
@@ -135,6 +161,10 @@
                 <ArticleLink article={$event} skipLink={true} />
             {:else if $event.kind === NDKKind.HorizontalVideo}
                 <VideoLink video={$event} skipLink={true} />
+            {:else if $event.kind === NDKKind.GroupNote}
+                <PostGrid event={$event} />
+            {:else}
+                {$event.kind}
             {/if}
         {/if}
     </div>
@@ -157,6 +187,12 @@
     </section>
 
     {#if $debugMode}
+        <div class="max-w-xl overflow-auto">
+            Preview
+            <pre>{JSON.stringify($preview?.rawEvent())}</pre>
+            Event
+            <pre>{JSON.stringify($event?.rawEvent())}</pre>
+        </div>
         <div>wideDistribution: {$wideDistribution}</div>
     {/if}
 

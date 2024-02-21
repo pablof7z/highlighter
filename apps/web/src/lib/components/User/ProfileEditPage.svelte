@@ -1,11 +1,9 @@
 <script lang="ts">
-    import UserProfile from '$components/User/UserProfile.svelte';
 	import EditableAvatar from '$components/User/EditableAvatar.svelte';
 	import { ndk, user } from '@kind0/ui-common';
     import { debugMode, userProfile } from '$stores/session';
     import { createEventDispatcher } from 'svelte';
 	import { NDKEvent, serializeProfile, type NostrEvent } from '@nostr-dev-kit/ndk';
-	import type { UserProfileType } from "../../../app";
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
     import { Image } from "phosphor-svelte";
 	import GlassyInput from "$components/Forms/GlassyInput.svelte";
@@ -18,6 +16,8 @@
     export let saving = false;
 
     async function save() {
+        if ($userProfile === undefined) return;
+
         saving = true;
         try {
             $userProfile.display_name ??= $userProfile.name;

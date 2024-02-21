@@ -25,12 +25,13 @@
             card
             !rounded-3xl
             shadow-xl
+            transition-all duration-1000
             flex flex-col
             overflow-y-hidden
             w-fit mx-auto
             {$$props.class}
         " style="pointer-events: auto; max-height: 92vh;" transition:fade>
-            <div class="!rounded-3xl inner shadow-lg p-6 flex flex-col items-center gap-6 {$$props.class}">
+            <div class="!rounded-3xl inner shadow-lg p-6 flex flex-col items-center transition-all duration-1000 gap-6 {$$props.class}">
                 <slot />
             </div>
         </div>

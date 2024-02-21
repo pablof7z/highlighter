@@ -29,7 +29,9 @@
                     </div>
                 </div>
 
-                <Check class="text-white {!selected ? 'hidden' : ''}" />
+                {#if !$$props.skipCheck}
+                    <Check class="text-white {!selected ? 'hidden' : ''}" />
+                {/if}
             </div>
         </div>
     </button>

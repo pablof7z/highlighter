@@ -75,7 +75,7 @@ export async function calculateSatAmountFromAmountTag(amountTag: NDKTag): Promis
 
 	if (['USD', 'EUR'].includes(currency)) {
 		const bitcoinPrice = await getBitcoinPrice(currency);
-		return Math.floor((Number(value) / bitcoinPrice) * 100_000_000); // expressed in USD in the tag
+		return Math.floor((Number(value) / bitcoinPrice) * 100_000_000) / 100; // expressed in cents in the tag
 	} else if (currency === 'msat') {
 		return value / 1000; // expressed in msats in the tag
 	} else {

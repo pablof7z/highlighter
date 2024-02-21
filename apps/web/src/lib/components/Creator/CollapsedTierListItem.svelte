@@ -8,7 +8,7 @@
 </script>
 
 <button
-    class="border border-base-300 p-4 flex flex-col gap-2 hover:bg-white/10 transition-all duration-300"
+    class="border border-base-300 px-4 flex flex-col gap-2 hover:bg-white/10 transition-all duration-300 w-full"
     on:click
 >
     <div class="flex flex-row justify-between whitespace-nowrap truncate w-full">
@@ -29,7 +29,7 @@
     {#if tier.content.length > 0 || tier.getMatchingTags("perk").length > 0}
         <ul class="text-xs flex flex-col items-start gap-2">
             {#if tier.content.length > 0}
-                <li>
+                <li class="text-left">
                     {tier.content}
                 </li>
             {/if}

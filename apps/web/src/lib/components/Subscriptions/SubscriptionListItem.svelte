@@ -13,9 +13,9 @@
 
     export let subsciptionStart: NDKSubscriptionStart;
 
-    const targetUser = subsciptionStart.targetUser;
+    const recipient = subsciptionStart.recipient;
     const amount = subsciptionStart.amount;
-    let authorUrl: string = `/${targetUser?.npub}`;
+    let authorUrl: string = `/${recipient?.npub}`;
 
     const actions = $ndk.storeSubscribe(
         subsciptionStart.filter(),
@@ -25,7 +25,7 @@
     onDestroy(() => actions.unsubscribe());
 </script>
 
-<UserProfile user={targetUser} let:userProfile let:fetching>
+<UserProfile user={recipient} let:userProfile let:fetching>
     <Box innerClass="w-full">
         <div class="flex flex-row justify-between w-full">
             {#if userProfile}

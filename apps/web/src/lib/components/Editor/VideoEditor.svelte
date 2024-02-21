@@ -5,7 +5,6 @@
     import Page1 from "./VideoEditorPage/Page1.svelte";
 	import { type TierSelection, getTierSelectionFromAllTiers } from '$lib/events/tiers';
 	import { getUserSubscriptionTiersStore } from '$stores/user-view';
-	import { status } from '$stores/post-editor';
 
     export let video: NDKVideo = new NDKVideo($ndk, {
         content: "",

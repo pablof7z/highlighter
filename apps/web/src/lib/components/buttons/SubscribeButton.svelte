@@ -17,9 +17,9 @@
 
     tiers ??= getUserSubscriptionTiersStore();
 
-    let currentUserSubscriberTier: string | undefined;
+    let currentUserSubscriberTier: string | true | undefined;
     const supporters = getUserSupporters();
-    // $: currentUserSubscriberTier = ($currentUser && $supporters[$currentUser.pubkey]) || undefined;
+    $: currentUserSubscriberTier = !!($currentUser && $supporters[$currentUser.pubkey]) || undefined;
 
     function openSupportModal() {
         if ($currentUser) {
@@ -37,42 +37,31 @@
     }
 </script>
 
-<UserProfile bind:authorUrl {user} />
+{#if user.pubkey !== $currentUser?.pubkey}
+    <UserProfile bind:authorUrl {user} />
 
-{#if !currentUserSubscriberTier}
-    {#if hasLNPayments === false}
-        <div class="text-xs">
-            <X class="w-4 h-4 inline text-red-800" />
-            No payments enabled for {userProfile.name}
-        </div>
-    {:else}
-        <button
-            on:click={openSupportModal}
-            class="
-                button flex flex-row items-center !gap-0
-                whitespace-nowrap button-primary text-base
-                max-sm:w-full max-sm:!rounded-md
-            "
-        >
-            {#if $tiers.length > 0}
-                Go Backstage
-            {:else}
-                Support
-            {/if}
-            <CaretRight class="w-5 h-5 inline" />
-        </button>
+    {#if !currentUserSubscriberTier}
+        {#if hasLNPayments === false}
+            <div class="text-xs">
+                <X class="w-4 h-4 inline text-red-800" />
+                No payments enabled for {userProfile.name}
+            </div>
+        {:else}
+            <button
+                on:click={openSupportModal}
+                class="
+                    button flex flex-row items-center !gap-0
+                    whitespace-nowrap text-base
+                    max-sm:w-full max-sm:!rounded-md
+                "
+            >
+                {#if $tiers && $tiers.length > 0}
+                    Go Backstage
+                {:else}
+                    Support
+                {/if}
+                <CaretRight class="w-5 h-5 inline" />
+            </button>
+        {/if}
     {/if}
-{:else if $tiers.length > 0}
-    <a href="{authorUrl}/backstage"
-        on:click={openSupportModal}
-        class="
-            button flex flex-row items-center !gap-0
-            whitespace-nowrap button-primary text-base
-        "
-    >
-        Go Backstage
-        <CaretRight class="w-5 h-5 inline" />
-    </a>
-{:else}
-    You are a supporter!
 {/if}

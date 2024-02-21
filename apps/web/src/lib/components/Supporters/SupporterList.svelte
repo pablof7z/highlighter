@@ -4,20 +4,23 @@
     It's intended to be displayed for the creator.
 -->
 <script lang="ts">
-	import UserProfile from "$components/User/UserProfile.svelte";
 	import { getUserSubscriptionTiersStore, getUserSupporters } from "$stores/user-view";
-	import { Avatar, Name, ndk, user } from "@kind0/ui-common";
-	import type { Hexpubkey } from "@nostr-dev-kit/ndk";
-	import { onMount } from "svelte";
-	import { type Readable } from "svelte/store";
-	import { slide } from "svelte/transition";
+	import { creatorRelayPubkey } from "$utils/const";
+	import { Avatar, Name, ndk, user as currentUser } from "@kind0/ui-common";
+	import { NDKKind, type Hexpubkey, NDKSubscription, NDKSubscriptionReceipt, NDKSubscriptionStart, NDKUser, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
+	import { onDestroy, onMount } from "svelte";
+	import { derived, type Readable } from "svelte/store";
+	import SupporterListItem from './SupporterListItem.svelte';
+	import { getDefaultRelaySet } from '$utils/ndk';
 
-    let supporters: Readable<Record<Hexpubkey, string|undefined>> | undefined = undefined;
+    export let user: NDKUser;
+
+    let supporters: Readable<Record<Hexpubkey, string|true>> | undefined = undefined;
     let tierNames: Record<string, string> = {};
 
-    onMount(() => {
+    // onMount(() => {
         supporters = getUserSupporters();
-    });
+    // });
 
     const tiers = getUserSubscriptionTiersStore();
 
@@ -31,33 +34,41 @@
         }
     }
 
-    const payments = $ndk.storeSubscribe(
-        { kinds: [7003], "#P": [$user?.pubkey] }
-    )
+    const relaySet = getDefaultRelaySet();
+    const receipts = $ndk.storeSubscribe([
+        { kinds: [NDKKind.SubscriptionReceipt], "#p": [user.pubkey], authors: [creatorRelayPubkey] },
+    ]
+    , { relaySet, cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY }, NDKSubscriptionReceipt);
+
+    onDestroy(() => {
+        receipts.unsubscribe();
+    })
+
+    const sortedReceipts = derived( receipts, ($receipts) => {
+        const pubkeys: Record<Hexpubkey, NDKSubscriptionReceipt> = {};
+
+        // go through the receipts, get the recipient's pubkey and put the lowest created_at in the pubkey object
+        for (const receipt of $receipts) {
+            const subscriber = receipt.subscriber?.pubkey;
+            if (!subscriber) continue;
+            if (!pubkeys[subscriber] || pubkeys[subscriber].created_at! > receipt.created_at!) {
+                pubkeys[subscriber] = receipt;
+            }
+        }
+
+        const sorted: NDKSubscriptionReceipt[] = Object.keys(pubkeys).sort((a, b) => {
+            if (pubkeys[a].created_at! < pubkeys[b].created_at!) return -1;
+            if (pubkeys[a].created_at! > pubkeys[b].created_at!) return 1;
+            return 0;
+        }).map((pubkey) => pubkeys[pubkey]);
+        return sorted;
+    });
 </script>
 
 {#if $supporters}
-    <div class="flex flex-col divide-y divide-base-300 {$$props.class??""}">
-        {#each Object.entries($supporters) as [pubkey, tier]}
-            <UserProfile {pubkey} let:userProfile let:fetching>
-                <div class="flex flex-row items-center justify-between py-2">
-                    <div class="flex flex-row items-center gap-2" transition:slide>
-                        <Avatar {pubkey} {userProfile} {fetching} class="w-10 h-10 border-2 border-black" />
-
-                        <div class="flex flex-col items-start">
-                            <Name {pubkey} {userProfile} {fetching} class="font-medium text-white" />
-                            {#if tier}
-                                <div class="text-xs text-neutral-500">{tierNames[tier]??tier}</div>
-                            {/if}
-                        </div>
-                    </div>
-
-                    <span class="bafge badge-neutral text-white text-opacity-60 text-sm font-normal leading-6">
-
-                    </span>
-                </div>
-
-            </UserProfile>
+    <div class="flex flex-col gap-4 {$$props.class??""}">
+        {#each $sortedReceipts as receipt, i (receipt.pubkey)}
+            <SupporterListItem pubkey={receipt.subscriber.pubkey} {tiers} {tierNames} position={i} creatorPubkey={user?.pubkey} {receipt} />
         {/each}
     </div>
 {/if}

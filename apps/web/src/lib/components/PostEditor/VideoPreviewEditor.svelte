@@ -9,7 +9,7 @@
 	import { onMount } from "svelte";
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
-	import { makePublicAfter, previewExtraContent, status, wideDistribution } from "$stores/post-editor";
+	import { makePublicAfter, previewExtraContent, status, view, wideDistribution } from "$stores/post-editor";
 	import { slide } from "svelte/transition";
 	import MakePublicAfter from "$components/Editor/Audience/MakePublicAfter.svelte";
 
@@ -24,15 +24,7 @@
 
     $previewExtraContent ??= { before: undefined, after: previewContentReadLink};
 
-    teaser.title = video.title;
-
     let teaserUrl: string | undefined = undefined;
-
-    onMount(() => {
-        teaser.title = video.title;
-        teaser.content = video.content;
-        teaser.thumbnail = video.thumbnail;
-    });
 
     $: if ($user) {
         teaser.pubkey = $user.pubkey;

@@ -1,7 +1,7 @@
 import type NDK from '@nostr-dev-kit/ndk';
 import type { NDKEvent, NDKRelaySet, NDKUser } from '@nostr-dev-kit/ndk';
 import { getDefaultRelaySet } from '$utils/ndk';
-import type { TierSelection } from '$lib/events/tiers';
+import { requiredTiersFor, type TierSelection } from '$lib/events/tiers';
 import { urlFromEvent } from '$utils/url';
 import { dvmScheduleEvent } from '$lib/dvm';
 
@@ -10,8 +10,8 @@ function getEventRelaySet(
 	wideDistribution: boolean,
 	relaySet: NDKRelaySet | undefined
 ) {
-	if (!hasTeaser && wideDistribution) return undefined;
-	else return relaySet || getDefaultRelaySet();
+	if (!hasTeaser) return undefined;
+	else if (relaySet) return relaySet || getDefaultRelaySet();
 }
 
 function addHTag(event: NDKEvent, user: NDKUser) {
@@ -117,7 +117,6 @@ async function publishOrSchedule(
 	publishAt?: Date,
 ) {
 	if (!publishAt) {
-		console.log('publishing event', event.rawEvent(), relaySet?.size);
 		await event.publish(relaySet);
 	} else {
 		const relays = relaySet ? Array.from(relaySet.relays).map(r => r.url) : undefined;
@@ -137,13 +136,17 @@ export async function publishToTiers(
 ) {
 	const teaser = opts.teaserEvent;
 
-	opts.relaySet = getEventRelaySet(!!opts.teaserEvent, !!opts.wideDistribution, opts.relaySet);
+	const eventHasFreeTier = requiredTiersFor(event).includes('Free');
+	if (!opts.teaserEvent && eventHasFreeTier) {
+		opts.relaySet = undefined;
+	} else {
+		opts.relaySet = getDefaultRelaySet();
+	}
 
 	if (teaser) {
-		const teaserRelaySet = opts.wideDistribution ? undefined : opts.relaySet;
 		await teaser.sign();
 
-		await publishOrSchedule(teaser, teaserRelaySet, opts.publishAt);
+		await publishOrSchedule(teaser, undefined, opts.publishAt);
 	}
 
 	if (!event.sig) await event.sign();

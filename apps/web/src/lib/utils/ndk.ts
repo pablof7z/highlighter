@@ -53,7 +53,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	$ndk.addExplicitRelay('wss://relay.noswhere.com');
 	$ndk.addExplicitRelay('wss://relay.nostr.band');
 
-	$ndk.connect();
+	$ndk.connect(2000);
 
 	$ndk.pool.on('relay:auth', (relay) => {
 		debug('relay auth', relay.url);
@@ -69,7 +69,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'higlighter2' });
+	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL' });
 	$ndk.clientName = 'highlighter';
 
 	$ndk.pool.on("notice", (relay: NDKRelay, notice: string) => {

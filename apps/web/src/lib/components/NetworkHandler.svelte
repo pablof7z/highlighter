@@ -40,7 +40,7 @@
 
     $: if ($online) {
         console.log('Going online');
-        $ndk.connect();
+        $ndk.connect(2000);
         $ndk.on('connect', () => {
             alert('Connected');
         });
@@ -49,7 +49,7 @@
         });
         for (const relay of $ndk.pool.relays.values()) {
             console.log('Connecting to', relay.url);
-            relay.connect();
+            relay.connect(2000);
         }
     }
 </script>

@@ -2,14 +2,12 @@
 	import ModalShell from '$components/ModalShell.svelte';
     import { user as loggedInUser } from '@kind0/ui-common';
     import UserProfile from '$components/User/UserProfile.svelte';
-    import { userSuperFollows } from '$stores/session';
-    import Tier from "$components/Tier.svelte";
+    import { userFollows } from '$stores/session';
 	import type { NDKIntervalFrequency, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
+    import Tier from "$components/Tier.svelte";
 	import type { Readable } from "svelte/motion";
 	import { derived } from "svelte/store";
 	import { termToShort } from "$utils/term";
-	import { slide } from 'svelte/transition';
-	import { Name } from '@kind0/ui-common';
 	import WalletConnect from '$components/Payment/WalletConnect.svelte';
 	import Subscribe from '$components/Payment/Subscribe.svelte';
 	import { closeModal } from 'svelte-modals';
@@ -23,6 +21,7 @@
     import createDebug from 'debug';
     import {requestProvider} from 'webln';
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
+	import RadioButton from '$components/Forms/RadioButton.svelte';
 
     export let user: NDKUser;
 
@@ -77,39 +76,29 @@
             }
         }
 
-        return Array.from(currencies);
-    });
-
-    const sortedTiers = derived(tiers, $tiers => {
-        const t = $tiers
-            .sort((a, b) => {
-                const aAmount = a.amounts.find((amount) => amount.currency === selectedCurrency);
-                const bAmount = b.amounts.find((amount) => amount.currency === selectedCurrency);
-
-                if (aAmount && bAmount) return aAmount.amount - bAmount.amount;
-
-                return 0;
-            });
-
-        if (!selected && t[0]) {
-            selected = t[0];
-            const amount = t[0].amounts[0];
-            selectedAmount = amount.amount;
-            selectedCurrency = amount.currency;
-            selectedTerm = amount.term;
+        if ($tiers.length > 0 && (
+            !selected || $tiers.find((tier) => tier.id === selected!.id) === undefined
+        ) && selectedCurrency) {
+            const tier = $tiers[0];
+            const amount = tier.amounts.find((amount) => amount.currency === selectedCurrency);
+            if (amount) {
+                selected = tier;
+                selectedAmount = amount.amount;
+                selectedTerm = amount.term;
+            }
         }
 
-        return t;
+        return Array.from(currencies);
     });
 
     async function onPaid() {
         paid = true;
-        if ($userSuperFollows.has(user.pubkey)) return;
-        $loggedInUser.follow(user, undefined, 17001);
+        if ($userFollows.has(user.pubkey)) return;
+        $loggedInUser.follow(user);
     }
 </script>
 
-<ModalShell color="glassy" class="w-full md:max-w-3xl">
+<ModalShell color="glassy" class="md:max-w-5xl w-fit">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div on:click|preventDefault|stopPropagation={() => {}} class="w-full relative transition-all duration-1000">
@@ -122,15 +111,19 @@
         {#if !paid}
             {#if !bitcoin}
                 <div class="flex flex-col flex-nowrap gap-6 items-stretch sm:items-center">
-                    {#if $availableCurrencies.length > 0}
-                        <div class="w-full self-end">
-                            <select class="select !bg-white/10" bind:value={selectedCurrency}>
-                                {#each $availableCurrencies as currency}
-                                    <option value={currency}>
-                                        {currencyCode(currency)}
-                                    </option>
-                                {/each}
-                            </select>
+                    {#if $availableCurrencies.length > 1}
+                        <div class="flex flex-row gap-2 bg-white/10 p-2 rounded-box">
+                            {#each $availableCurrencies as currency}
+                                <RadioButton
+                                    bind:currentValue={selectedCurrency}
+                                    value={currency}
+                                    label={currencyCode(currency)}
+                                    class="!bg-white/10 w-fit whitespace-nowrap !p-2 !px-4"
+                                    skipCheck={true}
+                                >
+                                    {currencyCode(currency)}
+                                </RadioButton>
+                            {/each}
                         </div>
                     {/if}
 
@@ -139,7 +132,7 @@
                         sm:max-w-[60vw] sm:overflow-x-auto overscroll-contain max-sm:snap-y sm:snap-x
                         snap-mandatory pb-8
                     ">
-                        {#if $sortedTiers.length === 0}
+                        {#if $tiers.length === 0}
                             <EmptyTierForm
                                 bind:selectedAmount
                                 bind:currency={selectedCurrency}
@@ -147,16 +140,15 @@
                                 term={selectedTerm}
                             />
                         {/if}
-                        {#each $sortedTiers as tier (tier.id)}
+                        {#each $tiers as tier (tier.id)}
                             {#if tier.amounts.some(amount => amount.currency === selectedCurrency)}
                                 <Tier
                                     {tier}
                                     currency={selectedCurrency}
-                                    selected={selected === tier}
+                                    selected={selected?.id === tier?.id}
                                     term={selectedTerm}
                                     on:changed={(e) => {
                                         const amount = e.detail;
-                                        console.log(amount);
                                         selected = tier;
                                         selectedAmount = amount.amount;
                                         selectedTerm = amount.term;

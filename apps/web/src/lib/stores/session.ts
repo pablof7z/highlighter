@@ -60,16 +60,15 @@ export const userTiers = derived(
 	([$allUserTiers, $tierList]) => {
 		const tiers: NDKSubscriptionTier[] = [];
 		if (!tierList || !$tierList) return tiers;
-		const eTags = $tierList.getMatchingTags('e').map((t: NDKTag) => t[1]);
 
-		d(`tier list eTags`, eTags);
+		for (const tag of $tierList.getMatchingTags("e")) {
+			const id = tag[1];
 
-		for (const tier of $allUserTiers) {
-			const inList = eTags.includes(tier.id);
-			const valid = tier.isValid;
-
-			if (valid && inList) {
-				tiers.push(tier);
+			for (const tier of $allUserTiers) {
+				if (tier.id !== id) continue;
+				if (tier.isValid) {
+					tiers.push(tier);
+				}
 			}
 		}
 
@@ -280,8 +279,6 @@ async function fetchData(
 			processContactList(event, opts.followsStore);
 		} else if (event.kind === 0 && opts.profileStore) {
 			processUserProfile(event, opts.profileStore);
-		} else if (event.kind === 17001 && opts.superFollowsStore) {
-			processContactList(event, opts.superFollowsStore);
 		} else if (event.kind === NDKKind.GroupMembers && opts.activeSubscriptionsStore) {
 			processSubscriptionList(event, authors[0]);
 		} else if (event.kind === NDKKind.Subscribe) {
@@ -456,10 +453,6 @@ async function fetchData(
 
 		if (opts.followsStore) {
 			filters.push({ kinds: [3], authors: authorPrefixes });
-		}
-
-		if (opts.superFollowsStore) {
-			filters.push({ kinds: [17001], authors: authorPrefixes });
 		}
 
 		if (opts.activeSubscriptionsStore) {

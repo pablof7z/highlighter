@@ -45,22 +45,4 @@
     ul {
         @apply flex flex-col;
     }
-
-    li a {
-        @apply flex flex-row items-center justify-between;
-        @apply py-2 text-lg;
-    }
-
-    li a:hover {
-        @apply text-white;
-    }
-
-    li a span {
-        @apply flex flex-row items-center gap-2;
-    }
-
-    li:not(:last-child) {
-        @apply border-b-2 border-base-200;
-    }
-
 </style>

@@ -69,7 +69,7 @@
     <div class="tooltip tooltip-left {$$props.class??""}"  data-tip={`Add to "${listTitle}"`}>
         <button
             class:text-accent2={saved}
-            on:click|stopImmediatePropagation={save}
+            on:click|stopImmediatePropagation|preventDefault|capture={save}
         >
             <BookmarksSimple
                 class="w-7 h-7"

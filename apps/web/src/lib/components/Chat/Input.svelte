@@ -2,7 +2,7 @@
 	import GlassyInput from "$components/Forms/GlassyInput.svelte";
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { Textarea, ndk, newToasterMessage } from "@kind0/ui-common";
-	import { NDKEvent, NDKKind, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKKind, NDKRelay, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { PaperPlaneTilt } from "phosphor-svelte";
 
     export let tags: NDKTag[] = [];
@@ -23,12 +23,17 @@
                     ...tags
                 ]
             } as NostrEvent)
-            const publishedEvents = await e.publish(relaySet);
+            let publishedEvents: Set<NDKRelay>;
+            try {
+                publishedEvents = await e.publish(relaySet);
+                if (publishedEvents.size > 0) {
+                    content = '';
+                } else {
+                    newToasterMessage("Failed to publish message");
+                }
 
-            if (publishedEvents.size > 0) {
-                content = '';
-            } else {
-                newToasterMessage("Failed to publish message");
+            } catch (e: any) {
+                newToasterMessage("Failed to publish message: " + e.relayErrors);
             }
 
             publishing = false;

@@ -1,22 +1,27 @@
 <script lang="ts">
 	import FeedEvent from "./FeedEvent.svelte";
 	import { getGAUserContent, getUserContent } from "$stores/user-view";
-	import { ndk } from "@kind0/ui-common";
+	import { derived } from "svelte/store";
+	import { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { requiredTiersFor } from "$lib/events/tiers";
+
+    export let onlyBackstageContent = false;
 
     const userContent = getUserContent();
     const userGAContent = getGAUserContent();
 
-    // const rootContent = derived(content, ($content) => {
-    //     return $content;
-    //     // return $content.filter(isRootEvent);
-    // });
+    const allContent = derived([userContent, userGAContent], ([$userContent, $userGAContent]) => {
+        const ret = [...$userContent, ...$userGAContent]
+            .sort((a, b) => b.created_at! - a.created_at!);
+
+        if (!onlyBackstageContent) return ret;
+
+        return ret.filter((e: NDKEvent) => !requiredTiersFor(e).includes('Free'));
+    });
 </script>
 
 <div class="flex flex-col w-full gap-10">
-        {#each $userContent as event (event.id)}
-            <FeedEvent {event} skipAuthor={true} />
-        {/each}
-        {#each $userGAContent as event (event.id)}
+        {#each $allContent as event (event.id)}
             <FeedEvent {event} skipAuthor={true} />
         {/each}
 </div>

@@ -2,9 +2,10 @@
 	import type { NDKUser } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
 	import UserProfile from "./UserProfile.svelte";
-	import { Avatar, Name } from "@kind0/ui-common";
+	import { Avatar, Name, ndk } from "@kind0/ui-common";
 
-    export let user: NDKUser | undefined = undefined;
+    export let pubkey: string | undefined = undefined;
+    export let user: NDKUser | undefined = pubkey ? undefined : $ndk.getUser({ pubkey });
     export let userProfile: UserProfileType | undefined = undefined;
     export let authorUrl: string | undefined = undefined;
     export let spacing = "gap-2";

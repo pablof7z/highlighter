@@ -2,7 +2,7 @@ import type { TierSelection } from "$lib/events/tiers";
 import { NDKArticle, NDKEvent, NDKVideo } from "@nostr-dev-kit/ndk";
 import { writable } from "svelte/store";
 
-type View = "edit" | "audience" | "edit-preview" | "preview" | "distribution" | "meta" | "schedule" | "publish" | "published";
+type View = "edit" | "audience" | "edit-preview" | "preview" | "distribution" | "meta" | "published";
 
 export const selectedTiers = writable<TierSelection>({})
 export const view = writable<View>("edit");

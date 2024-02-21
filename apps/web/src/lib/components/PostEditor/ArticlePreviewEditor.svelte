@@ -2,10 +2,9 @@
 	import { slide } from 'svelte/transition';
     import Input from "$components/Forms/Input.svelte";
 	import GuideToPreviews from './../../drawer/help/guide-to-previews.svelte';
-    import { makePublicAfter, previewExtraContent, selectedTiers, wideDistribution } from "$stores/post-editor";
-	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
+    import { makePublicAfter, preview, previewExtraContent, selectedTiers, view, wideDistribution } from "$stores/post-editor";
 	import Box from "$components/PageElements/Box.svelte";
-	import { preview, previewContentChanged, previewTitleChanged } from "$stores/post-editor";
+	import { previewContentChanged, previewTitleChanged } from "$stores/post-editor";
 	import { Textarea, ndk, pageDrawerToggle } from "@kind0/ui-common";
 	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
     import truncateMarkdown from 'markdown-truncate';
@@ -74,13 +73,13 @@
 <Box innerClass="">
     <h3 class="text-white text-sm">
         <Info class="w-4 h-4 text-info inline ml-2" />
-        You're editing your article's teaser for non-subscribers
+        You're editing your article's preview for non-subscribers
     </h3>
 
     <MakePublicAfter />
 
     <!-- <button class="button" on:click={openGuide}>
-        How to write a good teaser
+        How to write a good preview
     </button> -->
 </Box>
 

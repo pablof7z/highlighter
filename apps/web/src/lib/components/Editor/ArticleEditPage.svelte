@@ -11,47 +11,37 @@
 	import { onDestroy } from "svelte";
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import ArticleMetaPage from "./ArticleMetaPage.svelte";
-	import { view } from "$stores/post-editor";
+	import { view, preview, previewTitleChanged, previewContentChanged } from "$stores/post-editor";
 	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
 
     export let article: NDKArticle;
-    export let preview: NDKArticle;
     export let draftItem: DraftItem | undefined = undefined;
     let draftCheckpoints: DraftCheckpoint[] = draftItem?.checkpoints ? JSON.parse(draftItem?.checkpoints) : [];
 
     $: article.pubkey = $user?.pubkey;
 
-    let previewContent: string;
     let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
 
-    let previewContentChanged = false;
-
-    const domain = "https://highlighter.com";
-    let authorLink: string = domain;
     let authorUrl: string | undefined;
-    $: authorLink = authorUrl ? `${domain}${authorUrl}` : domain;
-    let previewContentReadLink: string;
-    $: previewContentReadLink = `\n\n--------------------------\n\nSupport my work and read the rest of this article on my Highlighter page: ${authorLink}`;
 
     function onArticleChange() {
         contentChangedSinceLastSave++;
-        updatePreviewContent();
     }
 
-    function updatePreviewContent() {
-        if (!previewContentChanged) {
-            const limit = Math.min(1500, article.content.length * 0.4);
-            previewContent = truncateMarkdown(article.content, {
-                limit,
-                ellipsis: true
-            });
-
-            previewContent += previewContentReadLink;
-        }
+    function generatePreviewContent() {
+        const limit = Math.min(1500, article.content.length * 0.4);
+        return truncateMarkdown(article.content, {
+            limit,
+            ellipsis: true
+        });
     }
 
-    $: if (article.content) {
-        updatePreviewContent();
+    $: if ($view !== "edit-preview" && $preview instanceof NDKArticle) {
+        $preview.image = article.image;
+        $preview.summary = article.summary;
+        $preview.tags.push(...article.getMatchingTags("t"))
+        if (!$previewTitleChanged) $preview.title = article.title;
+        if (!$previewContentChanged) $preview.content = generatePreviewContent()
     }
 
     let userProfile: UserProfileType;
@@ -114,3 +104,5 @@
         <ArticlePreviewEditor {article} {authorUrl} />
     </div>
 </Shell>
+
+{preview?.title}

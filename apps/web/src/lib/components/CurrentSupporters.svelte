@@ -29,7 +29,7 @@
                 </div>
             {/each}
         </div>
-        <span class="text-sm whitespace-nowrap">
+        <span class="text-xs text-neutral-500 whitespace-nowrap">
             {supportingPubkeys?.size}
             Supporter{supportingPubkeys?.size > 1 ? "s" : ""}
         </span>

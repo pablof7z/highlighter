@@ -6,7 +6,6 @@
     import { type as _type } from "$stores/post-editor";
 	import { getTierSelectionFromAllTiers } from '$lib/events/tiers';
 	import { NDKArticle, NDKEvent, NDKVideo } from '@nostr-dev-kit/ndk';
-	import Publish from './Publish.svelte';
 	import PublishingStep from '$components/Editor/Pages/PublishingStep.svelte';
 	import { onMount } from 'svelte';
 	import AudiencePage from './AudiencePage.svelte';
@@ -48,10 +47,6 @@
     </div>
     {#if $view === "audience"}
         <AudiencePage />
-    {:else if $view === "schedule"}
-        <Publish {article} {note} schedule={true} />
-    {:else if $view === "publish"}
-        <Publish {article} {note} />
     {:else if $view === "published"}
         <PublishingStep />
     {/if}

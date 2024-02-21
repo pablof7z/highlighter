@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { CaretRight } from 'phosphor-svelte';
+	import { CaretRight, Lock } from 'phosphor-svelte';
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { getDefaultRelaySet } from "$utils/ndk";
-	import { Avatar, ndk } from "@kind0/ui-common";
+	import { ndk } from "@kind0/ui-common";
     import { NDKKind, type NDKFilter, type NDKTag, NDKEvent } from "@nostr-dev-kit/ndk";
     import { user as currentUser } from "@kind0/ui-common";
 	import { onDestroy } from "svelte";
@@ -31,8 +31,11 @@
         messagesSinceLastRead.unsubscribe()
     });
 
-    let memberCount = groupMembersEvent.tags.filter((t: NDKTag) => t[0] === "p").length;
-    let isMember = groupMembersEvent.tags.some((t: NDKTag) => t[0] === "p" && t[1] === $currentUser.pubkey);
+    let memberCount: number;
+    let isMember: boolean;
+
+    $: memberCount = groupMembersEvent.getMatchingTags("p").length;
+    $: isMember = groupMembersEvent.tags.some((t: NDKTag) => t[0] === "p" && t[1] === $currentUser.pubkey);
 
     const lastMessage = derived(messagesSinceLastRead, $messagesSinceLastRead => {
         const count = $messagesSinceLastRead.length;
@@ -48,14 +51,15 @@
         >
             <div class="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex max-h-36 overflow-clip">
                 <div class="self-stretch text-white text-base font-medium leading-relaxed max-h-12 overflow-clip">
-                    <AvatarWithName {userProfile} {fetching} class="max-w-[15rem] truncate">
+                    <AvatarWithName {user} {userProfile} {fetching} class="max-w-[15rem] truncate">
                         {#if $lastMessage}
-                            <EventContent ndk={$ndk} event={$lastMessage} class="text-sm text-neutral-500 truncate " />
+                            <EventContent ndk={$ndk} event={$lastMessage} class="text-sm text-neutral-500 truncate" />
+                        {:else if memberCount}
+                            <span class="text-sm text-neutral-500 truncate">
+                                {memberCount} members
+                            </span>
                         {/if}
                     </AvatarWithName>
-                    {#if memberCount}
-                        {memberCount} members
-                    {/if}
                 </div>
             </div>
 
@@ -65,7 +69,11 @@
                 </div>
             {:else}
                 <div class="flex items-center justify-center">
-                    <CaretRight size="24" />
+                    {#if isMember}
+                        <CaretRight size="24" />
+                    {:else}
+                        <Lock size="24" />
+                    {/if}
                 </div>
             {/if}
         </a>

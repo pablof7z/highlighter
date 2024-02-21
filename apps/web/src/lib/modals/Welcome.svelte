@@ -13,11 +13,11 @@
 
     // double-check this is a new account
     $ndk.fetchEvents({
-        authors: [$user.pubkey], limit: 10
+        authors: [$user.pubkey], limit: 100
     }).then((events) => {
         const cutOff = Math.floor(Date.now() / 1000) - 3600;
         // This account created less than 5 total events
-        if (events.size < 50 && $userProfile && $userProfile.created_at > cutOff) {
+        if (events.size < 5 && $userProfile && $userProfile.created_at > cutOff) {
             $ndk.signer?.blockUntilReady().then(() => {
                 fillInSkeletonProfile($userProfile!);
             });

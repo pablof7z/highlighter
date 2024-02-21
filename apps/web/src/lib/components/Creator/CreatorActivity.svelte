@@ -105,6 +105,4 @@
             </div>
         {/if}
     </div>
-
-    <SupporterList />
 </div>

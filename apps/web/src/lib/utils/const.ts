@@ -12,3 +12,18 @@ export const blacklistedPubkeys = [
 export const creatorRelayPubkey = import.meta.env.VITE_CREATOR_RELAY_PUBKEY;
 export const defaultVerifierPubkey = creatorRelayPubkey;
 export const defaultRelays = [import.meta.env.VITE_RELAY];
+
+if (!creatorRelayPubkey) {
+    console.error("No creator relay pubkey found");
+    process.exit(1);
+}
+
+if (!defaultRelays.length) {
+    console.error("No default relays found");
+    process.exit(1);
+}
+
+if (!defaultVerifierPubkey) {
+    console.error("No default verifier pubkey found");
+    process.exit(1);
+}

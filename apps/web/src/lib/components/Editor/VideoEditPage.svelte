@@ -5,7 +5,7 @@
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import VideoMetaPage from "./VideoMetaPage.svelte";
 	import VideoPreviewEditor from "$components/PostEditor/VideoPreviewEditor.svelte";
-	import { nonSubscribersPreview, preview, selectedTiers, wideDistribution } from "$stores/post-editor";
+	import { nonSubscribersPreview, preview, previewContentChanged, previewTitleChanged, selectedTiers, view, wideDistribution } from "$stores/post-editor";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { user } from "@kind0/ui-common";
 
@@ -21,6 +21,13 @@
     $: $wideDistribution = !!(
         $preview && ($preview as NDKVideo).url || $selectedTiers["Free"]?.selected
     )
+
+    $: if ($view !== "edit-preview" && $preview instanceof NDKVideo) {
+        $preview.thumbnail = video.thumbnail;
+        $preview.tags.push(...video.getMatchingTags("t"))
+        if (!$previewTitleChanged) $preview.title = video.title;
+        if (!$previewContentChanged) $preview.content = video.content;
+    }
 
     const allTiers = getUserSubscriptionTiersStore();
 
