@@ -1,8 +1,8 @@
-import { Hexpubkey, NDKArticle, NDKEvent, NDKTag, NDKUser } from '@nostr-dev-kit/ndk';
+import NDK, { Hexpubkey, NDKSubscriptionTier, NDKEvent, NDKTag, NDKUser, NDKKind, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
 
 export function requiredTierNamesFor(
 	event: NDKEvent,
-	userTiers: NDKArticle[],
+	userTiers: NDKSubscriptionTier[],
 	addFreeIfEmpty = true
 ) {
 	const tierIds = requiredTiersFor(event, addFreeIfEmpty);
@@ -53,14 +53,14 @@ export function canUserComment(
 export type TierSelectionEntry = {
 	name: string;
 	selected: boolean;
-	event?: NDKArticle;
+	event?: NDKSubscriptionTier;
 };
 export type TierId = string;
 export type TierSelection = Record<TierId, TierSelectionEntry>;
 export type Tier = {
 	id: TierId;
 	name: string;
-	event?: NDKArticle;
+	event?: NDKSubscriptionTier;
 };
 
 export function getSelectedTiers(tiers: TierSelection): Tier[] {
@@ -78,7 +78,7 @@ export function getSelectedTiers(tiers: TierSelection): Tier[] {
 	return selectedTiers;
 }
 
-export function getTierSelectionFromAllTiers(allTiers: NDKArticle[]) {
+export function getTierSelectionFromAllTiers(allTiers: NDKSubscriptionTier[]) {
 	const tiers: TierSelection = {};
 	tiers['Free'] = { name: 'Free', selected: true };
 
@@ -98,9 +98,19 @@ export function getTierIdFromSubscriptionEvent(event: NDKEvent): string | undefi
 	if (!tierEventString) return undefined;
 
 	try {
-		const tierEvent = new NDKArticle(undefined, JSON.parse(tierEventString));
+		const tierEvent = new NDKSubscriptionTier(undefined, JSON.parse(tierEventString));
 		return tierEvent.tagValue('d');
 	} catch (error) {
 		return undefined;
 	}
+}
+
+export async function hasUserEverCreatedATier(user: NDKUser, ndk: NDK): Promise<boolean> {
+	const e = await ndk.fetchEvents({
+		kinds: [NDKKind.SubscriptionTier],
+		authors: [user.pubkey],
+		limit: 1
+	}, { groupable: false, cacheUsage: NDKSubscriptionCacheUsage.PARALLEL })
+
+	return e.length > 0;
 }

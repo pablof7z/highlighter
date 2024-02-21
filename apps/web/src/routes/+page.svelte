@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKList, NDKRelaySet } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKList, NDKRelaySet, NDKRelay } from '@nostr-dev-kit/ndk';
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
     import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from 'svelte';
@@ -20,7 +20,7 @@
 	import PostGrid from '$components/Events/PostGrid.svelte';
 	import CurationItem from '$components/CurationItem.svelte';
 	import { wot, wotFiltered } from '$stores/wot';
-	import { event } from '$stores/post-editor';
+	import { E } from 'vidstack/dist/types/vidstack-YccYOULG.js';
 
     const debug = createDebug("HL:explore");
 
@@ -106,6 +106,7 @@
     })
 
     function subscribe(filters: NDKFilter[]) {
+        debug("subscribing to events", filters, {needsToUnsubscribe: !!events});
         events?.unsubscribe();
 
         events = $ndk.storeSubscribe(
@@ -133,6 +134,14 @@
                     events.push(event);
                 }
             }
+
+            // filter out preview events that reference a full event we already have
+            events = events.filter((event) => {
+                const fullTag = event.tagValue("full");
+                if (!fullTag) return true;
+                if (events.find((e: NDKEvent) => e.tagAddress() === fullTag)) return false;
+                return true;
+            });
 
             if (filter === "All Creators") {
                 events = events.filter((event) => {

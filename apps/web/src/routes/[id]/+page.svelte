@@ -17,6 +17,7 @@
 	import type { UserProfileType } from '../../app';
 	import CreatorsList from "$components/CreatorsList.svelte";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
+	import SupporterList from "$components/Supporters/SupporterList.svelte";
 
     let id: string;
     let { user } = $page.data;
@@ -112,13 +113,18 @@
             <CreatorProfileTabs
                 bind:value={activeTab}
                 name={userProfile?.name}
+                pubkey={user.pubkey}
                 {authorUrl}
             />
         </div>
     </UserProfile>
 
 
-    {#if activeTab === "Publications"}
+    {#if activeTab === "Backstage"}
+        <div class="flex flex-row gap-10">
+            <CreatorFeed onlyBackstageContent={true} />
+        </div>
+    {:else if activeTab === "Publications"}
         <div class="flex flex-row gap-10">
             <CreatorFeed />
         </div>
@@ -129,6 +135,10 @@
     {:else if activeTab === "Highlights"}
         <Highlights
             filter={{"authors": [user.pubkey]}}
+        />
+    {:else if activeTab === "Supporters"}
+        <SupporterList
+            {user}
         />
     {:else if activeTab === "Supported Creators"}
         <CreatorsList

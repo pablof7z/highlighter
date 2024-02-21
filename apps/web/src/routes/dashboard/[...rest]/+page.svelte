@@ -37,7 +37,7 @@
             <!-- <ScheduleList /> -->
 
             <Box title="Supporters" innerClas="flex flex-col justify-stretch w-full">
-                <SupporterList class="w-full" />
+                <SupporterList user={$user} class="w-full" />
             </Box>
 
         </div>

@@ -49,8 +49,7 @@ async function getPaymentRequest(event: NDKEvent): Promise<string | null> {
 	let pr: string | null;
 
 	try {
-		// pr = await zap.createZapRequest(satsAmount * 1000, comment, undefined, ["wss://relay.damus.io/"]);
-		pr = await zap.createZapRequest(5000, comment);
+		pr = await zap.createZapRequest(satsAmount * 1000, comment);
 
 		if (!pr) {
 			throw new Error('Unable to generate a payment request');
@@ -83,7 +82,6 @@ async function reportToClient(statusTags: NDKTag[], event: NDKEvent) {
 export async function POST({ request }) {
 	const payload = await request.json();
 	const { subscriptionEvent } = payload as Payload;
-	console.log('POST /api/user/subscribe', {subscriptionEvent});
 	// const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
 
 	// return json(response.json());
@@ -105,7 +103,7 @@ export async function POST({ request }) {
 			[ "status", "Fetching creator payment details" , "processing"]
 		], event);
 
-		const recipient = event.targetUser
+		const recipient = event.recipient;
 
 		if (!recipient) {
 			return text('Recipient not found', { status: 400 });
@@ -144,12 +142,11 @@ export async function POST({ request }) {
 
 		// return json({ success: true });
 
-		console.log('paymentResult', paymentResult);
 		return json(paymentResult);
 	} catch (error: any) {
 		console.log(JSON.stringify(error))
 		debug('err', { error });
-		return text(error.message ?? error.error ?? JSON.stringify(error), { status: 400 });
+		return text(error.message ?? error.error?.message ?? JSON.stringify(error), { status: 400 });
 	}
 }
 

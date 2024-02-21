@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { NDKKind, type Hexpubkey } from '@nostr-dev-kit/ndk';
-	import { userActiveSubscriptions, userFollows, userSuperFollows } from "$stores/session";
+	import { userActiveSubscriptions, userFollows } from "$stores/session";
 	import { MagicWand } from 'phosphor-svelte';
 	import { page } from '$app/stores';
 	import SuperFollowListItem from './SuperFollowListItem.svelte';
@@ -13,7 +13,7 @@
     let selectedId: string;
     $: selectedId = $page.url.searchParams.get("id") || "";
 
-    export let activeView = $userSuperFollows;
+    export let activeView = $userFollows;
 
     let allAuthors: Hexpubkey[] = [];
 

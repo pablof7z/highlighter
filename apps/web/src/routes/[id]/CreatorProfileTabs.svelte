@@ -3,10 +3,12 @@
     import OptionsList from "$components/OptionsList.svelte";
     import { getUserHighlights, getUserSupporters, getGAUserContent, getUserCurations, getUserContent } from "$stores/user-view";
 	import { user } from "@kind0/ui-common";
+	import { Hexpubkey } from "@nostr-dev-kit/ndk";
 
     export let value: string = "Publications";
     export let name: string = "this user"
     export let authorUrl: string;
+    export let pubkey: Hexpubkey;
 
     const highlights = getUserHighlights();
     const gaContent = getGAUserContent();
@@ -28,7 +30,7 @@
         if (hasBackstage)
             options.push({ name: "Backstage", tooltip: `Backstage content by ${name}`, class: 'gradient' },)
         if (hasBackstage)
-            options.push({ name: "Community", tooltip: `${name}'s Community'`, class: 'gradient', href: `${authorUrl}/chat` },)
+            options.push({ name: "Chat", tooltip: `${name}'s Chat'`, class: 'gradient', href: `${authorUrl}/chat` },)
         if (hasPublications)
             options.push({ name: "Publications", tooltip: `Publications by ${name}` },)
         if (hasCurations)
@@ -40,16 +42,16 @@
     }
 
     let hasBackstage = false;
-    let currentUserSubscriberTier: string | undefined;
+    let currentUserSubscriberTier: string | true | undefined;
     const supporters = getUserSupporters();
-    $: {
+    $: if ($user) {
         currentUserSubscriberTier = ($user && $supporters[$user.pubkey]) || undefined;
-        hasBackstage = !!currentUserSubscriberTier;
+        hasBackstage = !!currentUserSubscriberTier || $user.pubkey === pubkey;
     }
 
     function changed(e: CustomEvent) {
         const {value} = e.detail;
-        if (value === 'Community') {
+        if (value === 'Chat') {
             goto(`${authorUrl}/chat`);
         }
     }

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ModalShell from '$components/ModalShell.svelte';
     import { user as loggedInUser } from '@kind0/ui-common';
+    import UserProfile from '$components/User/UserProfile.svelte';
     import { userSuperFollows } from '$stores/session';
     import Tier from "$components/Tier.svelte";
 	import type { NDKIntervalFrequency, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
@@ -21,6 +22,7 @@
 	import { getUserSubscriptionTiersStore } from '$stores/user-view';
     import createDebug from 'debug';
     import {requestProvider} from 'webln';
+	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 
     export let user: NDKUser;
 
@@ -107,13 +109,19 @@
     }
 </script>
 
-<ModalShell color="glassy" class="max-sm:w-full">
+<ModalShell color="glassy" class="w-full md:max-w-3xl">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div on:click|preventDefault|stopPropagation={() => {}} class="w-full relative">
+    <div on:click|preventDefault|stopPropagation={() => {}} class="w-full relative transition-all duration-1000">
+        <div class="w-full flex justify-center mb-4">
+            <UserProfile {user}>
+                <AvatarWithName {user} avatarType="square" spacing="gap-4" nameClass="text-white text-xl" />
+            </UserProfile>
+        </div>
+
         {#if !paid}
             {#if !bitcoin}
-                <div class="flex flex-col flex-nowrap gap-6 items-stretch sm:items-center" transition:slide>
+                <div class="flex flex-col flex-nowrap gap-6 items-stretch sm:items-center">
                     {#if $availableCurrencies.length > 0}
                         <div class="w-full self-end">
                             <select class="select !bg-white/10" bind:value={selectedCurrency}>
@@ -129,7 +137,7 @@
                     <div class="
                         flex flex-col md:flex-row gap-4 items-start overflow-y-auto max-sm:max-h-[50vh]
                         sm:max-w-[60vw] sm:overflow-x-auto overscroll-contain max-sm:snap-y sm:snap-x
-                        snap-mandatory
+                        snap-mandatory pb-8
                     ">
                         {#if $sortedTiers.length === 0}
                             <EmptyTierForm
@@ -182,13 +190,11 @@
                     </div>
                 </div>
             {:else}
-                <div class="flex flex-col flex-nowrap gap-6 items-center" transition:slide>
+                <div class="flex flex-col flex-nowrap gap-6 items-center">
                     {#if !userHasWalletConnected}
-                        <div class="text-center text-white text-base font-normal leading-normal">
-                            Connect a lightning wallet to subscribe to
-                            <Name {user} />'s
-                            content.
-                        </div>
+                        <h1 class="text-2xl text-center text-white font-semibold leading-normal">
+                            Connect your wallet
+                        </h1>
 
                         <WalletConnect bind:mode={nwcMode} bind:nwcUrl on:connected={onWalletConnected} />
                     {:else if selectedAmount && selectedCurrency}

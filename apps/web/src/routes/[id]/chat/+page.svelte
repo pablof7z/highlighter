@@ -5,12 +5,16 @@
 	import { NDKKind, NDKRelay, NDKRelaySet, type NDKTag } from "@nostr-dev-kit/ndk";
 	import { ndk } from "@kind0/ui-common";
 	import { getDefaultRelaySet } from "$utils/ndk";
-	import { onDestroy } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import { derived } from "svelte/store";
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import type { UserProfileType } from '../../../app';
 	import { pageHeader } from '$stores/layout';
+	import { createPublicKey } from "crypto";
+	import { creatorRelayPubkey } from "$utils/const";
+	import ChatNewMember from "$components/Chat/ChatNewMember.svelte";
+	import { lastSeenGroupTimestamp } from "$stores/notifications";
 
     let { user } = $page.data;
     let userProfile: UserProfileType;
@@ -22,6 +26,7 @@
     const relaySet = getDefaultRelaySet();
 
     const events = $ndk.storeSubscribe([
+        { kinds: [NDKKind.GroupAdminAddUser ], "#h": [user.pubkey], authors: [creatorRelayPubkey] },
         { kinds: [NDKKind.GroupChat], "#h": [user.pubkey] },
         { kinds: [NDKKind.Article, NDKKind.HorizontalVideo], "#h": [user.pubkey] },
     ], { relaySet, groupable: false });
@@ -42,18 +47,27 @@
         const relaySet = new NDKRelaySet(new Set([relay]), $ndk);
 
     }
+
+    onMount(() => {
+        $lastSeenGroupTimestamp ??= {};
+        $lastSeenGroupTimestamp[user.pubkey] ??= Math.floor(Date.now() / 1000);
+    })
 </script>
 
 <UserProfile {user} bind:userProfile />
 
 <MainWrapper
     class="!min-h-0 h-[calc(100vh-4rem)] flex flex-col"
-    marginClass="max-w-5xl mx-auto"
+    marginClass="w-full"
 >
     <div class="flex flex-col grow justify-end gap-6 overflow-y-auto scrollable-content">
         <div class="flex flex-col justify-end gap-6">
         {#each $sortedEvents as event (event.id)}
-            <ChatBubble {event} />
+            {#if event.kind === NDKKind.GroupAdminAddUser}
+                <ChatNewMember {event} />
+            {:else}
+                <ChatBubble {event} />
+            {/if}
         {/each}
         </div>
 

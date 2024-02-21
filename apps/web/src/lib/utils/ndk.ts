@@ -10,9 +10,6 @@ const debug = createDebug('HL:ndk');
 
 export const nip50Relays = ['wss://relay.noswhere.com', 'wss://relay.nostr.band'];
 
-// Relays we are going to send a request to check if we need to auth
-const authRelays = defaultRelays;
-
 export function getNip50RelaySet() {
 	const $ndk = getStore(ndk);
 
@@ -43,18 +40,12 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	$ndk.clientName = 'highlighter';
 	$ndk.clientNip89 =
 		'31990:73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63:1704502265408';
-	$ndk.relayAuthDefaultPolicy = NDKRelayAuthPolicies.disconnect($ndk.pool);
 	// $ndk.httpFetch = nodeFetch as typeof fetch;
 
 	// add default relays
 	for (const relay of defaultRelays) {
 		const r = $ndk.addExplicitRelay(relay, NDKRelayAuthPolicies.signIn({ ndk: $ndk }), false);
 		r.trusted = true;
-
-		if (authRelays.includes(relay)) {
-			r.authRequired = true;
-		}
-		r.connect();
 	}
 	$ndk.addExplicitRelay('wss://purplepag.es');
 	$ndk.addExplicitRelay('wss://relay.damus.io');
@@ -64,10 +55,13 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 
 	$ndk.connect();
 
+	$ndk.pool.on('relay:auth', (relay) => {
+		debug('relay auth', relay.url);
+	});
 	$ndk.pool.on('relay:ready', (relay) => {
 		debug('relay ready', relay.url);
 	});
-	$ndk.pool.on('relay.disconnect', (relay) => {
+	$ndk.pool.on('relay:disconnect', (relay) => {
 		debug('relay disconnect', relay.url);
 	});
 }

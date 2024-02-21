@@ -4,6 +4,7 @@
 	import ProfileEditPage from "$components/User/ProfileEditPage.svelte";
 	import { pageHeader, pageSidebar } from "$stores/layout";
 	import { onDestroy } from "svelte";
+	import { goto } from '$app/navigation';
 
     $pageSidebar = { component: Settings, props: {} }
     onDestroy(() => { $pageSidebar = null; })
@@ -31,5 +32,10 @@
 </script>
 
 <MainWrapper>
-    <ProfileEditPage bind:saving bind:forceSave />
+    <ProfileEditPage
+        bind:saving bind:forceSave
+        on:saved={() => {
+            goto("/settings")
+        }}
+    />
 </MainWrapper>

@@ -9,12 +9,10 @@ if (!RELAY_PRIVATE_KEY) {
 }
 
 // define load function
-export async function load({ fetch }) {
-	const $ndk = get(ndk);
+const $ndk = get(ndk);
 
+if (!$ndk.explicitRelayUrls || $ndk.explicitRelayUrls.length === 0) {
 	if (!$ndk.explicitRelayUrls || $ndk.explicitRelayUrls.length === 0) {
-		if (!$ndk.explicitRelayUrls || $ndk.explicitRelayUrls.length === 0) {
-			await configureBeNDK(RELAY_PRIVATE_KEY, fetch);
-		}
+		await configureBeNDK(RELAY_PRIVATE_KEY, fetch);
 	}
 }

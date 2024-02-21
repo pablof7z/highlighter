@@ -2,8 +2,8 @@
     import { page } from '$app/stores';
     import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { ndk } from "@kind0/ui-common";
-    import { userSuperFollows, userCreatorSubscriptionPlans, userFollows, debugPageFilter } from "$stores/session";
-    import { type NDKEvent, type NDKFilter, NDKSubscriptionCacheUsage, NDKKind } from "@nostr-dev-kit/ndk";
+    import { userCreatorSubscriptionPlans, userFollows } from "$stores/session";
+    import { type NDKEvent, type NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
 	import FeedEvent from "$components/Feed/FeedEvent.svelte";
 	import { onDestroy, onMount } from "svelte";
 	import { Tray } from 'phosphor-svelte';
@@ -13,7 +13,7 @@
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 
     let activeFilterCount: number | undefined = undefined;
-    let activeView = $userSuperFollows;
+    let activeView = $userFollows;
 
     let selectedNip05: string | undefined = undefined;
     let selectedPubkey: string | undefined = undefined;
@@ -93,7 +93,7 @@
     <div class="
         flex-col justify-start items-start flex w-full
     ">
-        {#if $userSuperFollows.size === 0}
+        {#if $userFollows.size === 0}
             <div class="w-full bg-base-200 rounded-xl min-h-[50vh] h-full flex flex-col items-center justify-center gap-6">
                 <Tray size="64" class="text-base-300" />
                 <div class="text-xl opacity-60">

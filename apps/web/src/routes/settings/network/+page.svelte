@@ -3,10 +3,13 @@
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
     import { pageHeader, pageSidebar } from "$stores/layout";
     import { getDefaultRelaySet } from "$utils/ndk";
-	import { ndk } from "@kind0/ui-common";
+	import { Name, ndk } from "@kind0/ui-common";
 	import { RelayList } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy } from 'svelte';
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
+	import { creatorRelayPubkey } from '$utils/const';
+	import AvatarWithName from '$components/User/AvatarWithName.svelte';
+	import UserProfile from '$components/User/UserProfile.svelte';
 
     $pageSidebar = { component: Settings, props: {} }
     onDestroy(() => { $pageSidebar = null; })
@@ -34,6 +37,7 @@
             </div>
 
                 {#each creatorRelays.relays as relay}
+                <div class="flex flex-row items-center gap-4 relative">
                     <GlassyInput
                         type="text"
                         readonly={true}
@@ -41,6 +45,12 @@
                         placeholder="Relay URL"
                         class="text-sm"
                     />
+                    <div class="absolute right-4">
+                        <UserProfile pubkey={creatorRelayPubkey} let:userProfile>
+                            <AvatarWithName {userProfile} pubkey={creatorRelayPubkey} nameClass="text-xs" avatarSize="tiny" />
+                        </UserProfile>
+                    </div>
+                </div>
                     <div class="text-xs text-neutral-500">
                         This URL can't be changed yet.
                     </div>

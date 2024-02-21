@@ -145,6 +145,10 @@
                 <UserProfile user={event.author} bind:authorUrl />
 
                 <slot {event} {urlPrefix} {eventType} {article} {video} {isFullVersion} {authorUrl} />
+
+                {#if $debugMode}
+                    <pre class="max-w-5xl overflow-auto">{JSON.stringify(event.rawEvent(), null, 4)}</pre>
+                {/if}
             {:else}
                 Event not found
             {/if}
