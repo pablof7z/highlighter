@@ -76,6 +76,7 @@ export const userTiers = derived(
 
 		return tiers;
 	});
+
 export const inactiveUserTiers = derived(
 	[allUserTiers, userTiers],
 	([$allUserTiers, $userTiers]) => {
@@ -95,6 +96,8 @@ export const inactiveUserTiers = derived(
 
 		return tiers;
 	});
+
+export const groupsList = writable<NDKList|undefined>(undefined);
 
 export const userActiveSubscriptions = writable<Map<Hexpubkey, string>>(new Map());
 
@@ -184,6 +187,7 @@ export async function prepareSession(): Promise<void> {
 			userArticleCurationsStore: userArticleCurations,
 			userVideoCurationsStore: userVideoCurations,
 			userTierStore: allUserTiers,
+			groupsListStore: groupsList,
 			tierListStore: tierList,
 			activeSubscriptionsStore: userActiveSubscriptions,
 			appHandlersStore: userAppHandlers,
@@ -232,6 +236,7 @@ interface IFetchDataOptions {
 	userArticleCurationsStore?: Writable<Map<string, NDKList>>;
 	userVideoCurationsStore?: Writable<Map<string, NDKList>>;
 	userTierStore?: Writable<NDKSubscriptionTier[]>;
+	groupsListStore?: Writable<NDKList | undefined>;
 	tierListStore?: Writable<NDKList | undefined>;
 	listsKinds?: number[];
 	extraKinds?: number[];
@@ -287,6 +292,8 @@ async function fetchData(
 			processAppRecommendation(event);
 		} else if (event.kind === NDKKind.TierList) {
 			processTierList(event);
+		} else if (event.kind === NDKKind.SimpleGroupList) {
+			groupsListStore(event);
 		} else if (event.kind === NDKKind.SubscriptionTier) {
 			processSubscriptionTier(event);
 		} else if ([NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet].includes(event.kind!)) {
@@ -336,6 +343,13 @@ async function fetchData(
 	const processTierList = (event: NDKEvent) => {
 		opts.tierListStore!.update((tierList) => {
 			if (tierList && event.created_at! < tierList.created_at!) return tierList;
+			return NDKList.from(event);
+		});
+	}
+
+	const groupsListStore = (event: NDKEvent) => {
+		opts.groupsListStore!.update((groupsList) => {
+			if (groupsList && event.created_at! < groupsList.created_at!) return groupsList;
 			return NDKList.from(event);
 		});
 	}
@@ -442,9 +456,8 @@ async function fetchData(
 			filters.push({ kinds, authors: authorPrefixes, limit: 10 });
 		}
 
-		if (opts.appHandlersStore) {
-			kinds.push(NDKKind.AppRecommendation);
-		}
+		if (opts.groupsListStore) kinds.push(NDKKind.SimpleGroupList);
+		if (opts.appHandlersStore) kinds.push(NDKKind.AppRecommendation);
 
 		if (opts.userTierStore) {
 			kinds.push(NDKKind.SubscriptionTier);

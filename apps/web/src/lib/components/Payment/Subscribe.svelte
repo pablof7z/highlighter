@@ -2,12 +2,15 @@
 	import { ndk, newToasterMessage, nicelyFormattedSatNumber } from "@kind0/ui-common";
 	import { onMount } from "svelte";
     import { NDKSubscriptionTier, type NDKEvent, type NDKIntervalFrequency, type NDKUser, NDKSubscriptionStart, type NDKTag } from "@nostr-dev-kit/ndk";
+    import { defaultRelays } from "$lib/utils/const";
 	import { termToShort } from "$utils/term";
 	import { createSubscriptionEvent } from "./subscription-event";
 	import { slide } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
 	import { currencyFormat } from "$utils/currency";
 	import SubscribeStatusInfo from "./SubscribeStatusInfo.svelte";
+	import { bookmarkGroup } from "$lib/nip29";
+	import { groupsList } from "$stores/session";
 
     export let amount: string;
     export let currency: string;
@@ -61,8 +64,11 @@
             const text = await res.text();
             newToasterMessage("Failed to start subscription: " + text, "error");
             subscribing = false;
+
             return;
         }
+
+        bookmarkGroup($ndk, subscribeEvent?.recipient!.pubkey!, defaultRelays, $groupsList);
 
         const data = await res.json();
 

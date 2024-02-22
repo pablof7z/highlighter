@@ -1,4 +1,4 @@
-import NDK, { Hexpubkey, NDKEvent, NDKKind, NDKRelaySet, NDKSigner, NDKSimpleGroup, NDKUser, type NostrEvent } from "@nostr-dev-kit/ndk";
+import NDK, { Hexpubkey, NDKEvent, NDKKind, NDKList, NDKRelaySet, NDKSigner, NDKSimpleGroup, NDKUser, type NostrEvent } from "@nostr-dev-kit/ndk";
 import createDebug from "debug";
 
 const d = createDebug("HL:nip29");
@@ -63,6 +63,35 @@ export async function addGroupMember(
     const group = new NDKSimpleGroup(ndk, groupId, relaySet);
     const user = ndk.getUser({pubkey: member});
     await group.addUser(user);
+}
+
+/**
+ * Marks a group so the user can easily find it later
+ */
+export async function bookmarkGroup(
+    ndk: NDK,
+    groupId: string,
+    relays: string[],
+    list?: NDKList
+) {
+    if (!ndk) throw new Error("NDK or user not found");
+
+    if (!list) {
+        list = new NDKList(ndk);
+        list.kind = NDKKind.SimpleGroupList;
+    }
+
+    const tag = ["group", groupId, ...relays];
+    const stag = JSON.stringify(tag);
+
+    // make sure we don't already have the group in the list
+    if (list!.tags.find(t => JSON.stringify(t) === stag)) {
+        return;
+    }
+
+    list!.tags.push(tag);
+
+    return await list!.publish();
 }
 
 export default {

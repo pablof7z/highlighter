@@ -1,6 +1,5 @@
 <script lang="ts">
     import { NDKVideo } from "@nostr-dev-kit/ndk";
-	import { getUserSubscriptionTiersStore } from "$stores/user-view";
 	import VideoEditor from './VideoEditor.svelte';
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import VideoMetaPage from "./VideoMetaPage.svelte";
@@ -13,10 +12,7 @@
     export let videoFile: File | undefined = undefined;
     export let teaser: NDKVideo;
 
-    let tiers: Record<string, boolean> = { "Free": true };
-
     $preview = teaser;
-    $nonSubscribersPreview = true;
 
     $: $wideDistribution = !!(
         $preview && ($preview as NDKVideo).url || $selectedTiers["Free"]?.selected
@@ -27,15 +23,6 @@
         $preview.tags.push(...video.getMatchingTags("t"))
         if (!$previewTitleChanged) $preview.title = video.title;
         if (!$previewContentChanged) $preview.content = video.content;
-    }
-
-    const allTiers = getUserSubscriptionTiersStore();
-
-    $: for (const tier of $allTiers) {
-        const dTag = tier.tagValue("d");
-        if (dTag && tiers[dTag] === undefined) {
-            tiers[dTag] = false;
-        }
     }
 </script>
 

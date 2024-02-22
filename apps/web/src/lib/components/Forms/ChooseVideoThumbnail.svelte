@@ -1,10 +1,7 @@
 <script lang="ts">
 	import AiIcon from './../../icons/AiIcon.svelte';
     import { onMount } from "svelte";
-    import { user } from "@kind0/ui-common";
-	import type { NDKVideo } from "@nostr-dev-kit/ndk";
 	import ImageIcon from "$icons/ImageIcon.svelte";
-	import { CaretLeft, CaretRight } from 'phosphor-svelte';
 	import Carousel from '$components/Page/Carousel.svelte';
 	import { slide } from 'svelte/transition';
 
@@ -162,20 +159,6 @@
     });
 
     let fileUpload: HTMLInputElement;
-
-    const videoMock = {
-        content,
-        title,
-        thumbnail: "https://i.imgur.com/3Zo7z3u.png",
-        duration,
-        author: $user,
-        tagValue: () => "",
-    } as NDKVideo;
-
-    $: videoMock.author ??= $user;
-    $: videoMock.thumbnail = currentThumbnail ?? selectedThumbnail?.dataUrl!;
-    $: videoMock.title = title ?? "Untitled";
-    $: videoMock.content = content ?? "";
 
     $: selectedBlob = selectedThumbnail?.blob;
 </script>

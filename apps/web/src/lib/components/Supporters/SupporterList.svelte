@@ -49,12 +49,15 @@
 
         // go through the receipts, get the recipient's pubkey and put the lowest created_at in the pubkey object
         for (const receipt of $receipts) {
+            console.log('receipt', receipt.rawEvent());
             const subscriber = receipt.subscriber?.pubkey;
             if (!subscriber) continue;
             if (!pubkeys[subscriber] || pubkeys[subscriber].created_at! > receipt.created_at!) {
                 pubkeys[subscriber] = receipt;
             }
         }
+
+        console.log('pubkeys', Object.keys(pubkeys));
 
         const sorted: NDKSubscriptionReceipt[] = Object.keys(pubkeys).sort((a, b) => {
             if (pubkeys[a].created_at! < pubkeys[b].created_at!) return -1;
@@ -67,7 +70,7 @@
 
 {#if $supporters}
     <div class="flex flex-col gap-4 {$$props.class??""}">
-        {#each $sortedReceipts as receipt, i (receipt.pubkey)}
+        {#each $sortedReceipts as receipt, i (receipt.subscriber.pubkey)}
             <SupporterListItem pubkey={receipt.subscriber.pubkey} {tiers} {tierNames} position={i} creatorPubkey={user?.pubkey} {receipt} />
         {/each}
     </div>

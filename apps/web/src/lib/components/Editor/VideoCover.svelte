@@ -1,12 +1,15 @@
 <script lang="ts">
     import type { NDKVideo } from '@nostr-dev-kit/ndk';
 	import { ndk, newToasterMessage, nip96Upload, uploadToSatelliteCDN } from '@kind0/ui-common';
+    import { status } from '$stores/post-editor';
 	import ChooseVideoThumbnail from '$components/Forms/ChooseVideoThumbnail.svelte';
     import createDebug from "debug";
 
     export let videoFile: File | undefined = undefined;
     export let video: NDKVideo;
     let pendingStatus: string | undefined;
+
+    const st = "Uploading thumbnail";
 
     const debug = createDebug("HL:video-uploader");
 
@@ -22,14 +25,17 @@
         const xhr = new XMLHttpRequest();
 
         xhr.upload.addEventListener('progress', (event) => {
-            pendingStatus = "Uploading thumbnail";
+            // if st is not in status, add it
+            if (!$status.some((s) => s === st)) $status.push(st);
         });
 
         xhr.addEventListener('load', async () => {
             if (xhr.status >= 200 && xhr.status <= 202) {
                 const json = JSON.parse(xhr.responseText);
                 const {url} = json;
-                pendingStatus = undefined;
+
+                // remove from status
+                status.update((s) => s.filter((st) => st !== st));
 
                 video.thumbnail = url;
             } else if (xhr.status === 402) {

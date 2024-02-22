@@ -41,22 +41,25 @@
     }
 </script>
 
-<div class="w-full flex flex-row relative justify-stretch">
+<div class="h-16"></div>
+
+<div class="right-0 left-20 lg:ml-96 flex flex-row fixed justify-stretch bottom-0 !backdrop-blur-[50px] border-t border-white/20 px-4">
     <Textarea
         color="black"
         bind:value={content}
         rows={1}
-        class="!min-h-none w-full grow rounded-box p-4 overflow-hidden"
+        class="!min-h-none w-full grow rounded-box p-4 overflow-hidden !bg-transparent !border-0"
         on:keydown={onkeydown}
+        placeholder="Type a message"
         captureTyping={true}
     />
 
-    <div class="absolute right-2 flex justify-end items-end bottom-2">
+    <div class="z-50 right-2 flex justify-end items-center bottom-0">
         {#if publishing}
             <div class="loading loading-sm text-accent2 loading-bars"></div>
         {:else}
-            <button>
-                <PaperPlaneTilt />
+            <button class="button rounded-full w-10 h-10 p-0.5 opacity-80">
+                <PaperPlaneTilt class="text-black" />
             </button>
         {/if}
     </div>

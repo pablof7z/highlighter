@@ -17,9 +17,9 @@
         showPublicPreview = !$selectedTiers["Free"].selected;
     }
 
-    $: if ($nonSubscribersPreview === undefined) {
-        $nonSubscribersPreview = !$selectedTiers["Free"].selected;
-    }
+    // $: if ($nonSubscribersPreview === undefined) {
+    //     $nonSubscribersPreview = !$selectedTiers["Free"].selected;
+    // }
 </script>
 
 <section class="settings">

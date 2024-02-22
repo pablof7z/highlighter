@@ -4,7 +4,7 @@
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
-	import { onDestroy } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { getEventType } from "./get-event-type";
@@ -16,6 +16,7 @@
 	import { addReadReceipt } from "$utils/read-receipts";
 	import { mainContentKinds } from "$utils/event";
 	import type { EventType } from "../../../app";
+	import { getDefaultRelaySet } from "$utils/ndk";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -33,8 +34,21 @@
     $: if (!tagIdExplicit) tagId = $page.params.tagId;
 
     let needsToLoad: boolean;
+    let authed: boolean;
 
     startUserView(user);
+
+    const relaySet = getDefaultRelaySet();
+    const relay = Array.from(relaySet.relays)[0];
+    relay.on("authed", () => {
+        if (events && !authed) {
+            events.unsubscribe();
+        }
+        events = $ndk.storeSubscribe(getFilter(), { subId: 'with-item', groupable: false });
+        events.onEose(() => { eosed = true; });
+
+        authed = true;
+    });
 
     onDestroy(() => {
         userSubscription?.unref();
@@ -69,16 +83,11 @@
     //     });
     // }
 
-    $: if (!events && user.pubkey && tagId) {
-        events = $ndk.storeSubscribe(getFilter(), { subId: 'with-item', groupable: false });
-        events.onEose(() => {
-            eosed = true;
-        });
-    }
-
     // Search for an event, if we haven't EOSEd yet, only look for explicitly supported kinds
     $: if (events && !event) {
         const e = Array.from($events) as NDKEvent[];
+
+        console.log("events", e);
 
         const matchingEvent = e.find(e => mainContentKinds.includes(e.kind!)) as NDKEvent | undefined;
         if (matchingEvent) {
@@ -86,6 +95,11 @@
         } else if (eosed) {
             event = e[0];
         }
+    }
+
+    $: if (!events && user.pubkey && tagId) {
+        events = $ndk.storeSubscribe(getFilter(), { subId: 'with-item', groupable: false });
+        events.onEose(() => { eosed = true; });
     }
 
     $: if (event?.kind === NDKKind.Article) article = NDKArticle.from(event);

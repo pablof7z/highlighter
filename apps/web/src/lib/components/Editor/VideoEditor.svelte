@@ -16,7 +16,6 @@
     const allTiers = getUserSubscriptionTiersStore();
     $: tiers = getTierSelectionFromAllTiers($allTiers);
 
-    const domain = "https://highlighter.com";
     let authorUrl: string | undefined;
 
     $: teaser.content = video.content;

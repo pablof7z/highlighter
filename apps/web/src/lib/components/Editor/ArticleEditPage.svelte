@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { newToasterMessage, user } from "@kind0/ui-common";
-	import { NDKArticle } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
     import truncateMarkdown from 'markdown-truncate';
 	import UserProfile from '$components/User/UserProfile.svelte';
@@ -36,12 +36,18 @@
         });
     }
 
-    $: if ($view !== "edit-preview" && $preview instanceof NDKArticle) {
-        $preview.image = article.image;
-        $preview.summary = article.summary;
-        $preview.tags.push(...article.getMatchingTags("t"))
-        if (!$previewTitleChanged) $preview.title = article.title;
-        if (!$previewContentChanged) $preview.content = generatePreviewContent()
+    $: if ($view !== "edit-preview") {
+        if ($preview instanceof NDKArticle) {
+            $preview.image = article.image;
+            $preview.summary = article.summary;
+            $preview.tags.push(...article.getMatchingTags("t"))
+            if (!$previewTitleChanged) $preview.title = article.title;
+            if (!$previewContentChanged) $preview.content = generatePreviewContent()
+        } else if ($preview instanceof NDKVideo) {
+            $preview.thumbnail = article.image;
+            if (!$previewTitleChanged) $preview.title = article.title;
+            if (!$previewContentChanged) $preview.content = generatePreviewContent()
+        }
     }
 
     let userProfile: UserProfileType;

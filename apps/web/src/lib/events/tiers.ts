@@ -78,16 +78,26 @@ export function getSelectedTiers(tiers: TierSelection): Tier[] {
 	return selectedTiers;
 }
 
-export function getTierSelectionFromAllTiers(allTiers: NDKSubscriptionTier[]) {
+export function getTierSelectionFromAllTiers(allTiers: NDKSubscriptionTier[], event?: NDKEvent) {
+	const requiredTiers = event ? requiredTiersFor(event, false) : undefined;
+
+	console.log('requiredTiers', requiredTiers, !!event);
+
 	const tiers: TierSelection = {};
-	tiers['Free'] = { name: 'Free', selected: true };
+	tiers['Free'] = { name: 'Free', selected: requiredTiers ? requiredTiers.includes("Free") : true };
 
 	for (const tier of allTiers) {
 		const dTag = tier.tagValue('d');
 		if (dTag && tiers[dTag] === undefined) {
 			tiers[dTag] = { name: tier.title ?? dTag, selected: true };
+
+			if (requiredTiers) {
+				tiers[dTag].selected = requiredTiers.includes(dTag);
+			}
 		}
 	}
+
+	console.log('tiers', tiers);
 
 	return tiers;
 }

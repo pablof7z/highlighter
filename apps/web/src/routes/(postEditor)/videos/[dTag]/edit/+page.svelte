@@ -3,10 +3,19 @@
 	import { NDKVideo, NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
 	import { page } from '$app/stores';
 	import VideoEditPage from "$components/Editor/VideoEditPage.svelte";
+	import { Coins } from "phosphor-svelte";
+	import { getTierSelectionFromAllTiers, requiredTiersFor } from "$lib/events/tiers";
+	import { debugMode } from "$stores/session";
+	import { nonSubscribersPreview, selectedTiers } from "$stores/post-editor";
+	import { getUserSubscriptionTiersStore } from "$stores/user-view";
 
 	let dTag: string;
 
 	let video: NDKVideo;
+	let teaser: NDKVideo;
+	let tiers: Record<string, boolean> = { "Free": true };
+
+	const allTiers = getUserSubscriptionTiersStore();
 
 	$: if (dTag !== $page.params.dTag) {
 		dTag = $page.params.dTag;
@@ -19,30 +28,62 @@
 				return;
 			}
 
-			video = NDKVideo.from(Array.from(events)[0]);
+			const _video = NDKVideo.from(Array.from(events)[0]);
 
-			const fullId = video.tagValue("full");
-			const previewId = video.tagValue("preview");
+			const fullId = _video.tagValue("full");
+			const previewId = _video.tagValue("preview");
 			let otherEvent: NDKEvent | null | undefined = undefined;
-			let teaser: NDKVideo;
 
 			if (fullId || previewId) {
 				otherEvent = await $ndk.fetchEvent(fullId ?? previewId!);
 			}
 
-			if (otherEvent && fullId) {
-				teaser = video;
-				video = NDKVideo.from(otherEvent);
+			console.log({fullId, previewId, otherEvent});
+
+			if (otherEvent) {
+				if (fullId) {
+					teaser = _video;
+					video = NDKVideo.from(otherEvent);
+				} else {
+					teaser = NDKVideo.from(otherEvent);
+					video = _video;
+				}
+				$nonSubscribersPreview = true;
 			} else {
-				teaser = NDKVideo.from(otherEvent);
+				video = _video;
+				teaser = new NDKVideo($ndk);
+				$nonSubscribersPreview = false;
 			}
 
-		}).catch((e: any) => alert(e))
+			const videoRequiredTiers = requiredTiersFor(video);
+			tiers = {};
+			for (const tier of videoRequiredTiers) {
+				tiers[tier] = true;
+			}
+
+			$selectedTiers = getTierSelectionFromAllTiers($allTiers);
+			// set all to false
+			for (const tier of Object.keys($selectedTiers)) {
+				$selectedTiers[tier].selected = false;
+			}
+			for (const tier of videoRequiredTiers) {
+				$selectedTiers[tier] = { name: tier, selected: true };
+			}
+		})
 	}
 </script>
 
 {#key dTag}
-	{#if video}
-		<VideoEditPage {video} {teaser} />
+	{#if video && teaser}
+		<VideoEditPage {video} {teaser} {tiers} />
 	{/if}
 {/key}
+
+{#if $debugMode}
+	{#if video}
+		<pre>{JSON.stringify(video.rawEvent(), null, 2)}</pre>
+	{/if}
+	{#if teaser}
+		<pre>{JSON.stringify(teaser.rawEvent(), null, 2)}</pre>
+	{/if}
+{/if}

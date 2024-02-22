@@ -19,7 +19,10 @@
     function uploading(e: CustomEvent<{progress: number | string}>) {
         const { progress } = e.detail;
 
-        $status.push(st);
+        if (!pendingStatus) {
+            $status.push(st);
+            console.log('status is', $status, progress);
+        }
 
         // if progress is a number
         if (typeof progress === 'number') {
@@ -40,7 +43,8 @@
         pendingStatus = "Video uploaded!";
 
         // remove from status
-        $status = $status.filter((s) => s !== st);
+        status.update((s) => s.filter((st) => st !== "Uploading video"));
+        console.log('status is', $status);
 
         setTimeout(() => {
             pendingStatus = undefined;

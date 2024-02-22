@@ -3,7 +3,7 @@
 	import VideoLink from "$components/Events/VideoLink.svelte";
 	import RadioButton from "$components/Forms/RadioButton.svelte";
     import ModalShell from "$components/ModalShell.svelte";
-    import { event, previewExtraContent, reset } from "$stores/post-editor";
+    import { event, nonSubscribersPreview, previewExtraContent, reset, status } from "$stores/post-editor";
 	import { user } from "@kind0/ui-common";
 	import { NDKArticle, NDKKind, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { closeModal } from "svelte-modals";
@@ -14,8 +14,8 @@
 	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { debugMode } from "$stores/session";
-	import ItemLink from "$components/Events/ItemLink.svelte";
 	import PostGrid from "$components/Events/PostGrid.svelte";
+	import PublishValidation from "./PublishValidation.svelte";
 
     $: if ($event && $user) {
         $event.pubkey = $user?.pubkey;
@@ -30,6 +30,11 @@
     let makePublicScheduled = false;
     let publishAtVal: string | undefined = $publishAt?.toISOString().slice(0, -1);
 
+    const tiers = getSelectedTiers($selectedTiers);
+    if (Object.values($selectedTiers).length === tiers.length) {
+        $nonSubscribersPreview = false;
+    }
+
     $: if (publishAtVal) {
         try {
             const date = new Date(publishAtVal);
@@ -39,15 +44,11 @@
 
     async function publish() {
         publishing = true;
-        const tiers = getSelectedTiers($selectedTiers);
+
 
         if (!$event) {
             publishing = false;
             return;
-        }
-
-        if (Object.values($selectedTiers).length === tiers.length) {
-            $preview = undefined;
         }
 
         // add preview content
@@ -66,7 +67,7 @@
             $selectedTiers,
             {
                 ndk: $ndk,
-                teaserEvent: $preview as NDKEvent,
+                teaserEvent: $nonSubscribersPreview ? $preview as NDKEvent : undefined,
                 wideDistribution: $wideDistribution,
                 publishAt: $publishAt
             }
@@ -115,8 +116,6 @@
             makePublicScheduled = true;
         }
 
-        console.log('after')
-        debugger
         publishing = false;
         $view = "published";
         closeModal();
@@ -148,6 +147,15 @@
             if (thumbnail && !$preview.thumbnail) $preview.thumbnail = thumbnail;
         }
     }
+
+    let canPublish: boolean;
+
+    let statusLength: number;
+
+    $: {
+        $status.length;
+        setTimeout(() => statusLength = $status.length, 500);
+    }
 </script>
 
 <ModalShell color="glassy" class="max-w-3xl">
@@ -155,25 +163,30 @@
         Ready to publish?
     </h1>
 
-    <div class="md:min-w-[40rem] bg-white/5 border border-white/20 rounded-box p-3">
-        {#if $event && $user}
-            {#if $event.kind === NDKKind.Article}
-                <ArticleLink article={$event} skipLink={true} />
-            {:else if $event.kind === NDKKind.HorizontalVideo}
-                <VideoLink video={$event} skipLink={true} />
-            {:else if $event.kind === NDKKind.GroupNote}
-                <PostGrid event={$event} />
-            {:else}
-                {$event.kind}
-            {/if}
-        {/if}
-    </div>
+    {#key statusLength}
+        <PublishValidation bind:canPublish />
+        {#key canPublish}
+            <div class="md:min-w-[40rem] bg-white/5 border border-white/20 rounded-box p-3">
+                {#if $event && $user}
+                    {#if $event.kind === NDKKind.Article}
+                        <ArticleLink article={$event} skipLink={true} />
+                    {:else if $event.kind === NDKKind.HorizontalVideo}
+                        <VideoLink video={$event} skipLink={true} />
+                    {:else if $event.kind === NDKKind.GroupNote}
+                        <PostGrid event={$event} />
+                    {:else}
+                        {$event.kind}
+                    {/if}
+                {/if}
+            </div>
+        {/key}
+    {/key}
 
     <section class="settings !bg-transparent !p-0 w-full">
         <div class="field">
             <div class="title">Publication</div>
 
-            <RadioButton bind:currentValue={mode} value="now" class="flex-1 bg-white/10 !text-white font-normal text-xl">
+            <RadioButton bind:currentValue={mode} value="now" class="flex-1 bg-white/10 !text-white font-normal text-xl ">
                 Publish now
             </RadioButton>
 
@@ -188,12 +201,15 @@
 
     {#if $debugMode}
         <div class="max-w-xl overflow-auto">
-            Preview
-            <pre>{JSON.stringify($preview?.rawEvent())}</pre>
+            {#if $nonSubscribersPreview}
+                Preview
+                <pre>{JSON.stringify($preview?.rawEvent())}</pre>
+            {/if}
             Event
             <pre>{JSON.stringify($event?.rawEvent())}</pre>
         </div>
         <div>wideDistribution: {$wideDistribution}</div>
+        <div>nonSubscribersPreview: {$nonSubscribersPreview}</div>
     {/if}
 
     <div class="flex flex-row gap-4 w-full">
@@ -203,7 +219,7 @@
 
         <button
             class="button flex-1 px-10 py-3"
-            disabled={mode === 'schedule' && (!$publishAt || new Date($publishAt) < new Date())}
+            disabled={mode === 'schedule' && (!$publishAt || new Date($publishAt) < new Date()) || !canPublish}
             on:click={() => {
                 if (mode === "now") $publishAt = undefined;
                 publish();

@@ -69,6 +69,9 @@
                 <div class="flex flex-row w-full justify-between items-center text-white text-2xl font-medium">
                     <div>{video.title}</div>
                 </div>
+                {#if $user?.pubkey === video.pubkey}
+                    <a href={editUrl} class="button">Edit</a>
+                {/if}
                 <!-- <div class="flex-row items-start gap-4 flex w-full justify-between">
                     <div class="flex flex-row items-center gap-12">
                         <EventActionButtons

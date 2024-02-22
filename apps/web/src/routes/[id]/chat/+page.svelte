@@ -11,7 +11,6 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import type { UserProfileType } from '../../../app';
 	import { pageHeader } from '$stores/layout';
-	import { createPublicKey } from "crypto";
 	import { creatorRelayPubkey } from "$utils/const";
 	import ChatNewMember from "$components/Chat/ChatNewMember.svelte";
 	import { lastSeenGroupTimestamp } from "$stores/notifications";
@@ -57,18 +56,18 @@
 <UserProfile {user} bind:userProfile />
 
 <MainWrapper
-    class="!min-h-0 h-[calc(100vh-4rem)] flex flex-col"
+    class="!min-h-0 min-h-[calc(100vh-4rem)] flex flex-col"
     marginClass="w-full"
 >
-    <div class="flex flex-col grow justify-end gap-6 overflow-y-auto scrollable-content">
+    <div class="flex flex-col h-full grow justify-end h-full gap-6 overflow-y-auto scrollable-content">
         <div class="flex flex-col justify-end gap-6">
-        {#each $sortedEvents as event (event.id)}
-            {#if event.kind === NDKKind.GroupAdminAddUser}
-                <ChatNewMember {event} />
-            {:else}
-                <ChatBubble {event} />
-            {/if}
-        {/each}
+            {#each $sortedEvents as event (event.id)}
+                {#if event.kind === NDKKind.GroupAdminAddUser}
+                    <ChatNewMember {event} />
+                {:else}
+                    <ChatBubble {event} />
+                {/if}
+            {/each}
         </div>
 
         <ChatInput {tags} />

@@ -134,7 +134,7 @@
                         <div class="-mt-16 group-hover:-mt-4 transition-all duration-1000 ">
                             <UserProfile pubkey={pubkey} let:userProfile let:fetching let:authorUrl>
                                 <Item href={authorUrl}>
-                                    <Avatar {userProfile} {fetching} size="medium" />
+                                    <Avatar {userProfile} {fetching} class="flex-none" />
                                 </Item>
                             </UserProfile>
                         </div>
