@@ -15,7 +15,7 @@
 ">
     {#if comingSoon}
         <div class="badge border-none whitespace-nowrap py-4 bg-neutral-900 absolute -top-5">
-            <span class="bg-clip-text bg-gradient-to-r text-transparent from-[#BD9488] to-[#7092A0] text-sm font-semibold px-1 whitespace-nowrap">
+            <span class="text-neutral-500 text-xs font-semibold px-1 whitespace-nowrap">
                 Coming soon
             </span>
         </div>

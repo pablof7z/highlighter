@@ -47,7 +47,7 @@
 
         <div class="grow">
             <p>
-                Set up your creator profile and start publishing your work on Nostr
+                Set up your creator profile and start publishing on Nostr
                 and getting paid for your work.
             </p>
         </div>

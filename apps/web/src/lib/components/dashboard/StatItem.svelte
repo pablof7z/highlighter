@@ -47,7 +47,7 @@
                         {valueRender}
                     {/if}
                 </h1>
-                <span class="gradient-text">
+                <span>
                     {label}
                     {#if $$slots.default}
                         <Question class="inline ml-1 text-neutral-500" size="1.5rem" />
@@ -70,6 +70,6 @@
     }
 
     span {
-        @apply font-medium text-base text-center whitespace-nowrap;
+        @apply font-normal text-sm text-center whitespace-nowrap;
     }
 </style>

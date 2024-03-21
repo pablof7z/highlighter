@@ -88,7 +88,7 @@
         flex-col justify-start items-start flex w-full
         gap-6
     ">
-        {#each $eventsToRender as event}
+        {#each $eventsToRender as event (event.id)}
             {#if event.kind === NDKKind.Highlight}
                 <Highlight highlight={NDKHighlight.from(event)} class="bg-base-100/60" />
             {:else if event.kind === NDKKind.Text}

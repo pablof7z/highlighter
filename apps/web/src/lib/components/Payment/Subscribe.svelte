@@ -68,7 +68,7 @@
             return;
         }
 
-        bookmarkGroup($ndk, subscribeEvent?.recipient!.pubkey!, defaultRelays, $groupsList);
+        bookmarkGroup($ndk, subscribeEvent!.recipient!.pubkey!, defaultRelays, $groupsList);
 
         const data = await res.json();
 
@@ -107,12 +107,12 @@
 
 <div class="text-lg font-medium flex flex-col items-center gap-1">
     {#if currency !== 'msat'}
-        <div class="text-4xl gradient-text ">
+        <div class="text-4xl text-white font-bold">
             {currencyFormat(currency, parseInt(amount))}/{termToShort(term)}
         </div>
 
         {#if satsAmount}
-            <div class="opacity-60">({nicelyFormattedSatNumber(satsAmount)} sats)</div>
+            <div class="opacity-60 font-normal">({nicelyFormattedSatNumber(satsAmount)} sats)</div>
         {/if}
     {:else}
         {currencyFormat(currency, parseInt(amount))}
@@ -130,7 +130,7 @@
         <SubscribeStatusInfo {subscribeEvent} />
     {/if}
 
-    <button class="button button-primary w-full" on:click={subscribe} disabled={subscribing}>
+    <button class="button w-full" on:click={subscribe} disabled={subscribing}>
         {#if subscribing}
             <div class="loading loading-sm"></div>
         {:else}

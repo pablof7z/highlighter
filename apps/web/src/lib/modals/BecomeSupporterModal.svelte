@@ -118,7 +118,7 @@
                                     bind:currentValue={selectedCurrency}
                                     value={currency}
                                     label={currencyCode(currency)}
-                                    class="!bg-white/10 w-fit whitespace-nowrap !p-2 !px-4"
+                                    class="w-fit whitespace-nowrap !p-2 !px-4"
                                     skipCheck={true}
                                 >
                                     {currencyCode(currency)}
@@ -167,7 +167,7 @@
                         >Cancel</button>
                         {#if selectedAmount && selectedCurrency}
                             <button
-                                class="button button-primary px-10 text-lg grow"
+                                class="button px-10 text-lg grow"
                                 disabled={!selectedAmount}
                                 on:click={() => bitcoin = true}
                             >

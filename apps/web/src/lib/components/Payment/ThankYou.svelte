@@ -71,7 +71,7 @@
 
         </div>
 
-        <button on:click={seeContentClicked} class="button button-primary w-full place-self-end">
+        <button on:click={seeContentClicked} class="button w-full place-self-end">
             Go backstage
         </button>
     </div>

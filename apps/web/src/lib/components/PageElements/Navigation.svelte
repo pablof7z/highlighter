@@ -129,7 +129,7 @@
             {/if}
 
             {#if $userActiveSubscriptions.size > 0}
-                <div class="flex flex-col transition-all duration-1000 group pt-16 flex-grow overflow-y-auto brightness-90 hover:brightness-100 hover:pt-4">
+                <div class="flex flex-col transition-all duration-1000 group pt-16 flex-grow brightness-90 hover:brightness-100 hover:pt-4">
                     {#each $userActiveSubscriptions.keys() as pubkey}
                         <div class="-mt-16 group-hover:-mt-4 transition-all duration-1000 ">
                             <UserProfile pubkey={pubkey} let:userProfile let:fetching let:authorUrl>

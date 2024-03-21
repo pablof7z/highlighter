@@ -130,7 +130,7 @@
                 bind:value={nwc}
             />
             <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                <button class="button button-primary w-full" on:click={() => nwcConnect(nwc)}>
+                <button class="button w-full" on:click={() => nwcConnect(nwc)}>
                     Connect
                 </button>
             </div>
@@ -154,7 +154,7 @@
             </div>
         </div>
 
-        <button class="button button-primary w-full" on:click={() => nwcConnect(nwc)}>
+        <button class="button w-full" on:click={() => nwcConnect(nwc)}>
             Connect
         </button>
     </div>

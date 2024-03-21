@@ -6,11 +6,11 @@ export const possibleCurrencies = ['USD', 'EUR', 'msat'];
 export function currencyCode(currency: string) {
 	switch (currency) {
 		case 'USD':
-			return '$ - USD';
+			return 'USD';
 		case 'EUR':
-			return '€ - Euros';
+			return 'Euros';
 		case 'msat':
-			return 'sats - Bitcoin';
+			return 'Bitcoin';
 		default:
 			return currency;
 	}

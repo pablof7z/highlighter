@@ -1,6 +1,6 @@
 import { sendPayment } from '$lib/backend/pay';
 import { ndk } from '@kind0/ui-common';
-import NDK, { NDKEvent, NDKSubscriptionStart, NDKUser, NDKZap, type Hexpubkey, type NostrEvent, type NDKTag } from '@nostr-dev-kit/ndk';
+import NDK, { NDKEvent, NDKSubscriptionStart, NDKUser, NDKZap, type NostrEvent, type NDKTag } from '@nostr-dev-kit/ndk';
 import { json, text } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import createDebug from 'debug';
@@ -10,6 +10,8 @@ import { addToListOfSupporters, getTierNameFromSubscriptionEvent, recordValidSub
 import { verifySignature, type Event } from 'nostr-tools';
 
 const debug = createDebug('HL:/api/user/subscribe');
+
+const MOCK_PAYMENT = true && import.meta.env.VITE_HOSTNAME === 'localhost';
 
 type Payload = {
 	subscriptionEvent: string;
@@ -122,9 +124,14 @@ export async function POST({ request }) {
 			[ "status", "Sending payment" , "processing"]
 		], event);
 
-		// const paymentResult = { mocked: 'yup!' };
-		const paymentResult = await sendPayment(pr, event.pubkey);
-		debug('payment result', paymentResult);
+		let paymentResult: any;
+
+		if (MOCK_PAYMENT) {
+			paymentResult = { mocked: 'yup!' };
+		} else {
+			paymentResult = await sendPayment(pr, event.pubkey);
+			debug('payment result', paymentResult);
+		}
 
 		reportToClient([
 			[ "status", "Fetching creator payment details" , "done"],

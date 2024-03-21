@@ -43,6 +43,7 @@
                 !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg
                 focus:ring-0 text-neutral-400
                 resize-none min-h-[20vh] h-[70vh]
+                font-serif
                 {$$props.textareaClass??""}
             "
             placeholder="Write your heart out..."

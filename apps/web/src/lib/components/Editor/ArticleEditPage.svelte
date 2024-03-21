@@ -110,5 +110,3 @@
         <ArticlePreviewEditor {article} {authorUrl} />
     </div>
 </Shell>
-
-{preview?.title}
