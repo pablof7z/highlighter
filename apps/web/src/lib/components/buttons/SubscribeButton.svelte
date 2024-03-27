@@ -19,7 +19,11 @@
 
     let currentUserSubscriberTier: string | true | undefined;
     const supporters = getUserSupporters();
-    $: currentUserSubscriberTier = !!($currentUser && $supporters[$currentUser.pubkey]) || undefined;
+    $: {
+        if (supporters && $supporters) {
+            currentUserSubscriberTier = !!($currentUser && $supporters[$currentUser.pubkey]) || undefined;
+        }
+    }
 
     function openSupportModal() {
         if ($currentUser) {
@@ -37,7 +41,7 @@
     }
 </script>
 
-{#if user.pubkey !== $currentUser?.pubkey}
+{#if user && user.pubkey !== $currentUser?.pubkey}
     <UserProfile bind:authorUrl {user} />
 
     {#if !currentUserSubscriberTier}

@@ -45,3 +45,18 @@ model Payment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model StripeSession {
+  id          String @id
+  paymentId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  paid       Boolean @default(false)
+  amount      Int
+  term        String
+  currency    String
+  tierId      String?
+  subscriberPubkey String
+  recipientPubkey String
+  event String
+}

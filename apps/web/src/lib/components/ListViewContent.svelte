@@ -16,6 +16,7 @@
     const items = $ndk.storeSubscribe(filters);
 
     let selectedItemId: string | undefined = undefined;
+    let saving = false;
 
     $: selectedItemId = $page.params.subId;
 
@@ -28,10 +29,15 @@
     }
 
     async function saveDescription() {
+        saving = true;
         list.content = editDescription??"";
         list.id = "";
         list.sig = "";
-        await list.publish();
+        try {
+            await list.publish();
+        } finally {
+            saving = false;
+        }
         editDescription = null;
     }
 </script>
@@ -72,14 +78,18 @@
                 />
                 <div class="flex flex-row justify-end">
                     <button class="button" on:click={saveDescription}>
-                        Save
+                        {#if saving}
+                            Saving...
+                        {:else}
+                            Save
+                        {/if}
                     </button>
                 </div>
             {/if}
         {:else if list.content.length > 0}
-            <div class="items-start text-lg">
+            <button class="items-start text-lg" on:click={() => editDescription = list.content??""}>
                 {list.content}
-            </div>
+            </button>
         {/if}
     </div>
 </div>

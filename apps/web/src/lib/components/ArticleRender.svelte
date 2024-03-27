@@ -270,9 +270,11 @@
 </div>
 
 <div class="w-full flex flex-col gap-4">
-    <div class="self-stretch text-white text-4xl font-semibold">
-        {article.title}
-    </div>
+    {#if article.title}
+        <div class="self-stretch text-white text-4xl font-semibold">
+            {article.title}
+        </div>
+    {/if}
 
     <div class="text-xl text-white/70 font-normal">
         {getSummary(article)}

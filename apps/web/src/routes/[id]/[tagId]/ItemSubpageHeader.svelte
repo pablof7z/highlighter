@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { ArrowLeft, CaretLeft } from "phosphor-svelte";
 
     export let urlPrefix: string;

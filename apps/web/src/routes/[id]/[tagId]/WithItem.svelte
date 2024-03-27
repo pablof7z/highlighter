@@ -3,7 +3,7 @@
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
+	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, filterFromId } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
@@ -17,6 +17,7 @@
 	import { mainContentKinds } from "$utils/event";
 	import type { EventType } from "../../../app";
 	import { getDefaultRelaySet } from "$utils/ndk";
+	import { nip19 } from "nostr-tools";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -36,7 +37,7 @@
     let needsToLoad: boolean;
     let authed: boolean;
 
-    startUserView(user);
+    if (user) startUserView(user);
 
     const relaySet = getDefaultRelaySet();
     const relay = Array.from(relaySet.relays)[0];
@@ -56,14 +57,20 @@
     })
 
     function getFilter(): NDKFilter[] {
-        if (!user.pubkey || !tagId) return [{limit:0}];
-        const filters: NDKFilter[] = [{ authors: [user.pubkey], "#d": [tagId] }];
+        if (!tagId) return [{limit:0}];
+        let filters: NDKFilter[] = [{ "#d": [tagId], kinds: mainContentKinds }];
 
-        // 18-char of regex
-        const regex = new RegExp(`^[0-9a-fA-F]{${EVENT_ID_SUFFIX_LENGTH}}$`);
-        if (tagId.match(regex)) {
-            filters.push({ authors: [user.pubkey], "ids": [tagId] });
+        if (user) filters[0].authors = [user.pubkey];
+
+        // A nip19 entity
+        try {
+            nip19.decode(tagId);
+            return filters = filterFromId(tagId);
+        } catch {
+            console.log("👉 tagId is not a bech32", tagId);
         }
+
+        console.log("👉 filter", filters);
 
         return filters;
     }
@@ -97,7 +104,7 @@
         }
     }
 
-    $: if (!events && user.pubkey && tagId) {
+    $: if (!events && tagId) {
         events = $ndk.storeSubscribe(getFilter(), { subId: 'with-item', groupable: false });
         events.onEose(() => { eosed = true; });
     }

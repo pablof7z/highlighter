@@ -1,6 +1,6 @@
 import type { NDKEvent } from '@nostr-dev-kit/ndk';
 
-export const EVENT_ID_SUFFIX_LENGTH = 18;
+export const EVENT_ID_SUFFIX_LENGTH = 999;
 
 export function urlFromEvent(event: NDKEvent): string {
 	const suffix = urlSuffixFromEvent(event);
@@ -14,7 +14,7 @@ export function urlSuffixFromEvent(event: NDKEvent): string {
 		return encodeURIComponent(event.tagValue('d')!);
 	}
 
-	return event.id.slice(0, EVENT_ID_SUFFIX_LENGTH);
+	return event.encode();
 }
 
 export function urlSuffixFromTagId(tagId: string): string {
@@ -24,5 +24,5 @@ export function urlSuffixFromTagId(tagId: string): string {
 		return dTag;
 	}
 
-	return tagId.slice(0, EVENT_ID_SUFFIX_LENGTH);
+	return tagId;
 }

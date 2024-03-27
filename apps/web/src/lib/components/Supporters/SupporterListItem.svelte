@@ -87,11 +87,11 @@
             </div>
         </div>
 
-        <div class="flex flex-col gap-0 items-center justify-center bg-gradient w-[7rem] h-[7rem] rounded-box flex-none">
-            <div class="text-5xl font-black text-base-300 opacity-80">
-                <span class="opacity-40">#</span>{position+1}
+        <div class="flex flex-col gap-0 items-center justify-center bg-gradient w-[7rem] h-[7rem] mask mask-hexagon flex-none">
+            <div class="text-5xl font-black text-white opacity-80 flex flex-row items-end">
+                <span class="text-2xl opacity-80 absolute -translate-x-5">#</span>{position+1}
             </div>
-            <div class="text-xs text-neutral-800/80">
+            <div class="text-xs text-white">
                 Supporter
             </div>
         </div>

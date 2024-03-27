@@ -28,7 +28,7 @@ let timeout: NodeJS.Timeout | undefined = undefined;
 
 const d = createDebug('HL:read-receipts');
 
-let signer: NDKPrivateKeySigner | undefined = undefined;
+let signer: NDKPrivateKeySigner | undefined = NDKPrivateKeySigner.generate();
 
 /**
  * Adds a kind:15 event tagging seen events.

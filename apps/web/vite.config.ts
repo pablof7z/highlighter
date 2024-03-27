@@ -47,5 +47,5 @@ export default defineConfig({
 	],
 	optimizeDeps: {
 		exclude: ["phosphor-svelte"],
-	}
+	},
 });

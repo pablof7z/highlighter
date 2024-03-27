@@ -2,18 +2,21 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import { urlSuffixFromEvent } from "$utils/url";
-	import { Avatar, AvatarWithName, Name, RelativeTime, ndk, user } from "@kind0/ui-common";
+    import AvatarWithName from "$components/User/AvatarWithName.svelte";
+	import { Avatar, Name, RelativeTime, ndk, user } from "@kind0/ui-common";
     import { type NDKEvent } from "@nostr-dev-kit/ndk";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import { EventCardDropdownMenu, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
     import Comment from "$components/Forms/Comment.svelte";
 	import { slide } from "svelte/transition";
 	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
+	import { goto } from "$app/navigation";
 
     export let event: NDKEvent;
     export let urlPrefix: string | undefined = undefined;
     export let skipAuthor: boolean = false;
     export let skipActions = false;
     export let reverse = false;
+    export let deleted = false;
     const author = event.author;
 
     let suffixUrl = urlSuffixFromEvent(event);
@@ -34,14 +37,18 @@
     function reset() {
         showComment = false;
     }
+
+    function deleteEvent() {
+        deleted = true;
+        event.delete();
+    }
 </script>
 
 <UserProfile user={author} let:userProfile let:fetching let:authorUrl>
     <a href="{authorUrl}{urlPrefix??""}/{suffixUrl}" class="
         bg-base-200 rounded-box p-4
         flex flex-col gap-4 pb-6 wrapper w-full {$$props.class??""}
-        overflow-clip
-    ">
+    " class:hidden={deleted}>
         {#if reverse}
             <div class="flex flex-row w-full justify-between items-stretch">
                 <AvatarWithName user={author} {userProfile} {fetching} />
@@ -49,7 +56,13 @@
                 <div class="flex flex-row gap-2 items-center" on:click|preventDefault|stopPropagation|stopImmediatePropagation>
                     <RelativeTime {event} class="text-neutral-500 text-sm font-normal" />
 
-                    <!-- <EventCardDropdownMenu {event} /> -->
+                    <EventCardDropdownMenu
+                        {event}
+                        enableDelete={$user && $user.pubkey === event.pubkey}
+                        on:delete={deleteEvent}
+                        class="dropdown-end right-0" on:open={() => {
+                        goto(`/e/${event.encode()}`);
+                    }} />
                 </div>
             </div>
         {/if}

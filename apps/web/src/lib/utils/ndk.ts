@@ -48,10 +48,9 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 		r.trusted = true;
 	}
 	$ndk.addExplicitRelay('wss://purplepag.es');
-	$ndk.addExplicitRelay('wss://relay.damus.io');
 	$ndk.addExplicitRelay('wss://nos.lol');
-	$ndk.addExplicitRelay('wss://relay.noswhere.com');
-	$ndk.addExplicitRelay('wss://relay.nostr.band');
+	// $ndk.addExplicitRelay('wss://relay.noswhere.com');
+	// $ndk.addExplicitRelay('wss://relay.nostr.band');
 
 	$ndk.connect(2000);
 

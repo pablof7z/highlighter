@@ -112,7 +112,7 @@
             {#if !bitcoin}
                 <div class="flex flex-col flex-nowrap gap-6 items-stretch sm:items-center">
                     {#if $availableCurrencies.length > 1}
-                        <div class="flex flex-row gap-2 bg-white/10 p-2 rounded-box">
+                        <div class="flex flex-row gap-2 bg-white/10 rounded-box">
                             {#each $availableCurrencies as currency}
                                 <RadioButton
                                     bind:currentValue={selectedCurrency}
@@ -188,7 +188,16 @@
                             Connect your wallet
                         </h1>
 
-                        <WalletConnect bind:mode={nwcMode} bind:nwcUrl on:connected={onWalletConnected} />
+                        <WalletConnect
+                            bind:mode={nwcMode}
+                            bind:nwcUrl
+                            on:connected={onWalletConnected}
+                            pubkey={user.pubkey}
+                            term={selectedTerm}
+                            amount={selectedAmount}
+                            currency={selectedCurrency}
+                            tier={selected}
+                        />
                     {:else if selectedAmount && selectedCurrency}
                         <Subscribe
                             amount={selectedAmount.toString()}

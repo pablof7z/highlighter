@@ -1,13 +1,11 @@
 <script lang="ts">
 	import CurationWithCountButton from "$components/buttons/CurationWithCountButton.svelte";
-	import ReactionsWithCountButton from "$components/buttons/ReactionsWithCountButton.svelte";
     import CommentsButton from "$components/buttons/CommentsButton.svelte";
 	import { mainContentKinds } from "$utils/event";
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import HighlightsWithCountButton from "$components/buttons/HighlightsWithCountButton.svelte";
 	import type { EventType } from "../../../../app";
 	import BoostButton from "$components/buttons/BoostButton.svelte";
-	import { Lightning } from "phosphor-svelte";
 	import { ZapsButton } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
 	import { hideMobileBottomBar } from "$stores/layout";
@@ -58,7 +56,9 @@
             </div>
 
             <div class="place-self-end max-sm:hidden">
-                <SubscribeButton user={event.author} tiers={getUserSubscriptionTiersStore()} />
+                {#if event.author}
+                    <SubscribeButton user={event.author} tiers={getUserSubscriptionTiersStore()} />
+                {/if}
             </div>
         </div>
     </div>

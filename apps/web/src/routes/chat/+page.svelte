@@ -6,6 +6,7 @@
 	import { ndk } from "@kind0/ui-common";
 	import { NDKKind } from "@nostr-dev-kit/ndk";
     import Chat from "$components/PageSidebar/Chat.svelte";
+	import { onDestroy } from "svelte";
 
     $pageHeader = { title: "Community" };
     $pageSidebar = {
@@ -13,6 +14,11 @@
         props: {
         }
     }
+
+    onDestroy(() => {
+        $pageHeader = null;
+        $pageSidebar = null;
+    });
 
     // const relaySet = getDefaultRelaySet();
     // const chatGroups = $ndk.storeSubscribe(

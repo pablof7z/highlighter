@@ -25,6 +25,7 @@
     let authorUrl: string | undefined;
 
     function onArticleChange() {
+        console.log(`content changed`);
         contentChangedSinceLastSave++;
     }
 
@@ -59,7 +60,7 @@
             saveDraft(false);
             contentChangedSinceLastSave = 0;
         }
-    }, 60000);
+    }, 30000);
 
     onDestroy(() => {
         clearInterval(saveDraftInterval);
@@ -70,11 +71,13 @@
             time: Date.now(),
             data: {
                 article: JSON.stringify(article.rawEvent()),
-                preview: JSON.stringify(preview?.rawEvent()),
+                preview: JSON.stringify($preview?.rawEvent()),
                 tiers,
             },
             manuallySaved
         }
+
+        console.log(`saving draft`, checkpoint);
 
         if (draftItem) {
             $drafts = $drafts.filter(d => d.id !== draftItem!.id);

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { qrcode } from "@sveu/extend/qrcode";
+    // import { qrcode } from "@sveu/extend/qrcode";
 	import { onMount } from "svelte";
     import { createEventDispatcher } from "svelte";
 
@@ -10,26 +10,26 @@
     let paired = false;
     let uri: string;
 
-    $: ({ output, pending, error } = qrcode(uri??""))
+    // $: ({ output, pending, error } = qrcode(uri??""))
 
-    onMount(async () => {
-        const module = await import("@lottiefiles/svelte-lottie-player");
-        LottiePlayer = module.LottiePlayer;
+    // onMount(async () => {
+    //     const module = await import("@lottiefiles/svelte-lottie-player");
+    //     LottiePlayer = module.LottiePlayer;
 
-        const res = await fetch("/api/user/nwa", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            },
-        })
+    //     const res = await fetch("/api/user/nwa", {
+    //         method: "GET",
+    //         headers: {
+    //             "Content-Type": "application/json"
+    //         },
+    //     })
 
-        const data = await res.json();
-        console.log(data);
-        uri = data.url;
-    })
+    //     const data = await res.json();
+    //     console.log(data);
+    //     uri = data.url;
+    // })
 </script>
 
-{#if uri}
+<!-- {#if uri}
 <div class="grid place-items-center">
     {#if paired}
     <div class="max-w-lg mx-auto w-full">
@@ -57,4 +57,4 @@
         <br />
     {/if}
 </div>
-{/if}
+{/if} -->

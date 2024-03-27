@@ -1,12 +1,12 @@
 import { sendPayment } from '$lib/backend/pay';
 import { ndk } from '@kind0/ui-common';
-import NDK, { NDKEvent, NDKSubscriptionStart, NDKUser, NDKZap, type NostrEvent, type NDKTag } from '@nostr-dev-kit/ndk';
+import { NDKEvent, NDKSubscriptionStart, NDKUser, NDKZap, type NostrEvent, type NDKTag } from '@nostr-dev-kit/ndk';
 import { json, text } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import createDebug from 'debug';
 import 'websocket-polyfill';
 import { calculateSatAmountFromAmountTag } from '$utils/currency';
-import { addToListOfSupporters, getTierNameFromSubscriptionEvent, recordValidSubscriptionPayment } from '$utils/subscriptions';
+import { getTierNameFromSubscriptionEvent, processNewSubscription } from '$utils/subscriptions';
 import { verifySignature, type Event } from 'nostr-tools';
 
 const debug = createDebug('HL:/api/user/subscribe');
@@ -139,7 +139,7 @@ export async function POST({ request }) {
 			[ "status", "Confirming payments" , "processing"]
 		], event);
 
-		await processNewSubscription(event, recipient, $ndk);
+		await processNewSubscription(event, recipient, $ndk, debug);
 
 		reportToClient([
 			[ "status", "Fetching creator payment details" , "done"],
@@ -155,31 +155,4 @@ export async function POST({ request }) {
 		debug('err', { error });
 		return text(error.message ?? error.error?.message ?? JSON.stringify(error), { status: 400 });
 	}
-}
-
-async function processNewSubscription(event: NDKSubscriptionStart, recipient: NDKUser, ndk: NDK) {
-	await Promise.all([
-		new Promise((resolve) => {
-			event.publish().then((relays) => {
-				debug(`event published to ${relays.size} relays`);
-				resolve(null);
-			});
-		}),
-		new Promise((resolve) => {
-			addToListOfSupporters(ndk, recipient.pubkey, event)
-				.then(resolve)
-				.catch((e) => {
-					debug('error adding to list of supporters', e);
-					resolve(null);
-				});
-		}),
-		new Promise((resolve) => {
-			recordValidSubscriptionPayment(event)
-				.then(resolve)
-				.catch(e => {
-					debug('error recording valid subscription payment', e);
-					resolve(null);
-				})
-		})
-	]);
 }

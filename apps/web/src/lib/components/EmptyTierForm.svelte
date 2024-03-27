@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { termToShort, type Term, possibleTerms } from "$utils/term";
-	import type { UserProfileType } from "../../app";
 	import GlassyInput from "./Forms/GlassyInput.svelte";
     import Input from "./Forms/Input.svelte";
 
     export let currency: string = 'USD';
     export let term: Term;
     export let selectedAmount: number | undefined = 5;
-    export let userProfile: UserProfileType;
 
     let amount: string = selectedAmount ? selectedAmount.toString() : "";
 

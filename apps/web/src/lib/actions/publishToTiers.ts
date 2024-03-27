@@ -4,15 +4,9 @@ import { getDefaultRelaySet } from '$utils/ndk';
 import { requiredTiersFor, type TierSelection } from '$lib/events/tiers';
 import { urlFromEvent } from '$utils/url';
 import { dvmScheduleEvent } from '$lib/dvm';
+import createDebug from "debug";
 
-function getEventRelaySet(
-	hasTeaser: boolean,
-	wideDistribution: boolean,
-	relaySet: NDKRelaySet | undefined
-) {
-	if (!hasTeaser) return undefined;
-	else if (relaySet) return relaySet || getDefaultRelaySet();
-}
+const debug = createDebug('HL:publishToTiers');
 
 function addHTag(event: NDKEvent, user: NDKUser) {
 	if (!event.tagValue('h')) {
@@ -137,7 +131,8 @@ export async function publishToTiers(
 	const teaser = opts.teaserEvent;
 
 	const eventHasFreeTier = requiredTiersFor(event).includes('Free');
-	if (!opts.teaserEvent && eventHasFreeTier) {
+
+	if (eventHasFreeTier) {
 		opts.relaySet = undefined;
 	} else {
 		opts.relaySet = getDefaultRelaySet();
@@ -146,10 +141,14 @@ export async function publishToTiers(
 	if (teaser) {
 		await teaser.sign();
 
+		debug("publishing teaser to relays", teaser.encode(), { requiredTiersFor: requiredTiersFor(teaser) } )
+
 		await publishOrSchedule(teaser, undefined, opts.publishAt);
 	}
 
 	if (!event.sig) await event.sign();
+
+	debug("publishing event to relays", event.encode(), {relayCount: Array.from(opts.relaySet?.relays?.values())} ?? "all relays", event.getMatchingTags("f"), { requiredTiersFor: requiredTiersFor(event) } )
 
 	await publishOrSchedule(event, opts.relaySet, opts.publishAt);
 }

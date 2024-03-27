@@ -23,7 +23,7 @@
 
     {#if isFullVersion === false}
         <SubscribeButton user={author} />
-    {:else}
+    {:else if false}
         {#if isVideo}
             <div class="tooltip tooltip-left max-sm:hidden" data-tip="Coming soon">
                 <button class="btn btn-neutral !rounded-full">

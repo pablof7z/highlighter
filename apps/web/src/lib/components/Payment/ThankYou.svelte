@@ -21,7 +21,6 @@
         }
     }
 
-    const receipts = getReceipts();
     const supporters = getSortedSupporters();
 
     let position: number | undefined;

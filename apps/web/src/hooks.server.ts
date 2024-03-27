@@ -8,7 +8,8 @@ const AUTH_PATHS = [
 	'/api/user/wallet/balance',
 	'/api/user/pay',
 	'/api/user/subscribe',
-	'/api/user/upload'
+	'/api/user/upload',
+	'/api/stripe'
 ];
 
 export const handle: Handle = async ({ event, resolve }) => {

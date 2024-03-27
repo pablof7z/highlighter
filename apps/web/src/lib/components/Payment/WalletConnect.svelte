@@ -8,11 +8,18 @@
 	import WalletConnectNwa from './WalletConnectNWA.svelte';
 	import NwcIcon from '$icons/NwcIcon.svelte';
 	import { Textarea, ZapIcon } from '@kind0/ui-common';
+	import WalletConnectStripe from './WalletConnectStripe.svelte';
+	import { NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
 
-    type Mode = "alby" | "mutiny" | "nwc" | "nwa" | "zap";
+    type Mode = "stripe" | "alby" | "mutiny" | "nwc" | "nwa" | "zap";
 
     export let mode: Mode | undefined;
     export let nwcUrl: string;
+    export let pubkey: string;
+    export let term: string;
+    export let amount: number | undefined;
+    export let currency: string | undefined;
+    export let tier: NDKSubscriptionTier;
 
     const dispatch = createEventDispatcher();
 
@@ -42,7 +49,7 @@
 
 <div class="flex flex-col gap-[1px] rounded-box w-full">
     {#if mode}
-        <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded-t-box flex flex-row gap-4 items-center" on:click={() => mode = undefined} transition:slide>
+        <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded-box flex flex-row gap-4 items-center mb-4" on:click={() => mode = undefined} transition:slide>
             <div class="w-12 h-12 flex flex-col items-center bg-black justify-center mask mask-squircle flex-none">
                 <ArrowLeft class="w-8 h-8 text-neutral-500" />
             </div>
@@ -52,6 +59,32 @@
                 </div>
         </button>
     {/if}
+
+    {#if currency === 'USD'}
+        {#if !mode}
+            <h2 class="text-white text-lg font-medium">Pay in fiat</h2>
+        {/if}
+
+        {#if !mode || mode === 'stripe'}
+        <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded-box flex flex-row gap-4 items-stretch" on:click={() => mode = "stripe"} transition:slide>
+                <img src="/images/cc.png" class="w-12 h-12 mask mask-squircle bg-zinc-700" />
+                <div class="flex flex-col items-start w-full">
+                    <div class="font-normal text-lg text-white">
+                        Debit / Credit Card
+                    </div>
+
+                    <div class="font-normal text-sm text-neutral-500">
+                        Finish subscribing on Stripe
+                    </div>
+                </div>
+            </button>
+        {/if}
+    {/if}
+
+    {#if !mode}
+    <h2 class="text-white text-lg font-medium mt-4">Pay in Bitcoin</h2>
+    {/if}
+
     {#if !mode || mode === 'alby'}
     <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded-t-box flex flex-row gap-4 items-stretch" on:click={() => mode = "alby"} transition:slide>
         <img src="https://raw.githubusercontent.com/getAlby/media/4647cca3705445f81d204fc6cd19287f085dc644/Alby-logo-icons/Alby%20logo.jpg" class="w-12 h-12 mask mask-squircle bg-zinc-700" />
@@ -101,7 +134,7 @@
     </button>
     {/if}
 
-    {#if !mode || mode === 'nwa'}
+    <!-- {#if !mode || mode === 'nwa'}
     <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch rounded-b-box" on:click={() => mode = "nwa"} transition:slide>
         <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded-box flex-none">
             <ZapIcon class="w-8 h-8 mask mask-squircle text-accent2" />
@@ -116,7 +149,7 @@
             </div>
         </div>
     </button>
-    {/if}
+    {/if} -->
 </div>
 
 
@@ -165,4 +198,6 @@
     />
 {:else if mode === "nwa"}
     <WalletConnectNwa on:success={onSuccess} />
+{:else if mode === "stripe"}
+    <WalletConnectStripe {pubkey} {term} {amount} {currency} {tier} />
 {/if}

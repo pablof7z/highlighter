@@ -7,6 +7,7 @@
 	import ChatItem from './ChatItem.svelte';
 	import { derived, type Readable } from 'svelte/store';
 	import { getDefaultRelaySet } from '$utils/ndk';
+	import { onDestroy } from 'svelte';
 
     export let activeUser: NDKUser | undefined = undefined;
 
@@ -47,6 +48,10 @@
             return Array.from(dTag.values());
         });
     }
+
+    onDestroy(() => {
+        followsWithCommunities?.unsubscribe();
+    });
 </script>
 
 <PageSidebar title="Chat" innerClass="!px-0 !gap-0">

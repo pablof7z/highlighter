@@ -40,30 +40,27 @@
 
     $: articleUrl = `${domain}${authorUrl}/${suffixUrl}`;
 
+    let publishing = false;
+
     async function publish() {
+        publishing = true;
         const boostEvent = new NDKEvent($ndk);
+        const boostedEvent = previewEvent ?? event;
         boostEvent.kind = NDKKind.Text;
-        boostEvent.content = `${content}\n\n${articleUrl}`;
-        boostEvent.tag(previewEvent || event);
-        await boostEvent.sign();
-        console.log(boostEvent.rawEvent());
+        boostEvent.content = `${content}\n\nnostr:${article.encode()}\n\n${articleUrl}`;
+        boostEvent.tags.push(["q", boostedEvent.tagId(), boostedEvent.relay?.url??"", "mention"]);
+        boostEvent.tags.push(["k", boostedEvent.kind!.toString()]);
+        boostEvent.tag(boostedEvent.author);
+        try {
+            await boostEvent.publish();
+            closeModal();
+        } finally {
+            publishing = false;
+        }
     }
 </script>
 
 <ModalShell color="black" class="w-full max-w-2xl">
-    <div class="justify-start items-center gap-4 flex w-full">
-        <UserProfile user={$user} let:userProfile>
-            <div class="w-12 h-12 relative">
-                <Avatar {userProfile} user={$user} class="w-12 h-12 border border-white" />
-            </div>
-            <div class="flex flex-col gap-1 items-start">
-                <div class="text-white text-[15px] font-semibold">
-                    <Name {userProfile} user={$user} />
-                </div>
-            </div>
-        </UserProfile>
-    </div>
-
     <UserProfile user={event.author} bind:authorUrl>
         <Textarea
             class="w-full rounded-md border !border-base-300 text-lg min-h-[10rem] !bg-transparent max-h-[50vh]"
@@ -74,8 +71,14 @@
         <ArticleCard {article} />
     </UserProfile>
 
-    <div class="flex flex-row items-stretch justify-between gap-8 w-full">
-        <button class="button button-black" on:click={() => closeModal()}>Cancel</button>
-        <button class="button button-primary px-10" on:click={publish}>Publish</button>
+    <div class="flex flex-row items-stretch justify-end gap-8 w-full">
+        <button class="" on:click={() => closeModal()}>Cancel</button>
+        <button class="button px-10" on:click={publish}>
+            {#if publishing}
+                Publishing...
+            {:else}
+                Publish
+            {/if}
+        </button>
     </div>
 </ModalShell>

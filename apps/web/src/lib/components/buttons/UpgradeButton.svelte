@@ -8,7 +8,7 @@
     import { user } from "@kind0/ui-common";
 
     export let event: NDKEvent;
-    export let text = "Become a fan to unlock";
+    export let text = "Get a backstage pass";
 
     const requiredTier = requiredTiersFor(event)[0];
     const author = event.author;
