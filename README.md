@@ -20,7 +20,7 @@ NIP-88 provides the infrastructure for recurring subscriptions
 This repository is a monorepo that contains the following packages:
 
 * [apps/web](./apps/web): The web frontend for Highlighter
-* [apps/relay/relay](./apps/relay/relay): The relay that implements NIP-29, based on https://github.com/fiatjaf/relay29
+* [apps/relay29](./apps/relay29): The relay that implements NIP-29, based on https://github.com/fiatjaf/relay29
 * [packages/ui-common](./packages/ui-common): Common UI components used across the Highlighter ecosystem -- *there is a lot of preemptively extracted code from old projects here, most of this stuff should be moved to the web app*
 * [packages/ndk](./packages/ndk): Monorepo for highlighter
 
@@ -28,6 +28,8 @@ This repository is a monorepo that contains the following packages:
 ```
 git clone https://github.com/pablof7z/highlighter
 cd highlighter
+git submodule init
+git submodule update
 turbo build
 cd apps/web
 cp .env.example .env
