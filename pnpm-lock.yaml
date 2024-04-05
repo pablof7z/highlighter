@@ -39,7 +39,7 @@ importers:
         specifier: ^1.2.3
         version: 1.2.3
       '@nostr-dev-kit/ndk':
-        specifier: ^2.4.2
+        specifier: workspace:^
         version: link:../../packages/ndk/ndk
       '@prisma/client':
         specifier: ^5.4.1

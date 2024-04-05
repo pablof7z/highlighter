@@ -20,3 +20,4 @@ yarn.lock
 
 # Sentry Config File
 .sentryclirc
+highlighter.db
