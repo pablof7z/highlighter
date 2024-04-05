@@ -31,5 +31,9 @@ compile-ndk:
     ./ndk_compile.sh
 
 deploy:
-	rsync -avP -l -t --exclude nsecbunker.json --exclude dist --exclude db --exclude nostdress/nostdress --exclude relay/relay29/relay29 --exclude .env --exclude .svelte-kit --exclude node_modules --exclude build --exclude prisma/generated /Users/pablofernandez/work/projects/highlighter/ kind0:/home/pablo/projects/highlighter
+	rsync -avP -l -t --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./apps/web/ kind0:/home/pablo/projects/highlighter/apps/web
+	rsync -avP -l -t --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./packages/ kind0:/home/pablo/projects/highlighter/packages
+
+deploy-old:
+#	rsync -avP -l -t --exclude nsecbunker.json --exclude dist --exclude db --exclude nostdress/nostdress --exclude relay/relay29 --exclude .env --exclude .svelte-kit --exclude node_modules --exclude build /Users/pablofernandez/work/projects/highlighter/ kind0:/home/pablo/projects/highlighter
 
