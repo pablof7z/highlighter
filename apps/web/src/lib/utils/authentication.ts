@@ -1,8 +1,8 @@
-import type { User } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
 import { JWT_ACCESS_SECRET } from '$env/static/private';
 import jwt from 'jsonwebtoken';
 import createDebug from 'debug';
+import { User } from '../../server/schema';
 
 const d = createDebug('HL:auth');
 

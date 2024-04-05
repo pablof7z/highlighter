@@ -3,8 +3,6 @@
     import { pageHeader, pageSidebar } from "$stores/layout";
 	import { onDestroy } from "svelte";
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
-	import ServiceItem from './ServiceItem.svelte';
-	import { NDKEvent, NDKKind, NDKPrivateKeySigner, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import NDKCacheAdapterDexie, { db } from '@nostr-dev-kit/ndk-cache-dexie';
 	import { ndk } from '@kind0/ui-common';
 	import { browser } from '$app/environment';
@@ -26,9 +24,8 @@
 
     let cachedEventKinds: Record<number, number>;
     let cachedProfileCount: number | undefined;
-    let cacheCount = 0;
 
-    function updateCachCounts() {
+    function updateCacheCounts() {
         db.events.each((row) => {
             cachedEventKinds[row.kind] = (cachedEventKinds[row.kind] || 0) + 1
         })
@@ -41,10 +38,10 @@
         cachedEventKinds = {};
         lruProfileCount = ($ndk.cacheAdapter as NDKCacheAdapterDexie).profiles?.size
 
-        setInterval(updateCachCounts, 1000);
+        setInterval(updateCacheCounts, 1000);
     }
 
-    updateCachCounts();
+    updateCacheCounts();
 </script>
 
 <MainWrapper marginClass="max-w-3xl">

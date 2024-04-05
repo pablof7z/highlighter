@@ -26,10 +26,11 @@ export async function browserSetup() {
         user.set(u);
     }
 
-    // No stored pubkey found, attempt to sign in with NIP-07
-    if (!pubkey) return newSessionTryNip07();
-
     const method = localStorage.getItem('nostr-key-method') as LoginMethod;
+
+    // No stored pubkey found, attempt to sign in with NIP-07
+    if (!pubkey && method !== "none") return newSessionTryNip07();
+
 
     if (method) {
         return login(method, pubkey);

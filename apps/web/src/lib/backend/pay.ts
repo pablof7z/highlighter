@@ -1,4 +1,4 @@
-import db from '$lib/db';
+import { getWalletForPubkey } from '$lib/server/wallet';
 import { ndk } from '@kind0/ui-common';
 import type { Hexpubkey } from '@nostr-dev-kit/ndk';
 import { NDKNwc } from '@nostr-dev-kit/ndk';
@@ -8,15 +8,13 @@ import { get } from 'svelte/store';
 const debug = createDebug('HL:payments:pay');
 
 export async function getNwcString(pubkey: string) {
-	const wallet = await db.walletConnect.findUnique({
-		where: { pubkey }
-	});
+	const walletUri = await getWalletForPubkey(pubkey);
 
-	if (!wallet) {
+	if (!walletUri) {
 		throw new Error('Wallet not connected');
 	}
 
-	return wallet.uri;
+	return walletUri;
 }
 
 export async function sendPayment(invoice: string, pubkey: Hexpubkey): Promise<string> {

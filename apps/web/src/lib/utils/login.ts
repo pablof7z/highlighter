@@ -14,6 +14,8 @@ import { generateLoginEvent } from '$actions/signLoginEvent';
 import { get } from 'svelte/store';
 import { jwt as jwtStore, loginState } from '$stores/session';
 import createDebug from 'debug';
+import currentUser from '$stores/currentUser';
+import { goto } from '$app/navigation';
 
 export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
 
@@ -217,6 +219,7 @@ export function logout(): void {
 	const $ndk = get(ndk);
 	$ndk.signer = undefined;
 	user.set(undefined);
+	currentUser.set(undefined);
 	console.log("DEBUG setting user (logout)");
 	loginState.set('logged-out');
 	localStorage.removeItem('currentUserFollowPubkeysStore');
@@ -233,6 +236,8 @@ export function logout(): void {
 
 	// explicitly prevent auto-login with NIP-07
 	localStorage.setItem('nostr-key-method', 'none');
+
+	goto('/');
 }
 
 export async function fillInSkeletonProfile(profile: NDKUserProfile) {

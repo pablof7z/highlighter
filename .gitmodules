@@ -1,15 +1,15 @@
 [submodule "packages"]
 	path = packages
-	url = git@github.com:kind-0/packages.git
+	url = https://github.com/kind-0/packages
 	branch = master
 [submodule "apps/nsecbunkerd"]
 	path = apps/nsecbunkerd
-	url = git@github.com:kind-0/nsecbunkerd
+	url = https://github.com/kind-0/nsecbunkerd
 	branch = master
 [submodule "apps/nostdress"]
 	path = apps/nostdress
-	url = https://github.com/believethehype/nostdress.git
+	url = https://github.com/believethehype/nostdress
 	branch = master
 [submodule "apps/relay/go-nostr"]
 	path = apps/relay/go-nostr
-	url = git@github.com:pablof7z/go-nostr.git
+	url = https://github.com/pablof7z/go-nostr

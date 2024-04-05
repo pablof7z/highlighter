@@ -1,9 +1,9 @@
-import db from '$lib/db';
 import { json } from '@sveltejs/kit';
 import createDebug from 'debug';
 import type { Session } from '../../../../app.js';
+import { setWalletForPubkey } from '$lib/server/wallet.js';
 
-const log = createDebug('shipyard:/api/posts');
+const log = createDebug('HL:/api/user/nwc');
 
 type Payload = {
 	nwc: string;
@@ -16,13 +16,7 @@ export async function POST({ request, locals }) {
 
 	log('save nwc', payload);
 
-	const a = await db.walletConnect.upsert({
-		where: { pubkey },
-		create: { pubkey, uri: nwc },
-		update: { uri: nwc }
-	});
-
-	console.log(a);
+	await setWalletForPubkey(pubkey, nwc);
 
 	try {
 		return json({ ok: true });

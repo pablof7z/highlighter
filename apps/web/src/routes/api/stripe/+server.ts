@@ -2,9 +2,9 @@ import { ndk } from '@kind0/ui-common';
 import { json } from '@sveltejs/kit';
 import Stripe from 'stripe';
 import { get } from 'svelte/store';
-import db from "$lib/db";
 import { Session } from '../../../app';
 import { STRIPE_KEY } from "$env/static/private";
+import { createStripeSession } from '$lib/server/stripe';
 
 const APP_URL = import.meta.env.VITE_HOSTNAME === "localhost" ? "http://localhost:5173" : `https://${import.meta.env.VITE_HOSTNAME}`;
 
@@ -47,17 +47,15 @@ export async function POST({ request, locals }) {
         cancel_url: `${APP_URL}/${user.npub}`,
     });
 
-    await db.StripeSession.create({
-        data: {
-            id: session.id,
-            recipientPubkey: creator,
-            subscriberPubkey,
-            term: term,
-            currency: currency,
-            amount: parseInt(amount??"12"),
-            tierId: tierId,
-            event
-        }
+    await createStripeSession({
+        id: session.id,
+        recipientPubkey: creator,
+        subscriberPubkey,
+        term: term,
+        currency: currency,
+        amount: parseInt(amount??"12"),
+        tierId: tierId,
+        event
     });
 
     return json({ url: session.url });

@@ -9,14 +9,14 @@ Sentry.init({
 })
 
 const AUTH_PATHS = [
-				'/api/user',
-				'/api/user/nwa',
-				'/api/user/nwc',
-				'/api/user/wallet/balance',
-				'/api/user/pay',
-				'/api/user/subscribe',
-				'/api/user/upload',
-				'/api/stripe'
+	'/api/user',
+	'/api/user/nwa',
+	'/api/user/nwc',
+	'/api/user/wallet/balance',
+	'/api/user/pay',
+	'/api/user/subscribe',
+	'/api/user/upload',
+	'/api/stripe'
 ];
 
 export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, resolve }) => {

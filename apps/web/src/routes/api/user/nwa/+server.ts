@@ -1,4 +1,3 @@
-import db from '$lib/db';
 import { json } from '@sveltejs/kit';
 import createDebug from 'debug';
 import type { Session } from '../../../../app.js';
@@ -32,18 +31,18 @@ async function processNWAEvent(event: NDKEvent, signer: NDKPrivateKeySigner, pub
 
 	log(`nwc url`, url.toString());
 
-	const nwc = url.toString();
+	// const nwc = url.toString();
 
 	// delete the old one
-	await db.walletConnect.deleteMany({ where: { pubkey } });
+	// await db.walletConnect.deleteMany({ where: { pubkey } });
 
-	const a = await db.walletConnect.upsert({
-		where: { pubkey },
-		create: { pubkey: userPubkey, uri: nwc },
-		update: { uri: nwc }
-	});
+	// const a = await db.walletConnect.upsert({
+	// 	where: { pubkey },
+	// 	create: { pubkey: userPubkey, uri: nwc },
+	// 	update: { uri: nwc }
+	// });
 
-	log(a);
+	// log(a);
 }
 
 export async function GET({ locals }) {
@@ -113,15 +112,15 @@ export async function POST({ request, locals }) {
 
 				log(`nwc url`, url.toString());
 
-				const nwc = url.toString();
+				// const nwc = url.toString();
 
-				const a = await db.walletConnect.upsert({
-					where: { pubkey },
-					create: { pubkey, uri: nwc },
-					update: { uri: nwc }
-				});
+				// const a = await db.walletConnect.upsert({
+				// 	where: { pubkey },
+				// 	create: { pubkey, uri: nwc },
+				// 	update: { uri: nwc }
+				// });
 
-				log(a);
+				// log(a);
 
 				resolve(json({ ok: true }));
 			} catch (e) {

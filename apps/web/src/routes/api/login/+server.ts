@@ -1,10 +1,11 @@
 import { JWT_ACCESS_SECRET } from '$env/static/private';
 import { verifySignature, type Event } from 'nostr-tools';
-import db from '$lib/db.js';
 import { NDKEvent } from '@nostr-dev-kit/ndk';
 import { json, text } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
 import type { Session } from '../../../app';
+import { createUser, getUserFromPubkey } from '$lib/server/user';
+import { getWalletForPubkey } from '$lib/server/wallet';
 const { sign } = jwt;
 
 const CURRENT_DOMAIN = import.meta.env.VITE_HOSTNAME;
@@ -34,22 +35,18 @@ async function generateJWTFromEvent(event: NDKEvent) {
 	validateEvent(event);
 
 	// check if user exists, else create it
-	let user = await db.user.findUnique({
-		where: { pubkey }
-	});
+	let user = await getUserFromPubkey(pubkey);
+	console.log('user', user);
 
 	if (!user) {
 		// Create it
-		user = await db.user.create({
-			data: {
-				pubkey
-			}
-		});
+		console.log('Creating user');
+		user = await createUser(pubkey);
+		console.log('created user', user);
 	} else {
-		// check if user has a NWC address
-		const nwc = await db.walletConnect.findUnique({ where: { pubkey } });
+		const nwcUri = getWalletForPubkey(pubkey);
 
-		nwcAvailable = !!nwc;
+		nwcAvailable = !!nwcUri;
 	}
 
 	const jwtUser: Session = {
@@ -71,8 +68,8 @@ function validateEvent(event: NDKEvent) {
 	const timeWindow = 3 * 60; // 3 minutes
 
 	if (event.created_at! < now - timeWindow || event.created_at! > now + timeWindow) {
-		const dateString = new Date(event.created_at! * 1000).toISOString();
-		throw new Error('Invalid date, event has date ' + dateString);
+		// const dateString = new Date(event.created_at! * 1000).toISOString();
+		// throw new Error('Invalid date, event has date ' + dateString);
 	}
 
 	// validate domain
