@@ -26,10 +26,9 @@ This repository is a monorepo that contains the following packages:
 
 # Running Highlighter
 ```
-git clone https://github.com/pablof7z/highlighter
+git clone --recursive https://github.com/pablof7z/highlighter
+# Use --recursive to fetch all the git submodules!
 cd highlighter
-git submodule init
-git submodule update
 turbo build
 cd apps/web
 cp .env.example .env
