@@ -28,6 +28,21 @@ This repository is a monorepo that contains the following packages:
 ```
 git clone https://github.com/pablof7z/highlighter
 cd highlighter
-pnpm install
-./build
+turbo build
+cd apps/web
+cp .env.example .env
+```
+
+Replace the placeholder values in `.env` with your own values. You'll need to create a private key for your creator relay identity.
+
+* Run the relay
+```
+cd apps/relay/relay
+RELAY_URL=ws://localhost:5577 RELAY_PRIVKEY=<your-relay-private-key> RELAY_NAME="some-name-for-your-relay" DOMAIN=localhost go run -ldflags=-compressdwarf=false .
+```
+
+* Run the web app
+```
+cd apps/web
+pnpm dev
 ```
