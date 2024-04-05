@@ -66,16 +66,15 @@
     });
 </script>
 
-<!-- {#if sortedReceipts && $sortedReceipts?.length > 0} -->
+{#if sortedReceipts && $sortedReceipts?.length > 0}
     <div class="flex flex-col">
         <h2 class="text-white font-semibold text-lg px-4 pb-2">
             Top Supporters
         </h2>
         <div class="flex flex-col discussion-wrapper w-full">
-            <SidebarSupporterItem pubkey="fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52" {tiers} {tierNames} position={0} creatorPubkey={user?.pubkey} receipt={{id: '123'}} />
             {#each $sortedReceipts as receipt, i (receipt.subscriber.pubkey)}
                 <SidebarSupporterItem pubkey={receipt.subscriber.pubkey} {tiers} {tierNames} position={i} creatorPubkey={user?.pubkey} {receipt} />
             {/each}
         </div>
     </div>
-<!-- {/if} -->
+{/if}
