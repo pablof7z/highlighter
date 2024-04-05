@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { afterUpdate } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import '../app.postcss';
 	import { RelativeTime, Toaster, bunkerNDK, ndk, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
 	import { fillInSkeletonProfile, finalizeLogin, login } from '$utils/login';
@@ -16,6 +17,7 @@
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { welcomeScreenSeen } from '$stores/settings';
 	import NetworkHandler from '$components/NetworkHandler.svelte';
+	import currentUser from '$stores/currentUser';
 
 	const d = createDebug('HL:layout');
 
@@ -31,7 +33,7 @@
 			await browserSetupPromise;
 		});
 
-		hasJwt = !!$jwt;
+		hasJwt = !!$jwt && document.cookie.includes('jwt=');
 	}
 
 	onMount(async () => {
@@ -56,7 +58,7 @@
 	}
 
 	$: if (mounted && !hasJwt) {
-		hasJwt = !!$jwt;
+		hasJwt = !!$jwt && document.cookie.includes('jwt=');
 		d(`hasJwt`, hasJwt);
 	}
 
@@ -71,6 +73,8 @@
 		sessionPreparationStarted = true;
 		prepareSession();
 	}
+
+	$: $currentUser = $user;
 </script>
 
 <svelte:head>

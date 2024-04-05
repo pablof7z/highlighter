@@ -5,6 +5,7 @@
 
     export let list: NDKList;
     export let grid: boolean;
+    export let skipAuthor: boolean | undefined = undefined;
 
     const durationTag = `${list.items.length} items`;
 
@@ -24,6 +25,7 @@
     title={list.title}
     {grid}
     useProfileAsDefaultImage={false}
+    {skipAuthor}
 >
     {#if !grid}
         <ul class="overflow-clip self-stretch max-h-24">

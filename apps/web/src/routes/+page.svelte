@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKList, NDKRelaySet, NDKRelay } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKList, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
     import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from 'svelte';
@@ -19,8 +19,7 @@
 	import VideoLink from '$components/Events/VideoLink.svelte';
 	import PostGrid from '$components/Events/PostGrid.svelte';
 	import CurationItem from '$components/CurationItem.svelte';
-	import { wot, wotFiltered } from '$stores/wot';
-	import { E } from 'vidstack/dist/types/vidstack-YccYOULG.js';
+	import { wotFiltered } from '$stores/wot';
 
     const debug = createDebug("HL:explore");
 
@@ -41,9 +40,11 @@
         if ($typeFilter.includes("video")) kinds.push(NDKKind.HorizontalVideo);
         if ($typeFilter.includes("curation")) kinds.push(NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet);
 
-        filters = [
-            { search: query, kinds }
-        ]
+        if (query.startsWith("#")) {
+            filters = [ { kinds, "#t": [ query ] } ]
+        } else {
+            filters = [ { search: query, kinds } ]
+        }
 
         return filters;
     }
@@ -111,7 +112,7 @@
 
         events = $ndk.storeSubscribe(
             filters,
-        { relaySet, autoStart: true, groupable: false, subId: 'explore', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
+        { relaySet, autoStart: true, groupable: false, subId: 'explore' })
         debug(filters);
 
         eventsForRender = derived([events, typeFilter], ([$events, $typeFilter]) => {
@@ -184,7 +185,6 @@
         title: "Discover",
         searchFn,
     };
-
 </script>
 
 <svelte:head>

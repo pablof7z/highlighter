@@ -3,7 +3,6 @@
 	import { Textarea } from "@kind0/ui-common";
 	import type { NDKArticle, NDKKind } from "@nostr-dev-kit/ndk";
     import { countWords } from "$utils/article";
-	import DvmGenerateButton from "$components/Dvm/DvmGenerateButton.svelte";
 
     export let article: NDKArticle;
 

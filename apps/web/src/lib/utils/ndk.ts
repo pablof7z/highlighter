@@ -40,7 +40,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	$ndk.clientName = 'highlighter';
 	$ndk.clientNip89 =
 		'31990:73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63:1704502265408';
-	// $ndk.httpFetch = nodeFetch as typeof fetch;
+	$ndk.httpFetch = nodeFetch as typeof fetch;
 
 	// add default relays
 	for (const relay of defaultRelays) {
@@ -50,9 +50,9 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	$ndk.addExplicitRelay('wss://purplepag.es');
 	$ndk.addExplicitRelay('wss://nos.lol');
 	// $ndk.addExplicitRelay('wss://relay.noswhere.com');
-	// $ndk.addExplicitRelay('wss://relay.nostr.band');
+	$ndk.addExplicitRelay('wss://relay.nostr.band');
 
-	$ndk.connect(2000);
+	// $ndk.connect(2000);
 
 	$ndk.pool.on('relay:auth', (relay) => {
 		debug('relay auth', relay.url);
@@ -68,7 +68,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL' });
+	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL3' });
 	$ndk.clientName = 'highlighter';
 
 	$ndk.pool.on("notice", (relay: NDKRelay, notice: string) => {
@@ -84,7 +84,7 @@ export async function configureFeNDK() {
 		const $userFollows = getStore(userFollows)
 		$ndk.fetchEvents([
 			{ kinds: [0], authors: Array.from($userFollows), limit: 1000 },
-			{ kinds: [30023], authors: Array.from($userFollows), limit: 1000 }
+			{ kinds: [30023], authors: Array.from($userFollows), limit: 100 }
 		], { groupable: false, cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY });
 	}, 1000);
 }

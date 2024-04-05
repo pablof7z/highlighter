@@ -5,13 +5,14 @@
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { ndk } from "@kind0/ui-common";
+	import { ZapsButton, ndk } from "@kind0/ui-common";
 	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent, type NDKEventId } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
-	import { Lightning } from 'phosphor-svelte';
+	import { CrownSimple, Lightning } from 'phosphor-svelte';
 	import { getParagraph, getText } from '$utils/text';
 	import LogoGradient from '$icons/LogoGradient.svelte';
+	import ItemViewZaps from './ItemViewZaps.svelte';
 
     export let article: NDKArticle;
     const author = article.author;
@@ -42,12 +43,10 @@
         // create regexp from highlight content (escape special characters)
         const regexp = new RegExp(highlightContent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
 
-        console.log(highlight.content);
         content = content.replace(regexp, (match) => {
             appliedHighlightIds.add(highlight.id);
             return `<mark data-highlight-id="${highlight.id}">${match}</mark>`;
         })
-        console.log(content);
     }
 
     // Check if this user has access to the full article and if they do, redirect them to the full article
@@ -151,7 +150,7 @@
                 const paragraph = paragraphs[i] as HTMLElement;
                 if (!paragraph) continue;
                 const rect = paragraph.getBoundingClientRect();
-                if (rect.top > 120) {
+                if (rect.top > 120 && rect.top < 400) {
                     firstVisibleParagraph = paragraph;
                     break;
                 }
@@ -278,6 +277,16 @@
 
     <div class="text-xl text-white/70 font-normal">
         {getSummary(article)}
+    </div>
+
+    <ItemViewZaps event={article} />
+
+    <div class="flex flex-row gap-4 flex-wrap">
+        {#each article.getMatchingTags("t") as tag, i (i)}
+            <div href="/?q={encodeURIComponent("#"+tag[1])}" class="flex-row gap-2 text-white/50 text-sm inline flex-inline bg-white/10 rounded-full px-3 py-1 whitespace-nowrap">
+                <span>{tag[1]}</span>
+            </div>
+        {/each}
     </div>
 
     {#if article.image}

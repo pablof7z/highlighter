@@ -33,6 +33,7 @@
 
 <footer class="
     fixed bottom-0 w-full max-sm:px-3 py-3 mobile-nav bg-base-100/10
+    z-40
     border-t border-white/20
 ">
     <div class="{mxClass} max-w-3xl">

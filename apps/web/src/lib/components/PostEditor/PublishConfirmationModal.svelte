@@ -45,7 +45,6 @@
     async function publish() {
         publishing = true;
 
-
         if (!$event) {
             publishing = false;
             return;
@@ -87,6 +86,7 @@
             eventPublished = true;
             if ($preview) previewPublished = true;
         } catch (e: any) {
+            console.trace(e);
             newToasterMessage(e.message, "error");
             publishing = false;
             return;
@@ -172,8 +172,6 @@
                         <ArticleLink article={$event} skipLink={true} />
                     {:else if $event.kind === NDKKind.HorizontalVideo}
                         <VideoLink video={$event} skipLink={true} />
-                    {:else if $event.kind === NDKKind.GroupNote}
-                        <PostGrid event={$event} />
                     {:else}
                         {$event.kind}
                     {/if}
@@ -193,7 +191,7 @@
             <RadioButton bind:currentValue={mode} value="schedule" class="flex-1 bg-white/10 !text-white font-normal text-xl" on:click={() => dateInput.focus()}>
                 Schedule
                 <div slot="description" class:hidden={mode !== "schedule"}>
-                    <input type="datetime-local" bind:value={publishAtVal} class="border-none !bg-transparent" bind:this={dateInput} />
+                    <input type="datetime-local" bind:value={publishAtVal} class="border-none !bg-transparent placeholder:text-black text-black" bind:this={dateInput} />
                 </div>
             </RadioButton>
         </div>

@@ -19,8 +19,6 @@ export async function fetchArticle(
 	const reader = new Readability(doc);
 	const article: NDKArticle | null = reader.parse() as NDKArticle | null;
 
-	console.log(article);
-
 	if (!article) return null;
 
 	article.url = url;

@@ -8,6 +8,7 @@
 	import CurationItem from "./CurationItem.svelte";
 
     export let filter: NDKFilter;
+    export let skipAuthor: boolean | undefined = undefined;
 
     const debug = createDebug("highlighter:curations");
 
@@ -52,15 +53,16 @@
     });
 </script>
 
-<div class="flex flex-row gap-8 mx-auto mt-8 w-full">
+<div class="flex flex-row mx-auto w-full">
     <div class="
         max-sm:px-[var(--mobile-body-px)]
         flex-col justify-start items-start flex
-        gap-6 w-full
+        w-full
+        discussion-wrapper
     ">
         {#each $sortedLists as list (list.id)}
             {#if list.items.length > 0}
-                <CurationItem {list} grid={false} />
+                <CurationItem {list} grid={false} {skipAuthor} />
             {/if}
         {/each}
     </div>

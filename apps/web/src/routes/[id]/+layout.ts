@@ -13,6 +13,11 @@ export async function load({ params, fetch }) {
 
 	debug('user layout starting');
 
+	if (id.startsWith('npub')) {
+		user = new NDKUser({ npub: id });
+		return { user, npub: id };
+	}
+
 	nip05.useFetchImplementation(async (url: string, options: any) => {
 		options ??= {};
 		options.cache = 'no-store';
@@ -33,11 +38,6 @@ export async function load({ params, fetch }) {
 		}
 		return res;
 	});
-
-	if (id.startsWith('npub')) {
-		user = new NDKUser({ npub: id });
-		return { user, npub: id };
-	}
 
 	let npub = ``;
 

@@ -13,6 +13,9 @@
 	import ArticleMetaPage from "./ArticleMetaPage.svelte";
 	import { view, preview, previewTitleChanged, previewContentChanged } from "$stores/post-editor";
 	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
+	import ItemView from "../../../routes/[id]/[tagId]/ItemView.svelte";
+	import ArticleView from "$components/ArticleView.svelte";
+	import { debugMode } from "$stores/session";
 
     export let article: NDKArticle;
     export let draftItem: DraftItem | undefined = undefined;
@@ -77,8 +80,6 @@
             manuallySaved
         }
 
-        console.log(`saving draft`, checkpoint);
-
         if (draftItem) {
             $drafts = $drafts.filter(d => d.id !== draftItem!.id);
         } else {
@@ -92,13 +93,32 @@
         draftCheckpoints.unshift(checkpoint);
         draftItem.checkpoints = JSON.stringify(draftCheckpoints);
 
-        $drafts.unshift(draftItem);
+        try {
+            $drafts.unshift(draftItem);
+        } catch (e) {
+            console.error(e);
+            return;
+        }
 
         console.log(`setting drafts`, drafts)
         $drafts = $drafts
 
         newToasterMessage("Draft saved", "success");
         if (manuallySaved) goto("/dashboard/drafts");
+    }
+
+    let currentView: string;
+    let signedAt: number = 0;
+
+    $: if (currentView !== $view) {
+        if ($view === "view-preview") {
+            article.sign().then(() => {
+                currentView = $view;
+                signedAt = Date.now();
+            });
+        } else {
+            currentView = $view;
+        }
     }
 </script>
 
@@ -107,7 +127,15 @@
 <Shell type="article" {article}>
     <ArticleEditor bind:article on:contentUpdate={onArticleChange} textareaClass="" />
     <div slot="meta">
-        <ArticleMetaPage {article} on:done={() => $view = "edit"}/>
+        <ArticleMetaPage bind:article on:done={() => $view = "edit"}/>
+    </div>
+    <div slot="viewPreview">
+        {#key signedAt}
+            <ArticleView bind:article isFullVersion={true} />
+            {#if $debugMode}
+                <pre>{JSON.stringify(article.rawEvent())}</pre>
+            {/if}
+        {/key}
     </div>
     <div slot="editPreview">
         <ArticlePreviewEditor {article} {authorUrl} />

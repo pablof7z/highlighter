@@ -45,7 +45,7 @@
 </script>
 
 <UserProfile {pubkey} let:userProfile let:fetching let:authorUrl>
-    <div class="rounded-box flex flex-row p-4 gap-8 bg-white/10 justify-between">
+    <a href={authorUrl} class="rounded-box flex flex-row gap-8 justify-between discussion-item">
         <div class="flex flex-row gap-4 justify-stretch grow">
             <a href={authorUrl} class="flex-none">
                 <Avatar {pubkey} {userProfile} {fetching} class="w-24 h-24 border-2 border-black" type="square" />
@@ -95,5 +95,5 @@
                 Supporter
             </div>
         </div>
-    </div>
+    </a>
 </UserProfile>

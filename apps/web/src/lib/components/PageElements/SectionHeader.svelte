@@ -1,7 +1,7 @@
 <script lang="ts">
     import SearchBar from "$components/Page/SearchBar.svelte";
 	import Toolbar from "$components/PostEditor/Toolbar.svelte";
-    import { mainWrapperMargin, pageHeader, pageSidebar } from "$stores/layout";
+    import { sectionHeaderMargin, pageHeader, pageSidebar } from "$stores/layout";
 	import HeaderLeftButton from "./HeaderLeftButton.svelte";
 	import HeaderRightButton from "./HeaderRightButton.svelte";
 
@@ -35,11 +35,11 @@
             <h1>{$pageHeader.title}</h1>
         </div>
 
-        <div class="flex flex-grow {$mainWrapperMargin??""}">
+        <div class="flex flex-grow {$sectionHeaderMargin??""}">
             <SearchBar inputClass="focus:!outline-none focus:!border-none" />
         </div>
     {:else if $pageHeader?.left && $pageHeader?.right && $pageHeader?.title}
-        <div class="{$mainWrapperMargin??""} grow flex flex-row items-center justify-between {hasSidebar ? "!mx-0" : ""}">
+        <div class="{$sectionHeaderMargin??""} grow flex flex-row items-center justify-between {hasSidebar ? "!mx-0" : ""}">
             <div class="px-4 w-1/6 overflow-hidden">
                 <HeaderLeftButton />
             </div>
@@ -64,7 +64,7 @@
             flex flex-row
             w-full
             items-stretch
-            {hasSidebar ? "" : $mainWrapperMargin??""}
+            {hasSidebar ? "" : $sectionHeaderMargin??""}
         ">
             {#if $pageHeader?.component}
                 <div class="sm:p-4 w-full">

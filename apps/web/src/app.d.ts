@@ -26,6 +26,7 @@ export type UserProfileType = NDKUserProfile & {
 export type EventType =
 	| 'article'
 	| 'group-note'
+	| 'group-reply'
 	| 'video'
 	| 'short-note'
 	| 'highlight'

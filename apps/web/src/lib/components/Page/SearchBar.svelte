@@ -27,6 +27,10 @@
         return str.includes("@") && str.includes(".");
     }
 
+    function looksLikeHashtag(str: string) {
+        return str.startsWith("#");
+    }
+
     function looksLikeNpub(str: string) {
         return !!str.match(/^(npub1|nprofile1)/);
     }
@@ -55,6 +59,10 @@
 
     function search() {
         $searching = true;
+        if (looksLikeHashtag(value)) {
+            return redirectTo(`/search?q=${encodeURIComponent(value)}`);
+        }
+
         if (looksLikeEmail(value)) {
             $ndk.getUserFromNip05(value).then(user => {
                 if (user) return redirectTo(`/${value}`);

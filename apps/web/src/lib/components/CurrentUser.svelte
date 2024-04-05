@@ -1,7 +1,6 @@
 <script lang="ts">
 	import UserDrawer from './PageSidebar/UserDrawer.svelte';
 	import { Avatar, bunkerNDK, ndk, pageDrawerToggle, user } from '@kind0/ui-common';
-	import { loginState } from '$stores/session';
 	import { fade } from 'svelte/transition';
 	import UserProfile from './User/UserProfile.svelte';
     import { rightSidebar } from '@kind0/ui-common';
@@ -17,12 +16,12 @@
 
 <div class="w-full flex-none" transition:fade>
     {#if $user}
-        <UserProfile user={$user} let:userProfile let:fetching>
+        <UserProfile user={$user} let:userProfile let:authorUrl let:fetching>
             <button on:click={clicked} class="sm:hidden">
                 <Avatar user={$user} {userProfile} {fetching} class="flex-none" />
             </button>
 
-            <a href="/settings" class="max-sm:hidden">
+            <a href={authorUrl} class="max-sm:hidden">
                 <Avatar user={$user} {userProfile} {fetching} class="flex-none" />
             </a>
         </UserProfile>

@@ -7,7 +7,7 @@
 
     export let user: NDKUser;
     export let tiers: Readable<NDKSubscriptionTier[]>;
-    export let userSupporters: Readable<Record<Hexpubkey, string | undefined>>;
+    export let userSupporters: Readable<Record<Hexpubkey, string | undefined | true>>;
 
     let hasSidebar = false;
     $: hasSidebar = !!$pageSidebar?.component;

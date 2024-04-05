@@ -2,7 +2,7 @@
     import ArticleView from "$components/ArticleView.svelte";
 	import { page } from "$app/stores";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKArticle, NDKKind, type NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
     import Highlight from "$components/Highlight.svelte";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { goto } from "$app/navigation";

@@ -9,6 +9,7 @@ export const blacklistedPubkeys = [
     "67fc313ff8a5445c5ec77e4287348356c9cb123df8d045485f171a76e71dc703",
     "06e3591d054a5e50433fc5c9cd99f7d2acda8cc610e046ba502992639fe735b6", // jhhhh@nostr.me
     "c73818cc95d6adf098fbff289cda4c3cf50d5f370d25f0b6f3677231ccd5c890", // spam
+    "82fbb08c8ef45c4d71c88368d0ae805bc62fb92f166ab04a0b7a0c83d8cbc29a" // notary@pablof7z.com
 ];
 export const creatorRelayPubkey = import.meta.env.VITE_CREATOR_RELAY_PUBKEY;
 export const defaultVerifierPubkey = creatorRelayPubkey;

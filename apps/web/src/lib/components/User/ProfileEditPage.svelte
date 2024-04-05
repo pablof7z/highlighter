@@ -1,11 +1,11 @@
 <script lang="ts">
 	import EditableAvatar from '$components/User/EditableAvatar.svelte';
 	import { ndk, user } from '@kind0/ui-common';
-    import { debugMode, userProfile } from '$stores/session';
-    import { createEventDispatcher } from 'svelte';
-	import { NDKEvent, serializeProfile, type NostrEvent } from '@nostr-dev-kit/ndk';
+    import { debugMode, processUserProfile, userProfile } from '$stores/session';
+    import { createEventDispatcher, onMount } from 'svelte';
+	import { NDKEvent, serializeProfile, type NostrEvent, NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
-    import { Image } from "phosphor-svelte";
+    import { ArrowElbowRight, Image } from "phosphor-svelte";
 	import GlassyInput from "$components/Forms/GlassyInput.svelte";
 	import CategorySelector from '$components/Forms/CategorySelector.svelte';
 
@@ -15,8 +15,24 @@
 
     export let saving = false;
 
+    // just to be on the safe-side, try to load this user's profile again
+    $ndk.fetchEvent(
+        {kinds: [0], authors:[$user.pubkey]},
+        { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
+        NDKRelaySet.fromRelayUrls([
+            "wss://purplepag.es/", "wss://profiles.nos.lol", "wss://relay.damus.io", "wss://relay.primal.net"
+        ], $ndk)
+    ).then((refetchedProfile) => {
+        if (refetchedProfile) {
+            processUserProfile(refetchedProfile, userProfile)
+        }
+    });
+
     async function save() {
-        if ($userProfile === undefined) return;
+        if ($userProfile === undefined) {
+            if (!confirm("Your current profile could not be found, if you continue your current profile will be overwritten. Continue?")) return;
+            $userProfile = {};
+        }
 
         saving = true;
         try {
@@ -25,6 +41,8 @@
                 kind: 0,
                 content: serializeProfile($userProfile)
             } as NostrEvent);
+            console.log('profile', $userProfile);
+            console.log(profile.rawEvent());
             await profile.publish();
         } catch (e) {
             console.error(e);

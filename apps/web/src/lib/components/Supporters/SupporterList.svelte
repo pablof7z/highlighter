@@ -57,8 +57,6 @@
             }
         }
 
-        console.log('pubkeys', Object.keys(pubkeys));
-
         const sorted: NDKSubscriptionReceipt[] = Object.keys(pubkeys).sort((a, b) => {
             if (pubkeys[a].created_at! < pubkeys[b].created_at!) return -1;
             if (pubkeys[a].created_at! > pubkeys[b].created_at!) return 1;
@@ -69,9 +67,7 @@
 </script>
 
 {#if $supporters}
-    <div class="flex flex-col gap-4 {$$props.class??""}">
-        {#each $sortedReceipts as receipt, i (receipt.subscriber.pubkey)}
-            <SupporterListItem pubkey={receipt.subscriber.pubkey} {tiers} {tierNames} position={i} creatorPubkey={user?.pubkey} {receipt} />
-        {/each}
-    </div>
+    {#each $sortedReceipts as receipt, i (receipt.subscriber.pubkey)}
+        <SupporterListItem pubkey={receipt.subscriber.pubkey} {tiers} {tierNames} position={i} creatorPubkey={user?.pubkey} {receipt} />
+    {/each}
 {/if}

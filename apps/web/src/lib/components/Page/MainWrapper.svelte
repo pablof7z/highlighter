@@ -1,12 +1,23 @@
 <script lang="ts">
-	import { mainWrapperMargin } from "$stores/layout";
+	import { mainWrapperMargin, sectionHeaderMargin } from "$stores/layout";
+	import { afterUpdate } from "svelte";
 
     export let mobilePadded = true;
     export let paddingClass = "sm:p-4 pb-24";
     export let marginClass = "max-w-3xl mx-auto";
     export let el: HTMLElement | undefined = undefined;
+    export let headerMarginClass: string | undefined = undefined;
 
     $mainWrapperMargin = marginClass;
+
+    afterUpdate(() => {
+        if (headerMarginClass) {
+            $sectionHeaderMargin = headerMarginClass;
+        } else {
+            $sectionHeaderMargin = marginClass;
+        }
+    });
+
 </script>
 
 <div class="

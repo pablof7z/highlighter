@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { getUserHighlights } from "$stores/user-view";
-    import { createEventDispatcher } from "svelte";
+    import { Crown, CrownSimple } from "phosphor-svelte";
+import { SvelteComponent, createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -10,80 +10,87 @@
         tooltip?: string;
         icon?: any;
         class?: string;
+        href?: string;
+        id?: string;
+        component?: {
+            component: typeof SvelteComponent;
+            props?: Record<string, any>;
+        }
+        fn?: () => void;
+        premiumOnly?: boolean;
     };
 
     export let options: Option[] = [];
 
-    export let value: string;
-    export let name: string = "this user"
-
-    const highlights = getUserHighlights();
+    export let value: string = "";
+    export let name: string = "this user";
 
     function clicked(option: Option) {
         value = option.value || option.name
+        if (option.fn) option.fn();
+
         dispatch('changed', { value, ...option });
     }
 </script>
 
-<div class="justify-start items-start gap-4 inline-flex whitespace-nowrap max-sm:px-3">
-    <div class="justify-start items-center gap-4 flex">
-        {#each options as option (option.name)}
-            <div class:tooltip={option.tooltip} data-tip={option.tooltip}>
-                {#if option.class?.includes("gradient")}
-                    <div
-                        class="rounded-full p-[2px] bg-gradient"
-                    >
-                    <button
-                        class="snap-center border-2 border-base-100 gradient {option.class??""}"
-                        on:click={() => clicked(option)}
-                        class:active={value === (option.value || option.name)}
-                    >
-                        {#if option.icon}
-                            <svelte:component this={option.icon} class="w-5 h-5 mr-1 inline" />
-                        {/if}
-                        {option.name}
-                    </button>
+<div class="justify-start items-start inline-flex whitespace-nowrap max-sm:px-3 w-full">
+    <div class="lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}">
+        {#each options as option (option.id ?? option.name)}
+            {#if option.name === '-------'}
+                <div class="
+                    w-0.5 h-6 lg:w-full lg:h-[1px] bg-base-300 mx-2 lg:my-4
+                "></div>
+            {:else if option.component}
+                <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 p-1.5 items-center">
+                    <div class="rounded-full p-[2px]" class:text-white={value === (option.value || option.name)}>
+                        <svelte:component
+                            this={option.component.component}
+                            {...option.component.props??{}}
+                        />
                     </div>
-                {:else}
-                    <div class="rounded-full p-[2px]" class:bg-white={value === (option.value || option.name)}>
-                        <button
-                            class="snap-center border-2 border-base-100 {option.class??""}"
+                </div>
+            {:else}
+                <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 p-1.5 items-center">
+                    <div class="rounded-full p-[2px]" class:text-white={value === (option.value || option.name)}>
+                        <a
+                            href={option.href}
+                            class="
+                                snap-center w-full {option.class??""}
+                                px-4 sm:px-0 cursor-pointer
+                                hover:text-white
+                                {option.premiumOnly ? "premium" : ""}
+                            "
                             on:click={() => clicked(option)}
                             class:active={value === (option.value || option.name)}
                         >
                             {#if option.icon}
-                                <svelte:component this={option.icon} class="w-5 h-5 mr-1 inline" />
+                                <svelte:component this={option.icon} class="w-6 xl:w-5 h-6 xl:h-5 mr-1 inline" />
                             {/if}
-                            {option.name}
-                        </button>
+                            <span class="sm:hidden lg:inline">
+                                {option.name}
+                                {#if option.premiumOnly}
+                                    <span class="text-accent2">
+                                        <CrownSimple class="ml-2 w-fit h-fit inline" weight="fill" />
+                                    </span>
+                                {/if}
+                            </span>
+                        </a>
                     </div>
-                {/if}
-            </div>
+                </div>
+            {/if}
         {/each}
     </div>
 </div>
 
 <style>
-    button {
-        @apply px-4 py-2 rounded-full;
-        @apply bg-zinc-800 bg-opacity-70 justify-start items-center gap-2 flex;
+    a {
+        @apply justify-start items-center gap-2 flex;
         @apply text-neutral-400 text-sm font-normal;
         @apply transition-all duration-100;
+        @apply text-lg;
     }
 
-    button:hover {
-        @apply text-neutral-200;
-    }
-
-    button.active {
-        @apply !bg-white !text-black;
-    }
-
-    button.gradient {
-        @apply bg-zinc-800;
-    }
-
-    button.gradient.active {
-        @apply !bg-base-100/40 !text-white !border m-[1px];
+    a.active {
+        @apply !bg-transparent !text-white font-bold;
     }
 </style>

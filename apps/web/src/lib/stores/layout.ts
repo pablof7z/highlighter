@@ -54,3 +54,4 @@ export type PageHeader = {
 export const pageHeader = writable<PageHeader | null>(null);
 
 export const mainWrapperMargin = writable<string | null>(null);
+export const sectionHeaderMargin = writable<string | null>(null);

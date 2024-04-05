@@ -5,7 +5,6 @@
 	import { pageHeader } from "$stores/layout";
 	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter } from "@nostr-dev-kit/ndk";
-	import { onMount } from "svelte";
 	import CreatorsSection from "./CreatorsSection.svelte";
 
     $pageHeader = {
@@ -20,7 +19,7 @@
 
         const filters: NDKFilter[] = [
             { kinds: [NDKKind.Highlight], },
-            { kinds: [NDKKind.Text], "#k": [NDKKind.Highlight.toString()] }
+            { kinds: [NDKKind.Text], "#k": [NDKKind.Highlight.toString()] },
         ]
 
         if (userHasEnoughFollows) {

@@ -11,11 +11,11 @@
     w-full
     max-lg:!hidden
     max-lg:top-0 max-lg:left-0 max-lg:h-screen
+    overflow-x-clip
 
     lg:flex-none
     h-full
     bg-base-100 max-lg:mobile-nav
-    lg:rounded-3xl
     flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
 ">
     {#if title}

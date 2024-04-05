@@ -1,7 +1,7 @@
 import { loginState } from '$stores/session';
 import { loggedIn, login, type LoginMethod } from '$utils/login';
-import { bunkerNDK, ndk, user } from '@kind0/ui-common';
-import { NDKNip07Signer, NDKUser, type NDKSigner } from '@nostr-dev-kit/ndk';
+import { ndk, user } from '@kind0/ui-common';
+import { NDKNip07Signer, NDKUser } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 import { get } from 'svelte/store';
 
@@ -27,7 +27,7 @@ export async function browserSetup() {
     }
 
     // No stored pubkey found, attempt to sign in with NIP-07
-    if (!pubkey) return newSessionTryNio07();
+    if (!pubkey) return newSessionTryNip07();
 
     const method = localStorage.getItem('nostr-key-method') as LoginMethod;
 
@@ -36,7 +36,7 @@ export async function browserSetup() {
     }
 }
 
-export async function newSessionTryNio07() {
+export async function newSessionTryNip07() {
     let signer: NDKNip07Signer | undefined;
     let u: NDKUser | null | undefined;
 

@@ -10,45 +10,20 @@
 
     onMount(() => {
         const i = network();
-        console.log(i);
         supported = i.supported;
         online = i.online;
         onlineAt = i.onlineAt;
     });
 
-    $: if (supported) {
-        console.log('defined');
-        if ($supported) {
-            if ($online) {
-                console.log('Online');
-            } else {
-                console.log('Offline');
-            }
-        } else {
-            console.log('Not supported');
-        }
-    }
-
     $: if (!$online) {
-        console.log('Going offline');
-
         for (const relay of $ndk.pool.relays.values()) {
-            console.log('Disconnecting from', relay.url);
             relay.disconnect();
         }
     }
 
     $: if ($online) {
-        console.log('Going online');
         $ndk.connect(2000);
-        $ndk.on('connect', () => {
-            alert('Connected');
-        });
-        $ndk.on('relay:connect', (r) => {
-            alert('Relay connected' + r.url);
-        });
         for (const relay of $ndk.pool.relays.values()) {
-            console.log('Connecting to', relay.url);
             relay.connect(2000);
         }
     }

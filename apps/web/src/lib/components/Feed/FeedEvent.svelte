@@ -18,13 +18,13 @@
 </script>
 
 {#if supportedKinds.includes(event.kind)}
-    <div class="w-full max-sm:max-w-[100vw] max-sm:overflow-hidden">
+    <a class="w-full max-sm:max-w-[100vw] max-sm:overflow-hidden">
         {#if event.kind === NDKKind.GroupNote || event.kind === NDKKind.Text}
             <FeedGroupPost {event} class="!py-5 border border-base-300" />
         {:else if event.kind === NDKKind.Article}
             <ArticleLink article={NDKArticle.from(event)} {skipAuthor} />
         {:else if event.kind === NDKKind.HorizontalVideo}
-            <VideoLink video={NDKVideo.from(event)} />
+            <VideoLink video={NDKVideo.from(event)} {skipAuthor} />
         {/if}
-    </div>
+    </a>
 {/if}

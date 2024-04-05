@@ -4,6 +4,7 @@
 	import { welcomeScreenSeen } from "$stores/settings";
 	import { fillInSkeletonProfile } from "$utils/login";
 	import { ndk, user } from "@kind0/ui-common";
+	import { NDKRelaySet, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
 	import { closeModal } from "svelte-modals";
 
@@ -12,9 +13,13 @@
     })
 
     // double-check this is a new account
-    $ndk.fetchEvents({
-        authors: [$user.pubkey], limit: 100
-    }).then((events) => {
+    $ndk.fetchEvents(
+        { authors: [$user.pubkey], limit: 10 },
+        { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
+        NDKRelaySet.fromRelayUrls([
+            "wss://purplepag.es/", "wss://profiles.nos.lol", "wss://relay.damus.io", "wss://relay.primal.net"
+        ], $ndk)
+    ).then((events) => {
         const cutOff = Math.floor(Date.now() / 1000) - 3600;
         // This account created less than 5 total events
         if (events.size < 5 && $userProfile && $userProfile.created_at > cutOff) {

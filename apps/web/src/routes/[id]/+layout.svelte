@@ -7,7 +7,6 @@
     export let user: NDKUser = $page.data.user;
 
     $: {
-        console.log('$: user in layout.svelte', user);
         user = $page.data.user;
 
         try {
@@ -21,10 +20,6 @@
     let npub: string;
 
     // $: npub = $page.data.npub;
-
-
-
-    console.log('user in layout.svelte', user);
 
     onDestroy(() => {
         userSubscription?.unref();

@@ -7,7 +7,6 @@
 	import { Globe } from "phosphor-svelte";
     import BookmarkSimple from "phosphor-svelte/lib/BookmarkSimple";
     import Hash from "phosphor-svelte/lib/Hash";
-    import Plus from "phosphor-svelte/lib/Plus";
 
     export let value: string;
     export let typeFilter: App.FilterType[];
@@ -19,26 +18,31 @@
             kinds: [NDKKind.Article, NDKKind.HorizontalVideo],
             limit: 100,
         }] },
-        { name: "Art", icon: Hash, filters: [{
-            kinds: [NDKKind.Article, NDKKind.HorizontalVideo],
-            "#t": [ "photography", "art", "artstr"],
-            limit: 100,
-        }] },
-        { name: "Literature", icon: Hash, filters: [{
-            kinds: [NDKKind.Article],
-            "#t": [ "literature", "book", "bookstr", "books"],
-            limit: 100,
-        }] },
+        // { name: "Art", icon: Hash, filters: [{
+        //     kinds: [NDKKind.Article, NDKKind.HorizontalVideo],
+        //     "#t": [ "photography", "art", "artstr"],
+        //     limit: 100,
+        // }] },
+        // { name: "Literature", icon: Hash, filters: [{
+        //     kinds: [NDKKind.Article],
+        //     "#t": [ "literature", "book", "bookstr", "books"],
+        //     limit: 100,
+        // }] },
         { name: "Freedom", icon: Hash, filters: [{
             kinds: [NDKKind.Article, NDKKind.HorizontalVideo],
             "#t": [ "bitcoin", "nostr", "education", "freedom", "politics" ],
             limit: 100,
         }] },
+        // { name: "Freedom", icon: Hash, filters: [{
+        //     kinds: [NDKKind.Article, NDKKind.HorizontalVideo],
+        //     "#t": [ "bitcoin", "nostr", "education", "freedom", "politics" ],
+        //     limit: 100,
+        // }] },
         // { name: "Hot", tooltip: "Coming Soon", icon: Fire },
         // { name: "Controversial", tooltip: "Coming Soon", icon: CircleHalfTilt },
         { name: "Curated", icon: BookmarkSimple },
         // { name: "Backstage", icon: Shapes },
-        { name: "", value: 'add', icon: Plus, class: "!bg-zinc-800 !text-white" },
+        // { name: "", value: 'add', icon: Plus, class: "!bg-zinc-800 !text-white" },
     ]
 
     $: if ($user && !options[1]!.filters![0].authors) {

@@ -13,12 +13,11 @@
         gap-6
         w-full
         grid md:grid-flow-col
-        grid-cols-1 md:grid-cols-5
+        grid-cols-1 md:grid-cols-4
         justify-center
     ">
         <NewPostItem icon={TextAlignLeft} title="Article" href="/articles/new" />
         <NewPostItem icon={Play} title="Video" href="/videos/new" />
-        <NewPostItem icon={NoteIcon} title="Note" href="/notes/new" />
         <NewPostItem icon={StreamIcon} title="Live stream" comingSoon={true} />
         <NewPostItem icon={Microphone} title="Podcast" comingSoon={true} />
     </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, wideDistribution, preview } from '$stores/post-editor.js';
+	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, preview } from '$stores/post-editor.js';
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { pageHeader } from "$stores/layout";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
@@ -52,13 +52,16 @@
 </script>
 
 {#if $debugMode}
-$nonSubscribersPreview = {$nonSubscribersPreview}
-$selectedTiers = {JSON.stringify($selectedTiers)}
+    $nonSubscribersPreview = {$nonSubscribersPreview}
+    $selectedTiers = {JSON.stringify($selectedTiers)}
 {/if}
 
 <MainWrapper mobilePadded={false} class="pb-24">
     <div class="w-full" class:hidden={$view !== 'edit'}>
         <slot />
+    </div>
+    <div class="w-full" class:hidden={!($view === "view-preview" && $$slots.viewPreview)}>
+        <slot name="viewPreview" />
     </div>
     <div class="w-full" class:hidden={!($view === "edit-preview" && $$slots.editPreview)}>
         <slot name="editPreview" />

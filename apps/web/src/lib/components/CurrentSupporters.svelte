@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { Avatar, user as currentUser } from "@kind0/ui-common";
 	import type { NDKUser, Hexpubkey, NDKArticle } from "@nostr-dev-kit/ndk";
-	import type { Readable } from "svelte/motion";
-	import SubscribeButton from "./buttons/SubscribeButton.svelte";
 
     export let user: NDKUser;
-    export let supporters: Record<Hexpubkey, string | undefined>;
+    export let supporters: Record<Hexpubkey, string | undefined | true>;
 
     let supportingPubkeys: Set<Hexpubkey> = new Set<Hexpubkey>();
 

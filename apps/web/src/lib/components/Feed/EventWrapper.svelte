@@ -46,7 +46,7 @@
 
 <UserProfile user={author} let:userProfile let:fetching let:authorUrl>
     <a href="{authorUrl}{urlPrefix??""}/{suffixUrl}" class="
-        bg-base-200 rounded-box p-4
+        p-4
         flex flex-col gap-4 pb-6 wrapper w-full {$$props.class??""}
     " class:hidden={deleted}>
         {#if reverse}

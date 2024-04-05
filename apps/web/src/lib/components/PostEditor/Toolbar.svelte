@@ -1,10 +1,10 @@
     <script lang="ts">
-	import { fade } from 'svelte/transition';
 	import PublishConfirmationModal from './PublishConfirmationModal.svelte';
 	import { CaretLeft, CaretRight, Notches, PaperPlane, Timer } from "phosphor-svelte";
     import { view, type, status } from "$stores/post-editor";
 	import { openModal } from "svelte-modals";
 	import { debugMode } from '$stores/session';
+    import { getUserSubscriptionTiersStore } from '$stores/user-view';
 
     function previewAndPublish() {
         openModal(PublishConfirmationModal)
@@ -15,13 +15,24 @@
     let back: Entry | undefined;
     let next: Entry | undefined;
 
+    const tiers = getUserSubscriptionTiersStore();
+
     $: switch ($view) {
         case "edit":
             back = undefined;
             next = {label: "Continue", value: "meta"};
             if ($type === "note") next = {label: "Continue", value: "audience"};
             break;
-        case "meta": back = {label: "Back to Edit", value: "edit"}; next = {label: 'Continue', value: "audience"}; break;
+        case "view-preview":
+            back = {label: "Back to Edit", value: "edit"};
+            next = {label: "Continue", value: "edit-preview"};
+            break;
+        case "meta": {
+            back = {label: "Back to Edit", value: "edit"};
+            if ($tiers.length > 0) next = {label: "Continue", value: "audience"};
+            else next = {label: 'Continue', value: "schedule"};
+            break;
+        }
         case "edit-preview": back = {label: 'Back', value: "audience"}; next = {label: 'Continue', value: "schedule"}; break;
         case "audience": back = {label: 'Back', value: "meta"}; next = {label: 'Continue', value: "schedule"}; break;
     }
@@ -64,6 +75,11 @@
 
     <div class="flex flex-row gap-4 self-end">
         {#if next}
+            {#if ($type === "article")}
+                <button class="button button-black truncate" on:click={() => $view = "view-preview"}>
+                    Preview
+                </button>
+            {/if}
             <button class="button" on:click={nextClicked}>
                 {next.label}
                 <CaretRight size={24} />

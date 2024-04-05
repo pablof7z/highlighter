@@ -5,7 +5,7 @@
 	import { Avatar, Name, ndk } from "@kind0/ui-common";
 
     export let pubkey: string | undefined = undefined;
-    export let user: NDKUser | undefined = pubkey ? undefined : $ndk.getUser({ pubkey });
+    export let user: NDKUser | undefined = !pubkey ? undefined : $ndk.getUser({ pubkey });
     export let userProfile: UserProfileType | undefined = undefined;
     export let authorUrl: string | undefined = undefined;
     export let spacing = "gap-2";

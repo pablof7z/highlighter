@@ -7,7 +7,6 @@ import { userActiveSubscriptions } from './session';
 import createDebug from 'debug';
 import { mainContentKinds } from '$utils/event';
 import { creatorRelayPubkey } from '$utils/const';
-import { getDefaultRelaySet } from '$utils/ndk';
 
 const d = createDebug('HL:user-view');
 
@@ -80,7 +79,6 @@ export function startUserView(user: NDKUser) {
 		subId: 'user-view',
 		autoStart: true,
 		groupable: false,
-		relaySet: getDefaultRelaySet(),
 	});
 
 	userSupporters.set(getUserSupporters());
@@ -297,7 +295,12 @@ export function getUserContent(): Readable<NDKEvent[]> {
 }
 
 export function getUserHighlights(): Readable<NDKHighlight[]> {
-	if (!userSubscription) return derived([], () => []);
+	if (!userSubscription) {
+		d('no userSubscription');
+		return derived([], () => []);
+	}
+
+	d('getting highlights');
 
 	return derived([userSubscription], ([$userSubscription]) => {
 		return $userSubscription

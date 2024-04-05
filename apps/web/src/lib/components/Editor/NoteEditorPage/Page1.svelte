@@ -1,12 +1,20 @@
 <script lang="ts">
 	import { isImage, isVideo } from "$utils/media";
-	import { Textarea, UploadButton } from "@kind0/ui-common";
+	import { Input, Textarea, UploadButton } from "@kind0/ui-common";
 	import type { NDKEvent, NDKTag } from "@nostr-dev-kit/ndk";
 	import { Image, X } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
 
     export let note: NDKEvent;
-    export let uploadedFiles: string[];
+    export let uploadedFiles: string[] = [];
+    export let skipUploadButton = false;
+
+    export let title: string;
+
+    $: {
+        note.removeTag("title");
+        note.tags.push(["title", title]);
+    }
 
     function uploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {
         const {url, tags} = e.detail;
@@ -18,24 +26,44 @@
             console.error("Failed to upload file");
         }
     }
+
+    let contentAreaElement: HTMLTextAreaElement;
+
+    function onTitleKeyDown(e: KeyboardEvent) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            // move focus to content
+            if (contentAreaElement) contentAreaElement.focus();
+        }
+    }
 </script>
 
 <div class="">
-    <div class="w-full">
+    <div class="w-full sm:rounded-box max-sm:border-none !border-base-300">
+        <Input
+            bind:value={title}
+            color="black"
+            class="!bg-transparent !text-2xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] placeholder:text-white/50 placeholder:font-normal mb-4 w-full"
+            placeholder="What is this conversation about?"
+            on:keydown={onTitleKeyDown}
+            autofocus={true}
+        />
         <Textarea
             bind:value={note.content}
-            autofocus={true}
-            class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-transparent !border-base-300 text-neutral-400 p-6 min-h-[15rem]"
+            bind:element={contentAreaElement}
+            class="w-full flex-grow font-normal border-none text-lg leading-normal !bg-transparent  text-neutral-400 min-h-[15rem] p-0"
             placeholder="Write your note here..."
         />
 
         <div class="flex flex-col gap-4 max-sm:px-4">
-            <div class="flex flex-row items-center text-white gap-4">
-                <UploadButton class="button w-10 h-10 !rounded-full p-1" on:uploaded={uploaded}>
-                    <Image class="w-6 h-6" />
-                </UploadButton>
-                Attachments
-            </div>
+            {#if !skipUploadButton}
+                <div class="flex flex-row items-center text-white gap-4">
+                    <UploadButton class="button w-10 h-10 !rounded-full p-1" on:uploaded={uploaded}>
+                        <Image class="w-6 h-6" />
+                    </UploadButton>
+                    Attachments
+                </div>
+            {/if}
 
             {#if uploadedFiles.length > 0}
                 <div class="grid grid-flow-col overflow-x-auto w-full items-start justify-start gap-8 attachments pb-6" transition:slide>

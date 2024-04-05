@@ -8,7 +8,7 @@ export const minimumScore = writable<number>(3);
 export const wot = derived([networkFollows, minimumScore], ([$networkFollows, $minimumScore]) => {
     const pubkeys = new Set<Hexpubkey>();
 
-    $networkFollows.forEach((score, follow) => {
+    $networkFollows.forEach((score: number, follow: Hexpubkey) => {
         if (score >= $minimumScore) pubkeys.add(follow);
     });
 

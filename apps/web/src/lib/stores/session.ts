@@ -22,6 +22,7 @@ import debug from 'debug';
 import type { UserProfileType } from '../../app';
 import { getDefaultRelaySet } from '$utils/ndk';
 import { creatorRelayPubkey } from '$utils/const';
+import { nip19 } from 'nostr-tools';
 
 const d = debug('HL:session');
 
@@ -45,12 +46,6 @@ export const userFollows = persist(
 	writable<Set<string>>(new Set()),
 	createLocalStorage(),
 	'user-follows'
-);
-
-export const userSuperFollows = persist(
-	writable<Set<string>>(new Set()),
-	createLocalStorage(),
-	'user-super-follows'
 );
 
 export const allUserTiers = writable<NDKSubscriptionTier[]>([]);
@@ -101,25 +96,6 @@ export const groupsList = writable<NDKList|undefined>(undefined);
 
 export const userActiveSubscriptions = writable<Map<Hexpubkey, string>>(new Map());
 
-export const userCreatorSubscriptionPlans = derived(
-	[userSuperFollows, userActiveSubscriptions],
-	([$userSuperFollows, $userActiveSubscriptions]) => {
-		const plans = new Map<Hexpubkey, string>();
-
-		for (const superFollow of $userSuperFollows) {
-			if (!plans.has(superFollow)) {
-				plans.set(superFollow, 'Free');
-			}
-		}
-
-		for (const [creator, plan] of $userActiveSubscriptions) {
-			plans.set(creator, plan);
-		}
-
-		return plans;
-	}
-);
-
 /**
  * Current user app handlers
  */
@@ -168,6 +144,7 @@ export const networkSupport = writable<NDKEvent[]>([]);
  * Main entry point to prepare the session.
  */
 export async function prepareSession(): Promise<void> {
+	console.log("DEBUG prepareSession")
 	const $ndk = getStore(ndk);
 	const $user = getStore(user);
 
@@ -183,7 +160,6 @@ export async function prepareSession(): Promise<void> {
 		fetchData('user', $ndk, [$user.pubkey], {
 			profileStore: userProfile,
 			followsStore: userFollows,
-			superFollowsStore: userSuperFollows,
 			userArticleCurationsStore: userArticleCurations,
 			userVideoCurationsStore: userVideoCurations,
 			userTierStore: allUserTiers,
@@ -224,6 +200,23 @@ export async function prepareSession(): Promise<void> {
 			}
 		});
 	});
+}
+
+export const processUserProfile = (event: NDKEvent, store: Writable<UserProfileType | undefined>) => {
+	const $store = get(store);
+
+	if (event.created_at && (
+		!$store?.created_at ||
+		event.created_at > $store.created_at
+	)) {
+		const profile = profileFromEvent(event) as UserProfileType;
+		profile.created_at = event.created_at;
+		store.set(profile);
+		d(`updating profile`, event.created_at, $store?.created_at, profile.lud16, profile);
+		d(`profile is now`, get(store))
+	} else {
+		d(`skipping profile update`, event.created_at, $store?.created_at);
+	}
 }
 
 interface IFetchDataOptions {
@@ -300,23 +293,6 @@ async function fetchData(
 			processCurationList(event);
 		}
 	};
-
-	const processUserProfile = (event: NDKEvent, store: Writable<UserProfileType | undefined>) => {
-		const $store = get(store);
-
-		if (event.created_at && (
-			!$store?.created_at ||
-			event.created_at > $store.created_at
-		)) {
-			const profile = profileFromEvent(event) as UserProfileType;
-			profile.created_at = event.created_at;
-			store.set(profile);
-			d(`updating profile`, event.created_at, $store?.created_at, profile.lud16, profile);
-			d(`profile is now`, get(store))
-		} else {
-			d(`skipping profile update`, event.created_at, $store?.created_at);
-		}
-	}
 
 	const processSubscriptionList = (event: NDKEvent, author: string) => {
 		opts.activeSubscriptionsStore!.update((activeSubscriptions) => {
@@ -415,7 +391,15 @@ async function fetchData(
 	};
 
 	const updateFollows = (event: NDKEvent, store: Writable<Set<Hexpubkey> | Map<Hexpubkey, number>>) => {
-		const follows = event.tags.filter((t: NDKTag) => t[0] === 'p').map((t: NDKTag) => t[1]);
+		const follows = event.tags
+			.filter((t: NDKTag) => t[0] === 'p')
+			.map((t: NDKTag) => t[1])
+			.filter((f: Hexpubkey) => {
+				try {
+					nip19.npubEncode(f);
+					return true;
+				} catch { return false; }
+			});
 
 		// if authors has more than one, add the current data, otherwise replace
 		if (authors.length > 1) {

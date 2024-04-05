@@ -45,7 +45,7 @@
         if (events && !authed) {
             events.unsubscribe();
         }
-        events = $ndk.storeSubscribe(getFilter(), { subId: 'with-item', groupable: false });
+        events = $ndk.storeSubscribe(getFilter(), { groupable: false });
         events.onEose(() => { eosed = true; });
 
         authed = true;
@@ -105,7 +105,7 @@
     }
 
     $: if (!events && tagId) {
-        events = $ndk.storeSubscribe(getFilter(), { subId: 'with-item', groupable: false });
+        events = $ndk.storeSubscribe(getFilter(), {  groupable: false });
         events.onEose(() => { eosed = true; });
     }
 
@@ -161,7 +161,6 @@
 
 {#if needsToLoad || (!!event || eosed)}
     <LoadingScreen ready={!!event || eosed}>
-        <main>
             {#if event}
                 <UserProfile user={event.author} bind:authorUrl />
 
@@ -173,7 +172,6 @@
             {:else}
                 Event not found
             {/if}
-        </main>
     </LoadingScreen>
 {/if}
 

@@ -8,6 +8,8 @@ export function getEventType(event: NDKEvent): EventType | undefined {
 		return 'video';
 	} else if (event.kind === NDKKind.GroupNote) {
 		return 'group-note';
+	} else if (event.kind === NDKKind.GroupReply) {
+		return 'group-reply';
 	} else if (event.kind === NDKKind.Text) {
 		return 'short-note';
 	} else if (event.kind === NDKKind.Highlight) {

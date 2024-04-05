@@ -26,7 +26,6 @@
     let nwc: string;
 
     async function nwcConnect(url: string) {
-        debugger
         await fetch("/api/user/nwc", {
             method: "POST",
             headers: {

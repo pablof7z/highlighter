@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import ClipItem from "$components/Clips/ClipItem.svelte";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKHighlight } from "@nostr-dev-kit/ndk";
     import createDebug from "debug";
 	import { onDestroy } from "svelte";
 	import Highlight from "./Highlight.svelte";
@@ -10,8 +10,6 @@
 	import { derived } from "svelte/store";
 
     export let filter: NDKFilter | undefined = undefined;
-
-    const debug = createDebug("highlighter:highlights");
 
     let selectedCategory: string;
 
@@ -86,7 +84,7 @@
     <div class="
         max-sm:px-[var(--mobile-body-px)]
         flex-col justify-start items-start flex w-full
-        gap-6
+        discussion-wrapper
     ">
         {#each $eventsToRender as event (event.id)}
             {#if event.kind === NDKKind.Highlight}

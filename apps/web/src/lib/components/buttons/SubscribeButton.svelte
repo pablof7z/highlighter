@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
 	import CaretRight from "phosphor-svelte/lib/CaretRight";
+    import currentUser from "$stores/currentUser";
     import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { openModal } from "svelte-modals";
 	import SignupModal from "$modals/SignupModal.svelte";
-    import { user as currentUser } from "@kind0/ui-common";
 	import { getUserSubscriptionTiersStore, getUserSupporters } from "$stores/user-view";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import type { Readable } from "svelte/store";
@@ -48,7 +48,7 @@
         {#if hasLNPayments === false}
             <div class="text-xs">
                 <X class="w-4 h-4 inline text-red-800" />
-                No payments enabled for {userProfile.name}
+                No payments enabled for {userProfile?.name??"this user"}
             </div>
         {:else}
             <button
@@ -57,6 +57,7 @@
                     button flex flex-row items-center !gap-0
                     whitespace-nowrap text-base
                     max-sm:w-full max-sm:!rounded-md
+                    {$$props.buttonClass??""}
                 "
             >
                 {#if $tiers && $tiers.length > 0}

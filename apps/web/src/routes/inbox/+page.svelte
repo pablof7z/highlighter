@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { ndk } from "@kind0/ui-common";
-    import { userCreatorSubscriptionPlans, userFollows } from "$stores/session";
+    import { userFollows } from "$stores/session";
     import { type NDKEvent, type NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
 	import FeedEvent from "$components/Feed/FeedEvent.svelte";
 	import { onDestroy, onMount } from "svelte";
@@ -39,8 +39,8 @@
         activeFilterCount = activeView.size;
 
         for (const pubkey of activeView) {
-            const plan = $userCreatorSubscriptionPlans.get(pubkey) ?? "Free";
-            filters.push({ "#h": [pubkey], "#f": [plan] });
+            // const plan = $userCreatorSubscriptionPlans.get(pubkey) ?? "Free";
+            // filters.push({ "#h": [pubkey], "#f": [plan] });
         }
 
         if ($mode === "all") {

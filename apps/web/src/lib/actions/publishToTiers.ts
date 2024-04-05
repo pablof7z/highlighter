@@ -148,7 +148,7 @@ export async function publishToTiers(
 
 	if (!event.sig) await event.sign();
 
-	debug("publishing event to relays", event.encode(), {relayCount: Array.from(opts.relaySet?.relays?.values())} ?? "all relays", event.getMatchingTags("f"), { requiredTiersFor: requiredTiersFor(event) } )
+	debug("publishing event to relays", event.rawEvent() )
 
 	await publishOrSchedule(event, opts.relaySet, opts.publishAt);
 }

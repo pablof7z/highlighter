@@ -53,6 +53,7 @@ async function nip46Login(remotePubkey?: Hexpubkey) {
 	if (!remoteUser) return;
 
 	user.set(remoteUser);
+	console.log("DEBUG setting user", remoteUser)
 	$bunkerNDK.pool.on('relay:ready', async () => {
 		d('bunker relay ready');
 		loginState.set('contacting-remote-signer');
@@ -205,6 +206,7 @@ export function loggedIn(signer: NDKSigner, u: NDKUser, method: LoginMethod) {
 	$ndk.signer = signer;
     u.ndk = $ndk;
     user.set(u)
+	console.log("DEBUG setting user (loggedIn)", u)
     loginState.set("logged-in");
 
     localStorage.setItem('pubkey', u.pubkey);
@@ -215,6 +217,7 @@ export function logout(): void {
 	const $ndk = get(ndk);
 	$ndk.signer = undefined;
 	user.set(undefined);
+	console.log("DEBUG setting user (logout)");
 	loginState.set('logged-out');
 	localStorage.removeItem('currentUserFollowPubkeysStore');
 	localStorage.removeItem('currentUserStore');
