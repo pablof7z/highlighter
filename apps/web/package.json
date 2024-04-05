@@ -4,10 +4,12 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "pnpm migrate && vite build",
 		"preview": "vite preview",
 		"jest": "jest",
 		"test": "playwright test",
+		"migrate": "prisma migrate deploy",
+		"prebuild": "pnpm migrate",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:unit": "vitest",
