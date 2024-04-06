@@ -8,6 +8,7 @@
 	import { page } from "$app/stores";
 	import { goto } from "$app/navigation";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
+	import LengthIndicator from "$components/LengthIndicator.svelte";
 
     export let creatorUser: NDKUser;
 
@@ -95,6 +96,8 @@
             </div>
 
             <div class="flex flex-row items-center justify-end gap-4">
+                <LengthIndicator text={note.content} />
+
                 <button on:click={() => opened = false}>
                     Cancel
                 </button>
