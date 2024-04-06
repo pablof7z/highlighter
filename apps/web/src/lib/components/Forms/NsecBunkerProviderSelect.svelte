@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { ndk } from "@kind0/ui-common";
+	import { bunkerNDK, ndk } from "@kind0/ui-common";
 	import { NDKKind, type Hexpubkey } from "@nostr-dev-kit/ndk";
 	import type { NsecBunkerProvider } from "../../../app";
 	import NsecBunkerProviderItem from "./NsecBunkerProviderItem.svelte";
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
 
     export let value: NsecBunkerProvider = { pubkey: "", domain: ""};
     export let username: string | undefined;
@@ -14,8 +14,12 @@
 
     export let allNsecBunkerProviders = $ndk.storeSubscribe(
         { kinds: [NDKKind.AppHandler], "#k": [NDKKind.NostrConnect.toString()] },
-        { closeOnEose: true, subId: 'nsec-bunker-providers' }
+        { closeOnEose: true, groupable: false }
     )
+
+    onMount(() => {
+        $bunkerNDK.connect();
+    })
 
     function onClick(e: CustomEvent<{pubkey: Hexpubkey, domain: string}>) {
         const { pubkey, domain } = e.detail;
