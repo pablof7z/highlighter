@@ -187,7 +187,7 @@
         tiers = tiers;
     }
 
-    function deletTier(tier: NDKSubscriptionTier) {
+    function deleteTier(tier: NDKSubscriptionTier) {
         if (tier.dTag) deletedDtags.add(tier.dTag);
         tiers = tiers.filter((t) => t !== tier);
     }
@@ -232,7 +232,7 @@
                                 <CaretDown class="w-5 h-5" />
                             </button>
 
-                            <button class="text-red-500 mt-2" on:click={() => deletTier(tier)}>
+                            <button class="text-red-500 mt-2" on:click={() => deleteTier(tier)}>
                                 <Trash class="w-5 h-5" />
                             </button>
                         </div>
