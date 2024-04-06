@@ -61,5 +61,7 @@
     <title>{article.title}</title>
 </svelte:head>
 
-<ItemHeader item={article} />
-<ArticleRender {article} {editUrl} {isFullVersion} />
+<div class="flex flex-col gap-2 px-4 sm:px-0">
+    <ItemHeader item={article} />
+    <ArticleRender {article} {editUrl} {isFullVersion} />
+</div>
