@@ -34,11 +34,9 @@
     }
 
     let authorUrl: string;
-    let hasLNPayments: boolean | undefined;
+    let hasLNPayments: boolean | undefined = !!(userProfile?.lud06 || userProfile?.lud16);
 
-    $: if (userProfile && (!userProfile.lud06 && !userProfile.lud16)) {
-        hasLNPayments = false;
-    }
+    $: hasLNPayments = !!(userProfile?.lud06 || userProfile?.lud16);
 </script>
 
 {#if user && user.pubkey !== $currentUser?.pubkey}

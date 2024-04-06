@@ -11,6 +11,7 @@
 	import { hideMobileBottomBar } from "$stores/layout";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
+	import UserProfile from "$components/User/UserProfile.svelte";
 
     export let event: NDKEvent;
     export let urlPrefix: string;
@@ -58,7 +59,9 @@
 
             <div class="place-self-end max-sm:hidden">
                 {#if event.author}
-                    <SubscribeButton user={event.author} tiers={getUserSubscriptionTiersStore()} />
+                    <UserProfile user={event.author} let:userProfile>
+                        <SubscribeButton {userProfile} user={event.author} tiers={getUserSubscriptionTiersStore()} />
+                    </UserProfile>
                 {/if}
             </div>
         </div>
