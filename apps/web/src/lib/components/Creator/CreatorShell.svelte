@@ -126,7 +126,7 @@
                     {avatarWrapper}
                     transition-all duration-300
                     w-full max-sm:w-screen
-                    sticky top-0 z-50
+                    sticky top-0 z-30
                 ">
                     <div class="flex items-end">
                         <Avatar user={user} {userProfile} {fetching} class="{avatarClass} transition-all duration-300 flex-none object-cover mask mask-squircle rounded-none" />
