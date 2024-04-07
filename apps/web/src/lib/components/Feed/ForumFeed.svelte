@@ -5,6 +5,7 @@
 	import { onDestroy } from "svelte";
 	import ForumFeedItem from "./ForumFeedItem.svelte";
 	import NewPost from "./NewPost.svelte";
+	import Note from "./Note.svelte";
 
     export let user: NDKUser;
     export let filters: NDKFilter[] = [
@@ -57,13 +58,23 @@
             <NewPost creatorUser={user} bind:opened={newPostOpened} />
         </div>
         {#each $renderFeed as event, i (event.id)}
-            <ForumFeedItem
-                creatorUser={user}
-                {event}
-                position={i}
-                mostRecentActivity={perNoteLatestActivity.get(event.id)}
-                skipReply={true}
-            />
+            {#if event.kind === NDKKind.Text}
+                <Note
+                    creatorUser={user}
+                    {event}
+                    position={i}
+                    mostRecentActivity={perNoteLatestActivity.get(event.id)}
+                    skipReply={true}
+                />
+            {:else}
+                <ForumFeedItem
+                    creatorUser={user}
+                    {event}
+                    position={i}
+                    mostRecentActivity={perNoteLatestActivity.get(event.id)}
+                    skipReply={true}
+                />
+            {/if}
         {/each}
     </div>
 </div>
