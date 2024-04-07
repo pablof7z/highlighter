@@ -1,12 +1,7 @@
 <script lang="ts">
 	import { UnsubscribableStore, ZapInvoiceWithEvent, getRecentZaps, getTopZapsByIndividualAmount } from "$utils/zaps";
-	import { nicelyFormattedMilliSatNumber } from "@kind0/ui-common";
 	import { NDKEvent, NDKEventId } from "@nostr-dev-kit/ndk";
-    import {Avatar} from "@kind0/ui-common";
 	import { onDestroy } from "svelte";
-	import UserProfile from "$components/User/UserProfile.svelte";
-	import { userProfile } from "$stores/session";
-	import { slide } from "svelte/transition";
 	import ZapPill from "./ZapPill.svelte";
 
     export let event: NDKEvent;

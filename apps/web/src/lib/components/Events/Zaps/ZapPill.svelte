@@ -3,6 +3,7 @@
 	import ButtonWithExtraText from "$components/buttons/ButtonWithExtraText.svelte";
 	import { Avatar, nicelyFormattedMilliSatNumber } from "@kind0/ui-common";
 	import { NDKZapInvoice } from "@nostr-dev-kit/ndk";
+	import { Lightning } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
 
     export let zap: NDKZapInvoice;
@@ -14,13 +15,14 @@
     {#if userProfile}
         <a href={authorUrl} class="
             relative overflow-hidden
-            flex flex-row rounded-full group bg-base-300 pr-3 items-center {$$props.class??""}
+            flex flex-row rounded-full group bg-base-300 px-2 py-1 items-center {$$props.class??""}
             transition-all duration-300 w-auto group
         " transition:slide={{ axis: 'x'}}>
-            <Avatar pubkey={zap.zappee} {userProfile} size={avatarSize} />
-            <span class="text-white font-medium ml-3">
+            <span class="text-white font-light mr-3">
+                <Lightning class="w-4 h-4 inline" weight="fill" />
                 {nicelyFormattedMilliSatNumber(zap.amount)}
             </span>
+            <Avatar pubkey={zap.zappee} {userProfile} size={avatarSize} />
             {#if zap.comment && comment !== "hide"}
                 <span class="
                     text-white/70 transition-all duration-300 text-white whitespace-nowrap line-clamp-1
