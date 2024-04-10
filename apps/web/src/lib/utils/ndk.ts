@@ -68,7 +68,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL3' });
+	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL9' });
 	$ndk.clientName = 'highlighter';
 
 	$ndk.pool.on("notice", (relay: NDKRelay, notice: string) => {

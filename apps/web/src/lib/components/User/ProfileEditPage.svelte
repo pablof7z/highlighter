@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { categories } from './../../utils/categories.ts';
 	import EditableAvatar from '$components/User/EditableAvatar.svelte';
     import currentUser from '$stores/currentUser';
-	import { RelativeTime, ndk, user } from '@kind0/ui-common';
+	import { ndk, newToasterMessage } from '@kind0/ui-common';
     import { debugMode, processUserProfile, userProfile } from '$stores/session';
     import { createEventDispatcher, onMount } from 'svelte';
-	import { NDKEvent, serializeProfile, type NostrEvent, NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
+	import { NDKEvent, serializeProfile, type NostrEvent, NDKRelaySet, NDKSubscriptionCacheUsage, NDKRelayList, NDKRelay } from '@nostr-dev-kit/ndk';
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
-    import { ArrowElbowRight, Image, Info, Warning } from "phosphor-svelte";
+    import { Image, Warning } from "phosphor-svelte";
 	import GlassyInput from "$components/Forms/GlassyInput.svelte";
 	import CategorySelector from '$components/Forms/CategorySelector.svelte';
 
@@ -30,11 +29,19 @@
         relaySet.addRelay(relay);
     }
 
+    NDKRelayList.forUser($currentUser?.pubkey, $ndk).then((relayList) => {
+        if (!relayList) return;
+        for (const writeRelay of relayList.writeRelayUrls) {
+            const r = new NDKRelay(writeRelay, $ndk);
+            relaySet.addRelay(r);
+        }
+    })
+
     // just to be on the safe-side, try to load this user's profile again
     const fetchingProfile = new Promise<void>((resolve) => {
         const fetching = $ndk.subscribe(
             {kinds: [0], authors:[$currentUser?.pubkey]},
-            { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY, closeOnEose: true },
+            { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
             relaySet
         );
 
@@ -42,15 +49,25 @@
             processUserProfile(e, userProfile)
             categories = $userProfile!.categories ?? [];
             resolve();
+            setVars();
         });
         fetching.on("eose", () => {
             resolve();
+            setVars();
         })
     });
 
+    function setVars() {
+        name = $userProfile?.displayName ?? $userProfile?.name ?? "";
+        banner = $userProfile?.banner ?? "";
+        picture = $userProfile?.image ?? "";
+        about = $userProfile?.about ?? "";
+        lud16 = $userProfile?.lud16 ?? "";
+    }
+
     function emptyProfile() {
         if ($userProfile === undefined) return true;
-        if (!$userProfile.name || $userProfile.name.length === 0) return true;
+        if (!$userProfile.displayName || $userProfile.displayName.length === 0) return true;
 
         return false;
     }
@@ -62,10 +79,36 @@
 
         saving = true;
         try {
-            $userProfile.display_name ??= $userProfile.name;
+            let newProfile = {
+                ...$userProfile,
+                displayName: name,
+                name: name,
+                image: picture,
+                banner: banner,
+                about: about,
+                lud16: lud16,
+            };
+            if (name !== "") {
+                newProfile.displayName = name;
+                newProfile.name = name;
+            }
+            if (picture !== "") newProfile.image = picture;
+            if (banner !== "") newProfile.banner = banner;
+            if (about !== "") newProfile.about = about;
+            if (lud16 !== "") newProfile.lud16 = lud16;
+
+            console.log("UPDATING PROFILE FROM " + JSON.stringify($userProfile) + " TO " + JSON.stringify(newProfile) + " FOR " + $currentUser!.pubkey);
+            console.log("RELAYS", Array.from(relaySet.relays).map(r => r.url));
+
+            if (Object.keys(newProfile).length === 0) {
+                console.log("Refusing to update profile");
+                newToasterMessage("Profile not updated", "error");
+                return;
+            }
+
             const profile = new NDKEvent($ndk, {
                 kind: 0,
-                content: serializeProfile($userProfile)
+                content: serializeProfile(newProfile)
             } as NostrEvent);
             if (categories.length > 0) {
                 for (const category of categories) {
@@ -90,12 +133,20 @@
         forceSave = false;
         save();
     }
+
+    let name: string = "";
+    let banner: string;
+    let picture: string;
+    let about: string;
+    let lud16: string;
+
+    setVars();
 </script>
 
 {#await fetchingProfile}
     <div class="loading loading-lg"></div>
 {:then}
-    {#if !$userProfile || $userProfile.name?.toString().length === 0 && !$userProfile.picture}
+    {#if name === "" && picture === ""}
         <div class="alert alert-neutral text-warning border border-warning font-light">
             <Warning class="w-8 h-8" />
             <div class="flex flex-col gap-2">
@@ -111,7 +162,7 @@
 
     <div class="flex flex-col">
         <div class="relative w-full h-[20rem] overflow-hidden rounded-box">
-            <ImageUploader bind:url={$userProfile.banner} wrapperClass="overflow-hidden" alwaysUseSlot={true}>
+            <ImageUploader bind:url={banner} wrapperClass="overflow-hidden" alwaysUseSlot={true}>
                 {#if $userProfile?.banner}
                     <img src={$userProfile?.banner} class="w-full h-full object-cover object-top lg:rounded" alt={$userProfile?.name}>
                     <div class="flex flex-col items-center gap-4 text-base opacity-70 text-white z-40">
@@ -133,25 +184,26 @@
             <div class="flex flex-row gap-4 items-end">
                 <div class="flex-none">
                     <EditableAvatar
-                        url={$userProfile?.image}
-                        on:uploaded={(e) => { console.log(e, e.detail); $userProfile.image = e.detail }}
-                        class="w-24 h-24 mask mask-squircle"
+                        url={picture}
+                        on:uploaded={(e) => { picture = e.detail }}
+                        class="w-24 h-24 rounded-full"
                     />
                 </div>
 
-                <GlassyInput bind:value={$userProfile.name} placeholder="Name" color="black" class="text-lg text-white font-medium" />
+                <GlassyInput bind:value={name} placeholder="Name" color="black" class="text-lg text-white font-medium" />
             </div>
+
         </div>
 
         <section class="settings">
             <div class="field">
                 <div class="title">About you</div>
-                <GlassyInput bind:value={$userProfile.about} placeholder="About" class="text-sm" />
+                <GlassyInput bind:value={about} placeholder="About" class="text-sm" />
             </div>
 
             <div class="field">
                 <div class="title">LN Wallet</div>
-                <GlassyInput bind:value={$userProfile.lud16} placeholder="LN Wallet" class="text-sm" />
+                <GlassyInput bind:value={lud16} placeholder="LN Wallet" class="text-sm" />
             </div>
 
             <div class="field">

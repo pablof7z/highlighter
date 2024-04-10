@@ -7,14 +7,12 @@ import {
 	type NDKFilter,
 	type NDKTag,
 	NDKKind,
-	type NDKEventId,
-	NDKDVMJobResult,
-	NDKDVMRequest,
 	NDKListKinds,
 	type Hexpubkey,
 	profileFromEvent,
 	NDKSubscriptionTier,
 	NDKRelaySet,
+	NostrEvent,
 } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
@@ -25,6 +23,7 @@ import { creatorRelayPubkey } from '$utils/const';
 import { nip19 } from 'nostr-tools';
 
 const d = debug('HL:session');
+const $ndk = getStore(ndk);
 
 export const jwt = persist(writable<string | null>(null), createLocalStorage(), 'jwt');
 
@@ -107,14 +106,12 @@ export const userAppHandlers = persist(
 	'user-app-handlers'
 );
 
-export const userDVMResults = writable<Map<NDKEventId, NDKDVMJobResult[]>>(new Map());
-export const userDVMRequests = writable<Map<number, NDKDVMRequest[]>>(new Map());
-
 /**
  * Current user's lists
  */
 export const userArticleCurations = writable<Map<string, NDKList>>(new Map());
 export const userVideoCurations = writable<Map<string, NDKList>>(new Map());
+export const userGenericCuration = writable<NDKList>(new NDKList($ndk, { kind: NDKKind.BookmarkList, created_at: 0 } as NostrEvent));
 
 /**
  * Current user's supported people
@@ -144,8 +141,7 @@ export const networkSupport = writable<NDKEvent[]>([]);
  * Main entry point to prepare the session.
  */
 export async function prepareSession(): Promise<void> {
-	console.log("DEBUG prepareSession")
-	const $ndk = getStore(ndk);
+	console.log("DEBUG prepareSession", new Date())
 	const $user = getStore(user);
 
 	if (!$ndk || !$user) {
@@ -157,11 +153,13 @@ export async function prepareSession(): Promise<void> {
 	return new Promise((resolve) => {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
 
+		console.log("DEBUG prepareSession fetchData", new Date())
 		fetchData('user', $ndk, [$user.pubkey], {
 			profileStore: userProfile,
 			followsStore: userFollows,
 			userArticleCurationsStore: userArticleCurations,
 			userVideoCurationsStore: userVideoCurations,
+			userGenericCurationStore: userGenericCuration,
 			userTierStore: allUserTiers,
 			groupsListStore: groupsList,
 			tierListStore: tierList,
@@ -172,7 +170,8 @@ export async function prepareSession(): Promise<void> {
 			listsKinds: [
 				NDKKind.ArticleCurationSet,
 				NDKKind.VideoCurationSet,
-				NDKKind.CategorizedHighlightList
+				NDKKind.CategorizedHighlightList,
+				NDKKind.BookmarkList,
 			]
 		}).then(() => {
 			const $userFollows = getStore(userFollows);
@@ -229,6 +228,7 @@ interface IFetchDataOptions {
 	appHandlersStore?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
 	userArticleCurationsStore?: Writable<Map<string, NDKList>>;
 	userVideoCurationsStore?: Writable<Map<string, NDKList>>;
+	userGenericCurationStore?: Writable<NDKList>;
 	userTierStore?: Writable<NDKSubscriptionTier[]>;
 	groupsListStore?: Writable<NDKList | undefined>;
 	tierListStore?: Writable<NDKList | undefined>;
@@ -290,7 +290,11 @@ async function fetchData(
 			groupsListStore(event);
 		} else if (event.kind === NDKKind.SubscriptionTier) {
 			processSubscriptionTier(event);
-		} else if ([NDKKind.ArticleCurationSet, NDKKind.VideoCurationSet].includes(event.kind!)) {
+		} else if ([
+			NDKKind.ArticleCurationSet,
+			NDKKind.VideoCurationSet,
+			NDKKind.BookmarkList,
+		].includes(event.kind!)) {
 			processCurationList(event);
 		}
 	};
@@ -386,6 +390,12 @@ async function fetchData(
 				opts.userVideoCurationsStore!.update((lists) => {
 					lists.set(list.tagId(), list);
 					return lists;
+				});
+				break;
+			case NDKKind.BookmarkList:
+				opts.userGenericCurationStore!.update((existingList) => {
+					if (existingList!.created_at && existingList.created_at > event.created_at!) return existingList;
+					return list;
 				});
 				break;
 		}

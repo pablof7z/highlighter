@@ -75,16 +75,14 @@ op = {!!op} -->
 
 <!-- nestedMaxLevel = {nestedMaxLevel} <br> -->
 
-<a class="w-full text-left p-4 {$$props.class??""}" href="/{authorId}/posts/{event.encode()}">
+<a class="w-full text-left p-4 !pb-0 {$$props.class??""}" href="/{authorId}/posts/{event.encode()}">
     <div class="flex flex-col items-start w-full">
         <UserProfile user={event.author} let:userProfile let:fetching>
             <div class="flex flex-row items-start w-full">
                 <!-- Avatars -->
                 <div class="flex flex-col items-center flex-none w-16 self-stretch">
-                        <Avatar user={event.author} {userProfile} class="w-16 h-16 object-cover" type="square" />
-                    {#if !threadView && !expandReplies && ($replies.length > 0 || $eventsInThread.length > 0)}
-                        <div class="w-[1px] min-h-[40px] bg-white/20 grow"></div>
-                    {/if}
+                        <Avatar user={event.author} {userProfile} class="w-16 h-16 object-cover" type="circle" />
+                        <!-- <div class="w-[1px] min-h-[40px] bg-white/20 grow"></div> -->
                 </div>
 
                 <!-- Content -->
@@ -106,7 +104,7 @@ op = {!!op} -->
                     </div>
 
                     <!-- Content / reactions / comment count -->
-                    <div class="flex flex-col items-start gap-2">
+                    <div class="flex flex-col items-start gap-2 my-4">
                         <!-- Content -->
                         <EventContent ndk={$ndk} {event} content={contentToRender} class={`${$$props.contentClass??""}`} />
 
@@ -130,7 +128,7 @@ op = {!!op} -->
 
             {#if !expandReplies && !expandThread}
                 {#if $replies.length > 0 || $eventsInThread.length > 0}
-                    <div class="flex flex-row items-end gap-4 w-full -mt-4">
+                    <div class="flex flex-row items-end gap-4 w-full">
                         <div class="flex flex-col items-center flex-none w-16">
                             {#if $replies.length > 0}
                                 <ReplyAvatars users={$commentAuthors} />

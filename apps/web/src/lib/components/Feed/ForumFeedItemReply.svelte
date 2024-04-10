@@ -7,6 +7,10 @@
     export let reply: NDKEvent = new NDKEvent($ndk, { kind: NDKKind.GroupReply } as NostrEvent);
     export let showReply = true;
 
+    if (event.kind === NDKKind.Text) {
+        reply.kind = NDKKind.Text;
+    }
+
     let publishing = false;
 
     async function publish() {

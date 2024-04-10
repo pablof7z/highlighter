@@ -4,8 +4,13 @@
 	import CreatorOnboardingActions from '$components/PageSidebar/CreatorOnboardingActions.svelte';
 	import { pageHeader } from "$stores/layout";
 	import { userFollows } from "$stores/session";
-	import { NDKKind, type NDKFilter } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKFilter, NDKEvent } from "@nostr-dev-kit/ndk";
 	import CreatorsSection from "./CreatorsSection.svelte";
+	import CreatorFeed from "$components/Feed/CreatorFeed.svelte";
+	import { ndk } from "@kind0/ui-common";
+	import { isRootEvent } from "$utils/event";
+	import FeedEvent from "$components/Feed/FeedEvent.svelte";
+	import { derived } from "svelte/store";
 
     $pageHeader = {
         title: "Home",
@@ -30,17 +35,44 @@
 
         highlightFilters = filters;
     }
+
+    // const allEvents = $ndk.storeSubscribe({
+    //     kinds: [NDKKind.Highlight, NDKKind.Text],
+    //     authors: Array.from($userFollows)
+    // });
+
+    // const feed = derived(allEvents, $allEvents => {
+    //     const events: NDKEvent[] = [];
+
+    //     for (const event of $allEvents) {
+    //         if (event.kind === NDKKind.Text) {
+    //             if (isRootEvent(event))
+    //                 events.push(event);
+    //         } else if (event.kind === NDKKind.Highlight) {
+    //             events.push(event);
+    //         }
+    //     }
+
+    //     // Sort by date
+    //     events.sort((a, b) => b.created_at! - a.created_at!);
+
+    //     return events;
+    // })
 </script>
 
 <MainWrapper class="flex flex-col gap-10 w-full sm:my-10">
     <section>
         <h1>Creators</h1>
-
-        <CreatorsSection />
     </section>
 
     <section>
         <h1>Highlights & Notes</h1>
+
+        <!-- <div class="discussion-wrapper flex flex-col w-full">
+            {#each $feed as event (event.id)}
+                <FeedEvent {event} />
+            {/each}
+        </div> -->
 
         <Highlights filters={highlightFilters} />
     </section>

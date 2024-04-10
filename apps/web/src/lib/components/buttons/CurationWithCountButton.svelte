@@ -13,21 +13,6 @@
     let listStore: Writable<Map<string, NDKList>>;
     let listKind: number;
 
-    const curations = $ndk.storeSubscribe(
-        { kinds: [
-            NDKKind.ArticleCurationSet,
-            NDKKind.VideoCurationSet,
-        ], ...event.filter() },
-        {
-            cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY,
-            groupableDelayType: "at-least",
-        }
-    );
-
-    onDestroy(() => {
-        curations.unsubscribe();
-    });
-
     switch (event.kind) {
         case NDKKind.Article:
             listStore = userArticleCurations;
@@ -38,8 +23,18 @@
             listKind = NDKKind.VideoCurationSet;
             break;
         default:
+            listKind = NDKKind.BookmarkList;
             alert(`Not supported curation button for kind ${event.kind}`)
     }
+
+    const curations = $ndk.storeSubscribe(
+        { kinds: [ listKind ], ...event.filter() },
+        { groupableDelayType: "at-least", }
+    );
+
+    onDestroy(() => {
+        curations.unsubscribe();
+    });
 
     let bookmarked = false;
 
@@ -92,7 +87,9 @@
     >
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <!-- svelte-ignore a11y-label-has-associated-control -->
-        <label tabindex="0" class="cursor-pointer">
+        <label tabindex="0" class="cursor-pointer" on:click|preventDefault={(e) => {
+            console.log('clicked')
+        }}>
             <BookmarkSimple
                 class="w-7 h-7" weight={bookmarked ? "fill" : "regular"}
             />

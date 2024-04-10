@@ -3,6 +3,8 @@ import * as Sentry from '@sentry/sveltekit';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { authenticateUser } from '$lib/utils/authentication';
 
+// if running in production
+
 Sentry.init({
     dsn: "https://a63e57721efe045140239736daf0d675@o317830.ingest.us.sentry.io/4506382142799872",
     tracesSampleRate: 1

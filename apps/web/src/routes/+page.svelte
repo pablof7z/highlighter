@@ -224,7 +224,7 @@
                     </div>
                 {:else}
                     <WelcomeGridItem />
-                    <div class="flex flex-col sm:grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10">
+                    <div class="flex flex-col sm:grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10">
                         {#key filter}
                             {#each $eventsForRender as event (event.id)}
                                 {#if event.kind === NDKKind.Article}

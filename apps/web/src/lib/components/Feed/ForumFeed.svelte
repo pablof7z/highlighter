@@ -6,6 +6,7 @@
 	import ForumFeedItem from "./ForumFeedItem.svelte";
 	import NewPost from "./NewPost.svelte";
 	import Note from "./Note.svelte";
+	import { page } from "$app/stores";
 
     export let user: NDKUser;
     export let filters: NDKFilter[] = [
@@ -18,8 +19,26 @@
 
     const perNoteLatestActivity = new Map<NDKEventId, number>();
 
+    const eventsWithAnnotatedTagged = new Set<NDKEventId>();
+    const skipEventIds = new Set<NDKEventId>();
+    const allEventIds = new Set<NDKEventId>();
+
     const renderFeed = derived(feed, $feed => {
         const topLevelNotes = new Map<NDKEventId, NDKEvent>();
+
+        for (const event of $feed.values()) { allEventIds.add(event.id); }
+
+        // Decide which event ids we are not going to render in the feed
+        // Don't render events that are tagging other events we are also going to render
+        for (const event of $feed.values()) {
+            if (skipEventIds.has(event.id)) { continue; }
+            for (const tag of event.getMatchingTags("e")) {
+                if (allEventIds.has(tag[1])) {
+                    skipEventIds.add(event.id);
+                    break;
+                }
+            }
+        }
 
         const markLatestActivity = (event: NDKEvent, topNoteId: NDKEventId) => {
             const latestActivity = perNoteLatestActivity.get(topNoteId) ?? 0;
@@ -29,6 +48,7 @@
         }
 
         for (const event of $feed.values()) {
+            if (skipEventIds.has(event.id)) { continue; }
             if (event.kind === NDKKind.GroupNote || event.kind === NDKKind.Text) {
                 topLevelNotes.set(event.id, event);
                 markLatestActivity(event, event.id);
@@ -49,6 +69,10 @@
     });
 
     let newPostOpened = false;
+
+    let urlPrefix: string;
+
+    $: urlPrefix = $page.url.pathname + '/';
 </script>
 
 <div class="flex flex-col w-full justify-stretch">
@@ -65,6 +89,7 @@
                     position={i}
                     mostRecentActivity={perNoteLatestActivity.get(event.id)}
                     skipReply={true}
+                    {urlPrefix}
                 />
             {:else}
                 <ForumFeedItem
