@@ -38,7 +38,8 @@
     ndk={$ndk}
     {event}
     eventComponent={EventWrapper}
-    eventComponentProps={{class: "!bg-white"}}
+    eventComponentProps={{class: "!bg-white discussion-item opacity-50"}}
+    class="discussion-item"
 />
 
 <!-- {#if showComment}

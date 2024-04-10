@@ -88,7 +88,7 @@
         </div>
     {/if}
 
-    <div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-6 discussion-wrapper bg-black/90">
         {#each $comments as comment (comment.id)}
             <RootReply event={comment} />
         {/each}
