@@ -14,11 +14,11 @@
     switch (event.kind) {
         case NDKKind.Article:
             listStore = userArticleCurations;
-            listKind = NDKKind.CurationSet;
+            listKind = NDKKind.ArticleCurationSet
             break;
         case NDKKind.HorizontalVideo:
             listStore = userVideoCurations;
-            listKind = NDKKind.CurationSet+1;
+            listKind = NDKKind.VideoCurationSet;
             break;
         default:
             alert(`Not supported curation button for kind ${event.kind}`)

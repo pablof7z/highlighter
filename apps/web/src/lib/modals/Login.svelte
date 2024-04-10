@@ -2,15 +2,17 @@
 	import { login as _login } from '$utils/login';
 	import { ndk, bunkerNDK, user } from "@kind0/ui-common";
 	import { NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
-    import Input from "$components/Forms/Input.svelte";
 	import { onMount } from "svelte";
 	import { closeModal } from "svelte-modals";
 	import { slide } from "svelte/transition";
 	import { nip19 } from "nostr-tools";
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
+	import currentUser from '$stores/currentUser';
+	import { loginState } from '$stores/session';
 
     export let value: string = "";
     export let nsec: string = "";
+    export let npub = "";
 
     let blocking = false;
     let advanced = false;
@@ -20,6 +22,15 @@
     onMount(async () => {
         $bunkerNDK.connect(2500);
     });
+
+    async function loginWithNpub() {
+        $user = $ndk.getUser({npub});
+        console.log($user.pubkey);
+        $currentUser = $user;
+        localStorage.setItem('pubkey', $user.pubkey);
+
+        loginState.set('logged-in');
+    }
 
     async function loginWithNsec() {
         const pk = nip19.decode(nsec);
@@ -111,7 +122,6 @@
                     <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
                         <div class="text-white text-base font-medium leading-normal">Username / Nostr address</div>
                         <GlassyInput bind:value type="text" placeholder="eg. bob@nostr.me" />
-                        <!-- <button class="text-white text-sm font-normal underline leading-[19px]">Forgot username?</button> -->
                     </div>
                 </div>
 
@@ -119,7 +129,7 @@
                     <span class="text-danger">{error}</span>
                 {/if}
 
-                <button class="button py-4 group" on:click={login}>
+                <button class="button py-3 group" on:click={login}>
                     {#if !blocking}
                         Continue
                     {:else}
@@ -138,7 +148,7 @@
         <div class="w-full flex flex-col gap-4">
             <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
                 <div class="text-white text-base font-medium leading-normal">Browser Extension Login</div>
-                <button class="button py-4 group w-full" disabled={!window.nostr}>
+                <button class="button py-3 group w-full" disabled={!window.nostr}>
                     Continue
                 </button>
                 {#if !window.nostr}
@@ -154,7 +164,7 @@
                 <div class="text-white text-base font-medium leading-normal">Private Key Login</div>
                 <GlassyInput bind:value={nsec} type="text" placeholder="nsec1..." />
                 {#if nsec}
-                    <button class="button py-4 group w-full" on:click={loginWithNsec}>
+                    <button class="button py-3 group w-full" on:click={loginWithNsec}>
                         Continue
                     </button>
                 {/if}
@@ -163,6 +173,18 @@
                     you shouldn't paste your nsec!
                     <!-- <button class="text-white text-sm font-normal underline leading-[19px]">Why?</button> -->
                 </span>
+            </div>
+
+            <div class="divider my-0"></div>
+
+            <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
+                <div class="text-white text-base font-medium leading-normal">Read-only public login</div>
+                <GlassyInput bind:value={npub} type="text" placeholder="npub1..." />
+                {#if npub}
+                    <button class="button py-3 group w-full" on:click={loginWithNpub}>
+                        Continue
+                    </button>
+                {/if}
             </div>
 
             <button class="text-white text-sm text-opacity-50" on:click={() => advanced = !advanced}>

@@ -66,12 +66,14 @@
     }
 
     const closeOnEose = user?.pubkey !== $currentUser?.pubkey;
-    const cacheUsage = forceFetch ? NDKSubscriptionCacheUsage.ONLY_RELAY : NDKSubscriptionCacheUsage.PARALLEL;
+    const cacheUsage = forceFetch ? NDKSubscriptionCacheUsage.ONLY_RELAY : NDKSubscriptionCacheUsage.CACHE_FIRST;
     const groupable = !forceFetch;
+
+    const subId = subsOptions?.subId ?? 'user-profile';
 
     const sub = fetching && user && $ndk.subscribe([
         { kinds: [0], authors: [user.pubkey] },
-    ], { groupable, closeOnEose, cacheUsage, ...subsOptions});
+    ], { groupableDelayType: 'at-least', subId, groupable, closeOnEose, cacheUsage, ...subsOptions});
 
     onDestroy(() => {
         if (sub) sub.stop();

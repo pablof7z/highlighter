@@ -1,7 +1,6 @@
 <script lang="ts">
 	import TiersModal from '$modals/TiersModal.svelte';
-    import { CaretDown } from "phosphor-svelte";
-	import { slide } from "svelte/transition";
+    import { CaretDown, Plus } from "phosphor-svelte";
 	import type { TierSelection } from "$lib/events/tiers";
     import { createEventDispatcher, onMount } from "svelte";
 	import { openModal } from "svelte-modals";
@@ -17,18 +16,15 @@
 
     function updateSelectedString(changingTier?: string) {
         // If a tier is being changed, and it's being unchecked, uncheck Free
-        console.log({changingTier, selected: tiers[changingTier]?.selected});
         if (
             changingTier &&
             changingTier !== "Free" && !tiers[changingTier].selected) {
             tiers["Free"].selected = false;
             tiers = tiers
-            console.log("unselecting Free")
         }
 
         // If Free is selected, select all (the keys are dynamic)
         if (tiers["Free"].selected) {
-            console.log("Free is selected, selecting all")
             tiers = Object.keys(tiers)
                 .reduce((acc, id) => ({ ...acc, [id]: { name: tiers[id].name, selected: true } }), {});
         }
@@ -60,16 +56,14 @@
     let selectedString: string;
 </script>
 
-<div class="w-full flex-col justify-start items-start gap-2 inline-flex {$$props.class??""}">
-        {#if !alwaysOpen}
-            <button on:click={() => show = !show} class="text-base px-4 py-3 font-medium w-full text-left flex flex-row items-center justify-between">
+<div class={$$props.class??""}>
+    {#if !alwaysOpen}
+        <div tabindex="0" role="button" class="text-base px-4 py-3 font-medium w-full text-left flex flex-row items-center justify-between dropdown-button">
             <div class="flex flex-col items-start gap-0">
                 {#key tiers}
-                    <h1>
-                        <TiersLabel {tiers} bind:value={selectedString} />
-                    </h1>
+                    <TiersLabel {tiers} bind:value={selectedString} />
                 {/key}
-                {#if selectedString === "Free"}
+                {#if selectedString === "Public"}
                     {#if onlyFree}
                     <div class="font-light text-sm opacity-50">
                         Only non-subscribers will see this content
@@ -86,44 +80,49 @@
                 {/if}
             </div>
             <CaretDown color="white"/>
-        </button>
-        {/if}
-        {#if show}
-            <ul class="flex flex-col gap-2 justify-stretch w-full flex-nowrap" transition:slide>
-                {#each Object.keys(tiers) as tier}
-                    <li
-                        class="
-                            rounded-box px-4
-                            { tiers[tier].selected ? 'bg-white/10' : 'bg-white/5' }
-                            { tier === "Free" ? 'border-t border-base-300' : '' }
-                        "
-                    >
-                        <label class="w-full flex flex-row gap-4 py-3">
-                            <input type="checkbox" class="checkbox" bind:checked={tiers[tier].selected} on:change={(e) => { updateSelectedString(tier); onlyFree = false; }} />
-                            <span class="w-full"
-                            >{tiers[tier].name}</span>
+        </div>
+    {/if}
+    <ul class="{$$props.containerClass??""}">
+        {#each Object.keys(tiers) as tier}
+            <li
+                class="
+                    px-4
+                    { tiers[tier].selected ? 'bg-white/10' : 'bg-white/5' }
+                    { tier === "Free" ? 'border-t border-base-300' : '' }
+                "
+            >
+                <label class="w-full flex flex-row gap-4 py-3">
+                    <input type="checkbox" class="checkbox" bind:checked={tiers[tier].selected} on:change={(e) => { updateSelectedString(tier); onlyFree = false; }} />
+                    <span class="w-full"
+                    >{tiers[tier].name}</span>
 
-                            {#if tier === "Free"}
-                                <button
-                                    class="text-xs whitespace-nowrap"
-                                    class:button={!onlyFree}
-                                    class:button-black={!onlyFree}
-                                    on:click={toggleOnlyFree}
-                                >
-                                    Only
-                                    {#if onlyFree}
-                                        non-subscribers will see this content
-                                    {/if}
-                                </button>
+                    {#if tier === "Free"}
+                        <button
+                            class="text-xs whitespace-nowrap"
+                            class:button={!onlyFree}
+                            class:button-black={!onlyFree}
+                            on:click={toggleOnlyFree}
+                        >
+                            Only
+                            {#if onlyFree}
+                                non-subscribers will see this content
                             {/if}
-                        </label>
-                    </li>
-                {/each}
-                <li class="border-t border-base-300">
-                    <button class="text-white w-full flex flex-row gap-4" on:click={addNewTier}>
-                        Add a new tier
-                    </button>
-                </li>
-            </ul>
-        {/if}
+                        </button>
+                    {/if}
+                </label>
+            </li>
+        {/each}
+        <li class="mt-2">
+            <button class="button button-black" on:click={addNewTier}>
+                <Plus size={24} />
+                Add a new tier
+            </button>
+        </li>
+    </ul>
 </div>
+
+<style>
+    .dropdown-open .dropdown-button {
+        @apply border border-base-300;
+    }
+</style>

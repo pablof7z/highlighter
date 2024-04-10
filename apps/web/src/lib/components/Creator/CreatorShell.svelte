@@ -14,37 +14,11 @@
 	import CreatorProfileTabs from "./CreatorShell/CreatorProfileTabs.svelte";
 	import CreatorShellSidebar from "./CreatorShell/CreatorShellSidebar.svelte";
 	import { debugMode } from "$stores/session";
+	import CreatorHeader from "./CreatorHeader.svelte";
 
     export let user: NDKUser;
 
     const userSupporters = getUserSupporters();
-
-    let id: string;
-    let scrollY = 0;
-    let avatarWrapper = 'bg-transparent'; // Initial size of the avatar
-    let avatarClass = 'w-28 h-28';
-
-    function updateScroll() {
-        scrollY = window.scrollY;
-    }
-
-    // Adjust avatar size based on scroll position
-    $: if (scrollY > 100) { // Assuming 100px is the point where the banner is not visible
-
-        avatarClass = 'w-14 h-14'; // Half the original size
-        avatarWrapper = 'bg-black/90'; // Darken the avatar
-    } else {
-        avatarClass = 'w-28 h-28'; // Original size
-        avatarWrapper = 'bg-transparent'; // Original color
-    }
-
-    onMount(() => {
-        window.addEventListener('scroll', updateScroll);
-    });
-
-    onDestroy(() => {
-        window.removeEventListener('scroll', updateScroll);
-    });
 
     const userTiers = getUserSubscriptionTiersStore();
 
@@ -96,11 +70,10 @@
 
             <div class="my-4"></div>
 
-            <div class="py-4">
+            <div class="lg:py-4 pr-4">
                 <CreatorProfileTabs
                     bind:value={activeTab}
                     name={userProfile?.name}
-                    pubkey={user.pubkey}
                     {userProfile}
                     {user}
                     {authorUrl}
@@ -109,7 +82,7 @@
         </div>
         <div class="md:w-4/5 lg:w-3/5 border-x border-base-300">
             <UserProfile {user} bind:userProfile bind:fetching bind:authorUrl>
-                <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%]">
+                <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%] max-sm:hidden">
                     {#if userProfile?.banner}
                         <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
                     {:else}
@@ -117,50 +90,16 @@
                     {/if}
                 </div>
                 <!-- Profile Header -->
-                <div class="
-                    flex
-                    max-sm:flex-col max-sm:items-start max-sm:gap-4
-                    overflow-clip
-                    items-end justify-between p-3 sm:px-6 sm:py-4 -mt-16
-                    gap-4
-                    {avatarWrapper}
-                    transition-all duration-300
-                    w-full max-sm:w-screen
-                    sticky top-0 z-[19]
-                ">
-                    <div class="flex items-end">
-                        <Avatar user={user} {userProfile} {fetching} class="{avatarClass} transition-all duration-300 flex-none object-cover mask mask-squircle rounded-none" />
-
-                        <div class="ml-4 overflow-clip">
-                            <div class="name text-xl font-semibold text-base-100-content">
-                                <Name {userProfile} {fetching} />
-                            </div>
-                            <p class="text-sm truncate max-w-md text-neutral-500 w-full basis-0 shrink">
-                                {#if fetching && !userProfile?.about}
-                                    <div class="skeleton h-15 w-48">&nbsp;</div>
-                                {:else if userProfile?.about}
-                                    {userProfile?.about}
-                                {:else}
-                                    &nbsp;
-                                {/if}
-                            </p>
-                        </div>
-                    </div>
-
-                    {#if $userTiers}
-                        <SubscribeButton {user} {userProfile} tiers={userTiers} />
-                    {/if}
-                </div>
+                <CreatorHeader {user} {userProfile} {fetching} tiers={userTiers} />
             </UserProfile>
 
             <div class="md:hidden">
-                <div class="border-t border-base-300 my-4 py-4">
+                <div class="border-t border-base-300 mt-4 mb-2">
                     <CreatorProfileTabs
                         bind:value={activeTab}
                         {user}
-                        name={userProfile?.name}
-                        pubkey={user.pubkey}
                         {authorUrl}
+                        skipSubscribeButton={true}
                     />
                 </div>
             </div>

@@ -6,7 +6,7 @@
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
     import { getUserHighlights, getUserSupporters, getGAUserContent, getUserCurations, getUserContent, getUserSubscriptionTiersStore } from "$stores/user-view";
 	import { Hexpubkey, NDKUser } from "@nostr-dev-kit/ndk";
-	import { Article, Atom, Gear, ListPlus, Ticket, UsersThree } from "phosphor-svelte";
+	import { Article, Atom, Gear, ListPlus, Note, Notepad, Ticket, UsersThree } from "phosphor-svelte";
 	import SidebarPublishButton from "./SidebarPublishButton.svelte";
     import currentUser from "$stores/currentUser";
 	import { openModal } from "svelte-modals";
@@ -17,8 +17,8 @@
     export let value: string = "Publications";
     export let userProfile: UserProfileType | undefined = undefined;
     export let authorUrl: string;
-    export let pubkey: Hexpubkey;
     export let user: NDKUser;
+    export let skipSubscribeButton = false;
 
     const highlights = getUserHighlights();
     const gaContent = getGAUserContent();
@@ -59,7 +59,7 @@
         }
         // if (hasBackstage)
         //     options.push({ name: "Chat", tooltip: `${name}'s Chat'`, class: 'gradient', href: `${authorUrl}/chat` },)
-        // options.push({ name: "Notes", href: url('/notes'), icon: NoteIcon },)
+        options.push({ name: "Tweets", href: url('/notes'), icon: Notepad },)
         if (hasPublications)
             options.push({ name: "Publications", href: authorUrl, icon: Article },)
         if (hasCurations)
@@ -69,7 +69,7 @@
 
         options.push({ name: "Supporters", href: url('/supporters'), icon: Atom})
 
-        if (pubkey === $currentUser?.pubkey) {
+        if (user.pubkey === $currentUser?.pubkey) {
             options.push({ name: '-------', id: 1} )
             options.push({
                 id: 'publish-button',
@@ -81,7 +81,7 @@
             options.push({
                 name: 'Settings', href: '/settings', icon: Gear
             })
-        } else {
+        } else if (!skipSubscribeButton) {
             options.push({
                 id: 'subscribe-button',
                 component: {
@@ -107,7 +107,7 @@
     const supporters = getUserSupporters();
     $: if ($supporters && $currentUser) {
         currentUserSubscriberTier = ($currentUser && $supporters[$currentUser.pubkey]) || undefined;
-        hasBackstage = !!currentUserSubscriberTier || $currentUser.pubkey === pubkey;
+        hasBackstage = !!currentUserSubscriberTier || $currentUser.pubkey === user.pubkey;
     }
 
     function changed(e: CustomEvent) {

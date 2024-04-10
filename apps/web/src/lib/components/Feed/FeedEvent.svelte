@@ -5,6 +5,7 @@
 	import FeedVideo from "./FeedVideo.svelte";
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
 	import VideoLink from "$components/Events/VideoLink.svelte";
+	import Note from "./Note.svelte";
 
     export let event: NDKEvent;
     export let skipAuthor = false;
@@ -18,9 +19,9 @@
 </script>
 
 {#if supportedKinds.includes(event.kind)}
-    <a class="w-full max-sm:max-w-[100vw] max-sm:overflow-hidden">
+    <a class="w-full max-sm:max-w-[100vw] max-sm:overflow-hidden discussion-item">
         {#if event.kind === NDKKind.GroupNote || event.kind === NDKKind.Text}
-            <FeedGroupPost {event} class="!py-5 border border-base-300" />
+            <Note {event} urlPrefix="/e/" />
         {:else if event.kind === NDKKind.Article}
             <ArticleLink article={NDKArticle.from(event)} {skipAuthor} />
         {:else if event.kind === NDKKind.HorizontalVideo}

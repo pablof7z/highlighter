@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { ArrowLeft } from 'phosphor-svelte';
 	import { page } from "$app/stores";
-	import CreatorShell from "$components/Creator/CreatorShell.svelte";
-	import { NDKEvent, NDKUser, isEventOriginalPost, getEventReplyIds, getRootEventId } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKUser, isEventOriginalPost, getEventReplyIds, getRootEventId, NDKKind } from "@nostr-dev-kit/ndk";
 	import WithItem from "../../../[tagId]/WithItem.svelte";
 	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
 	import { ndk } from '@kind0/ui-common';
 	import { goto } from '$app/navigation';
-	import { pageHeader } from '$stores/layout';
-	import { onDestroy } from 'svelte';
+	import Note from '$components/Feed/Note.svelte';
 
     let id: string;
     let creator: NDKUser | undefined = undefined;
@@ -90,7 +88,19 @@
                         </div>
                     {/if}
 
-                    <ForumFeedItem creatorUser={creator} {event} skipTitle={true} contentClass="text-xl leading-10" maxContentLength={999999} expandThread={expandThread(event)} expandReplies={expandReplies(event)} bind:showReply />
+                    {#if event.kind === NDKKind.Text}
+                        <Note
+                            {event}
+                            creatorUser={creator}
+                            expandReplies={expandReplies(event)}
+                            expandThread={true}
+                            threadView={true}
+                            showReply={true}
+                            urlPrefix={`/${id}/posts/`}
+                        />
+                    {:else}
+                        <ForumFeedItem creatorUser={creator} {event} skipTitle={true} contentClass="text-xl leading-10" maxContentLength={999999} expandThread={expandThread(event)} expandReplies={expandReplies(event)} bind:showReply />
+                    {/if}
                 </div>
             {/if}
         </WithItem>
