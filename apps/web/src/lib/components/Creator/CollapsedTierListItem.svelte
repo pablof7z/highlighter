@@ -8,7 +8,7 @@
 </script>
 
 <button
-    class="border border-base-300 px-4 flex flex-col gap-2 hover:bg-white/10 transition-all duration-300 w-full"
+    class="border border-base-300 px-4 py-3 flex flex-col gap-2 hover:bg-white/10 transition-all duration-300 w-full rounded-md"
     on:click
 >
     <div class="flex flex-row justify-between whitespace-nowrap truncate w-full">

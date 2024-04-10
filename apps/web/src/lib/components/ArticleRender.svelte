@@ -326,7 +326,7 @@
     }
 
     :global(.article pre) {
-        @apply whitespace-normal mb-4;
+        @apply mb-4;
     }
 
     :global(.article > p) {

@@ -187,7 +187,7 @@
         tiers = tiers;
     }
 
-    function deletTier(tier: NDKSubscriptionTier) {
+    function deleteTier(tier: NDKSubscriptionTier) {
         if (tier.dTag) deletedDtags.add(tier.dTag);
         tiers = tiers.filter((t) => t !== tier);
     }
@@ -220,7 +220,10 @@
             {:else}
                 {#each tiers as tier, i (i)}
                     <div class="w-full group flex flex-row items-stretch">
-                        <div class="flex flex-col gpa-2 transition-all duration-300 self-stretch opacity-10 group-hover:opacity-100">
+                        <CollapsedTierListItem {tier}
+                            on:click={() => {expandedTierIndex = i}}
+                        />
+                        <div class="flex flex-col items-center gpa-2 transition-all duration-300 self-stretch opacity-10 group-hover:opacity-100 w-8">
                             <button class="" on:click={() => {moveUp(i)}} disabled={i === 0}>
                                 <CaretUp class="w-5 h-5" />
                             </button>
@@ -229,20 +232,17 @@
                                 <CaretDown class="w-5 h-5" />
                             </button>
 
-                            <button class="text-red-500 mt-2" on:click={() => deletTier(tier)}>
+                            <button class="text-red-500 mt-2" on:click={() => deleteTier(tier)}>
                                 <Trash class="w-5 h-5" />
                             </button>
                         </div>
-                        <CollapsedTierListItem {tier}
-                            on:click={() => {expandedTierIndex = i}}
-                        />
                     </div>
                 {/each}
             {/if}
         </ul>
 
         <div
-            class="flex flex-col sm:flex-row justify-between items-stretch max-sm:w-full max-sm:gap-4"
+            class="flex flex-col sm:flex-row justify-between items-stretch max-sm:w-full max-sm:gap-4 mr-8"
             class:hidden={expandedTierIndex !== undefined}
         >
             <button
