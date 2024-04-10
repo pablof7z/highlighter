@@ -12,10 +12,10 @@
 	import { openModal } from "svelte-modals";
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import SignupModal from "$modals/SignupModal.svelte";
-	import NoteIcon from "$icons/NoteIcon.svelte";
+	import { UserProfileType } from "../../../../app";
 
     export let value: string = "Publications";
-    export let name: string = "this user"
+    export let userProfile: UserProfileType | undefined = undefined;
     export let authorUrl: string;
     export let pubkey: Hexpubkey;
     export let user: NDKUser;
@@ -88,6 +88,7 @@
                     component: SubscribeButton,
                     props: {
                         user,
+                        userProfile,
                         buttonClass: "w-full"
                     }
                 }

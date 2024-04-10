@@ -30,8 +30,6 @@
         const localUser = await signer.user();
         const rpc = new NDKNostrRpc($bunkerNDK, signer, debug);
 
-        console.log('subscribing to', pubkey);
-
         await rpc.subscribe({
             kinds: [24133 as number, 24134 as number],
             "#p": [localUser.pubkey],
@@ -57,11 +55,14 @@
             if (username !== "_") return false;
 
             // Validate the nip05 points to this pubkey
-            if (!await validateNip05(pubkey, domain)) return false;
+            if (!await validateNip05(pubkey, domain)) {
+                console.log('invalid nip05');
+                return false;
+            }
 
             // Validate it has emitted an event in the past 1 hour
             const e = await $ndk.fetchEvents({
-                authors: [pubkey], since: Math.floor(Date.now() / 1000) - (3600*240)
+                authors: [pubkey], since: Math.floor(Date.now() / 1000) - (3600*240), limit: 1
             }, { groupable: true, groupableDelay: 100 });
 
             // get the most recent created_at returned

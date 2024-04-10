@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKList, NDKRelaySet } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKList, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
     import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from 'svelte';
@@ -223,22 +223,22 @@
                         </h2>
                     </div>
                 {:else}
-                        <div class="flex flex-col sm:grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10">
-                            {#key filter}
-                                <WelcomeGridItem />
-                                {#each $eventsForRender as event (event.id)}
-                                    {#if event.kind === NDKKind.Article}
-                                        <ArticleLink article={NDKArticle.from(event)} grid={true} />
-                                    {:else if event.kind === NDKKind.HorizontalVideo}
-                                        <VideoLink video={NDKVideo.from(event)} grid={true} />
-                                    {:else if event.kind === NDKKind.GroupNote}
-                                        <PostGrid {event} />
-                                    {:else if event.kind === NDKKind.ArticleCurationSet || event.kind === NDKKind.VideoCurationSet}
-                                        <CurationItem list={NDKList.from(event)} grid={true} />
-                                    {/if}
-                                {/each}
-                            {/key}
-                        </div>
+                    <WelcomeGridItem />
+                    <div class="flex flex-col sm:grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10">
+                        {#key filter}
+                            {#each $eventsForRender as event (event.id)}
+                                {#if event.kind === NDKKind.Article}
+                                    <ArticleLink article={NDKArticle.from(event)} grid={true} />
+                                {:else if event.kind === NDKKind.HorizontalVideo}
+                                    <VideoLink video={NDKVideo.from(event)} grid={true} />
+                                {:else if event.kind === NDKKind.GroupNote}
+                                    <PostGrid {event} />
+                                {:else if event.kind === NDKKind.ArticleCurationSet || event.kind === NDKKind.VideoCurationSet}
+                                    <CurationItem list={NDKList.from(event)} grid={true} />
+                                {/if}
+                            {/each}
+                        {/key}
+                    </div>
                 {/if}
             </div>
         </div>

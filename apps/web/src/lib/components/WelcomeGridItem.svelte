@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-    import { ndk, user } from "@kind0/ui-common";
+    import { user } from "@kind0/ui-common";
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { seenOnboardingPromptGridItem } from "$stores/settings";
-	import { CaretRight } from "phosphor-svelte";
+	import { CaretRight, X } from "phosphor-svelte";
 	import { onMount } from "svelte";
 	import { openModal } from "svelte-modals";
 	import { userTiers } from '$stores/session';
@@ -18,7 +18,7 @@
             } else {
                 display = $userTiers.length === 0;
             }
-        }, 5000);
+        }, 1000);
     })
 
     $: if (browser && $seenOnboardingPromptGridItem === true) {
@@ -39,28 +39,26 @@
 </script>
 
 {#if display}
-<div class="w-fit sm:rounded-box bg-gradient p-[1px] flex max-lg:col-span-2 lg:row-span-2 transition-all duration-300" transition:slide>
-    <div class="bg-base-100/30 w-fit sm:rounded-box p-6 text-lg flex flex-col gap-4">
-        <h1 class="text-2xl font-medium">
-            Are you a creator?
-        </h1>
+<div class="w-full bg-gradient p-[1px] flex transition-all duration-300 mb-2" transition:slide>
+    <div class="w-full flex flex-row items-center bg-base-100/30 p-3 lg:p-1 text-base gap-10 justify-center">
+        <div class="flex flex-col">
+            <h1 class="text-lg lg:text-base font-bold">
+                Are you a content creator?
+            </h1>
 
-        <div class="grow">
-            <p>
-                Set up your creator profile and start publishing on Nostr
-                and getting paid for your work.
-            </p>
+            <div class="text-sm max-md:hidden">
+                Set up your creator profile and start earning from your audience.
+            </div>
         </div>
 
-        <div class="flex flex-col-reverse lg:flex-row gap-4">
-
-            <button class="text-base" on:click={dismiss}>
-                Dismiss
-            </button>
-
-            <button class="button w-full py-2.5 px-6 whitespace-nowrap" on:click={getStarted}>
+        <div class="flex flex-row gap-4">
+            <button class="button w-full h-fit whitespace-nowrap" on:click={getStarted}>
                 Get Started
                 <CaretRight class="w-5 h-5 inline" />
+            </button>
+
+            <button class="text-base" on:click={dismiss}>
+                <X class="w-5 h-5" />
             </button>
         </div>
     </div>

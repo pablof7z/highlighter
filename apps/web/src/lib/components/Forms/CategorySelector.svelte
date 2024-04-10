@@ -3,9 +3,12 @@
 	import { CaretDown } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
 	import Input from "./Input.svelte";
+    import { createEventDispatcher } from "svelte";
 
     export let categories: string[] = [];
     export let show = true;
+
+    const dispatch = createEventDispatcher();
 
     let _categories: Record<string, boolean> = {};
 
@@ -29,6 +32,8 @@
             selectedString = categories.join(", ");
         }
         selectedString = categories.join(", ");
+
+        dispatch("change", categories);
     }
 
     updateSelectedString();

@@ -14,6 +14,7 @@
     export let subsOptions: NDKSubscriptionOptions | undefined = undefined;
     export let displayNip05: string | undefined = undefined;
     export let forceFetch: boolean = false;
+    export let event: NDKEvent | undefined = undefined;
 
     const d = createDebug("HL:UserProfile");
     const dispatch = createEventDispatcher();
@@ -84,6 +85,7 @@
             if ((noKind0Event || kind0EventIsOlder)) {
                 kind0Event = e;
                 userProfile = profileFromEvent(e) as UserProfileType;
+                event = e;
 
                 if (!fetching) {
                     dispatch("newProfileAfterEose", userProfile);
@@ -108,4 +110,4 @@
     }
 </script>
 
-<slot {userProfile} {fetching} {authorUrl} {displayNip05} />
+<slot {userProfile} {fetching} {authorUrl} {displayNip05} {event} />

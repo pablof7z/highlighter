@@ -211,6 +211,7 @@ export const processUserProfile = (event: NDKEvent, store: Writable<UserProfileT
 	)) {
 		const profile = profileFromEvent(event) as UserProfileType;
 		profile.created_at = event.created_at;
+		profile.categories = event.getMatchingTags("c").map((t) => t[1]);
 		store.set(profile);
 		d(`updating profile`, event.created_at, $store?.created_at, profile.lud16, profile);
 		d(`profile is now`, get(store))

@@ -8,21 +8,18 @@
     import { addReadReceipt } from "$utils/read-receipts";
 	import { pageHeader } from '$stores/layout';
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
-	import CreatorFooter from '$components/Creator/CreatorFooter.svelte';
 	import type { UserProfileType } from '../../../app';
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
 	import Logo from "$icons/Logo.svelte";
-	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import CreatorProfileTabs from "./CreatorShell/CreatorProfileTabs.svelte";
 	import CreatorShellSidebar from "./CreatorShell/CreatorShellSidebar.svelte";
+	import { debugMode } from "$stores/session";
 
     export let user: NDKUser;
 
     const userSupporters = getUserSupporters();
 
     let id: string;
-    const defaultBanner = 'https://tonygiorgio.com/content/images/2023/03/cypherpunk-ostrach--copy--2.png';
-
     let scrollY = 0;
     let avatarWrapper = 'bg-transparent'; // Initial size of the avatar
     let avatarClass = 'w-28 h-28';
@@ -77,8 +74,6 @@
 
     let userProfile: UserProfileType;
 
-    $: if (userProfile && !userProfile.banner) userProfile.banner = defaultBanner;
-
     let activeTab: string = "Publications";
 
     $: $pageHeader = {}
@@ -106,6 +101,7 @@
                     bind:value={activeTab}
                     name={userProfile?.name}
                     pubkey={user.pubkey}
+                    {userProfile}
                     {user}
                     {authorUrl}
                 />
@@ -114,7 +110,11 @@
         <div class="md:w-4/5 lg:w-3/5 border-x border-base-300">
             <UserProfile {user} bind:userProfile bind:fetching bind:authorUrl>
                 <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%]">
-                    <img src={userProfile?.banner??defaultBanner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
+                    {#if userProfile?.banner}
+                        <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
+                    {:else}
+                        <div class="absolute w-full h-full object-cover object-top lg:rounded bg-gradient-to-b from-base-300 to-transparent via-bg-base-300" />
+                    {/if}
                 </div>
                 <!-- Profile Header -->
                 <div class="
@@ -126,7 +126,7 @@
                     {avatarWrapper}
                     transition-all duration-300
                     w-full max-sm:w-screen
-                    sticky top-0 z-30
+                    sticky top-0 z-[19]
                 ">
                     <div class="flex items-end">
                         <Avatar user={user} {userProfile} {fetching} class="{avatarClass} transition-all duration-300 flex-none object-cover mask mask-squircle rounded-none" />
