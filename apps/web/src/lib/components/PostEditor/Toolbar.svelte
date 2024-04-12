@@ -1,7 +1,7 @@
     <script lang="ts">
 	import PublishConfirmationModal from './PublishConfirmationModal.svelte';
-	import { CaretLeft, CaretRight, Notches, PaperPlane, Timer } from "phosphor-svelte";
-    import { view, type, status } from "$stores/post-editor";
+	import { CaretLeft, CaretRight } from "phosphor-svelte";
+    import { view, type, status, View } from "$stores/post-editor";
 	import { openModal } from "svelte-modals";
 	import { debugMode } from '$stores/session';
     import { getUserSubscriptionTiersStore } from '$stores/user-view';
@@ -17,6 +17,17 @@
 
     const tiers = getUserSubscriptionTiersStore();
 
+    let modeBeforePreview: View | undefined;
+    function togglePreview() {
+        if ($view !== "view-preview") {
+            modeBeforePreview = $view;
+            $view = "view-preview";
+        } else {
+            $view = modeBeforePreview || "edit";
+            modeBeforePreview = undefined;
+        }
+    }
+
     $: switch ($view) {
         case "edit":
             back = undefined;
@@ -24,7 +35,11 @@
             if ($type === "note") next = {label: "Continue", value: "audience"};
             break;
         case "view-preview":
-            back = {label: "Back to Edit", value: "edit"};
+            if (modeBeforePreview !== "edit") {
+                back = {label: "Back to Edit", value: "edit"};
+            } else {
+                back = undefined;
+            }
             next = {label: "Continue", value: "edit-preview"};
             break;
         case "meta": {
@@ -76,11 +91,11 @@
     <div class="flex flex-row gap-4 self-end">
         {#if next}
             {#if ($type === "article")}
-                <button class="button button-black truncate" on:click={() => $view = "view-preview"}>
+                <button class="truncate" on:click={togglePreview} class:button={$view === "view-preview"}>
                     Preview
                 </button>
             {/if}
-            <button class="button" on:click={nextClicked}>
+            <button class="button" on:click={nextClicked} disabled={$view === "view-preview"}>
                 {next.label}
                 <CaretRight size={24} />
             </button>

@@ -23,7 +23,8 @@ module.exports = {
 			}
 		},
 		fontFamily: {
-			serif: ['Lora']
+			serif: ['Lora'],
+			sans: ['Inter', 'sans-serif']
 		}
 	},
 	plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography'), require('daisyui')],

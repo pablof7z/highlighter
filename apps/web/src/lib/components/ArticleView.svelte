@@ -12,6 +12,7 @@
     const author = article.author;
     export let editUrl: string | undefined = undefined;
     export let isFullVersion: boolean;
+    export let isPreview = false;
     let content = article.content;
 
     const highlights = $ndk.storeSubscribe(
@@ -63,5 +64,5 @@
 
 <div class="flex flex-col gap-2 px-4 sm:px-0">
     <ItemHeader item={article} />
-    <ArticleRender {article} {editUrl} {isFullVersion} />
+    <ArticleRender {article} {editUrl} {isFullVersion} {isPreview} />
 </div>

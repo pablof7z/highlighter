@@ -5,11 +5,10 @@
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { ZapsButton, ndk } from "@kind0/ui-common";
+	import { ndk } from "@kind0/ui-common";
 	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent, type NDKEventId } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
-	import { CrownSimple, Lightning } from 'phosphor-svelte';
 	import { getParagraph, getText } from '$utils/text';
 	import LogoGradient from '$icons/LogoGradient.svelte';
 	import ItemViewZaps from './ItemViewZaps.svelte';
@@ -18,6 +17,7 @@
     const author = article.author;
     export let editUrl: string | undefined = undefined;
     export let isFullVersion: boolean;
+    export let isPreview = false;
     let content = article.content;
 
     const highlights = $ndk.storeSubscribe(
@@ -60,7 +60,7 @@
 
     editUrl ??= `/articles/${article.tagValue("d")}/edit`;
 
-    onMount(() => {
+    function setupHighlightingHandler() {
         document.addEventListener('click', function(event) {
             // if the target is not the container nor a descendant of the container
             if (!el?.contains(event.target as Node)) {
@@ -178,6 +178,12 @@
             paragraphFloat.style.top = (rect.top + window.scrollY) + 'px';
             paragraphFloat.style.left = (rect.left + window.scrollX - paragraphFloat.offsetWidth - 20) + 'px';
         })
+    }
+
+    onMount(() => {
+        if (!isPreview) {
+            setupHighlightingHandler();
+        }
     })
 
     let el: HTMLDivElement;
@@ -279,7 +285,9 @@
         {getSummary(article)}
     </div>
 
-    <ItemViewZaps event={article} />
+    {#if !isPreview}
+        <ItemViewZaps event={article} />
+    {/if}
 
     <div class="flex flex-row gap-4 flex-wrap">
         {#each article.getMatchingTags("t") as tag, i (i)}

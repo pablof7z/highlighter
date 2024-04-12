@@ -17,7 +17,7 @@
     $: showHelperText = !topZapEvent;
 </script>
 
-<div class="flex flex-row gap-1 items-center">
+<div class="flex flex-row gap-1 items-center {$$props.class??""}">
     <TopZap {event} class="text-sm w-fit whitespace-nowrap" avatarSize="small" bind:zapEvent={topZapEvent} />
     <div class="flex flex-row gap-2 items-center text-sm" class:hidden={!topZapEvent}>
         <CrownSimple class="w-6 h-6 text-accent2" />
