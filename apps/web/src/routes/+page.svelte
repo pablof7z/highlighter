@@ -76,12 +76,13 @@
 
                 break;
             case "Network":
-                newFilters = [ { kinds, limit: 100 } ];
+                const oneDayAgo = Math.floor(Date.now() / 1000) - 86400;
+                newFilters = [ { kinds, limit: 100, since: oneDayAgo } ];
                 relaySet = undefined;
                 break;
             case "All Creators":
                 newFilters = [ { kinds, limit: 100 } ];
-                relaySet = getDefaultRelaySet();
+                // relaySet = getDefaultRelaySet();
             default:
                 newFilters = [ { kinds, limit: 100 } ];
                 console.log("filter", filter);
@@ -144,6 +145,18 @@
                 return true;
             });
 
+            // sort by published_at
+            events = events.sort((a, b) => {
+                let aDate = a.published_at ?? a.created_at;
+                let bDate = b.published_at ?? b.created_at;
+                return bDate! - aDate!;
+            });
+
+            // filter out bad events
+            events = events.filter((event) => {
+                return (event.tagValue("title") && event.tagValue("image"));
+            });
+
             if (filter === "All Creators") {
                 events = events.filter((event) => {
                     return !!event.tagValue("h")
@@ -152,7 +165,7 @@
 
             if (filter === "Network") {
                 events = events.filter(hasImage);
-                return wotFiltered(events);
+                // return wotFiltered(events);
             }
 
             return events;
@@ -223,7 +236,7 @@
                         </h2>
                     </div>
                 {:else}
-                    <WelcomeGridItem />
+                    <!-- <WelcomeGridItem /> -->
                     <div class="flex flex-col sm:grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10">
                         {#key filter}
                             {#each $eventsForRender as event (event.id)}

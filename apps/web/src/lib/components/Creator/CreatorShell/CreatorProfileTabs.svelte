@@ -5,7 +5,7 @@
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
     import { getUserHighlights, getUserSupporters, getGAUserContent, getUserCurations, getUserContent, getUserSubscriptionTiersStore } from "$stores/user-view";
-	import { Hexpubkey, NDKUser } from "@nostr-dev-kit/ndk";
+	import { NDKUser } from "@nostr-dev-kit/ndk";
 	import { Article, Atom, Gear, ListPlus, Note, Notepad, Ticket, UsersThree } from "phosphor-svelte";
 	import SidebarPublishButton from "./SidebarPublishButton.svelte";
     import currentUser from "$stores/currentUser";
@@ -59,7 +59,7 @@
         }
         // if (hasBackstage)
         //     options.push({ name: "Chat", tooltip: `${name}'s Chat'`, class: 'gradient', href: `${authorUrl}/chat` },)
-        options.push({ name: "Tweets", href: url('/notes'), icon: Notepad },)
+        options.push({ name: "Notes", href: url('/notes'), icon: Notepad },)
         if (hasPublications)
             options.push({ name: "Publications", href: authorUrl, icon: Article },)
         if (hasCurations)
@@ -118,4 +118,4 @@
     }
 </script>
 
-<OptionsList {options} bind:value on:changed={changed} class="sm:flex-col" />
+<OptionsList {options} bind:value on:changed={changed} class="sm:flex-col w-full max-sm:gap-2 gap-4" />

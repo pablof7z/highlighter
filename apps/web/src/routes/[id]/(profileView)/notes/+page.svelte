@@ -11,5 +11,5 @@
 <div class="flex flex-row gap-10">
     <ForumFeed {user} filters={[
         { kinds: [NDKKind.Text], authors: [user.pubkey], limit: 50 },
-    ]} />
+    ]} showNewPost={false} />
 </div>

@@ -10,7 +10,6 @@
 	import Bug from "phosphor-svelte/lib/Bug";
 	import DurationTag from "$components/DurationTag.svelte";
 	import TopZap from "./TopZap.svelte";
-	import RecentZaps from "./Zaps/RecentZaps.svelte";
 
     export let event: NDKEvent;
     export let description: string | undefined = undefined;
@@ -115,8 +114,8 @@
             {title}
         </a>
         {#if description}
-            <a {href} class="self-stretch text-neutral-500 text-sm font-normal overflow-y-clip basis-0 grow
-                {grid ? "hidden max-h-[1.5rem]" : ""}
+            <a {href} class="self-stretch max-h-[1.5rem] text-neutral-500 text-sm font-normal overflow-y-clip basis-0 grow
+                {grid ? "hidden" : ""}
             ">
                 {description}
             </a>

@@ -54,7 +54,7 @@
                 class="
                     button flex flex-row items-center !gap-0
                     whitespace-nowrap text-base
-                    max-sm:w-full max-sm:!rounded-md
+                    max-sm:px-6
                     {$$props.buttonClass??""}
                 "
             >

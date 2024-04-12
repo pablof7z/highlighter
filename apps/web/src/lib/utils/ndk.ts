@@ -5,6 +5,7 @@ import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSu
 import createDebug from 'debug';
 import { userFollows, debugMode } from '$stores/session';
 import { defaultRelays } from './const';
+import NDKSigVerificationWorker from "@nostr-dev-kit/ndk/workers/sig-verification?worker";
 
 const debug = createDebug('HL:ndk');
 
@@ -41,16 +42,22 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	$ndk.clientNip89 =
 		'31990:73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63:1704502265408';
 	$ndk.httpFetch = nodeFetch as typeof fetch;
+	$ndk.pool.blacklistRelayUrls.add("wss://relayer.fiatjaf.com/")
+	$ndk.pool.blacklistRelayUrls.add("wss://relay.nostr.info/")
+	$ndk.pool.blacklistRelayUrls.add("wss://nostr-01.bolt.observer/")
 
 	// add default relays
 	for (const relay of defaultRelays) {
 		const r = $ndk.addExplicitRelay(relay, NDKRelayAuthPolicies.signIn({ ndk: $ndk }), false);
 		r.trusted = true;
 	}
-	$ndk.addExplicitRelay('wss://purplepag.es');
-	$ndk.addExplicitRelay('wss://nos.lol');
-	// $ndk.addExplicitRelay('wss://relay.noswhere.com');
-	$ndk.addExplicitRelay('wss://relay.nostr.band');
+	$ndk.addExplicitRelay('wss://purplepag.es', undefined, false);
+	$ndk.addExplicitRelay('wss://nos.lol', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.noswhere.com', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.primal.net', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.damus.com', undefined, false);
+	$ndk.addExplicitRelay('wss://njump.me', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.nostr.band', undefined, false);
 
 	// $ndk.connect(2000);
 
@@ -68,8 +75,13 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL9' });
+	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL10' });
 	$ndk.clientName = 'highlighter';
+
+	const sigWorker = import.meta.env.DEV ?
+		new Worker(new URL('@nostr-dev-kit/ndk/workers/sig-verification?worker', import.meta.url), { type: 'module' }) : new NDKSigVerificationWorker();
+
+	$ndk.signatureVerificationWorker = sigWorker;
 
 	$ndk.pool.on("notice", (relay: NDKRelay, notice: string) => {
 		debug('Relay notice', relay.url, notice);
@@ -78,15 +90,7 @@ export async function configureFeNDK() {
 		}
 	});
 
-	await $ndk.connect(2000);
-
-	setTimeout(() => {
-		const $userFollows = getStore(userFollows)
-		$ndk.fetchEvents([
-			{ kinds: [0], authors: Array.from($userFollows), limit: 1000 },
-			{ kinds: [30023], authors: Array.from($userFollows), limit: 100 }
-		], { groupable: false, cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY });
-	}, 1000);
+	await $ndk.connect(10000);
 }
 
 export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch) {
@@ -121,7 +125,7 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 	//     });
 	// });
 	Promise.all([
-		$ndk.connect(2000)
+		// $ndk.connect(2000)
 		// redisConnected
 	]);
 

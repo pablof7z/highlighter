@@ -16,10 +16,9 @@
         href={option.href}
         class="
             rounded-full
-            snap-center w-full {option.class??""}
+            snap-center {option.class??""}
             sm:px-0 cursor-pointer
-            hover:text-white
-            {active ? "max-sm:bg-white max-sm:text-black lg:text-white" : "max-sm:bg-white/10"}
+            {active ? "max-sm:bg-white max-sm:text-black" : ""}
             {option.premiumOnly ? "premium" : ""}
         "
         on:click
@@ -43,11 +42,12 @@
         @apply justify-start items-center gap-2 flex;
         @apply text-sm font-normal;
         @apply transition-all duration-100;
-        @apply text-lg p-2 px-4;
+        @apply sm:text-lg p-2 px-4;
         @apply max-sm:w-fit;
+        @apply text-white/90;
     }
 
     a.active {
-        @apply lg:!text-white font-bold lg:bg-white/10;
+        @apply font-bold bg-zinc-900 text-white;
     }
 </style>

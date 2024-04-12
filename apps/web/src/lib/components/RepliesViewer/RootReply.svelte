@@ -3,7 +3,6 @@
 	import { NDKKind, type NDKEvent, type NDKFilter } from "@nostr-dev-kit/ndk";
     import { ndk } from "@kind0/ui-common";
     import { EventThread } from "@nostr-dev-kit/ndk-svelte-components";
-	import { derived } from "svelte/store";
 
     export let event: NDKEvent;
     let showComment = false;

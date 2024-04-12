@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { UnsubscribableStore, ZapInvoiceWithEvent, getTopZapsByIndividualAmount } from "$utils/zaps";
-	import { nicelyFormattedMilliSatNumber } from "@kind0/ui-common";
-	import { NDKEvent, NDKZapInvoice } from "@nostr-dev-kit/ndk";
-    import {Avatar} from "@kind0/ui-common";
+	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import ZapPill from "./Zaps/ZapPill.svelte";
 

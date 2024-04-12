@@ -1,19 +1,16 @@
 <script lang="ts">
 	import { getUserSupporters, userSubscription, getUserSubscriptionTiersStore } from "$stores/user-view";
-	import { Avatar, Name } from "@kind0/ui-common";
 	import { NDKArticle, NDKKind, type NDKEventId, NDKUser } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { onDestroy, onMount } from "svelte";
+	import { onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
 	import { pageHeader } from '$stores/layout';
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import type { UserProfileType } from '../../../app';
-	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
 	import Logo from "$icons/Logo.svelte";
 	import CreatorProfileTabs from "./CreatorShell/CreatorProfileTabs.svelte";
 	import CreatorShellSidebar from "./CreatorShell/CreatorShellSidebar.svelte";
-	import { debugMode } from "$stores/session";
 	import CreatorHeader from "./CreatorHeader.svelte";
 
     export let user: NDKUser;
@@ -73,7 +70,6 @@
             <div class="lg:py-4 pr-4">
                 <CreatorProfileTabs
                     bind:value={activeTab}
-                    name={userProfile?.name}
                     {userProfile}
                     {user}
                     {authorUrl}

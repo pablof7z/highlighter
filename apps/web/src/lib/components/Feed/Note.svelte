@@ -86,7 +86,7 @@
     }
 </script>
 
-<a class="w-full text-left p-4 pb-0 {$$props.class??""}" href="{urlPrefix}{event.encode()}">
+<a class="w-full text-left md:p-4 pb-0 max-w-[100vw] {$$props.class??""}" href="{urlPrefix}{event.encode()}">
     <div class="flex flex-col items-start w-full">
         <UserProfile
             user={event.author}
@@ -97,9 +97,9 @@
         >
             <div class="flex flex-row items-start w-full">
                 <!-- Avatars -->
-                <div class="flex flex-col items-center flex-none w-16 self-stretch">
+                <div class="flex flex-col items-center flex-none w-10 sm:w-16 self-stretch">
                     <a href={authorUrl} on:click|preventDefault>
-                        <Avatar user={event.author} {userProfile} class="w-12 h-12 object-cover" type="circle" {fetching} />
+                        <Avatar user={event.author} {userProfile} class="w-8 sm:w-12 h-8 sm:h-12 object-cover" type="circle" {fetching} />
                     </a>
                     {#if shouldDisplayVerticalBar}
                         <div class="
@@ -110,7 +110,7 @@
                 </div>
 
                 <!-- Content -->
-                <div class="flex flex-col grow w-full pl-4 relative">
+                <div class="flex flex-col grow w-full pl-2 md:pl-4 relative">
                     <!-- Title and time -->
                     <div class="flex flex-row items-start w-full gap-2 relative">
                         <div class="flex flex-col items-start grow">

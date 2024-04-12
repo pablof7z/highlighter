@@ -36,7 +36,7 @@
 
     $: if (browser && !cachedEventKinds) {
         cachedEventKinds = {};
-        lruProfileCount = ($ndk.cacheAdapter as NDKCacheAdapterDexie).profiles?.size
+        lruProfileCount = ($ndk.cacheAdapter as NDKCacheAdapterDexie).profiles?.size()
 
         setInterval(updateCacheCounts, 1000);
     }

@@ -86,7 +86,7 @@
 			<UserProfile {pubkey} let:userProfile let:authorUrl>
 				{#if userProfile}
 					<a href={authorUrl} class="flex flex-row items-center justify-between w-full discussion-item gap-4 !py-2">
-						<AvatarWithName {userProfile} avatarType="square" avatarSize="small" class="truncate" />
+						<AvatarWithName {userProfile} avatarType="circle" avatarSize="small" class="truncate" />
 						<div class="text-sm font-bold">{nicelyFormattedMilliSatNumber(totalSats)}</div>
 					</a>
 				{/if}

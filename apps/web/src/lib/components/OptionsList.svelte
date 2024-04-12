@@ -13,9 +13,9 @@
 
 <div class="justify-start items-start inline-flex whitespace-nowrap w-full">
     <div class="
-        lg:justify-stretch lg:items-stretch items-end flex w-full gap-4 {$$props.class??""}
+        lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}
         snap-x snap-mandatory
-        overflow-x-auto max-w-[100vw]
+        max-sm:overflow-x-auto max-sm:max-w-[100vw]
     ">
         {#each options as option (option.id ?? option.name)}
             {#if option.name === '-------'}

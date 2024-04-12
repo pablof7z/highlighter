@@ -75,7 +75,7 @@ op = {!!op} -->
 
 <!-- nestedMaxLevel = {nestedMaxLevel} <br> -->
 
-<a class="w-full text-left p-4 !pb-0 {$$props.class??""}" href="/{authorId}/posts/{event.encode()}">
+<a class="w-full text-left md:p-4 !pb-0 {$$props.class??""}" href="/{authorId}/posts/{event.encode()}">
     <div class="flex flex-col items-start w-full">
         <UserProfile user={event.author} let:userProfile let:fetching>
             <div class="flex flex-row items-start w-full">

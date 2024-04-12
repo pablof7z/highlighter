@@ -23,7 +23,7 @@
 
     function updateScroll() {
         scrollY = window.scrollY;
-        if (scrollY > 100) {
+        if (scrollY > 80) {
             collapsed = true;
         } else {
             collapsed = false;
@@ -44,12 +44,10 @@
         "bg-transparent" :
         "bg-black/90"
     }
-    { !collapsed ?
-        "max-sm:flex-col max-sm:items-start " :
-        "max-sm:flex-row max-sm:items-center "}
+    max-sm:flex-row max-sm:items-center
 ">
     <div class="flex items-center sm:items-end shrink">
-        <Avatar user={user} {userProfile} {fetching} class="
+        <Avatar user={user} {userProfile} {fetching} size={collapsed ? "small" : "medium"} class="
             transition-all duration-300 flex-none object-cover
             {collapsed ? 'w-14 h-14' : 'w-16 h-16 sm:w-28 sm:h-28'}
         " />
@@ -75,8 +73,7 @@
 
     {#if $tiers}
         <SubscribeButton {user} {userProfile} {tiers} buttonClass="
-            max-sm:bg-accent2 max-sm:text-white
-            {!collapsed ? "" : "max-sm:w-fit"}
+            max-sm:bg-accent2 max-sm:text-white max-sm:!w-fit
         " />
     {/if}
 </div>

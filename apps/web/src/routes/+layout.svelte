@@ -81,7 +81,7 @@
 	{@html webManifestLink}
 </svelte:head>
 
-<NetworkHandler />
+<!-- <NetworkHandler /> -->
 
 <LoadingScreen ready={mounted}>
 	<AppShell>

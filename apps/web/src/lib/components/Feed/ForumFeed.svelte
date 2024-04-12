@@ -12,6 +12,7 @@
     export let filters: NDKFilter[] = [
         { kinds: [NDKKind.GroupNote, NDKKind.GroupReply], "#h": [user.pubkey] }
     ]
+    export let showNewPost: boolean = true;
 
     const feed = $ndk.storeSubscribe(filters);
 
@@ -78,9 +79,11 @@
 <div class="flex flex-col w-full justify-stretch">
 
     <div class="discussion-wrapper w-full flex flex-col">
-        <div class="w-full bg-white/5">
-            <NewPost creatorUser={user} bind:opened={newPostOpened} />
-        </div>
+        {#if showNewPost}
+            <div class="w-full bg-white/5">
+                <NewPost creatorUser={user} bind:opened={newPostOpened} />
+            </div>
+        {/if}
         {#each $renderFeed as event, i (event.id)}
             {#if event.kind === NDKKind.Text}
                 <Note

@@ -64,7 +64,7 @@ export async function getTopZapsByIndividualAmount(
         unsubscribe: () => {},
     }
 
-    const filter = { kinds: [NDKKind.Zap as number], '#e': [event.id] };
+    const filter = { kinds: [NDKKind.Zap as number], ...event.filter() };
 
     const zaps = $ndk.storeSubscribe(filter);
 

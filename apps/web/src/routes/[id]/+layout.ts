@@ -4,11 +4,17 @@ import { nip05 } from 'nostr-tools';
 import { get } from 'svelte/store';
 import createDebug from 'debug';
 
-const debug = createDebug('highlighter:user-layout');
+const debug = createDebug('HL:user-layout');
 
-export async function load({ params, fetch }) {
+export async function load({ params, fetch, data }) {
 	const { id } = params;
 	let user: NDKUser | undefined;
+	const $ndk = get(ndk);
+
+	if (data?.pubkey) {
+		user = $ndk.getUser({pubkey: data.pubkey});
+		return { user, pubkey: data.pubkey };
+	}
 
 	debug('user layout starting');
 
@@ -41,7 +47,6 @@ export async function load({ params, fetch }) {
 	let npub = ``;
 
 	try {
-		const $ndk = get(ndk);
 		user = await $ndk.getUserFromNip05(id, true);
 		if (user) {
 			npub = user.npub;

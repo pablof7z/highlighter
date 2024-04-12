@@ -1,0 +1,331 @@
+{
+    "names": {
+      "0": "bd35e2f10e17d6e3c515911fa2fb16231ec3ec42dd3f3e20b238db56236fc11f",
+      "_": "73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63",
+      "pablo": "b0eb081aaa09de23377896cd5eebfcaba71f103d2958f0ba23e2234b117dbe9e",
+      "gurkansn": "beb1b71615eee84bcddb141b22d2a2bcf797420f15079225f2c927ea0619334d",
+      "tester": "932fcb72424ec8840bbace77457e31a056ce67c0b1e5f83ab5e3056999b4b79f",
+      "Bitcoinshagga": "84d82bdc6a04eaefb785e8b2f6d5cef12f53ee6fb4191cdc39210d23a8547921",
+      "Sax4Sats": "8195458e4b5277128abbe9afac3cc6b8cb9a5de4c3b3ba87b522ed1ed44f3f59",
+      "buttercup": "74e5eb336fb8a65a625eb6d8ecbd2e39065f4744a6e74cf68cea9762994f48c3",
+      "presnt": "920c4f3fd7eac10498003f7ebe88d4420218bf0aa6cc56bd26feb94bcb07e824",
+      "maximi": "1f27618f68d7f6b000cba7a305fc5c178fee006ba74a30fa2fce7a4abcadad4d",
+      "Tub": "99b5772c621746ace4450e3e2ba13030c4fc27de5c94f6de970e476e610e85a9",
+      "makrof": "c042dd292bd00c0cb7aab06a1dbffb8e31dba94d2c6bdf30f19104c5f2e80212",
+      "leok11": "2180ec68a94891b677a089d107e2591c5e23217b0857685a9abc6c0e6e02dae5",
+      "f": "1471934d58e8f56a26ad488f096209d66e1ebaeb2fd8ba60956dde9db53a3295",
+      "fDVDZ": "b47c13b53dca8f40e3970b6ba627434d52e5da6682896ab3b5a69840558ef417",
+      "gregor21": "d5099f99f983060cabf6da49f3c7e5eb1268f333ed7c7d7be7b462b4f34fe290",
+      "vaklaria": "ffba8758be97af8c6665e7c3c04b4c4a540bfb74ac4a6fd38fae4e3a048e0987",
+      "noble": "5abd6a5be481114c262d0b5479ac115e1d8d136f35ab0f119aca4acb90fab07f",
+      "frazierpianostudio": "2fb28ff717c9cc9519060fd9c91568697c0376a7a8f0bd55cb24960d3c86c3d5",
+      "Madonna ": "abed4cb269e607b2fad579b621f187108d10438538f02d5dcee75012eb7dfb68",
+      "RScottBonney": "3ae72a381b2d0312329f5b8718312da993ad20d58e0bc5a69f1f5be6d7c3f27c",
+      "bill": "62ab9e14348ea80a8e2be708eb54ae8c560c7348105c984ba87f0b8f119b7ff2",
+      "damon": "62e4a41fdcdf6b6b8f53dcde07a47fbb77332f42e7c74d15b7637c7566a0ea84",
+      "test123": "37aa43b1c662296193a0c2bc776523f2d255ff41710ebeae9bdfc579665afc3c",
+      "pepe": "0289820514cdad16146b78c7b1b91731e3db8c92adf4172fbec09f8ad2d9d0cc",
+      "rafaelpaicaovieira": "6e34102f68bd53db85cb1c9fbf0531824b20ec46f7076f96d8363bda904ee401",
+      "rafaelpaixavieira": "2406e4d2825fb879502ab406562a08949cb524004ec083ed867a84a9baa382c7",
+      "jensemil": "2ac45c2ede8f92b9bd5dee90a1ba45f78eaa2871ff3123afb4c35466e41377ee",
+      "cfdvsefcsedfs": "75410f7942d0132c43ee4671a6ca94ecbfb26b5da3faae9be7935d85619f4146",
+      "blockbling": "b4e76a530d74828a9ad66e941169aa5807d8151b8bdde9eb8c348d7c230698ec",
+      "blizzlybankz": "cd8932404957d8771691b1bee8b3bc2a06d05a6f827a4c1a418da030d6e7614d",
+      "syedalamin": "b38167593f1f9d1087189bbb92d8506ac4368c4b65693103f32c70f0b3d61601",
+      "Panntera": "e4524122a16930e7a8386126695120f7515b340454868f36ff25c78ab2803e9a",
+      "darkorange": "91ea776d9ac5cede877120fd441ae44b372379c594649558a8cd743f2ca40837",
+      "angiealphabet": "513ffe3b33a4f431b165b4aa225e9950334569616728abbece4dca8f2c692ea1",
+      "petersboro": "c361ac863e4bbfeaee0cc2b3ed8b1fed636013fffec6209fc1f015ac6daab4da",
+      "dhretyyruj": "51c9c853fd93e8ed9858cf6b381f7872c0c8abc56608c911eb87d97627c8444a",
+      "fattoad": "c527ea1920680589752047df6acdfbf3db1e4c8e6fd2ed49ffcca0a8cdb1d3b2",
+      "loveisbitcoin": "e9e6505261f4f00c0782d4ca884986807039a6cb906b3f085085cdb8bac9894f",
+      "tarwarrior": "707f7b6329b7a9769200ab910a2d53423b4f3906ab836174d93bd7c048a324a2",
+      "elcid": "8dc443aba356eb6aee16228fdc78c0a831876777e61620aae406309d108685bd",
+      "x_shortsvid": "512a0a12973e6e489717c6b840f5aa670cbc946b031462aa6df0baf69f77f84e",
+      "bangbankz": "9eb63f063a222fae0c4253e85850cd8d7c99376725c09457701155900ae5ccd1",
+      "marvore_lucas19": "39f36f9f71e64ea45af746d5713a35ef731a2f0ea79ab44daa30253644b7ae83",
+      "joy": "34e5ed1b033bc75296437eec04dfa2eb1e8c68bd884e39126b6b30e7e9cba4bc",
+      "avichand": "b7d246d77c2b0efc446049e7dd12c453218167d1c49ebec7a44a69c8db957661",
+      "Kuzgun Mage": "8aeb9104f59e313cf9f239b8c49dd56567934edafc343bc0b253f11a5c02becd",
+      "Oxc13": "0e5b7a2ca84b249b6158161272c7dd721fc59e177fc7cbbbe50e74ef74344acc",
+      "FrienrenOpressora": "c2a72d177295fb5a8507b4799e1f00a3dee84b990159451dc716c126f0e3c7b6",
+      "Alexgerope": "fa1ca89179b516c23718fd5c1c68c5b4fca31dfb8f2410b129b403fd9f18f19b",
+      "Thiago": "48fe45e722a44d60321a82dd39b3881eecdc442b00944148ed1350a9a6a7c428",
+      "juninho": "abb0174c6c108ea94735d2b95ac0898e50415ebd1a960276ec40d7f9bc36f4fc",
+      "familia mendes": "a4974ba6c0ca607edb0e4b57993fcaca14fa3eb43ad07654e93d42511300f7dd",
+      "DANI": "59a468d137054069409027b8bd8815d49af66a19fa4e4348e3a8145048940e9a",
+      "enokas": "fa17014f9ef6e01dd6fbbf43823be0945ca07614e9cf5189bda8c845da696e16",
+      "nukeboy": "dc18614cfc1ce637f7fd8872dbb822520088da7bb8dd5c4ff306aca8f228223a",
+      "TUSAHIKI": "b059ea165dc85fdd6a02bc61fd8b6de2638891dc4f6535772a7a2b73c450c3c9",
+      "Muh. Hajis": "7dd39b4c8345c1305fb52f5ccb9f43e83222b1c4213927b1e7d512512957adce"
+    },
+    "relays": {
+      "73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63": [
+        "wss://relay.f7z.io",
+        "wss://relay.damus.io",
+        "wss://nos.lol"
+      ]
+    },
+    "nip46": {
+      "73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "80a730fa455757a7548c3c6b2ec2aa8c8974e60f9d35c13b005be8e29acfa81c": [
+        "wss://relay.damus.io",
+        "wss://relay.nsecbunker.com"
+      ],
+      "8102a659d1941ecb1e32b61e2368643c0b549369bdde189d50290e155490ab8d": [
+        "wss://relay.damus.io",
+        "wss://relay.nsecbunker.com"
+      ],
+      "a127c9ca15a16027155c06335489c4e724ad66c52fa08e704306e58855e45783": [
+        "wss://relay.damus.io",
+        "wss://relay.nsecbunker.com"
+      ],
+      "8c86a440451c90da699a5c998d1e73830aa0aa221aab98edccd586c17f65793d": [
+        "wss://relay.damus.io",
+        "wss://relay.nsecbunker.com"
+      ],
+      "8b30e9b8bde59ebed0a3f7b84a968f70a6f401dc2f3ad7ec885a5ba15371dbe0": [
+        "wss://relay.damus.io",
+        "wss://relay.nsecbunker.com"
+      ],
+      "5c76251c70a296b12a197766bba777962abb74fbdbb35ded302e94be8d3bfcf5": [
+        "wss://relay.damus.io",
+        "wss://relay.nsecbunker.com"
+      ],
+      "5ac955bd2473e2723b680350abdf3b8dca734fa493f0ab1c795db8bc127c3688": [
+        "wss://relay.damus.io",
+        "wss://relay.nsecbunker.com"
+      ],
+      "b0eb081aaa09de23377896cd5eebfcaba71f103d2958f0ba23e2234b117dbe9e": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "beb1b71615eee84bcddb141b22d2a2bcf797420f15079225f2c927ea0619334d": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "932fcb72424ec8840bbace77457e31a056ce67c0b1e5f83ab5e3056999b4b79f": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "84d82bdc6a04eaefb785e8b2f6d5cef12f53ee6fb4191cdc39210d23a8547921": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "8195458e4b5277128abbe9afac3cc6b8cb9a5de4c3b3ba87b522ed1ed44f3f59": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "74e5eb336fb8a65a625eb6d8ecbd2e39065f4744a6e74cf68cea9762994f48c3": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "920c4f3fd7eac10498003f7ebe88d4420218bf0aa6cc56bd26feb94bcb07e824": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "1f27618f68d7f6b000cba7a305fc5c178fee006ba74a30fa2fce7a4abcadad4d": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "99b5772c621746ace4450e3e2ba13030c4fc27de5c94f6de970e476e610e85a9": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "c042dd292bd00c0cb7aab06a1dbffb8e31dba94d2c6bdf30f19104c5f2e80212": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "2180ec68a94891b677a089d107e2591c5e23217b0857685a9abc6c0e6e02dae5": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "1471934d58e8f56a26ad488f096209d66e1ebaeb2fd8ba60956dde9db53a3295": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "b47c13b53dca8f40e3970b6ba627434d52e5da6682896ab3b5a69840558ef417": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "d5099f99f983060cabf6da49f3c7e5eb1268f333ed7c7d7be7b462b4f34fe290": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "ffba8758be97af8c6665e7c3c04b4c4a540bfb74ac4a6fd38fae4e3a048e0987": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "5abd6a5be481114c262d0b5479ac115e1d8d136f35ab0f119aca4acb90fab07f": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "2fb28ff717c9cc9519060fd9c91568697c0376a7a8f0bd55cb24960d3c86c3d5": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "abed4cb269e607b2fad579b621f187108d10438538f02d5dcee75012eb7dfb68": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "3ae72a381b2d0312329f5b8718312da993ad20d58e0bc5a69f1f5be6d7c3f27c": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "62ab9e14348ea80a8e2be708eb54ae8c560c7348105c984ba87f0b8f119b7ff2": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "bd35e2f10e17d6e3c515911fa2fb16231ec3ec42dd3f3e20b238db56236fc11f": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "62e4a41fdcdf6b6b8f53dcde07a47fbb77332f42e7c74d15b7637c7566a0ea84": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "37aa43b1c662296193a0c2bc776523f2d255ff41710ebeae9bdfc579665afc3c": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "0289820514cdad16146b78c7b1b91731e3db8c92adf4172fbec09f8ad2d9d0cc": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "6e34102f68bd53db85cb1c9fbf0531824b20ec46f7076f96d8363bda904ee401": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "2406e4d2825fb879502ab406562a08949cb524004ec083ed867a84a9baa382c7": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "2ac45c2ede8f92b9bd5dee90a1ba45f78eaa2871ff3123afb4c35466e41377ee": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "75410f7942d0132c43ee4671a6ca94ecbfb26b5da3faae9be7935d85619f4146": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "b4e76a530d74828a9ad66e941169aa5807d8151b8bdde9eb8c348d7c230698ec": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "cd8932404957d8771691b1bee8b3bc2a06d05a6f827a4c1a418da030d6e7614d": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "b38167593f1f9d1087189bbb92d8506ac4368c4b65693103f32c70f0b3d61601": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "e4524122a16930e7a8386126695120f7515b340454868f36ff25c78ab2803e9a": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "91ea776d9ac5cede877120fd441ae44b372379c594649558a8cd743f2ca40837": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "513ffe3b33a4f431b165b4aa225e9950334569616728abbece4dca8f2c692ea1": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "c361ac863e4bbfeaee0cc2b3ed8b1fed636013fffec6209fc1f015ac6daab4da": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "51c9c853fd93e8ed9858cf6b381f7872c0c8abc56608c911eb87d97627c8444a": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "c527ea1920680589752047df6acdfbf3db1e4c8e6fd2ed49ffcca0a8cdb1d3b2": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "e9e6505261f4f00c0782d4ca884986807039a6cb906b3f085085cdb8bac9894f": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "707f7b6329b7a9769200ab910a2d53423b4f3906ab836174d93bd7c048a324a2": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "8dc443aba356eb6aee16228fdc78c0a831876777e61620aae406309d108685bd": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "512a0a12973e6e489717c6b840f5aa670cbc946b031462aa6df0baf69f77f84e": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "9eb63f063a222fae0c4253e85850cd8d7c99376725c09457701155900ae5ccd1": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "39f36f9f71e64ea45af746d5713a35ef731a2f0ea79ab44daa30253644b7ae83": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "34e5ed1b033bc75296437eec04dfa2eb1e8c68bd884e39126b6b30e7e9cba4bc": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "b7d246d77c2b0efc446049e7dd12c453218167d1c49ebec7a44a69c8db957661": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "8aeb9104f59e313cf9f239b8c49dd56567934edafc343bc0b253f11a5c02becd": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "0e5b7a2ca84b249b6158161272c7dd721fc59e177fc7cbbbe50e74ef74344acc": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "c2a72d177295fb5a8507b4799e1f00a3dee84b990159451dc716c126f0e3c7b6": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "fa1ca89179b516c23718fd5c1c68c5b4fca31dfb8f2410b129b403fd9f18f19b": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "48fe45e722a44d60321a82dd39b3881eecdc442b00944148ed1350a9a6a7c428": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "abb0174c6c108ea94735d2b95ac0898e50415ebd1a960276ec40d7f9bc36f4fc": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "a4974ba6c0ca607edb0e4b57993fcaca14fa3eb43ad07654e93d42511300f7dd": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "59a468d137054069409027b8bd8815d49af66a19fa4e4348e3a8145048940e9a": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "fa17014f9ef6e01dd6fbbf43823be0945ca07614e9cf5189bda8c845da696e16": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "dc18614cfc1ce637f7fd8872dbb822520088da7bb8dd5c4ff306aca8f228223a": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "b059ea165dc85fdd6a02bc61fd8b6de2638891dc4f6535772a7a2b73c450c3c9": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ],
+      "7dd39b4c8345c1305fb52f5ccb9f43e83222b1c4213927b1e7d512512957adce": [
+        "wss://relay.nsecbunker.com",
+        "wss://relay.damus.io"
+      ]
+    }
+  }
