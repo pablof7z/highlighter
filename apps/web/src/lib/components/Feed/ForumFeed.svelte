@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { derived } from "svelte/store";
-	import { NDKEvent, NDKEventId, NDKFilter, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKEventId, NDKFilter, NDKKind, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
 	import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from "svelte";
 	import ForumFeedItem from "./ForumFeedItem.svelte";
-	import NewPost from "./NewPost.svelte";
+	import NewPost from "./NewPost/NewPost.svelte";
 	import Note from "./Note.svelte";
 	import { page } from "$app/stores";
 
-    export let user: NDKUser;
-    export let filters: NDKFilter[] = [
-        { kinds: [NDKKind.GroupNote, NDKKind.GroupReply], "#h": [user.pubkey] }
-    ]
+    export let filters: NDKFilter[];
     export let showNewPost: boolean = true;
+    export let newPostKind: NDKKind;
+    export let renderLimit = 10;
+    export let newPostTags: NDKTag[] = [];
 
     const feed = $ndk.storeSubscribe(filters);
 
@@ -20,7 +20,6 @@
 
     const perNoteLatestActivity = new Map<NDKEventId, number>();
 
-    const eventsWithAnnotatedTagged = new Set<NDKEventId>();
     const skipEventIds = new Set<NDKEventId>();
     const allEventIds = new Set<NDKEventId>();
 
@@ -66,10 +65,9 @@
             const bLatest = perNoteLatestActivity.get(b.id) ?? 0;
 
             return bLatest - aLatest;
-        });
+        })
+            .slice(0, renderLimit);
     });
-
-    let newPostOpened = false;
 
     let urlPrefix: string;
 
@@ -80,23 +78,27 @@
 
     <div class="discussion-wrapper w-full flex flex-col">
         {#if showNewPost}
-            <div class="w-full bg-white/5">
-                <NewPost creatorUser={user} bind:opened={newPostOpened} />
+            <div class="w-full sm:bg-white/5">
+                <NewPost
+                    extraTags={newPostTags}
+                    kind={newPostKind}
+                    placeholder="What's happening?!"
+                    autofocus={false}
+                />
             </div>
         {/if}
         {#each $renderFeed as event, i (event.id)}
             {#if event.kind === NDKKind.Text}
                 <Note
-                    creatorUser={user}
                     {event}
                     position={i}
                     mostRecentActivity={perNoteLatestActivity.get(event.id)}
                     skipReply={true}
+                    showReply={false}
                     {urlPrefix}
                 />
             {:else}
                 <ForumFeedItem
-                    creatorUser={user}
                     {event}
                     position={i}
                     mostRecentActivity={perNoteLatestActivity.get(event.id)}

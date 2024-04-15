@@ -131,7 +131,7 @@
     </div>
     <div slot="viewPreview">
         {#key signedAt}
-            <ArticleView bind:article isFullVersion={true} isPreview={true} />
+            <ArticleView bind:article isFullVersion={true} isPreview={true} fillInSummary={false} />
             {#if $debugMode}
                 <pre>{JSON.stringify(article.rawEvent())}</pre>
             {/if}

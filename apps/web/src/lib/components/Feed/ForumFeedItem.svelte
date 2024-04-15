@@ -4,10 +4,10 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { Avatar, Name, RelativeTime, ndk } from "@kind0/ui-common";
-	import { Hexpubkey, NDKEvent, NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
+	import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
-	import ForumFeedItemReply from "./ForumFeedItemReply.svelte";
+	import NewPost from "./NewPost/NewPost.svelte";
 	import { getRepliesStore, getConversationRepliesStore, getThreadStore } from "./replies";
 	import CommentsButton from "$components/buttons/CommentsButton.svelte";
 	import ReplyAvatars from "./ReplyAvatars.svelte";
@@ -30,6 +30,19 @@
         filter = { "#h": [hTag], "#e": [event.id], kinds: [NDKKind.GroupReply] };
     } else {
         filter = { "#e": [event.id], kinds: [NDKKind.Text] };
+    }
+
+    let replyKind: NDKKind;
+    let newPostTags: NDKTag[] = [];
+
+    $: {
+        replyKind = event.kind === NDKKind.Text ? NDKKind.Text : NDKKind.GroupReply;
+        newPostTags = event.referenceTags("reply");
+        if (hTag) {
+            // make sure we don't add two h tags for when ndk's referenceTags brings NIP-29 h-tag
+            newPostTags = newPostTags.filter(tag => tag[0] !== "h");
+            newPostTags.push(["h", hTag]);
+        }
     }
 
     const events = $ndk.storeSubscribe(
@@ -160,7 +173,7 @@ op = {!!op} -->
     </div>
 </a>
 {#if showReply}
-    <ForumFeedItemReply {event} bind:showReply />
+    <NewPost kind={replyKind} extraTags={newPostTags} bind:showReply />
 {/if}
 {#if expandThread && event.id == op.id}
     {#each $eventsInThread as thread, i (thread.id)}

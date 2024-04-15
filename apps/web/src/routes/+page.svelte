@@ -82,7 +82,7 @@
                 break;
             case "All Creators":
                 newFilters = [ { kinds, limit: 100 } ];
-                // relaySet = getDefaultRelaySet();
+                relaySet = getDefaultRelaySet();
             default:
                 newFilters = [ { kinds, limit: 100 } ];
                 console.log("filter", filter);

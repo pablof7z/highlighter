@@ -1,11 +1,10 @@
-import { writable, get as getStore, type Writable, derived, get } from 'svelte/store';
-import { ndk, user } from '@kind0/ui-common';
+import { writable, get as getStore, type Writable, derived, get, Readable } from 'svelte/store';
+import { ndk } from '@kind0/ui-common';
 import {
 	NDKEvent,
 	NDKList,
 	NDKSubscriptionCacheUsage,
 	type NDKFilter,
-	type NDKTag,
 	NDKKind,
 	NDKListKinds,
 	type Hexpubkey,
@@ -16,14 +15,17 @@ import {
 } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
-import debug from 'debug';
+import createDebug from 'debug';
 import type { UserProfileType } from '../../app';
 import { getDefaultRelaySet } from '$utils/ndk';
 import { creatorRelayPubkey } from '$utils/const';
-import { nip19 } from 'nostr-tools';
+import { filterValidPTags } from '$utils/event';
+import currentUser from './currentUser';
 
-const d = debug('HL:session');
+const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
+
+type PubkeysFollowCount = Map<Hexpubkey, number>;
 
 export const jwt = persist(writable<string | null>(null), createLocalStorage(), 'jwt');
 
@@ -38,13 +40,16 @@ export const debugPageFilter = writable<string | null>(null);
 
 export const loadingScreen = writable<boolean>(false);
 
-/**
- * Current user's follows
- */
 export const userFollows = persist(
-	writable<Set<string>>(new Set()),
+	writable(new Set<Hexpubkey>()),
 	createLocalStorage(),
-	'user-follows'
+	'user-follows-set'
+);
+
+export const networkFollows = persist(
+	writable(new Map<Hexpubkey, number>()),
+	createLocalStorage(),
+	'network-follows-map'
 );
 
 export const allUserTiers = writable<NDKSubscriptionTier[]>([]);
@@ -73,12 +78,12 @@ export const userTiers = derived(
 
 export const inactiveUserTiers = derived(
 	[allUserTiers, userTiers],
-	([$allUserTiers, $userTiers]) => {
+	([$allUserTiers, $currentUser]) => {
 		const tiers: NDKSubscriptionTier[] = [];
 
 		for (const tier of $allUserTiers) {
 			let active = false;
-			for (const t of $userTiers) {
+			for (const t of $currentUser) {
 				if (t.tagId() === tier.tagId()) {
 					active = true;
 					break;
@@ -121,11 +126,6 @@ export const userSupport = writable<NDKEvent[]>([]);
 /**
  * The user's extended network
  */
-export const networkFollows = persist(
-	writable<Map<Hexpubkey, number>>(new Map()),
-	createLocalStorage(),
-	'network-follows-map'
-);
 export const networkFollowsUpdatedAt = persist(
 	writable<number>(0),
 	createLocalStorage(),
@@ -141,20 +141,17 @@ export const networkSupport = writable<NDKEvent[]>([]);
  * Main entry point to prepare the session.
  */
 export async function prepareSession(): Promise<void> {
-	console.log("DEBUG prepareSession", new Date())
-	const $user = getStore(user);
+	d("DEBUG prepareSession", new Date())
+	const $currentUser = getStore(currentUser);
 
-	if (!$ndk || !$user) {
+	if (!$ndk || !$currentUser) {
 		return;
 	}
 
-	d(`running prepareSession`);
-
-	return new Promise((resolve) => {
+	return new Promise<void>((resolve) => {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
 
-		console.log("DEBUG prepareSession fetchData", new Date())
-		fetchData('user', $ndk, [$user.pubkey], {
+		fetchData('user', $ndk, [$currentUser.pubkey], {
 			profileStore: userProfile,
 			followsStore: userFollows,
 			userArticleCurationsStore: userArticleCurations,
@@ -174,7 +171,7 @@ export async function prepareSession(): Promise<void> {
 				NDKKind.BookmarkList,
 			]
 		}).then(() => {
-			const $userFollows = getStore(userFollows);
+			const $currentUser = getStore(userFollows);
 
 			resolve();
 
@@ -185,19 +182,21 @@ export async function prepareSession(): Promise<void> {
 			if ($networkFollows.size < 1000 || $networkFollowsUpdatedAt < twoWeeksAgo) {
 				const kind3RelaySet = NDKRelaySet.fromRelayUrls(["wss://purplepag.es"], $ndk);
 
-				fetchData('wot', $ndk, Array.from($userFollows), {
+				fetchData('wot', $ndk, Array.from($currentUser), {
 					followsStore: networkFollows,
 					closeOnEose: true
 				}, kind3RelaySet).then(() => {
 					networkFollowsUpdatedAt.set(Math.floor(Date.now() / 1000));
 				})
 
-				fetchData('network-support', $ndk, Array.from($userFollows), {
+				fetchData('network-support', $ndk, Array.from($currentUser), {
 					supportStore: networkSupport,
 					closeOnEose: true
 				}, getDefaultRelaySet())
 			}
 		});
+	}).catch((e) => {
+		console.error(e);
 	});
 }
 
@@ -221,8 +220,7 @@ export const processUserProfile = (event: NDKEvent, store: Writable<UserProfileT
 
 interface IFetchDataOptions {
 	profileStore?: Writable<UserProfileType | undefined>;
-	followsStore?: Writable<Set<Hexpubkey>> | Writable<Map<Hexpubkey, number>>;
-	superFollowsStore?: Writable<Set<Hexpubkey>>;
+	followsStore?: Writable<Set<Hexpubkey> | PubkeysFollowCount>;
 	activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
 	supportStore?: Writable<NDKEvent[]>;
 	appHandlersStore?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
@@ -339,8 +337,6 @@ async function fetchData(
 		opts.userTierStore!.update((tiers) => {
 			const tier = NDKSubscriptionTier.from(event);
 
-			d(`Found tier ${tier.title}`, tier.isValid);
-
 			tiers.push(tier);
 
 			return tiers;
@@ -367,7 +363,7 @@ async function fetchData(
 	/**
 	 * Called when a newer event of kind 3 is received.
 	 */
-	const processContactList = (event: NDKEvent, store: Writable<Set<Hexpubkey> | Map<Hexpubkey, number>>) => {
+	const processContactList = (event: NDKEvent, store: Writable<Set<Hexpubkey> | PubkeysFollowCount>) => {
 		if (event.id !== processedIdForKind[event.kind!]) {
 			processedIdForKind[event.kind!] = event.id;
 			updateFollows(event, store);
@@ -401,31 +397,25 @@ async function fetchData(
 		}
 	};
 
-	const updateFollows = (event: NDKEvent, store: Writable<Set<Hexpubkey> | Map<Hexpubkey, number>>) => {
-		const follows = event.tags
-			.filter((t: NDKTag) => t[0] === 'p')
-			.map((t: NDKTag) => t[1])
-			.filter((f: Hexpubkey) => {
-				try {
-					nip19.npubEncode(f);
-					return true;
-				} catch { return false; }
-			});
+	const updateFollows = (
+		event: NDKEvent,
+		store: Writable<Set<Hexpubkey> | PubkeysFollowCount>,
+	) => {
+		const follows = filterValidPTags(event.tags);
 
-		// if authors has more than one, add the current data, otherwise replace
-		if (authors.length > 1) {
-			opts.followsStore!.update((existingFollows: Set<Hexpubkey> | Map<Hexpubkey, number>) => {
+		store.update((existingFollows: Set<Hexpubkey> | PubkeysFollowCount) => {
+			if (existingFollows instanceof Set) {
+				return new Set(follows);
+			} else if (existingFollows instanceof Map) {
 				follows.forEach((f) => {
-					if (existingFollows instanceof Map) {
-						const current = existingFollows.get(f) || 0;
-						existingFollows.set(f, current + 1);
-					} else if (existingFollows instanceof Set) {
-						existingFollows.add(f)
-					}
+					const current = existingFollows.get(f) || 0;
+					existingFollows.set(f, current + 1);
 				});
 				return existingFollows;
-			});
-		} else store!.set(new Set(follows));
+			}
+
+			throw new Error('Invalid store type');
+		});
 	};
 
 	return new Promise((resolve) => {

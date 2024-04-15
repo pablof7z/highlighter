@@ -2,7 +2,6 @@
 	import Box from "$components/PageElements/Box.svelte";
     import { debounce } from "@sveu/shared";
 	import { Question } from "phosphor-svelte";
-	import { slide } from "svelte/transition";
 
     export let loading = false;
     export let value: string | number | undefined;

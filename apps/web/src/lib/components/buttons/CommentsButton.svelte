@@ -41,14 +41,20 @@
 </script>
 
 <a
-    href={urlPrefix ? `${urlPrefix}/comments` : "#"}
+    href={urlPrefix ? `${urlPrefix}/comments` : "#a"}
     class="flex flex-row items-center gap-2 {commentedByUser ? 'text-white' : ''}"
-    on:click
+    on:click={e => {
+        if (!urlPrefix) {
+            e.preventDefault();
+        }
+    }}
 >
-    <ChatCircle
-        class="w-5 h-5"
-        weight={commentedByUser ? "fill" : "regular"}
-    />
+    {#if !label || $replies.length === 0}
+        <ChatCircle
+            class="w-6 h-6"
+            weight={commentedByUser ? "fill" : "regular"}
+        />
+    {/if}
 
     {#if $replies.length > 0}
         <span class="font-light opacity-60">

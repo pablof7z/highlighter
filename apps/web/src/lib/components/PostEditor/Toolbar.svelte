@@ -35,11 +35,7 @@
             if ($type === "note") next = {label: "Continue", value: "audience"};
             break;
         case "view-preview":
-            if (modeBeforePreview !== "edit") {
-                back = {label: "Back to Edit", value: "edit"};
-            } else {
-                back = undefined;
-            }
+            back = {label: "Back to Edit", value: "edit"};
             next = {label: "Continue", value: "edit-preview"};
             break;
         case "meta": {

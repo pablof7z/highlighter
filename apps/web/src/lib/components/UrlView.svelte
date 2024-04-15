@@ -1,66 +1,26 @@
 <script lang="ts">
-	import HighlightIcon from '../icons/HighlightIcon.svelte';
-	import { ndk, pageDrawerToggle, rightSidebar, user, HighlightWrapper, Avatar, Name } from "@kind0/ui-common";
-	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { onMount } from "svelte";
+	import { ndk } from "@kind0/ui-common";
+	import { type NDKArticle, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
 	import { pageHeader } from '$stores/layout';
-	import { getParagraph, getText } from '$utils/text';
+	import HighlightingArea from './HighlightingArea.svelte';
+	import HighlightedContent from './HighlightedContent.svelte';
+	import { onDestroy } from "svelte";
 
     export let article: NDKArticle;
     export let editUrl: string | undefined = undefined;
 
-    let content = article.content;
+    let tags: NDKTag[] = [];
 
-    onMount(() => {
-        document.addEventListener('click', function(event) {
-            // if the target is not the container nor a descendant of the container
-            if (!el?.contains(event.target as Node)) {
-                if (el?.classList.contains('opacity-0')) return;
-                el?.classList.add('opacity-0');
-            }
-        });
-        document.addEventListener('mouseup', function(event) {
-            let selection = window.getSelection();
-            if (selection && selection.toString().length > 0) {
-                let range = selection.getRangeAt(0);
-                let rect = range.getBoundingClientRect();
+    if (article.url) tags.push(["r", article.url]);
 
-                // Create the floating element
-                el.style.top = (rect.top + window.scrollY - 50) + 'px';
-                el.style.left = (rect.right + window.scrollX) + 'px';
-                // remove opacity-0 class
-                setTimeout(() => {
-                    el?.classList.remove('opacity-0');
-                }, 10)
-                // setTimeout(() => {
-                //     el?.appendChild(floatElement);
-                // }, 100)
-            }
-        });
+    const highlights = $ndk.storeSubscribe(
+        { kinds: [NDKKind.Highlight], "#r": [article.url??""] },
+        { subId: 'article-highlights' }
+    )
 
-
-    })
-
-    let el: HTMLDivElement;
-
-    async function createHighlight() {
-        const content = getText();
-
-        if (!content) return;
-
-        const event = new NDKEvent($ndk, {
-            kind: NDKKind.Highlight,
-            content,
-            tags: [
-                [ "context", getParagraph() ]
-            ]
-        } as NostrEvent);
-
-        if (article.url) event.tag(["r", article.url]);
-
-        await event.sign();
-        await event.publish()
-    }
+    onDestroy(() => {
+        highlights?.unsubscribe();
+    });
 
     $pageHeader = { title: article?.title }
 </script>
@@ -69,23 +29,13 @@
     <title>{article.title}</title>
 </svelte:head>
 
-<div bind:this={el} class="float-element z-50 absolute opacity-0 transition-all duration-300 flex flex-col gap-1">
-    <button class="
-        button px-4 py-3
-        transition-all duration-300
-    " on:click={createHighlight}>
-        <HighlightIcon class="w-6 h-6" />
-        Highlight
-    </button>
-</div>
-
 <div class="w-full">
     <div class="flex-col justify-start items-center gap-10 flex w-full max-sm:px-4">
         <div class="self-stretch justify-center items-start gap-8 inline-flex">
             <div class="grow shrink basis-0 flex-col justify-center items-start gap-10 inline-flex">
                 <div class="self-stretch flex-col justify-center items-start flex">
                     <div class="self-stretch flex-col justify-start items-start gap-1 flex">
-                        <div class="self-stretch text-white text-2xl font-medium">
+                        <div class="self-stretch text-white text-4xl font-medium">
                             {article.title}
                         </div>
                         <div class="flex-row justify-between items-center gap-4 flex w-full">
@@ -93,9 +43,12 @@
                             </div>
                         </div>
                     </div>
-                    <article class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative prose">
-                        {@html article.content}
-                    </article>
+                    <HighlightingArea {tags} class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative article">
+                        <HighlightedContent content={article.content} {highlights} />
+                    </HighlightingArea>
+                    <!-- <article class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative prose"> -->
+
+                    <!-- </article> -->
                 </div>
             </div>
         </div>

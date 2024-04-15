@@ -1,26 +1,31 @@
 <script lang="ts">
     import Quill from 'quill';
-    import Input from "$components/Forms/Input.svelte";
-	import { UploadButton, ndk } from "@kind0/ui-common";
-	import { NDKArticle, NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher, onMount } from "svelte";
     import quillEditorMention from "./quill-editor-mention.js";
     import "quill-mention";
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
+	import { UploadButton } from '@kind0/ui-common';
 
-    export let article: NDKArticle = new NDKArticle($ndk, {
-        content: "",
-    } as NostrEvent);
+    export let content: string = "";
+    export let toolbar = true;
+    export let autofocus = false;
+    export let allowMarkdown = true;
+
+    const dispatch = createEventDispatcher();
+
+    let editorEl: HTMLElement;
+    let toolbarEl: HTMLElement;
 
     let quill: Quill;
 
     onMount(() => {
-        quill = new Quill('#editor', {
+        const options: any = {
             theme: 'snow',
-            placeholder: "Write your heart out...",
+            placeholder: $$props.placeholder ?? "Write your heart out...",
             modules: {
-                toolbar: "#toolbar-container",
+                toolbar: toolbar ? { container: toolbarEl } : false,
                 mention: {
                     source: quillEditorMention,
                     dataAttributes: ['id', 'value', 'avatar'],
@@ -35,26 +40,24 @@
                     },
                 }
             }
-        });
+        };
 
-        quill.setText(article.content)
+        if (!allowMarkdown) options.formats = ['mention'];
+
+        quill = new Quill(editorEl, options);
+
+        quill.setText(content)
         quill.on("text-change", () => {
-            article.content = getContents(quill);
+            content = getContents(quill);
             dispatch("contentChanged");
         });
+
+        const editorChild = editorEl.firstChild as HTMLElement;
+        editorChild.addEventListener("focusin", () => dispatch("focus"));
+        editorChild.addEventListener("focusout", () => dispatch("blur"));
+
+        if (autofocus) quill.focus();
     })
-
-    const dispatch = createEventDispatcher();
-
-    let contentAreaElement: HTMLElement;
-
-    function onTitleKeyDown(e: KeyboardEvent) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            // move focus to content
-            if (contentAreaElement) contentAreaElement.focus();
-        }
-    }
 
     function fileUploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {
         const {url, tags} = e.detail;
@@ -68,55 +71,45 @@
     }
 </script>
 
-<div class="flex flex-col border-none border-neutral-800 sm:rounded-xl border">
-    <div class="-mt-4 toolbar sticky z-40 top-16 bg-base-100/80  !backdrop-blur-[50px] !border-b !border-base-200" id="toolbar-container">
-        <span class="ql-formats">
-            <select class="ql-header"></select>
-        </span>
-        <span class="ql-formats">
-            <button class="ql-bold"></button>
-            <button class="ql-italic"></button>
-            <button class="ql-link"></button>
-            <button>
-                <UploadButton class="!p-0" on:uploaded={fileUploaded}>
-                    <Image class="w-full" />
-                </UploadButton>
-            </button>
-        </span>
-    </div>
-    <div class="p-6 pb-0 w-full">
-        <Input
-            bind:value={article.title}
-            color="black"
-            class="!bg-transparent !text-3xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] placeholder:text-white/50 placeholder:font-normal"
-            placeholder="Add a title"
-            on:keydown={onTitleKeyDown}
-            on:change={() => dispatch("titleChanged")}
-        />
-    </div>
-    <div class="px-2 pt-0 flex flex-col gap-4">
-        <!-- bind:value={article.content}
-        on:keyup={() => dispatch("contentUpdate", article.content)}
-        bind:element={contentAreaElement}
-        on:change={() => dispatch("contentChanged")}
-        fixedHeight={true} -->
-
-        <div id="editor" />
+<div class="flex flex-col border-none border-neutral-800 sm:rounded-xl border grow">
+    {#if toolbar}
+        <div bind:this={toolbarEl} class="-mt-4 toolbar sticky z-40 top-16 bg-base-100/80  !backdrop-blur-[50px] !border-b !border-base-200 toolbar-container">
+            <span class="ql-formats">
+                <select class="ql-header"></select>
+            </span>
+            <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-link"></button>
+                <button>
+                    <UploadButton class="!p-0" on:uploaded={fileUploaded}>
+                        <Image class="w-full" />
+                    </UploadButton>
+                </button>
+            </span>
+        </div>
+    {/if}
+    <div class="px-2 pt-0 flex flex-col gap-4 transition-all duration-100 {$$props.class??""}">
+        <div bind:this={editorEl} class="editor h-full {$$props.class??""}" />
     </div>
 </div>
 
 <style>
-    #editor {
-        min-height: 20vh;
-        @apply text-lg font-serif;
+    .editor {
+        @apply text-lg;
         @apply w-full border-0;
         @apply flex flex-col items-stretch justify-stretch p-4;
     }
 
-    #toolbar-container {
+    .toolbar-container {
         @apply p-2;
         @apply !border-t-0 !border-l-0 !border-r-0;
         @apply flex flex-row items-center gap-1;
+    }
+
+    :global(.ql-editor.ql-blank::before) {
+        @apply text-zinc-500 pl-3;
+        font-style: normal;
     }
 
     :global(.ql-editor) {
@@ -165,11 +158,11 @@
     }
 
     :global(.ql-mention-list) {
-        @apply bg-base-200 font-sans py-2 rounded-box;
+        @apply bg-base-200 font-sans py-2 rounded-box absolute z-50;
     }
 
     :global(.ql-mention-list-item) {
-        @apply px-4 py-1 text-base;
+        @apply px-4 py-1 text-base truncate w-full max-w-[300px];
     }
 
     :global(.ql-mention-list-item.selected) {

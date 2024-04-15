@@ -1,5 +1,6 @@
 import { ndk } from "@kind0/ui-common";
-import { Hexpubkey, NDKEvent, NDKKind, NDKZap, NDKZapInvoice, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
+import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKSubscriptionCacheUsage, NDKUser, NDKZap, NDKZapInvoice, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
+import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 import { Readable, derived, get, readable } from "svelte/store";
 
 export type ZapScore = { pubkey: Hexpubkey, totalSats: number, totalZaps: number, comments?: string[] };
@@ -8,43 +9,104 @@ export type UnsubscribableStore<T> = Readable<T> & { unsubscribe: () => void };
 export type ZapInvoiceWithEvent = NDKZapInvoice & { event: NDKEvent };
 
 /**
- * Gets the most recent zaps for an event
- * @param event
- * @param count
- * @returns
+ * Create a filter to fetch zaps
  */
-export async function getRecentZaps(
-    event: NDKEvent,
-    count: number,
-): Promise<UnsubscribableStore<ZapInvoiceWithEvent[]>> {
-    const $ndk = get(ndk);
-    const zapperPubkey = await NDKZap.getZapperPubkey($ndk, event.pubkey);
+const filter = (
+    eventOrUser: NDKEvent | NDKUser,
+    zapperPubkey?: Hexpubkey,
+    extraFilter: NDKFilter = { limit: 100 }
+): NDKFilter => {
+    const filter: NDKFilter = { kinds: [NDKKind.Zap as number], ...extraFilter };
+    if (eventOrUser instanceof NDKUser) filter['#p'] = [eventOrUser.pubkey];
+    else filter['#e'] = [eventOrUser.id];
+    if (zapperPubkey) filter['authors'] = [zapperPubkey];
+    return filter;
+}
 
-    if (!zapperPubkey) return {
-        ...readable([]),
-        unsubscribe: () => {},
+/**
+ * Create a store to receive zaps
+ */
+const zapsStore = (
+    eventOrUser: NDKEvent | NDKUser,
+    zapperPubkey?: Hexpubkey,
+    extraFilter?: NDKFilter,
+) => {
+    console.log('zapsStore', filter(eventOrUser, zapperPubkey, extraFilter));
+    return get(ndk).storeSubscribe(
+        filter(eventOrUser, zapperPubkey, extraFilter),
+        { cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE, closeOnEose: true}
+    );
+}
+
+/**
+ * Enforce a zapper pubkey filter
+ */
+const withValidZapper = (zapperPubkey?: Hexpubkey) => (zap: NDKZapInvoice) => !zapperPubkey || zap.zapper === zapperPubkey;
+
+/**
+ * Get the top zaps for an event
+ */
+const topZapStore = (
+    zapEvents: NDKEventStore<NDKEvent>,
+    count: number
+) => derived(zapEvents, $zapEvents => {
+    const receipts: ZapInvoiceWithEvent[] = [];
+
+    for (const zap of $zapEvents) {
+        const receipt = zapInvoiceFromEvent(zap);
+        if (receipt && receipt.amount) receipts.push({event: zap, ...receipt});
     }
 
-    const filter = { kinds: [NDKKind.Zap as number], '#e': [event.id] };
-    const zaps = $ndk.storeSubscribe(filter);
+    return receipts
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, count);
+})
 
-    const recentZaps = derived(zaps, $zaps => {
-        const receipts: ZapInvoiceWithEvent[] = [];
-
-        for (const zap of $zaps) {
-            const receipt = zapInvoiceFromEvent(zap);
-            if (receipt) {
-                if ((zapperPubkey && receipt.zapper === zapperPubkey) || !zapperPubkey) {
-                    receipts.push({event: zap, ...receipt});
-                }
-            }
+const aggregatedTopZapStore = (
+    zapEvents: NDKEventStore<NDKEvent>,
+    count: number,
+    countType: 'sats' | 'zaps' = 'sats'
+) => derived(zapEvents, $zapEvents => {
+    const perPubkeyScore = new Map<Hexpubkey, ZapScore>();
+    for (const zap of $zapEvents) {
+        const receipt = zapInvoiceFromEvent(zap);
+        if (receipt && receipt.amount) {
+            const score = perPubkeyScore.get(receipt.zappee) || { pubkey: receipt.zappee, totalSats: 0, totalZaps: 0 };
+            score.totalSats += receipt.amount;
+            score.totalZaps++;
+            perPubkeyScore.set(receipt.zappee, score);
         }
+    }
 
-        return receipts.sort((a, b) => b.event.created_at! - a.event.created_at!).slice(0, count);
-    });
+    let ret = Array.from(perPubkeyScore.values())
 
-    return { ...recentZaps, unsubscribe: () => zaps.unsubscribe() };
-}
+    if (countType === 'zaps')
+        ret = ret.sort((a, b) => b.totalZaps - a.totalZaps)
+    else
+        ret = ret.sort((a, b) => b.totalSats - a.totalSats)
+
+    return ret.slice(0, count);
+});
+
+/**
+ * Get the most recent zaps for an event
+ */
+const mostRecentZapsStore = (
+    zapEvents: NDKEventStore<NDKEvent>,
+    count: number
+) => derived(zapEvents, $zapEvents => {
+    const receipts: ZapInvoiceWithEvent[] = [];
+
+    for (const zap of $zapEvents) {
+        const receipt = zapInvoiceFromEvent(zap);
+        if (receipt && receipt.amount) receipts.push({event: zap, ...receipt});
+    }
+
+    return receipts
+        .sort((a, b) => b.event.created_at! - a.event.created_at!)
+        .slice(0, count);
+})
+
 
 /**
  * Gets the top zaps, sorted by individual amount
@@ -53,68 +115,74 @@ export async function getRecentZaps(
  * @returns
  */
 export async function getTopZapsByIndividualAmount(
-    event: NDKEvent,
+    eventOrUser: NDKEvent | NDKUser,
     count: number,
 ): Promise<UnsubscribableStore<ZapInvoiceWithEvent[]>> {
+    const zaps = zapsStore(eventOrUser, await getZapperPubkey(eventOrUser));
+    const topZaps = topZapStore(zaps, count);
+
+    return { ...topZaps, unsubscribe: () => zaps.unsubscribe() };
+}
+
+const getZapperPubkey = async (eventOrUser: NDKEvent | NDKUser) => {
     const $ndk = get(ndk);
-    const zapperPubkey = await NDKZap.getZapperPubkey($ndk, event.pubkey);
+    return await NDKZap.getZapperPubkey($ndk, eventOrUser.pubkey);
+}
 
-    if (!zapperPubkey) return {
-        ...readable([]),
-        unsubscribe: () => {},
-    }
+/**
+ * Gets the most recent zaps for an event
+ * @param event
+ * @param count
+ * @returns
+ */
+export async function getRecentZaps(
+    eventOrUser: NDKEvent | NDKUser,
+    count: number,
+): Promise<UnsubscribableStore<ZapInvoiceWithEvent[]>> {
+    const zaps = zapsStore(eventOrUser, await getZapperPubkey(eventOrUser));
+    const recentZaps = mostRecentZapsStore(zaps, count);
 
-    const filter = { kinds: [NDKKind.Zap as number], ...event.filter() };
+    return { ...recentZaps, unsubscribe: () => zaps.unsubscribe() };
+}
 
-    const zaps = $ndk.storeSubscribe(filter);
+/**
+ * Returns the top zap, followed by the most recent zaps
+ * @param event
+ * @param count
+ * @returns
+ */
+export async function topPlusRecentZaps(
+    eventOrUser: NDKEvent | NDKUser,
+    count: number,
+    filter?: NDKFilter
+) {
+    const zaps = zapsStore(eventOrUser, await getZapperPubkey(eventOrUser), filter);
+    const topZaps = topZapStore(zaps, 1);
+    const recentZaps = mostRecentZapsStore(zaps, count);
 
-    const topZaps = derived(zaps, $zaps => {
-        const receipts: ZapInvoiceWithEvent[] = [];
+    const recentZapsWithTopZapFirst = derived([zaps, topZaps, recentZaps], ([$zaps, $topZaps, $recentZaps]) => {
+        // console.log(`called with ${$zaps.length} zaps, ${$topZaps.length} top zaps, ${$recentZaps.length} recent zaps`)
+        const ret = $recentZaps.filter(zap => $topZaps[0]?.event.id !== zap.event.id);
 
-        // case 'highest-sat-aggregate': {
-        //     const perPubkeyScore = new Map<Hexpubkey, ZapScore>();
 
-        //     for (const zap of $zaps) {
-        //         const receipt = zapInvoiceFromEvent(zap);
-        //         if (receipt) {
-        //             if (
-        //                 (zapperPubkey && receipt.zapper === zapperPubkey) ||
-        //                 !zapperPubkey
-        //             ) {
-        //                 receipts.push(receipt);
-        //                 const currentScore = perPubkeyScore.get(receipt.zappee) || { totalSats: 0, totalZaps: 0 };
-        //                 perPubkeyScore.set(receipt.zappee, {
-        //                     totalSats: currentScore.totalSats + receipt.amount,
-        //                     totalZaps: currentScore.totalZaps + 1,
-        //                     pubkey: receipt.zappee,
-        //                 });
-        //             }
-        //         }
-        //     }
+        // prepend the top zap to the list if there is one
+        if ($topZaps[0]) ret.unshift($topZaps[0]);
 
-        //     // get the top ten pubkeys with the most amount of sats
-        //     const sortedScores = Array.from(perPubkeyScore.entries())
-        //         .sort((a, b) => b[1].totalSats - a[1].totalSats)
-        //         .slice(0, count);
-        //     return sortedScores.map(([pubkey, score]) => ({ ...score, pubkey }));
-        // }
-
-        for (const zap of $zaps) {
-            const receipt = zapInvoiceFromEvent(zap);
-            if (receipt) {
-                if ((zapperPubkey && receipt.zapper === zapperPubkey) || !zapperPubkey) {
-                    receipts.push({
-                        event: zap,
-                        ...receipt});
-                }
-            }
-        }
-
-        return receipts.sort((a, b) => b.amount - a.amount).slice(0, count);
+        return ret;
     });
 
     return {
-        ...topZaps,
-        unsubscribe: () => zaps.unsubscribe(),
-    };
+        ...recentZapsWithTopZapFirst,
+        unsubscribe: () => zaps.unsubscribe()
+    }
+}
+
+export async function getTopZapsByAggregatedAmount(
+    eventOrUser: NDKEvent | NDKUser,
+    count: number,
+) {
+    const zaps = zapsStore(eventOrUser, await getZapperPubkey(eventOrUser));
+    const topZaps = aggregatedTopZapStore(zaps, count);
+
+    return { ...topZaps, unsubscribe: () => zaps.unsubscribe() };
 }

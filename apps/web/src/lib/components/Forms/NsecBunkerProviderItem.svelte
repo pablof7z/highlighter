@@ -5,7 +5,7 @@
     import { createEventDispatcher } from "svelte";
     import createDebug from "debug";
 
-    const debug = createDebug("highlighter:nsecbunker");
+    const debug = createDebug("HL:nsecbunker");
 
     export let provider: NDKEvent;
 
@@ -36,6 +36,7 @@
         });
 
         return new Promise((resolve) => {
+            debug("pinging", pubkey);
             rpc.sendRequest(pubkey, "ping", undefined, undefined, (res: NDKRpcResponse) => {
                 pinged = true;
                 resolve(true);
@@ -81,7 +82,9 @@
     }
 
     async function validateNip05(pubkey: Hexpubkey, domain: string) {
-        const user = await NDKUser.fromNip05(domain);
+        debug("validating nip05", pubkey, domain)
+        const user = await NDKUser.fromNip05(domain, $ndk);
+        debug("user", user);
 
         return !!(user && user.pubkey === pubkey);
     }
@@ -94,6 +97,8 @@
         dispatch("click", { pubkey, domain });
     }
 </script>
+
+<p>{pubkey.slice(0,8)} {valid}</p>
 
 {#if valid && profile}
     <li class:active={selected} class="overflow-x-clip">

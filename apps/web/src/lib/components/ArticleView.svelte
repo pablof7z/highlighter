@@ -13,6 +13,7 @@
     export let editUrl: string | undefined = undefined;
     export let isFullVersion: boolean;
     export let isPreview = false;
+    export let fillInSummary = true;
     let content = article.content;
 
     const highlights = $ndk.storeSubscribe(
@@ -38,12 +39,10 @@
         // create regexp from highlight content (escape special characters)
         const regexp = new RegExp(highlightContent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
 
-        console.log(highlight.content);
         content = content.replace(regexp, (match) => {
             appliedHighlightIds.add(highlight.id);
             return `<mark data-highlight-id="${highlight.id}">${match}</mark>`;
         })
-        console.log(content);
     }
 
     // Check if this user has access to the full article and if they do, redirect them to the full article
@@ -64,5 +63,5 @@
 
 <div class="flex flex-col gap-2 px-4 sm:px-0">
     <ItemHeader item={article} />
-    <ArticleRender {article} {editUrl} {isFullVersion} {isPreview} />
+    <ArticleRender {article} {editUrl} {isFullVersion} {isPreview} {fillInSummary} />
 </div>

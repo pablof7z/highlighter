@@ -28,5 +28,5 @@ export async function writeAppHandler(kind: NDKKind, force = false) {
 
 	appHandlerEvent.tag(['a', $ndk.clientNip89]);
 
-	await appHandlerEvent.publish();
+	// await appHandlerEvent.publish();
 }

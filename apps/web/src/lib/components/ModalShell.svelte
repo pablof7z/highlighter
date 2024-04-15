@@ -15,7 +15,7 @@
     fixed
     h-screen top-0 bottom-0 left-0 px-4 lg:px-0
     flex flex-col justify-center items-center
-    z-40
+    z-[99]
     w-screen
     pointer-events-none
     {color}

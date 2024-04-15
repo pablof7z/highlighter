@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
-<link href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.5/dist/quill.snow.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.5/dist/quill.core.css" rel="stylesheet" />
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Highlighter">
@@ -73,12 +73,12 @@
 <link rel="apple-touch-startup-image" media="screen and (prefers-color-scheme: dark) and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/splash/apple-splash-landscape-dark-1136x640.png" />
 		<meta
 			name="viewport"
-			content="width=device-width; initial-scale=1.0; user-scalable=no, viewport-fit=cover"
+			content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale = 1.0, user-scalable = no, viewport-fit=cover"
 		/>
 		<link rel="stylesheet" href="/fonts/inter.css" />
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover">
+	<body class="max-sm:w-screen overflow-x-clip" data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>

@@ -16,7 +16,6 @@
 	import { openModal } from 'svelte-modals';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { welcomeScreenSeen } from '$stores/settings';
-	import NetworkHandler from '$components/NetworkHandler.svelte';
 	import currentUser from '$stores/currentUser';
 
 	const d = createDebug('HL:layout');
@@ -69,7 +68,7 @@
 
 	let sessionPreparationStarted = false;
 
-	$: if (!sessionPreparationStarted && !!$user) {
+	$: if (!sessionPreparationStarted && !!$currentUser) {
 		sessionPreparationStarted = true;
 		prepareSession();
 	}

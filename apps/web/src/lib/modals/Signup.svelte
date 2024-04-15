@@ -38,7 +38,7 @@
         creating = true;
         // See if this username resolves to an existing NIP-05
         const domain = nsecBunker.domain;
-        const nip05 = await NDKUser.fromNip05([ username, domain ].join("@"));
+        const nip05 = await NDKUser.fromNip05([ username, domain ].join("@"), $ndk);
 
         if (nip05) {
             usernameTaken = true;

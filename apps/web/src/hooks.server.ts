@@ -5,10 +5,10 @@ import { authenticateUser } from '$lib/utils/authentication';
 
 // if running in production
 
-Sentry.init({
-    dsn: "https://a63e57721efe045140239736daf0d675@o317830.ingest.us.sentry.io/4506382142799872",
-    tracesSampleRate: 1
-})
+// Sentry.init({
+//     dsn: "https://a63e57721efe045140239736daf0d675@o317830.ingest.us.sentry.io/4506382142799872",
+//     tracesSampleRate: 1
+// })
 
 const AUTH_PATHS = [
 	'/api/user',
@@ -21,7 +21,7 @@ const AUTH_PATHS = [
 	'/api/stripe'
 ];
 
-export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, resolve }) => {
+export const handle: Handle = /*sequence(Sentry.sentryHandle(), */async ({ event, resolve }) => {
 	// Convert strings to regular expressions and check if path matches
 	const isAuthPath = AUTH_PATHS.some((path) => {
 		const regex = typeof path === 'string' ? new RegExp(`^${path}$`) : path;
@@ -41,5 +41,6 @@ export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, re
 	});
 	// response.headers.delete('link');
 	return response;
-});
-export const handleError = Sentry.handleErrorWithSentry();
+};
+// });
+// export const handleError = Sentry.handleErrorWithSentry();

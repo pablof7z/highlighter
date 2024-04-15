@@ -12,12 +12,14 @@
 
     let amount = ((value.currency === 'msat') ? (value.amount/1000) : (value.amount/100)).toString();
 
-    $: value.amount = parseFloat(amount) * (value.currency === 'msat' ? 1000 : 100);
+    $: value.amount = parseFloat(amount) * (value.currency === 'msat' ? 1000 : 100) ?? 0;
+    $: if (isNaN(value.amount)) value.amount = 0;
 
     function blurInput() {
         // if the currency is USD or EUR, make it into a float with 2 decimals
         if (value.currency === "USD" || value.currency === "EUR") {
             amount = parseFloat(amount).toFixed(2);
+            if (amount === "NaN") amount = "0";
         }
     }
 

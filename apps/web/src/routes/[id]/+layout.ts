@@ -11,12 +11,12 @@ export async function load({ params, fetch, data }) {
 	let user: NDKUser | undefined;
 	const $ndk = get(ndk);
 
+	debug(`user layout starting for ${id}: ${JSON.stringify(data)}`);
+
 	if (data?.pubkey) {
 		user = $ndk.getUser({pubkey: data.pubkey});
 		return { user, pubkey: data.pubkey };
 	}
-
-	debug('user layout starting');
 
 	if (id.startsWith('npub')) {
 		user = new NDKUser({ npub: id });

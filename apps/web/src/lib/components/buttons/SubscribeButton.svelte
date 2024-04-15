@@ -8,7 +8,7 @@
 	import { getUserSubscriptionTiersStore, getUserSupporters } from "$stores/user-view";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import type { Readable } from "svelte/store";
-	import { X } from "phosphor-svelte";
+	import { Crown, X } from "phosphor-svelte";
 	import type { UserProfileType } from "../../../app";
 
     export let user: NDKUser;
@@ -43,27 +43,29 @@
     <UserProfile bind:authorUrl {user} />
 
     {#if !currentUserSubscriberTier}
-        {#if hasLNPayments === false}
-            <div class="text-xs">
-                <X class="w-4 h-4 inline text-red-800" />
-                No payments enabled for {userProfile?.name??"this user"}
-            </div>
-        {:else}
+        {#if hasLNPayments !== false}
             <button
                 on:click={openSupportModal}
                 class="
-                    button flex flex-row items-center !gap-0
+                    flex flex-row items-center !gap-0
                     whitespace-nowrap text-base
                     max-sm:px-6
+                    xl:py-3 xl:button border-accent2 w-full transition-all duration-300 group
+                    border-2 hover:bg-accent2/20 xl:bg-transparent
+                    rounded-full p-2
+                    !text-white
                     {$$props.buttonClass??""}
                 "
             >
-                {#if $tiers && $tiers.length > 0}
-                    Go Backstage
-                {:else}
-                    Support
-                {/if}
-                <CaretRight class="w-5 h-5 inline" />
+                <span class="hidden xl:inline">
+                    {#if $tiers && $tiers.length > 0}
+                        Go Backstage
+                    {:else}
+                        Support
+                        <CaretRight class="w-5 h-5 inline" />
+                    {/if}
+                </span>
+                <Crown class="w-5 h-5 inline xl:hidden" />
             </button>
         {/if}
     {/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import FollowButton from "$components/buttons/FollowButton.svelte";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
 	import { Avatar, Name } from "@kind0/ui-common";
 	import { NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
@@ -25,7 +26,7 @@
         scrollY = window.scrollY;
         if (scrollY > 80) {
             collapsed = true;
-        } else {
+        } else if (scrollY < 20) {
             collapsed = false;
         }
     }
@@ -35,6 +36,7 @@
     flex
     max-sm:gap-4
     overflow-clip
+    max-sm:py-1
     items-end justify-between p-3 sm:px-6 sm:py-4 sm:-mt-16
     gap-4
     transition-all duration-300
@@ -49,7 +51,7 @@
     <div class="flex items-center sm:items-end shrink">
         <Avatar user={user} {userProfile} {fetching} size={collapsed ? "small" : "medium"} class="
             transition-all duration-300 flex-none object-cover
-            {collapsed ? 'w-14 h-14' : 'w-16 h-16 sm:w-28 sm:h-28'}
+            {collapsed ? 'w-12 h-12 sm:w-14 sm:h-14' : 'w-16 h-16 sm:w-28 sm:h-28'}
         " />
 
         <div class="ml-4 overflow-clip">
@@ -71,9 +73,12 @@
         </div>
     </div>
 
-    {#if $tiers}
-        <SubscribeButton {user} {userProfile} {tiers} buttonClass="
-            max-sm:bg-accent2 max-sm:text-white max-sm:!w-fit
-        " />
-    {/if}
+    <div class="flex flex-row items-center gap-2">
+        {#if $tiers}
+            <SubscribeButton {user} {userProfile} {tiers} buttonClass="
+                max-sm:bg-accent2 max-sm:text-white max-sm:!w-fit
+            " />
+        {/if}
+        <FollowButton {user} />
+    </div>
 </div>

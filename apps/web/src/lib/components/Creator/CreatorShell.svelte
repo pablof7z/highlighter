@@ -12,6 +12,7 @@
 	import CreatorProfileTabs from "./CreatorShell/CreatorProfileTabs.svelte";
 	import CreatorShellSidebar from "./CreatorShell/CreatorShellSidebar.svelte";
 	import CreatorHeader from "./CreatorHeader.svelte";
+	import LogoSmall from "$icons/LogoSmall.svelte";
 
     export let user: NDKUser;
 
@@ -62,8 +63,13 @@
     "
 >
     <div class="flex flex-row w-full relative h-full grow">
-        <div class="md:w-1/5 h-full hidden md:block sticky top-0 grow pt-10">
-            <Logo class="w-40" />
+        <div class="md:w-10 lg:w-1/5 xl:w-1/5 h-full hidden md:block sticky top-0 grow pt-10 ">
+            <div class="hidden xl:block">
+                <Logo class="w-40" />
+            </div>
+            <!-- <div class="xl:hidden">
+                <LogoSmall class="w-10" />
+            </div> -->
 
             <div class="my-4"></div>
 
@@ -76,7 +82,7 @@
                 />
             </div>
         </div>
-        <div class="md:w-4/5 lg:w-3/5 border-x border-base-300">
+        <div class="md:w-full lg:w-3/5 xl:w-3/5 border-x border-base-300">
             <UserProfile {user} bind:userProfile bind:fetching bind:authorUrl>
                 <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%] max-sm:hidden">
                     {#if userProfile?.banner}
@@ -89,7 +95,7 @@
                 <CreatorHeader {user} {userProfile} {fetching} tiers={userTiers} />
             </UserProfile>
 
-            <div class="md:hidden">
+            <div class="md:hidden sticky top-14 z-50 bg-black/90">
                 <div class="border-t border-base-300 mt-4 mb-2">
                     <CreatorProfileTabs
                         bind:value={activeTab}
@@ -102,7 +108,7 @@
 
             <slot />
         </div>
-        <div class="lg:w-1/5 max-lg:hidden grow pt-10">
+        <div class="lg:w-1/5 hidden lg:block grow pt-10">
             <CreatorShellSidebar {user} {userSupporters} />
         </div>
     </div>

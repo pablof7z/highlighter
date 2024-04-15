@@ -16,7 +16,9 @@
 
     onDestroy(() => { zap?.unsubscribe(); });
 
-    $: if (zap && $zap) zapEvent = $zap[0]?.event;
+    $: if (zap && $zap) {
+        zapEvent = $zap[0]?.event;
+    }
 </script>
 
 {#if zap && $zap.length > 0}

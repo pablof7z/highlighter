@@ -94,8 +94,8 @@
                             creatorUser={creator}
                             expandReplies={expandReplies(event)}
                             expandThread={true}
+                            contentClass="text-lg"
                             threadView={true}
-                            showReply={true}
                             urlPrefix={`/${id}/posts/`}
                         />
                     {:else}

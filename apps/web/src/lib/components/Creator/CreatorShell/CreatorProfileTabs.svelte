@@ -6,7 +6,7 @@
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
     import { getUserHighlights, getUserSupporters, getGAUserContent, getUserCurations, getUserContent, getUserSubscriptionTiersStore } from "$stores/user-view";
 	import { NDKUser } from "@nostr-dev-kit/ndk";
-	import { Article, Atom, Gear, ListPlus, Note, Notepad, Ticket, UsersThree } from "phosphor-svelte";
+	import { Article, Atom, Gear, ListPlus, Notepad, Ticket, UsersThree } from "phosphor-svelte";
 	import SidebarPublishButton from "./SidebarPublishButton.svelte";
     import currentUser from "$stores/currentUser";
 	import { openModal } from "svelte-modals";
@@ -70,14 +70,12 @@
         options.push({ name: "Supporters", href: url('/supporters'), icon: Atom})
 
         if (user.pubkey === $currentUser?.pubkey) {
-            options.push({ name: '-------', id: 1} )
             options.push({
                 id: 'publish-button',
                 component: {
                     component: SidebarPublishButton
                 }
             })
-            options.push({ name: '-------', id: 2} )
             options.push({
                 name: 'Settings', href: '/settings', icon: Gear
             })
@@ -118,4 +116,4 @@
     }
 </script>
 
-<OptionsList {options} bind:value on:changed={changed} class="sm:flex-col w-full max-sm:gap-2 gap-4" />
+<OptionsList {options} bind:value on:changed={changed} class="sm:flex-col w-full max-sm:gap-0 gap-2" />

@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { NDKEvent, NDKKind, NDKRelaySet, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKKind, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
     import Input from "$components/Forms/Input.svelte";
 	import Page1 from "$components/Editor/NoteEditorPage/Page1.svelte";
 	import { UploadButton, ndk, newToasterMessage } from "@kind0/ui-common";
     import { Image, X } from "phosphor-svelte";
-	import { getDefaultRelaySet } from "$utils/ndk";
 	import { page } from "$app/stores";
 	import { goto } from "$app/navigation";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
@@ -12,29 +11,22 @@
 	import SelectTier from "$components/Forms/SelectTier.svelte";
 	import { selectedTiers } from "$stores/post-editor";
 	import { getTierSelectionFromAllTiers } from "$lib/events/tiers";
-
-    export let creatorUser: NDKUser;
+	import { relaySetForEvent } from "$utils/event";
 
     export let opened = true;
+    export let kind: NDKKind;
 
     let note = new NDKEvent($ndk);
-    note.kind = NDKKind.GroupNote;
-
-    let relaySet: NDKRelaySet | undefined = getDefaultRelaySet();
-
-    if (note.kind === NDKKind.Text) {
-        relaySet = undefined;
-    }
+    note.kind = kind;
 
     async function publish() {
-        note.tags.push(["h", creatorUser.pubkey])
 
-        for (const url of uploadedFiles) {
-            note.content += `\n\n${url}`;
-        }
 
         try {
-            await note.publish(relaySet)
+            const relaySet = relaySetForEvent(note);
+            console.log('publishing', relaySet)
+            const relays = await note.publish(relaySet)
+            console.log('published to relays', Array.from(relays), relaySet)
             const id = note.encode();
             note = new NDKEvent($ndk);
             note.kind = NDKKind.GroupNote;
@@ -53,7 +45,6 @@
 
     function uploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {
         const {url, tags} = e.detail;
-        console.log(e.detail);
         if (url) {
             uploadedFiles.push(url);
             uploadedFiles = uploadedFiles;
@@ -85,7 +76,7 @@
 
         <div class="flex flex-row items-center justify-end gap-4 pt-0 p-4">
             <div class="flex flex-row items-center justify-end gap-4">
-                <button class="button px-6" on:click={publish} disabled={note.content.length < 5}>
+                <button class="button px-6" on:click={publish} disabled={note.content.length < 1}>
                     Publish
                 </button>
             </div>
@@ -94,7 +85,7 @@
 {:else}
     <div class="">
         <div class="p-4 border-b border-white/10">
-            <Page1 bind:note skipUploadButton={true} bind:uploadedFiles bind:title />
+            <Page1 bind:note skipUploadButton={true} bind:uploadedFiles bind:title on:submit={publish} />
 
             <div class="flex flex-row items-center text-white gap-4">
                 <UploadButton class="button w-10 h-10 !rounded-full p-1" on:uploaded={uploaded}>
@@ -105,11 +96,15 @@
         </div>
 
         <div class="flex flex-row items-center justify-between gap-4 p-4">
-            <SelectTier
-                bind:tiers={$selectedTiers}
-                class="dropdown w-full"
-                containerClass="dropdown-content z-40 bg-base-100 p-4 border border-base-300 w-full"
-            />
+            {#if note.kind !== NDKKind.Text}
+                <SelectTier
+                    bind:tiers={$selectedTiers}
+                    class="dropdown w-full"
+                    containerClass="dropdown-content z-40 bg-base-100 p-4 border border-base-300 w-full"
+                />
+            {:else}
+                <div class="grow"></div>
+            {/if}
 
             <div class="flex flex-row items-center justify-end gap-4">
                 <LengthIndicator text={note.content} />
@@ -117,7 +112,7 @@
                 <button on:click={() => opened = false}>
                     Cancel
                 </button>
-                <button class="button px-6" on:click={publish} disabled={note.content.length < 5}>
+                <button class="button px-6" on:click={publish} disabled={note.content.length < 1}>
                     Publish
                 </button>
             </div>

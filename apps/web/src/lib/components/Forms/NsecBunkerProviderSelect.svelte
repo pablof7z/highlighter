@@ -31,6 +31,7 @@
 
 <div class:hidden={!open}>
     <ul class="bg-black/50 border border-white/10 flex-nowrap rounded-box p-0 overflow-y-auto h-fit">
+        {$allNsecBunkerProviders.length}
         {#each $allNsecBunkerProviders as provider (provider.id)}
             <NsecBunkerProviderItem
                 {provider}
