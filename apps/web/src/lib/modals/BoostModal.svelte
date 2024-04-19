@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import ArticleCard from "$components/Events/ArticleCard.svelte";
+	import ItemLink from "$components/Events/ItemLink.svelte";
+	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
+	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import Input from "$components/Forms/Input.svelte";
     import ModalShell from "$components/ModalShell.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
@@ -13,13 +16,15 @@
 
     export let event: NDKEvent;
 
-    let article: NDKArticle;
+    let article: NDKArticle | undefined = undefined;
     let summary: string | undefined;
+    let placeholder: string = "Write something";
 
     let content: string;
 
     if (event.kind === NDKKind.Article) {
         article = NDKArticle.from(event);
+        placeholder = `What did you think of ${article.title}?`;
     }
 
     // Check if there is a preview version
@@ -29,7 +34,7 @@
 
     const suffixUrl = previewId ? urlSuffixFromTagId(previewId) : urlSuffixFromEvent(event);
     let authorUrl: string;
-    let articleUrl: string;
+    let articleUrl: string | undefined;
     const domain = $page.url.protocol + "://" + $page.url.hostname;
 
     if (preview) {
@@ -41,7 +46,7 @@
         })
     }
 
-    $: articleUrl = `${domain}${authorUrl}/${suffixUrl}`;
+    $: if (article) articleUrl = `${domain}${authorUrl}/${suffixUrl}`;
 
     let publishing = false;
 
@@ -50,9 +55,12 @@
         const boostEvent = new NDKEvent($ndk);
         const boostedEvent = previewEvent ?? event;
         boostEvent.kind = NDKKind.Text;
-        boostEvent.content = `${content}\n\nnostr:${article.encode()}\n\n${articleUrl}`;
-        boostEvent.tags.push(["q", boostedEvent.tagId(), boostedEvent.relay?.url??"", "mention"]);
-        boostEvent.tags.push(["k", boostedEvent.kind!.toString()]);
+        boostEvent.content = `${content}\n\nnostr:${event.encode()}`;
+        if (articleUrl)
+            boostEvent.content += `\n\n${articleUrl}`;
+
+        boostEvent.tag(boostedEvent, "mention", false, "q");
+        if (boostedEvent.kind !== NDKKind.Text) boostEvent.tags.push(["k", boostedEvent.kind!.toString()]);
         boostEvent.tag(boostedEvent.author);
         try {
             await boostEvent.publish();
@@ -65,16 +73,30 @@
     let advanced = false;
 </script>
 
-<ModalShell color="black" class="w-full max-w-2xl">
-    <h1 class="w-full text-left text-3xl font-bold">Publish on Nostr</h1>
+<ModalShell color="glassy" class="w-full max-w-2xl items-stretch">
+    <h1 class="w-full text-left text-xl font-bold">Publish on Nostr</h1>
+
     <UserProfile user={event.author} bind:authorUrl>
-        <Textarea
-            class="w-full rounded-md border !border-base-300 text-lg min-h-[10rem] !bg-transparent max-h-[50vh]"
-            placeholder="What did you think of this article?"
-            bind:value={content}
+        <ContentEditor
+            bind:content
+            toolbar={false}
+            {placeholder}
+            allowMarkdown={false}
+            autofocus={true}
+            class="
+                w-full min-h-[15rem]
+                border border-white/10 rounded-box
+                {$$props.class??""}
+            "
         />
 
-        <ArticleCard {article} />
+        {#if article}
+            <ArticleCard {article} />
+        {:else}
+            <div class="bg-base-300 rounded-box w-full px-4">
+                <ForumFeedItem {event} />
+            </div>
+        {/if}
     </UserProfile>
 
     <div class="flex flex-row items-stretch justify-end gap-8 w-full">

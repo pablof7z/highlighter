@@ -67,13 +67,15 @@ async function addPointerTags(event: NDKEvent, teaser?: NDKEvent) {
 
 export async function prepareEventsForTierPublish(
 	event: NDKEvent,
-	tiers: TierSelection,
+	tiers: TierSelection | undefined,
 	opts: {
 		wideDistribution?: boolean;
 		teaserEvent?: NDKEvent;
 		ndk?: NDK;
 		relaySet?: NDKRelaySet;
 		publishAt?: Date;
+		skipHTag?: boolean;
+		explicitCreatedAt?: number;
 	} = {}
 ) {
 	const ndk = opts.ndk ?? event.ndk!;
@@ -87,14 +89,15 @@ export async function prepareEventsForTierPublish(
 
 	// update created_at date
 	console.log(`publishAt: ${publishAt}`);
-	event.created_at = Math.floor(publishAt.getTime() / 1000);
-	if (teaser) teaser.created_at = Math.floor(publishAt.getTime() / 1000);
+	event.created_at = opts.explicitCreatedAt ?? Math.floor(publishAt.getTime() / 1000);
+	if (teaser) teaser.created_at = opts.explicitCreatedAt ?? Math.floor(publishAt.getTime() / 1000);
 	console.log(`event.created_at: ${event.created_at}`);
 
-	addHTag(event, user);
+	if (!opts.skipHTag) addHTag(event, user);
 	if (teaser) addHTag(teaser, user);
 
-	addTierTags(event, tiers, teaser);
+	if (tiers)
+		addTierTags(event, tiers, teaser);
 
 	await addPubkeyAndDTag(event, user, teaser);
 

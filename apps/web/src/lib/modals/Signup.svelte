@@ -66,6 +66,7 @@
 
         // Generate event
         const signer = new NDKNip46Signer($bunkerNDK, nsecBunker.pubkey, localSigner);
+
         let popup: Window | null = null;
         signer.rpc.on("authUrl", (url: string) => {
             popup = window.open(url, "_blank", "width=400,height=600");
@@ -110,7 +111,7 @@
     async function checkUsername() {
         const domain = nsecBunker?.domain;
         if (username.length === 0 || !domain) return;
-        const nip05 = await NDKUser.fromNip05([ username, domain ].join("@"));
+        const nip05 = await NDKUser.fromNip05([ username, domain ].join("@"), $ndk);
 
         if (nip05) {
             usernameTaken = true;

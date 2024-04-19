@@ -3,8 +3,7 @@
 	import VideoLink from "$components/Events/VideoLink.svelte";
 	import RadioButton from "$components/Forms/RadioButton.svelte";
     import ModalShell from "$components/ModalShell.svelte";
-    import { event, nonSubscribersPreview, previewExtraContent, reset, status } from "$stores/post-editor";
-	import { user } from "@kind0/ui-common";
+    import { event, event, nonSubscribersPreview, previewExtraContent, reset, status } from "$stores/post-editor";
 	import { NDKArticle, NDKKind, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { closeModal } from "svelte-modals";
     import { prepareEventsForTierPublish, publishToTiers } from "$actions/publishToTiers";
@@ -14,12 +13,15 @@
 	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { debugMode } from "$stores/session";
-	import PostGrid from "$components/Events/PostGrid.svelte";
 	import PublishValidation from "./PublishValidation.svelte";
+	import { Thread } from "$utils/thread";
+	import currentUser from "$stores/currentUser";
+	import ThreadItem from "$components/Editor/ThreadEditor/ThreadItem.svelte";
+	import { goto } from "$app/navigation";
 
-    $: if ($event && $user) {
-        $event.pubkey = $user?.pubkey;
-        $event.author = $user;
+    $: if ($event && $currentUser) {
+        $event.pubkey = $currentUser?.pubkey;
+        $event.author = $currentUser;
     }
 
     let mode: "now" | "schedule" = "now";
@@ -42,12 +44,84 @@
         } catch(e) { console.log(e) }
     }
 
+    async function publishThread(thread: Thread) {
+        let rootEvent: NDKEvent | undefined;
+        let lastEvent: NDKEvent | undefined;
+        let lastPublishTime: number;
+        const timestampEventsEvery = 5; // seconds
+
+        // if publishAt is set, use it, in seconds
+        if ($publishAt) {
+            lastPublishTime = $publishAt.getTime() / 1000;
+        } else {
+            lastPublishTime = Math.floor(Date.now() / 1000); // now
+        }
+
+        for (const item of thread.items) {
+            const event = item.event;
+            event.id = "";
+            event.sig = "";
+            event.created_at = lastPublishTime;
+
+            // next publish time should be in timestampEventsEvery seconds
+            lastPublishTime += timestampEventsEvery;
+
+            if (rootEvent) {
+                // tag the current event with the root event
+                event.tag(rootEvent, "root", true);
+
+                // if we have a lastEvent, tag it, we're replying to it since this is a thread
+                if (lastEvent) { event.tag(lastEvent, "reply", true); }
+            }
+
+            const [ eventForPublish ] = await prepareEventsForTierPublish(
+                event,
+                $selectedTiers,
+                {
+                    ndk: $ndk,
+                    wideDistribution: true,
+                    publishAt: $publishAt,
+                    explicitCreatedAt: event.created_at
+                }
+            )
+
+            if (!eventForPublish) {
+                newToasterMessage("Failed to prepare event for publish", "error");
+                return;
+            };
+
+            // sign, we need Ids
+            await eventForPublish.sign();
+            eventForPublish.rawEvent();
+
+            if (!rootEvent) {
+                rootEvent = eventForPublish;
+            } else {
+                lastEvent = eventForPublish;
+            }
+
+            await publishToTiers(
+                eventForPublish, {
+                    ndk: $ndk,
+                    wideDistribution: true,
+                    publishAt: $publishAt,
+                }
+            )
+        }
+
+        if (rootEvent) goto("/e/" + rootEvent.encode());
+    }
+
     async function publish() {
         publishing = true;
 
         if (!$event) {
             publishing = false;
             return;
+        }
+
+        if ($event instanceof Thread) {
+            return publishThread($event);
         }
 
         // add preview content
@@ -73,7 +147,6 @@
         )
 
         try {
-            console.log('publishing');
             await publishToTiers(
                 eventForPublish!, {
                     ndk: $ndk,
@@ -82,7 +155,6 @@
                     publishAt: $publishAt
                 }
             )
-            console.log('done with publish');
             eventPublished = true;
             if ($preview) previewPublished = true;
         } catch (e: any) {
@@ -117,6 +189,7 @@
         }
 
         publishing = false;
+
         $view = "published";
         closeModal();
         // reset("published");
@@ -166,17 +239,32 @@
     {#key statusLength}
         <PublishValidation bind:canPublish />
         {#key canPublish}
-            <div class="md:min-w-[40rem] bg-white/5 border border-white/20 rounded-box p-3">
-                {#if $event && $user}
-                    {#if $event.kind === NDKKind.Article}
+            {#if $event && $currentUser}
+                {#if $event.kind === NDKKind.Article}
+                    <div class="md:min-w-[40rem] border border-white/20 rounded-box p-3">
                         <ArticleLink article={$event} skipLink={true} />
-                    {:else if $event.kind === NDKKind.HorizontalVideo}
+                    </div>
+                {:else if $event.kind === NDKKind.HorizontalVideo}
+                    <div class="md:min-w-[40rem] border border-white/20 rounded-box p-3">
                         <VideoLink video={$event} skipLink={true} />
-                    {:else}
-                        {$event.kind}
-                    {/if}
+                    </div>
+                {:else if $event instanceof Thread}
+                    <div class="max-h-[50vh] overflow-y-auto discussion-wrapper w-full sm:min-w-[35rem]">
+                        {#each $event.items as item, i }
+                            <div class="w-full discussion-item">
+                                <ThreadItem
+                                    item={item}
+                                    shouldDisplayVerticalBar={i !== $event.items.length - 1}
+                                    readOnly={true}
+                                />
+
+                            </div>
+                        {/each}
+                    </div>
+                {:else}
+                    {$event.kind}
                 {/if}
-            </div>
+            {/if}
         {/key}
     {/key}
 
@@ -184,16 +272,18 @@
         <div class="field">
             <div class="title">Publication</div>
 
-            <RadioButton bind:currentValue={mode} value="now" class="flex-1 bg-white/10 !text-white font-normal text-xl ">
-                Publish now
-            </RadioButton>
+            <div class="w-full rounded-box overflow-clip">
+                <RadioButton bind:currentValue={mode} value="now" class="flex-1 bg-white/10 !text-white font-normal text-xl ">
+                    Publish now
+                </RadioButton>
 
-            <RadioButton bind:currentValue={mode} value="schedule" class="flex-1 bg-white/10 !text-white font-normal text-xl" on:click={() => dateInput.focus()}>
-                Schedule
-                <div slot="description" class:hidden={mode !== "schedule"}>
-                    <input type="datetime-local" bind:value={publishAtVal} class="border-none !bg-transparent placeholder:text-black text-black" bind:this={dateInput} />
-                </div>
-            </RadioButton>
+                <RadioButton bind:currentValue={mode} value="schedule" class="flex-1 bg-white/10 !text-white font-normal text-xl" on:click={() => dateInput.focus()}>
+                    Schedule
+                    <div slot="description" class:hidden={mode !== "schedule"}>
+                        <input type="datetime-local" bind:value={publishAtVal} class="border-none !bg-transparent placeholder:text-black text-black" bind:this={dateInput} />
+                    </div>
+                </RadioButton>
+            </div>
         </div>
     </section>
 
@@ -217,7 +307,7 @@
 
         <button
             class="button flex-1 px-10 py-3"
-            disabled={mode === 'schedule' && (!$publishAt || new Date($publishAt) < new Date()) || !canPublish}
+            disabled={mode === 'schedule' && (!$publishAt || new Date($publishAt) < new Date()) || !canPublish || publishing}
             on:click={() => {
                 if (mode === "now") $publishAt = undefined;
                 publish();

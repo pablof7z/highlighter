@@ -2,7 +2,7 @@
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { pageSidebar } from "$stores/layout";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { user } from "@kind0/ui-common";
+	import currentUser from "$stores/currentUser";
 	import { onMount, onDestroy } from "svelte";
 
     let startedUserView = false;
@@ -12,8 +12,12 @@
         mounted = true;
     });
 
-    $: if (!!$user && !startedUserView && mounted) {
-        startUserView($user);
+    $: console.log({currentUser: !!$currentUser})
+    $: console.log({mounted})
+    $: console.log({startedUserView})
+
+    $: if (!!$currentUser && !startedUserView && mounted) {
+        startUserView($currentUser);
         startedUserView = true;
     }
 

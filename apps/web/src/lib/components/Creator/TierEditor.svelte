@@ -12,7 +12,7 @@
 
     const dispatch = createEventDispatcher();
 
-    let name: string;
+    let name: string = "";
     let description: string;
 
     let amounts: NDKSubscriptionAmount[] = [];
@@ -151,7 +151,7 @@
                             <div class="relative w-full flex-grow flex flex-row items-center">
                                 <GlassyInput
                                     tabindex={i+1}
-                                    autofocus={i === perks.length - 1}
+                                    autofocus={i === perks.length - 1 && name.length > 0}
                                     bind:value={perk}
                                     on:focus={() => perkWithFocus = i}
                                     on:blur={() => perkWithFocus = undefined}

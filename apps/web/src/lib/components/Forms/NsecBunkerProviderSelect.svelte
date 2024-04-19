@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { bunkerNDK, ndk } from "@kind0/ui-common";
-	import { NDKKind, type Hexpubkey } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type Hexpubkey, NDKEvent, NDKNostrRpc, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
 	import type { NsecBunkerProvider } from "../../../app";
 	import NsecBunkerProviderItem from "./NsecBunkerProviderItem.svelte";
     import { createEventDispatcher, onMount } from "svelte";
+	import { derived } from "svelte/store";
+    import createDebug from "debug";
+
+    const debug = createDebug("HL:nsecbunker");
 
     export let value: NsecBunkerProvider = { pubkey: "", domain: ""};
     export let username: string | undefined;
@@ -17,8 +21,27 @@
         { closeOnEose: true, groupable: false }
     )
 
-    onMount(() => {
-        $bunkerNDK.connect();
+    const dedupedProviders = derived(allNsecBunkerProviders, $providers => {
+        const pubkeys = new Set<Hexpubkey>();
+        return $providers.filter((provider: NDKEvent) => {
+            if (pubkeys.has(provider.pubkey)) return false;
+            pubkeys.add(provider.pubkey);
+            return true;
+        })
+    })
+
+    let rpc: NDKNostrRpc;
+    let pingRpcUser: NDKUser;
+
+    onMount(async () => {
+        await $bunkerNDK.connect(2500);
+        const signer = NDKPrivateKeySigner.generate();
+        pingRpcUser = await signer.user();
+        rpc = new NDKNostrRpc($bunkerNDK, signer, debug);
+        await rpc.subscribe({
+            kinds: [24133 as number, 24134 as number],
+            "#p": [pingRpcUser.pubkey],
+        });
     })
 
     function onClick(e: CustomEvent<{pubkey: Hexpubkey, domain: string}>) {
@@ -29,16 +52,19 @@
     }
 </script>
 
-<div class:hidden={!open}>
-    <ul class="bg-black/50 border border-white/10 flex-nowrap rounded-box p-0 overflow-y-auto h-fit">
-        {$allNsecBunkerProviders.length}
-        {#each $allNsecBunkerProviders as provider (provider.id)}
-            <NsecBunkerProviderItem
-                {provider}
-                {username}
-                selected={provider.pubkey === selection}
-                on:click={onClick}
-            />
-        {/each}
-    </ul>
-</div>
+{#if rpc}
+    <div class:hidden={!open}>
+        <ul class="bg-black/50 border border-white/10 flex-nowrap rounded-box p-0 overflow-y-auto h-fit">
+            {#each $dedupedProviders as provider (provider.id)}
+                <NsecBunkerProviderItem
+                    {provider}
+                    {username}
+                    {rpc}
+                    {pingRpcUser}
+                    selected={provider.pubkey === selection}
+                    on:click={onClick}
+                />
+            {/each}
+        </ul>
+    </div>
+{/if}

@@ -27,9 +27,6 @@ export function getContents(quill: Quill) {
 
     const md = deltaToMarkdown(delta)
 
-    console.log(delta);
-    console.log(md);
-
     return md;
     // return quill.getContents().ops
     //     .map((op) => {

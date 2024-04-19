@@ -1,10 +1,14 @@
     <script lang="ts">
+	import { Thread } from '$utils/thread.js';
 	import PublishConfirmationModal from './PublishConfirmationModal.svelte';
 	import { CaretLeft, CaretRight } from "phosphor-svelte";
-    import { view, type, status, View } from "$stores/post-editor";
+    import { event, view, type, status, View, currentDraftItem } from "$stores/post-editor";
 	import { openModal } from "svelte-modals";
 	import { debugMode } from '$stores/session';
     import { getUserSubscriptionTiersStore } from '$stores/user-view';
+	import { saveDraft } from '$utils/thread';
+	import { drafts } from '$stores/drafts';
+	import { goto } from '$app/navigation';
 
     function previewAndPublish() {
         openModal(PublishConfirmationModal)
@@ -32,7 +36,17 @@
         case "edit":
             back = undefined;
             next = {label: "Continue", value: "meta"};
-            if ($type === "note") next = {label: "Continue", value: "audience"};
+            switch ($type) {
+                case "note": {
+                    next = {label: "Continue", value: "audience"};
+                    break;
+                }
+
+                case "thread": {
+                    next = {label: "Continue", value: "schedule"};
+                    break;
+                }
+            }
             break;
         case "view-preview":
             back = {label: "Back to Edit", value: "edit"};
@@ -56,6 +70,15 @@
         if (next?.value === "schedule") {
             previewAndPublish();
         } else if (next) $view = next.value as any;
+    }
+
+    function threadSaveDraft() {
+        if ($event instanceof Thread) {
+            const draftItem = saveDraft(true, $currentDraftItem, drafts, $event);
+            goto(`/drafts/${draftItem.id}`);
+        } else {
+            console.log($event)
+        }
     }
 
     let hasStatus = $status.length;
@@ -89,6 +112,10 @@
             {#if ($type === "article")}
                 <button class="truncate" on:click={togglePreview} class:button={$view === "view-preview"}>
                     Preview
+                </button>
+            {:else if ($type === "thread")}
+                <button class="truncate" on:click={threadSaveDraft}>
+                    Save Draft
                 </button>
             {/if}
             <button class="button" on:click={nextClicked} disabled={$view === "view-preview"}>

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { pageSidebar, pageHeader, sidebarPlacement } from "$stores/layout";
+    import { pageSidebar, pageHeader, sidebarPlacement, modalState } from "$stores/layout";
 	import { loginState } from '$stores/session';
 	import { Toaster, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
     import { Modals, closeModal } from 'svelte-modals'
-	import { fade } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	import Navigation from "./Navigation.svelte";
 	import SectionHeader from "./SectionHeader.svelte";
 	import { page } from "$app/stores";
@@ -35,7 +35,8 @@
 <Modals>
 	<div
 		slot="backdrop"
-		class="backdrop z-40 fixed"
+		class="backdrop z-[51] fixed"
+		class:hidden={$modalState !== "open"}
 		on:click={closeModal}
 		transition:fade={{ duration: 300 }}></div>
 </Modals>

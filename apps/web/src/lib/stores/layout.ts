@@ -1,7 +1,7 @@
 import { writable, type Writable } from 'svelte/store';
 
 interface Component {
-	component: ConstructorOfATypedSvelteComponent;
+	component: ConstructorOfATypedSvelteComponent | "Note";
 	props: { [key: string]: any };
 }
 
@@ -9,6 +9,10 @@ export const pageSidebar: Writable<Component | null> = writable(null);
 export const hideMobileBottomBar: Writable<boolean> = writable(false);
 export const sidebarPlacement: Writable<'left' | 'right'> = writable('left');
 export const searching: Writable<boolean> = writable(false);
+
+export const modalState: Writable<"open" | "closing" | "closed"> = writable("closed");
+
+export const threeColumnLayoutRightSidebar: Writable<Component | null> = writable(null);
 
 export type PageHeader = {
 	/**

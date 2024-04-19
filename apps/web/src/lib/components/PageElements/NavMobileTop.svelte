@@ -28,7 +28,7 @@
     // }
 </script>
 
-<div class="navbar fixed z-50 mobile-nav px-3 w-full grid grid-cols-5 gap-1 !py-0 mb-0 min-h-0 h-12">
+<div class="navbar fixed z-50 mobile-nav px-3 w-full grid grid-cols-5 gap-1 !py-0 mb-0 min-h-0 h-14">
     {#if $pageHeader?.component}
         <SectionHeader />
     {:else if !searchBar}
@@ -81,4 +81,4 @@
     {/if}
 </div>
 
-<div class="h-12"></div>
+<div class="h-14"></div>

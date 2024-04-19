@@ -81,7 +81,7 @@
                     </a>
                     <div class="flex flex-col gap-1 items-start w-full truncate">
                         <a href={authorUrl} class="text-white text-[15px] font-medium truncate">
-                            <Name {userProfile} {fetching} user={author} />
+                            <Name  npubMaxLength={12} {userProfile} {fetching} user={author} />
                         </a>
 
                         {#if event.pubkey === $user?.pubkey}

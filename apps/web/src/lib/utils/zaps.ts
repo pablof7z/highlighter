@@ -1,5 +1,5 @@
 import { ndk } from "@kind0/ui-common";
-import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKSubscriptionCacheUsage, NDKUser, NDKZap, NDKZapInvoice, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
+import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, NDKUser, NDKZap, NDKZapInvoice, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
 import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 import { Readable, derived, get, readable } from "svelte/store";
 
@@ -30,18 +30,13 @@ const zapsStore = (
     eventOrUser: NDKEvent | NDKUser,
     zapperPubkey?: Hexpubkey,
     extraFilter?: NDKFilter,
+    subOpts?: NDKSubscriptionOptions,
 ) => {
-    console.log('zapsStore', filter(eventOrUser, zapperPubkey, extraFilter));
     return get(ndk).storeSubscribe(
         filter(eventOrUser, zapperPubkey, extraFilter),
-        { cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE, closeOnEose: true}
+        { cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE, closeOnEose: true, ...subOpts}
     );
 }
-
-/**
- * Enforce a zapper pubkey filter
- */
-const withValidZapper = (zapperPubkey?: Hexpubkey) => (zap: NDKZapInvoice) => !zapperPubkey || zap.zapper === zapperPubkey;
 
 /**
  * Get the top zaps for an event
@@ -154,9 +149,10 @@ export async function getRecentZaps(
 export async function topPlusRecentZaps(
     eventOrUser: NDKEvent | NDKUser,
     count: number,
-    filter?: NDKFilter
+    filter?: NDKFilter,
+    subOpts?: NDKSubscriptionOptions
 ) {
-    const zaps = zapsStore(eventOrUser, await getZapperPubkey(eventOrUser), filter);
+    const zaps = zapsStore(eventOrUser, await getZapperPubkey(eventOrUser), filter, subOpts);
     const topZaps = topZapStore(zaps, 1);
     const recentZaps = mostRecentZapsStore(zaps, count);
 

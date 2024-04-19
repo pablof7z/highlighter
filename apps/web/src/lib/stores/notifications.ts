@@ -1,5 +1,5 @@
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
-import { writable, get as getStore, type Readable, derived } from 'svelte/store';
+import { writable, type Readable } from 'svelte/store';
 import type { NDKEvent } from '@nostr-dev-kit/ndk';
 
 export const seenIds = persist(writable<Set<string>>(new Set()), createLocalStorage(), 'seen-ids');
@@ -50,7 +50,6 @@ export const notificationsEnabled = writable(false);
 // }
 
 export function markEventAsSeen(eventId: string) {
-	console.log(`Marking event ${eventId} as seen`);
 	seenIds.update(($seenIds) => {
 		$seenIds.add(eventId);
 		return $seenIds;

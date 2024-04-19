@@ -63,7 +63,7 @@
 ">
     <div class="justify-start gap-6 flex whitespace-nowrap flex-shrink flex-grow
         max-sm:max-w-[100vw] overflow-x-auto
-        max-sm:border-y border-white/10 max-sm:py-2
+        max-sm:border-y border-white/10
         max-sm:w-full
     ">
 

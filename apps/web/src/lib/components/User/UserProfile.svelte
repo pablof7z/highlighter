@@ -2,11 +2,12 @@
     import { ndk, user as currentUser } from "@kind0/ui-common";
     import { userProfile as currentUserProfile } from "$stores/session";
     import { profileFromEvent, type Hexpubkey, type NDKEvent, type NDKSubscriptionOptions, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
-    import type { NDKRelay, NDKUser } from "@nostr-dev-kit/ndk";
+    import type { NDKRelay, NDKSubscription, NDKUser } from "@nostr-dev-kit/ndk";
     import type { UserProfileType } from "../../../app";
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
     import { createEventDispatcher, onDestroy } from "svelte";
     import createDebug from "debug";
+    import { inview } from 'svelte-inview';
 
     export let pubkey: Hexpubkey | undefined = undefined;
     export let npub: string | undefined = undefined;
@@ -15,6 +16,7 @@
     export let displayNip05: string | undefined = undefined;
     export let forceFetch: boolean = false;
     export let event: NDKEvent | undefined = undefined;
+    export let allowLazyLoading = true;
 
     const d = createDebug("HL:UserProfile");
     const dispatch = createEventDispatcher();
@@ -23,7 +25,15 @@
         user ??= $ndk.getUser({npub, pubkey});
     }
 
-    export let authorUrl: string = `/${user?.npub}`;
+    export let authorUrl: string | undefined = undefined;
+
+    try {
+        authorUrl = `/${user?.npub}`;
+    } catch {
+        authorUrl = "";
+        user = undefined;
+    }
+
     export let userProfile: UserProfileType | undefined | null = undefined;
     export let fetching: boolean = !userProfile;
 
@@ -38,8 +48,6 @@
         if ($currentUserProfile) {
             userProfile = {...$currentUserProfile};
             fetching = false;
-        } else {
-            fetching = true;
         }
     }
 
@@ -51,8 +59,6 @@
             if (p) {
                 d(`Fetched profile for ${p.displayName} from cache`);
                 userProfile ??= p;
-            } else {
-                d(`No profile found for ${user.pubkey} in cache`);
             }
         }).catch((e: any) => {
             console.error(e);
@@ -69,32 +75,44 @@
     const cacheUsage = forceFetch ? NDKSubscriptionCacheUsage.ONLY_RELAY : NDKSubscriptionCacheUsage.CACHE_FIRST;
     const groupable = !forceFetch;
 
-    const subId = subsOptions?.subId ?? 'user-profile';
+    let subscription: NDKSubscription | undefined = undefined;
 
-    const sub = fetching && user && $ndk.subscribe([
-        { kinds: [0], authors: [user.pubkey] },
-    ], { groupableDelayType: 'at-least', subId, groupable, closeOnEose, cacheUsage, ...subsOptions});
+    function fetchProfileRemotely() {
+        fetching = true;
+        const subId = subsOptions?.subId ?? 'user-profile';
+        subscription = fetching && user && $ndk.subscribe(
+            [ { kinds: [0], authors: [user.pubkey] }, ],
+            { groupableDelayType: 'at-least', subId, groupable, closeOnEose, cacheUsage, ...subsOptions},
+            undefined, false
+        );
+
+        if (subscription) {
+            subscription.on("event", (e: NDKEvent, r: NDKRelay) => {
+                const noKind0Event = !kind0Event;
+                const kind0EventIsOlder = kind0Event?.created_at! < e.created_at!;
+
+                if ((noKind0Event || kind0EventIsOlder)) {
+                    kind0Event = e;
+                    userProfile = profileFromEvent(e) as UserProfileType;
+                    event = e;
+
+                    if (!fetching) {
+                        dispatch("newProfileAfterEose", userProfile);
+                    }
+                }
+            });
+            subscription.on("eose", () => { fetching = false; });
+            subscription.start();
+        }
+    }
 
     onDestroy(() => {
-        if (sub) sub.stop();
+        if (subscription) subscription.stop();
     })
 
-    if (sub) {
-        sub.on("event", (e: NDKEvent, r: NDKRelay) => {
-            const noKind0Event = !kind0Event;
-            const kind0EventIsOlder = kind0Event?.created_at! < e.created_at!;
-
-            if ((noKind0Event || kind0EventIsOlder)) {
-                kind0Event = e;
-                userProfile = profileFromEvent(e) as UserProfileType;
-                event = e;
-
-                if (!fetching) {
-                    dispatch("newProfileAfterEose", userProfile);
-                }
-            }
-        });
-        sub.on("eose", () => { fetching = false; });
+    // If we are not lazy loading and we don't have the userprofile, fetch it
+    if (!allowLazyLoading && !fetching && !userProfile) {
+        fetchProfileRemotely();
     }
 
     let validatedNip05: boolean | undefined;
@@ -112,4 +130,17 @@
     }
 </script>
 
+
 <slot {userProfile} {fetching} {authorUrl} {displayNip05} {event} />
+
+{#if allowLazyLoading}
+    {#if !userProfile}
+        <div use:inview={{
+            rootMargin: '50px',
+            unobserveOnEnter: true,
+            threshold: 0.5
+        }}
+            on:inview_enter={fetchProfileRemotely}
+        />
+    {/if}
+{/if}

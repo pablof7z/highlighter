@@ -26,6 +26,42 @@
             placeholder: $$props.placeholder ?? "Write your heart out...",
             modules: {
                 toolbar: toolbar ? { container: toolbarEl } : false,
+                keyboard: {
+                    bindings: {
+                        // when esc key is pressed, blur the editor
+                        esc: {
+                            key: 27,
+                            handler: () => {
+                                quill.blur();
+                            }
+                        },
+                        // when cmd+enter dispatch a submit event
+                        // enter: {
+                        //     key: 'enter',
+                        //     handler: () => {
+                        //         alert('handler')
+                        //         // dispatch("submit");
+                        //     }
+                        // },
+                        // when the down key is pressed and we are at the last line
+                        // dispatch a next event
+                        // next: {
+                        //     key: 40,
+                        //     handler: () => {
+                        //         const range = quill.getSelection();
+                        //         const lines = quill.getLines();
+                        //         console.log(lines);
+                        //         if (range) {
+                        //             const line = quill.getLine(range.index);
+                        //             console.log(line);
+                        //             // if (line && line.next == null) {
+                        //             //     dispatch("next");
+                        //             // }
+                        //         }
+                        //     }
+                        // },
+                    }
+                },
                 mention: {
                     source: quillEditorMention,
                     dataAttributes: ['id', 'value', 'avatar'],
@@ -108,7 +144,7 @@
     }
 
     :global(.ql-editor.ql-blank::before) {
-        @apply text-zinc-500 pl-3;
+        @apply text-zinc-500;
         font-style: normal;
     }
 

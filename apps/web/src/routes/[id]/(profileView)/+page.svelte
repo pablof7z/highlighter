@@ -1,31 +1,17 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import CreatorFeed from "$components/Feed/CreatorFeed.svelte";
-	import { getUserSupporters, userSubscription, getUserSubscriptionTiersStore } from "$stores/user-view";
-	import { Avatar, Name, ndk } from "@kind0/ui-common";
+	import { userSubscription, getUserSubscriptionTiersStore } from "$stores/user-view";
+	import { ndk } from "@kind0/ui-common";
 	import { NDKArticle, NDKKind, type NDKEventId } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
-	import UserProfile from "$components/User/UserProfile.svelte";
 	import { onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
-	import CreatorProfileTabs from './CreatorProfileTabs.svelte';
-	import Curations from '$components/Curations.svelte';
-	import Highlights from '$components/Highlights.svelte';
 	import { pageHeader } from '$stores/layout';
-	import MainWrapper from '$components/Page/MainWrapper.svelte';
-	import CreatorFooter from '$components/Creator/CreatorFooter.svelte';
 	import type { UserProfileType } from '../../app';
-	import CreatorsList from "$components/CreatorsList.svelte";
-	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
-	import SupporterList from "$components/Supporters/SupporterList.svelte";
-	import ForumFeed from "$components/Feed/ForumFeed.svelte";
-	import Logo from "$icons/Logo.svelte";
 
     let id: string;
     let { user } = $page.data;
-    const defaultBanner = 'https://tonygiorgio.com/content/images/2023/03/cypherpunk-ostrach--copy--2.png';
-
-    const userTiers = getUserSubscriptionTiersStore();
 
     $: if (id !== $page.params.id) {
         id = $page.params.id;
@@ -58,8 +44,6 @@
 
     let userProfile: UserProfileType;
 
-    $: if (userProfile && !userProfile.banner) userProfile.banner = defaultBanner;
-
     $: $pageHeader = {}
 </script>
 
@@ -68,7 +52,9 @@
     <meta name="description" content="Creator profile" />
     <meta property="og:title" content={user.npub} />
     <meta property="og:description" content="Creator profile" />
-    <meta property="og:image" content={userProfile?.image || defaultBanner} />
+    {#if userProfile?.banner}
+        <meta property="og:image" content={userProfile.banner} />
+    {/if}
 </svelte:head>
 
 <CreatorFeed />

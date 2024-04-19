@@ -4,6 +4,7 @@
 	import { ndk, user } from "@kind0/ui-common";
 	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import ArticleLink from '$components/Events/ArticleLink.svelte';
+    import ThreadItem from "$components/Drafts/Items/Thread.svelte";
 
     export let item: DraftItem;
 
@@ -30,4 +31,6 @@
         grid={true}
         href="/drafts/{item.id}"
     />
+{:else if item.type === "thread"}
+    <ThreadItem href="/drafts/{item.id}" {checkpoint} />
 {/if}

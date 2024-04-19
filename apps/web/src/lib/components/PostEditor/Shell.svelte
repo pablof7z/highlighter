@@ -11,12 +11,10 @@
 	import AudiencePage from './AudiencePage.svelte';
 	import { debugMode } from '$stores/session';
 
-    export let type: "article" | "video" | "note";
+    export let type: "article" | "video" | "note" | "thread";
     export let article: NDKArticle | undefined = undefined;
     export let video: NDKVideo | undefined = undefined;
     export let note: NDKEvent | undefined = undefined;
-
-    console.log(type, article, video, note);
 
     onMount(() => {
         $view = 'edit';
@@ -34,7 +32,7 @@
     $postType = type;
 
     const allTiers = getUserSubscriptionTiersStore();
-    const hasTierTags = $event.tags.some(([tag]) => tag === "tier" || tag === "f");
+    const hasTierTags = $event?.tags.some(([tag]) => tag === "tier" || tag === "f");
 
     // $: {
         // if we already have tier tags on the main event, we are probably editing,
@@ -44,7 +42,7 @@
 
     // if we have tier tags on the main event, load whether we want a preview from the fact the preview event
     // has an ID or not
-    if ($event.id) {
+    if ($event?.id) {
         $nonSubscribersPreview = !!$preview && !!$preview.id;
     }
 

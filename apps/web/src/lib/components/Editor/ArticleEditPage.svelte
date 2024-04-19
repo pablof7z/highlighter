@@ -13,7 +13,6 @@
 	import ArticleMetaPage from "./ArticleMetaPage.svelte";
 	import { view, preview, previewTitleChanged, previewContentChanged } from "$stores/post-editor";
 	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
-	import ItemView from "../../../routes/[id]/[tagId]/ItemView.svelte";
 	import ArticleView from "$components/ArticleView.svelte";
 	import { debugMode } from "$stores/session";
 

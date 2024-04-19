@@ -1,6 +1,7 @@
 <script lang="ts">
     import { CrownSimple } from "phosphor-svelte";
     import type { Option } from "./option";
+	import { page } from "$app/stores";
 
     export let option: Option;
     export let value: string;
@@ -9,7 +10,7 @@
     let el: HTMLElement;
 
     $: {
-        active = (value === (option.value || option.name))
+        active = (value === (option.value || option.name) || $page.url.pathname === option.href);
         // scroll into view
         if (active) {
             el?.scrollIntoView({ block: "center" });
@@ -22,9 +23,10 @@
     bind:this={el}
     href={option.href}
     class="
-        rounded-full
+        sm:rounded-full
         snap-center {option.class??""}
         sm:px-0 cursor-pointer
+        max-sm:!py-4
         {active ? "max-sm:bg-white max-sm:text-black" : ""}
         {option.premiumOnly ? "premium" : ""}
     "
@@ -32,9 +34,9 @@
     class:active={active}
 >
     {#if option.icon}
-        <svelte:component this={option.icon} class="w-6 xl:w-5 h-6 xl:h-5 inline" />
+        <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline" />
     {/if}
-    <span class="sm:hidden xl:inline">
+    <span class="sm:hidden lg:inline">
         {option.name}
         {#if option.premiumOnly}
             <span class="text-accent2">

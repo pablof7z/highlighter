@@ -15,7 +15,7 @@
         avatarSize="large" avatarClass="w-16 h-16"
     />
 
-    <div class="flex flex-col sm:flex-row gap-4 items-stretch justify-evenly w-full">
+    <div class="flex max-sm :flex-col flex-row gap-4 items-stretch justify-evenly w-full">
         <a href={authorUrl} class="btn btn-neutral sm:w-1/3">
             View Profile
         </a>

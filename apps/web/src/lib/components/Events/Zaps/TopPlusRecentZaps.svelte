@@ -29,23 +29,24 @@
 </script>
 
 {#if throttleZaps && $throttleZaps.length > 0}
-    {#each $throttleZaps as zap, i (zap.event.id)}
-        {#if !skipEventIds.includes(zap.event.id)}
-            {#if i === 0 && $throttleZaps.length > 1}
-                <ZapPill
-                    {zap}
-                    {avatarSize}
-                    icon={Crown}
-                    class="
-                        border-2 border-yellow-400/50
-                        bg-yellow-400/20
-                        {$$props.class}
-                    "
-                />
-                <div class="w-[1px] bg-white/40"></div>
-            {:else}
-                <ZapPill {zap} {avatarSize} class={$$props.class} />
-            {/if}
-        {/if}
-    {/each}
+    <div class="flex flex-col items-start gap-2">
+        <ZapPill
+            zap={$throttleZaps[0]}
+            avatarSize={avatarSize}
+            comment="show"
+            class="
+                border-2 border-yellow-400/50
+                bg-yellow-400/20
+                {$$props.class}
+            "
+            icon={Crown}
+        />
+        <div class="flex flex-row">
+            {#each $throttleZaps.slice(1, -1) as zap, i (zap.event.id)}
+                {#if !skipEventIds.includes(zap.event.id)}
+                    <ZapPill {zap} {avatarSize} class={$$props.class} />
+                {/if}
+            {/each}
+        </div>
+    </div>
 {/if}

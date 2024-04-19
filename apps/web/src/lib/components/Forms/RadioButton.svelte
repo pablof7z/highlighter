@@ -18,7 +18,8 @@
 </script>
 
 <div class="container"
-    class:selected>
+    class:selected
+>
     <button class="text-white text-base font-medium flex flex-row gap-2 items-center justify-between w-full {$$props.class??""}" on:click={onClick}>
         <div class="flex flex-row items-start w-full">
             <div class="flex flex-row gap-2 justify-stretch items-start w-full">
@@ -39,14 +40,13 @@
 
 <style lang="postcss">
     button {
-        @apply p-4 rounded-xl;
-        @apply self-stretch !rounded-box justify-between items-start flex-col inline-flex h-full;
+        @apply px-4 py-3;
+        @apply self-stretch justify-between items-start flex-col inline-flex h-full;
         @apply flex flex-col text-neutral-300
     }
 
     .container {
         @apply w-full;
-        @apply !rounded-box;
     }
 
     .container.selected {

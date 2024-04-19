@@ -1,16 +1,8 @@
 <script lang="ts">
-	import Highlights from "$components/Highlights.svelte";
-    import MainWrapper from "$components/Page/MainWrapper.svelte";
-	import CreatorOnboardingActions from '$components/PageSidebar/CreatorOnboardingActions.svelte';
 	import { pageHeader } from "$stores/layout";
 	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter, NDKEvent } from "@nostr-dev-kit/ndk";
-	import CreatorsSection from "./CreatorsSection.svelte";
-	import CreatorFeed from "$components/Feed/CreatorFeed.svelte";
-	import { ndk } from "@kind0/ui-common";
-	import { isRootEvent } from "$utils/event";
-	import FeedEvent from "$components/Feed/FeedEvent.svelte";
-	import { derived } from "svelte/store";
+	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 
     $pageHeader = {
         title: "Home",
@@ -58,12 +50,16 @@
 
     //     return events;
     // })
+
+    function clicked(e: CustomEvent) {
+        console.log(e)
+        e.preventDefault();
+    }
 </script>
 
-<MainWrapper class="flex flex-col gap-10 w-full sm:my-10">
-    <section>
+    <!-- <section>
         <h1>Creators</h1>
-    </section>
+    </section> -->
 
     <section>
         <h1>Highlights & Notes</h1>
@@ -74,9 +70,12 @@
             {/each}
         </div> -->
 
-        <Highlights filters={highlightFilters} />
+        <FilterFeed
+            filters={highlightFilters}
+            renderLimit={100}
+        />
+        <!-- <Highlights filters={highlightFilters} /> -->
     </section>
-</MainWrapper>
 
 <style>
     .bg {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CaretRight } from 'phosphor-svelte';
+	import { CaretRight, Lightning } from 'phosphor-svelte';
 	import { page } from "$app/stores";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { Avatar, Name, RelativeTime, ZapsButton, ndk } from "@kind0/ui-common";
@@ -7,7 +7,7 @@
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
 	import NewPost from "./NewPost/NewPost.svelte";
-	import { getRepliesStore, getConversationRepliesStore, getThreadStore } from "./replies";
+	import { getRepliesStore, getConversationRepliesStore, getThreadStore, computeScore } from "./replies";
 	import CommentsButton from "$components/buttons/CommentsButton.svelte";
 	import ReplyAvatars from "./ReplyAvatars.svelte";
 	import RelayIndicator from '$components/Events/RelayIndicator.svelte';
@@ -17,8 +17,15 @@
 	import TopPlusRecentZaps from '$components/Events/Zaps/TopPlusRecentZaps.svelte';
 	import currentUser from '$stores/currentUser';
 	import { UserProfileType } from '../../../app';
+	import { goto } from '$app/navigation';
+	import BoostButton from '$components/buttons/BoostButton.svelte';
+	import { onDestroy } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
+
+    const dispatch = createEventDispatcher();
 
     export let event: NDKEvent;
+    export let author = event.author;
     export let op: NDKEvent = event;
     export let mostRecentActivity: number = event.created_at!;
     export let skipTitle = false;
@@ -30,7 +37,7 @@
     export let expandReplies = false;
     export let nestedMaxLevel = 2;
     export let showReply: boolean | undefined = undefined;
-    export let urlPrefix: string;
+    export let urlPrefix: string = "/e/";
     export let willShowReply: boolean | undefined = undefined;
 
     export let hTag = op.tagValue("h");
@@ -48,8 +55,12 @@
 
     const events = $ndk.storeSubscribe(
         filter,
-        { groupable: true, groupableDelay: 100, subId: 'note-replies' }
+        { groupable: true, groupableDelay: 250, subId: 'note-replies', groupableDelayType: 'at-least' }
     );
+
+    onDestroy(() => {
+        events?.unsubscribe();
+    })
 
     let replyKind: NDKKind;
     let newPostTags: NDKTag[] = [];
@@ -66,24 +77,14 @@
         newPostTags = replyEvent.tags;
     }
 
-    /**
-     * Events that are tagged with the same h tag as the current event
-     */
-    let hTaggedEvents = derived(events, $events => {
-        return Array.from($events.values()).filter(event => {
-            return event.tagValue("h") === hTag;
-        });
-    });
-    export let eventsInThread: Readable<NDKEvent[]> = getThreadStore(op, hTaggedEvents);
+    export let eventsInThread: Readable<NDKEvent[]> = getThreadStore(op, events);
 
     export let threadView = false;
-
-    const authorId = $page.params.id;
 
     const title = event.tagValue("title");
     const contentToRender = event.content.slice(0, maxContentLength);
 
-    const replies = threadView ? getRepliesStore(event, hTaggedEvents, eventsInThread) : getConversationRepliesStore(op, hTaggedEvents);
+    const replies = threadView ? getRepliesStore(event, events, eventsInThread, op) : getConversationRepliesStore(op, events);
 
     const commentAuthors = derived(replies, $replies => {
         const authors = new Set<Hexpubkey>();
@@ -110,7 +111,9 @@
         shouldExpandBeyondBox = (expandThread && positionInThread < $eventsInThread.length);
     }
 
-    $: willShowReply = showReply === true || (showReply == undefined && isLastInThread && topLevel);
+    const isCurrentUser = $currentUser?.pubkey === event.pubkey;
+
+    $: willShowReply = showReply === true || (showReply == undefined && isLastInThread && topLevel && isCurrentUser);
 
     $: if (expandReplies && $replies.length > 0) {
         shouldDisplayVerticalBar = !willShowReply;
@@ -129,6 +132,28 @@
 
     let autofocusNewPost = false;
     let userProfile: UserProfileType | undefined | null;
+
+    function contentClicked(e: CustomEvent) {
+        const { type, pubkey } = e.detail;
+        console.log('in note', e)
+        if (type === "pubkey") {
+            const user = $ndk.getUser({pubkey});
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            goto(`/${user.npub}`);
+            console.log(user.npub)
+        }
+    }
+
+    function noteClicked(e: Event) {
+        dispatch('open:note', { event, originalEvent: e });
+    }
+
+    function viewConversationClicked(e: CustomEvent) {
+        const { event, originalEvent } = e.detail;
+        dispatch('open:conversation', { event, originalEvent });
+    }
 </script>
 
 <div class="
@@ -136,7 +161,7 @@
     !font-light
 ">
     <UserProfile
-        user={event.author}
+        user={author}
         bind:userProfile
         let:fetching
         let:authorUrl
@@ -145,7 +170,7 @@
             <!-- Avatars -->
             <div class="flex flex-col items-center flex-none w-10 sm:w-16 self-stretch">
                 <a href={authorUrl}>
-                    <Avatar user={event.author} {userProfile} class="w-8 sm:w-12 h-8 sm:h-12 object-cover" type="circle" {fetching} />
+                    <Avatar user={author} {userProfile} class="w-8 sm:w-12 h-8 sm:h-12 object-cover" type="circle" {fetching} />
                 </a>
                 {#if shouldDisplayVerticalBar}
                     <div class="
@@ -158,20 +183,20 @@
             <!-- Content -->
             <div class="flex flex-col overflow-x-clip pl-2 md:pl-4 relative grow">
                 <!-- Title and time -->
-                <div class="flex flex-row items-start w-full gap-2 relative">
+                <div class="flex flex-row items-start w-full gap-2 relative group">
                     <div class="flex flex-col items-start grow">
                         {#if title && !skipTitle && !threadView}
                             <div class="text-lg text-white font-semibold truncate grow">{title}</div>
                         {/if}
                         <div class="text-sm opacity-80">
-                            <Name user={event.author} {userProfile} {fetching} />
+                            <Name user={author} {userProfile} {fetching} />
                         </div>
                     </div>
 
                     <div class="justify-self-end text-sm h-full absolute right-0">
                         <div class="flex flex-row items-center justify-end gap-2 place-self-end">
                             <!-- Relay indicators / hidden in mobile -->
-                            <div class="flex flex-row items-center max-sm:hidden gap-2">
+                            <div class="flex flex-row items-center max-sm:hidden gap-2 opacity-20 group-hover:opacity-80">
                                 {#if event.relay}
                                     <RelayIndicator relay={event.relay.url} />
                                 {/if}
@@ -194,21 +219,23 @@
                 <div class="flex flex-col items-stretch justify-stretch basis-0 shrink overflow-x-clip">
                     {#if topLevel}
                         <div class="flex flex-row" class:hidden={noRepliesToShow}>
-                            <ViewConversation {event} {urlPrefix} bind:isNoop={noRepliesToShow} />
+                            <ViewConversation {event} {urlPrefix} bind:isNoop={noRepliesToShow} on:click={viewConversationClicked} />
                         </div>
                     {/if}
                     <!-- Content -->
-                    <a href="{urlPrefix}{event.encode()}" class="mt-2">
+
+                    <a href="{urlPrefix}{event.encode()}" class="mt-2 mb-4" on:click={noteClicked}>
                         <EventContent
                             ndk={$ndk}
                             {event}
                             content={contentToRender}
                             class={`${$$props.contentClass??"text-white/80"}`}
                             mediaCollectionComponent={MediaCollection}
+                            on:click={contentClicked}
                         />
                     </a>
 
-                    <div class="flex flex-row items-center text-zinc-500 w-full max-sm:my-2 mt-4" class:hidden={noZapsToShow}>
+                    <div class="flex flex-row items-center text-zinc-500 w-full max-sm:my-2" class:hidden={noZapsToShow}>
                         <div class="flex flex-row gap-2">
                             <TopPlusRecentZaps {event} count={3} class="text-xs" bind:isNoop={noZapsToShow} />
                         </div>
@@ -218,8 +245,8 @@
         </div>
 
         <div class="flex flex-row items-end gap-4 w-full mt-2">
-            <div class="flex flex-col items-center flex-none w-10 sm:w-16">
-                {#if !expandReplies && !(expandThread && $eventsInThread.length > 0)}
+            <div class="flex flex-col items-center justify-end flex-none w-10 sm:w-16">
+                {#if (!expandReplies || nestedMaxLevel === 0) && !(expandThread && $eventsInThread.length > 0)}
                     {#if $replies.length > 0}
                         <ReplyAvatars users={$commentAuthors} />
                     {:else if $eventsInThread.length > 0}
@@ -228,30 +255,41 @@
                 {/if}
             </div>
 
-            <div class="flex flex-row grow text-xs w-full justify-between gap-4">
-                    <div class="grow">
-                        {#if $eventsInThread.length > 0 && !expandThread}
-                            <button class="opacity-60">
-                                View thread
-                            </button>
-                        {:else if $replies.length > 0 && !expandReplies}
-                            <button class="" on:click|stopPropagation={() => { expandReplies = true }}>
-                                <CommentsButton {event} prefetchedReplies={replies} label="comment" />
-                            </button>
-                        {/if}
-                    </div>
+            <div class="max-sm:hidden grow"></div>
 
-                    <div class="shrink justify-end flex flex-row gap-3 items-center text-white/50">
-                        {#if $replies.length === 0 || !($replies.length > 0 && !expandReplies)}
-                            <button class="" on:click|stopPropagation={() => { autofocusNewPost = showReply = !showReply }}>
-                                <CommentsButton {event} prefetchedReplies={replies} />
-                            </button>
-                        {/if}
+            <div class="flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4">
+                <div class="w-1/4 flex justify-center items-end">
+                    {#if $eventsInThread.length > 0 && !expandThread}
+                        <button class="opacity-60 whitespace-nowrap" on:click={() => expandReplies = true }>
+                            View thread
+                        </button>
+                    {:else if $replies.length > 0 && !expandReplies}
+                        <button class="text-left w-full" on:click|stopPropagation={() => { expandReplies = true }}>
+                            <CommentsButton {event} prefetchedReplies={replies} />
+                        </button>
+                    {:else}
+                        <button class="" on:click|stopPropagation={() => { autofocusNewPost = showReply = !showReply }}>
+                            <CommentsButton {event} prefetchedReplies={replies} />
+                        </button>
+                    {/if}
+                </div>
 
-                        <Bookmark {event} class="w-6 h-6" />
+                <div class="w-1/4 flex justify-center items-end ">
+                    <BoostButton {event} />
+                </div>
 
-                        <ZapsButton {event} />
-                    </div>
+                <div class="w-1/4 flex justify-center items-end ">
+                    <Bookmark {event} class="max-sm:w-6 w-5 max-sm:h-6 h-5" />
+                </div>
+                    <!-- <div class="shrink flex flex-row gap-3 items-center text-white/50 border grow justify-between"> -->
+
+                <div class="w-1/4 flex justify-center items-end ">
+                    <ZapsButton {event}>
+                        <span slot="icon">
+                            <Lightning class="max-sm:w-6 w-5 max-sm:h-6 h-5" />
+                        </span>
+                    </ZapsButton>
+                </div>
             </div>
         </div>
     </UserProfile>
@@ -282,7 +320,6 @@
             {eventsInThread}
             {urlPrefix}
             {hTag}
-            {hTaggedEvents}
         />
     {/each}
 {/if}
@@ -294,18 +331,18 @@
                     event={reply}
                     op={op ?? event}
                     {expandThread}
-                    expandReplies={false}
+                    expandReplies={true}
+                    threadView={true}
                     nestedMaxLevel={nestedMaxLevel-1}
                     {eventsInThread}
                     {hTag}
-                    {hTaggedEvents}
                     {urlPrefix}
                     topLevel={false}
                 />
             {/each}
         </div>
     {:else}
-        <a href="/{authorId}/posts/{event.encode()}" class="p-4">
+        <a href="{urlPrefix}{event.encode()}" class="p-4">
             <div class="text-xs text-white/50">
                 View discussion
                 <CaretRight class="w-4 h-4 inline-block" />

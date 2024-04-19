@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Article, Play, TextAlignLeft, UserList, Video } from 'phosphor-svelte';
+	import { Play, TextAlignLeft, UserList, Video } from 'phosphor-svelte';
 
     export let filters: App.FilterType[];
 

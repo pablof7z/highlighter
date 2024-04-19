@@ -31,10 +31,10 @@
     </UserProfile>
 {:else}
     <a href={authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
-        <Avatar {userProfile} size={avatarSize} class={$$props.avatarClass??""} type={avatarType} />
+        <Avatar {user} {pubkey} {userProfile} size={avatarSize} class={$$props.avatarClass??""} type={avatarType} />
 
         <div class="flex flex-col items-start gap-0">
-            <Name {userProfile} {authorUrl} class={$$props.nameClass??""} />
+            <Name {user} {pubkey} {userProfile} {authorUrl} class={$$props.nameClass??""} />
             <slot />
         </div>
     </a>

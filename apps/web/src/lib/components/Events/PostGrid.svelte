@@ -45,7 +45,7 @@
             <div class="self-stretch h-[38px] flex-col justify-start items-start gap-1 flex">
                 {#if !skipAuthor}
                     <div class="self-stretch text-white text-opacity-60 text-sm font-medium">
-                        <Name {user} {userProfile} />
+                        <Name  npubMaxLength={12} {user} {userProfile} />
                     </div>
                 {/if}
                 <div class="self-stretch text-white text-opacity-60 text-sm font-medium">

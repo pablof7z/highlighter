@@ -62,7 +62,7 @@
 
     export let threadView = false;
 
-    const authorId = $page.params.id;
+    let authorUrl = $page.params.id;
 
     const title = event.tagValue("title");
     const contentToRender = event.content.slice(0, maxContentLength);
@@ -80,17 +80,9 @@
     });
 </script>
 
-<!-- showReply = {showReply} <br> -->
-<!-- expandThread = {expandThread} <br>
-expandReplies = {expandReplies} <br>
-threadView = {threadView} <br>
-op = {!!op} -->
-
-<!-- nestedMaxLevel = {nestedMaxLevel} <br> -->
-
-<a class="w-full text-left md:p-4 !pb-0 {$$props.class??""}" href="/{authorId}/posts/{event.encode()}">
+<a class="w-full text-left md:p-4 !pb-0 {$$props.class??""}" href="{authorUrl}/posts/{event.encode()}">
     <div class="flex flex-col items-start w-full">
-        <UserProfile user={event.author} let:userProfile let:fetching>
+        <UserProfile user={event.author} let:userProfile let:fetching bind:authorUrl>
             <div class="flex flex-row items-start w-full">
                 <!-- Avatars -->
                 <div class="flex flex-col items-center flex-none w-16 self-stretch">
@@ -107,7 +99,7 @@ op = {!!op} -->
                                 <div class="text-lg text-white font-semibold truncate grow">{title}</div>
                             {/if}
                             <div class="text-xs opacity-50">
-                                <Name user={event.author} {userProfile} {fetching} />
+                                <Name npubMaxLength={12} user={event.author} {userProfile} {fetching} />
                             </div>
                         </div>
 
@@ -120,13 +112,6 @@ op = {!!op} -->
                     <div class="flex flex-col items-start gap-2 my-4">
                         <!-- Content -->
                         <EventContent ndk={$ndk} {event} content={contentToRender} class={`${$$props.contentClass??""}`} />
-
-                        <!-- event id = {event.id.slice(0, 10)} <br>
-                        event count = {$events.length} <br>
-                        $replies = {$replies.length} <br>
-                        expandReplies = {expandReplies} <br>
-                        eventsInThread = {$eventsInThread.length} <br>
-                        hTaggedEvents = {$hTaggedEvents.length}<br> -->
 
                         <!-- TODO: Reactions -->
 
@@ -193,7 +178,7 @@ op = {!!op} -->
 {/if}
 {#if expandReplies && $replies.length > 0}
     {#if nestedMaxLevel > 0}
-        <div class="bg-white/10 border-white/20 pl-4 border-b-0 border-r-0">
+        <div class="border-white/20 pl-4 border-b-0 border-r-0">
             {#each $replies as reply, i (reply.id)}
                 <svelte:self
                     event={reply}
@@ -208,7 +193,7 @@ op = {!!op} -->
             {/each}
         </div>
     {:else}
-        <a href="/{authorId}/posts/{event.encode()}" class="p-4">
+        <a href="{authorUrl}/posts/{event.encode()}" class="p-4">
             <div class="text-xs text-white/50">
                 View discussion
                 <CaretRight class="w-4 h-4 inline-block" />

@@ -1,22 +1,19 @@
 <script lang="ts">
-	import { derived } from "svelte/store";
-	import { NDKEvent, NDKEventId, NDKFilter, NDKKind, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
-	import { ndk } from "@kind0/ui-common";
-	import { onDestroy } from "svelte";
+	import { Readable, derived } from "svelte/store";
+	import { NDKArticle, NDKEvent, NDKEventId, NDKHighlight, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
 	import ForumFeedItem from "./ForumFeedItem.svelte";
-	import NewPost from "./NewPost/NewPost.svelte";
 	import Note from "./Note.svelte";
-	import { page } from "$app/stores";
+	import Highlight from "$components/Highlight.svelte";
+	import ArticleLink from "$components/Events/ArticleLink.svelte";
+	import { navigateToEvent } from "./navigate-to-event";
+	import NewPost from "./NewPost/NewPost.svelte";
+    import { inview } from 'svelte-inview';
 
-    export let filters: NDKFilter[];
-    export let showNewPost: boolean = true;
-    export let newPostKind: NDKKind;
+    export let feed: Readable<NDKEvent[]>;
+    export let newPostKind: NDKKind | undefined = undefined;
     export let renderLimit = 10;
     export let newPostTags: NDKTag[] = [];
-
-    const feed = $ndk.storeSubscribe(filters);
-
-    onDestroy(() => { feed.unsubscribe(); });
+    export let urlPrefix: string = "/e/";
 
     const perNoteLatestActivity = new Map<NDKEventId, number>();
 
@@ -57,6 +54,9 @@
                     const parentId = tag[1];
                     markLatestActivity(event, parentId);
                 });
+            } else {
+                topLevelNotes.set(event.id, event);
+                markLatestActivity(event, event.id);
             }
         }
 
@@ -66,18 +66,21 @@
 
             return bLatest - aLatest;
         })
-            .slice(0, renderLimit);
     });
 
-    let urlPrefix: string;
+    function openNote(e: CustomEvent<{event: NDKEvent, originalEvent: Event }>) {
+        console.log('open note called')
+        const { event, originalEvent } = e.detail;
+        originalEvent.preventDefault();
+        navigateToEvent(event);
+    }
 
-    $: urlPrefix = $page.url.pathname + '/';
+
 </script>
 
 <div class="flex flex-col w-full justify-stretch">
-
     <div class="discussion-wrapper w-full flex flex-col">
-        {#if showNewPost}
+        {#if newPostKind}
             <div class="w-full sm:bg-white/5">
                 <NewPost
                     extraTags={newPostTags}
@@ -87,15 +90,28 @@
                 />
             </div>
         {/if}
-        {#each $renderFeed as event, i (event.id)}
+        {#each $renderFeed.slice(0, renderLimit) as event, i (event.id)}
             {#if event.kind === NDKKind.Text}
                 <Note
                     {event}
-                    position={i}
                     mostRecentActivity={perNoteLatestActivity.get(event.id)}
                     skipReply={true}
                     showReply={false}
                     {urlPrefix}
+                    on:click
+                    on:open:note={openNote}
+                    on:open:conversation={openNote}
+                />
+            {:else if event.kind === NDKKind.Article}
+                <ArticleLink
+                    article={NDKArticle.from(event)}
+                />
+            {:else if event.kind === NDKKind.Highlight}
+                <Highlight
+                    highlight={NDKHighlight.from(event)}
+                    position={i}
+                    mostRecentActivity={perNoteLatestActivity.get(event.id)}
+                    skipReply={true}
                 />
             {:else}
                 <ForumFeedItem
@@ -107,7 +123,16 @@
             {/if}
         {/each}
     </div>
+
+    <button class="button" on:click={() => { renderLimit++; }} use:inview on:inview_change={(e) => {
+        if (e.detail.inView) {
+            renderLimit += 10;
+        }
+    }}>
+        load more
+    </button>
 </div>
+
 
 <style lang="postcss">
     :global(.article p) {

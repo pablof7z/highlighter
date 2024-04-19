@@ -36,7 +36,14 @@
 	}
 
 	onMount(async () => {
-		mounted = true;
+		if ($ndk.cacheAdapter?.onReady && !$ndk.cacheAdapter?.ready) {
+			$ndk.cacheAdapter.onReady(() => {
+				console.log('Cache adapter ready');
+				mounted = true
+			});
+		} else {
+			mounted = true;
+		}
     });
 
 	let finalizingLogin = false;

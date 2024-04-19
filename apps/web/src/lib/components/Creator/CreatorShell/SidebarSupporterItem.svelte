@@ -50,7 +50,7 @@
         <div class="flex flex-row gap-2 justify-stretch items-start grow w-full">
             <Avatar {pubkey} {userProfile} {fetching} type="square" size="small" />
             <div class="flex flex-col grow">
-                <Name {pubkey} {userProfile} {fetching} class="text-white truncate grow" />
+                <Name  npubMaxLength={12} {pubkey} {userProfile} {fetching} class="text-white truncate grow" />
                 {#if $substart.length > 0}
                     <div class="text-xs text-neutral-500">
                         Since

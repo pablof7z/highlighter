@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import ForumFeed from "$components/Feed/ForumFeed.svelte";
+	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 	import { NDKKind, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
 
     let user: NDKUser;
@@ -15,7 +15,7 @@
 </script>
 
 {#key user.pubkey}
-    <ForumFeed
+    <FilterFeed
         newPostKind={NDKKind.GroupNote}
         showNewPost={true}
         filters={[

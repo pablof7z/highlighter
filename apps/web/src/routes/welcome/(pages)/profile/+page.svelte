@@ -5,6 +5,7 @@
 	import { pageHeader } from '$stores/layout.js';
 	import ProfileEditPage from '$components/User/ProfileEditPage.svelte';
 	import LoadingScreen from '$components/LoadingScreen.svelte';
+	import { goto } from "$app/navigation";
 
     const dispatch = createEventDispatcher();
 
@@ -32,7 +33,7 @@
 
 <MainWrapper marginClass="max-w-3xl">
     <LoadingScreen ready={!!$user}>
-        <ProfileEditPage {forceSave} />
+        <ProfileEditPage {forceSave} on:saved={() => goto('/welcome/tiers')} />
     </LoadingScreen>
 </MainWrapper>
 

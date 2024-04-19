@@ -1,41 +1,63 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { closeModal } from "svelte-modals";
-	import { fade } from "svelte/transition";
+	import { modalState } from '$stores/layout';
+	import { onDestroy, onMount } from 'svelte';
+	import { closeModal, onBeforeClose } from "svelte-modals";
+	import { fade, slide } from "svelte/transition";
 
     export let color: "white" | "black" | "glassy" = "white";
 
+    const slideAnimationDuration = 300;
+
     let url = $page.url.pathname;
     $: if ($page.url.pathname !== url) closeModal();
+
+    let mounted = false;
+
+    onMount(() => {
+        mounted = true;
+        $modalState = "open";
+    });
+
+    onBeforeClose(() => {
+        if (mounted === true) {
+            $modalState = "closing";
+            mounted = false;
+            setTimeout(closeModal, slideAnimationDuration);
+            return false;
+        }
+    });
+
+    onDestroy(() => {
+        $modalState = "closed";
+    })
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="
-    fixed
-    h-screen top-0 bottom-0 left-0 px-4 lg:px-0
-    flex flex-col justify-center items-center
-    z-[99]
-    w-screen
-    pointer-events-none
-    {color}
-">
-    <div class="relative z-50 w-full {$$props.class??""}">
-        <div class="
-            card
-            !rounded-3xl
-            shadow-xl
-            transition-all duration-1000
-            flex flex-col
-            overflow-y-hidden
-            w-fit mx-auto
-            {$$props.class}
-        " style="pointer-events: auto; max-height: 92vh;" transition:fade>
-            <div class="!rounded-3xl inner shadow-lg p-6 flex flex-col items-center transition-all duration-1000 gap-6 {$$props.class}">
-                <slot />
+<div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none {color}">
+    <div class="
+        max-sm:fixed max-sm:bottom-0 z-[99] max-sm:w-full  max-sm:!pb-0
+        {$$props.class??""}
+    ">
+        {#if mounted}
+            <div class="
+                card
+                !rounded-3xl
+                max-sm:!rounded-b-none
+                shadow-xl
+                flex flex-col
+                overflow-y-auto
+                w-fit mx-auto
+                p-6
+                {$$props.class}
+            " style="pointer-events: auto; max-height: 92vh;" transition:slide={{axis:'y', duration: slideAnimationDuration}}>
+                <div class="!rounded-3xl inner flex flex-col items-center transition-all duration-1000 gap-6
+                {$$props.class}">
+                    <slot />
+                </div>
             </div>
-        </div>
-        <slot name="after" />
+        {/if}
     </div>
 </div>
 
@@ -49,7 +71,7 @@
     }
 
     .glassy .card {
-        @apply bg-zinc-800 bg-opacity-50 backdrop-blur-[48px];
+        @apply bg-base-200 bg-opacity-80 backdrop-blur-[48px];
         @apply border border-white/10;
     }
 </style>

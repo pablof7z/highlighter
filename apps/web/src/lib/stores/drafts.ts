@@ -2,14 +2,24 @@ import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import { writable } from 'svelte/store';
 import type { EventType } from '../../app';
 import type { TierSelection } from '$lib/events/tiers';
+import { NDKEventSerialized } from '@nostr-dev-kit/ndk';
 
 export type ArticleCheckpoint = {
 	article: string;
 	preview: string;
-	tiers: TierSelection;
+	tiers?: TierSelection;
 };
 
-export type CheckpointData = ArticleCheckpoint;
+export type ThreadCheckpointItem = {
+	event: NDKEventSerialized;
+	urls: string[];
+};
+
+export type ThreadCheckpoint = {
+	items: ThreadCheckpointItem[];
+}
+
+export type CheckpointData = ArticleCheckpoint | ThreadCheckpoint;
 
 export type DraftCheckpoint = {
 	time: number;
@@ -18,7 +28,7 @@ export type DraftCheckpoint = {
 };
 
 export type DraftItem = {
-	type: EventType;
+	type: EventType | 'thread';
 	id: string;
 	checkpoints: string;
 };

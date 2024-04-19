@@ -63,10 +63,10 @@
         }
 
         if (!u) {
-            u = await NDKUser.fromNip05(value);
+            u = await NDKUser.fromNip05(value, $ndk, true);
 
             if (!u) {
-                error = "User not found";
+                error = "User not found" + value;
                 return;
             }
         }

@@ -75,7 +75,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL11' });
+	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL12' });
 	$ndk.clientName = 'highlighter';
 
 	const sigWorker = import.meta.env.DEV ?

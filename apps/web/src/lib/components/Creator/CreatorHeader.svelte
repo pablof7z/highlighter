@@ -76,7 +76,8 @@
     <div class="flex flex-row items-center gap-2">
         {#if $tiers}
             <SubscribeButton {user} {userProfile} {tiers} buttonClass="
-                max-sm:bg-accent2 max-sm:text-white max-sm:!w-fit
+                max-sm:bg-accent2 max-sm:!text-white max-sm:btn max-sm:btn-circle
+                max-sm:!px-0
             " />
         {/if}
         <FollowButton {user} />

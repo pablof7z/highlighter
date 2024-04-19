@@ -8,7 +8,7 @@
 	import { getUserSubscriptionTiersStore, getUserSupporters } from "$stores/user-view";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import type { Readable } from "svelte/store";
-	import { Crown, X } from "phosphor-svelte";
+	import { Ticket } from "phosphor-svelte";
 	import type { UserProfileType } from "../../../app";
 
     export let user: NDKUser;
@@ -36,11 +36,11 @@
     let authorUrl: string;
     let hasLNPayments: boolean | undefined = !!(userProfile?.lud06 || userProfile?.lud16);
 
-    $: hasLNPayments = !!(userProfile?.lud06 || userProfile?.lud16);
+    $: if (userProfile) hasLNPayments = !!(userProfile.lud06 || userProfile.lud16);
 </script>
 
 {#if user && user.pubkey !== $currentUser?.pubkey}
-    <UserProfile bind:authorUrl {user} />
+    <UserProfile bind:authorUrl bind:userProfile {user} />
 
     {#if !currentUserSubscriberTier}
         {#if hasLNPayments !== false}
@@ -50,14 +50,14 @@
                     flex flex-row items-center !gap-0
                     whitespace-nowrap text-base
                     max-sm:px-6
-                    xl:py-3 xl:button border-accent2 w-full transition-all duration-300 group
-                    border-2 hover:bg-accent2/20 xl:bg-transparent
+                    lg:py-3 lg:button border-accent2 w-full transition-all duration-300 group
+                    border-2 hover:bg-accent2/20 lg:bg-transparent
                     rounded-full p-2
                     !text-white
                     {$$props.buttonClass??""}
                 "
             >
-                <span class="hidden xl:inline">
+                <span class="hidden lg:inline">
                     {#if $tiers && $tiers.length > 0}
                         Go Backstage
                     {:else}
@@ -65,7 +65,7 @@
                         <CaretRight class="w-5 h-5 inline" />
                     {/if}
                 </span>
-                <Crown class="w-5 h-5 inline xl:hidden" />
+                <Ticket size={24} class="inline lg:hidden" />
             </button>
         {/if}
     {/if}

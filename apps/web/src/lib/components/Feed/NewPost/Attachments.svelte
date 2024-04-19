@@ -44,7 +44,7 @@
 {/if}
 
 <div class="flex flex-row items-center text-white gap-4">
-    <UploadButton class="btn btn-circle btn-ghost flex-none p-1" on:uploaded={uploaded}>
+    <UploadButton class="flex-none p-1 {$$props.buttonClass??""}" on:uploaded={uploaded}>
         <Image class="w-6 h-6" />
     </UploadButton>
 </div>

@@ -49,7 +49,7 @@
                                 <div class="w-full truncate text-neutral-200 font-medium">
                                     {highlightedArticle.title}
                                 </div>
-                                <Name user={highlightedArticle.author} class="text-neutral-500 text-sm" />
+                                <Name npubMaxLength={12} user={highlightedArticle.author} class="text-neutral-500 text-sm" />
                             </div>
 
                             <CaretRight class="w-8 h-8 self-center" />

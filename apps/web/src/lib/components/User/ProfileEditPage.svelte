@@ -29,7 +29,7 @@
         relaySet.addRelay(relay);
     }
 
-    NDKRelayList.forUser($currentUser?.pubkey, $ndk).then((relayList) => {
+    NDKRelayList.forUser($currentUser?.pubkey!, $ndk).then((relayList) => {
         if (!relayList) return;
         for (const writeRelay of relayList.writeRelayUrls) {
             const r = new NDKRelay(writeRelay, $ndk);
@@ -40,7 +40,7 @@
     // just to be on the safe-side, try to load this user's profile again
     const fetchingProfile = new Promise<void>((resolve) => {
         const fetching = $ndk.subscribe(
-            {kinds: [0], authors:[$currentUser?.pubkey]},
+            {kinds: [0], authors:[$currentUser?.pubkey!]},
             { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
             relaySet
         );
@@ -116,6 +116,7 @@
                 }
             }
             await profile.publish(relaySet);
+            dispatch('saved');
         } catch (e) {
             console.error(e);
         } finally {
@@ -125,7 +126,6 @@
 
     async function saveClicked() {
         await save();
-        dispatch('saved');
     }
 
     $: if (forceSave && !saving) {

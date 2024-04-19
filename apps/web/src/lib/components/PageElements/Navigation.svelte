@@ -1,19 +1,16 @@
 <script lang="ts">
 	import SignupModal from '$modals/SignupModal.svelte';
-	import { debugMode, userActiveSubscriptions, userTiers } from "$stores/session";
+	import { userActiveSubscriptions, userTiers } from "$stores/session";
 	import { Tray, PaperPlane, ChatCircle, House, Funnel, Fire, User, Gear, UserCircle, Bell, Gauge, Bug } from "phosphor-svelte";
     import { Avatar, bunkerNDK, ndk, user } from "@kind0/ui-common";
 	import { openModal } from "svelte-modals";
     import NewItemModal from '$modals/NewItemModal.svelte';
-	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import { login } from "$utils/login";
-	import { hideMobileBottomBar } from '$stores/layout';
 	import NavMobileTop from './NavMobileTop.svelte';
 	import Item from './Navigation/Item.svelte';
 	import CurrentUser from '$components/CurrentUser.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import DashboardIcon from '$icons/DashboardIcon.svelte';
-	import { RelayList } from '@nostr-dev-kit/ndk-svelte-components';
 
     async function openSignupModal() {
         if (window.nostr) {
@@ -26,8 +23,6 @@
 
         openModal(SignupModal);
     }
-
-    let showRelayList = false;
 </script>
 
 <!-- Mobile navigation -->
@@ -35,7 +30,7 @@
     <NavMobileTop />
 
     <!-- Navigation Bottom -->
-    <div
+    <!-- <div
         class="btm-nav bg-base-200 bg-opacity-80 mobile-nav z-50"
         class:forceHidden={$hideMobileBottomBar}
     >
@@ -60,7 +55,7 @@
                 <PaperPlane class="w-full h-full" weight="fill" />
             </Item>
         {/if}
-    </div>
+    </div> -->
 </div>
 
 <div class="
@@ -91,15 +86,15 @@
                 </CurrentUser>
             </Item>
 
-            <Item href="/dashboard" tooltip="Dashboard" let:active>
+            <Item href="/dashboard" let:active>
                 <DashboardIcon class="w-full h-full transition-all duration-300 {active ? "" : "brightness-75 hover:brightness-100"}" />
             </Item>
 
-            <Item href="/home" tooltip="Home" let:active>
+            <Item href="/home" let:active>
                 <House class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
 
-            <Item href="/" tooltip="Discover" let:active>
+            <Item href="/" let:active>
                 <Fire class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
 
@@ -111,12 +106,11 @@
                 <HighlightIcon class="w-full h-full" weight={active ? "fill" : "regular"} strokeWidth="1.4" />
             </Item> -->
 
-            <Item href="/chat" tooltip="Chat" let:active class="max-sm:hidden">
+            <!-- <Item href="/chat" tooltip="Chat" let:active class="max-sm:hidden">
                 <ChatCircle class="w-full h-full" weight={active ? "fill" : "regular"} />
-            </Item>
+            </Item> -->
             {#if $user}
                 <Item
-                    tooltip="Create something new"
                     let:active on:click={() => openModal(NewItemModal)}
                     matches={/\/(articles|notes|videos)\/new/}
                 >
@@ -152,22 +146,6 @@
             w-full
             gap-4
         ">
-            {#if import.meta.env.VITE_HOSTNAME === "localhost" || $user?.npub === "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft"}
-                <Item on:click={() => $debugMode = !$debugMode} tooltip="Notifications" active={$debugMode}>
-                    <Bug class="w-full h-full {$debugMode ? "text-accent2" : "text-inherit"}" weight={$debugMode ? "fill" : "regular"} />
-                </Item>
-
-                <Item on:click={() => showRelayList = !showRelayList} tooltip="Relay List" active={showRelayList}>
-                    <Gauge class="w-full h-full {showRelayList ? "text-accent2" : "text-inherit"}" weight={showRelayList ? "fill" : "regular"} />
-                </Item>
-
-                {#if showRelayList}
-                    <div class="fixed top-0 left-20 w-[50vw] bg-base-200/80 backdrop-blur-[50px] h-screen overflow-y-auto pr-6">
-                        <RelayList ndk={$ndk} />
-                    </div>
-                {/if}
-            {/if}
-
             <Item tooltip="Notifications" href="/notifications">
                 <Bell class="w-full h-full" />
             </Item>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { slide } from "svelte/transition";
     import Signup from './Signup.svelte';
 	import Login from "./Login.svelte";
 	import Welcome from "./Welcome.svelte";
@@ -43,21 +42,21 @@
         </div>
 
         {#if mode === 'signup'}
-            <div class="w-full flex flex-col gap-5" transition:slide>
+            <div class="w-full flex flex-col gap-5">
                 <Signup on:signed-up={signedUp} />
             </div>
         {:else if mode === 'login'}
-            <div class="w-full flex flex-col gap-5" transition:slide>
+            <div class="w-full flex flex-col gap-5">
                 <Login />
             </div>
         {:else if mode === 'welcome'}
-            <div class="w-full flex flex-col gap-5" transition:slide>
+            <div class="w-full flex flex-col gap-5">
                 <Welcome />
         </div>
         {/if}
     </div>
 
-    <div slot="after" class="mt-4 relative z-50 pointer-events-auto" class:hidden={mode === 'welcome'}>
+    <div class:hidden={mode === 'welcome'}>
         {#if mode === 'signup'}
             <p class="text-center text-neutral-500 text-base my-2">
                 Already have a Nostr account?

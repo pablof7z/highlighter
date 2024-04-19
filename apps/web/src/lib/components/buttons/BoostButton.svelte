@@ -1,10 +1,12 @@
 <script lang="ts">
 	import BoostModal from '$modals/BoostModal.svelte';
-	import RepostIcon from "$icons/RepostIcon.svelte";
-	import { ndk, user } from "@kind0/ui-common";
-	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
+	import { ndk } from "@kind0/ui-common";
+	import { type NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { openModal } from "svelte-modals";
+	import { Quotes, Repeat, ShareNetwork } from 'phosphor-svelte';
+	import ButtonWithCount from './ButtonWithCount.svelte';
+	import currentUser from '$stores/currentUser';
 
     export let event: NDKEvent;
 
@@ -14,8 +16,7 @@
             { kinds: [1], "#q": [ event.id, event.tagReference()[1] ] },
         ],
         {
-            cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY,
-            groupableDelay: 100,
+            groupableDelay: 1500,
             groupableDelayType: "at-least",
         }
     );
@@ -26,25 +27,62 @@
 
     let repostedByUser = false;
 
-    function findUserReaction(r: NDKEvent) {
-        return r.pubkey === $user?.pubkey;
-    }
-
-    $: repostedByUser = !!$reposts.find(findUserReaction);
+    $: if ($currentUser && !repostedByUser) repostedByUser = !!$reposts.find(e => e.pubkey === $currentUser!.pubkey)
 
     function boost() {
         openModal(BoostModal, { event });
     }
+
+    async function repost() {
+        await event.repost();
+    }
 </script>
 
-<div class="tooltip" data-tip="Share">
+{#if event.kind === NDKKind.Text}
+    <div class="dropdown dropdown-hover lg:dropdown-end">
+        <label tabindex="0">
+            <ButtonWithCount
+                count={$reposts.length}
+                active={repostedByUser}
+            >
+                {#if repostedByUser}
+                    <Repeat class="sm:w-5 w-6 sm:h-5 h-6 text-accent2" weight="fill" />
+                {:else}
+                    <Repeat class="sm:w-5 w-6 sm:h-5 h-6" weight="regular" />
+                {/if}
+
+            </ButtonWithCount>
+        </label>
+
+        <ul tabindex="0" class="dropdown-content z-[50] p-4 bg-base-300 rounded-box w-fit flex flex-row shadow-2xl gap-4">
+            <li><button on:click={repost} class="group">
+                <Repeat class="w-10 h-10" />
+                <span class="text-white/80 group-hover:text-white">Repost</span>
+            </button></li>
+            <li><button on:click={boost} class="group">
+                <Quotes class="w-10 h-10" />
+                <span class="text-white/80 group-hover:text-white">Quote</span>
+            </button></li>
+        </ul>
+    </div>
+{:else}
     <button on:click|stopPropagation|preventDefault={boost}
         class="flex flex-row items-center gap-2 {repostedByUser ? 'text-white' : ''}"
     >
         {#if repostedByUser}
-            <RepostIcon class="w-7 h-7 text-accent" />
+            <ShareNetwork class="sm:w-5 w-6 sm:h-5 h-6 text-accent" />
         {:else}
-            <RepostIcon class="w-7 h-7" weight="regular" />
+            <ShareNetwork class="sm:w-5 w-6 sm:h-5 h-6" weight="regular" />
         {/if}
     </button>
-</div>
+{/if}
+
+<style lang="postcss">
+    ul button {
+        @apply bg-base-100 border border-base-100 hover:border-white/50 hover:bg-base-200 rounded-box p-4 flex flex-col items-center gap-2 w-24 h-24;
+    }
+
+    ul button span {
+        @apply text-white/80 group-hover:text-white font-medium text-sm;
+    }
+</style>

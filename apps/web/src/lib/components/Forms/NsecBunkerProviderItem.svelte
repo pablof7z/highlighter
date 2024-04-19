@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { RelativeTime, bunkerNDK, ndk } from "@kind0/ui-common";
+	import { Avatar, Name, RelativeTime, bunkerNDK, ndk } from "@kind0/ui-common";
 	import { type Hexpubkey, NDKUser, type NDKUserProfile, NDKEvent, NDKPrivateKeySigner, NDKNostrRpc, type NDKRpcResponse } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
     import { createEventDispatcher } from "svelte";
@@ -13,8 +13,11 @@
     export let selected = false;
     export let domain: string | undefined = undefined;
 
-    export let valid: boolean | undefined = undefined;
+    export let valid: true | string = 'not checked';
     export let pubkey = provider.pubkey;
+
+    export let rpc: NDKNostrRpc;
+    export let pingRpcUser: NDKUser;
 
     let lastSeenAt: number = 0;
 
@@ -25,18 +28,7 @@
     let pinged: boolean | undefined;
 
     async function ping() {
-        await $bunkerNDK.connect();
-        const signer = NDKPrivateKeySigner.generate();
-        const localUser = await signer.user();
-        const rpc = new NDKNostrRpc($bunkerNDK, signer, debug);
-
-        await rpc.subscribe({
-            kinds: [24133 as number, 24134 as number],
-            "#p": [localUser.pubkey],
-        });
-
         return new Promise((resolve) => {
-            debug("pinging", pubkey);
             rpc.sendRequest(pubkey, "ping", undefined, undefined, (res: NDKRpcResponse) => {
                 pinged = true;
                 resolve(true);
@@ -44,7 +36,7 @@
         });
     }
 
-    async function validateNsecbunkerProvider(pubkey: Hexpubkey) {
+    async function validateNsecbunkerProvider(pubkey: Hexpubkey): Promise<true | string> {
         try {
             profile = JSON.parse(provider.content);
             profile.image ??= profile.picture;
@@ -52,45 +44,53 @@
             const [ username, d ] = nip05?.split("@") ?? [];
             domain = d;
 
+
             // If the username is not "_", it's not a valid root nsecbunker
-            if (username !== "_") return false;
+            if (username !== "_") return `username is ${username}`;
 
             // Validate the nip05 points to this pubkey
             if (!await validateNip05(pubkey, domain)) {
-                console.log('invalid nip05');
-                return false;
+                return 'nip05 does not point to this pubkey';
             }
 
-            // Validate it has emitted an event in the past 1 hour
-            const e = await $ndk.fetchEvents({
-                authors: [pubkey], since: Math.floor(Date.now() / 1000) - (3600*240), limit: 1
-            }, { groupable: true, groupableDelay: 100 });
+            const findRecentEventPromise = new Promise<void>((resolve) => {
+                $bunkerNDK.fetchEvent(
+                    { authors: [pubkey], since: Math.floor(Date.now() / 1000) - 43200, limit: 1 },
+                    { groupable: false },
+                ).then(e => {
+                    if (e) {
+                        console.log("found recent event", pubkey, e.rawEvent());
+                        resolve();
+                    }
+                })
+            });
 
-            // get the most recent created_at returned
-            for (const event of e) {
-                if (event.created_at! > (lastSeenAt ?? 0)) {
-                    lastSeenAt = event.created_at!;
-                }
-            }
+            await Promise.race([
+                new Promise<void|string>((resolve, reject) => setTimeout(() => reject("timeout"), 5000)),
+                findRecentEventPromise,
+                ping()
+            ]).then(() => {
+                valid = true
+            }).catch((e: any) => {
+                console.error(e);
+                valid = e
+            });
 
-            if (!await ping()) return false;
-
-            if (e.size === 0) return false;
-
-            return true;
-        } catch { return false }
+            return valid;
+        } catch (e: any) {
+            console.trace(e);
+            return e.message??e.toString();
+        }
     }
 
     async function validateNip05(pubkey: Hexpubkey, domain: string) {
-        debug("validating nip05", pubkey, domain)
-        const user = await NDKUser.fromNip05(domain, $ndk);
-        debug("user", user);
+        const user = await NDKUser.fromNip05(domain, $ndk, true);
 
         return !!(user && user.pubkey === pubkey);
     }
 
-    onMount(() => {
-        validateNsecbunkerProvider(pubkey).then(res => valid = res);
+    onMount(async () => {
+        valid = await validateNsecbunkerProvider(pubkey);
     })
 
     function clicked() {
@@ -98,9 +98,7 @@
     }
 </script>
 
-<p>{pubkey.slice(0,8)} {valid}</p>
-
-{#if valid && profile}
+{#if valid === true && profile}
     <li class:active={selected} class="overflow-x-clip">
         <button
             class="border-b flex border-white/10 items-center text-left gap-4 px-4 py-3 w-full"

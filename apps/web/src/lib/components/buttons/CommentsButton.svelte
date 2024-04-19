@@ -5,7 +5,7 @@
 	import { ChatCircle } from 'phosphor-svelte';
 	import { Readable } from "svelte/store";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-	import { pluralize } from "$utils";
+	import ButtonWithCount from "./ButtonWithCount.svelte";
 
     export let event: NDKEvent;
     export let urlPrefix: string | undefined = undefined;
@@ -40,28 +40,17 @@
     $: commentedByUser = !!$replies.find(findUserComment);
 </script>
 
-<a
+<ButtonWithCount
     href={urlPrefix ? `${urlPrefix}/comments` : "#a"}
-    class="flex flex-row items-center gap-2 {commentedByUser ? 'text-white' : ''}"
-    on:click={e => {
-        if (!urlPrefix) {
-            e.preventDefault();
-        }
-    }}
+    count={$replies.length}
+    {label}
+    active={commentedByUser}
+    on:click={e => { if (!urlPrefix) e.preventDefault() }}
 >
     {#if !label || $replies.length === 0}
-        <ChatCircle
-            class="w-6 h-6"
-            weight={commentedByUser ? "fill" : "regular"}
-        />
+    <ChatCircle
+        class="max-sm:w-6 w-5 max-sm:h-6 h-5 {commentedByUser ? 'text-accent2' : ''}}"
+        weight={commentedByUser ? "fill" : "regular"}
+    />
     {/if}
-
-    {#if $replies.length > 0}
-        <span class="font-light opacity-60">
-            {$replies.length}
-            {#if label}
-                {pluralize($replies.length, label)}
-            {/if}
-        </span>
-    {/if}
-</a>
+</ButtonWithCount>

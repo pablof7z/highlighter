@@ -10,7 +10,7 @@
     let wordCount: number;
     let url: string;
 
-    url = `/drafts/${draft.id}&checkpoint=` + checkpoint.time;
+    url = `/drafts/${draft.id}?checkpoint=` + checkpoint.time;
 
 </script>
 

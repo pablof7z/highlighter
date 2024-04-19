@@ -1,7 +1,7 @@
 <script lang="ts">
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { RelativeTime, user } from "@kind0/ui-common";
-	import type { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
 	import { urlSuffixFromEvent } from "$utils/url";
 	import UserProfile from "$components/User/UserProfile.svelte";
@@ -13,9 +13,9 @@
 
     export let event: NDKEvent;
     export let description: string | undefined = undefined;
-    export let title: string | undefined = "Untitled";
+    export let title: string | undefined = (event instanceof NDKArticle) ? event.title : "Untitled";
     export let durationTag: string | undefined = undefined;
-    export let image: string | undefined = undefined;
+    export let image: string | undefined = (event instanceof NDKArticle) ? event.image : "Untitled";
     export let grid = false;
     export let skipAuthor = false;
     export let skipLink = false;
@@ -114,7 +114,7 @@
             {title}
         </a>
         {#if description}
-            <a {href} class="self-stretch max-h-[1.5rem] text-neutral-500 text-sm font-normal overflow-y-clip basis-0 grow
+            <a {href} class="self-stretch max-h-[1.5rem] text-neutral-500 text-sm font-normal basis-0 grow
                 {grid ? "hidden" : ""}
             ">
                 {description}
