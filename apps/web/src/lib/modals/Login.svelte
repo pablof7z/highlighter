@@ -53,26 +53,53 @@
             blocking = false;
             return;
         }
-
         let u: NDKUser | undefined;
+        let token: string;
 
-        if (value.startsWith("npub")) {
+        if (value.startsWith("bunker://")) {
             try {
-                u = $ndk.getUser({npub: value});
-            } catch (e) {}
-        }
+                const uri = new URL(value);
+                let remotePubkey = uri.hostname;
+                if (remotePubkey.length === 0)
+                    remotePubkey = uri.pathname.slice(2);
+                const relay = uri.searchParams.get("relay");
+                const secret = uri.searchParams.get("secret");
 
-        if (!u) {
-            u = await NDKUser.fromNip05(value, $ndk, true);
+                if (relay) $bunkerNDK.pool.getRelay(relay);
+
+                await $bunkerNDK.connect(2500);
+
+                token = remotePubkey;
+                if (secret) token += "#" + secret;
+            } catch (e) {
+                console.error(e);
+                error = "Invalid bunker URI";
+                return;
+            }
+        } else {
+
+            if (value.startsWith("npub")) {
+                try {
+                    u = $ndk.getUser({npub: value});
+                } catch (e) {}
+            }
 
             if (!u) {
-                error = "User not found" + value;
-                return;
+                u = await NDKUser.fromNip05(value, $ndk, true);
+
+                if (!u) {
+                    error = "User not found" + value;
+                    return;
+                }
+
+                token = u.pubkey;
             }
         }
 
         const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
         let localSigner: NDKPrivateKeySigner;``
+
+
 
         if (existingPrivateKey) {
             localSigner = new NDKPrivateKeySigner(existingPrivateKey);
@@ -84,8 +111,13 @@
             localSigner = NDKPrivateKeySigner.generate();
         }
 
+        if (!token) {
+            error = "Invalid user";
+            return;
+        }
+
         try {
-            const remoteSigner = new NDKNip46Signer($bunkerNDK, u.pubkey, localSigner);
+            const remoteSigner = new NDKNip46Signer($bunkerNDK, token, localSigner);
             remoteSigner.on("authUrl", (url: string) => {
                 window.open(url, "nsecbunker", 'width=300,height=300');
             });

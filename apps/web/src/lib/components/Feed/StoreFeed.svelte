@@ -69,7 +69,6 @@
     });
 
     function openNote(e: CustomEvent<{event: NDKEvent, originalEvent: Event }>) {
-        console.log('open note called')
         const { event, originalEvent } = e.detail;
         originalEvent.preventDefault();
         navigateToEvent(event);

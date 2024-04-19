@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { afterUpdate } from 'svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import '../app.postcss';
 	import { RelativeTime, Toaster, bunkerNDK, ndk, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';

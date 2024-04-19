@@ -197,7 +197,7 @@ async function nip46SignIn(
 	const remoteSigner = new NDKNip46Signer($bunkerNDK, remoteUser.pubkey, localSigner!);
 
 	d(`Contacting remote signer`);
-	await remoteSigner.blockUntilReady();
+	remoteSigner.blockUntilReady();
 	d(`Remote signer came back`);
 
 	localStorage.setItem('nostr-nsecbunker-key', localSigner.privateKey!);

@@ -73,8 +73,6 @@ export function startUserView(user: NDKUser) {
 
 	filters.push(groupFilter);
 
-	console.log('user view filters', filters);
-
 	userSubscription = $ndk.storeSubscribe(filters, {
 		subId: 'user-view',
 		autoStart: true,

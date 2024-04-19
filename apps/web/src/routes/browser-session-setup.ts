@@ -31,7 +31,6 @@ export async function browserSetup() {
     // No stored pubkey found, attempt to sign in with NIP-07
     if (!pubkey && method !== "none") return newSessionTryNip07();
 
-
     if (method) {
         return login(method, pubkey);
     }
