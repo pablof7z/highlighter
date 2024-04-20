@@ -6,7 +6,7 @@
 	import { onMount } from "svelte";
 	import { fade } from "svelte/transition";
 	import Attachments from "./Attachments.svelte";
-	import { Feather } from "phosphor-svelte";
+	import { Feather, Timer } from "phosphor-svelte";
 
     export let extraTags: NDKTag[] = [];
     export let kind: NDKKind;
@@ -102,6 +102,9 @@
     <div class="max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 sm:border-t border-base-300 w-full px-4 justify-end z-40 max-sm:flex-row-reverse bottom-4 max-sm:h-16
         {collapsed ? "" : "max-sm:justify-between max-sm:top-0 "}
     ">
+        <!-- <button class="btn btn-circle btn-ghost">
+            <Timer class="w-6 h-6" />
+        </button> -->
         <button class="
             button
             {collapsed ? "button px-6" : "max-sm:bg-accent2 max-sm:text-white px-6"}

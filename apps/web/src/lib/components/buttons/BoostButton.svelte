@@ -4,7 +4,7 @@
 	import { type NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { openModal } from "svelte-modals";
-	import { Quotes, Repeat, ShareNetwork } from 'phosphor-svelte';
+	import { Quotes, Repeat, ShareNetwork, Timer } from 'phosphor-svelte';
 	import ButtonWithCount from './ButtonWithCount.svelte';
 	import currentUser from '$stores/currentUser';
 
@@ -59,14 +59,20 @@
             </ButtonWithCount>
         </div>
 
-        <ul tabindex="0" class="dropdown-content z-[50] p-2 bg-base-300 rounded-box w-fit flex flex-row shadow-2xl gap-2">
-            <li><button on:click={repost} class="group">
-                <Repeat class="w-10 h-10" />
-                <span class="text-white/80 group-hover:text-white">Repost</span>
-            </button></li>
-            <li><button on:click={boost} class="group">
-                <Quotes class="w-10 h-10" />
+        <ul tabindex="0" class="dropdown-content z-[50] p-2 bg-base-300 rounded-box w-fit flex flex-col shadow-2xl gap-2">
+            <div class="flex flex-row gap-2">
+                <li><button on:click={repost} class="group">
+                    <Repeat class="w-10 h-10" />
+                    <span class="text-white/80 group-hover:text-white">Repost</span>
+                </button></li>
+                <li><button on:click={boost} class="group">
+                    <Quotes class="w-10 h-10" />
                 <span class="text-white/80 group-hover:text-white">Quote</span>
+                </button></li>
+            </div>
+            <li><button class="!flex-row group !h-12 !w-full" on:click={boost}>
+                <Timer class="w-6 h-6" />
+                <span class="text-white/80 group-hover:text-white whitespace-nowrap">Scheduled Repost</span>
             </button></li>
         </ul>
     </div>
