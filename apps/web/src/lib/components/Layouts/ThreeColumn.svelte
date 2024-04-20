@@ -53,7 +53,7 @@ import MainWrapper from "$components/Page/MainWrapper.svelte";
 
         <!-- Main -->
         <div class="border-x border-base-300
-            flex-none
+            flex-none w-full
             {hasRightSidebarExpanded ?
                 "lg:w-3/4 xl:w-5/12" :
                 "md:w-full lg:w-3/4 xl:w-3/5"
@@ -67,6 +67,7 @@ import MainWrapper from "$components/Page/MainWrapper.svelte";
             sticky top-16
             max-h-screen overflow-y-auto overflow-x-clip
             w-full max-w-[50rem] shadow-2xl shadow-black
+            max-sm:fixed max-sm:top-0 max-sm:bottom-0 max-sm:right-0 max-sm:right-0 max-sm:w-full max-sm:max-w-[90vw] max-sm:z-[50] max-sm:bg-base-300 max-sm:backdrop-blur-[50px] max-sm:overflow-y-auto max-sm:h-[100dvh] max-sm:p-4
             {hasRightSidebarExpanded ?
                 "xl:block xl:5/12" :
                 "hidden "

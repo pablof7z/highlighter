@@ -49,7 +49,7 @@
 >
     {#if !label || $replies.length === 0}
     <ChatCircle
-        class="max-sm:w-6 w-5 max-sm:h-6 h-5 {commentedByUser ? 'text-accent2' : ''}}"
+        class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5 {commentedByUser ? 'text-accent2' : ''}}"
         weight={commentedByUser ? "fill" : "regular"}
     />
     {/if}

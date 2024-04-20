@@ -13,6 +13,7 @@
     $: if ($page.url.pathname !== url) closeModal();
 
     let mounted = false;
+    let containerEl: HTMLElement;
 
     onMount(() => {
         mounted = true;
@@ -31,11 +32,29 @@
     onDestroy(() => {
         $modalState = "closed";
     })
+
+    const viewport = window.visualViewport;
+
+    onMount(() => {
+        if (viewport) window.visualViewport?.addEventListener("resize", resizeHandler);
+
+        // add an event listener that fires on any input element focus
+        document.body.addEventListener("focus", resizeHandler);
+        document.body.addEventListener("blur", resizeHandler);
+    })
+
+    let height = viewport?.height;
+
+    function resizeHandler() {
+        if (!/iPhone|iPad|iPod/.test(window.navigator.userAgent)&& viewport?.height && height && viewport.height !== height) {
+            containerEl.style.bottom = `${height - viewport.height + 10}px`;
+        }
+    }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none {color}">
+<div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none {color}" bind:this={containerEl}>
     <div class="
         max-sm:fixed max-sm:bottom-0 z-[99] max-sm:w-full  max-sm:!pb-0
         {$$props.class??""}

@@ -30,17 +30,19 @@
 
 {#if throttleZaps && $throttleZaps.length > 0}
     <div class="flex flex-col items-start gap-2">
-        <ZapPill
-            zap={$throttleZaps[0]}
-            avatarSize={avatarSize}
-            comment="show"
-            class="
-                border-2 border-yellow-400/50
-                bg-yellow-400/20
-                {$$props.class}
-            "
-            icon={Crown}
-        />
+        <div class="flex flex-row items-center gap-2">
+            <ZapPill
+                zap={$throttleZaps[0]}
+                avatarSize={avatarSize}
+                comment="show"
+                class="
+                    border-2 border-yellow-400/50
+                    bg-yellow-400/20
+                    {$$props.class}
+                "
+                icon={Crown}
+            />
+        </div>
         <div class="flex flex-row">
             {#each $throttleZaps.slice(1, -1) as zap, i (zap.event.id)}
                 {#if !skipEventIds.includes(zap.event.id)}

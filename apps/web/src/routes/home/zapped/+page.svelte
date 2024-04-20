@@ -3,7 +3,6 @@
 	import { userFollows } from '$stores/session';
 	import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from "svelte";
-	import Note from "$components/Feed/Note.svelte";
     import Zap from "./Zap.svelte";
 
     const zaps = $ndk.storeSubscribe([

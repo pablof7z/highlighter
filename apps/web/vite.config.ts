@@ -12,7 +12,7 @@ export default defineConfig({
 	plugins: [sentrySvelteKit({
         sourceMapsUploadOptions: {
             org: "pablof7z",
-            project: "fans"
+            project: "highlighter"
         }
     }), sveltekit(), SvelteKitPWA({
         strategies: 'generateSW',

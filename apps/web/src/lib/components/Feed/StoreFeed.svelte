@@ -69,6 +69,8 @@
     });
 
     function openNote(e: CustomEvent<{event: NDKEvent, originalEvent: Event }>) {
+        const isMobile = window.innerWidth < 640;
+        if (isMobile) return;
         const { event, originalEvent } = e.detail;
         originalEvent.preventDefault();
         navigateToEvent(event);
@@ -80,7 +82,7 @@
 <div class="flex flex-col w-full justify-stretch">
     <div class="discussion-wrapper w-full flex flex-col">
         {#if newPostKind}
-            <div class="w-full sm:bg-white/5">
+            <div class="w-full">
                 <NewPost
                     extraTags={newPostTags}
                     kind={newPostKind}

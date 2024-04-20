@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { CaretRight, Lightning } from 'phosphor-svelte';
-	import { page } from "$app/stores";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { Avatar, Name, RelativeTime, ZapsButton, ndk } from "@kind0/ui-common";
-	import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKTag, NDKUserProfile, NostrEvent, eventIsReply, eventReplies, getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
+	import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
 	import NewPost from "./NewPost/NewPost.svelte";
@@ -39,6 +38,7 @@
     export let showReply: boolean | undefined = undefined;
     export let urlPrefix: string = "/e/";
     export let willShowReply: boolean | undefined = undefined;
+    export let newPostCompact = false;
 
     export let hTag = op.tagValue("h");
 
@@ -229,7 +229,7 @@
                             ndk={$ndk}
                             {event}
                             content={contentToRender}
-                            class={`${$$props.contentClass??"text-white/80"}`}
+                            class={`${$$props.contentClass??"text-white"}`}
                             mediaCollectionComponent={MediaCollection}
                             on:click={contentClicked}
                         />
@@ -268,7 +268,7 @@
                             <CommentsButton {event} prefetchedReplies={replies} />
                         </button>
                     {:else}
-                        <button class="" on:click|stopPropagation={() => { autofocusNewPost = showReply = !showReply }}>
+                        <button class="" on:click|stopPropagation={() => { autofocusNewPost = showReply = !showReply; newPostCompact = false }}>
                             <CommentsButton {event} prefetchedReplies={replies} />
                         </button>
                     {/if}
@@ -279,14 +279,14 @@
                 </div>
 
                 <div class="w-1/4 flex justify-center items-end ">
-                    <Bookmark {event} class="max-sm:w-6 w-5 max-sm:h-6 h-5" />
+                    <Bookmark {event} class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
                 </div>
                     <!-- <div class="shrink flex flex-row gap-3 items-center text-white/50 border grow justify-between"> -->
 
                 <div class="w-1/4 flex justify-center items-end ">
                     <ZapsButton {event}>
                         <span slot="icon">
-                            <Lightning class="max-sm:w-6 w-5 max-sm:h-6 h-5" />
+                            <Lightning class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
                         </span>
                     </ZapsButton>
                 </div>
@@ -301,6 +301,7 @@
         bind:showReply
         autofocus={autofocusNewPost}
         placeholder={newPostPlaceholder}
+        bind:collapsed={newPostCompact}
     />
 {/if}
 {#if expandThread && event.id == op.id}

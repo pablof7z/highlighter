@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import '../app.postcss';
-	import { RelativeTime, Toaster, bunkerNDK, ndk, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
-	import { fillInSkeletonProfile, finalizeLogin, login } from '$utils/login';
-	import { debugMode, prepareSession, jwt, userProfile } from '$stores/session';
+	import { ndk, user } from '@kind0/ui-common';
+	import { finalizeLogin } from '$utils/login';
+	import { prepareSession, jwt, userProfile } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
 	import { pwaInfo } from 'virtual:pwa-info';
 	import AppShell from '$components/PageElements/AppShell.svelte';

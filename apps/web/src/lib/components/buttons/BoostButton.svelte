@@ -35,26 +35,31 @@
 
     async function repost() {
         await event.repost();
+        repostedByUser = !repostedByUser;
+        const focusedElement = document.activeElement as HTMLElement;
+        focusedElement?.blur();
     }
+
+    let container: HTMLDivElement;
 </script>
 
 {#if event.kind === NDKKind.Text}
-    <div class="dropdown dropdown-hover lg:dropdown-end">
-        <label tabindex="0">
+    <div class="dropdown dropdown-hover lg:dropdown-end" bind:this={container}>
+        <div tabindex="0" role="button">
             <ButtonWithCount
                 count={$reposts.length}
                 active={repostedByUser}
             >
                 {#if repostedByUser}
-                    <Repeat class="sm:w-5 w-6 sm:h-5 h-6 text-accent2" weight="fill" />
+                    <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-accent2" weight="fill" />
                 {:else}
-                    <Repeat class="sm:w-5 w-6 sm:h-5 h-6" weight="regular" />
+                    <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5" weight="regular" />
                 {/if}
 
             </ButtonWithCount>
-        </label>
+        </div>
 
-        <ul tabindex="0" class="dropdown-content z-[50] p-4 bg-base-300 rounded-box w-fit flex flex-row shadow-2xl gap-4">
+        <ul tabindex="0" class="dropdown-content z-[50] p-2 bg-base-300 rounded-box w-fit flex flex-row shadow-2xl gap-2">
             <li><button on:click={repost} class="group">
                 <Repeat class="w-10 h-10" />
                 <span class="text-white/80 group-hover:text-white">Repost</span>

@@ -57,6 +57,6 @@
 
 <style lang="postcss">
     a {
-        @apply text-sm text-white underline;
+        @apply text-sm text-accent2;
     }
 </style>
