@@ -7,6 +7,8 @@
 	import { Quotes, Repeat, ShareNetwork, Timer } from 'phosphor-svelte';
 	import ButtonWithCount from './ButtonWithCount.svelte';
 	import currentUser from '$stores/currentUser';
+	import DateSelector from '$components/DateSelector.svelte';
+	import Scheduler from '$modals/Scheduler.svelte';
 
     export let event: NDKEvent;
 
@@ -40,6 +42,10 @@
         focusedElement?.blur();
     }
 
+    function scheduleBoost() {
+        openModal(Scheduler, { event })
+    }
+
     let container: HTMLDivElement;
 </script>
 
@@ -70,10 +76,11 @@
                 <span class="text-white/80 group-hover:text-white">Quote</span>
                 </button></li>
             </div>
-            <li><button class="!flex-row group !h-12 !w-full" on:click={boost}>
+            <li><button class="!flex-row group !h-12 !w-full" on:click={scheduleBoost}>
                 <Timer class="w-6 h-6" />
                 <span class="text-white/80 group-hover:text-white whitespace-nowrap">Scheduled Repost</span>
             </button></li>
+
         </ul>
     </div>
 {:else}

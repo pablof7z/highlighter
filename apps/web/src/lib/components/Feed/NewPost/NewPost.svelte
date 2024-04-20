@@ -7,6 +7,7 @@
 	import { fade } from "svelte/transition";
 	import Attachments from "./Attachments.svelte";
 	import { Feather, Timer } from "phosphor-svelte";
+    import { createEventDispatcher } from "svelte";
 
     export let extraTags: NDKTag[] = [];
     export let kind: NDKKind;
@@ -16,6 +17,8 @@
     export let hasFocus = false;
     export let autofocus = false;
     export let collapsed = true;
+
+    const dispatch = createEventDispatcher();
 
     let publishing = false;
     let content = event.content;
@@ -38,6 +41,7 @@
             content = "";
             resetEditorAt = new Date();
             collapsed = true;
+            dispatch("publish");
         } catch (e) {
             console.error(e);
             newToasterMessage(e.relayErrors ?? e.message, "error");
@@ -67,8 +71,8 @@
     let uploadedFiles: string[] = [];
 </script>
 
-{#if hasFocus && content.length > 0}
-    <div transition:fade class="absolute right-0 bottom-0 top-0 left-0 bg-black/40 z-30"></div>
+{#if !isMobile && hasFocus && content.length > 0}
+    <div transition:fade class="absolute right-0 bottom-0 top-0 left-0 bg-black/40 z-30">here</div>
 {/if}
 
 {#if collapsed}
@@ -86,11 +90,14 @@
         <ContentEditor
             bind:content
             toolbar={false}
+            on:focus={() => hasFocus = true}
+            on:blur={() => hasFocus = false}
             {placeholder}
             {autofocus}
             allowMarkdown={false}
             on:submit={publish}
             class="
+                text-white
                 {collapsed ? "sm:min-h-[7rem]" : "sm:min-h-[10rem] flex-grow"}
             {$$props.class??""}"
         />

@@ -4,6 +4,7 @@ import { get } from 'svelte/store';
 
 export const ssr = false;
 export const prerender = false;
+export const trailingSlash = 'always';
 
 export async function load({ fetch }) {
 	const $ndk = get(ndk);

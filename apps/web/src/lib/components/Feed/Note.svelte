@@ -302,6 +302,7 @@
         autofocus={autofocusNewPost}
         placeholder={newPostPlaceholder}
         bind:collapsed={newPostCompact}
+        on:publish={() => { showReply = false; }}
     />
 {/if}
 {#if expandThread && event.id == op.id}
