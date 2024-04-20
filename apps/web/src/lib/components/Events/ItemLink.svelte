@@ -86,9 +86,9 @@
         {#if !skipAuthor}
             <!-- Pushes the content up (since this is a flex-col-reverse) -->
             <div class="flex-grow" class:hidden={!grid}></div>
-            <div class="self-stretch justify-between items-center inline-flex leading-5">
+            <div class="self-stretch inline-flex leading-5">
                 <div class="
-                    gap-3 flex w-full whitespace-nowrap truncate items-end
+                    gap-3 flex w-full whitespace-nowrap truncate items-end justify-between items-center
                     {grid ? "" : "sm:mb-2"}
                 ">
                     <AvatarWithName
@@ -107,14 +107,14 @@
         {:else}
             <UserProfile bind:userProfile user={author} bind:authorUrl />
         {/if}
-        <a {href} class="
+        <a dir="auto" {href} class="
             self-stretch text-white font-semibold leading-relaxed
             {grid ? "" : "sm:text-xl"}
         ">
             {title}
         </a>
         {#if description}
-            <a {href} class="self-stretch max-h-[1.5rem] text-neutral-500 text-sm font-normal basis-0 grow
+            <a dir="auto" {href} class="self-stretch max-h-[1.5rem] text-neutral-500 text-sm font-normal basis-0 grow
                 {grid ? "hidden" : ""}
             ">
                 {description}
