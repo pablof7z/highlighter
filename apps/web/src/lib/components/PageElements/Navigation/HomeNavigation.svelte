@@ -11,7 +11,7 @@
     options.push({ name: "Highlights", href: "/home", icon: HighlightIcon})
     options.push({ name: "For You", href: "/home/for-you", icon: User})
     options.push({ name: "Bookmarks", href: "/home/bookmarks", icon: Bookmark})
-    options.push({ name: "ZAPPED", href: "/home/zapped", icon: Lightning})
+    options.push({ name: "Zapped", href: "/home/zapped", icon: Lightning})
 </script>
 
 <OptionsList {options} class="md:flex-col w-full max-sm:gap-0 gap-2" />
