@@ -48,13 +48,13 @@
     }
     max-sm:flex-row max-sm:items-center
 ">
-    <div class="flex items-center sm:items-end shrink">
+    <div dir="auto" class="flex items-center sm:items-end shrink">
         <Avatar user={user} {userProfile} {fetching} size={collapsed ? "small" : "medium"} class="
             transition-all duration-300 flex-none object-cover
             {collapsed ? 'w-12 h-12 sm:w-14 sm:h-14' : 'w-16 h-16 sm:w-28 sm:h-28'}
         " />
 
-        <div class="ml-4 overflow-clip">
+        <div class="ltr:ml-4 rtl:mr-4 overflow-clip">
             <div class="name text-xl font-semibold text-base-100-content truncate shrink basis-0 overflow-clip">
                 <Name {userProfile} {fetching} />
             </div>

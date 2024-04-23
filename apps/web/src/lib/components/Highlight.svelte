@@ -8,7 +8,7 @@
 </script>
 
 <EventWrapper event={highlight} reverse={true} class={$$props.class??""}>
-    <div class="pl-12">
+    <div dir="auto" class="pl-12">
         <HighlightBody {highlight} {highlightedArticle} />
     </div>
 </EventWrapper>

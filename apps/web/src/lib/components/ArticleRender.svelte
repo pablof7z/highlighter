@@ -50,7 +50,7 @@
     if (hTag) highlightTags.push(["h", hTag]);
 </script>
 
-<div class="w-full flex flex-col gap-4">
+<div dir="auto" class="w-full flex flex-col gap-4">
     {#if article.title}
         <div class="self-stretch text-white text-4xl font-semibold">
             {article.title}
