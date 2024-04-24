@@ -93,7 +93,7 @@
                 <MoreFromUser user={event.author} />
             </ThreeColumn> -->
             <MainWrapper
-                class="flex-col justify-start items-start gap-2 sm:gap-8 flex pb-6 sm:py-6"
+                class="flex-col justify-start gap-2 sm:gap-8 flex pb-6 sm:py-6"
                 marginClass={`max-w-3xl ${mxClass}`}
                 mobilePadded={false}
             >

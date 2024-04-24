@@ -5,11 +5,12 @@
 	import { userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { ndk } from "@kind0/ui-common";
-	import { type NDKArticle, NDKTag } from "@nostr-dev-kit/ndk";
+	import { type NDKArticle, NDKTag, NDKKind } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import ItemViewZaps from './ItemViewZaps.svelte';
 	import HighlightingArea from './HighlightingArea.svelte';
 	import HighlightedContent from './HighlightedContent.svelte';
+	import EventTags from './Events/EventTags.svelte';
 
     export let article: NDKArticle;
     const author = article.author;
@@ -63,13 +64,7 @@
         <ItemViewZaps event={article} />
     {/if}
 
-    <div class="flex flex-row gap-4 flex-wrap">
-        {#each article.getMatchingTags("t") as tag, i (i)}
-            <div href="/?q={encodeURIComponent("#"+tag[1])}" class="flex-row gap-2 text-white/50 text-sm inline flex-inline bg-white/10 rounded-full px-3 py-1 whitespace-nowrap">
-                <span>{tag[1]}</span>
-            </div>
-        {/each}
-    </div>
+    <EventTags event={article} />
 
     {#if article.image}
         <div class="w-full max-h-[50vh] relative overflow-hidden">
