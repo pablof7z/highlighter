@@ -8,6 +8,7 @@
     import { createEventDispatcher, onDestroy, tick } from "svelte";
     import createDebug from "debug";
     import { inview } from 'svelte-inview';
+	import { vanityUrls } from "$utils/const";
 
     export let pubkey: Hexpubkey | undefined = undefined;
     export let npub: string | undefined = undefined;
@@ -119,9 +120,22 @@
 
     let validatedNip05: boolean | undefined;
 
+    let userHasVanityUrl = false;
+
+    // if there is a user, see if we find the user's pubkey in a value, if we find it the key is the authorUrl with / prefix
+    if (user) {
+        for (const key in vanityUrls) {
+            if (vanityUrls[key] === user.pubkey) {
+                userHasVanityUrl = true;
+                authorUrl = `/${key}`;
+                break;
+            }
+        }
+    }
+
     $: if (userProfile && fetching) fetching = false;
     $: if (userProfile && userProfile.nip05 && !fetching) displayNip05 = prettifyNip05(userProfile.nip05, 999999)
-    $: if (userProfile && user && userProfile.nip05 && validatedNip05 === undefined) {
+    $: if (userProfile && user && userProfile.nip05 && validatedNip05 === undefined && !userHasVanityUrl) {
         user.ndk = $ndk;
         user.validateNip05(userProfile.nip05).then((v) => {
             validatedNip05 = true;
@@ -131,7 +145,6 @@
         });
     }
 </script>
-
 
 <slot {userProfile} {fetching} {authorUrl} {displayNip05} {event} />
 

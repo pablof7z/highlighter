@@ -1,3 +1,5 @@
+import { Hexpubkey } from "@nostr-dev-kit/ndk";
+
 export const blacklistedPubkeys = [
     "a2155842128093cac2c5120c9830d568c8556b95f6e03eeca3946bcd4309b43b", // marinalunes@nostr.me
     "0a6dfac7f5df57c3f21bdd265925dd09db51ad9324e41b63d521636574ba26da", // abcdef123@lume.nu
@@ -14,6 +16,17 @@ export const blacklistedPubkeys = [
 export const creatorRelayPubkey = import.meta.env.VITE_CREATOR_RELAY_PUBKEY;
 export const defaultVerifierPubkey = creatorRelayPubkey;
 export const defaultRelays = [import.meta.env.VITE_RELAY];
+
+export const vanityUrls: Record<string, Hexpubkey> = {
+	"avichand": "5002cb487a6e03a781d20b4d115bfc0e96abf7802d9ba4ee49d75a0231a0d6d8",
+	"max": "fe7f6bc6f7338b76bbf80db402ade65953e20b2f23e66e898204b63cc42539a3",
+	"maxdemarco": "fe7f6bc6f7338b76bbf80db402ade65953e20b2f23e66e898204b63cc42539a3",
+    "pablof7z": "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52",
+	"svetski": "6ad08392d1baa3f6ff7a9409e2ac5e5443587265d8b4a581c6067d88ea301584",
+    "miljan": "d61f3bc5b3eb4400efdae6169a5c17cabf3246b514361de939ce4a1a0da6ef4a",
+    "ODELL": "04c915daefee38317fa734444acee390a8269fe5810b2241e5e6dd343dfbecc9",
+    "walker": "c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11",
+}
 
 if (!creatorRelayPubkey) {
     console.error("No creator relay pubkey found");
