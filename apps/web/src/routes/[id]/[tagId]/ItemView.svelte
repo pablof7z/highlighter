@@ -44,7 +44,6 @@
 
     $: if (event && !readReceiptPosted) {
         readReceiptPosted = true;
-        console.log("Adding read receipt");
         addReadReceipt(event);
     }
 
@@ -84,15 +83,20 @@
 <WithItem {user} {tagId} bind:event bind:article bind:video let:urlPrefix let:eventType let:isFullVersion bind:authorUrl>
     {#if event && eventType}
         {#if eventType === "article" && article}
-            <!-- <ThreeColumn>
+            <ThreeColumn>
+                <ArticleView
+                    {article}
+                    {isFullVersion}
+                />
+
                 <ArticleView
                     {article}
                     {isFullVersion}
                 />
 
                 <MoreFromUser user={event.author} />
-            </ThreeColumn> -->
-            <MainWrapper
+            </ThreeColumn>
+            <!-- <MainWrapper
                 class="flex-col justify-start gap-2 sm:gap-8 flex pb-6 sm:py-6"
                 marginClass={`max-w-3xl ${mxClass}`}
                 mobilePadded={false}
@@ -103,7 +107,7 @@
                 />
 
                 <MoreFromUser user={event.author} />
-            </MainWrapper>
+            </MainWrapper> -->
 
             <ItemFooter {event} {urlPrefix} {eventType} {mxClass} />
         {:else if eventType === "video" && video}
