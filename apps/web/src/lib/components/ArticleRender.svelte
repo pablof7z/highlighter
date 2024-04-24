@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { getSummary } from '$utils/article';
-	import HighlightIcon from '../icons/HighlightIcon.svelte';
 	import { goto } from "$app/navigation";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKEvent, type NDKArticle, NDKKind, type NostrEvent, type NDKEventId, NDKTag } from "@nostr-dev-kit/ndk";
+	import { type NDKArticle, NDKTag } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import ItemViewZaps from './ItemViewZaps.svelte';
 	import HighlightingArea from './HighlightingArea.svelte';
@@ -56,8 +55,7 @@
             {article.title}
         </div>
     {/if}
-
-    <div class="text-xl text-white/70 font-normal" class:hidden={!article.summary && !fillInSummary}>
+    <div class="text-xl text-white/70 font-normal" class:hidden={!getSummary(article)}>
         {getSummary(article)}
     </div>
 

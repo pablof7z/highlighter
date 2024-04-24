@@ -8,6 +8,8 @@
 	import { pwaInfo } from 'virtual:pwa-info';
 	import AppShell from '$components/PageElements/AppShell.svelte';
 	import "@fontsource/lora";
+	import "@fontsource/lora/600.css";
+	import "@fontsource/lora/600-italic.css";
 	import { browser } from '$app/environment';
 	import { browserSetup } from './browser-session-setup';
 	import createDebug from 'debug';

@@ -18,7 +18,10 @@ const filter = (
 ): NDKFilter => {
     const filter: NDKFilter = { kinds: [NDKKind.Zap as number], ...extraFilter };
     if (eventOrUser instanceof NDKUser) filter['#p'] = [eventOrUser.pubkey];
-    else filter['#e'] = [eventOrUser.id];
+    else {
+        filter['#e'] = [eventOrUser.id];
+        if (eventOrUser.isParamReplaceable()) filter['#a'] = [eventOrUser.tagId()!];
+    }
     if (zapperPubkey) filter['authors'] = [zapperPubkey];
     return filter;
 }

@@ -226,7 +226,7 @@
         @apply relative;
     }
 
-    :global(.article p::before), :global(.article ul::before), :global(.article h1::before), :global(.article li::before), :global(.article blockquote) {
+    :global(.article p::before), :global(.article ul::before), :global(.article h1::before), :global(.article li::before), :global(.article blockquote::before) {
         @apply transition-opacity duration-300 ease-in;
         content: "";
         top: 0;

@@ -8,6 +8,8 @@
 	import { browser } from '$app/environment';
 	import { networkFollows, userFollows } from '$stores/session';
 	import { minimumScore, wot } from '$stores/wot';
+	import Checkbox from '$components/Forms/Checkbox.svelte';
+	import { devMode } from '$stores/settings';
 
     $pageSidebar = { component: Settings, props: {} }
     onDestroy(() => { $pageSidebar = null; })
@@ -45,6 +47,20 @@
 </script>
 
 <MainWrapper marginClass="max-w-3xl">
+    <section class="settings">
+        <div class="field">
+            <div class="title">
+                Developer Mode
+            </div>
+
+            <Checkbox bind:value={$devMode}>
+                Developer Mode
+                <span class="text-sm" slot="description">
+                    Enable additional debugging information and tools.
+                </span>
+            </Checkbox>
+        </div>
+    </section>
     <section class="settings">
         <div class="title">
             Database

@@ -12,10 +12,6 @@
         mounted = true;
     });
 
-    $: console.log({currentUser: !!$currentUser})
-    $: console.log({mounted})
-    $: console.log({startedUserView})
-
     $: if (!!$currentUser && !startedUserView && mounted) {
         startUserView($currentUser);
         startedUserView = true;

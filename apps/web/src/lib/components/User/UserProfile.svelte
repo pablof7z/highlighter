@@ -5,7 +5,7 @@
     import type { NDKRelay, NDKSubscription, NDKUser } from "@nostr-dev-kit/ndk";
     import type { UserProfileType } from "../../../app";
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
-    import { createEventDispatcher, onDestroy } from "svelte";
+    import { createEventDispatcher, onDestroy, tick } from "svelte";
     import createDebug from "debug";
     import { inview } from 'svelte-inview';
 
@@ -57,8 +57,10 @@
         checkedCache = true
         $ndk.cacheAdapter?.fetchProfile(user.pubkey).then((p) => {
             if (p) {
-                d(`Fetched profile for ${p.displayName} from cache`);
                 userProfile ??= p;
+
+                // not sure why this hack is needed
+                setTimeout(() => {userProfile ??= p;}, 100);
             }
         }).catch((e: any) => {
             console.error(e);

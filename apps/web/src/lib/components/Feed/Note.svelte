@@ -3,7 +3,7 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { Avatar, Name, RelativeTime, ZapsButton, ndk } from "@kind0/ui-common";
 	import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import { EventCardDropdownMenu, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
 	import NewPost from "./NewPost/NewPost.svelte";
 	import { getRepliesStore, getConversationRepliesStore, getThreadStore, computeScore } from "./replies";
@@ -20,6 +20,7 @@
 	import BoostButton from '$components/buttons/BoostButton.svelte';
 	import { onDestroy } from 'svelte';
     import { createEventDispatcher } from 'svelte';
+	import { devMode } from '$stores/settings';
 
     const dispatch = createEventDispatcher();
 
@@ -154,6 +155,8 @@
         const { event, originalEvent } = e.detail;
         dispatch('open:conversation', { event, originalEvent });
     }
+
+    const clientName = event.tagValue("client")
 </script>
 
 <div class="
@@ -190,6 +193,9 @@
                         {/if}
                         <div class="text-sm opacity-80">
                             <Name user={author} {userProfile} {fetching} />
+                            {#if clientName}
+                                <span class="ml-2 text-xs opacity-50">via {clientName}</span>
+                            {/if}
                         </div>
                     </div>
 
@@ -209,6 +215,9 @@
 
                             <div class="opacity-50">
                                 <RelativeTime timestamp={mostRecentActivity * 1000} />
+                                {#if $devMode}
+                                    <EventCardDropdownMenu {event} />
+                                {/if}
                             </div>
                         </div>
 

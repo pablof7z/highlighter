@@ -3,10 +3,12 @@
 	import { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher, onMount } from "svelte";
     import quillEditorMention from "./quill-editor-mention.js";
-    import "quill-mention";
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
-	import { UploadButton } from '@kind0/ui-common';
+	import { UploadButton, newToasterMessage } from '@kind0/ui-common';
+    import "quill-mention";
+	import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
+    import QuillImageDropAndPaste from 'quill-image-drop-and-paste';
 
     export let content: string = "";
     export let toolbar = true;
@@ -20,29 +22,42 @@
 
     let quill: Quill;
 
-    onMount(() => {
+    let uploadBlob: Blob;
+
+    onMount(async () => {
+        Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste)
+
         const options: any = {
             theme: 'snow',
             placeholder: $$props.placeholder ?? "Write your heart out...",
             modules: {
+                imageDropAndPaste: {
+                    // add an custom image handler
+                    handler: (imageDataUrl, type, imageData) => {
+                        uploadBlob = imageData.toBlob()
+                        const img = editorEl.querySelector(`img[src^="data:image"]`);
+                        if (img) img.classList.add('animate-pulse');
+                    }
+                },
                 toolbar: toolbar ? { container: toolbarEl } : false,
                 keyboard: {
                     bindings: {
-                        // when esc key is pressed, blur the editor
-                        esc: {
-                            key: 27,
+                        // when cmd+enter dispatch a submit event
+                        enter: {
+                            key: 'Enter',
+                            metaKey: true,
                             handler: () => {
-                                quill.blur();
+                                dispatch("submit");
                             }
                         },
-                        // when cmd+enter dispatch a submit event
-                        // enter: {
-                        //     key: 'enter',
-                        //     handler: () => {
-                        //         alert('handler')
-                        //         // dispatch("submit");
-                        //     }
-                        // },
+                        enter: {
+                            key: 'Enter',
+                            metaKey: true,
+                            shiftKey: true,
+                            handler: () => {
+                                dispatch("forceSubmit");
+                            }
+                        }
                         // when the down key is pressed and we are at the last line
                         // dispatch a next event
                         // next: {
@@ -64,14 +79,21 @@
                 },
                 mention: {
                     source: quillEditorMention,
-                    dataAttributes: ['id', 'value', 'avatar'],
+                    dataAttributes: ['id', 'value', 'avatar', "followed", "nip05"],
                     renderItem: (data) => {
                         const div = document.createElement("div");
-                        div.classList.add("flex", "flex-row", "items-center", "mention", "gap-3");
+                        div.classList.add("flex", "flex-row", "items-center", "mention", "gap-3", "cursor-pointer");
                         div.innerHTML = `<img src="${data.avatar}" class="w-7 h-7 rounded-full" />`;
                         const span = document.createElement("span");
+                        span.classList.add("grow");
                         span.innerText = data.value;
                         div.appendChild(span);
+                        if (typeof data.nip05 === "string") {
+                            const nip05Span = document.createElement("span");
+                            nip05Span.innerText = prettifyNip05(data.nip05, 30);
+                            nip05Span.classList.add("text-xs", "opacity-40", "truncate");
+                            div.appendChild(nip05Span);
+                        }
                         return div;
                     },
                 }
@@ -81,7 +103,6 @@
         if (!allowMarkdown) options.formats = ['mention'];
 
         quill = new Quill(editorEl, options);
-
         quill.setText(content)
         quill.on("text-change", () => {
             content = getContents(quill);
@@ -98,11 +119,35 @@
     function fileUploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {
         const {url, tags} = e.detail;
         if (url) {
-            quill.insertText(quill.getSelection()?.index || 0, "\n");
-            quill.insertEmbed(quill.getSelection()?.index || 0, "image", url);
-            quill.insertText(quill.getSelection()?.index || 0, "\n");
+            const img = document.querySelector(`img[src^="data:image"]`);
+            let index: number | undefined;
+            if (img) {
+                const imgBlot = Quill.find(img);
+                console.log(imgBlot)
+                // remove imgBlo from quill
+                if (imgBlot) {
+                    const imgIndex = quill.getIndex(imgBlot);
+                    if (imgIndex !== null) {
+                        quill.deleteText(imgIndex, 1);
+                        index = imgIndex;
+                    } else {
+                        console.log("unable to find image index")
+                    }
+                } else {
+                    console.log("unable to find image blot")
+                }
+            } else {
+                console.log("unable to find image")
+            }
+
+            if (index === undefined) {
+                index = quill.getSelection()?.index || 0;
+            }
+
+            quill.insertText(index, "\n");
+            quill.insertEmbed(index, "image", url);
         } else {
-            console.error("Failed to upload file");
+            newToasterMessage("Failed to upload image", "error");
         }
     }
 </script>
@@ -118,12 +163,15 @@
                 <button class="ql-italic"></button>
                 <button class="ql-link"></button>
                 <button>
-                    <UploadButton class="!p-0" on:uploaded={fileUploaded}>
+                    <UploadButton class="!p-0" on:uploaded={fileUploaded} bind:blob={uploadBlob}>
                         <Image class="w-full" />
                     </UploadButton>
                 </button>
             </span>
         </div>
+    {/if}
+    {#if $$slots.belowToolbar}
+        <slot name="belowToolbar" />
     {/if}
     <div class="px-2 pt-0 flex flex-col gap-4 transition-all duration-100 {$$props.class??""}">
         <div bind:this={editorEl} class="editor h-full {$$props.class??""}" />
@@ -198,7 +246,7 @@
     }
 
     :global(.ql-mention-list-item) {
-        @apply px-4 py-1 text-base truncate w-full max-w-[300px];
+        @apply px-4 py-1 text-base truncate w-full sm:w-96;
     }
 
     :global(.ql-mention-list-item.selected) {

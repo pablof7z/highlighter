@@ -7,6 +7,8 @@ import MainWrapper from "$components/Page/MainWrapper.svelte";
     import { threeColumnLayoutRightSidebar } from "$stores/layout";
 	import { X } from "phosphor-svelte";
 
+    export let leftColumn = true;
+
     let hasRightSidebarExpanded = false;
 
     $: hasRightSidebarExpanded = !!$page.state.detailView;
@@ -35,21 +37,23 @@ import MainWrapper from "$components/Page/MainWrapper.svelte";
 >
     <div class="flex flex-row w-full relative h-full grow">
         <!-- Left sidebar -->
-        <div class="
-            h-full hidden md:block sticky top-0 pt-10
-            lg:py-4 pr-4
-            flex-none
-            {hasRightSidebarExpanded ?
-                "md:w-10 lg:w-1/5 xl:w-2/12" :
-                "md:w-10 lg:w-1/5 xl:w-1/5 "
-            }
-        ">
-            {#if $$slots.left}
-                <slot name="left" />
-            {:else}
-                <HomeNavigation />
-            {/if}
-        </div>
+        {#if leftColumn}
+            <div class="
+                h-full hidden md:block sticky top-0 pt-10
+                lg:py-4 pr-4
+                flex-none
+                {hasRightSidebarExpanded ?
+                    "md:w-10 lg:w-1/5 xl:w-2/12" :
+                    "md:w-10 lg:w-1/5 xl:w-1/5 "
+                }
+            ">
+                {#if $$slots.left}
+                    <slot name="left" />
+                {:else}
+                    <HomeNavigation />
+                {/if}
+            </div>
+        {/if}
 
         <!-- Main -->
         <div class="border-x border-base-300

@@ -22,6 +22,7 @@
 	import Highlight from "$components/Highlight.svelte";
 	import { openModal } from "svelte-modals";
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
+	import ThreeColumn from "$components/Layouts/ThreeColumn.svelte";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -83,6 +84,14 @@
 <WithItem {user} {tagId} bind:event bind:article bind:video let:urlPrefix let:eventType let:isFullVersion bind:authorUrl>
     {#if event && eventType}
         {#if eventType === "article" && article}
+            <!-- <ThreeColumn>
+                <ArticleView
+                    {article}
+                    {isFullVersion}
+                />
+
+                <MoreFromUser user={event.author} />
+            </ThreeColumn> -->
             <MainWrapper
                 class="flex-col justify-start items-start gap-2 sm:gap-8 flex pb-6 sm:py-6"
                 marginClass={`max-w-3xl ${mxClass}`}

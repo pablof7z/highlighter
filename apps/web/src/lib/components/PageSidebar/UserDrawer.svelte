@@ -5,8 +5,6 @@
     import currentUser from "$stores/currentUser";
 	import { Fire, Gear, House, PaperPlane, SignOut, SquaresFour, User } from "phosphor-svelte";
 	import { openModal } from "svelte-modals";
-    import SettingsMenu from "../Settings/Menu.svelte";
-	import Item from "$components/PageElements/Navigation/Item.svelte";
 	import NewItemModal from "$modals/NewItemModal.svelte";
 
     let authorUrl: string;

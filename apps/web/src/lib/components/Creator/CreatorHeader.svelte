@@ -56,7 +56,7 @@
 
         <div class="ltr:ml-4 rtl:mr-4 overflow-clip">
             <div class="name text-xl font-semibold text-base-100-content truncate shrink basis-0 overflow-clip">
-                <Name {userProfile} {fetching} />
+                <Name {user} {userProfile} {fetching} />
             </div>
             <p class="
                 text-sm truncate max-w-md text-neutral-500 w-full

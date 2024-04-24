@@ -11,8 +11,10 @@
 
     $pageHeader = {
         title: "Privacy",
-        leftLabel: "Back",
-        leftUrl: "/settings",
+        left: {
+            label: 'Back',
+            url: '/settings',
+        }
     };
 
     let announceClient = !!$ndk.clientNip89;
@@ -33,7 +35,7 @@
     >
         Enable client identity
         <span class="text-sm" slot="description">
-            If this is turned on, public notes you create will have a "client" tag added. This helps with troubleshooting, and allows other people to find out about Highlighter.
+            If this is turned on, public notes you create will have a "client" tag added. This helps with troubleshooting, and allows others to know about different nostr clients.
         </span>
     </Checkbox>
 </MainWrapper>

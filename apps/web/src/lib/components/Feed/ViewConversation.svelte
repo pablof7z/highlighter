@@ -15,7 +15,7 @@
     const dispatch = createEventDispatcher();
 
     event.fetchRootEvent().then((e: NDKEvent | null) => rootEvent = e);
-    event.fetchTaggedEvent("e", "reply").then((e: NDKEvent | null) => replyToEvent = e);
+    event.fetchReplyEvent().then((e: NDKEvent | null) => replyToEvent = e);
 
     const rootTag = getRootEventId(event);
 

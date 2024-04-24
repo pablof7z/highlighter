@@ -5,12 +5,13 @@ import createDebug from 'debug';
 const vanityUrls = {
 	"avichand": "5002cb487a6e03a781d20b4d115bfc0e96abf7802d9ba4ee49d75a0231a0d6d8",
 	"max": "fe7f6bc6f7338b76bbf80db402ade65953e20b2f23e66e898204b63cc42539a3",
-	"maxdemarco": "fe7f6bc6f7338b76bbf80db402ade65953e20b2f23e66e898204b63cc42539a3"
+	"maxdemarco": "fe7f6bc6f7338b76bbf80db402ade65953e20b2f23e66e898204b63cc42539a3",
+	"svetski": "6ad08392d1baa3f6ff7a9409e2ac5e5443587265d8b4a581c6067d88ea301584"
 }
 
 const debug = createDebug('HL:user-layout');
 
-export async function load({ params }) {
+export async function load({ params }) { 
 	const { id } = params;
 	let user: NDKUser | undefined;
 

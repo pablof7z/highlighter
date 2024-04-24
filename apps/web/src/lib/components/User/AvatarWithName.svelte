@@ -13,7 +13,6 @@
     export let avatarSize: 'tiny' | 'small' | 'medium' | 'large' | undefined = "medium";
 
     function newProfileAfterEose(e: CustomEvent<UserProfileType>) {
-        console.log('newProfileAfterEose');
         userProfile = e.detail;
     }
 </script>

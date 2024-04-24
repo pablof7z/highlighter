@@ -14,7 +14,6 @@
     let feed = $ndk.storeSubscribe(filters, { subId: 'feed' });
 
     const sortedFeed = derived(feed, $feed => {
-        console.log('calculating sorted feed')
         return $feed.sort((a, b) => b.created_at! - a.created_at!);
     });
 

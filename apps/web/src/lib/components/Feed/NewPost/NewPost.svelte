@@ -72,7 +72,7 @@
 </script>
 
 {#if !isMobile && hasFocus && content.length > 0}
-    <div transition:fade class="absolute right-0 bottom-0 top-0 left-0 bg-black/40 z-30">here</div>
+    <div transition:fade class="absolute right-0 bottom-0 top-0 left-0 bg-black/40 z-30"></div>
 {/if}
 
 {#if collapsed}

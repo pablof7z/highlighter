@@ -45,7 +45,7 @@
         });
     }
 
-    let userProfile: UserProfileType;
+    let userProfile: UserProfileType | undefined = undefined;
 
     let activeTab: string = "Publications";
 
@@ -54,6 +54,8 @@
     let authorUrl: string;
     let fetching: boolean;
 </script>
+
+<UserProfile {user} bind:userProfile bind:fetching bind:authorUrl />
 
 <ThreeColumn>
     <div slot="left">
@@ -76,17 +78,15 @@
         </div>
     </div>
 
-    <UserProfile {user} bind:userProfile bind:fetching bind:authorUrl>
-        <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%] max-sm:hidden">
-            {#if userProfile?.banner}
-                <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
-            {:else}
-                <div class="absolute w-full h-full object-cover object-top lg:rounded bg-gradient-to-b from-base-300 to-transparent via-bg-base-300" />
-            {/if}
-        </div>
-        <!-- Profile Header -->
-        <CreatorHeader {user} {userProfile} {fetching} tiers={userTiers} />
-    </UserProfile>
+    <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%] max-sm:hidden">
+        {#if userProfile?.banner}
+            <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
+        {:else}
+            <div class="absolute w-full h-full object-cover object-top lg:rounded bg-gradient-to-b from-base-300 to-transparent via-bg-base-300" />
+        {/if}
+    </div>
+    <!-- Profile Header -->
+    <CreatorHeader {user} {userProfile} {fetching} tiers={userTiers} />
 
     <div class="md:hidden sticky top-14 z-50 bg-black/90">
         <div class="border-t border-base-300">

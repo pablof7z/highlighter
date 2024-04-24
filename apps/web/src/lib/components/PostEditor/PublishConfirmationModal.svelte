@@ -179,11 +179,14 @@
                 $event.tags.push(["f", tier]);
             }
             $event.id = "";
-            $event.sig = "";
             $event.created_at! += $makePublicAfter * 24 * 60 * 60;
-            $event.removeTag("published_at");
+
+            if ($event.sig !== "") {
+                $event.sig = "";
+            } else {
+                $event.removeTag("published_at");
+            }
             await $event.sign();
-            console.log("scheduling event", $event.rawEvent());
             await dvmScheduleEvent($event);
             makePublicScheduled = true;
         }

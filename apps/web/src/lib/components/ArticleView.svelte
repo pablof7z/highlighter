@@ -62,6 +62,6 @@
 </svelte:head>
 
 <div class="flex flex-col gap-2 px-4 sm:px-0">
-    <ItemHeader item={article} />
+    <ItemHeader item={article} {editUrl} />
     <ArticleRender {article} {editUrl} {isFullVersion} {isPreview} {fillInSummary} />
 </div>
