@@ -32,6 +32,17 @@ module.exports = {
 		utils: true,
 		styled: true,
 		themes: [
+			// {
+			// 	light: {
+			// 		...require('daisyui/src/theming/themes')['[data-theme=light]'],
+			// 		mark: {
+			// 			background: 'rgba(255, 104, 94, 0.33)',
+			// 			color: 'black'
+			// 		},
+			// 		'base-200': 'rgb(239, 243, 244)',
+			// 		'base-100-opposite': '#000000'
+			// 	}
+			// },
 			{
 				black: {
 					...require('daisyui/src/theming/themes')['[data-theme=dark]'],

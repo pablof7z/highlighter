@@ -16,7 +16,7 @@ export async function dvmScheduleEvent(event: NDKEvent, relays: string[] = []) {
     await dvmSchedule(
         event,
         dvm,
-        [...relays, "wss://relay.f7z.io"],
+        [...relays, "wss://relay.f7z.io", "wss://nos.lol"],
         true,
         5000
     )

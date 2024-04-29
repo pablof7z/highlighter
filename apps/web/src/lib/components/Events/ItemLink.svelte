@@ -12,7 +12,7 @@
 	import TopZap from "./TopZap.svelte";
 
     export let event: NDKEvent;
-    export let description: string | undefined = undefined;
+    export let description: string | undefined = (event instanceof NDKArticle) ? event.summary : undefined;
     export let title: string | undefined = (event instanceof NDKArticle) ? event.title : "Untitled";
     export let durationTag: string | undefined = undefined;
     export let image: string | undefined = (event instanceof NDKArticle) ? event.image : "Untitled";
@@ -20,10 +20,12 @@
     export let skipAuthor = false;
     export let skipLink = false;
     export let size: "small" | "normal" = "normal";
-    export let useProfileAsDefaultImage = false;
+    export let useProfileAsDefaultImage = true;
     export let href: string | undefined = undefined;
 
     const hrefSet = !!href;
+
+    $: if (!image && userProfile) { image = userProfile.image || userProfile.banner }
 
     $: title ??= "Untitled";
 
@@ -58,15 +60,19 @@
             (size === "normal" && "sm:w-64 sm:h-44")
         )}
     ">
-        {#if image}
-            <img src={image} alt={title} class="w-full h-full self-stretch object-cover place-self-stretch rounded" />
-        {:else}
-            <div class="bg-base-200 w-full overflow-clip h-full">
-                <div class="text-lg sm:text-3xl font-semibold gradient-text whitespace-normal w-full p-2 sm:p-6 leading-relaxed flex h-full items-end">
-                    {title}
+        <div class="w-full max-sm:min-h-[35vh] relative flex flex-row items-center justify-center" style={`
+        `}>
+            {#if image}
+                <img src={image} alt={title} class="w-full h-full absolute top-0 left-0 z-[1] backdrop-blur-xl" style="filter: blur(50px)" />
+                <img src={image} alt={title} class="object-fit sm:rounded max-sm:max-h-[35vh] absolute z-[5]" />
+            {:else}
+                <div class="bg-base-200 w-full overflow-clip h-full">
+                    <div class="text-lg sm:text-3xl font-semibold gradient-text whitespace-normal w-full p-2 sm:p-6 leading-relaxed flex h-full items-end">
+                        {title}
+                    </div>
                 </div>
-            </div>
-        {/if}
+            {/if}
+        </div>
         {#if durationTag && size === "normal"}
             <DurationTag value={durationTag} class="absolute top-3 right-3" />
         {/if}
@@ -81,7 +87,7 @@
     <div class="
         w-full grow flex-col justify-start items-start md:gap-1 inline-flex
         max-sm:px-2 overflow-clip
-        {grid ? "flex-col-reverse max-sm:items-stretch" : ""}
+        {grid ? "max-sm:items-stretch" : ""}
     ">
         {#if !skipAuthor}
             <!-- Pushes the content up (since this is a flex-col-reverse) -->
@@ -108,14 +114,14 @@
             <UserProfile bind:userProfile user={author} bind:authorUrl />
         {/if}
         <a dir="auto" {href} class="
-            self-stretch text-white font-semibold leading-relaxed
-            {grid ? "" : "sm:text-xl"}
+            self-stretch text-base-100-content font-semibold leading-relaxed
+            {grid ? "max-sm:text-xl max-sm:font-[InterDisplay]" : "sm:text-xl"}
         ">
             {title}
         </a>
         {#if description}
-            <a dir="auto" {href} class="self-stretch max-h-[1.5rem] text-neutral-500 text-sm font-normal basis-0 grow
-                {grid ? "hidden" : ""}
+            <a dir="auto" {href} class="self-stretch max-h-[1.5rem] w-full text-neutral-500 text-sm font-normal basis-0 grow overflow-clip
+                {grid ? "" : ""}
             ">
                 {description}
             </a>

@@ -12,7 +12,9 @@ export const searching: Writable<boolean> = writable(false);
 
 export const modalState: Writable<"open" | "closing" | "closed"> = writable("closed");
 
-export const threeColumnLayoutRightSidebar: Writable<Component | null> = writable(null);
+export const activeNewPostId: Writable<string | null> = writable(null);
+
+export const detailView: Writable<Component | null> = writable(null);
 
 export type PageHeader = {
 	/**

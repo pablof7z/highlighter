@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import ArticleCard from "$components/Events/ArticleCard.svelte";
 	import ItemLink from "$components/Events/ItemLink.svelte";
-	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
-	import Note from "$components/Feed/Note.svelte";
+	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import Input from "$components/Forms/Input.svelte";
     import ModalShell from "$components/ModalShell.svelte";
@@ -49,7 +47,11 @@
         })
     }
 
-    $: if (article) articleUrl = `${domain}${authorUrl}/${suffixUrl}`;
+    $: if (article) {
+        articleUrl = `${domain}${authorUrl}/${suffixUrl}`;
+    } else {
+        articleUrl = `${domain}/e/${event.encode()}`;
+    }
 
     let publishing = false;
 
@@ -101,7 +103,6 @@
                     allowMarkdown={false}
                     class="
                         w-full min-h-[10rem]
-                        border border-white/10 rounded-box
                         {$$props.class??""}
                     "
                 />
@@ -111,7 +112,7 @@
                         <ItemLink event={article} />
                     {:else}
                         <div class="bg-base-300 rounded-box w-full px-4">
-                            <Note {event} />
+                            <EventWrapper {event} />
                         </div>
                     {/if}
                 </div>

@@ -6,7 +6,7 @@
 	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
 	import { ndk } from '@kind0/ui-common';
 	import { goto } from '$app/navigation';
-	import Note from '$components/Feed/Note.svelte';
+	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 
     let id: string;
     let creator: NDKUser | undefined = undefined;
@@ -89,7 +89,7 @@
                     {/if}
 
                     {#if event.kind === NDKKind.Text}
-                        <Note
+                        <EventWrapper
                             {event}
                             creatorUser={creator}
                             expandReplies={expandReplies(event)}

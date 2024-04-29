@@ -13,13 +13,11 @@
 
     function updateSelectedString(changingTier?: string) {
         // If a tier is being changed, and it's being unchecked, uncheck Free
-        console.log({changingTier, selected: tiers[changingTier]?.selected});
         if (
             changingTier &&
             changingTier !== "Free" && !tiers[changingTier].selected) {
             tiers["Free"].selected = false;
             tiers = tiers
-            console.log("unselecting Free")
         }
 
         // If Free is selected, select all (the keys are dynamic)

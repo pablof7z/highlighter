@@ -9,16 +9,13 @@
 	import WithItem from "../../[id]/[tagId]/WithItem.svelte";
 	import CreatorShell from "$components/Creator/CreatorShell.svelte";
 	import MoreFromUser from "$components/Creator/MoreFromUser.svelte";
-	import EventResponses from "$components/EventResponses.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
-	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
 	import ListView from "$components/ListView.svelte";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import ItemFooter from "../../[id]/[tagId]/ItemFooter.svelte";
 	import VideoView from "../../[id]/[tagId]/VideoView.svelte";
 	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
 	import ThreeColumn from "$components/Layouts/ThreeColumn.svelte";
-	import Note from "$components/Feed/Note.svelte";
 
     let id: string;
 
@@ -79,18 +76,16 @@
                         <div class="flex flex-col w-full justify-stretch">
 
                             <div class="discussion-wrapper w-full flex flex-col">
-                                <Note {event} urlPrefix="/e/" expandReplies={true} threadView={true} />
+                                <EventWrapper {event} expandReplies={true} threadView={true} />
                             </div>
                         </div>
                     </div>
                 {:else if eventType === 'curation'}
                     <ListView {event} {urlPrefix} {authorUrl} />
                 {:else if eventType === 'highlight'}
-                    <CreatorShell user={event.author}>
-                        <div class="max-w-2xl mx-auto w-full">
-                            <Highlight highlight={NDKHighlight.from(event)} {urlPrefix} {authorUrl} />
-                        </div>
-                    </CreatorShell>
+                    <div class="max-w-2xl mx-auto w-full">
+                        <Highlight highlight={NDKHighlight.from(event)} {urlPrefix} {authorUrl} expandReplies={true} />
+                    </div>
                 {:else}
                     <CreatorShell user={event.author}>
                         <div class="max-w-3xl">

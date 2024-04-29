@@ -47,6 +47,7 @@
                             key: 'Enter',
                             metaKey: true,
                             handler: () => {
+                                alert('enter')
                                 dispatch("submit");
                             }
                         },
@@ -173,7 +174,7 @@
     {#if $$slots.belowToolbar}
         <slot name="belowToolbar" />
     {/if}
-    <div class="px-2 pt-0 flex flex-col gap-4 transition-all duration-100 {$$props.class??""}">
+    <div class="pt-0 flex flex-col gap-4 transition-all duration-100 {$$props.class??""}">
         <div bind:this={editorEl} class="editor h-full {$$props.class??""}" />
     </div>
 </div>

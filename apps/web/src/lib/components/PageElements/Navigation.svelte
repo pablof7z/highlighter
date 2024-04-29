@@ -11,6 +11,7 @@
 	import CurrentUser from '$components/CurrentUser.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import DashboardIcon from '$icons/DashboardIcon.svelte';
+	import { hideMobileBottomBar } from '$stores/layout';
 
     async function openSignupModal() {
         if (window.nostr) {
@@ -30,7 +31,7 @@
     <NavMobileTop />
 
     <!-- Navigation Bottom -->
-    <!-- <div
+    <div
         class="btm-nav bg-base-200 bg-opacity-80 mobile-nav z-50"
         class:forceHidden={$hideMobileBottomBar}
     >
@@ -42,20 +43,12 @@
             <Fire class="w-full h-full" weight={active ? "fill" : "regular"} />
         </Item>
 
-        {#if $user && $userTiers && $userTiers.length > 0}
-            <Item let:active on:click={() => openModal(NewItemModal)} matches={/\/(articles|notes|videos)\/new/}>
-                <PaperPlane class="w-full h-full" weight={active ? "fill" : "regular"} />
-            </Item>
-        {:else if $user}
-            <Item href="/home">
-                <PaperPlane class="w-full h-full" weight="fill" />
-            </Item>
-        {:else if !$user}
-            <Item on:click={openSignupModal}>
-                <PaperPlane class="w-full h-full" weight="fill" />
+        {#if $user}
+            <Item href="/home/for-you" let:active>
+                <Bell class="w-full h-full" weight={active ? "fill" : "regular"} />
             </Item>
         {/if}
-    </div> -->
+    </div>
 </div>
 
 <div class="

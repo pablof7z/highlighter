@@ -1,17 +1,20 @@
 <script lang="ts">
-	import ArticleLink from "$components/Events/ArticleLink.svelte";
-    import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { Avatar, Name, ndk } from "@kind0/ui-common";
     import { NDKHighlight, NDKEvent, NDKArticle } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { CaretRight } from "phosphor-svelte";
 	import UserProfile from "./User/UserProfile.svelte";
 	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
+	import AvatarWithName from "./User/AvatarWithName.svelte";
+	import { onMount } from "svelte";
 
     export let highlight: NDKHighlight;
     export let highlightedArticle: NDKArticle | NDKEvent | string | undefined = undefined;
+    export let skipArticle: boolean = false;
+    export let skipHighlighter = true;
+    export let scrollIntoView = false;
 
-    highlight.getArticle().then(result => highlightedArticle = result);
+    if (!skipArticle) highlight.getArticle().then(result => highlightedArticle = result);
 
     let highlightedArticleLink: string = "#";
     let articleAuthorUrl: string;
@@ -24,17 +27,37 @@
             highlightedArticleLink = urlFromEvent(highlightedArticle);
         }
     }
+
+    if (scrollIntoView) {
+        onMount(() => {
+            const mark = container.querySelector("mark");
+            if (mark) {
+                mark.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        })
+    }
+
+    let container: HTMLElement;
 </script>
 
-<div class="border-2 border-white/20 rounded-box bg-base-100 w-full">
-    <EventContent ndk={$ndk} event={highlight} class="highlight font-serif p-6 leading-8 text-lg {$$props.class??""}" />
+<div class="w-full border border-base-300" bind:this={container}>
+    <div class="flex flex-col gap-6 {$$props.class??""}">
+        <div class="flex flex-col gap-3 {$$props.contentClass??""}">
+            <EventContent ndk={$ndk} event={highlight} class="highlight font-serif leading-8 text-lg" />
+            {#if !skipHighlighter}
+                <AvatarWithName user={highlight.author} avatarSize="tiny" class="text-xs text-opacity-60" leadingText="highlighted by" />
+            {/if}
+        </div>
+    </div>
+
     {#key highlightedArticle}
         {#if highlightedArticle}
             <a href={highlightedArticleLink} class="
-                flex bg-white/5 border-t-2 border-white/20 p-4 text-neutral-500
+                flex bg-white/5 border-t-2 border-base-300 p-4 text-neutral-500
                 hover:bg-white/10
                 hover:text-neutral-400 transition-all duration-200
                 rounded-b-box
+                truncate
             ">
                 {#if highlightedArticle instanceof NDKArticle}
                     <UserProfile user={highlightedArticle.author} bind:authorUrl={articleAuthorUrl} let:userProfile let:fetching>

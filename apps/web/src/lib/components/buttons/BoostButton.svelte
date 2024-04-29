@@ -1,14 +1,14 @@
 <script lang="ts">
-	import BoostModal from '$modals/BoostModal.svelte';
+	import BoostModal from '$modals/ShareModal.svelte';
 	import { ndk } from "@kind0/ui-common";
-	import { type NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
-	import { onDestroy } from "svelte";
+	import { type NDKEvent, NDKKind, NDKHighlight } from "@nostr-dev-kit/ndk";
+	import { createEventDispatcher, onDestroy } from "svelte";
 	import { openModal } from "svelte-modals";
 	import { Quotes, Repeat, ShareNetwork, Timer } from 'phosphor-svelte';
 	import ButtonWithCount from './ButtonWithCount.svelte';
 	import currentUser from '$stores/currentUser';
-	import DateSelector from '$components/DateSelector.svelte';
 	import Scheduler from '$modals/Scheduler.svelte';
+	import QuoteModal from '$modals/QuoteModal.svelte';
 
     export let event: NDKEvent;
 
@@ -27,12 +27,18 @@
         reposts.unref();
     });
 
+    const dispatch = createEventDispatcher();
+
     let repostedByUser = false;
 
     $: if ($currentUser && !repostedByUser) repostedByUser = !!$reposts.find(e => e.pubkey === $currentUser!.pubkey)
 
+    function share() {
+        openModal(BoostModal, {event, onPublish: (event: NDKEvent) => dispatch('publish', event)});
+    }
+
     function boost() {
-        openModal(BoostModal, { event });
+        openModal(QuoteModal, {event, onPublish: (event: NDKEvent) => dispatch('publish', event)});
     }
 
     async function repost() {
@@ -49,7 +55,7 @@
     let container: HTMLDivElement;
 </script>
 
-{#if event.kind === NDKKind.Text}
+{#if event.kind === NDKKind.Text || event.kind === NDKKind.Highlight}
     <div class="dropdown dropdown-hover lg:dropdown-end" bind:this={container}>
         <div tabindex="0" role="button">
             <ButtonWithCount
@@ -69,23 +75,23 @@
             <div class="flex flex-row gap-2">
                 <li><button on:click={repost} class="group">
                     <Repeat class="w-10 h-10" />
-                    <span class="text-white/80 group-hover:text-white">Repost</span>
+                    <span class="text-base-100-content/80 group-hover:text-base-100-content">Repost</span>
                 </button></li>
                 <li><button on:click={boost} class="group">
                     <Quotes class="w-10 h-10" />
-                <span class="text-white/80 group-hover:text-white">Quote</span>
+                <span class="text-base-100-content/80 group-hover:text-base-100-content">Quote</span>
                 </button></li>
             </div>
             <li><button class="!flex-row group !h-12 !w-full" on:click={scheduleBoost}>
                 <Timer class="w-6 h-6" />
-                <span class="text-white/80 group-hover:text-white whitespace-nowrap">Scheduled Repost</span>
+                <span class="text-base-100-content/80 group-hover:text-base-100-content whitespace-nowrap">Scheduled Repost</span>
             </button></li>
 
         </ul>
     </div>
 {:else}
-    <button on:click|stopPropagation|preventDefault={boost}
-        class="flex flex-row items-center gap-2 {repostedByUser ? 'text-white' : ''}"
+    <button on:click|stopPropagation|preventDefault={share}
+        class="flex flex-row items-center gap-2 {repostedByUser ? 'text-base-100-content' : ''}"
     >
         {#if repostedByUser}
             <ShareNetwork class="sm:w-5 w-6 sm:h-5 h-6 text-accent" />
@@ -101,6 +107,6 @@
     }
 
     ul button span {
-        @apply text-white/80 group-hover:text-white font-medium text-sm;
+        @apply text-base-100-content text-opacity-80 group-hover:text-opacity-100 font-medium text-sm;
     }
 </style>

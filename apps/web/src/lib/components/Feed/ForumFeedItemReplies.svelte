@@ -6,7 +6,7 @@
     import { Readable, derived } from "svelte/store";
 	import ForumFeedItem from "./ForumFeedItem.svelte";
 	import { getThreadStore } from "./replies";
-	import Note from "./Note.svelte";
+	import EventWrapper from "./EventWrapper.svelte";
 
     export let event: NDKEvent;
 
@@ -24,5 +24,5 @@
 </script>
 
 {#each $threads as thread, i (thread.id)}
-    <Note event={thread} urlPrefix="/e/" />
+    <EventWrapper event={thread} />
 {/each}

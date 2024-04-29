@@ -1,7 +1,6 @@
 <script lang="ts">
-	import ViewConversation from './ViewConversation.svelte';
     import { debugMode } from "$stores/session";
-    import { Name, ndk } from "@kind0/ui-common";
+    import { Name } from "@kind0/ui-common";
     import { NDKEvent, getRootEventId } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 

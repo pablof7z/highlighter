@@ -1,7 +1,5 @@
 <script lang="ts">
-	import Note from "$components/Feed/Note.svelte";
 import ModalShell from "$components/ModalShell.svelte";
-	import Box from "$components/PageElements/Box.svelte";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { RelativeTime, ndk } from "@kind0/ui-common";
 	import { NDKEvent, dvmSchedule } from "@nostr-dev-kit/ndk";
@@ -72,7 +70,7 @@ import ModalShell from "$components/ModalShell.svelte";
     <div class="flex flex-col w-full text-sm border-b border-base-300 items-center pb-4">
         <div class="flex flex-row items-center gap-2 justify-center ">
             Scheduling provided by
-            <AvatarWithName user={dvmUser} avatarType="circle" avatarSize="small" class="text-white" />
+            <AvatarWithName user={dvmUser} avatarType="circle" avatarSize="small" class="text-base-100-content" />
         </div>
         <a href="/settings/services" class="text-xs underline">Configure a different provider</a>
     </div>
@@ -82,7 +80,7 @@ import ModalShell from "$components/ModalShell.svelte";
             <span class="text-2xl text-accent2">
                 <Check class="w-12 h-12 text-success" />
             </span>
-            <span class="text-xl text-white">Scheduled!</span>
+            <span class="text-xl text-base-100-content">Scheduled!</span>
         </div>
     {:else}
         <ul class="menu w-full">
@@ -99,9 +97,9 @@ import ModalShell from "$components/ModalShell.svelte";
         </div>
 
         {#if publishAt}
-            <span class="text-sm text-neutral-500">
+            <span class="text-sm text-base-100-content/50">
                 Schedule repost will be published&nbsp;
-                <RelativeTime timestamp={publishAt} class="text-white" />
+                <RelativeTime timestamp={publishAt} class="text-base-100-content" />
             </span>
         {/if}
 

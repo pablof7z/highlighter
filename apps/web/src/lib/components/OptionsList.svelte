@@ -19,6 +19,7 @@
         lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}
         snap-x snap-mandatory
         max-sm:overflow-x-auto max-sm:max-w-[100vw]
+        max-sm:scrollbar-hide
     ">
         {#each options as option (option.id ?? option.name)}
             {#if option.name === '-------'}

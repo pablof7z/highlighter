@@ -32,7 +32,7 @@
     // Check if this user has access to the full article and if they do, redirect them to the full article
     const fullTiers = article.getMatchingTags("tier").map(t => t[1]);
 
-    $: if (fullTiers.includes($userActiveSubscriptions.get(article.pubkey))) {
+    $: if ($userActiveSubscriptions.get(article.pubkey) && fullTiers.includes($userActiveSubscriptions.get(article.pubkey)!)) {
         const parts = article.tagValue("full")?.split(/:/) as string[];
         const dTag = parts[2] || parts[0];
         goto(`/${author.npub}/${dTag}`);
@@ -45,7 +45,7 @@
     <title>{article.title}</title>
 </svelte:head>
 
-<div class="flex flex-col gap-2 px-4 sm:px-0">
+<div class="flex flex-col gap-2 px-4">
     <ItemHeader item={article} {editUrl} />
     <ArticleRender {article} {editUrl} {isFullVersion} {isPreview} {fillInSummary} />
 </div>

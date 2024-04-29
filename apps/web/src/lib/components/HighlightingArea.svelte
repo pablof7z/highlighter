@@ -1,15 +1,17 @@
 <script lang="ts">
-	import { NDKEvent, NDKKind, NDKTag, NostrEvent } from '@nostr-dev-kit/ndk';
+	import Highlight from './Highlight.svelte';
+	import { NDKEvent, NDKKind, NDKRelay, NDKRelaySet, NDKTag, NostrEvent, NDKHighlight } from '@nostr-dev-kit/ndk';
 	import LogoGradient from "$icons/LogoGradient.svelte";
 	import { getParagraph, getText } from '$utils/text';
 	import { onMount } from 'svelte';
-	import HighlightIcon from '$icons/HighlightIcon.svelte';
 	import { ndk } from '@kind0/ui-common';
+	import { detailView } from '$stores/layout';
+	import { pushState } from '$app/navigation';
+	import HighlightTool from './HighlightArea/HighlightTool.svelte';
 
     export let tags: NDKTag[] = [];
 
     let paragraphFloat: HTMLDivElement;
-    let el: HTMLDivElement;
 
     let container: HTMLElement;
 
@@ -18,51 +20,15 @@
     })
 
     function setupHighlightingHandler() {
-        container.addEventListener('click', function(event) {
-            // if the target is not the container nor a descendant of the container
-            if (!el?.contains(event.target as Node)) {
-                if (el?.classList.contains('opacity-0')) return;
-                el?.classList.add('opacity-0');
+        function moveElementToWithinElement(floatingEl: HTMLElement, el: HTMLElement) {
+            // remove the paragraphFloat element from its parent and insert it next to the element
+            if (floatingEl.parentElement) {
+                floatingEl.parentElement.removeChild(floatingEl);
             }
-        });
 
-        container.addEventListener('selectionchange', function(event) {
-            let selection = window.getSelection();
-            if (selection && selection.toString().length > 0) {
-                let range = selection.getRangeAt(0);
-                let rect = range.getBoundingClientRect();
-
-                // Create the floating element
-                el.style.top = (rect.top + window.scrollY - 50) + 'px';
-                el.style.left = (rect.right + window.scrollX) + 'px';
-                // remove opacity-0 class
-                setTimeout(() => {
-                    el?.classList.remove('opacity-0');
-                }, 10)
-                // setTimeout(() => {
-                //     el?.appendChild(floatElement);
-                // }, 100)
-            }
-        });
-
-        container.addEventListener('mouseup', function(event) {
-            let selection = window.getSelection();
-            if (selection && selection.toString().length > 0) {
-                let range = selection.getRangeAt(0);
-                let rect = range.getBoundingClientRect();
-
-                // Create the floating element
-                el.style.top = (rect.top + window.scrollY - 50) + 'px';
-                el.style.left = (rect.right + window.scrollX) + 'px';
-                // remove opacity-0 class
-                setTimeout(() => {
-                    el?.classList.remove('opacity-0');
-                }, 10)
-                // setTimeout(() => {
-                //     el?.appendChild(floatElement);
-                // }, 100)
-            }
-        });
+            // insert it as the last child of this paragraph
+            el.appendChild(floatingEl);
+        }
 
         // add a hover listener that only acts on elements with class article
         container.addEventListener('mouseover', function(event) {
@@ -71,7 +37,18 @@
             // if (event.target?.classList.contains('article')) {
                 // add a listener to the element that will add the float element
                 // event.target.addEventListener('mouseup', function(event) {
-                const element = event.target as HTMLElement;
+                let element = event.target as HTMLElement;
+
+                // if it already has active-parapgrah, or one of its parents has active-paragraph, return
+                // if this is not a paragraph, find the parent paragraph
+                while (element.tagName !== 'P' && element.tagName !== 'UL') {
+                    element = element.parentElement as HTMLElement;
+                    if (!element) return;
+                    if (element.classList.contains('article')) break;
+                }
+
+                if (element.classList.contains('active-paragraph')) return;
+                
                 const rect = element.getBoundingClientRect();
                 const toolRect = paragraphFloat.getBoundingClientRect();
 
@@ -84,9 +61,11 @@
                 })
 
                 // Create the floating element
-                paragraphFloat.style.top = (rect.top + window.scrollY) + 'px';
-                paragraphFloat.style.left = (rect.left + window.scrollX - paragraphFloat.offsetWidth - 20) + 'px';
+                // paragraphFloat.style.top = (rect.top + window.scrollY) + 'px';
+                // paragraphFloat.style.left = (rect.left + window.scrollX - paragraphFloat.offsetWidth - 20) + 'px';
                 element.classList.add('active-paragraph');
+
+                moveElementToWithinElement(paragraphFloat, element);
         })
 
         // create a listener that fires when the document scrolls, when the user scrolls move the active paragraph float
@@ -119,16 +98,29 @@
             firstVisibleParagraph.classList.add('active-paragraph');
 
             const rect = firstVisibleParagraph.getBoundingClientRect();
-            const toolRect = paragraphFloat?.getBoundingClientRect();
-            if (!toolRect) return;
+            // const toolRect = paragraphFloat?.getBoundingClientRect();
+            // if (!toolRect) return;
 
-            if (toolRect.height > rect.height) return;
+            // if (toolRect.height > rect.height) return;
+
+            // remove the paragraphFloat element from its parent and insert it next to the element
+            if (paragraphFloat.parentElement) {
+                paragraphFloat.parentElement.removeChild(paragraphFloat);
+            }
+
+            // insert it as the last child of this paragraph
+            firstVisibleParagraph.appendChild(paragraphFloat);
 
             // Create the floating element
-            paragraphFloat.style.top = (rect.top + window.scrollY) + 'px';
-            paragraphFloat.style.left = (rect.left + window.scrollX - paragraphFloat.offsetWidth - 20) + 'px';
+            // paragraphFloat.style.top = (rect.top + window.scrollY) + 'px';
+            // paragraphFloat.style.left = (rect.left + window.scrollX - paragraphFloat.offsetWidth - 20) + 'px';
         })
     }
+
+    let highlightTags: NDKTag[] = [
+        ["alt", 'This is a highlight created in https://highlighter.com'],
+        ...tags
+    ];
 
     async function createParagraphHighlight() {
         const activeParagraphs = document.querySelectorAll('.active-paragraph');
@@ -143,15 +135,19 @@
         const event = new NDKEvent($ndk, {
             kind: NDKKind.Highlight,
             content,
-            tags: [
-                ["alt", 'This is a highlight created in https://highlighter.com'],
-                ...tags
-            ]
+            tags: highlightTags
         } as NostrEvent);
 
         if (paragraph && paragraph !== '') event.tags.push(["context", paragraph]);
 
         await event.publish()
+        pushState(`/e/${event.encode()}`, {
+            detailView: 'highlight'
+        });
+        $detailView = {
+            component: Highlight,
+            props: { highlight: NDKHighlight.from(event) }
+        }
     }
 
     async function createHighlight() {
@@ -175,8 +171,9 @@
 <div bind:this={paragraphFloat} class="
     float-element z-20 absolute transition-all duration-300 flex
     flex-row sm:flex-col gap-1
-    max-sm:ml-10 max-sm:-mt-10
-" style="top: -100px">
+    -translate-x-10 left-0 top-0
+    max-sm:ml-5 max-sm:-mt-5
+">
     <!-- <div class="sm:tooltip tooltip-left" data-tip="Zap!">
         <button class="
             transition-all duration-300
@@ -193,31 +190,22 @@
             max-sm:text-white
             text-neutral-800 hover:text-accent2
         " on:click={createParagraphHighlight}>
-            <LogoGradient class="max-sm:w-8 max-sm:h-8 w-6 h-6" />
+            <LogoGradient class="max-sm:w-5 max-sm:h-5 w-6 h-6" />
             <!-- <HighlightIcon class="max-sm:w-8 max-sm:h-8 w-6 h-6" /> -->
         </button>
     </div>
 </div>
 
-<div bind:this={el} class="float-element z-50 absolute opacity-0 transition-all duration-300 flex flex-col gap-1" style="top: -100px">
-    <button class="
-        button px-4 py-3
-        transition-all duration-300
-    " on:click={createHighlight}>
-        <HighlightIcon class="w-6 h-6" />
-        Highlight
-    </button>
-</div>
+{#if container}
+    <HighlightTool contentContainer={container} tags={highlightTags} />
+{/if}
 
 <article bind:this={container} class={$$props.class??""}>
     <slot />
 </article>
 
-<style lang="postcss">
-    :global(.float-element) {
-        box-shadow: 0 0 10px #000;
-    }
 
+<style lang="postcss">
     :global(.article pre) {
         @apply mb-4;
     }
@@ -226,11 +214,16 @@
         @apply relative;
     }
 
-    :global(.article p::before), :global(.article ul::before), :global(.article h1::before), :global(.article li::before), :global(.article blockquote::before) {
+    :global(.active-paragraph) {
+        @apply relative;
+    }
+
+    :global(.article p::before), :global(.article blockquote::before) {
         @apply transition-opacity duration-300 ease-in;
         content: "";
         top: 0;
-        left: -10px;
+        left: -15px;
+        @apply pl-4;
         height: 100%;
         position: absolute;
         @apply border-l-4 border-accent2;

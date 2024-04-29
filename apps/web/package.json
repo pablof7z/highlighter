@@ -54,12 +54,14 @@
 		"vitest": "^1.0.0"
 	},
 	"dependencies": {
+		"@floating-ui/dom": "^1.6.3",
 		"@fontsource/lora": "^5.0.8",
 		"@getalby/sdk": "^3.3.0",
 		"@libsql/client": "^0.6.0",
 		"@lottiefiles/svelte-lottie-player": "^0.3.0",
 		"@macfja/svelte-persistent-store": "^2.4.0",
 		"@mozilla/readability": "^0.5.0",
+		"@neodrag/svelte": "^2.0.6",
 		"@nostr-dev-kit/ndk": "workspace:*",
 		"@nostr-dev-kit/ndk-cache-dexie": "workspace:*",
 		"@nostr-dev-kit/ndk-cache-redis": "workspace:*",
@@ -93,6 +95,7 @@
 		"quill-mention": "github:artknight/quill-mention",
 		"sanitize-html": "^2.11.0",
 		"stripe": "^14.22.0",
+		"svelte-device-info": "^1.0.4",
 		"svelte-infinite-scroll": "^2.0.1",
 		"svelte-inview": "^4.0.2",
 		"svelte-lightbox": "^1.1.1",

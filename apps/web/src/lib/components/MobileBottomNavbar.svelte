@@ -5,7 +5,7 @@
 	import { Avatar, user } from "@kind0/ui-common";
 	import UserProfile from "./User/UserProfile.svelte";
 	import SignupModal from "$modals/SignupModal.svelte";
-    import { MagnifyingGlass, Compass, PlusCircle, Tray, UserCircle } from "phosphor-svelte";
+    import { MagnifyingGlass, Compass, PlusCircle, Tray, UserCircle, Bell } from "phosphor-svelte";
 	import { afterUpdate, onMount } from "svelte";
 	import Logo from "$icons/Logo.svelte";
 
@@ -55,12 +55,13 @@
         <span>Explore</span>
 	</a>
 
-    <button
-        on:click={() => openModal(NewItemModal)}
+    <a
+        href="/home/for-you"
+		class:active={$page.url.pathname.startsWith('/home/for-you')}
     >
-        <PlusCircle class="w-full h-full text-accent" weight="fill" />
-        <span>Publish</span>
-    </button>
+        <Bell class="w-full h-full text-accent" weight="fill" />
+        <span>For You</span>
+    </a>
 
     <button
         on:click={() => {alert('Search is not implemented yet!')}}

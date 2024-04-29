@@ -1,10 +1,8 @@
-import { writable, get as getStore, type Writable, derived, get, Readable } from 'svelte/store';
+import { get as getStore, type Writable, derived, get } from 'svelte/store';
 import { ndk } from '@kind0/ui-common';
 import {
 	NDKEvent,
 	NDKList,
-	NDKSubscriptionCacheUsage,
-	type NDKFilter,
 	NDKKind,
 	NDKListKinds,
 	type Hexpubkey,
@@ -12,15 +10,17 @@ import {
 	NDKSubscriptionTier,
 	NDKRelaySet,
 	NostrEvent,
+	NDKSubscriptionCacheUsage,
 } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import createDebug from 'debug';
 import type { UserProfileType } from '../../app';
 import { getDefaultRelaySet } from '$utils/ndk';
-import { creatorRelayPubkey } from '$utils/const';
 import { filterValidPTags } from '$utils/event';
 import currentUser from './currentUser';
+import { writable } from 'svelte/store';
+import { creatorRelayPubkey } from '$utils/const';
 
 const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
@@ -39,6 +39,13 @@ export const debugMode = writable<boolean>(false);
 export const debugPageFilter = writable<string | null>(null);
 
 export const loadingScreen = writable<boolean>(false);
+
+export const userBlossom = writable<NDKList | null>(null);
+export const activeBlossomServer = persist(
+	writable<string>("https://blossom.primal.net"),
+	createLocalStorage(),
+	'active-blossom-server'
+);
 
 export const userFollows = persist(
 	writable(new Set<Hexpubkey>()),
@@ -154,6 +161,7 @@ export async function prepareSession(): Promise<void> {
 		fetchData('user', $ndk, [$currentUser.pubkey], {
 			profileStore: userProfile,
 			followsStore: userFollows,
+			blossomStore: userBlossom,
 			userArticleCurationsStore: userArticleCurations,
 			userVideoCurationsStore: userVideoCurations,
 			userGenericCurationStore: userGenericCuration,
@@ -221,6 +229,7 @@ export const processUserProfile = (event: NDKEvent, store: Writable<UserProfileT
 interface IFetchDataOptions {
 	profileStore?: Writable<UserProfileType | undefined>;
 	followsStore?: Writable<Set<Hexpubkey> | PubkeysFollowCount>;
+	blossomStore?: Writable<NDKEvent | null>;
 	activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
 	supportStore?: Writable<NDKEvent[]>;
 	appHandlersStore?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
@@ -274,6 +283,8 @@ async function fetchData(
 
 		if (event.kind === 3 && opts.followsStore) {
 			processContactList(event, opts.followsStore);
+		} else if (event.kind === 10063) {
+			processBlossomList(event);
 		} else if (event.kind === 0 && opts.profileStore) {
 			processUserProfile(event, opts.profileStore);
 		} else if (event.kind === NDKKind.GroupMembers && opts.activeSubscriptionsStore) {
@@ -296,6 +307,18 @@ async function fetchData(
 			processCurationList(event);
 		}
 	};
+
+	const processBlossomList = (event: NDKEvent) => {
+		opts.blossomStore!.update((blossomList) => {
+			if (blossomList && event.created_at! < blossomList.created_at!) return blossomList;
+			const list = NDKList.from(event);
+			let firstItem = list.items[0]?.[1];
+			firstItem ??= "https://blossom.primal.net"
+
+			activeBlossomServer.set(firstItem);
+			return list;
+		});
+	}
 
 	const processSubscriptionList = (event: NDKEvent, author: string) => {
 		opts.activeSubscriptionsStore!.update((activeSubscriptions) => {
@@ -441,6 +464,7 @@ async function fetchData(
 			filters.push({ kinds, authors: authorPrefixes, limit: 10 });
 		}
 
+		if (opts.blossomStore) kinds.push(10063 as number);
 		if (opts.groupsListStore) kinds.push(NDKKind.SimpleGroupList);
 		if (opts.appHandlersStore) kinds.push(NDKKind.AppRecommendation);
 

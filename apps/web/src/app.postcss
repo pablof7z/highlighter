@@ -171,7 +171,15 @@
 }
 
 .event-card--dropdown-menu {
-	@apply menu gap-0 rounded-box border border-base-300 bg-base-100;
+	@apply menu gap-0 rounded-box border border-base-300 !bg-base-100 right-0 flex-nowrap opacity-100;
+}
+
+.event-card--dropdown-menu li {
+	@apply bg-base-100;
+}
+
+.event-card--dropdown-menu li button {
+	@apply whitespace-nowrap;
 }
 
 .tooltip::before,

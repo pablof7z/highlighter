@@ -36,8 +36,6 @@
 
     const withoutUnrelatedZaps = (event: NDKEvent, subStartEventIds: Set<NDKEventId>) => {
         if (event.kind !== NDKKind.Zap) return true;
-        console.log("withoutUnrelatedZaps", Array.from(subStartEventIds))
-        console.log("zap", event.rawEvent().tags)
         const eTag = event.tagValue("e");
         if (!eTag) return false;
         return subStartEventIds.has(eTag);

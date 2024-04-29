@@ -26,6 +26,9 @@
             </span>
             {#key zap.zappee}
                 <Avatar pubkey={zap.zappee} {userProfile} {fetching} size={avatarSize} />
+                {#if fetching && userProfile}
+                    fetching but have user profile!
+                {/if}
             {/key}
             {#if zap.comment && comment !== "hide"}
                 <span class="

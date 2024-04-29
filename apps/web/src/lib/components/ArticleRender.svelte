@@ -11,10 +11,10 @@
 	import HighlightingArea from './HighlightingArea.svelte';
 	import HighlightedContent from './HighlightedContent.svelte';
 	import EventTags from './Events/EventTags.svelte';
+	import currentUser from '$stores/currentUser';
 
     export let article: NDKArticle;
     const author = article.author;
-    export let editUrl: string | undefined = undefined;
     export let isFullVersion: boolean;
     export let isPreview = false;
     export let fillInSummary = true;
@@ -42,12 +42,16 @@
         goto(`/${author.npub}/${dTag}`);
     }
 
-    editUrl ??= `/articles/${article.tagValue("d")}/edit`;
-
     let highlightTags: NDKTag[] = article.referenceTags();
 
     const hTag = article.tagValue("h");
     if (hTag) highlightTags.push(["h", hTag]);
+
+    // add zap splits
+    if ($currentUser) {
+        highlightTags.push(["zap", $currentUser.pubkey, "2"])
+        highlightTags.push(["zap", article.pubkey, "8"])
+    }
 </script>
 
 <div dir="auto" class="w-full flex flex-col gap-4">
@@ -73,22 +77,16 @@
         </div>
     {/if}
 
-    <div class="flex-col justify-start items-center gap-10 flex w-full max-sm:px-4">
-        <div class="self-stretch justify-center items-start gap-8 inline-flex">
-            <div class="grow shrink basis-0 flex-col justify-center items-start gap-10 inline-flex">
-                <div class="self-stretch flex-col justify-center items-start flex">
-                    <HighlightingArea tags={highlightTags} class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative">
-                        <HighlightedContent event={article} {highlights} />
+    <div class="flex-col justify-start items-center gap-10 flex w-full max-sm:px-4 relative">
+        <HighlightingArea tags={highlightTags} class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative">
+            <HighlightedContent event={article} {highlights} />
 
-                        {#if !isFullVersion}
-                            <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
-                                <UpgradeButton event={article} />
-                            </div>
-                        {/if}
-                    </HighlightingArea>
+            {#if !isFullVersion}
+                <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
+                    <UpgradeButton event={article} />
                 </div>
-            </div>
-        </div>
+            {/if}
+        </HighlightingArea>
     </div>
 </div>
 

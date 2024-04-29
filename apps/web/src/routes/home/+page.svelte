@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { pageHeader } from "$stores/layout";
 	import { userFollows } from "$stores/session";
-	import { NDKKind, type NDKFilter, NDKEvent } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKFilter, NDKEvent, NDKTag, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
+	import Swipe from "$components/Swipe.svelte";
+	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
+	import { Readable } from "svelte/store";
+	import { computeArticleRecommendationFromHighlightStore } from "$utils/recommendations";
+	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
 
     $pageHeader = {
         title: "Home",
@@ -55,11 +60,24 @@
         console.log(e)
         e.preventDefault();
     }
+
+    let feed: NDKEventStore<NDKEvent>;
+
+    let recommendedArticles: Readable<{tag: NDKTag, highlights: NDKHighlight[]}[]> | undefined;
+
+    $: if (feed && !recommendedArticles) {
+        recommendedArticles = computeArticleRecommendationFromHighlightStore(feed);
+    }
 </script>
 
     <!-- <section>
         <h1>Creators</h1>
     </section> -->
+
+    {#if $recommendedArticles}
+        <MostHighlightedArticleGrid articleTagsWithHighlights={$recommendedArticles} />
+    {/if}
+
 
     <section>
         <h1>Highlights & Notes</h1>
@@ -72,6 +90,7 @@
 
         <FilterFeed
             filters={highlightFilters}
+            bind:feed
             renderLimit={100}
         />
         <!-- <Highlights filters={highlightFilters} /> -->

@@ -59,7 +59,6 @@
                     { groupable: false },
                 ).then(e => {
                     if (e) {
-                        console.log("found recent event", pubkey, e.rawEvent());
                         resolve();
                     }
                 })

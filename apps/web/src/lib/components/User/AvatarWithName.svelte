@@ -9,6 +9,7 @@
     export let userProfile: UserProfileType | undefined = undefined;
     export let authorUrl: string | undefined = undefined;
     export let spacing = "gap-2";
+    export let leadingText = "";
     export let avatarType: 'circle' | 'square' | undefined = "circle";
     export let avatarSize: 'tiny' | 'small' | 'medium' | 'large' | undefined = "medium";
 
@@ -33,7 +34,12 @@
         <Avatar {user} {pubkey} {userProfile} size={avatarSize} class={$$props.avatarClass??""} type={avatarType} />
 
         <div class="flex flex-col items-start gap-0">
-            <Name {user} {pubkey} {userProfile} {authorUrl} class={$$props.nameClass??""} />
+            <div class="flex flex-row gap-1 truncate flex-nowrap">
+                {#if leadingText.length > 0}
+                    <span class="opacity-70">{leadingText}</span>
+                {/if}
+                <Name {user} {pubkey} {userProfile} {authorUrl} class={$$props.nameClass??""} />
+            </div>
             <slot />
         </div>
     </a>

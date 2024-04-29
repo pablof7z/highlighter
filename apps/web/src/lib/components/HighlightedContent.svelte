@@ -5,35 +5,48 @@
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable } from "svelte/store";
     import currentUser from '$stores/currentUser';
-	import { sidebarPlacement, threeColumnLayoutRightSidebar } from '$stores/layout';
+	import { detailView } from '$stores/layout';
 	import Highlight from './DetailView/Highlight.svelte';
     import sanitizeHtml from 'sanitize-html';
+	import { onDestroy, onMount } from 'svelte';
+	import HighlightMarks from './HighlightMarks.svelte';
 
     export let event: NDKEvent | undefined = undefined;
     export let highlights: Readable<NDKEvent[]>;
     export let content: string = event?.content || '';
 
     const appliedHighlightIds = new Set<NDKEventId>();
+    let highlightsToMark: NDKEvent[] = [];
 
-    // add an event listener to click events on <mark> elements
-    document.addEventListener('click', (event) => {
-        // if the element clicked, or one of its ancestors, is a <mark> element
+    let isMobile = false;
+
+    onMount(() => {
+        isMobile = window.innerWidth < 768;
+    });
+
+    function onClickOpenSidebar(event: MouseEvent) {
         const target = (event.target as HTMLElement).closest('mark');
-        if (!target) return;
-        if (target.tagName === 'MARK') {
-            const highlightId = target.getAttribute('data-highlight-id');
-            if (highlightId) {
-                const highlight = $highlights.find(h => h.id === highlightId);
-                if (highlight) {
-                    $pageDrawerToggle = true;
-                    $sidebarPlacement = 'right';
-                    $rightSidebar = {
-                        component: Highlight,
-                        props: { highlight }
-                    }
+        if (target?.tagName !== 'MARK') return;
+        const highlightId = target.getAttribute('data-highlight-id');
+        if (highlightId) {
+            const highlight = $highlights.find(h => h.id === highlightId);
+            if (highlight) {
+                pushState(`/e/${highlight.encode()}`, {
+                    detailView: 'highlight'
+                });
+                $detailView = {
+                    component: Highlight,
+                    props: { highlight }
                 }
             }
         }
+    }
+
+    // add an event listener to click events on <mark> elements
+    document.addEventListener('click', onClickOpenSidebar);
+
+    onDestroy(() => {
+        document.removeEventListener('click', onClickOpenSidebar);
     });
 
     $: for (const highlight of $highlights) {
@@ -53,6 +66,8 @@
 
         content = content.replace(regexp, (match) => {
             appliedHighlightIds.add(highlight.id);
+            highlightsToMark.push(highlight)
+            highlightsToMark = highlightsToMark;
             return `<mark data-highlight-id="${highlight.id}">${match}</mark>`;
         })
     }
@@ -72,6 +87,13 @@
 
 {#if event}
     {#key content}
+        {#if !isMobile}
+            <HighlightMarks
+                {event}
+                highlights={highlightsToMark}
+            />
+        {/if}
+        
         <EventContent
             ndk={$ndk}
             {event}

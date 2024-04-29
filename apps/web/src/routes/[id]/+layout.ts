@@ -3,6 +3,7 @@ import { NDKUser } from '@nostr-dev-kit/ndk';
 import { nip05 } from 'nostr-tools';
 import { get } from 'svelte/store';
 import createDebug from 'debug';
+import { vanityUrls } from '$utils/const.js';
 
 const debug = createDebug('HL:user-layout');
 
@@ -12,6 +13,11 @@ export async function load({ params, fetch, data }) {
 	const $ndk = get(ndk);
 
 	debug(`user layout starting for ${id}: ${JSON.stringify(data)}`);
+
+	if (vanityUrls[id]) {
+		user = $ndk.getUser({ pubkey: vanityUrls[id] });
+		return { user, npub: user.npub };
+	}
 
 	if (data?.pubkey) {
 		user = $ndk.getUser({pubkey: data.pubkey});

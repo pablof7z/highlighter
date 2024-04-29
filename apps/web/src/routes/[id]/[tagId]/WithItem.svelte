@@ -67,10 +67,7 @@
             nip19.decode(tagId);
             return filters = filterFromId(tagId);
         } catch {
-            console.log("👉 tagId is not a bech32", tagId);
         }
-
-        console.log("👉 filter", filters);
 
         return filters;
     }
@@ -93,8 +90,6 @@
     // Search for an event, if we haven't EOSEd yet, only look for explicitly supported kinds
     $: if (events && !event) {
         const e = Array.from($events) as NDKEvent[];
-
-        console.log("events", e);
 
         const matchingEvent = e.find(e => mainContentKinds.includes(e.kind!)) as NDKEvent | undefined;
         if (matchingEvent) {

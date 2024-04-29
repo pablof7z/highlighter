@@ -3,7 +3,9 @@
 	import { modalState } from '$stores/layout';
 	import { onDestroy, onMount } from 'svelte';
 	import { closeModal, onBeforeClose } from "svelte-modals";
-	import { fade, slide } from "svelte/transition";
+	import { slide } from "svelte/transition";
+    import Device from "svelte-device-info";
+	import transitionIf from '$utils/transitionIf';
 
     export let color: "white" | "black" | "glassy" = "white";
 
@@ -70,7 +72,12 @@
                 w-fit mx-auto
                 p-6
                 {$$props.class}
-            " style="pointer-events: auto; max-height: 92vh;" transition:slide={{axis:'y', duration: slideAnimationDuration}}>
+            " style="pointer-events: auto; max-height: 92vh;"
+            transition:transitionIf={{
+                cond: Device.isPhone,
+                fn: slide,
+                opts: {axis:'y', duration: slideAnimationDuration}
+            }}>
                 <div class="!rounded-3xl inner flex flex-col items-center transition-all duration-1000 gap-6
                 {$$props.class}">
                     <slot />

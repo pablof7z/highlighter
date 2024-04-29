@@ -4,7 +4,8 @@
 	import { onDestroy } from "svelte";
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import ServiceItem from './ServiceItem.svelte';
-	import { NDKEvent, NDKKind, NDKPrivateKeySigner, type NostrEvent } from '@nostr-dev-kit/ndk';
+	import { NDKKind } from '@nostr-dev-kit/ndk';
+	import BlossomSection from './BlossomSection.svelte';
 
     $pageSidebar = { component: Settings, props: {} }
     onDestroy(() => { $pageSidebar = null; })
@@ -20,6 +21,16 @@
 
 <MainWrapper>
     <div class="flex flex-col gap-6">
+        <section>
+            <h1>🌸 Media Storage (Blossom)</h1>
+
+            <p>
+                This is where your media uploaded from Highlighter is stored.
+            </p>
+            
+            <BlossomSection />
+        </section>
+        
         <section>
             <h1>Publishing</h1>
             <ServiceItem

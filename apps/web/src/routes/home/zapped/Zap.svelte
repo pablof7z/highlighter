@@ -4,7 +4,7 @@
 	import { NDKEvent, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
 	import { Lightning } from 'phosphor-svelte';
 	import WithItem from '../../[id]/[tagId]/WithItem.svelte';
-	import Note from '$components/Feed/Note.svelte';
+	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 
     export let zapEvent: NDKEvent;
     const zapReceipt = zapInvoiceFromEvent(zapEvent);
@@ -33,5 +33,5 @@
             {nicelyFormattedMilliSatNumber(zapAmount)}
         </div>
     </div>
-    <Note {event} urlPrefix="/e/" />
+    <EventWrapper {event} />
 {/if}

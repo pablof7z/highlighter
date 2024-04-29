@@ -11,17 +11,24 @@
     export let newPostTags: NDKTag[] = [];
     export let urlPrefix: string | undefined = undefined;
 
-    let feed = $ndk.storeSubscribe(filters, { subId: 'feed' });
+    export let feed = $ndk.storeSubscribe(filters, { subId: 'feed' });
 
-    const sortedFeed = derived(feed, $feed => {
-        return $feed.sort((a, b) => b.created_at! - a.created_at!);
+    let showEventsOlderThan: Date | undefined = undefined;
+
+    feed.onEose(() => {
+        showEventsOlderThan = new Date();
     });
+
+    // const sortedFeed = derived(feed, $feed => {
+    //     return $feed.sort((a, b) => b.created_at! - a.created_at!);
+    // });
 
     onDestroy(() => { if (filters) feed?.unsubscribe(); });
 </script>
 
 <StoreFeed
-    feed={sortedFeed}
+    feed={feed}
+    bind:showEventsOlderThan
     {newPostKind}
     {renderLimit}
     {newPostTags}

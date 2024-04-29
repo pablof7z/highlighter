@@ -27,7 +27,6 @@
         snap-center {option.class??""}
         sm:px-0 cursor-pointer
         max-sm:!py-4
-        {active ? "max-sm:bg-white max-sm:text-black" : ""}
         {option.premiumOnly ? "premium" : ""}
     "
     on:click
@@ -53,12 +52,13 @@
         @apply transition-all duration-100;
         @apply sm:text-lg p-2 px-4;
         @apply max-sm:w-fit;
-        @apply text-white/90;
+        @apply text-base-100-content;
         @apply max-sm:border-b-4 max-sm:border-base-300 max-sm:rounded-b-none;
     }
 
     a.active {
-        @apply font-bold bg-zinc-900 text-white;
+        @apply font-bold bg-base-200 text-base-100-content;
         @apply max-sm:border-accent2;
+        @apply max-sm:bg-base-300 max-sm:text-white;
     }
 </style>

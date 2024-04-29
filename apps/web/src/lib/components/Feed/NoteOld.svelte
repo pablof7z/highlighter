@@ -21,6 +21,7 @@
 	import { onDestroy } from 'svelte';
     import { createEventDispatcher } from 'svelte';
 	import { devMode } from '$stores/settings';
+	import ClientName from '$components/ClientName.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -40,6 +41,7 @@
     export let urlPrefix: string = "/e/";
     export let willShowReply: boolean | undefined = undefined;
     export let newPostCompact = false;
+    export let skipFooter = false;
 
     export let hTag = op.tagValue("h");
 
@@ -121,6 +123,10 @@
         shouldExpandBeyondBox = true;
     }
 
+    $: if (skipFooter) {
+        shouldDisplayVerticalBar = false;
+    }
+
     let newPostPlaceholder = "Reply...";
 
     $: if ($currentUser?.pubkey === event.pubkey) {
@@ -134,35 +140,18 @@
     let autofocusNewPost = false;
     let userProfile: UserProfileType | undefined | null;
 
-    function contentClicked(e: CustomEvent) {
-        const { type, pubkey } = e.detail;
-        console.log('in note', e)
-        if (type === "pubkey") {
-            const user = $ndk.getUser({pubkey});
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            e.stopPropagation();
-            goto(`/${user.npub}`);
-            console.log(user.npub)
-        }
+    export let deleted = false;
+    
+    function deleteEvent() {
+        deleted = true;
+        event.delete();
     }
-
-    function noteClicked(e: Event) {
-        dispatch('open:note', { event, originalEvent: e });
-    }
-
-    function viewConversationClicked(e: CustomEvent) {
-        const { event, originalEvent } = e.detail;
-        dispatch('open:conversation', { event, originalEvent });
-    }
-
-    const clientName = event.tagValue("client")
 </script>
 
 <div class="
     w-full text-left md:p-4 pb-0 max-sm:py-4 max-sm:max-w-[100vw] flex flex-col items-start {$$props.class??""}
     !font-light
-">
+" class:hidden={deleted}>
     <UserProfile
         user={author}
         bind:userProfile
@@ -189,13 +178,11 @@
                 <div class="flex flex-row items-start w-full gap-2 relative group">
                     <div class="flex flex-col items-start grow">
                         {#if title && !skipTitle && !threadView}
-                            <div class="text-lg text-white font-semibold truncate grow">{title}</div>
+                            <div class="text-lg text-base-100-content font-semibold truncate grow">{title}</div>
                         {/if}
                         <div class="text-sm opacity-80">
                             <Name user={author} {userProfile} {fetching} />
-                            {#if clientName}
-                                <span class="ml-2 text-xs opacity-50">via {clientName}</span>
-                            {/if}
+                            <ClientName {event} class="ml-2 text-xs opacity-50" />
                         </div>
                     </div>
 
@@ -213,10 +200,6 @@
                                 {/each}
                             </div>
 
-                            <div class="opacity-50">
-                                <RelativeTime timestamp={mostRecentActivity * 1000} />
-                                {#if $devMode}
-                                    <EventCardDropdownMenu {event} />
                                 {/if}
                             </div>
                         </div>
@@ -234,14 +217,18 @@
                     <!-- Content -->
 
                     <a href="{urlPrefix}{event.encode()}" class="mt-2 mb-4" on:click={noteClicked}>
-                        <EventContent
-                            ndk={$ndk}
-                            {event}
-                            content={contentToRender}
-                            class={`${$$props.contentClass??"text-white"}`}
-                            mediaCollectionComponent={MediaCollection}
-                            on:click={contentClicked}
-                        />
+                        {#if $$slots.default}
+                            <slot />
+                        {:else}
+                            <EventContent
+                                ndk={$ndk}
+                                {event}
+                                content={contentToRender}
+                                class={`${$$props.contentClass??"text-base-100-content"}`}
+                                mediaCollectionComponent={MediaCollection}
+                                on:click={contentClicked}
+                            />
+                        {/if}
                     </a>
 
                     <div class="flex flex-row items-center text-zinc-500 w-full max-sm:my-2" class:hidden={noZapsToShow}>
@@ -253,54 +240,56 @@
             </div>
         </div>
 
-        <div class="flex flex-row items-end gap-4 w-full mt-2">
-            <div class="flex flex-col items-center justify-end flex-none w-10 sm:w-16">
-                {#if (!expandReplies || nestedMaxLevel === 0) && !(expandThread && $eventsInThread.length > 0)}
-                    {#if $replies.length > 0}
-                        <ReplyAvatars users={$commentAuthors} />
-                    {:else if $eventsInThread.length > 0}
-                        <ReplyAvatars users={[event.pubkey]} />
-                    {/if}
-                {/if}
-            </div>
-
-            <div class="max-sm:hidden grow"></div>
-
-            <div class="flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4">
-                <div class="w-1/4 flex justify-center items-end">
-                    {#if $eventsInThread.length > 0 && !expandThread}
-                        <button class="opacity-60 whitespace-nowrap" on:click={() => expandReplies = true }>
-                            View thread
-                        </button>
-                    {:else if $replies.length > 0 && !expandReplies}
-                        <button class="text-left w-full" on:click|stopPropagation={() => { expandReplies = true }}>
-                            <CommentsButton {event} prefetchedReplies={replies} />
-                        </button>
-                    {:else}
-                        <button class="" on:click|stopPropagation={() => { autofocusNewPost = showReply = !showReply; newPostCompact = false }}>
-                            <CommentsButton {event} prefetchedReplies={replies} />
-                        </button>
+        {#if !skipFooter}
+            <div class="flex flex-row items-end gap-4 w-full mt-2">
+                <div class="flex flex-col items-center justify-end flex-none w-10 sm:w-16">
+                    {#if (!expandReplies || nestedMaxLevel === 0) && !(expandThread && $eventsInThread.length > 0)}
+                        {#if $replies.length > 0}
+                            <ReplyAvatars users={$commentAuthors} />
+                        {:else if $eventsInThread.length > 0}
+                            <ReplyAvatars users={[event.pubkey]} />
+                        {/if}
                     {/if}
                 </div>
 
-                <div class="w-1/4 flex justify-center items-end ">
-                    <BoostButton {event} />
-                </div>
+                <div class="max-sm:hidden grow"></div>
 
-                <div class="w-1/4 flex justify-center items-end ">
-                    <Bookmark {event} class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
-                </div>
-                    <!-- <div class="shrink flex flex-row gap-3 items-center text-white/50 border grow justify-between"> -->
+                <div class="flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4">
+                    <div class="w-1/4 flex justify-center items-end">
+                        {#if $eventsInThread.length > 0 && !expandThread}
+                            <button class="opacity-60 whitespace-nowrap" on:click={() => expandReplies = true }>
+                                View thread
+                            </button>
+                        {:else if $replies.length > 0 && !expandReplies}
+                            <button class="text-left w-full" on:click|stopPropagation={() => { expandReplies = true }}>
+                                <CommentsButton {event} prefetchedReplies={replies} />
+                            </button>
+                        {:else}
+                            <button class="" on:click|stopPropagation={() => { autofocusNewPost = showReply = !showReply; newPostCompact = false }}>
+                                <CommentsButton {event} prefetchedReplies={replies} />
+                            </button>
+                        {/if}
+                    </div>
 
-                <div class="w-1/4 flex justify-center items-end ">
-                    <ZapsButton {event}>
-                        <span slot="icon">
-                            <Lightning class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
-                        </span>
-                    </ZapsButton>
+                    <div class="w-1/4 flex justify-center items-end ">
+                        <BoostButton {event} />
+                    </div>
+
+                    <div class="w-1/4 flex justify-center items-end ">
+                        <Bookmark {event} class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
+                    </div>
+                        <!-- <div class="shrink flex flex-row gap-3 items-center text-white/50 border grow justify-between"> -->
+
+                    <div class="w-1/4 flex justify-center items-end ">
+                        <ZapsButton {event}>
+                            <span slot="icon">
+                                <Lightning class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
+                            </span>
+                        </ZapsButton>
+                    </div>
                 </div>
             </div>
-        </div>
+        {/if}
     </UserProfile>
 </div>
 {#if willShowReply}
@@ -354,7 +343,7 @@
         </div>
     {:else}
         <a href="{urlPrefix}{event.encode()}" class="p-4">
-            <div class="text-xs text-white/50">
+            <div class="text-xs text-base-100-content/50">
                 View discussion
                 <CaretRight class="w-4 h-4 inline-block" />
             </div>

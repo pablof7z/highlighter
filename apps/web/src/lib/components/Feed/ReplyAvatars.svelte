@@ -16,9 +16,6 @@
                 map(pubkey => pubkey as Hexpubkey)
                 .slice(0, 3);
         } catch (e) {
-            console.error(e);
-            console.log(networkFollows);
-            console.log($networkFollows);
         }
     }
 </script>

@@ -2,18 +2,21 @@
 	import { Readable, derived } from "svelte/store";
 	import { NDKArticle, NDKEvent, NDKEventId, NDKHighlight, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
 	import ForumFeedItem from "./ForumFeedItem.svelte";
-	import Note from "./Note.svelte";
 	import Highlight from "$components/Highlight.svelte";
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
 	import { navigateToEvent } from "./navigate-to-event";
 	import NewPost from "./NewPost/NewPost.svelte";
     import { inview } from 'svelte-inview';
+	import EventWrapper from "./EventWrapper.svelte";
+	import { pluralize } from "$utils";
 
     export let feed: Readable<NDKEvent[]>;
     export let newPostKind: NDKKind | undefined = undefined;
     export let renderLimit = 10;
     export let newPostTags: NDKTag[] = [];
     export let urlPrefix: string = "/e/";
+    export let showEventsOlderThan: Date | undefined = undefined;
+    export let tooNewEvents = new Set<NDKEventId>();
 
     const perNoteLatestActivity = new Map<NDKEventId, number>();
 
@@ -22,6 +25,7 @@
 
     const renderFeed = derived(feed, $feed => {
         const topLevelNotes = new Map<NDKEventId, NDKEvent>();
+        tooNewEvents = new Set<NDKEventId>();
 
         for (const event of $feed.values()) { allEventIds.add(event.id); }
 
@@ -60,6 +64,16 @@
             }
         }
 
+        // filter out events that are newer than the showEventsOlderThan date
+        if (showEventsOlderThan) {
+            for (const event of topLevelNotes.values()) {
+                if (event.created_at!*1000 > showEventsOlderThan.getTime()) {
+                    topLevelNotes.delete(event.id);
+                    tooNewEvents.add(event.id);
+                }
+            }
+        }
+
         return Array.from(topLevelNotes.values()).sort((a, b) => {
             const aLatest = perNoteLatestActivity.get(a.id) ?? 0;
             const bLatest = perNoteLatestActivity.get(b.id) ?? 0;
@@ -75,12 +89,20 @@
         originalEvent.preventDefault();
         navigateToEvent(event);
     }
-
-
 </script>
 
 <div class="flex flex-col w-full justify-stretch">
     <div class="discussion-wrapper w-full flex flex-col">
+        {#if tooNewEvents.size > 0}
+            <div class="w-full flex flex-row items-center justify-center discussion-item transition-all duration-300 sticky top-0 z-50 ">
+                <button class="w-fit whitespace-nowrap rounded-full bg-accent2 text-base-100-content p-4"
+                    on:click={() => { showEventsOlderThan = new Date(); }}
+                >
+                    {tooNewEvents.size} new
+                    {pluralize(tooNewEvents.size, "post")}
+                </button>
+            </div>
+        {/if}
         {#if newPostKind}
             <div class="w-full">
                 <NewPost
@@ -93,7 +115,7 @@
         {/if}
         {#each $renderFeed.slice(0, renderLimit) as event, i (event.id)}
             {#if event.kind === NDKKind.Text}
-                <Note
+                <EventWrapper
                     {event}
                     mostRecentActivity={perNoteLatestActivity.get(event.id)}
                     skipReply={true}
