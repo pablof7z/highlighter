@@ -2,25 +2,28 @@
 	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKList, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
     import { ndk } from "@kind0/ui-common";
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { page } from '$app/stores';
     import createDebug from "debug";
 	import { derived, writable, type Readable } from 'svelte/store';
-	import { pageHeader } from '$stores/layout';
+	import { layoutMaxWidth, layoutMode, layoutNavState, pageHeader, resetLayout } from '$stores/layout';
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import ExploreFilters from './ExploreFilters.svelte';
 	import ListContentDvms from './ListContentDvms.svelte';
 	import { mainContentKinds } from '$utils/event';
 	import { browser } from '$app/environment';
-	import WelcomeGridItem from '$components/WelcomeGridItem.svelte';
 	import { blacklistedPubkeys } from '$utils/const';
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import VideoLink from '$components/Events/VideoLink.svelte';
 	import PostGrid from '$components/Events/PostGrid.svelte';
 	import CurationItem from '$components/CurationItem.svelte';
-	import { wotFiltered } from '$stores/wot';
 
+    $layoutNavState = "collapsed";
+    $layoutMode = "full-width";
+
+    onDestroy(resetLayout)
+    
     const debug = createDebug("HL:explore");
 
     let events: NDKEventStore<NDKEvent> | undefined = undefined;
@@ -210,7 +213,6 @@
     {/if}
 </svelte:head>
 
-<MainWrapper marginClass="w-full" mobilePadded={false}>
     {#if eventsForRender && $eventsForRender}
         <div class="flex flex-col gap-6 w-full">
             <ExploreFilters bind:value={filter} bind:typeFilter={$typeFilter} bind:filters />
@@ -256,4 +258,3 @@
             </div>
         </div>
     {/if}
-</MainWrapper>

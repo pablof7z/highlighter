@@ -111,8 +111,15 @@
                     {#if article}
                         <ItemLink event={article} />
                     {:else}
-                        <div class="bg-base-300 rounded-box w-full px-4">
-                            <EventWrapper {event} />
+                        <div class="border border-base-300 rounded-box w-full">
+                            <EventWrapper
+                                {event}
+                                expandReplies={false}
+                                expandThread={false}
+                                skipFooter={true}
+                                skipReply={true}
+                                compact={true}
+                            />
                         </div>
                     {/if}
                 </div>

@@ -11,6 +11,16 @@
 		--mobile-nav-bar: 63px;
 		--mobile-body-px: 0.5rem;
 		--tw-prose-quote-borders: #ff0000;
+
+		--layout-header-height: 48px;
+
+		/* Navbar */
+		--navbar-collapsed: 80px;
+
+		--navbar-icon-size: 32px;
+		@media (min-width: 640px) {
+			--navbar-icon: 40px;
+		}
 	}
 
 	body {
@@ -23,6 +33,15 @@
 	body > div {
 		font-family: Inter;
 		min-height: 100%;
+	}
+
+	/* Navbar */
+	.btm-nav > * {
+		@apply border-t-4 !border-base-100;
+	}
+	
+	.btm-nav > *:where(.active) {
+		@apply text-white !border-t-4 !border-accent2;	
 	}
 
 	.button {
@@ -118,11 +137,7 @@
 	}
 
 	.mobile-nav {
-		@apply bg-base-200 bg-opacity-80 backdrop-blur-[50px];
-	}
-
-	main {
-		@apply px-[var(--mobile-body-px)];
+		@apply bg-base-100/80 backdrop-blur-[50px];
 	}
 
 	.article hr {

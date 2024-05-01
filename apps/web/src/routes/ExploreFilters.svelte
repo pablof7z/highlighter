@@ -1,6 +1,8 @@
 <script lang="ts">
 	import FilterButtons from "$components/FilterButtons.svelte";
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import OptionsList from "$components/OptionsList.svelte";
+	import { pageNavigationOptions } from "$stores/layout";
 	import { userFollows } from "$stores/session";
 	import { user } from "@kind0/ui-common";
 	import { NDKKind, type NDKFilter } from "@nostr-dev-kit/ndk";
@@ -11,6 +13,8 @@
     export let value: string;
     export let typeFilter: App.FilterType[];
     export let filters: NDKFilter[] | undefined = undefined;
+
+    $pageNavigationOptions = [];
 
     let options: { name:string, icon?:any, filters?:NDKFilter[], value?:string, class?:string }[] = [
         { name: "All Creators", class: 'gradient' },
@@ -60,6 +64,8 @@
 <div class="w-full justify-between flex flex-nowrap
     items-start sm:items-center overflow-x-auto
     max-sm:flex-col
+    sticky top-0 sm:top-[var(--layout-header-height)] z-50
+    mobile-nav
 ">
     <div class="justify-start gap-6 flex whitespace-nowrap flex-shrink flex-grow
         max-sm:max-w-[100vw] overflow-x-auto
@@ -67,29 +73,17 @@
         max-sm:w-full
     ">
 
-        <OptionsList {options} bind:value on:changed={changed} />
+        <HorizontalOptionsList {options} bind:value on:changed={changed} />
     </div>
     <div class="
     max-sm:hidden
     flex justify-end
     overflow-clip
     flex-shrink
-        bg-base-100 max-sm:py-2
+        max-sm:py-2
         max-sm:border-y border-white/20
         max-sm:w-full
     ">
         <FilterButtons bind:filters={typeFilter} />
     </div>
 </div>
-
-<style lang="postcss">
-    .darken-x {
-        @apply !rounded-none;
-        @apply relative;
-    }
-
-    .darken-x::after {
-        @apply absolute top-0 right-0 w-1/6 h-full bg-gradient-to-l from-base-100 to-transparent pointer-events-none;
-        content: "";
-    }
-</style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { path } from 'node:path';
 	import { getSummary } from '$utils/article';
 	import { goto } from "$app/navigation";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
@@ -12,12 +13,15 @@
 	import HighlightedContent from './HighlightedContent.svelte';
 	import EventTags from './Events/EventTags.svelte';
 	import currentUser from '$stores/currentUser';
+	import ItemFooter from '../../routes/[id]/[tagId]/ItemFooter.svelte';
+	import { page } from '$app/stores';
 
     export let article: NDKArticle;
     const author = article.author;
     export let isFullVersion: boolean;
     export let isPreview = false;
     export let fillInSummary = true;
+    export let url = $page.url.pathname;
 
     const highlights = $ndk.storeSubscribe(
         { kinds: [NDKKind.Highlight], ...article.filter() },
@@ -69,6 +73,8 @@
     {/if}
 
     <EventTags event={article} />
+
+    <ItemFooter event={article} urlPrefix={url} eventType="article" class="-mx-4" />
 
     {#if article.image}
         <div class="w-full max-h-[50vh] relative overflow-hidden">

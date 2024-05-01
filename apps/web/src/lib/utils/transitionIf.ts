@@ -5,6 +5,7 @@ type ConditionalTransition = {
 }
 
 export default function(node: HTMLElement, opts: ConditionalTransition) {
+    console.log(opts);
     if (opts.cond) {
         return opts.fn(node, opts.options);
     }

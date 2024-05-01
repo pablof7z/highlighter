@@ -29,7 +29,11 @@ type PubkeysFollowCount = Map<Hexpubkey, number>;
 
 export const jwt = persist(writable<string | null>(null), createLocalStorage(), 'jwt');
 
-export const userProfile = writable<UserProfileType | undefined>(undefined);
+export const userProfile = persist(
+	writable<UserProfileType | undefined>(undefined),
+	createLocalStorage(),
+	'user-profile'
+);
 
 export type LoginState = 'logging-in' | 'logged-in' | 'contacting-remote-signer' | 'logged-out';
 

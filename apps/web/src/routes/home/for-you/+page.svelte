@@ -2,6 +2,9 @@
 	import currentUser from '$stores/currentUser';
 	import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
+	import { pageMainContentMaxWidth } from '$stores/layout';
+
+    $pageMainContentMaxWidth = 'max-w-3xl';
 
     const filters: NDKFilter[] = [
         {

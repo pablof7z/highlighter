@@ -6,12 +6,16 @@
 	import HighlightsWithCountButton from "$components/buttons/HighlightsWithCountButton.svelte";
 	import type { EventType } from "../../../../app";
 	import BoostButton from "$components/buttons/BoostButton.svelte";
-	import { ZapsButton } from "@kind0/ui-common";
+	import { ZapsButton, ndk } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
-	import { hideMobileBottomBar } from "$stores/layout";
+	import { hideMobileBottomBar, pageNavigationOptions } from "$stores/layout";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
 	import UserProfile from "$components/User/UserProfile.svelte";
+	import { NavigationOption } from "../../../app";
+	import { BookmarkSimple, ChatCircle, TextAa } from "phosphor-svelte";
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
+	import HighlightIcon from "$icons/HighlightIcon.svelte";
 
     export let event: NDKEvent;
     export let urlPrefix: string;
@@ -21,49 +25,27 @@
 
     const eventKind = event.kind!;
 
-    onMount(() => {
-        $hideMobileBottomBar = true;
-    })
+    const events = $ndk.storeSubscribe(
+        { kinds: [1, 12, 9735, 6, 16], ...event.filter() },
+    )
 
     onDestroy(() => {
-        $hideMobileBottomBar = false;
+        events.unsubscribe();
     })
+
+    $pageNavigationOptions = [];
+
+    let options: NavigationOption[] = [];
+
+    $: {
+        options = [];
+        options.push({ name: "Article", href: urlPrefix, icon: TextAa })
+        options.push({ name: "Comments", href: `${urlPrefix}/comments`, icon: ChatCircle })
+        options.push({ name: "Highlights", href: `${urlPrefix}/highlights`, icon: HighlightIcon })
+        options.push({ name: "Curations", href: `${urlPrefix}/curations`, icon: BookmarkSimple })
+    }
 </script>
 
-<div class="my-12"></div>
-
-<footer class="
-    fixed bottom-0 w-full max-sm:px-3 py-3 mobile-nav bg-base-100/10
-    z-40
-    border-t border-white/20
-">
-    <div class="{mxClass} max-w-3xl">
-        <div class="{innerMxClass} flex flex-row gap-8 items-center w-full justify-between">
-            <div class="flex flex-row gap-6 max-sm:w-full max-sm:justify-between max-sm:px-3">
-                {#if mainContentKinds.includes(eventKind)}
-                    <CurationWithCountButton {event} {urlPrefix} />
-                {/if}
-
-                <CommentsButton {event} {urlPrefix} />
-
-                <!-- <ReactionsWithCountButton {event} /> -->
-
-                {#if eventType === "article"}
-                    <HighlightsWithCountButton {event} {urlPrefix} />
-                {/if}
-
-                <BoostButton {event} />
-
-                <ZapsButton {event} />
-            </div>
-
-            <div class="place-self-end max-sm:hidden">
-                {#if event.author}
-                    <UserProfile user={event.author} let:userProfile>
-                        <SubscribeButton {userProfile} user={event.author} tiers={getUserSubscriptionTiersStore()} />
-                    </UserProfile>
-                {/if}
-            </div>
-        </div>
-    </div>
-</footer>
+<div class="sticky top-0 sm:top-[var(--layout-header-height)] z-50 mobile-nav {$$props.class??""}">
+    <HorizontalOptionsList {options} class="flex gap-4 !text-sm"  />
+</div>

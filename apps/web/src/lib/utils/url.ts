@@ -2,11 +2,17 @@ import type { NDKEvent } from '@nostr-dev-kit/ndk';
 
 export const EVENT_ID_SUFFIX_LENGTH = 999;
 
-export function urlFromEvent(event: NDKEvent): string {
-	const suffix = urlSuffixFromEvent(event);
-	const npub = event.author.npub;
+const hostname = import.meta.env.VITE_HOSTNAME;
 
-	return `https://highlighter.com/${npub}/${suffix}`;
+export function urlFromEvent(event: NDKEvent, authorUrl?: string): string {
+	const suffix = urlSuffixFromEvent(event);
+	let id = `/${event.author.npub}`;
+
+	if (authorUrl) {
+		id = authorUrl;
+	}
+
+	return `https://${hostname}${authorUrl}/${suffix}`;
 }
 
 export function urlSuffixFromEvent(event: NDKEvent): string {

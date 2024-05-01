@@ -1,23 +1,27 @@
 <script lang="ts">
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { user } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
 	import LoadingScreen from '$components/LoadingScreen.svelte';
+	import { layoutMode, resetLayout } from "$stores/layout";
+    import currentUser from "$stores/currentUser";
 
     let startedUserView = false;
     let mounted = false;
+
+    $layoutMode = "single-column-focused";
 
     onMount(() => {
         mounted = true;
     });
 
-    $: if (!!$user && !startedUserView && mounted) {
+    $: if (mounted && $currentUser && !startedUserView) {
+        startUserView($currentUser);
         startedUserView = true;
-        startUserView($user);
     }
 
     onDestroy(() => {
         userSubscription?.unref();
+        resetLayout();
     })
 </script>
 

@@ -34,7 +34,7 @@
         mentionEvent={event}
     >
         <div slot="afterContent">
-            <div class="w-full">
+            <div class="w-full max-sm:hidden">
                 {#if event.kind === NDKKind.Highlight}
                     <HighlightBody
                         highlight={NDKHighlight.from(event)}

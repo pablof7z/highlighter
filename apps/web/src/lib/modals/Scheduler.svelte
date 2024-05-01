@@ -51,7 +51,7 @@ import ModalShell from "$components/ModalShell.svelte";
         try {
             if (!publishAt) return;
             const repost = await event.repost(false);
-            repost.created_at = publishAt / 1000;
+            repost.created_at = Math.floor(publishAt / 1000);
             repost.id = "";
             repost.sig = "";
             await repost.sign();

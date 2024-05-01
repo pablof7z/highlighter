@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { pageHeader, pageSidebar } from "$stores/layout";
+	import { detailView, layoutAlign, layoutMaxWidth, layoutNavState, mainAlign, pageHeader, pageMainContentMaxWidth, pageSidebar } from "$stores/layout";
 	import { NDKList, type NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
     import ListSidebar from "$components/PageSidebar/List.svelte";
 	import { page } from '$app/stores';
@@ -18,6 +18,11 @@
 
     $: id = $page.params.subId;
 
+    $detailView = {
+        component: ListViewContent,
+        props: { list, urlPrefix }
+    }
+    
     $pageSidebar = {
         component: ListSidebar,
         props: { list, urlPrefix }
@@ -71,7 +76,7 @@
         />
     {/key}
 {:else}
-<div class="lg:hidden">
+    <div class="lg:hidden">
         <ListViewContent
             {list}
             {urlPrefix}

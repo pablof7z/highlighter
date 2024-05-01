@@ -2,7 +2,6 @@
     import { ndk, pageDrawerToggle, rightSidebar, user as currentUser, Avatar, Textarea, Name } from "@kind0/ui-common";
 	import { page } from "$app/stores";
 	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
-    import { debugMode } from "$stores/session";
 	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
 	import VideoView from "./VideoView.svelte";
 	import EventResponses from "$components/EventResponses.svelte";
@@ -16,14 +15,12 @@
 	import ListView from "$components/ListView.svelte";
 	import { goto } from "$app/navigation";
 	import ArticleView from "$components/ArticleView.svelte";
-	import { pageHeader } from "$stores/layout";
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
-	import { CaretLeft, Lightning } from "phosphor-svelte";
+	import { layoutNavState, layoutMaxWidth, pageHeader, pageNavigationOptions, mainAlign, contentCentricLayout, layoutMode, resetLayout } from "$stores/layout";
+	import { CaretLeft, ChatCircle, Lightning, MediumLogo } from "phosphor-svelte";
 	import Highlight from "$components/Highlight.svelte";
 	import { openModal } from "svelte-modals";
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
-	import ThreeColumn from "$components/Layouts/ThreeColumn.svelte";
-	import TwoColumns from "$components/Layouts/TwoColumns.svelte";
+	import { EventType } from "../../../app";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -79,32 +76,18 @@
             }
         }
     };
+
+    export let eventType: EventType | undefined;
 </script>
 
-<WithItem {user} {tagId} bind:event bind:article bind:video let:urlPrefix let:eventType let:isFullVersion bind:authorUrl>
+<WithItem {user} {tagId} bind:event bind:article bind:video let:urlPrefix bind:eventType let:isFullVersion bind:authorUrl>
     {#if event && eventType}
         {#if eventType === "article" && article}
-            <TwoColumns>
-                <ArticleView
-                    {article}
-                    {isFullVersion}
-                />
-                <MoreFromUser user={event.author} />
-            </TwoColumns>
-            <!-- <MainWrapper
-                class="flex-col justify-start gap-2 sm:gap-8 flex pb-6 sm:py-6"
-                marginClass={`max-w-3xl ${mxClass}`}
-                mobilePadded={false}
-            >
-                <ArticleView
-                    {article}
-                    {isFullVersion}
-                />
-
-                <MoreFromUser user={event.author} />
-            </MainWrapper> -->
-
-            <ItemFooter {event} {urlPrefix} {eventType} {mxClass} />
+            <ArticleView
+                {article}
+                {isFullVersion}
+            />
+            <MoreFromUser user={event.author} />
         {:else if eventType === "video" && video}
             <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl py-6">
                 <VideoView
@@ -130,11 +113,9 @@
         {:else if eventType === 'curation'}
             <ListView {event} {urlPrefix} {authorUrl} />
         {:else if eventType === 'highlight'}
-            <CreatorShell user={event.author}>
                 <div class="max-w-2xl mx-auto w-full">
                     <Highlight highlight={NDKHighlight.from(event)} {urlPrefix} {authorUrl} />
                 </div>
-            </CreatorShell>
         {:else}
             <CreatorShell user={event.author}>
                 <div class="{mxClass} max-w-3xl">
@@ -145,5 +126,4 @@
             </CreatorShell>
         {/if}
     {/if}
-
 </WithItem>

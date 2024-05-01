@@ -58,7 +58,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none {color}" bind:this={containerEl}>
     <div class="
-        max-sm:fixed max-sm:bottom-0 z-[99] max-sm:w-full  max-sm:!pb-0
+        max-sm:fixed max-sm:top-0 max-sm:bottom-0 z-[99] max-sm:w-full  max-sm:!pb-0
         {$$props.class??""}
     ">
         {#if mounted}
@@ -71,13 +71,10 @@
                 overflow-y-auto
                 w-fit mx-auto
                 p-6
+                h-full
                 {$$props.class}
             " style="pointer-events: auto; max-height: 92vh;"
-            transition:transitionIf={{
-                cond: Device.isPhone,
-                fn: slide,
-                opts: {axis:'y', duration: slideAnimationDuration}
-            }}>
+            >
                 <div class="!rounded-3xl inner flex flex-col items-center transition-all duration-1000 gap-6
                 {$$props.class}">
                     <slot />

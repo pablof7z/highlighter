@@ -1,6 +1,7 @@
 <script lang="ts">
 	import FollowButton from "$components/buttons/FollowButton.svelte";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
+	import { pageHeader } from "$stores/layout";
 	import { Avatar, Name } from "@kind0/ui-common";
 	import { NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
@@ -30,22 +31,29 @@
             collapsed = false;
         }
     }
+
+    $: if (userProfile?.name) {
+        $pageHeader = { title: userProfile.name }
+    }
 </script>
+
+<!-- <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%] max-sm:hidden">
+    {#if userProfile?.banner}
+        <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
+    {:else}
+        <div class="absolute w-full h-full object-cover object-top lg:rounded bg-gradient-to-b from-base-300 to-transparent via-bg-base-300" />
+    {/if}
+</div> -->
 
 <div class="
     flex
     max-sm:gap-4
     overflow-clip
     max-sm:py-1
-    items-end justify-between p-3 sm:px-6 sm:py-4 sm:-mt-16
+    items-end justify-between p-3 sm:px-6 sm:py-4
     gap-4
     transition-all duration-300
     w-full max-sm:w-screen
-    sticky top-0 z-[50]
-    { !collapsed ?
-        "bg-transparent" :
-        "bg-black/90"
-    }
     max-sm:flex-row max-sm:items-center
 ">
     <div dir="auto" class="flex items-center sm:items-end shrink">

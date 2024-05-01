@@ -15,26 +15,30 @@
 
     $: tagId = $page.params.tagId;
 
+    const origTitle = $pageHeader?.title;
+
     $pageHeader = {};
 
     $: $pageHeader = {
-        leftIcon: CaretLeft,
-        leftLabel: article?.title,
-        leftUrl: urlPrefix,
-        title: "Highlights",
+        left: {
+            label: article?.title ?? "Back",
+            url: urlPrefix,
+            icon: CaretLeft
+        },
+        title: origTitle,
     };
 </script>
 
 {#key tagId}
     <WithItem let:event bind:article bind:video bind:urlPrefix let:eventType>
         {#if event && article && eventType}
-            <ArticleBannerBackground {article} />
+        <!-- <ArticleBannerBackground {article} /> -->
+        <ItemFooter {event} {urlPrefix} {eventType} />
 
             <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
                 <Highlights filter={article.filter()} />
             </div>
 
-            <ItemFooter {event} {urlPrefix} {eventType} />
         {/if}
     </WithItem>
 {/key}

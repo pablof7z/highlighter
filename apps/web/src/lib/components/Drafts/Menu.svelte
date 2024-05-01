@@ -61,20 +61,6 @@
             {/each}
         {/key}
     </ul>
-    <div class="dropdown  w-full">
-        <button tabindex="0" class="button w-full rounded-md">
-            New post
-        </button>
-        <ul tabindex="0" class="dropdown-content z-[99] p-2 shadow bg-base-100 rounded-box w-full">
-            <button class="flex flex-row items-center gap-2" on:click={newThread}>
-                <div class="bg w-8 h-8 rounded-lg bg-base-300 backdrop-blur-lg justify-center items-center gap-2.5 inline-flex p-2">
-                    <RowsPlusBottom size={12} />
-                </div>
-
-                <div class="text-white">Thread</div>
-            </button>
-        </ul>
-    </div>
 {/if}
 
 <style>

@@ -16,6 +16,7 @@
     export let expandReplies = false;
     export let showReply = false;
     export let scrollIntoView = false;
+    export let compact = false;
 </script>
 
 <!-- <div class="flex flex-row items-center justify-between mb-4">
@@ -41,6 +42,7 @@
     event={highlight}
     placeholder="Add your thoughts about this highlight..."
     class="mb-4" {expandReplies}
+    {compact}
     on:publish={() => {
         showReply = false;
         highlight.publish();
@@ -52,7 +54,7 @@
         {skipArticle}
         skipHighlighter={true}
         {scrollIntoView}
-        class="py-4 max-h-[20vh] overflow-auto scrollbar-hide"
+        class="p-4 max-h-[20vh] overflow-auto scrollbar-hide bg-white/10 rounded-box"
     />
 </EventWrapper>
 

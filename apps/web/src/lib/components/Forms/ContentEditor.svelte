@@ -43,15 +43,14 @@
                 keyboard: {
                     bindings: {
                         // when cmd+enter dispatch a submit event
-                        enter: {
+                        cmdEnter: {
                             key: 'Enter',
                             metaKey: true,
                             handler: () => {
-                                alert('enter')
                                 dispatch("submit");
                             }
                         },
-                        enter: {
+                        shiftCmdEnter: {
                             key: 'Enter',
                             metaKey: true,
                             shiftKey: true,
@@ -251,7 +250,7 @@
     }
 
     :global(.ql-mention-list-item.selected) {
-        @apply bg-base-300 text-white;
+        @apply bg-base-300 text-accent2;
     }
 
     :global(.ql-tooltip) {
@@ -264,5 +263,13 @@
 
     :global(.ql-editor a) {
         @apply !text-white;
+    }
+
+    :global(.ql-editor span.mention) {
+        @apply text-accent2;
+    }
+
+    :global(span.mention[data-id="npub1mygerccwqpzyh9pvp6pv44rskv40zutkfs38t0hqhkvnwlhagp6s3psn5p"]) {
+        @apply text-pink-400;
     }
 </style>

@@ -1,27 +1,24 @@
 <script lang="ts">
-    import LoadingScreen from "$components/LoadingScreen.svelte";
-	import { getUserContent, getUserSupporters, startUserView, getGAUserContent } from '$stores/user-view';
-	import { Avatar, Name, ndk, user } from "@kind0/ui-common";
-	import { type Hexpubkey } from '@nostr-dev-kit/ndk';
-	import { onDestroy, onMount } from 'svelte';
-	import type { Readable } from 'svelte/motion';
-	import UserProfile from '$components/User/UserProfile.svelte';
-	import CreatorActivity from "$components/Creator/CreatorActivity.svelte";
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
-	import { pageHeader } from "$stores/layout";
+	import currentUser from '$stores/currentUser';
+	import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
+	import FilterFeed from "$components/Feed/FilterFeed.svelte";
+	import { pageMainContentMaxWidth } from '$stores/layout';
 
-    let mounted = false;
+    $pageMainContentMaxWidth = 'max-w-3xl';
 
-    onMount(() => {
-        startUserView($user);
-        mounted = true;
-    })
-
-    $pageHeader = { title: "Notifications" }
+    const filters: NDKFilter[] = [
+        {
+            kinds: [NDKKind.Highlight, NDKKind.Text, NDKKind.Article, NDKKind.HorizontalVideo],
+            "#p": [$currentUser!.pubkey],
+            limit: 100
+        }
+    ]
 </script>
 
-<LoadingScreen ready={!!mounted && !!$user}>
+<FilterFeed {filters} />
+
+<!-- <LoadingScreen ready={!!mounted && !!$user}>
     <MainWrapper class="flex flex-col gap-10">
         <CreatorActivity />
     </MainWrapper>
-</LoadingScreen>
+</LoadingScreen> -->

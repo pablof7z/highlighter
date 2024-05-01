@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { afterUpdate, beforeUpdate, onMount } from 'svelte';
 	import '../app.postcss';
 	import { ndk, user } from '@kind0/ui-common';
 	import { finalizeLogin } from '$utils/login';
@@ -18,6 +18,8 @@
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { welcomeScreenSeen } from '$stores/settings';
 	import currentUser from '$stores/currentUser';
+	import { beforeNavigate } from '$app/navigation';
+	import { detailView } from '$stores/layout';
 
 	const d = createDebug('HL:layout');
 
