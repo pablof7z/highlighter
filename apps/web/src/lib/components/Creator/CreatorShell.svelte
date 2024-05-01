@@ -1,19 +1,13 @@
 <script lang="ts">
-	import { getUserSupporters, userSubscription, getUserSubscriptionTiersStore, getUserCurations, getUserHighlights, getGAUserContent, getUserContent } from "$stores/user-view";
+	import { userSubscription, getUserSubscriptionTiersStore, getUserCurations, getUserHighlights, getGAUserContent, getUserContent } from "$stores/user-view";
 	import { NDKArticle, NDKKind, type NDKEventId, NDKUser } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
 	import { layoutNavState, pageHeader, pageHeaderComponent, pageNavigationOptions } from '$stores/layout';
-	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import type { UserProfileType } from '../../../app';
-	import Logo from "$icons/Logo.svelte";
-	import CreatorProfileTabs from "./CreatorShell/CreatorProfileTabs.svelte";
-	import CreatorShellSidebar from "./CreatorShell/CreatorShellSidebar.svelte";
 	import CreatorHeader from "./CreatorHeader.svelte";
-	import LogoSmall from "$icons/LogoSmall.svelte";
-	import ThreeColumn from "$components/Layouts/ThreeColumn.svelte";
 	import { Article, BookmarkSimple, Notepad } from "phosphor-svelte";
 	import { HighlightIcon } from "@kind0/ui-common";
 
