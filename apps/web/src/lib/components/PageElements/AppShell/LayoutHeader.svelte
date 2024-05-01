@@ -10,18 +10,16 @@
     const hasSidebar = true;
 </script>
 
+<div class="h-[var(--layout-header-height)]"></div>
+
 <div class="
-    sticky top-0 h-[var(--layout-header-height)]
+    !fixed top-0 h-[var(--layout-header-height)]
     z-40
     mobile-nav
     w-full
     {$$props.class??""}
 ">
     <div class="flex flex-row justify-between items-center h-full w-full gap-2">
-        <div class="w-10 shrink flex flex-row">
-            <CurrentUser />
-        </div>
-
         {#if $pageHeader?.component}
             <div class="sm:p-4 w-full">
                 {#if $pageHeader?.component === "post-editor"}

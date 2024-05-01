@@ -1,24 +1,22 @@
 <script lang="ts">
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { user } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
 	import LoadingScreen from '$components/LoadingScreen.svelte';
-	import { layoutMaxWidth, layoutNavState, pageMainContentMaxWidth, resetLayout } from "$stores/layout";
+	import { layoutMode, resetLayout } from "$stores/layout";
+    import currentUser from "$stores/currentUser";
 
     let startedUserView = false;
     let mounted = false;
 
-    $layoutNavState = "collapsed";
-    $layoutMaxWidth = "max-w-none";
-    $pageMainContentMaxWidth = "max-w-6xl";
+    $layoutMode = "single-column-focused";
 
     onMount(() => {
         mounted = true;
     });
 
-    $: if (!!$user && !startedUserView && mounted) {
+    $: if (mounted && $currentUser && !startedUserView) {
+        startUserView($currentUser);
         startedUserView = true;
-        startUserView($user);
     }
 
     onDestroy(() => {

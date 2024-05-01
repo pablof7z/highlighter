@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { type SvelteComponent } from 'svelte';
     import Device from 'svelte-device-info';
+    import { createEventDispatcher } from 'svelte';
+
+    const dispatch = createEventDispatcher();
 
     type Option = {
+        label: string;
         icon: typeof SvelteComponent;
         class?: string;
-        cb: () => void;
+        cb: () => true | void;
     };
 
     export let leftOptions: Option[] = [];
@@ -37,6 +41,9 @@
 
     let leftOptionWidth = 0;
     let rightOptionWidth = 0;
+
+    // Whether one of the sides is fully opened
+    let fullyOpened = false;
 
     $: if (element) {
         if (positionX !== 0) {
@@ -117,6 +124,13 @@
             leftOptionWidth = 0;
             positionX = -absOffsetX;
         }
+
+        // if we were fully opened and now we're closing, dispatch close
+        if (fullyOpened && absOffsetX === 0) {
+            fullyOpened = false;
+            console.log('dispatching close');
+            dispatch('close');
+        }
     }
 
     function onTouchEnd(event: TouchEvent) {
@@ -137,11 +151,11 @@
             const closerToFullThanZero = absOffsetX > maxSwipe.left / 2;
 
             if (exactlyOneOption && somethingShouldTrigger) {
-                leftOptions[0].cb();
-                updatePosition(0);
+                if (leftOptions[0].cb() !== true) updatePosition(0);
             } else if (closerToFullThanZero) {
                 const pos = triggerActionRequirement * leftOptions.length;
                 updatePosition(pos);
+                fullyOpened = true;
             } else {
                 updatePosition(0);
             }
@@ -150,11 +164,12 @@
             const closerToFullThanZero = absOffsetX > maxSwipe.right / 2;
 
             if (exactlyOneOption && somethingShouldTrigger) {
-                rightOptions[0].cb();
-                updatePosition(0);
+                if (rightOptions[0].cb() !== true) updatePosition(0);
             } else if (closerToFullThanZero) {
                 const pos = -triggerActionRequirement * rightOptions.length;
                 updatePosition(pos);
+                fullyOpened = true;
+                console.log('setting fully opened');
             } else {
                 updatePosition(0);
             }
@@ -170,18 +185,19 @@
     `}>
         {#each leftOptions as opt, i}
             <button
-                on:click={() => { updatePosition(0); opt.cb() }}
+                on:click={() => { if (opt.cb() !== true) updatePosition(0); }}
                 class="option {opt.class??""}"
                 style={`width: ${triggerActionRequirement}px;`}
             >
                 <svelte:component this={opt.icon} class="w-12 h-12 !text-white" />
+                <span class="text-white">{opt.label}</span>
             </button>
         {/each}
     </div>
     <div style="
         touch-action: pan-y;
     " bind:this={element} on:touchstart={onTouchStart} on:touchmove|passive={onTouchMove} on:touchend|passive={onTouchEnd}>
-        <slot />
+        <slot swapActive={true} />
     </div>
     <div class="options-wrapper right-0" style={`
         width: ${rightOptionWidth}px;
@@ -189,27 +205,28 @@
     `}>
         {#each rightOptions as opt, i}  
             <button
-                on:click={() => { updatePosition(0); opt.cb() }}
+                on:click={() => { if (opt.cb() !== true) updatePosition(0); }}
                 class="option {opt.class??""}"
                 style={`width: ${triggerActionRequirement}px;`}
             >
-                <svelte:component this={opt.icon} class="w-12 h-12 !text-white" />
+                <svelte:component this={opt.icon} class="w-12 h-12" />
+                <span class="text-white">{opt.label}</span>
             </button>
         {/each}
     </div>
 </div>
 {:else}
-    <slot />
+    <slot swapActive={false} />
 {/if}
 
 <style lang="postcss">
     .options-wrapper {
-        @apply absolute top-0 bottom-0 flex flex-row items-stretch overflow-clip;
+        @apply absolute top-0 bottom-0 flex flex-row items-stretch overflow-clip text-white;
         min-height: 32px;
     }
 
     button.option {
-        @apply h-full flex-none flex flex-row items-center justify-center overflow-clip;
+        @apply h-full flex-none flex flex-col gap-4 items-center justify-center overflow-clip;
         min-width: 5rem;
     }
 </style>

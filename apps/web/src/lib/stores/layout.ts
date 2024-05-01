@@ -4,7 +4,7 @@ import { NavigationOption } from '../../app';
 /**
  * `reversed-columns` - The sidebar takes about 1/3 of the screen and the main content takes about 2/3 of the screen
  */
-type LayoutMode = "centered-feed-column" | "content-focused" | "full-width" | "reversed-columns";
+type LayoutMode = "centered-feed-column" | "content-focused" | "full-width" | "reversed-columns" | "single-column-focused";
 
 export const layoutMode = writable<LayoutMode>("centered-feed-column");
 
@@ -33,6 +33,8 @@ interface Component {
 export const pageSidebar: Writable<Component | null> = writable(null);
 export const hideMobileBottomBar: Writable<boolean> = writable(false);
 
+export const detailView: Writable<Component | null> = writable(null);
+
 export function resetLayout() {
 	layoutMode.set("centered-feed-column");
 	layoutNavState.set("normal");
@@ -43,6 +45,7 @@ export function resetLayout() {
 	mainAlign.set("left");
 	pageMainContentMaxWidth.set(undefined);
 	contentCentricLayout.set(false);
+	detailView.set(null);
 }
 
 resetLayout();
@@ -54,8 +57,6 @@ export const searching: Writable<boolean> = writable(false);
 export const modalState: Writable<"open" | "closing" | "closed"> = writable("closed");
 
 export const activeNewPostId: Writable<string | null> = writable(null);
-
-export const detailView: Writable<Component | null> = writable(null);
 
 export type PageHeader = {
 	/**

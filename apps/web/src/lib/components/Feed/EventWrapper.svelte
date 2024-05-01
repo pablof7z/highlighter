@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { BookmarkSimple, CaretRight, ChatCircle, Lightning, Quotes } from 'phosphor-svelte';
+	import { BookmarkSimple, CaretRight, ChatCircle, Lightning, Quotes, Repeat, Timer } from 'phosphor-svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { Avatar, Name, RelativeTime, ZapsButton, ndk } from "@kind0/ui-common";
+	import { Avatar, Name, RelativeTime, ZapsButton, ndk, newToasterMessage } from "@kind0/ui-common";
 	import { Hexpubkey, NDKEvent, NDKFilter, NDKHighlight, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { EventCardDropdownMenu, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
@@ -25,6 +25,8 @@
 	import Swipe from '$components/Swipe.svelte';
 	import { openModal } from 'svelte-modals';
     import QuoteModal from '$modals/QuoteModal.svelte';
+	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
+	import { userGenericCuration } from '$stores/session';
 
     const dispatch = createEventDispatcher();
 
@@ -177,25 +179,44 @@
         deleted = true;
         event.delete();
     }
+
+    async function bookmark() {
+        try {
+            $userGenericCuration = await toggleBookmarkedEvent(event, $userGenericCuration);
+        } catch (e: any) {
+            newToasterMessage(e.relayErrors ?? e.message, "error")
+        }
+    }
+
+    let showQuoteOptions = false;
+    let rightOptions: any;
+
+    $: if (!showQuoteOptions) {
+        rightOptions = [
+            { label: "Quote", icon: Quotes, class: "bg-white/10 !text-success", cb: () => { showQuoteOptions = true; return true; } },
+            { label: 'Bookmark', icon: BookmarkSimple, class: "bg-white/20 !text-red-500", cb: bookmark },
+            { label: 'Zap!', icon: Lightning, class: "bg-white/30 !text-yellow-500", cb: () => {} }
+        ]
+    } else {
+        rightOptions = [
+            { label: "Repost", icon: Repeat, class: "bg-success/10", cb: () => {} },
+            { label: "Quote", icon: Quotes, class: "bg-success/20", cb: () => openModal(QuoteModal, { event }) },
+            { label: "Schedule", icon: Timer, class: "bg-success/30", cb: () => {} }
+        ];
+    }
 </script>
 
 <Swipe
     leftOptions={[
-        { icon: ChatCircle, class: "bg-accent2", cb: () => {
+        { label: 'Reply', icon: ChatCircle, class: "bg-accent2", cb: () => {
             showReply = true;
             willShowReply = true;
             autofocusNewPost = true;
         } },
-        
     ]}
-
-    rightOptions={[
-        { icon: Quotes, class: "bg-success", cb: () => openModal(QuoteModal, { event }) },
-        { icon: BookmarkSimple, class: "bg-orange-500", cb: () => {} },
-        { icon: Lightning, class: "bg-accent", cb: () => {} }
-    ]}
-
-    handle=".footer"
+    on:close={() => showQuoteOptions = false}
+    {rightOptions}
+    let:swapActive
 >
     <div class="
         w-full text-left md:p-4 pb-0 max-sm:py-4 max-sm:max-w-[100vw] flex flex-col items-start {$$props.class??""}
@@ -313,7 +334,7 @@
             </div>
 
             {#if !skipFooter}
-                <div class="flex flex-row items-end gap-4 w-full mt-2 footer">
+                <div class="flex flex-row items-end gap-4 w-full footer">
                     <div class="flex flex-col items-center justify-end flex-none w-10 sm:w-16">
                         {#if (!expandReplies || nestedMaxLevel === 0) && !(expandThread && $eventsInThread.length > 0)}
                             {#if $replies.length > 0}
@@ -336,7 +357,7 @@
                         {/if}
                     </div>
 
-                    <div class="flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4">
+                    <div class:hidden={swapActive} class="flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4">
                         <div class="w-1/4 flex justify-center items-end">
                             {#if !($eventsInThread.length > 0 && !expandThread) && !($replies.length > 0 && !expandReplies)}
                                 <button class="" on:click|stopPropagation={() => { autofocusNewPost = showReply = !showReply; newPostCompact = false }}>

@@ -16,8 +16,6 @@
     export let video: NDKVideo | undefined = undefined;
     export let note: NDKEvent | undefined = undefined;
 
-    $layoutMode = 'full-width';
-
     onMount(() => {
         $view = 'edit';
         $_type = type;
@@ -56,22 +54,20 @@
     $selectedTiers = {JSON.stringify($selectedTiers)}
 {/if}
 
-<MainWrapper mobilePadded={false} class="pb-24">
-    <div class="w-full" class:hidden={$view !== 'edit'}>
-        <slot />
-    </div>
-    <div class="w-full" class:hidden={!($view === "view-preview" && $$slots.viewPreview)}>
-        <slot name="viewPreview" />
-    </div>
-    <div class="w-full" class:hidden={!($view === "edit-preview" && $$slots.editPreview)}>
-        <slot name="editPreview" />
-    </div>
-    <div class="w-full" class:hidden={!($view === "meta" && $$slots.meta)}>
-        <slot name="meta" />
-    </div>
-    {#if $view === "audience"}
-        <AudiencePage />
-    {:else if $view === "published"}
-        <PublishingStep />
-    {/if}
-</MainWrapper>
+<div class="w-full" class:hidden={$view !== 'edit'}>
+    <slot />
+</div>
+<div class="w-full" class:hidden={!($view === "view-preview" && $$slots.viewPreview)}>
+    <slot name="viewPreview" />
+</div>
+<div class="w-full" class:hidden={!($view === "edit-preview" && $$slots.editPreview)}>
+    <slot name="editPreview" />
+</div>
+<div class="w-full" class:hidden={!($view === "meta" && $$slots.meta)}>
+    <slot name="meta" />
+</div>
+{#if $view === "audience"}
+    <AudiencePage />
+{:else if $view === "published"}
+    <PublishingStep />
+{/if}

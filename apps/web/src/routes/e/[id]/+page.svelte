@@ -15,8 +15,9 @@
 	import ItemFooter from "../../[id]/[tagId]/ItemFooter.svelte";
 	import VideoView from "../../[id]/[tagId]/VideoView.svelte";
 	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
-	import ThreeColumn from "$components/Layouts/ThreeColumn.svelte";
-	import { pageMainContentMaxWidth } from "$stores/layout";
+	import { detailView, pageMainContentMaxWidth } from "$stores/layout";
+
+    $detailView = null;
 
     let id: string;
 

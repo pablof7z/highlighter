@@ -47,6 +47,7 @@
 	}
 </script>
 
+<div class="max-w-3xl w-full sm:px-6">
 <Shell type="thread">
 	<UserProfile user={$currentUser} let:userProfile>
 		{#each thread.items as item, i (item.event.id??Math.random())}
@@ -73,3 +74,4 @@
 		</div>
 	</UserProfile>
 </Shell>
+</div>

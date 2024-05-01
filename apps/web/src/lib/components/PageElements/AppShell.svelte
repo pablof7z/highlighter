@@ -85,15 +85,23 @@
 			$layoutNavState = 'collapsed';
 			layoutWrapper = "w-full";
 			mainAndDetailWrapper = "max-w-7xl mx-auto w-fit justify-center";
-			navWrapper = "fixed sm:left-0";
+			navWrapper = "fixed sm:left-0 bg-base-200";
 			mainWrapper = "max-w-3xl w-full grow";
 			break;
 		case "reversed-columns":
+			$layoutNavState = 'collapsed';
 			layoutWrapper = "w-full";
 			mainAndDetailWrapper = "flex-row-reverse w-[calc(100vw_-_5rem)]";
-			navWrapper = "sticky sm:left-0";
-			mainWrapper = "w-2/3";
-			detailWrapper = "w-1/3";
+			navWrapper = "sticky sm:left-0 !bg-base-200 sm:h-screen";
+			mainWrapper = "w-2/3 grow";
+			detailWrapper = "w-1/3 max-w-[500px]";
+			break;
+		case "single-column-focused":
+			$layoutNavState = 'collapsed';
+			layoutWrapper = "w-full";
+			mainAndDetailWrapper = "max-w-5xl mx-auto w-fit justify-center";
+			navWrapper = "fixed sm:left-0 bg-base-200";
+			mainWrapper = "max-w-3xl w-full grow";
 			break;
 	}
 </script>
@@ -116,8 +124,6 @@
 
 	max-w-screen overflow-x-clip
 ">
-	<LayoutHeader class={mainAndDetailWrapper} />
-
 	<div class="
 		flex flex-row items-stretch justify-center h-full _border border-yellow-500
 		{layoutWrapper}
@@ -127,6 +133,7 @@
 
 		<div class="
 			flex flex-row w-full _border border-green-500
+			min-h-screen
 			{mainAndDetailWrapper}
 		">
 			<main class="
@@ -134,12 +141,9 @@
 				flex-none
 				shrink
 				{mainWrapper}
-			">
+				">
+				<LayoutHeader class={mainWrapper} />
 				<PageNavigation />
-				<!-- <p>layoutMode = {$layoutMode}</p>
-				<p>mainWrapper = {mainWrapper}</p>
-				<p>mainAndDetailWrapper = {mainAndDetailWrapper}</p> -->
-
 				<slot />
 			</main>
 

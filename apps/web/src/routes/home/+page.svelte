@@ -84,7 +84,7 @@
 {#if $recommendedArticles}
     <section>
         <div class="sm:px-6">
-            <h1 class="">
+            <h1 class="pt-6">
                 For You
             </h1>
             <MostHighlightedArticleGrid articleTagsWithHighlights={$recommendedArticles} />
@@ -94,7 +94,7 @@
 
     <section>
         <div>
-            <h1 class="sm:px-6">Highlights & Notes</h1>
+            <h1 class="sm:p-6">Highlights</h1>
     
             <!-- <div class="discussion-wrapper flex flex-col w-full">
                 {#each $feed as event (event.id)}

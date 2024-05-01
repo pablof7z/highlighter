@@ -1,9 +1,9 @@
 <script lang="ts">
 	import LoadingScreen from "$components/LoadingScreen.svelte";
-	import { pageSidebar } from "$stores/layout";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import currentUser from "$stores/currentUser";
 	import { onMount, onDestroy } from "svelte";
+	import { resetLayout } from "$stores/layout";
 
     let startedUserView = false;
     let mounted = false;
@@ -12,14 +12,14 @@
         mounted = true;
     });
 
-    $: if (!!$currentUser && !startedUserView && mounted) {
+    $: if (mounted && $currentUser && !startedUserView) {
         startUserView($currentUser);
         startedUserView = true;
     }
 
     onDestroy(() => {
         userSubscription?.unref();
-        $pageSidebar = null;
+        resetLayout();
     })
 </script>
 

@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { NDKArticle, NDKKind } from '@nostr-dev-kit/ndk';
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
-	import DvmGenerateButton from '$components/Dvm/DvmGenerateButton.svelte';
 	import AiIcon from '$icons/AiIcon.svelte';
 	import ImageIcon from '$icons/ImageIcon.svelte';
-	import ArticleLink from '$components/Events/ArticleLink.svelte';
 
     export let article: NDKArticle;
 

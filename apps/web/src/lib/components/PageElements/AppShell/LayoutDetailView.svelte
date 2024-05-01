@@ -2,7 +2,7 @@
 	import { pushState } from "$app/navigation";
 	import { page } from "$app/stores";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
-	import { detailView } from "$stores/layout";
+	import { detailView, layoutMode } from "$stores/layout";
 	import { X } from "phosphor-svelte";
 
     let hasRightSidebarExpanded = false;
@@ -18,17 +18,23 @@
         //     p.state.detailView = undefined;
         // });
     }
+
+    let showX = true;
+
+    $: showX = $layoutMode !== "reversed-columns";
+    
 </script>
 
 <aside class="
     sticky sm:top-[var(--layout-header-height)]
     max-h-screen overflow-y-auto overflow-x-clip
     max-w-[800px]
+    !border-x !border-base-300
     
     {$$props.class??""}
 ">
     {#if $detailView}
-        <button class="sticky top-0 right-4 top-22 z-[999]" on:click={closeDetailView}>
+        <button class="sticky top-0 right-4 top-22 z-[999]" class:hidden={!showX} on:click={closeDetailView}>
             <X class="w-6 h-6" />
         </button>
         {#key $detailView.props.event?.id}

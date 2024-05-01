@@ -69,20 +69,13 @@
     }
 </script>
 
-<MainWrapper
-    class="flex-col justify-start items-start gap-2 sm:gap-8 flex pb-6 sm:py-6"
-    marginClass={`max-w-3xl`}
-    mobilePadded={false}
->
-    {#key draftId + checkpointTime??""}
-        {#if article}
-            <a href="/articles/new?draft={draftId}" class="button text-lg">
-                Continue editing
-            </a>
-            <ArticleView {article} isFullVersion={true} />
-        {:else if thread}
-            <ThreadEditor bind:thread bind:draftItem />
-        {/if}
-    {/key}
-</MainWrapper>
-
+{#key draftId + checkpointTime??""}
+    {#if article}
+        <a href="/articles/new?draft={draftId}" class="button text-lg">
+            Continue editing
+        </a>
+        <ArticleView {article} isFullVersion={true} />
+    {:else if thread}
+        <ThreadEditor bind:thread bind:draftItem />
+    {/if}
+{/key}

@@ -19,7 +19,7 @@
         }
     });
 
-    $: if (article) url = authorUrl ? urlFromEvent(article, authorUrl) : `a/${article.encode()}`
+    $: if (article) url = authorUrl ? [authorUrl, article.tagValue("d")].join('/') : `a/${article.encode()}`
 </script>
 
 {#if article}
