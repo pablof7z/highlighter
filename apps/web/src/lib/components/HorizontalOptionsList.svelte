@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-	import OptionsListItem from "./OptionsListItem.svelte";
+	import HorizontalOptionsListItem from "./HorizontalOptionsListItem.svelte";
 	import { NavigationOption } from "../../app";
 
     const dispatch = createEventDispatcher();
@@ -9,18 +9,17 @@
 
     export let value: string = "";
     export let name: string = "this user";
-    export let collapsed = false;
 </script>
 
 <div class="
     justify-start items-start inline-flex whitespace-nowrap w-full
-    max-sm:border-t border-base-300
+    border-t border-base-300
 ">
     <div class="
         lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}
         snap-x snap-mandatory
-        max-sm:overflow-x-auto max-sm:max-w-[100vw]
-        max-sm:scrollbar-hide
+        overflow-x-auto max-w-[100vw]
+        scrollbar-hide
     ">
         {#each options as option (option.id ?? option.name)}
             {#if option.name === '-------'}
@@ -37,10 +36,9 @@
                     </div>
                 </div>
             {:else}
-                <OptionsListItem
+                <HorizontalOptionsListItem
                     {option}
                     {value}
-                    {collapsed}
                     on:click={() => { dispatch("changed", { value: option.name }); value = option.name; }}
                 />
             {/if}

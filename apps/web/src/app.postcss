@@ -11,6 +11,8 @@
 		--mobile-nav-bar: 63px;
 		--mobile-body-px: 0.5rem;
 		--tw-prose-quote-borders: #ff0000;
+
+		--layout-header-height: 48px;
 	}
 
 	body {
@@ -118,11 +120,7 @@
 	}
 
 	.mobile-nav {
-		@apply bg-base-200 bg-opacity-80 backdrop-blur-[50px];
-	}
-
-	main {
-		@apply px-[var(--mobile-body-px)];
+		@apply bg-base-200/80 backdrop-blur-[50px];
 	}
 
 	.article hr {

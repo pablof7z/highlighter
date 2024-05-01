@@ -2,6 +2,7 @@
 // for information about these interfaces
 
 import type { Hexpubkey, NDKUserProfile } from '@nostr-dev-kit/ndk';
+import type { SvelteComponent } from "svelte";
 
 export type TierEntry = {
 	name?: string;
@@ -36,6 +37,22 @@ export interface UserUploadQuota {
 	used: number;
 	total: number;
 }
+
+export type NavigationOption = {
+    value?: string;
+    name: string;
+    tooltip?: string;
+    icon?: any;
+    class?: string;
+    href?: string;
+    id?: string;
+    component?: {
+        component: typeof SvelteComponent;
+        props?: Record<string, any>;
+    }
+    fn?: () => void;
+    premiumOnly?: boolean;
+};
 
 declare global {
 	namespace App {

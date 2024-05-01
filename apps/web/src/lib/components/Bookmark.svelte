@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { userGenericCuration } from "$stores/session";
-	import { type NDKEvent, NDKList, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { ndk, newToasterMessage } from "@kind0/ui-common";
+	import { NDKEvent, NDKList, type NostrEvent } from "@nostr-dev-kit/ndk";
     import BookmarksSimple from "phosphor-svelte/lib/BookmarkSimple";
 
     export let event: NDKEvent;
@@ -11,19 +12,23 @@
 
     $: saved = $userGenericCuration.items.some(tag => tag[1] === eventReferenceTag) ?? false;
 
-    async function save(e: MouseEvent) {
-        e.stopPropagation();
+    async function save(ev: MouseEvent) {
+        ev.stopPropagation();
+
+        const e = new NDKList($ndk, $userGenericCuration.rawEvent());
 
         if (saved) {
-            $userGenericCuration.tags = $userGenericCuration.tags?.filter(tag => tag[1] !== eventReferenceTag);
+            e.tags = e.tags?.filter(tag => tag[1] !== eventReferenceTag);
         } else {
-            $userGenericCuration.addItem(event.tagReference());
+            e.addItem(event.tagReference(), undefined, false, "top");
         }
 
-        $userGenericCuration.created_at = Math.floor(Date.now() / 1000);
-        $userGenericCuration.sig = "";
-        $userGenericCuration.id = "";
-        await $userGenericCuration.publish();
+        try {
+            await e.publish();
+            $userGenericCuration = e;
+        } catch (e: any) {
+            newToasterMessage(e.relayErrors ?? e.message, "error")
+        }
     }
 </script>
 

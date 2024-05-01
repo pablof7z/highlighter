@@ -40,7 +40,7 @@
     let container: HTMLElement;
 </script>
 
-<div class="w-full border border-base-300" bind:this={container}>
+<div class="w-full " bind:this={container}>
     <div class="flex flex-col gap-6 {$$props.class??""}">
         <div class="flex flex-col gap-3 {$$props.contentClass??""}">
             <EventContent ndk={$ndk} event={highlight} class="highlight font-serif leading-8 text-lg" />

@@ -106,7 +106,7 @@
 {/if}
 
 {#if isCollapsed}
-    <button class="sm:hidden btn btn-lg p-3 btn-circle bg-accent2 text-white fixed z-[99999] bottom-2 right-2" on:click={() => isCollapsed = collapsed ?? false}>
+    <button class="sm:hidden btn btn-lg p-3 btn-circle bg-accent2 text-white fixed z-[99999] bottom-20 right-4" on:click={() => isCollapsed = collapsed ?? false}>
         <Feather class="w-full h-full" weight="fill" />
     </button>
 {/if}

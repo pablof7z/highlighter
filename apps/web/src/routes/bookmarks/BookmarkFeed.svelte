@@ -5,15 +5,15 @@
 	import { ndk } from "@kind0/ui-common";
 	import NDK, { NDKFilter, NDKKind, NDKEventId, NDKList } from "@nostr-dev-kit/ndk";
 
-    export let type: "You" | "Follows" = "You";
+    export let type: "You" | "follows" = "You";
 
     const filters: NDKFilter[] = [ { kinds: [NDKKind.BookmarkList], limit: 50 } ]
 
-    if (type === "Follows") {
+    if (type === "follows") {
         filters[0].authors = Array.from($userFollows);
     } else if (type === "You") {
         filters[0].authors = [$currentUser!.pubkey];
-    } else if (type === "Recent") {
+    } else if (type === "recent") {
         const twoDaysAgo = Math.floor(Date.now() / 1000) - 2 * 24 * 60 * 60;
         filters[0].since = twoDaysAgo;
     }

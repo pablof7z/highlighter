@@ -5,6 +5,10 @@
 	import UserProfile from './User/UserProfile.svelte';
     import { rightSidebar } from '@kind0/ui-common';
 	import currentUser from '$stores/currentUser';
+	import { UserCircle } from 'phosphor-svelte';
+	import { login } from '$utils/login';
+	import { openModal } from 'svelte-modals';
+    import SignupModal from '$modals/SignupModal.svelte';
 
     function clicked() {
         $pageDrawerToggle = true;
@@ -13,9 +17,21 @@
             props: {}
         });
     }
+
+    async function openSignupModal() {
+        if (window.nostr) {
+            const u = await login($ndk, $bunkerNDK, 'nip07');
+            if (u) {
+                $currentUser = u;
+                return;
+            }
+        }
+
+        openModal(SignupModal);
+    }
 </script>
 
-<div class="w-full flex-none" transition:fade>
+<div class="w-full" transition:fade>
     {#if $currentUser}
         <UserProfile user={$currentUser} let:userProfile let:authorUrl let:fetching>
             <button on:click={clicked} class="sm:hidden">
@@ -27,6 +43,8 @@
             </a>
         </UserProfile>
     {:else}
-        <slot />
+        <button on:click={openSignupModal} class="w-full h-full">
+            <UserCircle class="w-full h-full" />
+        </button>
     {/if}
 </div>

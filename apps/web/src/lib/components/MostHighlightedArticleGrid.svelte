@@ -12,10 +12,10 @@
 {#if articleTagsWithHighlights && articleTagsWithHighlights.length > 0}
 <div class="mb-4">
     <Carousel
-        class="overflow-auto w-full gap-6"
+        class="overflow-auto w-full gap-6 rounded-none"
         itemCount={articleTagsWithHighlights.length}
     >
-        {#each articleTagsWithHighlights.slice(0, 20) as {tag: articleTag, highlights}}
+        {#each articleTagsWithHighlights.slice(0, 20) as {tag: articleTag, highlights} (articleTag[1])}
             {#if articleTag[0] === "a"}
                 <ArticleGridArticle tag={articleTag} {highlights} />
             {:else if articleTag[0] === 'r'}

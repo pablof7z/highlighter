@@ -16,6 +16,7 @@
 	import VideoView from "../../[id]/[tagId]/VideoView.svelte";
 	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
 	import ThreeColumn from "$components/Layouts/ThreeColumn.svelte";
+	import { pageMainContentMaxWidth } from "$stores/layout";
 
     let id: string;
 
@@ -24,6 +25,7 @@
     let mxClass = "";
 
     let event: NDKEvent | null;
+    let eventType: string; 
 
     $: if (event) {
         const author = event.author;
@@ -32,11 +34,15 @@
             goto(`/${author.npub}/${event.dTag}`);
         }
     }
+
+    $: switch (eventType) {
+        case 'short-note': $pageMainContentMaxWidth = 'max-w-3xl'; break;
+        case 'highlight': $pageMainContentMaxWidth = 'max-w-3xl'; break;
+    }
 </script>
 
 {#key id}
-    <ThreeColumn>
-        <WithItem tagId={id} bind:event let:article let:video let:urlPrefix let:eventType let:isFullVersion let:authorUrl>
+        <WithItem tagId={id} bind:event let:article let:video let:urlPrefix bind:eventType let:isFullVersion let:authorUrl>
             {#if event && eventType}
                 {#if eventType === "article" && article}
                     <MainWrapper
@@ -72,20 +78,22 @@
                         </div>
                     </div>
                 {:else if ["short-note"].includes(eventType)}
-                    <div class="mx-auto max-w-3xl">
                         <div class="flex flex-col w-full justify-stretch">
 
                             <div class="discussion-wrapper w-full flex flex-col">
                                 <EventWrapper {event} expandReplies={true} threadView={true} />
                             </div>
                         </div>
-                    </div>
                 {:else if eventType === 'curation'}
                     <ListView {event} {urlPrefix} {authorUrl} />
                 {:else if eventType === 'highlight'}
-                    <div class="max-w-2xl mx-auto w-full">
-                        <Highlight highlight={NDKHighlight.from(event)} {urlPrefix} {authorUrl} expandReplies={true} />
-                    </div>
+                    <Highlight
+                        highlight={NDKHighlight.from(event)}
+                        {urlPrefix}
+                        {authorUrl}
+                        compact={true}
+                        expandReplies={true}
+                    />
                 {:else}
                     <CreatorShell user={event.author}>
                         <div class="max-w-3xl">
@@ -98,7 +106,6 @@
             {/if}
 
         </WithItem>
-    </ThreeColumn>
 {/key}
 <!--
 <LoadingScreen ready={!!event}>

@@ -3,7 +3,10 @@
 	import { userFollows } from "$stores/session";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 	import currentUser from "$stores/currentUser";
+	import { pageMainContentMaxWidth } from "$stores/layout";
 
+    $pageMainContentMaxWidth = 'max-w-3xl';
+    
     const authors = Array.from($userFollows);
 
     if ($currentUser) authors.push($currentUser.id);

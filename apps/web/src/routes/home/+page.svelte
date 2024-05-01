@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { pageHeader } from "$stores/layout";
+	import { layoutNavState, mainAlign, pageHeader, pageMainContentMaxWidth, pageNavigationOptions, resetLayout } from "$stores/layout";
 	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter, NDKEvent, NDKTag, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
@@ -8,11 +8,18 @@
 	import { Readable } from "svelte/store";
 	import { computeArticleRecommendationFromHighlightStore } from "$utils/recommendations";
 	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
+	import { onDestroy } from "svelte";
 
     $pageHeader = {
         title: "Home",
         searchBar: true
     }
+
+    $layoutNavState = 'normal';
+    $pageMainContentMaxWidth = 'max-w-3xl';
+    $mainAlign = "center";
+
+    onDestroy(resetLayout);
 
     let highlightFilters: NDKFilter[];
 
@@ -74,39 +81,43 @@
         <h1>Creators</h1>
     </section> -->
 
-    {#if $recommendedArticles}
-        <MostHighlightedArticleGrid articleTagsWithHighlights={$recommendedArticles} />
-    {/if}
-
+{#if $recommendedArticles}
+    <section>
+        <div class="sm:px-6">
+            <h1 class="">
+                For You
+            </h1>
+            <MostHighlightedArticleGrid articleTagsWithHighlights={$recommendedArticles} />
+        </div>
+    </section>
+{/if}
 
     <section>
-        <h1>Highlights & Notes</h1>
-
-        <!-- <div class="discussion-wrapper flex flex-col w-full">
-            {#each $feed as event (event.id)}
-                <FeedEvent {event} />
-            {/each}
-        </div> -->
-
-        <FilterFeed
-            filters={highlightFilters}
-            bind:feed
-            renderLimit={100}
-        />
+        <div>
+            <h1 class="sm:px-6">Highlights & Notes</h1>
+    
+            <!-- <div class="discussion-wrapper flex flex-col w-full">
+                {#each $feed as event (event.id)}
+                    <FeedEvent {event} />
+                {/each}
+            </div> -->
+    
+            <FilterFeed
+                filters={highlightFilters}
+                bind:feed
+                renderLimit={10}
+            />
+        </div>
         <!-- <Highlights filters={highlightFilters} /> -->
     </section>
 
 <style>
-    .bg {
-        background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD9488 0%, #7092A0 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
-    }
-
     section {
-        @apply w-full flex flex-col gap-5;
+        @apply w-full flex flex-col gap-5 mb-6;
     }
 
     section h1 {
-        @apply text-4xl font-semibold text-white;
+        @apply text-3xl font-semibold text-base-100-content;
     }
 </style>
 

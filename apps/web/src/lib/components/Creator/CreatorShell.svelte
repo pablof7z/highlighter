@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { getUserSupporters, userSubscription, getUserSubscriptionTiersStore } from "$stores/user-view";
+	import { getUserSupporters, userSubscription, getUserSubscriptionTiersStore, getUserCurations, getUserHighlights, getGAUserContent, getUserContent } from "$stores/user-view";
 	import { NDKArticle, NDKKind, type NDKEventId, NDKUser } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
-	import { pageHeader } from '$stores/layout';
+	import { layoutNavState, pageHeader, pageHeaderComponent, pageNavigationOptions } from '$stores/layout';
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import type { UserProfileType } from '../../../app';
 	import Logo from "$icons/Logo.svelte";
@@ -14,13 +14,18 @@
 	import CreatorHeader from "./CreatorHeader.svelte";
 	import LogoSmall from "$icons/LogoSmall.svelte";
 	import ThreeColumn from "$components/Layouts/ThreeColumn.svelte";
+	import { Article, BookmarkSimple, Notepad } from "phosphor-svelte";
+	import { HighlightIcon } from "@kind0/ui-common";
 
     export let user: NDKUser;
 
-    const userSupporters = getUserSupporters();
-
     const userTiers = getUserSubscriptionTiersStore();
 
+    const highlights = getUserHighlights();
+    const gaContent = getGAUserContent();
+    const userContent = getUserContent();
+    const curations = getUserCurations();
+    
     onMount(() => {
         addReadReceipt(user);
     })
@@ -53,58 +58,51 @@
 
     let authorUrl: string;
     let fetching: boolean;
+
+    let hasCurations = false;
+    let hasHighlights = false;
+    let hasPublications = false;
+
+    $layoutNavState = "normal";
+
+    $: {
+        $pageNavigationOptions = [];
+
+        if (!hasPublications && ($gaContent.length > 0 || $userContent.length > 0)) { hasPublications = true; }
+        if (!hasCurations && $curations.length > 0) { hasCurations = true; }
+        if (!hasHighlights && $highlights.length > 0) { hasHighlights = true; }
+
+        $pageNavigationOptions.push({ name: "Notes", href: `${authorUrl}/notes`, icon: Notepad },)
+        if (hasCurations)
+            $pageNavigationOptions.push({ name: "Curations", href: `${authorUrl}/curations`, icon: BookmarkSimple },)
+
+        if (hasPublications)
+            $pageNavigationOptions.push({ name: "Publications", href: authorUrl, icon: Article },)
+
+        if (hasHighlights)
+        $pageNavigationOptions.push({ name: "Highlights", href: `${authorUrl}/highlights`, icon: HighlightIcon },)
+    }
+
+    $: {
+        $pageHeaderComponent = {
+            component: CreatorHeader,
+            props: { user, userProfile, fetching, tiers: userTiers },
+            containerClass: ''
+        }
+    }
+
+    onDestroy(() => {
+        $pageHeaderComponent = null;
+    })
 </script>
 
 <UserProfile {user} bind:userProfile bind:fetching bind:authorUrl />
 
-<ThreeColumn>
-    <div slot="left">
-        <div class="hidden xl:block">
-            <Logo class="w-40" />
-        </div>
-        <!-- <div class="xl:hidden">
-            <LogoSmall class="w-10" />
-        </div> -->
+<slot />
 
-        <div class="my-4"></div>
-
-        <div class="lg:py-4 pr-4">
-            <CreatorProfileTabs
-                bind:value={activeTab}
-                {userProfile}
-                {user}
-                {authorUrl}
-            />
-        </div>
-    </div>
-
-    <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%] max-sm:hidden">
-        {#if userProfile?.banner}
-            <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
-        {:else}
-            <div class="absolute w-full h-full object-cover object-top lg:rounded bg-gradient-to-b from-base-300 to-transparent via-bg-base-300" />
-        {/if}
-    </div>
-    <!-- Profile Header -->
-    <CreatorHeader {user} {userProfile} {fetching} tiers={userTiers} />
-
-    <div class="md:hidden sticky top-14 z-50 bg-black/90">
-        <div class="border-t border-base-300">
-            <CreatorProfileTabs
-                bind:value={activeTab}
-                {user}
-                {authorUrl}
-                skipSubscribeButton={true}
-            />
-        </div>
-    </div>
-
-    <slot />
-
-    <div slot="right" class="xl:w-1/5 hidden xl:block grow pt-10">
+    <!-- <div slot="right" class="xl:w-1/5 hidden xl:block grow pt-10">
         <CreatorShellSidebar {user} {userSupporters} />
-    </div>
-</ThreeColumn>
+    </div> -->
 
 <!-- <CreatorFooter {user} tiers={userTiers} userSupporters={userSupporters} /> -->
 

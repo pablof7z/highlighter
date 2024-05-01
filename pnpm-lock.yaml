@@ -252,6 +252,12 @@ importers:
       svelte-device-info:
         specifier: ^1.0.4
         version: 1.0.4
+      svelte-drag-drop-touch:
+        specifier: ^0.1.9
+        version: 0.1.9
+      svelte-gestures:
+        specifier: ^4.0.0
+        version: 4.0.0
       svelte-infinite-scroll:
         specifier: ^2.0.1
         version: 2.0.1
@@ -292,9 +298,6 @@ importers:
       '@kind0/ui-common':
         specifier: workspace:^
         version: link:../../packages/ui-common
-      '@sonderbase/svelte-sortablejs':
-        specifier: ^2.0.2
-        version: 2.0.2(svelte@4.2.12)
       '@sveltejs/adapter-auto':
         specifier: ^3.2.0
         version: 3.2.0(@sveltejs/kit@2.5.5)
@@ -7922,15 +7925,6 @@ packages:
       '@sinonjs/commons': 3.0.0
     dev: true
 
-  /@sonderbase/svelte-sortablejs@2.0.2(svelte@4.2.12):
-    resolution: {integrity: sha512-ChPbN3Fx8vfpWutmgDfJ/DXXRu2mdWJbWT9ERJDjkl6hkOhn57PG6gttJgqSA5vWB4nV9XuYr2Uy40Z3EovQPw==}
-    peerDependencies:
-      svelte: ^4.0.0
-    dependencies:
-      sortablejs: 1.15.2
-      svelte: 4.2.12
-    dev: true
-
   /@storybook/addon-actions@7.5.1(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-GieD3ru6EslKvwol1cE4lvszQCLB/AkQdnLofnqy1nnYso+hRxmPAw9/O+pWfpUBFdjXsQ7GX09+wEUpOJzepw==}
     peerDependencies:
@@ -12533,6 +12527,10 @@ packages:
   /dotenv@16.3.1:
     resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
+
+  /dragdroptouch-bug-fixed@1.0.8:
+    resolution: {integrity: sha512-moNgBeWMeUk4zhV3B+a4TZUPmHVJz+cvjWEXENLEU3toVnm3lpS+ZkSwVbBxArDUQ8HSm1qA0UmKWWy1y7nvng==}
+    dev: false
 
   /dreamopt@0.8.0:
     resolution: {integrity: sha512-vyJTp8+mC+G+5dfgsY+r3ckxlz+QMX40VjPQsZc5gxVAxLmi64TBoVkP54A/pRAXMXsbu2GMMBrZPxNv23waMg==}
@@ -20562,10 +20560,6 @@ packages:
       minimist: 1.2.8
       sander: 0.5.1
 
-  /sortablejs@1.15.2:
-    resolution: {integrity: sha512-FJF5jgdfvoKn1MAKSdGs33bIqLi3LmsgVTliuX6iITj834F+JRQZN90Z93yql8h0K2t0RwDPBmxwlbZfDcxNZA==}
-    dev: true
-
   /source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
     engines: {node: '>=0.10.0'}
@@ -21023,6 +21017,12 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /svelte-drag-drop-touch@0.1.9:
+    resolution: {integrity: sha512-DWAMC+6xBRkl5OuVR7ze+znSKERlX9t9cx4/kzoWOnPwLFvv4g8YTtQxmO8wfWfETi9qgg/cnw58gmhZKY9vyw==}
+    dependencies:
+      dragdroptouch-bug-fixed: 1.0.8
+    dev: false
+
   /svelte-eslint-parser@0.33.0(svelte@4.2.12):
     resolution: {integrity: sha512-5awZ6Bs+Tb/zQwa41PSdcLynAVQTwW0HGyCBjtbAQ59taLZqDgQSMzRlDmapjZdDtzERm0oXDZNE0E+PKJ6ryg==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -21055,6 +21055,10 @@ packages:
       postcss: 8.4.35
       postcss-scss: 4.0.7(postcss@8.4.35)
       svelte: 4.2.15
+    dev: false
+
+  /svelte-gestures@4.0.0:
+    resolution: {integrity: sha512-YrryRlKGY2CJm3AtEjFt9+RdQ7/pqNio4O7Apb9ed6oMBEkd6BFoOuv9mBApAEBIx08+iBDXQujbYCvakGePPw==}
     dev: false
 
   /svelte-hmr@0.15.3(svelte@4.2.0):

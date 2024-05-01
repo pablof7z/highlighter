@@ -18,7 +18,8 @@
             highlight={NDKHighlight.from(highlight)}
             skipHighlighter={true}
             scrollable={true}
-            class="py-4 bg-white/10 rounded-none max-h-[20vh] overflow-auto scrollbar-hide"
+            scrollIntoView={true}
+            class="p-4 bg-white/10 rounded-none max-h-[20vh] overflow-auto scrollbar-hide"
         />
         <NewPost
             kind={replyKind}

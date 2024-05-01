@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-	import { Hexpubkey, NDKUser } from '@nostr-dev-kit/ndk';
+	import { Hexpubkey, NDKHighlight, NDKUser } from '@nostr-dev-kit/ndk';
 	import AvatarWithName from './User/AvatarWithName.svelte';
     import { Avatar } from '@kind0/ui-common';
 	import HighlightIcon from '$icons/HighlightIcon.svelte';
@@ -34,7 +34,7 @@
                         z-[1]
                     "
                 />
-                <div class="absolute top-0 left-0 right-0 bottom-0 z-[2] bg-black bg-opacity-50 w-full h-full backdrop-blur-3xl"></div>
+                <div class="absolute top-0 left-0 right-0 bottom-0 z-[2] bg-black bg-opacity-50 w-full h-full backdrop-blur-3xl rounded-box"></div>
 
                 <div class="flex flex-col absolute z-[3] left-5 right-5 top-5 bottom-5">
                     <div class="relative w-full h-full rounded-box overflow-clip">

@@ -96,6 +96,8 @@
 		"sanitize-html": "^2.11.0",
 		"stripe": "^14.22.0",
 		"svelte-device-info": "^1.0.4",
+		"svelte-drag-drop-touch": "^0.1.9",
+		"svelte-gestures": "^4.0.0",
 		"svelte-infinite-scroll": "^2.0.1",
 		"svelte-inview": "^4.0.2",
 		"svelte-lightbox": "^1.1.1",

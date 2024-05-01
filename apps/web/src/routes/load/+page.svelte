@@ -2,8 +2,9 @@
     import { page } from '$app/stores';
 	import UrlView from '$components/UrlView.svelte';
     import { fetchArticle } from '$lib/article';
-	import { pageHeader } from '$stores/layout.js';
+	import { layoutMode, pageHeader, resetLayout } from '$stores/layout.js';
     import { NDKUser, type Hexpubkey } from '@nostr-dev-kit/ndk';
+	import { onDestroy } from 'svelte';
 
     export let data;
     const { text, contentType, title, articleUrl } = data;
@@ -35,6 +36,9 @@
     }
 
     $pageHeader = {};
+
+    $layoutMode = "content-focused";
+    onDestroy(resetLayout);
 </script>
 
 {#if text}

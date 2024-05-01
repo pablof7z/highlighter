@@ -17,7 +17,9 @@
 
     $: tagId = $page.params.tagId;
 
+    const origTitle = $pageHeader?.title;
     $pageHeader = {};
+
 
     $: $pageHeader = {
         left: {
@@ -25,7 +27,7 @@
             url: urlPrefix,
             icon: CaretLeft
         },
-        title: "Comments",
+        title: origTitle,
         right: {
             label: "New Comment",
             fn: () => {
@@ -38,12 +40,10 @@
 {#key tagId}
     <WithItem let:event bind:article bind:video bind:urlPrefix let:eventType>
         {#if event && (article || video) && eventType}
-            <ArticleBannerBackground article={article||video} />
-            <MainWrapper>
-                <EventResponses {event} class="max-sm:px-4" bind:showComment />
-            </MainWrapper>
-
             <ItemFooter {event} {urlPrefix} {eventType} />
+            <!-- <ArticleBannerBackground article={article||video} /> -->
+            
+                <EventResponses {event} class="max-sm:px-4" bind:showComment />
         {/if}
     </WithItem>
 {/key}

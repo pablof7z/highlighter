@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, preview } from '$stores/post-editor.js';
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
-	import { pageHeader } from "$stores/layout";
+	import { layoutMode, pageHeader } from "$stores/layout";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
     import { type as _type } from "$stores/post-editor";
 	import { getTierSelectionFromAllTiers } from '$lib/events/tiers';
@@ -15,6 +15,8 @@
     export let article: NDKArticle | undefined = undefined;
     export let video: NDKVideo | undefined = undefined;
     export let note: NDKEvent | undefined = undefined;
+
+    $layoutMode = 'full-width';
 
     onMount(() => {
         $view = 'edit';
