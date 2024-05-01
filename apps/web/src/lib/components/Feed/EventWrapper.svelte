@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CaretRight, ChatCircle, Lightning, Quotes } from 'phosphor-svelte';
+	import { BookmarkSimple, CaretRight, ChatCircle, Lightning, Quotes } from 'phosphor-svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { Avatar, Name, RelativeTime, ZapsButton, ndk } from "@kind0/ui-common";
 	import { Hexpubkey, NDKEvent, NDKFilter, NDKHighlight, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
@@ -180,19 +180,20 @@
 </script>
 
 <Swipe
-    leftOptions={[{
-        icon: ChatCircle,
-        cb: () => {
+    leftOptions={[
+        { icon: ChatCircle, class: "bg-accent2", cb: () => {
             showReply = true;
             willShowReply = true;
             autofocusNewPost = true;
-        }
-    }]}
+        } },
+        
+    ]}
 
-    rightOptions={[{
-        icon: Quotes,
-        cb: () => openModal(QuoteModal, { event })
-    }]}
+    rightOptions={[
+        { icon: Quotes, class: "bg-success", cb: () => openModal(QuoteModal, { event }) },
+        { icon: BookmarkSimple, class: "bg-orange-500", cb: () => {} },
+        { icon: Lightning, class: "bg-accent", cb: () => {} }
+    ]}
 
     handle=".footer"
 >

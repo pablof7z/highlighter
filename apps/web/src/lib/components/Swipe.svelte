@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { draggable, type DragOptions } from '@neodrag/svelte';
-	import { onMount, SvelteComponent } from 'svelte';
+	import { type SvelteComponent } from 'svelte';
+    import Device from 'svelte-device-info';
 
     type Option = {
-        icon: SvelteComponent;
+        icon: typeof SvelteComponent;
+        class?: string;
         cb: () => void;
     };
 
@@ -11,100 +12,31 @@
     export let rightOptions: Option[] = [];
     export let handle: string | undefined = undefined;
 
-    let position = { x: 0, y: 0 };
     let positionX = 0;
 
     let element: HTMLElement;
 
     let viewportWidth = window.innerWidth;
-    let triggerActionRequirement = viewportWidth / 3;
+    let triggerActionRequirement = viewportWidth / 4;
 
     if (triggerActionRequirement > 100) { triggerActionRequirement = 100; }
 
-    // function onDragStart({ offsetX, offsetY }) {
-    //     // disable selection in the element
-    //     document.body.style.userSelect = 'none';
-
-    //     // disable click events on the element
-    //     element.style.pointerEvents = 'none';
-
-    //     // set z-index to 9999
-    //     element.style.zIndex = '9999';
-
-    //     // enable vertical scrolling on touch devices so that the user can scroll the page
-    //     element.style.touchAction = 'pan-y';
-
-
-        
-    // }
-
-    // function onDrag({ offsetX, offsetY }) {
-    //     if (offsetX > triggerActionRequirement) {
-    //         offsetX = triggerActionRequirement;
-    //     } else if (offsetX < -triggerActionRequirement) {
-    //         offsetX = -triggerActionRequirement;
-    //     }
-
-    //     position = { x: offsetX, y: 0 };
-    // }
-
-    // const resetPosition = (p = 0) => position = { x: p, y: 0 };
-
-    // function onDragEnd({ offsetX, offsetY }) {
-    //     document.body.style.userSelect = 'auto';
-    //     element.style.pointerEvents = 'auto';
-    //     element.style.zIndex = 'auto';
-        
-    //     const movingLeft = offsetX > 0;
-
-    //     if (movingLeft) {
-    //         const exactlyOneOption = leftOptions.length === 1;
-    //         const somethingShouldTrigger = offsetX >= triggerActionRequirement;
-
-    //         if (exactlyOneOption && somethingShouldTrigger) {
-    //             leftOptions[0].cb();
-    //             resetPosition();
-    //         } else if (somethingShouldTrigger) {
-    //             // set position so that all options are visible
-    //             const lastOption = leftOptions[leftOptions.length - 1];
-    //             const pos = triggerActionRequirement * leftOptions.length;
-    //             resetPosition(pos);
-    //         } else {
-    //             resetPosition();
-    //         }
-    //     } else {
-    //         const exactlyOneOption = rightOptions.length === 1;
-    //         const somethingShouldTrigger = offsetX <= -triggerActionRequirement;
-
-    //         if (exactlyOneOption && somethingShouldTrigger) {
-    //             rightOptions[0].cb();
-    //             resetPosition();
-    //         } else if (somethingShouldTrigger) {
-    //             // set position so that all options are visible
-    //             const lastOption = rightOptions[rightOptions.length - 1];
-    //             const pos = -triggerActionRequirement * rightOptions.length;
-    //             resetPosition(pos);
-    //         } else {
-    //             resetPosition();
-    //         }
-    //     }
-    // }
-
-            // if (offsetX < triggerActionRequirement) {
-                // return to original position
-                // element.classList.add('animate-transform', 'duration-100');
-                // element.style.transform = 'translateX(0)';
-                // setTimeout(() => {
-                    // element.classList.remove('animate-transform', 'duration-100');
-                    // position = { x: 0, y: offsetY };
-                // }, 100);
-            // } else {
-            //     offset = triggerActionRequirement;
-            // }
-    
+    // Is the user dragging the element?
     let dragging = false;
+
+    // The x position of the touch start
     let startX = 0;
+
+    // The y position of the touch start
     let startY = 0;
+
+    let absOffsetX = 0;
+
+    // Is the user swiping left?
+    let goingLeft = false;
+
+    let leftOptionWidth = 0;
+    let rightOptionWidth = 0;
 
     $: if (element) {
         if (positionX !== 0) {
@@ -113,15 +45,19 @@
             element.style.transform = "";
         }
     }
-    
-    function onTouchStart(event) {
+
+    const maxSwipe = {
+        left: leftOptions.length * triggerActionRequirement,
+        right: rightOptions.length * triggerActionRequirement
+    }
+
+    function onTouchStart(event: TouchEvent) {
         dragging = true;
-        startX = event.touches[0].clientX;
+        startX = event.touches[0].clientX - positionX;
         startY = event.touches[0].clientY;
     }
 
-    function isValidDragging(offsetX, offsetY) {
-        const goingLeft = offsetX > 0;
+    function isValidDragging(offsetX: number, offsetY: number) {
         let moduloDiff = Math.abs(offsetX) % Math.abs(offsetY);
 
         if (moduloDiff > 10) {
@@ -129,10 +65,10 @@
         }
 
         if (goingLeft && offsetY > offsetX) {
-            positionX = 0;
+            updatePosition(0);
             return false;
         } else if (!goingLeft && offsetY < offsetX) {
-            positionX = 0;
+            updatePosition(0);
             return false;
         }
 
@@ -141,13 +77,14 @@
 
     const threshold = 20; // don't render the options if the user is scrolling
 
-    function onTouchMove(event) {
+    function onTouchMove(event: TouchEvent) {
         if (dragging) {
             let xOffset = event.touches[0].clientX - startX;
             let yOffset = event.touches[0].clientY - startY;
-            const goingLeft = xOffset > 0;
+            goingLeft = xOffset > 0;
+            absOffsetX = Math.abs(xOffset);
             
-            if (Math.abs(xOffset) < threshold) {
+            if (absOffsetX < threshold) {
                 positionX = 0;
                 return;
             }
@@ -156,114 +93,123 @@
                 return;
             }
             
-            positionX = xOffset;
-
             // the larger the difference is in the y direction, the more x trends towards 0
 
             // limit the x offset to the triggerActionRequirement
-            if (goingLeft && xOffset > triggerActionRequirement) {
-                xOffset = triggerActionRequirement;
-            } else if (!goingLeft && xOffset < -triggerActionRequirement) {
-                xOffset = -triggerActionRequirement;
-            }
-
-            positionX = xOffset;
+            updatePosition(xOffset);
         }
     }
 
-    function onTouchEnd(event) {
+    function updatePosition(xOffset: number) {
+        absOffsetX = Math.abs(xOffset);
+        if (goingLeft && absOffsetX > maxSwipe.left) {
+            absOffsetX = maxSwipe.left;
+        } else if (!goingLeft && absOffsetX > maxSwipe.right) {
+            absOffsetX = maxSwipe.right;
+        }
+
+        if (goingLeft) {
+            leftOptionWidth = absOffsetX;
+            rightOptionWidth = 0;
+            positionX = absOffsetX;
+        } else {
+            rightOptionWidth = absOffsetX;
+            leftOptionWidth = 0;
+            positionX = -absOffsetX;
+        }
+    }
+
+    function onTouchEnd(event: TouchEvent) {
         dragging = false;
         const offsetX = event.changedTouches[0].clientX - startX;
         const offsetY = event.changedTouches[0].clientY - startY;
-        const goingLeft = offsetX > 0;
+        goingLeft = offsetX > 0;
+        absOffsetX = Math.abs(offsetX);
 
         if (!isValidDragging(offsetX, offsetY)) {
             return;
         }
 
+        const somethingShouldTrigger = absOffsetX >= triggerActionRequirement;
+
         if (goingLeft) {
             const exactlyOneOption = leftOptions.length === 1;
-            const somethingShouldTrigger = offsetX >= triggerActionRequirement;
+            const closerToFullThanZero = absOffsetX > maxSwipe.left / 2;
 
             if (exactlyOneOption && somethingShouldTrigger) {
                 leftOptions[0].cb();
-                positionX = 0;
-            } else if (somethingShouldTrigger) {
-                // set position so that all options are visible
-                const lastOption = leftOptions[leftOptions.length - 1];
+                updatePosition(0);
+            } else if (closerToFullThanZero) {
                 const pos = triggerActionRequirement * leftOptions.length;
-                positionX = pos;
+                updatePosition(pos);
             } else {
-                positionX = 0;
+                updatePosition(0);
             }
         } else {
             const exactlyOneOption = rightOptions.length === 1;
-            const somethingShouldTrigger = offsetX <= -triggerActionRequirement;
+            const closerToFullThanZero = absOffsetX > maxSwipe.right / 2;
 
             if (exactlyOneOption && somethingShouldTrigger) {
                 rightOptions[0].cb();
-                positionX = 0;
-            } else if (somethingShouldTrigger) {
-                // set position so that all options are visible
-                const lastOption = rightOptions[rightOptions.length - 1];
+                updatePosition(0);
+            } else if (closerToFullThanZero) {
                 const pos = -triggerActionRequirement * rightOptions.length;
-                positionX = pos;
+                updatePosition(pos);
             } else {
-                positionX = 0;
+                updatePosition(0);
             }
         }
     }
 </script>
 
+{#if Device.isPhone}
 <div class="w-full relative">
-    <div class="absolute left-0 top-0 bottom-0 flex flex-row overflow-clip" style={`
-        width: ${positionX}px;
+    <div class="options-wrapper left-0" style={`
+        width: ${leftOptionWidth}px;
+        opacity: ${(absOffsetX / triggerActionRequirement)};
     `}>
         {#each leftOptions as opt, i}
-            <div
-                class="min-w-[5rem] min-h-10 h-full bg-accent2 text-white absolute left-0 top-0 bottom-0 flex flex-row items-center overflow-clip"
-                style={`
-                    opacity: ${0 + (positionX / triggerActionRequirement)};
-                    width: ${triggerActionRequirement}px;
-                    max-width: 5px !important
-                `}
+            <button
+                on:click={() => { updatePosition(0); opt.cb() }}
+                class="option {opt.class??""}"
+                style={`width: ${triggerActionRequirement}px;`}
             >
-                    <svelte:component this={opt.icon} class="m-4 w-32 h-32" />
-            </div>
+                <svelte:component this={opt.icon} class="w-12 h-12 !text-white" />
+            </button>
         {/each}
     </div>
     <div style="
         touch-action: pan-y;
-    " bind:this={element} on:touchstart={onTouchStart} on:touchmove={onTouchMove} on:touchend={onTouchEnd}>
+    " bind:this={element} on:touchstart={onTouchStart} on:touchmove|passive={onTouchMove} on:touchend|passive={onTouchEnd}>
         <slot />
     </div>
-    <!-- <div
-        style="touch-action: pan-y;"
-        bind:this={element}
-        use:draggable={{
-            position,
-            onDragStart,
-            onDrag,
-            onDragEnd,
-            axis: 'x'
-        }}
-    >
-        <slot />
-    </div> -->
-    <div class="absolute right-0 top-0 bottom-0 flex flex-row overflow-clip" style={`
-        width: ${-positionX}px;
+    <div class="options-wrapper right-0" style={`
+        width: ${rightOptionWidth}px;
+        opac_ity: ${(absOffsetX / triggerActionRequirement)};
     `}>
-        {#each rightOptions as opt, i}
-            <div
-                class="min-w-[5rem] min-h-10 h-full bg-green-700 absolute right-0 top-0 bottom-0 flex flex-row items-center overflow-clip"
-                style={`
-                    opacity: ${0 - (positionX / triggerActionRequirement)};
-                    width: ${triggerActionRequirement}px;
-                    max-width: 5px !important
-                `}
+        {#each rightOptions as opt, i}  
+            <button
+                on:click={() => { updatePosition(0); opt.cb() }}
+                class="option {opt.class??""}"
+                style={`width: ${triggerActionRequirement}px;`}
             >
-                    <svelte:component this={opt.icon} class="m-4 w-32 h-32" />
-            </div>
+                <svelte:component this={opt.icon} class="w-12 h-12 !text-white" />
+            </button>
         {/each}
     </div>
 </div>
+{:else}
+    <slot />
+{/if}
+
+<style lang="postcss">
+    .options-wrapper {
+        @apply absolute top-0 bottom-0 flex flex-row items-stretch overflow-clip;
+        min-height: 32px;
+    }
+
+    button.option {
+        @apply h-full flex-none flex flex-row items-center justify-center overflow-clip;
+        min-width: 5rem;
+    }
+</style>

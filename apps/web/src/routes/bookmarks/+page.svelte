@@ -22,6 +22,5 @@
 </script>
 
 {#key value}
-{value}
     <BookmarkFeed type={value} />
 {/key}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { layoutNavState, mainAlign, pageHeader, pageMainContentMaxWidth, pageNavigationOptions, resetLayout } from "$stores/layout";
+	import { layoutNavState, mainAlign, pageHeader, pageMainContentMaxWidth, resetLayout } from "$stores/layout";
 	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter, NDKEvent, NDKTag, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";

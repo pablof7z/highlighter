@@ -1,19 +1,14 @@
 <script lang="ts">
-	import MainWrapper from './../Page/MainWrapper.svelte';
 	import { contentCentricLayout, layoutMode } from '$stores/layout.js';
     import { pageSidebar, pageHeader, sidebarPlacement, modalState, layoutMaxWidth, layoutAlign, layoutNavState, pageMainContentMaxWidth, mainAlign, detailView } from "$stores/layout";
-	import { loginState } from '$stores/session';
 	import { Toaster, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
     import { Modals, closeModal } from 'svelte-modals'
-	import { fade, slide } from 'svelte/transition';
-	import Navigation from "./Navigation.svelte";
-	import SectionHeader from "./SectionHeader.svelte";
+	import { fade } from 'svelte/transition';
 	import { page } from "$app/stores";
-	import SectionHeaderWithButtons from "./SectionHeaderWithButtons.svelte";
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
-	import LayoutHeader from "./AppShell/LayoutHeader.svelte";
 	import PageNavigation from "./AppShell/PageNavigation.svelte";
 	import LayoutDetailView from "./AppShell/LayoutDetailView.svelte";
+	import LayoutHeader from './AppShell/LayoutHeader.svelte';
 
 	let showSectionHeaderWithButtons = false;
 
@@ -63,9 +58,10 @@
 
 	$: switch ($layoutMode) {
 		case 'full-width':
+			$layoutNavState = 'collapsed';
 			layoutWrapper = "w-full";
 			mainAndDetailWrapper = "max-w-none w-full";
-			navWrapper = "sm:left-0 fixed";
+			navWrapper = "sm:left-0 sticky";
 			mainWrapper = "w-full";
 			break;
 		case 'centered-feed-column':
@@ -120,7 +116,7 @@
 
 	max-w-screen overflow-x-clip
 ">
-	<!-- <LayoutHeader class={mainAndDetailWrapper} /> -->
+	<LayoutHeader class={mainAndDetailWrapper} />
 
 	<div class="
 		flex flex-row items-stretch justify-center h-full _border border-yellow-500

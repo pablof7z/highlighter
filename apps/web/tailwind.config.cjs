@@ -14,7 +14,13 @@ module.exports = {
 			},
 			width: {
 				sidebar: '244px',
-				main: '700px'
+				main: '700px',
+
+				'navbar-collapsed': 'var(--navbar-collapsed, 80px)',
+				'navbar-icon': 'var(--navbar-icon, 32px)'
+			},
+			height: {
+				'navbar-icon': 'var(--navbar-icon, 32px)'
 			},
 			spacing: {
 				116: '29rem',

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { UserProfileType } from './../../../../app.d.ts';
 	import { layoutNavState } from "$stores/layout";
     import OptionsList from "$components/OptionsList.svelte";
 	import { Bell, BookmarkSimple, Fire, Gear, House, PaperPlaneTilt, SquaresFour } from "phosphor-svelte";
@@ -7,6 +8,8 @@
 	import NewItemModal from "$modals/NewItemModal.svelte";
     import currentUser from "$stores/currentUser";
 	import CurrentUser from "$components/CurrentUser.svelte";
+	import UserProfile from "$components/User/UserProfile.svelte";
+	import { page } from '$app/stores';
 
     function toggle() {
         if ($layoutNavState === "collapsed") {
@@ -17,7 +20,7 @@
     }
 
     let layoutNavWidth: string;
-    $: layoutNavWidth = $layoutNavState === "collapsed" ? "w-20" : "pl-6";
+    $: layoutNavWidth = $layoutNavState === "collapsed" ? "w-navbar-collapsed" : "pl-6";
 
     const options: NavigationOption[] = [
         { name: "Home", icon: House, href: "/home" },
@@ -26,11 +29,32 @@
         { name: "Notifications", icon: Bell, href: "/home/for-you"},
         { name: "Publish", icon: PaperPlaneTilt, fn: () => openModal(NewItemModal) },
     ]
+    
+    let bottomOptions: NavigationOption[] = [];
+    let profile: UserProfileType;
+    let authorUrl: string;
+    
+    $: {
+        let userName: string | undefined;
 
-    const bottomOptions: NavigationOption[] = [
-        { name: "Settings", icon: Gear, href: "/settings" },
-    ]
+        if (!$currentUser) {
+            userName = "Sign Up";
+        } else if (profile) {
+            userName = profile.display_name || profile?.displayName || profile.name;
+        }
+
+        userName ??= "You";
+        
+        bottomOptions = [
+            { name: "Settings", icon: Gear, href: "/settings" },
+            { name: userName, icon: CurrentUser, href: authorUrl ?? '/settings' }
+        ]
+    }
 </script>
+
+{#if $currentUser}
+    <UserProfile bind:userProfile={profile} bind:authorUrl user={$currentUser} />
+{/if}
 
 <div class="
     flex flex-col
@@ -48,18 +72,18 @@
 ">
     <!-- Mobile view -->
     <div class="btm-nav sm:hidden fixed z-[500] !bg-black">
-        <a href="/home">
-            <House class="w-8 h-8" />
+        <a href="/home" class:active={$page.url.pathname.startsWith('/home')}>
+            <House class="w-navbar-icon h-navbar-icon" />
         </a>
-        <a href="/bookmarks">
-            <BookmarkSimple class="w-8 h-8" />
+        <a href="/bookmarks" class:active={$page.url.pathname.startsWith('/bookmarks')}>
+            <BookmarkSimple class="w-navbar-icon h-navbar-icon" />
         </a>
-        <a href="/">
-            <Fire class="w-8 h-8" />
+        <a href="/" class:active={$page.url.pathname === '/'}>
+            <Fire class="w-navbar-icon h-navbar-icon" />
         </a>
         {#if $currentUser}
-            <a href="/home/for-you">
-                <Bell class="w-8 h-8" />
+            <a href="/home/for-you" class:active={$page.url.pathname.startsWith('/home/for-you')}>
+                <Bell class="w-navbar-icon h-navbar-icon" />
             </a>
         {:else}
             <CurrentUser />
@@ -74,7 +98,7 @@
         <OptionsList {options} class="flex-col w-full" collapsed={$layoutNavState === 'collapsed'} />
     </div>
 
-    <div class="flex flex-col fixed bottom-0 max-sm:hidden">
+    <div class="flex flex-col fixed bottom-0 max-sm:hidden items-center pb-6">
         <OptionsList options={bottomOptions} class="flex-col w-full" collapsed={$layoutNavState === 'collapsed'} />
     </div>
 </div>

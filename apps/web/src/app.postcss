@@ -13,6 +13,14 @@
 		--tw-prose-quote-borders: #ff0000;
 
 		--layout-header-height: 48px;
+
+		/* Navbar */
+		--navbar-collapsed: 80px;
+
+		--navbar-icon-size: 32px;
+		@media (min-width: 640px) {
+			--navbar-icon: 40px;
+		}
 	}
 
 	body {
@@ -25,6 +33,15 @@
 	body > div {
 		font-family: Inter;
 		min-height: 100%;
+	}
+
+	/* Navbar */
+	.btm-nav > * {
+		@apply border-t-4 !border-base-100;
+	}
+	
+	.btm-nav > *:where(.active) {
+		@apply text-white !border-t-4 !border-accent2;	
 	}
 
 	.button {

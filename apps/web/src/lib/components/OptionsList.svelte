@@ -23,11 +23,7 @@
         max-sm:scrollbar-hide
     ">
         {#each options as option (option.id ?? option.name)}
-            {#if option.name === '-------'}
-                <div class="
-                    w-0.5 h-6 lg:w-full lg:h-[1px] bg-base-300 mx-2 my-0
-                "></div>
-            {:else if option.component}
+            {#if option.component}
                 <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 p-1.5 items-center">
                     <div class="rounded-full p-[2px]" class:text-white={value === (option.value || option.name)}>
                         <svelte:component

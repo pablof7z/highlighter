@@ -20,7 +20,6 @@
 	import CurationItem from '$components/CurationItem.svelte';
 
     $layoutNavState = "collapsed";
-    $layoutMaxWidth = "max-w-none";
     $layoutMode = "full-width";
 
     onDestroy(resetLayout)
@@ -214,7 +213,6 @@
     {/if}
 </svelte:head>
 
-<MainWrapper marginClass="w-full" mobilePadded={false}>
     {#if eventsForRender && $eventsForRender}
         <div class="flex flex-col gap-6 w-full">
             <ExploreFilters bind:value={filter} bind:typeFilter={$typeFilter} bind:filters />
@@ -260,4 +258,3 @@
             </div>
         </div>
     {/if}
-</MainWrapper>
