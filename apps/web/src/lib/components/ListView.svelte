@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { detailView, layoutAlign, layoutMaxWidth, layoutNavState, mainAlign, pageHeader, pageMainContentMaxWidth, pageSidebar } from "$stores/layout";
+	import { detailView, pageHeader, pageSidebar } from "$stores/layout";
 	import { NDKList, type NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
     import ListSidebar from "$components/PageSidebar/List.svelte";
 	import { page } from '$app/stores';

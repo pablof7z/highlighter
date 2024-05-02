@@ -58,6 +58,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	$ndk.addExplicitRelay('wss://relay.damus.io', undefined, false);
 	$ndk.addExplicitRelay('wss://njump.me', undefined, false);
 	$ndk.addExplicitRelay('wss://relay.nostr.band', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.highlighter.com', undefined, false);
 
 	// $ndk.connect(2000);
 

@@ -5,7 +5,7 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
-	import { layoutNavState, pageHeader, pageHeaderComponent, pageNavigationOptions } from '$stores/layout';
+	import { pageHeader, pageHeaderComponent, pageNavigationOptions } from '$stores/layout';
 	import type { UserProfileType } from '../../../app';
 	import CreatorHeader from "./CreatorHeader.svelte";
 	import { Article, BookmarkSimple, Notepad } from "phosphor-svelte";
@@ -46,8 +46,6 @@
 
     let userProfile: UserProfileType | undefined = undefined;
 
-    let activeTab: string = "Publications";
-
     $: $pageHeader = {}
 
     let authorUrl: string;
@@ -56,8 +54,6 @@
     let hasCurations = false;
     let hasHighlights = false;
     let hasPublications = false;
-
-    $layoutNavState = "normal";
 
     $: {
         $pageNavigationOptions = [];
@@ -93,11 +89,5 @@
 <UserProfile {user} bind:userProfile bind:fetching bind:authorUrl />
 
 <slot />
-
-    <!-- <div slot="right" class="xl:w-1/5 hidden xl:block grow pt-10">
-        <CreatorShellSidebar {user} {userSupporters} />
-    </div> -->
-
-<!-- <CreatorFooter {user} tiers={userTiers} userSupporters={userSupporters} /> -->
 
 <div class="hidden bg-black/90 w-14 h-14 w-28 h-28"></div>

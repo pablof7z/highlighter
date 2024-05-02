@@ -15,8 +15,8 @@
 	import ListView from "$components/ListView.svelte";
 	import { goto } from "$app/navigation";
 	import ArticleView from "$components/ArticleView.svelte";
-	import { layoutNavState, layoutMaxWidth, pageHeader, pageNavigationOptions, mainAlign, contentCentricLayout, layoutMode, resetLayout } from "$stores/layout";
-	import { CaretLeft, ChatCircle, Lightning, MediumLogo } from "phosphor-svelte";
+	import { pageHeader } from "$stores/layout";
+	import { CaretLeft, Lightning } from "phosphor-svelte";
 	import Highlight from "$components/Highlight.svelte";
 	import { openModal } from "svelte-modals";
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";

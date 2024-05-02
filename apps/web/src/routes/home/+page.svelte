@@ -15,12 +15,6 @@
         searchBar: true
     }
 
-    $layoutNavState = 'normal';
-    $pageMainContentMaxWidth = 'max-w-3xl';
-    $mainAlign = "center";
-
-    onDestroy(resetLayout);
-
     let highlightFilters: NDKFilter[];
 
     $: {

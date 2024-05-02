@@ -132,9 +132,6 @@
             {:else if event.kind === NDKKind.Highlight}
                 <Highlight
                     highlight={NDKHighlight.from(event)}
-                    position={i}
-                    mostRecentActivity={perNoteLatestActivity.get(event.id)}
-                    skipReply={true}
                 />
             {:else}
                 <ForumFeedItem
@@ -147,7 +144,7 @@
         {/each}
     </div>
 
-    <button class="button" on:click={() => { renderLimit++; }} use:inview on:inview_change={(e) => {
+    <button class="opacity-0 h-0" on:click={() => { renderLimit++; }} use:inview on:inview_change={(e) => {
         if (e.detail.inView) {
             renderLimit += 10;
         }

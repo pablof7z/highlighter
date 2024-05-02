@@ -9,9 +9,6 @@ type LayoutMode = "centered-feed-column" | "content-focused" | "full-width" | "r
 export const layoutMode = writable<LayoutMode>("centered-feed-column");
 
 export const layoutNavState = writable<"normal" | "collapsed">("normal");
-export const layoutAlign = writable<"left" | "center" | "right">("center");
-export const layoutMaxWidth = writable<string | null>(null);
-export const contentCentricLayout = writable<boolean>(false);
 
 export const pageHeaderComponent = writable<Component | null>(null);
 
@@ -35,16 +32,16 @@ export const hideMobileBottomBar: Writable<boolean> = writable(false);
 
 export const detailView: Writable<Component | null> = writable(null);
 
+export const pageHeader = writable<PageHeader | null>(null);
+
 export function resetLayout() {
 	layoutMode.set("centered-feed-column");
 	layoutNavState.set("normal");
-	layoutAlign.set("center");
-	layoutMaxWidth.set(null);
 	pageHeaderComponent.set(null);
 	pageNavigationOptions.set([]);
+	pageHeader.set(null);
 	mainAlign.set("left");
 	pageMainContentMaxWidth.set(undefined);
-	contentCentricLayout.set(false);
 	detailView.set(null);
 }
 
@@ -98,8 +95,6 @@ export type PageHeader = {
 		fn?: () => void;
 	};
 };
-
-export const pageHeader = writable<PageHeader | null>(null);
 
 export const mainWrapperMargin = writable<string | null>(null);
 export const sectionHeaderMargin = writable<string | null>(null);

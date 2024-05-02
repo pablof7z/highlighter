@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { contentCentricLayout, layoutMode } from '$stores/layout.js';
-    import { pageSidebar, pageHeader, sidebarPlacement, modalState, layoutMaxWidth, layoutAlign, layoutNavState, pageMainContentMaxWidth, mainAlign, detailView } from "$stores/layout";
-	import { Toaster, pageDrawerToggle, rightSidebar, user } from '@kind0/ui-common';
+	import { layoutMode } from '$stores/layout.js';
+    import { modalState, layoutNavState, detailView } from "$stores/layout";
+	import { Toaster, pageDrawerToggle } from '@kind0/ui-common';
     import { Modals, closeModal } from 'svelte-modals'
 	import { fade } from 'svelte/transition';
 	import { page } from "$app/stores";
@@ -28,27 +28,6 @@
 	let checked: boolean;
 
 	$: checked = $pageDrawerToggle;
-
-	/**
-	 * The max width of the layout is either explicit or calculated
-	 * based on the size of the navbar and the presence of a sidebar
-	 */
-	let layoutEffectiveMaxWidth: string;
-	$: if ($layoutMaxWidth) {
-		layoutEffectiveMaxWidth = $layoutMaxWidth;
-	} else {
-		if (!$detailView) {
-			if ($pageMainContentMaxWidth) {
-				layoutEffectiveMaxWidth = $pageMainContentMaxWidth;
-			} else if ($layoutNavState === "collapsed") {
-				layoutEffectiveMaxWidth = "max-w-7xl";
-			} else {
-				layoutEffectiveMaxWidth = "max-w-7xl";
-			}
-		} else {
-			layoutEffectiveMaxWidth = "max-w-none";
-		}
-	}
 
 	let layoutWrapper: string;
 	let navWrapper: string;

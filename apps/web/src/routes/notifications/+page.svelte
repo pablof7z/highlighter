@@ -1,10 +1,28 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser';
 	import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
-	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 	import { pageMainContentMaxWidth } from '$stores/layout';
+	import { lastSeenTimestamp } from '$stores/notifications';
+	import StoreFeed from '$components/Feed/StoreFeed.svelte';
+	import { ndk } from '@kind0/ui-common';
+	import { derived } from 'svelte/store';
+	import { onDestroy, onMount } from 'svelte';
 
     $pageMainContentMaxWidth = 'max-w-3xl';
+    let timeout: any;
+
+    let originalLastSeenTimestamp = $lastSeenTimestamp;
+
+    onMount(() => {
+        setTimeout(() => {
+            $lastSeenTimestamp = Math.floor(new Date().getTime() / 1000);
+            timeout = undefined;
+        }, 0);
+    })
+
+    onDestroy(() => {
+        if (timeout) clearTimeout(timeout);
+    })
 
     const filters: NDKFilter[] = [
         {
@@ -13,9 +31,44 @@
             limit: 100
         }
     ]
+
+    export let feed = $ndk.storeSubscribe(filters);
+
+    let showEventsOlderThan: Date | undefined = undefined;
+
+    feed.onEose(() => {
+        showEventsOlderThan = new Date();
+    });
+
+    const unreadNotifications = derived(feed, $feed => {
+        if (!originalLastSeenTimestamp) return $feed;
+        else return $feed.filter(event => event.created_at! > originalLastSeenTimestamp);
+    });
+
+    const readNotifications = derived(feed, $feed => {
+        if (!originalLastSeenTimestamp) return [];
+        else return $feed.filter(event => event.created_at! <= originalLastSeenTimestamp);
+    });
 </script>
 
-<FilterFeed {filters} />
+{#if $unreadNotifications.length > 0}
+    <StoreFeed
+        feed={unreadNotifications}
+        bind:showEventsOlderThan
+        on:click
+    />
+    {#if $readNotifications.length > 0}
+        <div class="divider divider-base-300 text-xs text-base-300-content">READ NOTIFICATIONS</div>
+    {/if}
+{/if}
+
+{#if $readNotifications.length > 0}
+    <StoreFeed
+        feed={readNotifications}
+        bind:showEventsOlderThan
+        on:click
+    />
+{/if}
 
 <!-- <LoadingScreen ready={!!mounted && !!$user}>
     <MainWrapper class="flex flex-col gap-10">

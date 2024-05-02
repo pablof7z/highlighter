@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { UserProfileType } from './../../../../app.d.ts';
+	import User from './../../PageSidebar/OnboardingCheckingIcons/User.svelte';
+	import { UserProfileType } from './../../../../app.d.js';
 	import { layoutNavState } from "$stores/layout";
     import OptionsList from "$components/OptionsList.svelte";
 	import { Bell, BookmarkSimple, Chalkboard, ChalkboardSimple, Fire, Gear, House, PaperPlaneTilt, SquaresFour, Timer } from "phosphor-svelte";
@@ -12,6 +13,7 @@
 	import { page } from '$app/stores';
 	import Logo from '$icons/Logo.svelte';
 	import LogoSmall from '$icons/LogoSmall.svelte';
+	import { hasUnreadNotifications, unreadNotifications } from '$stores/notifications';
 
     function toggle() {
         if (collapsed) {
@@ -31,10 +33,13 @@
     const options: NavigationOption[] = [
         { name: "Home", icon: House, href: "/home" },
         { name: "Bookmarks",  href: "/bookmarks", icon: BookmarkSimple },
-        { name: "Discover",  href: "/", icon: Fire },
-        { name: "Notifications", icon: Bell, href: "/notifications"},
+        { name: "Creators",  href: "/creators", icon: User },
+        { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined },
+        { name: "Settings", icon: Gear, href: "/settings" },
         { name: "Publish", icon: PaperPlaneTilt, fn: () => openModal(NewItemModal) },
     ]
+
+    $: options[3] = { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined };
     
     let bottomOptions: NavigationOption[] = [];
     let profile: UserProfileType;
@@ -52,6 +57,8 @@
         userName ??= "You";
         
         bottomOptions = [
+            { name: "Schedule", icon: Timer, href: "/schedule" },
+            { name: "Drafts", icon: ChalkboardSimple, href: "/drafts" },
             { name: "Settings", icon: Gear, href: "/settings" },
             { name: userName, icon: CurrentUser, href: authorUrl ?? '/settings' }
         ]
@@ -89,7 +96,12 @@
         </a>
         {#if $currentUser}
             <a href="/notifications" class:active={$page.url.pathname.startsWith('/notifications')}>
-                <Bell class="w-navbar-icon h-navbar-icon" />
+                <div class="indicator">
+                    {#if $hasUnreadNotifications}
+                        <span class="indicator-item w-2 h-2 bg-accent2"></span>
+                    {/if}
+                    <Bell class="w-navbar-icon h-navbar-icon" />
+                </div>
             </a>
         {:else}
             <CurrentUser />
@@ -103,26 +115,18 @@
         sm:pr-6
     ">
         <div class="h-[var(--layout-header-height)] flex items-center justify-center fixed top-0 z-[99999]">
-            {#if !collapsed}
-                <Logo class="w-40" />
-            {:else}
-                <LogoSmall class="w-10 m-4" />
-            {/if}
+            <Logo class="w-40 hidden {collapsed ? "" : "lg:inline"}" />
+            <LogoSmall class="w-10 m-4 {collapsed ? "" : "lg:hidden"}" />
         </div>
 
         <div class="h-[var(--layout-header-height)] mb-6"></div>
         
         <OptionsList {options} class="flex-col w-full" {collapsed} />
-
-        <div class="divider my-0"></div>
-
-        <OptionsList class="flex-col w-full" options={[
-            { name: "Schedule", icon: Timer, href: "/schedule" },
-            { name: "Drafts", icon: ChalkboardSimple, href: "/drafts" },
-        ]} {collapsed} />
     </div>
 
-    <div class="flex flex-col fixed bottom-0 max-sm:hidden items-center pb-6">
+    <div
+        class="flex flex-col fixed bottom-0 max-sm:hidden items-center pb-6"
+    >
         <OptionsList options={bottomOptions} class="flex-col w-full" {collapsed} />
     </div>
 </div>

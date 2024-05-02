@@ -165,6 +165,27 @@
 	}
 }
 
+@layer utilities {
+    @variants responsive {
+        .masonry {
+            column-gap: 0.1rem;
+            column-count: 1;
+        }
+        .masonry-sm {
+            column-gap: 0.1rem;
+            column-count: 2;
+        }
+        .masonry-md {
+            column-gap: 0.1rem;
+            column-count: 2;
+        }
+        .break-inside {
+            break-inside: avoid;
+        }
+
+    }
+}
+
 .highlight--reference {
 	@apply hidden;
 }

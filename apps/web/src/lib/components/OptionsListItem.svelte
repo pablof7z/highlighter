@@ -2,6 +2,7 @@
     import { CrownSimple } from "phosphor-svelte";
 	import { page } from "$app/stores";
 	import { NavigationOption } from "../../app";
+	import { unreadNotifications } from "$stores/notifications";
 
     export let option: NavigationOption;
     export let value: string;
@@ -51,6 +52,10 @@
     class:active={active}
 >
     {#if option.icon}
+        <div class="indicator">
+            {#if option.badge}
+                <span class="indicator-item rounded-full bg-accent2 text-white flex items-center justify-center text-xs w-5 h-5">{$unreadNotifications}</span>
+            {/if}
         <svelte:component this={option.icon}
             class="
                 flex-none
@@ -64,8 +69,9 @@
             "
             weight="light"
         />
+        </div>
     {/if}
-    <span class="sm:hidden
+    <span class="sm:hidden flex flex-row items-center
     {collapsed ?
         "group-hover:inline group-hover:absolute group-hover:pl-12 group-hover:bg-base-200 group-hover:text-white group-hover:px-6 group-hover:py-2 group-hover:rounded-full group-hover:z-[19]"
         :

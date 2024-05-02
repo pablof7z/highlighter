@@ -21,6 +21,7 @@ import { filterValidPTags } from '$utils/event';
 import currentUser from './currentUser';
 import { writable } from 'svelte/store';
 import { creatorRelayPubkey } from '$utils/const';
+import { notificationsSubscribe } from './notifications';
 
 const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
@@ -183,9 +184,11 @@ export async function prepareSession(): Promise<void> {
 				NDKKind.BookmarkList,
 			]
 		}).then(() => {
-			const $currentUser = getStore(userFollows);
+			const $currentUserFollows = getStore(userFollows);
 
 			resolve();
+
+			notificationsSubscribe($ndk, $currentUser);
 
 			const $networkFollows = get(networkFollows);
 			const $networkFollowsUpdatedAt = get(networkFollowsUpdatedAt);
@@ -194,14 +197,14 @@ export async function prepareSession(): Promise<void> {
 			if ($networkFollows.size < 1000 || $networkFollowsUpdatedAt < twoWeeksAgo) {
 				const kind3RelaySet = NDKRelaySet.fromRelayUrls(["wss://purplepag.es"], $ndk);
 
-				fetchData('wot', $ndk, Array.from($currentUser), {
+				fetchData('wot', $ndk, Array.from($currentUserFollows), {
 					followsStore: networkFollows,
 					closeOnEose: true
 				}, kind3RelaySet).then(() => {
 					networkFollowsUpdatedAt.set(Math.floor(Date.now() / 1000));
 				})
 
-				fetchData('network-support', $ndk, Array.from($currentUser), {
+				fetchData('network-support', $ndk, Array.from($currentUserFollows), {
 					supportStore: networkSupport,
 					closeOnEose: true
 				}, getDefaultRelaySet())

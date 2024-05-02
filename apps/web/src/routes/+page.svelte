@@ -7,8 +7,7 @@
 	import { page } from '$app/stores';
     import createDebug from "debug";
 	import { derived, writable, type Readable } from 'svelte/store';
-	import { layoutMaxWidth, layoutMode, layoutNavState, pageHeader, resetLayout } from '$stores/layout';
-	import MainWrapper from '$components/Page/MainWrapper.svelte';
+	import { layoutMode, layoutNavState, pageHeader, resetLayout } from '$stores/layout';
 	import ExploreFilters from './ExploreFilters.svelte';
 	import ListContentDvms from './ListContentDvms.svelte';
 	import { mainContentKinds } from '$utils/event';

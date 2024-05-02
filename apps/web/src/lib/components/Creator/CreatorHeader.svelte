@@ -1,9 +1,11 @@
 <script lang="ts">
 	import FollowButton from "$components/buttons/FollowButton.svelte";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
+	import currentUser from "$stores/currentUser";
 	import { pageHeader } from "$stores/layout";
 	import { Avatar, Name } from "@kind0/ui-common";
 	import { NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+	import { CaretRight, Ticket } from "phosphor-svelte";
 	import { onDestroy, onMount } from "svelte";
 	import { Readable } from "svelte/store";
 
@@ -82,7 +84,24 @@
     </div>
 
     <div class="flex flex-row items-center gap-2">
-        {#if $tiers}
+        {#if user.pubkey === $currentUser?.pubkey}
+            <button
+                class="
+                    flex flex-row items-center !gap-0
+                    whitespace-nowrap text-base
+                    max-sm:px-6
+                    lg:py-3 lg:button border-accent2 w-full transition-all duration-300 group
+                    border-2 hover:bg-accent2/20 lg:bg-transparent
+                    rounded-full p-2
+                    !text-white
+                "
+            >
+                <Ticket size={24} class="inline lg:mr-2" />
+                <span class="hidden lg:inline">
+                    Backstage Area
+                </span>
+            </button>
+        {:else if $tiers}
             <SubscribeButton {user} {userProfile} {tiers} buttonClass="
                 max-sm:bg-accent2 max-sm:!text-white max-sm:btn max-sm:btn-circle
                 max-sm:!px-0

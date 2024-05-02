@@ -43,7 +43,10 @@
 		"prettier-plugin-svelte": "^3.0.3",
 		"prettier-plugin-tailwindcss": "^0.5.3",
 		"svelte": "^4.2.12",
+		"svelte-bricks": "^0.2.1",
 		"svelte-check": "^3.5.0",
+		"svelte-grid": "^5.1.2",
+		"svelte-motion": "^0.12.2",
 		"svelte-preprocess": "^5.0.4",
 		"tailwindcss": "^3.3.3",
 		"ts-jest": "^29.1.0",
@@ -54,6 +57,8 @@
 		"vitest": "^1.0.0"
 	},
 	"dependencies": {
+		"@egjs/svelte-grid": "^1.15.0",
+		"@egjs/svelte-infinitegrid": "^4.11.1",
 		"@floating-ui/dom": "^1.6.3",
 		"@fontsource/lora": "^5.0.8",
 		"@getalby/sdk": "^3.3.0",

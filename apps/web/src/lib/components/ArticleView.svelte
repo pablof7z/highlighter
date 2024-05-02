@@ -7,7 +7,6 @@
 	import { onDestroy, onMount } from "svelte";
 	import ArticleRender from './ArticleRender.svelte';
 	import ItemHeader from "$components/ItemHeader.svelte";
-	import { layoutMaxWidth, mainAlign, pageMainContentMaxWidth, resetLayout } from "$stores/layout";
 
     export let article: NDKArticle;
     const author = article.author;

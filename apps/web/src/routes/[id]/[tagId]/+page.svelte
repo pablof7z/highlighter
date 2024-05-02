@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { EventType } from './../../../../app.d.ts';
+	import type { EventType } from './../../../../app.d.js';
 	import { page } from "$app/stores";
-	import { layoutMaxWidth, layoutMode, layoutNavState, mainAlign, pageMainContentMaxWidth, resetLayout } from "$stores/layout";
+	import { layoutMode, layoutNavState, resetLayout } from "$stores/layout";
 	import { onDestroy } from "svelte";
 	import ItemView from './ItemView.svelte';
 
@@ -10,9 +10,6 @@
 
     $: tagId = $page.params.tagId;
 
-    $layoutMaxWidth = "max-w-none";
-    $pageMainContentMaxWidth = "max-w-3xl";
-    $mainAlign = "center";
     $layoutNavState = "collapsed";
 
     onDestroy(resetLayout);

@@ -27,6 +27,7 @@ export const vanityUrls: Record<string, Hexpubkey> = {
     "ODELL": "04c915daefee38317fa734444acee390a8269fe5810b2241e5e6dd343dfbecc9",
     "walker": "c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11",
     "chrisliss": "6ad3e2a34818b153c81f48c58f44e5199e7b4fc8dbe37810a000dce3c90b7740",
+    "onigirl": "3c9849383bdea883b0bd16fece1ed36d37e37cdde3ce43b17ea4e9192ec11289",
 }
 
 if (!creatorRelayPubkey) {

@@ -1,6 +1,8 @@
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
-import { writable, type Readable } from 'svelte/store';
-import type { NDKEvent } from '@nostr-dev-kit/ndk';
+import { derived, get, writable, type Readable } from 'svelte/store';
+import type { NDKEvent, NDKFilter, NDKUser } from '@nostr-dev-kit/ndk';
+import NDKSvelte, { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
+import NDK, { NDKKind } from '@nostr-dev-kit/ndk';
 
 export const seenIds = persist(writable<Set<string>>(new Set()), createLocalStorage(), 'seen-ids');
 
@@ -17,7 +19,7 @@ export const lastSeenGroupTimestamp = persist(
 export const lastSeenTimestamp = persist(
 	writable<number>(),
 	createLocalStorage(),
-	'last-seen-timestamp'
+	'last-seen-notif-timestamp'
 );
 
 export let unseenEvents: Readable<NDKEvent[]> | undefined;
@@ -55,3 +57,40 @@ export function markEventAsSeen(eventId: string) {
 		return $seenIds;
 	});
 }
+
+export let notifications: NDKEventStore<NDKEvent>;
+export let hasUnreadNotifications: Readable<boolean> | undefined;
+export let unreadNotifications: Readable<number> | undefined;
+
+export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {
+	const since = get(lastSeenTimestamp);
+
+	const filters: NDKFilter[] = [{
+		kinds: [NDKKind.Highlight, NDKKind.Text, NDKKind.Article, NDKKind.HorizontalVideo],
+		"#p": [currentUser.pubkey],
+		limit: 1,
+	}]
+
+	if (since) filters[0].since = since;
+	
+	notifications = ndk.storeSubscribe(filters, {subId: 'notifications'});
+
+	const filteredNotifications = derived(notifications, $notifications => {
+		return $notifications.filter(event => event.pubkey !== currentUser.pubkey);
+	});
+
+	hasUnreadNotifications = derived([filteredNotifications, lastSeenTimestamp], ([$filteredNotifications, $lastSeenTimestamp]) => {
+		if (!$lastSeenTimestamp) {
+			return $filteredNotifications.length > 0;
+		}
+		return $filteredNotifications.some(event => event.created_at! > $lastSeenTimestamp);
+	});
+
+	unreadNotifications = derived([filteredNotifications, lastSeenTimestamp], ([$filteredNotifications, $lastSeenTimestamp]) => {
+		if (!$lastSeenTimestamp) {
+			return $filteredNotifications.length;
+		}
+		return $filteredNotifications.filter(event => event.created_at! > $lastSeenTimestamp).length;
+	});
+}
+
