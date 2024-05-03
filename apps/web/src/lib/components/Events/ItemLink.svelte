@@ -60,7 +60,7 @@
             (size === "normal" && "sm:w-64 sm:h-44")
         )}
     ">
-        <div class="w-full max-sm:min-h-[35vh] relative flex flex-row items-center justify-center" style={`
+        <div class="w-full max-sm:min-h-[35vh] sm:h-full relative flex flex-row items-center justify-center" style={`
         `}>
             {#if image}
                 <img src={image} alt={title} class="w-full h-full absolute top-0 left-0 z-[1] backdrop-blur-xl" style="filter: blur(50px)" />

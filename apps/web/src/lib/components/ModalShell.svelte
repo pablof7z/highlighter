@@ -2,12 +2,13 @@
 	import { page } from '$app/stores';
 	import { modalState } from '$stores/layout';
 	import { onDestroy, onMount } from 'svelte';
-	import { closeModal, onBeforeClose } from "svelte-modals";
-	import { slide } from "svelte/transition";
+	import { onBeforeClose } from "svelte-modals";
+    import { closeModal } from '$utils/modal';
     import Device from "svelte-device-info";
-	import transitionIf from '$utils/transitionIf';
 
     export let color: "white" | "black" | "glassy" = "white";
+
+    const isPhone = Device.isPhone;
 
     const slideAnimationDuration = 300;
 
@@ -22,17 +23,20 @@
         $modalState = "open";
     });
 
-    onBeforeClose(() => {
-        if (mounted === true) {
-            $modalState = "closing";
-            mounted = false;
-            setTimeout(closeModal, slideAnimationDuration);
-            return false;
-        }
-    });
+    if (!isPhone) {
+        onBeforeClose(() => {
+            if (mounted === true) {
+                $modalState = "closing";
+                mounted = false;
+                setTimeout(closeModal, slideAnimationDuration);
+                return false;
+            }
+        });
+    }
 
     onDestroy(() => {
         $modalState = "closed";
+        window.visualViewport?.removeEventListener("resize", resizeHandler);
     })
 
     const viewport = window.visualViewport;
@@ -54,35 +58,39 @@
     }
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none {color}" bind:this={containerEl}>
-    <div class="
-        max-sm:fixed max-sm:top-0 max-sm:bottom-0 z-[99] max-sm:w-full  max-sm:!pb-0
-        {$$props.class??""}
-    ">
-        {#if mounted}
-            <div class="
-                card
-                !rounded-3xl
-                max-sm:!rounded-b-none
-                shadow-xl
-                flex flex-col
-                overflow-y-auto
-                w-fit mx-auto
-                p-6
-                h-full
-                {$$props.class}
-            " style="pointer-events: auto; max-height: 92vh;"
-            >
-                <div class="!rounded-3xl inner flex flex-col items-center transition-all duration-1000 gap-6
-                {$$props.class}">
-                    <slot />
+{#if isPhone}
+    <slot />
+{:else}
+    <div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none {color}" bind:this={containerEl}>
+        <div class="
+            max-sm:fixed max-sm:top-0 max-sm:bottom-0 z-[99] max-sm:w-full  max-sm:!pb-0
+            {$$props.class??""}
+        ">
+            {#if mounted}
+                <div class="
+                    card
+                    !rounded-3xl
+                    max-sm:!rounded-b-none
+                    shadow-xl
+                    flex flex-col
+                    overflow-y-auto
+                    w-fit mx-auto
+                    p-6
+                    h-full
+                    {$$props.class}
+                " style="pointer-events: auto; max-height: 92vh;"
+                >
+                    <div class="!rounded-3xl inner flex flex-col items-center transition-all duration-1000 gap-6
+                    {$$props.class}">
+                        <slot />
+                    </div>
                 </div>
-            </div>
-        {/if}
+            {/if}
+        </div>
     </div>
-</div>
+{/if}
+
+
 
 <style lang="postcss">
     .white .card .inner {

@@ -35,7 +35,7 @@
     $: if ($userActiveSubscriptions.get(article.pubkey) && fullTiers.includes($userActiveSubscriptions.get(article.pubkey)!)) {
         const parts = article.tagValue("full")?.split(/:/) as string[];
         const dTag = parts[2] || parts[0];
-        goto(`/${author.npub}/${dTag}`);
+        // goto(`/${author.npub}/${dTag}`);
     }
 
     editUrl ??= `/articles/${article.tagValue("d")}/edit`;

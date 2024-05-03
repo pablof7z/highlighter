@@ -13,12 +13,13 @@
 
     export let extraTags: NDKTag[] = [];
     export let kind: NDKKind;
-    export let event: NDKEvent = new NDKEvent($ndk, { kind, tags: extraTags } as NostrEvent);
+    export let event: NDKEvent = new NDKEvent($ndk, { kind } as NostrEvent);
     export let showReply: boolean | undefined = undefined;
     export let placeholder = "Reply...";
     export let hasFocus = false;
     export let autofocus = false;
     export let collapsed: boolean | undefined = undefined;
+    export let skipAvatar = false;
     export let isCollapsed: boolean | undefined = undefined;
     export let mentionEvent: NDKEvent | undefined = undefined;
 
@@ -50,6 +51,8 @@
             for (const url of uploadedFiles) {
                 content += `\n\n${url}`;
             }
+
+            event.tags = extraTags;
 
             // if we are mentioning an event, add it to the content and tag it
             if (mentionEvent) {
@@ -105,25 +108,21 @@
     <div transition:fade class="absolute right-0 bottom-0 top-0 left-0 bg-black/40 z-30"></div>
 {/if}
 
-{#if isCollapsed}
-    <button class="sm:hidden btn btn-lg p-3 btn-circle bg-accent2 text-white fixed z-[99999] bottom-20 right-4" on:click={() => isCollapsed = collapsed ?? false}>
-        <Feather class="w-full h-full" weight="fill" />
-    </button>
-{/if}
-
 <div class="
     relative z-[40] w-full
     flex flex-col
-    {isCollapsed ? "max-sm:hidden" : "max-sm:!fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:top-0 max-sm:!z-[50] max-sm:!bg-base-100/90 max-sm:backdrop-blur-[50px] max-sm:overflow-y-auto max-sm:h-[100dvh] max-sm:pt-16"}
+    max-sm:h-[90dvh]
 " class:hidden={publishing}>
     <div class="flex flex-row">
-        <Avatar user={$currentUser} size="small" class="ml-4 mt-4" />
+        {#if !skipAvatar}
+            <Avatar user={$currentUser} size="small" class="ml-4 mt-4" />
+        {/if}
         {#key resetEditorAt}
             <div class="relative flex-grow flex flex-col">
                 <ContentEditor
                     bind:content
                     toolbar={false}
-                    on:focus={() => hasFocus = true}
+                    on:focus={() => {hasFocus = true; dispatch('focus')}}
                     on:blur={() => hasFocus = false}
                     {placeholder}
                     {autofocus}
@@ -150,8 +149,8 @@
             </div>
         {/key}
     </div>
-    <div class="max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 sm:border-t border-base-300 w-full px-4 justify-end z-40 max-sm:flex-row-reverse bottom-4 max-sm:h-16
-        {isCollapsed ? "" : "max-sm:justify-between max-sm:top-0 "}
+    <div class="max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 sm:border-t border-base-300 w-full px-4 justify-end z-40 bottom-4 max-sm:h-16
+        {isCollapsed ? "" : "max-sm:justify-between max-sm:top-6"}
     ">
         {#if $$slots.buttonsBar}
             <slot name="buttonsBar" />

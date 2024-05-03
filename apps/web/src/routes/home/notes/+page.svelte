@@ -5,6 +5,8 @@
 	import currentUser from "$stores/currentUser";
 	import { pageMainContentMaxWidth } from "$stores/layout";
 	import { onMount } from "svelte";
+	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
+	import NewPostFloatButton from "$components/buttons/NewPostFloatButton.svelte";
 
     $pageMainContentMaxWidth = 'max-w-3xl';
     
@@ -22,11 +24,22 @@
     });
 </script>
 
+<div class="w-full hidden sm:block">
+    <NewPost
+        kind={NDKKind.Text}
+        placeholder="What's happening?!"
+        autofocus={false}
+    />
+</div>
+
+<div class="sm:hidden">
+    <NewPostFloatButton />
+</div>
+
 {#if filters}
-<FilterFeed
-    {filters}
-    newPostKind={NDKKind.Text}
-    urlPrefix="/e/"
-    renderLimit={1}
-/>
+    <FilterFeed
+        {filters}
+        urlPrefix="/e/"
+        renderLimit={1}
+    />
 {/if}

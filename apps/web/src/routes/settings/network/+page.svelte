@@ -1,18 +1,13 @@
 <script lang="ts">
-	import Settings from '$components/PageSidebar/Settings.svelte';
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
     import { pageHeader, pageSidebar } from "$stores/layout";
     import { getDefaultRelaySet } from "$utils/ndk";
 	import { Name, ndk } from "@kind0/ui-common";
 	import { RelayList } from "@nostr-dev-kit/ndk-svelte-components";
-	import { onDestroy } from 'svelte';
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 	import { creatorRelayPubkey } from '$utils/const';
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
-
-    $pageSidebar = { component: Settings, props: {} }
-    onDestroy(() => { $pageSidebar = null; })
 
     $pageHeader = {
         title: "Network Settings",

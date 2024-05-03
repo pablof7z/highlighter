@@ -11,6 +11,7 @@ import {
 	NDKRelaySet,
 	NostrEvent,
 	NDKSubscriptionCacheUsage,
+	NDKFilter,
 } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
@@ -468,7 +469,7 @@ async function fetchData(
 		const filters: NDKFilter[] = [];
 
 		if (kinds.length > 0) {
-			filters.push({ kinds, authors: authorPrefixes, limit: 10 });
+			filters.push({ kinds, authors: authorPrefixes, limit: 50 });
 		}
 
 		if (opts.blossomStore) kinds.push(10063 as number);

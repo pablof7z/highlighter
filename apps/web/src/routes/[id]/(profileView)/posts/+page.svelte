@@ -17,7 +17,6 @@
 {#key user.pubkey}
     <FilterFeed
         newPostKind={NDKKind.GroupNote}
-        showNewPost={true}
         filters={[
             { kinds: [NDKKind.GroupNote, NDKKind.GroupReply], "#h": [user.pubkey] }
         ]}

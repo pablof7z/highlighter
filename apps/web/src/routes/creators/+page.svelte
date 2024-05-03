@@ -1,11 +1,10 @@
 <script lang="ts">
 	import CreatorBanner from "$components/Creator/CreatorBanner.svelte";
-	import { blacklistedPubkeys } from "$utils/const";
+	import { blacklistedPubkeys, featuredCreatorPubkeys } from "$utils/const";
 	import { ndk } from "@kind0/ui-common";
-	import { Hexpubkey, NDKKind, NDKList, NDKSubscription, NDKSubscriptionStart, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
+	import { type Hexpubkey, NDKKind, NDKList, NDKSubscriptionStart } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { derived } from "svelte/store";
-
 
     const events = $ndk.storeSubscribe([
         {kinds: [NDKKind.Subscribe], limit: 100},
@@ -60,10 +59,38 @@
         return Array.from(creators)
             .filter(creator => subscriptionTierList.has(creator))
     });
+
+    const featuredCreators = derived(creators, $creators => {
+        const ret: Hexpubkey[] = [];
+
+        for (const creator of $creators) {
+            if (featuredCreatorPubkeys.includes(creator)) {
+                ret.push(creator);
+            }
+        }
+
+        return ret;
+    })
 </script>
 
+<svelte:head>
+    <title>Discover Creators on Nostr</title>
+</svelte:head>
+
+<h1 class="text-white">
+    Featured Creators
+</h1>
+
+{#each $featuredCreators as pubkey (pubkey)}
+    <CreatorBanner {pubkey} tierList={subscriptionTierList.get(pubkey)} />
+{/each}
+
 <div class="masonry sm:masonry-sm md:masonry-md">
-    {#each $creators as creator (creator)}
-        <CreatorBanner pubkey={creator} tierList={subscriptionTierList.get(creator)} />
+    {#each $creators.slice(0, 10) as creator (creator)}
+        <CreatorBanner
+            pubkey={creator}
+            tierList={subscriptionTierList.get(creator)}
+            contentClass="max-w-[300px]"
+        />
     {/each}
 </div>

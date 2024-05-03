@@ -1,17 +1,15 @@
 <script lang="ts">
 	import { Readable, derived } from "svelte/store";
 	import { NDKArticle, NDKEvent, NDKEventId, NDKHighlight, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
-	import ForumFeedItem from "./ForumFeedItem.svelte";
 	import Highlight from "$components/Highlight.svelte";
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
 	import { navigateToEvent } from "./navigate-to-event";
-	import NewPost from "./NewPost/NewPost.svelte";
     import { inview } from 'svelte-inview';
 	import EventWrapper from "./EventWrapper.svelte";
 	import { pluralize } from "$utils";
+	import GroupNote from "$components/Events/GroupNote.svelte";
 
     export let feed: Readable<NDKEvent[]>;
-    export let newPostKind: NDKKind | undefined = undefined;
     export let renderLimit = 10;
     export let newPostTags: NDKTag[] = [];
     export let urlPrefix: string = "/e/";
@@ -103,16 +101,6 @@
                 </button>
             </div>
         {/if}
-        {#if newPostKind}
-            <div class="w-full">
-                <NewPost
-                    extraTags={newPostTags}
-                    kind={newPostKind}
-                    placeholder="What's happening?!"
-                    autofocus={false}
-                />
-            </div>
-        {/if}
         {#each $renderFeed.slice(0, renderLimit) as event, i (event.id)}
             {#if event.kind === NDKKind.Text}
                 <EventWrapper
@@ -125,6 +113,8 @@
                     on:open:note={openNote}
                     on:open:conversation={openNote}
                 />
+            {:else if event.kind === NDKKind.GroupNote}
+                <GroupNote {event} {urlPrefix} />
             {:else if event.kind === NDKKind.Article}
                 <ArticleLink
                     article={NDKArticle.from(event)}
@@ -134,11 +124,12 @@
                     highlight={NDKHighlight.from(event)}
                 />
             {:else}
-                <ForumFeedItem
+                <EventWrapper
                     {event}
-                    position={i}
                     mostRecentActivity={perNoteLatestActivity.get(event.id)}
                     skipReply={true}
+                    showReply={false}
+                    {urlPrefix}
                 />
             {/if}
         {/each}

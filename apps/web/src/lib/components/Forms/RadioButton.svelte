@@ -46,7 +46,7 @@
     }
 
     .container {
-        @apply w-full;
+        @apply w-full overflow-clip;
     }
 
     .container.selected {

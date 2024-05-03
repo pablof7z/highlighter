@@ -69,9 +69,3 @@
         on:click
     />
 {/if}
-
-<!-- <LoadingScreen ready={!!mounted && !!$user}>
-    <MainWrapper class="flex flex-col gap-10">
-        <CreatorActivity />
-    </MainWrapper>
-</LoadingScreen> -->

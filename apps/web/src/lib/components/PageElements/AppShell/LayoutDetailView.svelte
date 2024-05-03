@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { pushState } from "$app/navigation";
 	import { page } from "$app/stores";
-	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { detailView, layoutMode } from "$stores/layout";
-	import { X } from "phosphor-svelte";
+	import { List, X } from "phosphor-svelte";
+    import { Drawer } from "vaul-svelte";
 
     let hasRightSidebarExpanded = false;
 
@@ -21,14 +21,13 @@
 
     let showX = true;
 
-    $: showX = $layoutMode !== "reversed-columns";
+    $: showX = $layoutMode !== "list-column";
     
 </script>
 
 <aside class="
     sticky sm:top-[var(--layout-header-height)]
     max-h-screen overflow-y-auto overflow-x-clip
-    max-w-[800px]
     !border-x !border-base-300
     
     {$$props.class??""}
@@ -37,20 +36,13 @@
         <button class="sticky top-0 right-4 top-22 z-[999]" class:hidden={!showX} on:click={closeDetailView}>
             <X class="w-6 h-6" />
         </button>
-        {#key $detailView.props.event?.id}
-            {#if $detailView.component === "Note"}
-                <div class="flex flex-col w-full justify-stretch">
-                    <div class="discussion-wrapper w-full flex flex-col">
-                        <EventWrapper
-                            event={$detailView.props.event}
-                            expandReplies={true}
-                            expandThread={true}
-                        />
-                    </div>
-                </div>
-            {:else}
-                <svelte:component this={$detailView.component} {...$detailView.props} />
-            {/if}
+
+        {#if !showX}
+            <List class="w-6 h-6" />
+        {/if}
+        
+        {#key $detailView}
+            <svelte:component this={$detailView.component} {...$detailView.props} />
         {/key}
         {:else}
             <slot name="right" />

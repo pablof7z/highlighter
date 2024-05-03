@@ -16,7 +16,7 @@
 
     $: switch (eventType) {
         case 'curation':
-            $layoutMode = 'reversed-columns';
+            $layoutMode = 'list-column';
             break;
         default:
             $layoutMode = 'content-focused';

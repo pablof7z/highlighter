@@ -1,17 +1,16 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import Chat from '$components/PageSidebar/Chat.svelte';
-    import { pageHeader, pageSidebar } from '$stores/layout.js';
+    import { detailView, layoutMode, pageHeader, pageSidebar, resetLayout } from '$stores/layout.js';
 	import { onDestroy } from 'svelte';
 
-    $pageSidebar = {
+    $layoutMode = 'list-column';
+    $detailView = {
         component: Chat,
         props: {
-            activeUser: $page.data.user,
+            activeUser: undefined
         }
     }
-
-    onDestroy(() => { $pageSidebar = null; })
+    onDestroy(resetLayout);
 
     $pageHeader = {
         title: 'Chat',

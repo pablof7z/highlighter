@@ -1,14 +1,8 @@
 <script lang="ts">
-	import Settings from '$components/PageSidebar/Settings.svelte';
-    import { pageHeader, pageSidebar } from "$stores/layout";
-	import { onDestroy } from "svelte";
-	import MainWrapper from '$components/Page/MainWrapper.svelte';
+    import { pageHeader } from "$stores/layout";
 	import ServiceItem from './ServiceItem.svelte';
 	import { NDKKind } from '@nostr-dev-kit/ndk';
 	import BlossomSection from './BlossomSection.svelte';
-
-    $pageSidebar = { component: Settings, props: {} }
-    onDestroy(() => { $pageSidebar = null; })
 
     $pageHeader = {
         title: "Highlighter",
@@ -19,43 +13,41 @@
     };
 </script>
 
-<MainWrapper>
-    <div class="flex flex-col gap-6">
-        <section>
-            <h1>🌸 Media Storage (Blossom)</h1>
+<div class="flex flex-col gap-6">
+    <section>
+        <h1>🌸 Media Storage (Blossom)</h1>
 
-            <p>
-                This is where your media uploaded from Highlighter is stored.
-            </p>
-            
-            <BlossomSection />
-        </section>
+        <p>
+            This is where your media uploaded from Highlighter is stored.
+        </p>
         
-        <section>
-            <h1>Publishing</h1>
-            <ServiceItem
-                kind={5905}
-                title="Post Schedule"
-                eventId="naddr1qqy8x6rfwpukzunyqgsgtssdxasw7nsewcr3545lkd3lflcgdj5swe5lh9gk0nw9xpvnf5grqsqqql8kvkq450"
-            >
-                <div slot="about">
-                    <span class="text-white inline">Highlighter</span>
-                    uses DVMs to schedule posts.
-                    These services allow you to schedule posts from any nostr-compatible application.
-                </div>
-            </ServiceItem>
-            <ServiceItem
-                kind={NDKKind.DVMReqImageGeneration}
-                title="Image Generation"
-                eventId="naddr1qqg8x6mtw56h5dr6w3nk6wrjw3mr2qgawaehxw309ahx7um5wgkhqatz9emk2mrvdaexgetj9ehx2aqzyp2k0scmru0v6v7dzs9g805h08sqxmvqwd4zas32zn5nc8e85xaekqcyqqq8easlxv24f"
-            >
-                <div slot="about">
-                    Highlighter uses Shipyard to schedule posts. Shipyard is a free and open source service that allows you to schedule posts to any nostr-compatible service.
-                </div>
-            </ServiceItem>
-        </section>
-    </div>
-</MainWrapper>
+        <BlossomSection />
+    </section>
+    
+    <section>
+        <h1>Publishing</h1>
+        <ServiceItem
+            kind={5905}
+            title="Post Schedule"
+            eventId="naddr1qqy8x6rfwpukzunyqgsgtssdxasw7nsewcr3545lkd3lflcgdj5swe5lh9gk0nw9xpvnf5grqsqqql8kvkq450"
+        >
+            <div slot="about">
+                <span class="text-white inline">Highlighter</span>
+                uses DVMs to schedule posts.
+                These services allow you to schedule posts from any nostr-compatible application.
+            </div>
+        </ServiceItem>
+        <ServiceItem
+            kind={NDKKind.DVMReqImageGeneration}
+            title="Image Generation"
+            eventId="naddr1qqg8x6mtw56h5dr6w3nk6wrjw3mr2qgawaehxw309ahx7um5wgkhqatz9emk2mrvdaexgetj9ehx2aqzyp2k0scmru0v6v7dzs9g805h08sqxmvqwd4zas32zn5nc8e85xaekqcyqqq8easlxv24f"
+        >
+            <div slot="about">
+                Highlighter uses Shipyard to schedule posts. Shipyard is a free and open source service that allows you to schedule posts to any nostr-compatible service.
+            </div>
+        </ServiceItem>
+    </section>
+</div>
 
 <style lang="postcss">
     h1 {

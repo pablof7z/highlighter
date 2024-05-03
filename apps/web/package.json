@@ -110,9 +110,11 @@
 		"tailwind-merge": "^2.2.1",
 		"tailwind-variants": "^0.2.0",
 		"throttle-debounce": "^5.0.0",
+		"vaul-svelte": "^0.3.0",
 		"vidstack": "^1.9.6",
 		"vite-plugin-mkcert": "^1.17.1",
 		"vite-plugin-pwa": "^0.17.4",
+		"web-push": "^3.6.7",
 		"webln": "^0.3.2",
 		"websocket-polyfill": "^0.0.3"
 	},

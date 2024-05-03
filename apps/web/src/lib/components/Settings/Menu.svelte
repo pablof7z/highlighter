@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { user } from "@kind0/ui-common";
     import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import { CaretRight, Code, Keyhole, Package, ShareNetwork } from "phosphor-svelte";
+	import { Bell, CaretRight, Code, Keyhole, Package, ShareNetwork } from "phosphor-svelte";
 	import { logout } from "$utils/login";
+	import currentUser from "$stores/currentUser";
 
     let authorUrl: string;
-
-
 </script>
 
-{#if $user}
-    <AvatarWithName user={$user} bind:authorUrl nameClass="text-xl text-white font-semibold"
+<div class="lg:px-6">
+{#if $currentUser}
+    <AvatarWithName user={$currentUser} bind:authorUrl nameClass="text-xl text-white font-semibold"
         spacing="gap-4"
         avatarSize="large" avatarClass="w-16 h-16"
     />
@@ -59,6 +58,16 @@
 
     <ul class="w-full">
         <li>
+            <a href="/settings/notifications">
+                <span>
+                    <Bell class="w-5 h-5" />
+                    Notifications
+                </span>
+                <CaretRight class="w-5 h-5" />
+            </a>
+        </li>
+
+        <li>
             <a href="/settings/network">
                 <span>
                     <ShareNetwork class="w-5 h-5" />
@@ -101,6 +110,7 @@
         </li>
     </ul>
 {/if}
+</div>
 
 <style>
     ul {

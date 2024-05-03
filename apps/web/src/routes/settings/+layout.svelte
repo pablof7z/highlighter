@@ -1,12 +1,18 @@
 <script lang="ts">
-	import LoadingScreen from "$components/LoadingScreen.svelte";
+	import SettingsMenu from '$components/Settings/Menu.svelte';
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import currentUser from "$stores/currentUser";
 	import { onMount, onDestroy } from "svelte";
-	import { resetLayout } from "$stores/layout";
+	import { detailView, layoutMode, resetLayout } from "$stores/layout";
 
     let startedUserView = false;
     let mounted = false;
+
+    $layoutMode = "list-column";
+    $detailView = {
+        component: SettingsMenu,
+        props: {}
+    }
 
     onMount(() => {
         mounted = true;
@@ -23,6 +29,4 @@
     })
 </script>
 
-<LoadingScreen ready={!!startedUserView}>
-    <slot />
-</LoadingScreen>
+<slot />

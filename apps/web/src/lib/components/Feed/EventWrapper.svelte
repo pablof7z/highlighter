@@ -263,7 +263,9 @@
                             {/if}
                             <div class="text-sm opacity-80">
                                 <Name user={author} {userProfile} {fetching} />
-                                <ClientName {event} class="ml-2 text-xs opacity-50" />
+                                {#if !compact}
+                                    <ClientName {event} class="ml-2 text-xs opacity-50 inline" />
+                                {/if}
                             </div>
                         </div>
 

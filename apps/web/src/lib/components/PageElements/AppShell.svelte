@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { layoutMode } from '$stores/layout.js';
-    import { modalState, layoutNavState, detailView } from "$stores/layout";
+    import { modal, modalState, layoutNavState, detailView } from "$stores/layout";
 	import { Toaster, pageDrawerToggle } from '@kind0/ui-common';
-    import { Modals, closeModal } from 'svelte-modals'
+	import Modal from './Modal.svelte';
 	import { fade } from 'svelte/transition';
 	import { page } from "$app/stores";
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
 	import PageNavigation from "./AppShell/PageNavigation.svelte";
 	import LayoutDetailView from "./AppShell/LayoutDetailView.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';
+	
 
 	let showSectionHeaderWithButtons = false;
 
@@ -67,13 +68,13 @@
 			navWrapper = "fixed sm:left-0 bg-base-200";
 			mainWrapper = "max-w-3xl w-full grow";
 			break;
-		case "reversed-columns":
+		case "list-column":
 			$layoutNavState = 'collapsed';
 			layoutWrapper = "w-full";
 			mainAndDetailWrapper = "flex-row-reverse w-[calc(100vw_-_5rem)]";
 			navWrapper = "sticky sm:left-0 !bg-base-200 sm:h-screen";
-			mainWrapper = "w-2/3 grow";
-			detailWrapper = "w-1/3 max-w-[500px]";
+			mainWrapper = "w-2/3 grow lg:px-6";
+			detailWrapper = "w-1/3 max-w-[500px] lg:p-6";
 			break;
 		case "single-column-focused":
 			$layoutNavState = 'collapsed';
@@ -85,14 +86,7 @@
 	}
 </script>
 
-<Modals>
-	<div
-		slot="backdrop"
-		class="backdrop z-[51] fixed"
-		class:hidden={$modalState !== "open"}
-		on:click={closeModal}
-		transition:fade={{ duration: 300 }}></div>
-</Modals>
+<Modal />
 
 <Toaster />
 
@@ -132,16 +126,6 @@
 </div>
 
 <style lang="postcss">
-	.backdrop {
-		position: fixed;
-		top: 0;
-		bottom: 0;
-		right: 0;
-		backdrop-filter: blur(10px);
-		left: 0;
-		background: rgba(0,0,0,0.50)
-	}
-
 	:global(.toast) {
 		@apply fixed bottom-2 right-2;
 	}

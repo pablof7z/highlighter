@@ -15,11 +15,18 @@ export default defineConfig({
             project: "highlighter"
         }
     }), sveltekit(), SvelteKitPWA({
-        strategies: 'generateSW',
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'service-worker.ts',
+        registerType: 'autoUpdate',
+        injectRegister: "inline",
         manifest: {
             short_name: 'Highlighter',
             name: 'Highlighter',
             theme_color: '#000000',
+            protocol_handlers: [
+                { protocol: 'web+nostr', url: '/%s' },
+            ],
             icons: [
                 {
                     src: '/pwa-192x192.png',

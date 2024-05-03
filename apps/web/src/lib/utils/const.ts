@@ -1,4 +1,4 @@
-import { Hexpubkey } from "@nostr-dev-kit/ndk";
+import type { Hexpubkey } from "@nostr-dev-kit/ndk";
 
 export const blacklistedPubkeys = [
     "a2155842128093cac2c5120c9830d568c8556b95f6e03eeca3946bcd4309b43b", // marinalunes@nostr.me
@@ -29,6 +29,12 @@ export const vanityUrls: Record<string, Hexpubkey> = {
     "chrisliss": "6ad3e2a34818b153c81f48c58f44e5199e7b4fc8dbe37810a000dce3c90b7740",
     "onigirl": "3c9849383bdea883b0bd16fece1ed36d37e37cdde3ce43b17ea4e9192ec11289",
 }
+
+export const featuredCreatorPubkeys = [
+    vanityUrls.maxdemarco,
+    vanityUrls.chrisliss,
+    vanityUrls.walker
+]
 
 if (!creatorRelayPubkey) {
     console.error("No creator relay pubkey found");

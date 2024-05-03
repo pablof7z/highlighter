@@ -98,7 +98,7 @@
             ndk={$ndk}
             {event}
             bind:content
-            class="prose !max-w-none leading-8"
+            class="prose leading-8"
             on:click={handleClick}
             sanitizeHtmlOptions={{
                 allowedAttributes: {

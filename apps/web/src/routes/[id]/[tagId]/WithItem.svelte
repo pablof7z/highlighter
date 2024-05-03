@@ -123,7 +123,7 @@
         if (hasAccessToFullVersion) {
             const parts = event.tagValue("full")?.split(/:/) as string[];
             const dTag = parts[2] || parts[0];
-            goto(`/${event.author.npub}/${dTag}`);
+            // goto(`/${event.author.npub}/${dTag}`);
         }
     }
 

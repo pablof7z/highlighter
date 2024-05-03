@@ -3,7 +3,6 @@
 	import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from "svelte";
 	import StoreFeed from "./StoreFeed.svelte";
-	import { derived } from "svelte/store";
 
     export let filters: NDKFilter[];
     export let newPostKind: NDKKind | undefined = undefined;
@@ -12,8 +11,8 @@
     export let urlPrefix: string | undefined = undefined;
 
     export let feed = $ndk.storeSubscribe(filters, { subId: 'feed' });
-
-    let showEventsOlderThan: Date | undefined = undefined;
+    
+    export let showEventsOlderThan: Date | undefined = undefined;
 
     feed.onEose(() => {
         showEventsOlderThan = new Date();

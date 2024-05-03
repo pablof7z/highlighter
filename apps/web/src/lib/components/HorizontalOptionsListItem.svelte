@@ -1,9 +1,9 @@
 <script lang="ts">
     import { CrownSimple } from "phosphor-svelte";
-    import type { Option } from "./option";
 	import { page } from "$app/stores";
+	import { NavigationOption } from "../../app";
 
-    export let option: Option;
+    export let option: NavigationOption;
     export let value: string;
 
     let active = false;
@@ -18,7 +18,6 @@
 
     }
 </script>
-
 <a
     bind:this={el}
     href={option.href}

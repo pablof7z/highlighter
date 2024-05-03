@@ -43,7 +43,8 @@ export function currencyFormat(currency: string, amount: number) {
 			retval = `${amount.toFixed(2)}€`;
 			break;
 		case 'msat':
-			const formatted = nicelyFormattedMilliSatNumber(amount);
+			let formatted = nicelyFormattedMilliSatNumber(amount);
+			if (typeof formatted === "number") formatted = formatted.toString();
 			return formatted.toLowerCase().endsWith('btc') ? formatted : `${formatted} sats`
 		default:
 			return `${amount} ${currency}`;

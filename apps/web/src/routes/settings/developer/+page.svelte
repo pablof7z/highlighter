@@ -1,7 +1,5 @@
 <script lang="ts">
-	import Settings from '$components/PageSidebar/Settings.svelte';
-    import { pageHeader, pageSidebar } from "$stores/layout";
-	import { onDestroy } from "svelte";
+    import { pageHeader } from "$stores/layout";
 	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import NDKCacheAdapterDexie, { db } from '@nostr-dev-kit/ndk-cache-dexie';
 	import { ndk } from '@kind0/ui-common';
@@ -10,9 +8,6 @@
 	import { minimumScore, wot } from '$stores/wot';
 	import Checkbox from '$components/Forms/Checkbox.svelte';
 	import { devMode } from '$stores/settings';
-
-    $pageSidebar = { component: Settings, props: {} }
-    onDestroy(() => { $pageSidebar = null; })
 
     $pageHeader = {
         title: "Highlighter",

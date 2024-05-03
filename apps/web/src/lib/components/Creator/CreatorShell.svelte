@@ -76,7 +76,7 @@
     $: {
         $pageHeaderComponent = {
             component: CreatorHeader,
-            props: { user, userProfile, fetching, tiers: userTiers },
+            props: { user, userProfile, authorUrl, fetching, tiers: userTiers },
             containerClass: ''
         }
     }

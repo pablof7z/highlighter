@@ -14,7 +14,7 @@
         title: "Drafts",
     }
 
-    $layoutMode = "reversed-columns";
+    $layoutMode = "list-column";
     $detailView = {
         component: DraftsMenu,
         props: {}

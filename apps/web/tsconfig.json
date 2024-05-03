@@ -10,7 +10,11 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"types": ["vidstack/svelte", "jest"]
+		"types": [
+			"vidstack/svelte",
+			"jest",
+			"vite-plugin-pwa/svelte",
+		]
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//

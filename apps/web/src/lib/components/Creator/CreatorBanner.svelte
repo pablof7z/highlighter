@@ -27,7 +27,7 @@
         const pubkeys = new Set<Hexpubkey>();
 
         for (const p of $followedBy) {
-            pubkeys.add(event.pubkey);
+            pubkeys.add(pubkey);
         }
 
         pubkeys.delete(pubkey);
@@ -44,7 +44,7 @@
         const pubkeys = new Set<Hexpubkey>();
 
         for (const event of $subscribeEvents) {
-            pubkeys.add(event.pubkey);
+            pubkeys.add(pubkey);
         }
 
         pubkeys.delete(pubkey);
@@ -68,7 +68,7 @@
                     <AvatarWithName {userProfile} {authorUrl} {pubkey} avatarSize="large" class="text-2xl font-medium text-white !items-start" spacing="gap-4">
                     </AvatarWithName>
 
-                    <div class="text-sm w-fit max-w-[300px]">
+                    <div class="text-sm w-fit {$$props.contentClass??""}">
                         <EventContent event={new NDKEvent()} content={userProfile?.about} ndk={$ndk} />
                     </div>
 

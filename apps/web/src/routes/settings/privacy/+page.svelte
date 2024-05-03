@@ -1,13 +1,8 @@
 <script lang="ts">
-	import Settings from '$components/PageSidebar/Settings.svelte';
 	import Checkbox from "$components/Forms/Checkbox.svelte";
     import { pageHeader, pageSidebar } from "$stores/layout";
 	import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from "svelte";
-	import MainWrapper from '$components/Page/MainWrapper.svelte';
-
-    $pageSidebar = { component: Settings, props: {} }
-    onDestroy(() => { $pageSidebar = null; })
 
     $pageHeader = {
         title: "Privacy",
@@ -28,7 +23,6 @@
     }
 </script>
 
-<MainWrapper marginClass="max-w-3xl">
     <Checkbox
         bind:value={announceClient}
 
@@ -38,7 +32,6 @@
             If this is turned on, public notes you create will have a "client" tag added. This helps with troubleshooting, and allows others to know about different nostr clients.
         </span>
     </Checkbox>
-</MainWrapper>
 
 <style lang="postcss">
     h1 {

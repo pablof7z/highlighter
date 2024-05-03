@@ -1,8 +1,6 @@
 <script lang="ts">
-	import CurrentUser from "$components/CurrentUser.svelte";
 	import SearchBar from "$components/Page/SearchBar.svelte";
     import Toolbar from "$components/PostEditor/Toolbar.svelte";
-	import Logo from "$icons/Logo.svelte";
 	import { pageHeader } from "$stores/layout";
 	import HeaderLeftButton from "../HeaderLeftButton.svelte";
 	import HeaderRightButton from "../HeaderRightButton.svelte";

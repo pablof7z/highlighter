@@ -11,6 +11,7 @@
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile;
+    export let authorUrl: string;
     export let fetching: boolean;
     export let collapsed: boolean = false;
     export let tiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
@@ -85,7 +86,8 @@
 
     <div class="flex flex-row items-center gap-2">
         {#if user.pubkey === $currentUser?.pubkey}
-            <button
+            <a
+                href="{authorUrl}/backstage"
                 class="
                     flex flex-row items-center !gap-0
                     whitespace-nowrap text-base
@@ -100,7 +102,7 @@
                 <span class="hidden lg:inline">
                     Backstage Area
                 </span>
-            </button>
+            </a>
         {:else if $tiers}
             <SubscribeButton {user} {userProfile} {tiers} buttonClass="
                 max-sm:bg-accent2 max-sm:!text-white max-sm:btn max-sm:btn-circle

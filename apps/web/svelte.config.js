@@ -20,6 +20,9 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
+		serviceWorker: {
+			register: false,
+		},
 		alias: {
 			$actions: 'src/lib/actions',
 			$components: 'src/lib/components',

@@ -9,11 +9,12 @@
 	import { Readable } from "svelte/store";
 
     export let user: NDKUser;
+	export let count: number = 5;
 
 	let topZaps: UnsubscribableStore<ZapScore[]> | undefined;
 	let debouncedTopZaps: Readable<ZapScore[]> | undefined;
 
-	getTopZapsByAggregatedAmount(user, 5).then((zaps) => {
+	getTopZapsByAggregatedAmount(user, count).then((zaps) => {
 		topZaps = zaps;
 		debouncedTopZaps = throttleStore<ZapScore[]>(topZaps, 1000);
 	});

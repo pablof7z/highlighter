@@ -3,7 +3,7 @@
 	import { detailView, layoutMode, resetLayout } from "$stores/layout";
 	import { onDestroy } from "svelte";
 
-    $layoutMode = "reversed-columns";
+    $layoutMode = "list-column";
 
     $detailView = {
         component: ScheduleList,
