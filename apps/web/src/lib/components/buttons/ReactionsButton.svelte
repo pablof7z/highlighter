@@ -2,7 +2,7 @@
 	import { ndk, user } from "@kind0/ui-common";
 	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import { ChatCircle } from 'phosphor-svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";

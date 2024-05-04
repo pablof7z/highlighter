@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { Microphone, Play, RowsPlusBottom, TextAlignLeft } from "phosphor-svelte";
+	import { Microphone, Note, Play, RowsPlusBottom, TextAlignLeft } from "phosphor-svelte";
     import NewPostItem from "./NewPostItem.svelte";
 	import StreamIcon from "$icons/StreamIcon.svelte";
 	import Box from "$components/PageElements/Box.svelte";
 	import { drafts } from "$stores/drafts";
 </script>
 
-<Box title="Create Something New" class={$$props.boxClass} innerClass="flex-col">
+<Box class={$$props.boxClass} innerClass="flex-col">
     <div class="
-        max-sm:gap-8
-        mt-4
-        gap-6
+        gap-4
+        sm:gap-6
         w-full
-        grid md:grid-flow-col
-        grid-cols-2 md:grid-cols-5
+        grid md:grid-flow-row
+        grid-cols-3 md:grid-cols-3
         justify-center
     ">
+        <NewPostItem icon={Note} title="Short Note"  href="/threads/new" />
         <NewPostItem icon={TextAlignLeft} title="Article" href="/articles/new" />
         <NewPostItem icon={Play} title="Video" href="/videos/new" />
         <NewPostItem icon={RowsPlusBottom} title="Thread" href="/threads/new" />

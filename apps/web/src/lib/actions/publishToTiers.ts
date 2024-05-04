@@ -69,7 +69,6 @@ export async function prepareEventsForTierPublish(
 	event: NDKEvent,
 	tiers: TierSelection | undefined,
 	opts: {
-		wideDistribution?: boolean;
 		teaserEvent?: NDKEvent;
 		ndk?: NDK;
 		relaySet?: NDKRelaySet;
@@ -124,7 +123,6 @@ async function publishOrSchedule(
 export async function publishToTiers(
 	event: NDKEvent,
 	opts: {
-		wideDistribution?: boolean;
 		teaserEvent?: NDKEvent;
 		ndk?: NDK;
 		relaySet?: NDKRelaySet;
@@ -151,7 +149,7 @@ export async function publishToTiers(
 
 	if (!event.sig) await event.sign();
 
-	debug("publishing event to relays", event.rawEvent() )
+	debug("publishing event to relays", event.rawEvent(), opts.relaySet)
 
-	await publishOrSchedule(event, opts.relaySet, opts.publishAt);
+	// await publishOrSchedule(event, opts.relaySet, opts.publishAt);
 }

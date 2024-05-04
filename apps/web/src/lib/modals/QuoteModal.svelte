@@ -3,7 +3,7 @@
     import HighlightBody from "$components/HighlightBody.svelte";
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
 	import { NDKEvent, NDKHighlight, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
-	import { closeModal } from "svelte-modals";
+	import { closeModal } from '$utils/modal';
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 
     export let event: NDKEvent;

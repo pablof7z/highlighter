@@ -9,7 +9,7 @@ import { ndk } from "@kind0/ui-common";
 	import { NDKFilter, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
 	import { Bell } from "phosphor-svelte";
 	import { onDestroy } from "svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 
     let { user } = $page.data;
 

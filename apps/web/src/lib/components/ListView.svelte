@@ -18,13 +18,9 @@
 
     $: id = $page.params.subId;
 
-    $detailView = {
-        component: ListViewContent,
-        props: { list, urlPrefix }
-    }
-    
     $pageSidebar = {
         component: ListSidebar,
+        focused: !id,
         props: { list, urlPrefix }
     }
 
@@ -35,6 +31,8 @@
     });
 
     let user: NDKUser | null;
+
+    $: if ($pageSidebar) $pageSidebar.focused = !id;
 
     $: {
         if (id) {

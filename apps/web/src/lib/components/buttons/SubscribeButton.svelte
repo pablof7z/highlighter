@@ -3,7 +3,7 @@
 	import CaretRight from "phosphor-svelte/lib/CaretRight";
     import currentUser from "$stores/currentUser";
     import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import SignupModal from "$modals/SignupModal.svelte";
 	import { getUserSubscriptionTiersStore, getUserSupporters } from "$stores/user-view";
 	import UserProfile from "$components/User/UserProfile.svelte";

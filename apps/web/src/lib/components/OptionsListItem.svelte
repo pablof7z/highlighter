@@ -54,7 +54,11 @@
     {#if option.icon}
         <div class="indicator">
             {#if option.badge}
-                <span class="indicator-item rounded-full bg-accent2 text-white flex items-center justify-center text-xs w-5 h-5">{$unreadNotifications}</span>
+                {#if option.badge === true}
+                    <span class="indicator-item rounded-full bg-accent2 text-white flex items-center justify-center text-xs w-2 h-2"></span>
+                    {:else}
+                    <span class="indicator-item rounded-full bg-accent2 text-white flex items-center justify-center text-xs w-5 h-5">{$unreadNotifications}</span>
+                {/if}
             {/if}
         <svelte:component this={option.icon}
             class="

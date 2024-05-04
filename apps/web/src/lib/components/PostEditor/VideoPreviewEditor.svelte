@@ -9,7 +9,7 @@
 	import { onMount } from "svelte";
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
-	import { makePublicAfter, previewExtraContent, status, view, wideDistribution } from "$stores/post-editor";
+	import { makePublicAfter, previewExtraContent, status } from "$stores/post-editor";
 	import { slide } from "svelte/transition";
 	import MakePublicAfter from "$components/Editor/Audience/MakePublicAfter.svelte";
 

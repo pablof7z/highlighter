@@ -15,9 +15,8 @@ export default defineConfig({
             project: "highlighter"
         }
     }), sveltekit(), SvelteKitPWA({
-        strategies: 'injectManifest',
+        strategies: 'generateSW',
         srcDir: 'src',
-        filename: 'service-worker.ts',
         registerType: 'autoUpdate',
         injectRegister: "inline",
         manifest: {

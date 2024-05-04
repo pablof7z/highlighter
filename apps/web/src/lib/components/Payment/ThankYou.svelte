@@ -6,7 +6,7 @@
 	import { userSubscription, getReceipts, getSortedSupporters, getUserSupporters } from "$stores/user-view";
 	import { Avatar, Name, user as currentUser } from "@kind0/ui-common";
 	import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { closeModal } from "svelte-modals";
+	import { closeModal } from '$utils/modal';
 
     export let user: NDKUser;
     let authorUrl: string;

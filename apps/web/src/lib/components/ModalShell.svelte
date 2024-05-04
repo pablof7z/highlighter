@@ -59,7 +59,9 @@
 </script>
 
 {#if isPhone}
-    <slot />
+    <div class="{$$props.class??""}">
+        <slot />
+    </div>
 {:else}
     <div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none {color}" bind:this={containerEl}>
         <div class="

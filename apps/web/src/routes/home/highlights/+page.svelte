@@ -7,13 +7,9 @@
     import createDebug from "debug";
 	import { onDestroy, onMount } from "svelte";
     import { pageHeader, pageSidebar, searching } from "$stores/layout";
-    import HighlightsSidebar from "$components/PageSidebar/Highlights.svelte";
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { getNip50RelaySet } from "$utils/ndk";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import Highlight from "$components/Highlight.svelte";
-
-    const debug = createDebug("highlighter:highlights");
 
     let selectedCategory: string;
     let events: NDKEventStore<NDKEvent> | undefined = undefined;
@@ -70,13 +66,7 @@
 
     onDestroy(() => {
         events?.unsubscribe();
-        $pageSidebar = null;
     });
-
-    $pageSidebar = {
-        component: HighlightsSidebar,
-        props: {}
-    }
 
     function searchFn(query: string) {
         // set q in the url

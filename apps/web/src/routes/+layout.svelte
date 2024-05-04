@@ -14,7 +14,7 @@
 	import { browserSetup } from './browser-session-setup';
 	import createDebug from 'debug';
 	import LoadingScreen from '$components/LoadingScreen.svelte';
-	import { openModal } from 'svelte-modals';
+	import { openModal } from '$utils/modal';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { welcomeScreenSeen } from '$stores/settings';
 	import currentUser from '$stores/currentUser';

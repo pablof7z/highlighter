@@ -5,13 +5,15 @@
     export let href: string | undefined = "#";
 </script>
 
-<a {href} class="
+<a {href} on:click class="
     rounded-2xl justify-center items-center inline-flex
-    flex-row sm:flex-col
+    flex-col
     flex-none
-    py-10 sm:px-0 sm:py-6
+    py-4 sm:px-0 sm:py-6
     gap-4 sm:gap-2
+    max-sm:mb-4
     relative
+    focus:outline-none
 ">
     {#if comingSoon}
         <div class="badge border-none whitespace-nowrap py-4 bg-neutral-900 absolute -top-5">
@@ -34,7 +36,7 @@
     }
 
     a {
-        @apply bg-white/5 hover:bg-white/10;
+        @apply max-sm:bg-white/10 hover:bg-white/10 sm:bg-white/5;
         @apply transition-all duration-300;
     }
 </style>

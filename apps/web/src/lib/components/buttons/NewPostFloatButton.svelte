@@ -2,7 +2,7 @@
 	import NewPostModal from "$modals/NewPostModal.svelte";
 	import { modal } from "$stores/layout";
 	import { Feather } from "phosphor-svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 
     function open() {
         $modal = {

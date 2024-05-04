@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { PaperPlane } from 'phosphor-svelte';
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 
     function open() {
         openModal(NewItemModal)

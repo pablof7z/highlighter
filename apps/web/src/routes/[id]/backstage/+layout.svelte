@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CurrencyBtc, Microphone, Money } from 'phosphor-svelte';
+	import { Users } from 'phosphor-svelte';
 	import HorizontalOptionsList from './../../../lib/components/HorizontalOptionsList.svelte';
 	import { ChatCenteredDots, TShirt } from 'phosphor-svelte';
 	import { Ticket } from 'phosphor-svelte';
@@ -30,7 +30,7 @@
 
     $: options = [
         { name: "Backstage", href: `${backstageUrl}`, icon: Ticket },
-        { name: "Forum", href: `${backstageUrl}/forum`, icon: Microphone },
+        { name: "Forum", href: `${backstageUrl}/forum`, icon: Users },
         { name: "Chat", href: `${backstageUrl}/chat`, icon: ChatCenteredDots },
         // { name: "Goals", href: `${backstageUrl}/goals`, icon: CurrencyBtc },
         // { name: "Merch", href: `${backstageUrl}/merch`, icon: TShirt },

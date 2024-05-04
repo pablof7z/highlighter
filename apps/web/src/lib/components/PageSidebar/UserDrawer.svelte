@@ -4,7 +4,7 @@
     import { logout } from "$utils/login";
     import currentUser from "$stores/currentUser";
 	import { Fire, Gear, House, PaperPlane, SignOut, SquaresFour, User } from "phosphor-svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import NewItemModal from "$modals/NewItemModal.svelte";
 
     let authorUrl: string;

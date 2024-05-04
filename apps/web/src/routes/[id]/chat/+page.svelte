@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Chat from '$components/PageSidebar/Chat.svelte';
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
     import ChatInput from "$components/Chat/Input.svelte";
 	import { page } from "$app/stores";
@@ -10,7 +11,7 @@
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import type { UserProfileType } from '../../../app';
-	import { pageHeader } from '$stores/layout';
+	import { layoutMode, pageHeader, pageSidebar, resetLayout } from '$stores/layout';
 	import { creatorRelayPubkey } from "$utils/const";
 	import ChatNewMember from "$components/Chat/ChatNewMember.svelte";
 	import { lastSeenGroupTimestamp } from "$stores/notifications";
@@ -55,22 +56,16 @@
 
 <UserProfile {user} bind:userProfile />
 
-<MainWrapper
-    class="!min-h-0 min-h-[calc(100vh-4rem)] flex flex-col"
-    marginClass="w-full"
->
-    <div class="flex flex-col h-full grow justify-end h-full gap-6 overflow-y-auto scrollable-content">
-        <div class="flex flex-col justify-end gap-6">
-            {#each $sortedEvents as event (event.id)}
-                {#if event.kind === NDKKind.GroupAdminAddUser}
-                    <ChatNewMember {event} />
-                {:else}
-                    <ChatBubble {event} />
-                {/if}
-            {/each}
-        </div>
-
-        <ChatInput {tags} />
+<div class="flex flex-col h-[calc(100dvh_-_var(--layout-header-height))] grow justify-end gap-6 overflow-y-auto scrollable-content relative border">
+    <div class="flex flex-col justify-end gap-6 grow overflow-y-scroll border h-full">
+        {#each $sortedEvents as event (event.id)}
+            {#if event.kind === NDKKind.GroupAdminAddUser}
+                <ChatNewMember {event} />
+            {:else}
+                <ChatBubble {event} />
+            {/if}
+        {/each}
     </div>
 
-</MainWrapper>
+    <ChatInput {tags} />
+</div>

@@ -1,14 +1,12 @@
 <script lang="ts">
-	import { layoutNavState, mainAlign, pageHeader, pageMainContentMaxWidth, resetLayout } from "$stores/layout";
+	import { pageHeader } from "$stores/layout";
 	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter, NDKEvent, NDKTag, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
-	import Swipe from "$components/Swipe.svelte";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { Readable } from "svelte/store";
 	import { computeArticleRecommendationFromHighlightStore } from "$utils/recommendations";
 	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
-	import { onDestroy } from "svelte";
 
     $pageHeader = {
         title: "Home",

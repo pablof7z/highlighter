@@ -23,10 +23,11 @@
 	import NewPost from './NewPost/NewPost.svelte';
 	import HighlightBody from '$components/HighlightBody.svelte';
 	import Swipe from '$components/Swipe.svelte';
-	import { openModal } from 'svelte-modals';
+	import { openModal } from '$utils/modal';
     import QuoteModal from '$modals/QuoteModal.svelte';
 	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
 	import { userGenericCuration } from '$stores/session';
+	import NewPostModal from '$modals/NewPostModal.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -36,6 +37,7 @@
     export let mostRecentActivity: number = event.created_at!;
     export let skipTitle = false;
     export let skipReply = false;
+    export let skipZaps = false;
     export let topLevel = true;
     export let maxContentLength = 1500;
     export let expandThread = false;
@@ -204,15 +206,17 @@
             { label: "Schedule", icon: Timer, class: "bg-success/30", cb: () => {} }
         ];
     }
+
+    function onSwipeToReply() {
+        openModal(NewPostModal, {
+            replyTo: event,
+        });
+    }
 </script>
 
 <Swipe
     leftOptions={[
-        { label: 'Reply', icon: ChatCircle, class: "bg-accent2", cb: () => {
-            showReply = true;
-            willShowReply = true;
-            autofocusNewPost = true;
-        } },
+        { label: 'Reply', icon: ChatCircle, class: "bg-accent2", cb: onSwipeToReply },
     ]}
     on:close={() => showQuoteOptions = false}
     {rightOptions}
@@ -326,11 +330,13 @@
                             {/if}
                         </a>
 
-                        <div class="flex flex-row items-center text-zinc-500 w-full max-sm:my-2" class:hidden={noZapsToShow}>
-                            <div class="flex flex-row gap-2">
-                                <TopPlusRecentZaps {event} count={3} class="text-xs" bind:isNoop={noZapsToShow} />
+                        {#if !skipZaps}
+                            <div class="flex flex-row items-center text-zinc-500 w-full max-sm:my-2" class:hidden={noZapsToShow}>
+                                <div class="flex flex-row gap-2">
+                                    <TopPlusRecentZaps {event} count={3} class="text-xs" bind:isNoop={noZapsToShow} />
+                                </div>
                             </div>
-                        </div>
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -391,7 +397,7 @@
     </div>
 </Swipe>
 {#if willShowReply}
-    <div class="pl-4">
+    <div class="md:pl-4">
         <NewPost
             kind={replyKind}
             extraTags={newPostTags}

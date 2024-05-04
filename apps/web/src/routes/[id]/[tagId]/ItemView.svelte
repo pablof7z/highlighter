@@ -18,7 +18,7 @@
 	import { pageHeader } from "$stores/layout";
 	import { CaretLeft, Lightning } from "phosphor-svelte";
 	import Highlight from "$components/Highlight.svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import { EventType } from "../../../app";
 

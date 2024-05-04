@@ -4,8 +4,6 @@
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import Article from '$components/List/Article.svelte';
 	import { page } from '$app/stores';
-	import { EventContent } from '@nostr-dev-kit/ndk-svelte-components';
-	import EventActionButtons from './buttons/EventActionButtons.svelte';
 
     export let list: NDKList;
     export let urlPrefix: string;
@@ -44,8 +42,15 @@
 
 <div class="px-4 w-full flex flex-col gap-2">
     {#if listImage}
-        <img src={listImage} alt={list.title} class="w-full h-auto object-cover rounded-2xl" />
+        <div class="-mb-10 -mx-8 relative -z-1">
+            <div class="absolute w-full bottom-0 bg-gradient-to-b from-transparent to-base-100 h-32"></div>
+            <img src={listImage} alt={list.title} class="w-full h-auto object-cover rounded-2xl rounded-b-none  max-h-[20dvh] min-h-[5rem]" />
+        </div>
     {/if}
+
+    <h1 class="text-white font-semibold z-1 relative">
+        {list.title}
+    </h1>
 
     <div class="flex flex-row items-center w-full justify-between">
         <AvatarWithName

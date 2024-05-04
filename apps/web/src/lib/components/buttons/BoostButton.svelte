@@ -3,7 +3,7 @@
 	import { ndk } from "@kind0/ui-common";
 	import { type NDKEvent, NDKKind, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher, onDestroy } from "svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import { Quotes, Repeat, ShareNetwork, Timer } from 'phosphor-svelte';
 	import ButtonWithCount from './ButtonWithCount.svelte';
 	import currentUser from '$stores/currentUser';

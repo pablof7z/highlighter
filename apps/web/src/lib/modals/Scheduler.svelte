@@ -4,7 +4,7 @@ import ModalShell from "$components/ModalShell.svelte";
 	import { RelativeTime, ndk } from "@kind0/ui-common";
 	import { NDKEvent, dvmSchedule } from "@nostr-dev-kit/ndk";
 	import { Check } from "phosphor-svelte";
-	import { closeModal } from "svelte-modals";
+	import { closeModal } from '$utils/modal';
 
     export let event: NDKEvent;
 

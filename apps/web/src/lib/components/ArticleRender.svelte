@@ -77,7 +77,7 @@
     <ItemFooter event={article} urlPrefix={url} eventType="article" class="-mx-4" />
 
     {#if article.image}
-        <div class="w-full max-h-[50vh] relative overflow-hidden">
+        <div class="w-full  max-w-[65ch] max-h-[50vh] relative overflow-hidden">
             <img class="w-full relative sm:rounded-xl object-cover object-top h-full" src={article.image} />
             <div class="absolute bottom-0 w-full h-2/5 bg-gradient-to-b from-transparent to-black"></div>
         </div>

@@ -3,7 +3,7 @@
     import User from "./OnboardingCheckingIcons/User.svelte";
     import Tiers from "./OnboardingCheckingIcons/Tiers.svelte";
 	import Post from "./OnboardingCheckingIcons/Post.svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import NewItemModal from "$modals/NewItemModal.svelte";
 	import { getUserSubscriptionTiersStore, getContent } from "$stores/user-view";
 	import { onMount } from "svelte";

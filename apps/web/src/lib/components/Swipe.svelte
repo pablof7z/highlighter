@@ -178,7 +178,11 @@
 </script>
 
 {#if Device.isPhone}
-<div class="w-full relative">
+<div class="w-full relative"
+    style="
+        touch-action: pan-y;
+    " on:touchstart={onTouchStart} on:touchmove|passive={onTouchMove} on:touchend|passive={onTouchEnd}
+>
     <div class="options-wrapper left-0" style={`
         width: ${leftOptionWidth}px;
         opacity: ${(absOffsetX / triggerActionRequirement)};
@@ -194,9 +198,7 @@
             </button>
         {/each}
     </div>
-    <div style="
-        touch-action: pan-y;
-    " bind:this={element} on:touchstart={onTouchStart} on:touchmove|passive={onTouchMove} on:touchend|passive={onTouchEnd}>
+    <div bind:this={element}>
         <slot swapActive={true} />
     </div>
     <div class="options-wrapper right-0" style={`

@@ -24,6 +24,9 @@
 {#if $currentUser}
     <ul class="w-full discussion-wrapper">
         {#key $drafts}
+            {#if $drafts.length === 0}
+                No drafts yet.
+            {/if}
             {#each $drafts as draft (draft.id)}
                 <div class="discussion-item">
                 <div class="max-h-[25vh] overflow-hidden">

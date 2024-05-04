@@ -3,7 +3,7 @@
     import { CaretDown, Plus } from "phosphor-svelte";
 	import type { TierSelection } from "$lib/events/tiers";
     import { createEventDispatcher, onMount } from "svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import TiersLabel from './TiersLabel.svelte';
 
     export let show = false;

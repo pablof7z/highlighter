@@ -4,7 +4,7 @@ import { NavigationOption } from '../../app';
 /**
  * `list-column` - The sidebar takes about 1/3 of the screen and the main content takes about 2/3 of the screen
  */
-type LayoutMode = "centered-feed-column" | "content-focused" | "full-width" | "list-column" | "single-column-focused";
+type LayoutMode = "centered-feed-column" | "content-focused" | "full-width" | "single-column-focused";
 
 export const layoutMode = writable<LayoutMode>("centered-feed-column");
 
@@ -19,7 +19,6 @@ export const pageHeaderComponent = writable<Component | null>(null);
 export const pageNavigationOptions = writable<NavigationOption[]>([]);
 
 export const pageMainContentMaxWidth = writable<string | undefined>();
-export const mainAlign = writable<"left" | "center" | "right">("left");
 
 interface Component {
 	component: ConstructorOfATypedSvelteComponent;
@@ -27,8 +26,7 @@ interface Component {
 	containerClass?: string;
 }
 
-export const pageSidebar: Writable<Component | null> = writable(null);
-export const hideMobileBottomBar: Writable<boolean> = writable(false);
+export const pageSidebar: Writable<Component & { focused: boolean } | null> = writable(null);
 
 export const detailView: Writable<Component | null> = writable(null);
 
@@ -42,8 +40,8 @@ export function resetLayout() {
 	pageHeaderComponent.set(null);
 	pageNavigationOptions.set([]);
 	pageHeader.set(null);
-	mainAlign.set("left");
 	pageMainContentMaxWidth.set(undefined);
+	pageSidebar.set(null);
 	detailView.set(null);
 }
 

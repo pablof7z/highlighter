@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import Curations from "$components/Curations.svelte";
-	import ArticleBannerBackground from "../ArticleBannerBackground.svelte";
 	import ItemFooter from "../ItemFooter.svelte";
-	import ItemSubpageHeader from "../ItemSubpageHeader.svelte";
 	import WithItem from "../WithItem.svelte";
 
     let tagId: string;

@@ -113,7 +113,10 @@
     flex flex-col
     max-sm:h-[90dvh]
 " class:hidden={publishing}>
-    <div class="flex flex-row">
+    <div class="
+        flex flex-row
+        max-sm:mt-10
+    ">
         {#if !skipAvatar}
             <Avatar user={$currentUser} size="small" class="ml-4 mt-4" />
         {/if}
@@ -137,7 +140,7 @@
                     {$$props.class??""}"
                 />
 
-                <div class="px-4 mb-4" class:hidden={isCollapsed}>
+                <div class="px-4 mb-4 shrink" class:hidden={isCollapsed}>
                     <Attachments buttonClass="btn btn-circle btn-ghost" bind:uploadedFiles />
                 </div>
 
@@ -149,7 +152,9 @@
             </div>
         {/key}
     </div>
-    <div class="max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 sm:border-t border-base-300 w-full px-4 justify-end z-40 bottom-4 max-sm:h-16
+    <div class="
+        max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 sm:border-t border-base-300 w-full px-4 justify-end z-40 bottom-4 max-sm:h-16
+        max-sm:pt-0
         {isCollapsed ? "" : "max-sm:justify-between max-sm:top-6"}
     ">
         {#if $$slots.buttonsBar}

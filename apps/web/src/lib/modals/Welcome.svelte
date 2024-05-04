@@ -7,7 +7,7 @@
     import currentUser from "$stores/currentUser";
 	import { NDKRelaySet, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
-	import { closeModal } from "svelte-modals";
+	import { closeModal } from '$utils/modal';
 
     onMount(() => {
         $welcomeScreenSeen = true;

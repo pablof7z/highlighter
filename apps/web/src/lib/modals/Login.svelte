@@ -3,7 +3,7 @@
 	import { ndk, bunkerNDK, user } from "@kind0/ui-common";
 	import { NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
-	import { closeModal } from "svelte-modals";
+	import { closeModal } from '$utils/modal';
 	import { slide } from "svelte/transition";
 	import { nip19 } from "nostr-tools";
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
@@ -30,6 +30,7 @@
         localStorage.setItem('pubkey', $user.pubkey);
 
         loginState.set('logged-in');
+        closeModal();
     }
 
     async function loginWithNsec() {
@@ -46,6 +47,8 @@
         localStorage.setItem('nostr-key', key);
 
         _login('pk', user.pubkey);
+        console.log(user.pubkey);
+        closeModal();
     }
 
     async function login() {

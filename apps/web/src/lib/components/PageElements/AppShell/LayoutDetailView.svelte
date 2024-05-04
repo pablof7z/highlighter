@@ -20,16 +20,27 @@
     }
 
     let showX = true;
+    let listMode = false;
+    let listModeDrawerActive = false;
 
+    $: listMode = $layoutMode !== "list-column";
     $: showX = $layoutMode !== "list-column";
     
 </script>
+
+<!-- <div class="backdrop backdrop-blur-sm backdrop-filter backdrop-blur-sm bg-base-900 bg-opacity-50 fixed inset-0 z-[998] hidden={!hasRightSidebarExpanded}" on:click={closeDetailView}></div> -->
 
 <aside class="
     sticky sm:top-[var(--layout-header-height)]
     max-h-screen overflow-y-auto overflow-x-clip
     !border-x !border-base-300
+
+    max-md:fixed max-md:left-0 max-md:top-0 max-md:bottom-0 max-md:overflow-x-auto
+    max-md:z-[999999]
+
+    { listMode && listModeDrawerActive ? "max-md:w-[90dvw]" : ""}
     
+
     {$$props.class??""}
 ">
     {#if $detailView}

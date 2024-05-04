@@ -5,11 +5,11 @@
     import ModalShell from "$components/ModalShell.svelte";
     import { event, event, nonSubscribersPreview, previewExtraContent, reset, status } from "$stores/post-editor";
 	import { NDKArticle, NDKKind, NDKVideo } from "@nostr-dev-kit/ndk";
-	import { closeModal } from "svelte-modals";
+	import { closeModal } from '$utils/modal';
     import { prepareEventsForTierPublish, publishToTiers } from "$actions/publishToTiers";
 	import { dvmScheduleEvent } from "$lib/dvm";
 	import { getSelectedTiers } from "$lib/events/tiers";
-	import { publishAt, makePublicAfter, preview, view, selectedTiers, wideDistribution } from "$stores/post-editor";
+	import { publishAt, makePublicAfter, preview, view, selectedTiers } from "$stores/post-editor";
 	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { debugMode } from "$stores/session";
@@ -18,6 +18,7 @@
 	import currentUser from "$stores/currentUser";
 	import ThreadItem from "$components/Editor/ThreadEditor/ThreadItem.svelte";
 	import { goto } from "$app/navigation";
+	import { publishThread } from "$lib/utils/thread";
 
     $: if ($event && $currentUser) {
         $event.pubkey = $currentUser?.pubkey;
@@ -44,72 +45,18 @@
         } catch(e) { console.log(e) }
     }
 
-    async function publishThread(thread: Thread) {
-        let rootEvent: NDKEvent | undefined;
-        let lastEvent: NDKEvent | undefined;
-        let lastPublishTime: number;
-        const timestampEventsEvery = 5; // seconds
-
-        // if publishAt is set, use it, in seconds
-        if ($publishAt) {
-            lastPublishTime = $publishAt.getTime() / 1000;
-        } else {
-            lastPublishTime = Math.floor(Date.now() / 1000); // now
+    async function _publishThread(thread: Thread) {
+        try {
+            const e = await publishThread(
+                thread,
+                $publishAt,
+                $selectedTiers
+            )
+        } catch (e) {
+            newToasterMessage(e.message, 'error');
         }
 
-        for (const item of thread.items) {
-            const event = item.event;
-            event.id = "";
-            event.sig = "";
-            event.created_at = lastPublishTime;
-
-            // next publish time should be in timestampEventsEvery seconds
-            lastPublishTime += timestampEventsEvery;
-
-            if (rootEvent) {
-                // tag the current event with the root event
-                event.tag(rootEvent, "root", true);
-
-                // if we have a lastEvent, tag it, we're replying to it since this is a thread
-                if (lastEvent) { event.tag(lastEvent, "reply", true); }
-            }
-
-            const [ eventForPublish ] = await prepareEventsForTierPublish(
-                event,
-                $selectedTiers,
-                {
-                    ndk: $ndk,
-                    wideDistribution: true,
-                    publishAt: $publishAt,
-                    explicitCreatedAt: event.created_at
-                }
-            )
-
-            if (!eventForPublish) {
-                newToasterMessage("Failed to prepare event for publish", "error");
-                return;
-            };
-
-            // sign, we need Ids
-            await eventForPublish.sign();
-            eventForPublish.rawEvent();
-
-            if (!rootEvent) {
-                rootEvent = eventForPublish;
-            } else {
-                lastEvent = eventForPublish;
-            }
-
-            await publishToTiers(
-                eventForPublish, {
-                    ndk: $ndk,
-                    wideDistribution: true,
-                    publishAt: $publishAt,
-                }
-            )
-        }
-
-        if (rootEvent) goto("/e/" + rootEvent.encode());
+        if (e) goto(`/e/${e.encode()}`);
     }
 
     async function publish() {
@@ -121,7 +68,7 @@
         }
 
         if ($event instanceof Thread) {
-            return publishThread($event);
+            return _publishThread($event);
         }
 
         // add preview content
@@ -141,7 +88,6 @@
             {
                 ndk: $ndk,
                 teaserEvent: $nonSubscribersPreview ? $preview as NDKEvent : undefined,
-                wideDistribution: $wideDistribution,
                 publishAt: $publishAt
             }
         )
@@ -151,7 +97,6 @@
                 eventForPublish!, {
                     ndk: $ndk,
                     teaserEvent: teaserForPublish as NDKEvent,
-                    wideDistribution: $wideDistribution,
                     publishAt: $publishAt
                 }
             )
@@ -299,7 +244,6 @@
             Event
             <pre>{JSON.stringify($event?.rawEvent())}</pre>
         </div>
-        <div>wideDistribution: {$wideDistribution}</div>
         <div>nonSubscribersPreview: {$nonSubscribersPreview}</div>
     {/if}
 

@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { openModal } from '$utils/modal';
 	import User from './../../PageSidebar/OnboardingCheckingIcons/User.svelte';
 	import { UserProfileType } from './../../../../app.d.js';
 	import { layoutNavState } from "$stores/layout";
     import OptionsList from "$components/OptionsList.svelte";
-	import { Bell, BookmarkSimple, Chalkboard, ChalkboardSimple, ChatCenteredDots, ChatCenteredText, ChatCircleDots, Fire, Gear, House, PaperPlaneTilt, SquaresFour, Timer } from "phosphor-svelte";
+	import { Bell, BookmarkSimple, ChalkboardSimple, ChatCircleDots, Fire, Gear, House, PaperPlaneTilt, Plus, SquaresFour, Timer } from "phosphor-svelte";
 	import { NavigationOption } from "../../../../app";
-	import { openModal } from "svelte-modals";
 	import NewItemModal from "$modals/NewItemModal.svelte";
     import currentUser from "$stores/currentUser";
 	import CurrentUser from "$components/CurrentUser.svelte";
@@ -21,14 +21,6 @@
 
     $: hasDrafts = $drafts.length > 0;
 
-    function toggle() {
-        if (collapsed) {
-            $layoutNavState = "normal";
-        } else {
-            $layoutNavState = "collapsed";
-        }
-    }
-
     let collapsed = false;
     $: collapsed = $layoutNavState === "collapsed";
     
@@ -41,10 +33,11 @@
         { name: "Bookmarks",  href: "/bookmarks", icon: BookmarkSimple },
         { name: "Creators",  href: "/creators", icon: User },
         { name: "Chat",  href: "/chat", icon: ChatCircleDots },
+        { name: "Collections", icon: SquaresFour, href: "/collections" },
         { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined },
     ]
 
-    $: options[4] = { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined };
+    $: options[5] = { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined };
     
     let publicationOptions: NavigationOption[] = [];
     let userOptions: NavigationOption[] = [];
@@ -54,7 +47,7 @@
     $: {
         publicationOptions = [
             { name: "Schedule", icon: Timer, href: "/schedule" },
-            { name: "Drafts", icon: ChalkboardSimple, href: "/drafts" },
+            { name: "Drafts", icon: ChalkboardSimple, href: "/drafts", badge: hasDrafts ? true : undefined },
         ]
     }
 
@@ -82,7 +75,7 @@
         name: "Publish",
         icon: PaperPlaneTilt,
         fn: () => openModal(NewItemModal),
-        class: collapsed ? "" : 'lg:bg-accent2/80 hover:lg:!bg-accent2 lg:!text-white'
+        class: collapsed ? "" : 'lg:!bg-accent2 lg:!text-white'
     }
 </script>
 
@@ -90,11 +83,15 @@
     <UserProfile bind:userProfile={profile} bind:authorUrl user={$currentUser} />
 {/if}
 
+{#if $$props.class?.match(/fixed/)}
+    <div class="max-sm:hidden flex-none {layoutNavWidth}"></div>
+{/if}
+
 <div class="
     flex flex-col
     sm:top-0
     sm:h-full
-    overflow-hidden z-[50000]
+    overflow-hidden z-10
     hover:overflow-visible
     flex-none
 
@@ -105,13 +102,16 @@
     {$$props.class??""}
 ">
     <!-- Mobile view -->
-    <div class="btm-nav btm-nav-lg sm:hidden fixed z-[500] !bg-black">
+    <div class="btm-nav btm-nav-lg sm:hidden fixed z-[5000000] !bg-black">
         <a href="/home" class:active={$page.url.pathname.startsWith('/home')}>
             <House class="w-navbar-icon h-navbar-icon" />
         </a>
         <a href="/bookmarks" class:active={$page.url.pathname.startsWith('/bookmarks')}>
             <BookmarkSimple class="w-navbar-icon h-navbar-icon" />
         </a>
+        <button on:click={() => openModal(NewItemModal, {})}>
+            <Plus class="w-navbar-icon h-navbar-icon" weight="duotone" />
+        </button>
         <a href="/" class:active={$page.url.pathname === '/'}>
             <Fire class="w-navbar-icon h-navbar-icon" />
         </a>

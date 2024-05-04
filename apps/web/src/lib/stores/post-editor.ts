@@ -15,7 +15,6 @@ export const currentDraftItem = writable<DraftItem | undefined>(undefined);
 export const nonSubscribersPreview = writable<boolean | undefined>(undefined);
 export const makePublicAfter = writable<number | false | undefined>(undefined);
 export const previewExtraContent = writable<{before: string|undefined, after: string|undefined} | undefined>();
-export const wideDistribution = writable<boolean | undefined>(undefined);
 export const publishAt = writable<Date | undefined>(undefined);
 export const status = writable<string[]>([]);
 
@@ -30,7 +29,6 @@ export function reset(newView: View = "edit") {
     preview.set(undefined);
     nonSubscribersPreview.set(undefined);
     makePublicAfter.set(undefined);
-    wideDistribution.set(undefined);
     publishAt.set(undefined);
     status.set([]);
 }

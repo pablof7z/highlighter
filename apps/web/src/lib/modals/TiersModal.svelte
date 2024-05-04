@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TierList from "$components/Creator/TierList.svelte";
     import ModalShell from "$components/ModalShell.svelte";
-	import { closeModal } from "svelte-modals";
+	import { closeModal } from '$utils/modal';
 </script>
 
 <ModalShell

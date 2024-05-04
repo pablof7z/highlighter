@@ -1,4 +1,7 @@
+import { prepareEventsForTierPublish, publishToTiers } from "$actions/publishToTiers";
+import { TierSelection } from "$lib/events/tiers";
 import { DraftCheckpoint, DraftItem, ThreadCheckpoint, ThreadCheckpointItem } from "$stores/drafts";
+import { ndk, newToasterMessage } from "@kind0/ui-common";
 import NDK, { NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 import { Writable, get } from "svelte/store";
 
@@ -104,4 +107,84 @@ export function saveDraft(
     }
 
     return draftItem;
+}
+
+export async function publishThread(
+    thread: Thread,
+    publishAt?: Date,
+    selectedTiers?: TierSelection,
+) {
+    const $ndk = get(ndk);
+    let rootEvent: NDKEvent | undefined;
+    let lastEvent: NDKEvent | undefined;
+    let lastPublishTime: number;
+    const timestampEventsEvery = 5; // seconds
+
+    const kind1 = thread.items[0].event.kind === NDKKind.Text;
+
+    // if publishAt is set, use it, in seconds
+    if (publishAt) {
+        lastPublishTime = Math.floor(publishAt.getTime() / 1000);
+    } else {
+        lastPublishTime = Math.floor(Date.now() / 1000); // now
+    }
+
+    for (const item of thread.items) {
+        const event = item.event;
+        event.id = "";
+        event.sig = "";
+        event.created_at = lastPublishTime;
+
+        event.content = [event.content, ...item.urls].join("\n\n");
+
+        // next publish time should be in timestampEventsEvery seconds
+        lastPublishTime += timestampEventsEvery;
+
+        if (rootEvent) {
+            // tag the current event with the root event
+            event.tag(rootEvent, "root", true);
+
+            // if we have a lastEvent, tag it, we're replying to it since this is a thread
+            if (lastEvent) { event.tag(lastEvent, "reply", true); }
+        }
+
+        let eventForPublish: NDKEvent | undefined;
+
+        if (kind1) {
+            eventForPublish = event;
+        } else {
+            eventForPublish = (await prepareEventsForTierPublish(
+                event,
+                selectedTiers,
+                {
+                    ndk: $ndk,
+                    publishAt: publishAt,
+                    explicitCreatedAt: event.created_at
+                }
+            ))[0]
+        }
+
+        if (!eventForPublish) {
+            throw new Error("Failed to prepare event for publish");
+        };
+
+        // sign, we need Ids
+        await eventForPublish.sign();
+        eventForPublish.rawEvent();
+
+        if (!rootEvent) {
+            rootEvent = eventForPublish;
+        } else {
+            lastEvent = eventForPublish;
+        }
+
+        await publishToTiers(
+            eventForPublish, {
+                ndk: $ndk,
+                publishAt: publishAt,
+            }
+        )
+    }
+
+    return rootEvent;
 }

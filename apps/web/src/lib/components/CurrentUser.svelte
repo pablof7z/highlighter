@@ -8,7 +8,7 @@
 	import currentUser from '$stores/currentUser';
 	import { UserCircle } from 'phosphor-svelte';
 	import { login } from '$utils/login';
-	import { openModal } from 'svelte-modals';
+	import { openModal } from '$utils/modal';
     import SignupModal from '$modals/SignupModal.svelte';
 
     export let withName = false;
@@ -56,8 +56,8 @@
             {/if}
         </UserProfile>
     {:else}
-        <button on:click={openSignupModal} class="w-full h-full">
-            <UserCircle class="w-full h-full" />
+        <button on:click={openSignupModal} class="w-10 h-10">
+            <UserCircle class="w-full h-full" weight="light" />
         </button>
     {/if}
 </div>

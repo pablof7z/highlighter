@@ -4,7 +4,7 @@
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { LockSimple } from "phosphor-svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
     import { user } from "@kind0/ui-common";
 
     export let event: NDKEvent;

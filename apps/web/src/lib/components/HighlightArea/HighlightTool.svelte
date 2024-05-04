@@ -10,7 +10,7 @@
 	import { ChatCircle, Quotes, Repeat, Share } from "phosphor-svelte";
 	import { onDestroy, onMount } from "svelte";
     import { ReferenceElement, autoUpdate, computePosition, offset } from '@floating-ui/dom';
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import { NDKHighlight, NDKKind, NDKTag } from '@nostr-dev-kit/ndk';
 	import { ndk } from '@kind0/ui-common';
 	import { getParagraph, getText } from '$utils/text';

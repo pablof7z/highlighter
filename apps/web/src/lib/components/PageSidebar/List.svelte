@@ -29,9 +29,9 @@
     <title>{listTitle}</title>
 </svelte:head>
 
-<PageSidebar title={listTitle} bind:open innerClass="!px-0 !gap-0">
-    <ListViewContent {list} {urlPrefix} />
-</PageSidebar>
+<div class="h-screen">
+<ListViewContent {list} {urlPrefix} />
+</div>
 
 <style lang="postcss">
     .tab {

@@ -35,11 +35,11 @@
             color="black"
             class="border-none text-xl"
             bind:value={title}
-            placeholder="What is this thread about?" autofocus={true}
+            placeholder="Title" autofocus={true}
         />
         <NewPost
             kind={NDKKind.GroupNote}
-            placeholder="What are your thoughts?"
+            placeholder="Write a post..."
             editorClass="text-white min-h-[7rem]"
             skipAvatar={true}
             collapsed={false}

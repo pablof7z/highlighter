@@ -10,7 +10,7 @@
 	import { termToShort } from "$utils/term";
 	import WalletConnect from '$components/Payment/WalletConnect.svelte';
 	import Subscribe from '$components/Payment/Subscribe.svelte';
-	import { closeModal } from 'svelte-modals';
+	import { closeModal } from '$utils/modal';
 	import { onMount } from 'svelte';
 	import ThankYou from '$components/Payment/ThankYou.svelte';
 	import { isNwcAvailable } from '$utils/nwc';

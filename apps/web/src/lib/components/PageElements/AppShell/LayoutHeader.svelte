@@ -35,8 +35,14 @@
             </div>
         {:else}
             <div class="flex items-center justify-between px-4 w-full">
-                {#if !hasSidebar && $pageHeader?.left}
-                    <HeaderLeftButton />
+                {#if $pageHeader?.left}
+                    <div class="
+                        {hasSidebar ?
+                            "md:hidden" :
+                            ""}
+                    ">
+                        <HeaderLeftButton />
+                    </div>
                 {/if}
 
                 <!-- If we have a sidebar, don't show the title on desktop -->

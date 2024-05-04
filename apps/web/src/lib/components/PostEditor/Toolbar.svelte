@@ -1,14 +1,16 @@
     <script lang="ts">
-	import { Thread } from '$utils/thread.js';
+	import { Thread, publishThread } from '$utils/thread.js';
 	import PublishConfirmationModal from './PublishConfirmationModal.svelte';
-	import { CaretLeft, CaretRight } from "phosphor-svelte";
-    import { event, view, type, status, View, currentDraftItem } from "$stores/post-editor";
-	import { openModal } from "svelte-modals";
+	import { CaretLeft, CaretRight, Timer } from "phosphor-svelte";
+    import { event, view, type, status, View, currentDraftItem, selectedTiers } from "$stores/post-editor";
+	import { openModal } from '$utils/modal';
 	import { debugMode } from '$stores/session';
     import { getUserSubscriptionTiersStore } from '$stores/user-view';
 	import { saveDraft } from '$utils/thread';
 	import { drafts } from '$stores/drafts';
 	import { goto } from '$app/navigation';
+	import ScheduleModal from '$modals/ScheduleModal.svelte';
+	import { TierSelection } from '$lib/events/tiers';
 
     function previewAndPublish() {
         openModal(PublishConfirmationModal)
@@ -81,6 +83,50 @@
         }
     }
 
+    async function _publishThread() {
+        if (!($event instanceof Thread)) {
+            throw 'not a thread';
+        }
+
+        let tiers: TierSelection | undefined = $selectedTiers;
+
+        // if this is a kind 1 no tiers
+        if ($event.items[0].event.kind === 1) {
+            tiers = undefined;
+        }
+
+        await publishThread(
+            $event,
+            undefined,
+            tiers
+        );
+    }
+
+    async function scheduleThread() {
+        if (!($event instanceof Thread)) {
+            throw 'not a thread';
+        }
+
+        const length = $event.items.length;
+
+        let action = "Thread will be published";
+
+        if (length === 1) {
+            action = "Post will be published";
+        }
+        
+        openModal(ScheduleModal, {
+            action,
+            onSchedule: async (timestamp: number) => {
+                await publishThread(
+                    $event as Thread,
+                    new Date(timestamp),
+                    $selectedTiers
+                );
+            }
+        });
+    }
+
     let hasStatus = $status.length;
     $: hasStatus = $status.length;
 </script>
@@ -109,19 +155,31 @@
 
     <div class="flex flex-row gap-4 self-end">
         {#if next}
-            {#if ($type === "article")}
+            {#if ($type === "article" || $type === "thread")} 
                 <button class="truncate" on:click={togglePreview} class:button={$view === "view-preview"}>
                     Preview
                 </button>
-            {:else if ($type === "thread")}
+            {/if}
+            {#if ($type === "thread")}
                 <button class="truncate" on:click={threadSaveDraft}>
                     Save Draft
                 </button>
             {/if}
-            <button class="button" on:click={nextClicked} disabled={$view === "view-preview"}>
-                {next.label}
-                <CaretRight size={24} />
-            </button>
+
+            {#if $type === "thread" && next.value === "schedule"}
+                <button class="btn btn-circle" on:click={scheduleThread}>
+                    <Timer size={24} />
+                </button>
+
+                <button class="button" on:click={_publishThread}>
+                    Publish
+                </button>
+            {:else}
+                <button class="button" on:click={nextClicked} disabled={$view === "view-preview"}>
+                    {next.label}
+                    <CaretRight size={24} />
+                </button>
+            {/if}
         {/if}
     </div>
 </div>

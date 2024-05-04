@@ -3,14 +3,16 @@
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import currentUser from "$stores/currentUser";
 	import { onMount, onDestroy } from "svelte";
-	import { detailView, layoutMode, resetLayout } from "$stores/layout";
+	import { detailView, layoutMode, pageSidebar, resetLayout } from "$stores/layout";
+	import { page } from '$app/stores';
 
     let startedUserView = false;
     let mounted = false;
 
-    $layoutMode = "list-column";
-    $detailView = {
+    $layoutMode = "single-column-focused";
+    $pageSidebar = {
         component: SettingsMenu,
+        focused: true,
         props: {}
     }
 

@@ -9,7 +9,7 @@
 	import { Article, Atom, Gear, ListPlus, Notepad, Ticket, UsersThree } from "phosphor-svelte";
 	import SidebarPublishButton from "./SidebarPublishButton.svelte";
     import currentUser from "$stores/currentUser";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 	import SignupModal from "$modals/SignupModal.svelte";
 	import { UserProfileType } from "../../../../app";

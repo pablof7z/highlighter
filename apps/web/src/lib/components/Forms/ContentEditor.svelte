@@ -14,6 +14,7 @@
     export let toolbar = true;
     export let autofocus = false;
     export let allowMarkdown = true;
+    export let enterSubmits = false;
 
     const dispatch = createEventDispatcher();
 
@@ -42,6 +43,27 @@
                 toolbar: toolbar ? { container: toolbarEl } : false,
                 keyboard: {
                     bindings: {
+                        justEnter: {
+                            key: 'Enter',
+                            handler: () => {
+                                if (enterSubmits) {
+                                    dispatch("submit");
+                                } else {
+                                    const range = quill.getSelection();
+                                    if (range) quill.insertText(range.index, "\n");
+                                }
+                            }
+                        },
+                        shiftEnter: {
+                            key: 'Enter',
+                            shiftKey: true,
+                            handler: () => {
+                                if (enterSubmits) {
+                                    const range = quill.getSelection();
+                                    if (range) quill.insertText(range.index, "\n");
+                                }
+                            }
+                        },
                         // when cmd+enter dispatch a submit event
                         cmdEnter: {
                             key: 'Enter',

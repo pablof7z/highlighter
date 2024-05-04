@@ -5,7 +5,7 @@
 	import { seenOnboardingPromptGridItem } from "$stores/settings";
 	import { CaretRight, X } from "phosphor-svelte";
 	import { onMount } from "svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 	import { userTiers } from '$stores/session';
 	import { slide } from 'svelte/transition';
 

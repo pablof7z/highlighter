@@ -1,12 +1,13 @@
 <script lang="ts">
 	import ScheduleList from "$components/Schedule/ScheduleList.svelte";
-	import { detailView, layoutMode, resetLayout } from "$stores/layout";
+	import { detailView, layoutMode, pageSidebar, resetLayout } from "$stores/layout";
 	import { onDestroy } from "svelte";
 
-    $layoutMode = "list-column";
+    $layoutMode = "single-column-focused";
 
-    $detailView = {
+    $pageSidebar = {
         component: ScheduleList,
+        focused: true,
         props: {}
     }
 

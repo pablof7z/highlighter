@@ -22,12 +22,12 @@
 {#if isPhone}
 	<Drawer.Root open={!!$modal}>
 		<Drawer.Portal>
-			<Drawer.Overlay class="fixed inset-0 bg-white" />
+			<Drawer.Overlay class="fixed inset-0 bg-black/50 z-50" />
 			<Drawer.Content
 				class="bg-base-100 flex flex-col rounded-t-box mt-24 z-[999999] fixed bottom-0 left-0 right-0"
 			>
-				<div class="p-6 rounded-t-box flex-1">
-					<div class="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full mb-8 bg-white" />
+				<div class="rounded-t-box flex-1">
+					<div class="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full mt-4 bg-white" />
 				</div>
 				
 				{#if $modal}

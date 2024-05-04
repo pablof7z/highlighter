@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { Avatar, Name, RelativeTime, ndk } from "@kind0/ui-common";
-	import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+	import { NDKHighlight, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import Attachments from "$components/Feed/NewPost/Attachments.svelte";
 	import LengthIndicator from "$components/LengthIndicator.svelte";
     import { createEventDispatcher } from "svelte";
-	import { X } from "phosphor-svelte";
+	import { InstagramLogo, StackPlus, X } from "phosphor-svelte";
 	import { ThreadItem } from "$utils/thread";
 	import currentUser from "$stores/currentUser";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import { openModal } from "$utils/modal";
+	import SelectHighlight from "$modals/SelectHighlight.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -17,9 +19,19 @@
     export let shouldDisplayVerticalBar: boolean;
     export let autofocus = false;
     export let content = item.event.content;
+    export let urls = item.urls;
     export let readOnly = false;
     let hasFocus = false;
     let resetEditorAt = new Date();
+
+    function selectHighlight() {
+        openModal(SelectHighlight, {
+            onSelect: (highlight: NDKHighlight) => {
+                content += `nostr:${highlight.encode()}`
+                resetEditorAt = new Date();
+            }
+        });
+    }
 
     const title = item.event.tagValue("title");
 
@@ -118,7 +130,10 @@
 
                         <div class="px-4 flex flex-row items-center justify-between">
                             <div class="flex flex-row gap-2 items-center justify-stretch transition-all duration-300 group-hover:!opacity-100" class:opacity-20={!hasFocus}>
-                                <Attachments buttonClass="btn btn-ghost btn-circle btn-sm !py-1 text-zinc-300" bind:uploadedFiles={item.urls} />
+                                <button class="btn btn-ghost btn-circle" on:click={selectHighlight}>
+                                    <StackPlus size={24} />
+                                </button>
+                                <Attachments buttonClass="btn btn-ghost btn-circle btn-sm !py-1 text-zinc-300" bind:uploadedFiles={urls} />
                             </div>
                         </div>
                     {/key}

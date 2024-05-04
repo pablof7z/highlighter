@@ -4,7 +4,7 @@
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import VideoMetaPage from "./VideoMetaPage.svelte";
 	import VideoPreviewEditor from "$components/PostEditor/VideoPreviewEditor.svelte";
-	import { nonSubscribersPreview, preview, previewContentChanged, previewTitleChanged, selectedTiers, view, wideDistribution } from "$stores/post-editor";
+	import { preview, previewContentChanged, previewTitleChanged, view } from "$stores/post-editor";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { user } from "@kind0/ui-common";
 
@@ -13,10 +13,6 @@
     export let teaser: NDKVideo;
 
     $preview = teaser;
-
-    $: $wideDistribution = !!(
-        $preview && ($preview as NDKVideo).url || $selectedTiers["Free"]?.selected
-    )
 
     $: if ($view !== "edit-preview" && $preview instanceof NDKVideo) {
         $preview.thumbnail = video.thumbnail;

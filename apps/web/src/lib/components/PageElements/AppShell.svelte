@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { layoutMode } from '$stores/layout.js';
+	import { layoutMode, pageSidebar } from '$stores/layout.js';
     import { modal, modalState, layoutNavState, detailView } from "$stores/layout";
 	import { Toaster, pageDrawerToggle } from '@kind0/ui-common';
 	import Modal from './Modal.svelte';
@@ -9,6 +9,7 @@
 	import PageNavigation from "./AppShell/PageNavigation.svelte";
 	import LayoutDetailView from "./AppShell/LayoutDetailView.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';
+	import PageSidebar from './AppShell/PageSidebar.svelte';
 	
 
 	let showSectionHeaderWithButtons = false;
@@ -35,14 +36,21 @@
 	let mainAndDetailWrapper: string;
 	let mainWrapper: string;
 	let detailWrapper: string;
+	let sidebarWrapper: string;
 
 	$: switch ($layoutMode) {
 		case 'full-width':
 			$layoutNavState = 'collapsed';
 			layoutWrapper = "w-full";
 			mainAndDetailWrapper = "max-w-none w-full";
-			navWrapper = "sm:left-0 sticky";
 			mainWrapper = "w-full";
+			if ($pageSidebar) {
+				sidebarWrapper = "w-1/3 max-w-[400px] lg:p-6";
+				mainAndDetailWrapper = "max-w-none w-[calc(100vw_-_400px)]";
+				mainWrapper = "w-[calc(100vw_-_400px)]";
+			}
+			navWrapper = "sm:left-0 sticky";
+			
 			break;
 		case 'centered-feed-column':
 			mainAndDetailWrapper = "";
@@ -67,15 +75,21 @@
 			mainAndDetailWrapper = "max-w-7xl mx-auto w-fit justify-center";
 			navWrapper = "fixed sm:left-0 bg-base-200";
 			mainWrapper = "max-w-3xl w-full grow";
+
+			if ($pageSidebar) {
+				sidebarWrapper = "w-1/3 max-w-[500px] lg:px-6 top-0";
+				mainAndDetailWrapper = "max-w-7xl mr-auto w-fit justify-center";
+			}
+			
 			break;
-		case "list-column":
-			$layoutNavState = 'collapsed';
-			layoutWrapper = "w-full";
-			mainAndDetailWrapper = "flex-row-reverse w-[calc(100vw_-_5rem)]";
-			navWrapper = "sticky sm:left-0 !bg-base-200 sm:h-screen";
-			mainWrapper = "w-2/3 grow lg:px-6";
-			detailWrapper = "w-1/3 max-w-[500px] lg:p-6";
-			break;
+		// case "list-column":
+		// 	$layoutNavState = 'collapsed';
+		// 	layoutWrapper = "w-full";
+		// 	mainAndDetailWrapper = "flex-row-reverse w-[calc(100vw_-_5rem)]";
+		// 	navWrapper = "sticky sm:left-0 !bg-base-200 sm:h-screen";
+		// 	mainWrapper = "w-2/3 grow lg:px-6";
+		// 	detailWrapper = "w-1/3 max-w-[500px] lg:p-6";
+		// 	break;
 		case "single-column-focused":
 			$layoutNavState = 'collapsed';
 			layoutWrapper = "w-full";
@@ -93,7 +107,7 @@
 <div class="
 	_border border-red-500
 	flex flex-col min-h-screen items-stretch justify-stretch
-	gap-0 h-full
+	gap-0 h-ful
 
 	max-w-screen overflow-x-clip
 ">
@@ -103,6 +117,8 @@
 	">
 		<!-- Layout navbar -->
 		<LayoutNavigation class={navWrapper} />
+
+		<PageSidebar class={sidebarWrapper} />
 
 		<div class="
 			flex flex-row w-full _border border-green-500

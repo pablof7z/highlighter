@@ -3,7 +3,7 @@
 	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { CaretRight, DownloadSimple, Question, UserList } from 'phosphor-svelte';
 	import { onMount } from "svelte";
-	import { openModal } from 'svelte-modals';
+	import { openModal } from '$utils/modal';
 
     let LottiePlayer: any;
 

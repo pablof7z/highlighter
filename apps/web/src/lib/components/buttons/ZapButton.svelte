@@ -2,7 +2,7 @@
 	import { ZapModal } from "@kind0/ui-common";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Lightning } from "phosphor-svelte";
-	import { openModal } from "svelte-modals";
+	import { openModal } from '$utils/modal';
 
     export let event: NDKEvent;
     export let showHelperText = false;

@@ -1,15 +1,20 @@
 <script lang="ts">
 	import { drafts, type DraftItem, DraftCheckpoint } from "$stores/drafts";
-	import { newToasterMessage } from "@kind0/ui-common";
+	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import currentUser from "$stores/currentUser";
 	import ThreadItem from "./ThreadItem.svelte";
 	import { Plus } from "phosphor-svelte";
-	import { afterUpdate, onDestroy, onMount } from 'svelte';
+	import { afterUpdate, onMount } from 'svelte';
 	import { Thread, saveDraft } from '$utils/thread.js';
-	import { currentDraftItem, event } from "$stores/post-editor";
-	import { debounce, throttle } from "@sveu/shared";
+	import { currentDraftItem, event, view } from "$stores/post-editor";
+	import { debounce } from "@sveu/shared";
+	import { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { derived } from "svelte/store";
+	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import AvatarWithName from "$components/User/AvatarWithName.svelte";
+	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 
     export let thread: Thread;
     export let draftItem: DraftItem | undefined = undefined;
@@ -45,15 +50,41 @@
 		thread.items = thread.items;
 		throttleSave();
 	}
+
+	let currentView = "view-edit";
+	let previewEvents: NDKEvent[] = [];
+	
+	$: if (currentView !== $view) {
+        if ($view === "view-preview") {
+			previewEvents = [];
+			for (const item of thread.items) {
+				const e = new NDKEvent($ndk, item.event.rawEvent());
+				e.content = [e.content, ...item.urls].join("\n\n");
+				e.pubkey = $currentUser!.pubkey;
+				e.author = $currentUser!;
+				e.id = Math.random().toString(36).substring(7);
+				previewEvents.push(e);
+			}
+			
+			previewEvents = previewEvents;
+			currentView = $view;
+        } else {
+            currentView = $view;
+        }
+    }
 </script>
 
-<div class="max-w-3xl w-full sm:px-6">
-<Shell type="thread">
+<div class="max-w-3xl w-full sm:px-6 overflow-x-clip">
+<Shell
+	type="thread"
+	on:prepare
+>
 	<UserProfile user={$currentUser} let:userProfile>
-		{#each thread.items as item, i (item.event.id??Math.random())}
+		{#each thread.items as item, i (i)}
 			<ThreadItem
 				bind:item
 				bind:content={item.event.content}
+				bind:urls={item.urls}
 				{userProfile}
 				shouldDisplayVerticalBar={true}
 				autofocus={i === thread.items.length - 1}
@@ -73,5 +104,17 @@
 			</button>
 		</div>
 	</UserProfile>
+	<div slot="viewPreview" class="discussion-wrapper">
+		{#key $view}
+			{#each previewEvents as event, i (i)}
+				<div class="discussion-item">
+					<AvatarWithName user={$currentUser} avatarSize="medium" spacing="gap-4" nameClass="text-sm opacity-50" />
+					<div class="pl-14 py-6">
+						<EventContent ndk={$ndk} event={event} />
+					</div>
+				</div>
+			{/each}
+		{/key}
+	</div>
 </Shell>
 </div>

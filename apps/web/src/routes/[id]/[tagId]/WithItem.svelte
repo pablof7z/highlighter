@@ -110,7 +110,7 @@
     $: if (article && !summary) summary = getSummary(article);
     $: if (video && !summary) summary = video.content;
 
-    export let eventType: EventType | undefined;
+    export let eventType: EventType | undefined = undefined;
     let tiersWithFullAccess: string[] | undefined;
     let isFullVersion: boolean;
     let hasAccessToFullVersion: boolean | undefined;

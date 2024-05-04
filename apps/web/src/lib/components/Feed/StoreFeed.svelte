@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Readable, derived } from "svelte/store";
-	import { NDKArticle, NDKEvent, NDKEventId, NDKHighlight, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKEventId, NDKHighlight, NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 	import Highlight from "$components/Highlight.svelte";
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
 	import { navigateToEvent } from "./navigate-to-event";
@@ -8,6 +8,7 @@
 	import EventWrapper from "./EventWrapper.svelte";
 	import { pluralize } from "$utils";
 	import GroupNote from "$components/Events/GroupNote.svelte";
+	import CurationItem from "$components/CurationItem.svelte";
 
     export let feed: Readable<NDKEvent[]>;
     export let renderLimit = 10;
@@ -123,6 +124,8 @@
                 <Highlight
                     highlight={NDKHighlight.from(event)}
                 />
+            {:else if event.kind === NDKKind.ArticleCurationSet}
+                <CurationItem list={NDKList.from(event)} grid={false} />
             {:else}
                 <EventWrapper
                     {event}

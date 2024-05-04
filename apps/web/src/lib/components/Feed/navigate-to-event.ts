@@ -1,4 +1,5 @@
 import { pushState } from "$app/navigation";
+import NoteDetailView from "$components/DetailView/NoteDetailView.svelte";
 import { detailView } from "$stores/layout";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 
@@ -7,7 +8,7 @@ export function navigateToEvent(event: NDKEvent) {
         detailView: true,
     });
     detailView.set({
-        component: 'Note',
+        component: NoteDetailView,
         props: { event }
     });
 }

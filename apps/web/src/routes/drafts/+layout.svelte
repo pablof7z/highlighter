@@ -2,9 +2,7 @@
 	import DraftsMenu from '$components/Drafts/Menu.svelte';
     import { page } from "$app/stores";
     import { detailView, layoutMode, pageHeader, pageSidebar, resetLayout } from "$stores/layout";
-    import Drafts from "$components/PageSidebar/Drafts.svelte";
 	import { onDestroy } from "svelte";
-	import { reset } from '$stores/post-editor';
 
     let id: string;
 
@@ -14,9 +12,10 @@
         title: "Drafts",
     }
 
-    $layoutMode = "list-column";
-    $detailView = {
+    $layoutMode = "content-focused";
+    $pageSidebar = {
         component: DraftsMenu,
+        focused: true,
         props: {}
     }
 

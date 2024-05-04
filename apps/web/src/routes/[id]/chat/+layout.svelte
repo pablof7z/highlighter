@@ -3,9 +3,10 @@
     import { detailView, layoutMode, pageHeader, pageSidebar, resetLayout } from '$stores/layout.js';
 	import { onDestroy } from 'svelte';
 
-    $layoutMode = 'list-column';
-    $detailView = {
+    $layoutMode = "full-width";
+    $pageSidebar = {
         component: Chat,
+        focused: true,
         props: {
             activeUser: undefined
         }

@@ -2,7 +2,7 @@
 	import { type, event, preview, view, status } from "$stores/post-editor";
 	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { Warning } from "phosphor-svelte";
-	import { closeModal } from "svelte-modals";
+	import { closeModal } from '$utils/modal';
 	import { slide } from "svelte/transition";
 
     export let canPublish: boolean | undefined = undefined;

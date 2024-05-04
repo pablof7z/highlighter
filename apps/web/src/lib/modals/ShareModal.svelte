@@ -7,13 +7,11 @@
     import ModalShell from "$components/ModalShell.svelte";
 	import OptionsList from "$components/OptionsList.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { Option } from "$components/option";
 	import { urlSuffixFromTagId, urlSuffixFromEvent } from "$utils/url";
-	import { Avatar, Name, Textarea, ndk, user } from "@kind0/ui-common";
+	import { ndk } from "@kind0/ui-common";
 	import { NDKArticle, NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
-	import { CaretDown } from "phosphor-svelte";
-	import { closeModal } from "svelte-modals";
-	import { slide } from "svelte/transition";
+	import { closeModal } from '$utils/modal';
+	import { NavigationOption } from "../../app";
 
     export let event: NDKEvent;
 
@@ -77,7 +75,7 @@
 
     let advanced = false;
 
-    let options: Option[] = [
+    let options: NavigationOption[] = [
         {
             name: "Publish on Nostr",
         },
@@ -118,6 +116,7 @@
                                 expandThread={false}
                                 skipFooter={true}
                                 skipReply={true}
+                                showReply={false}
                                 compact={true}
                             />
                         </div>

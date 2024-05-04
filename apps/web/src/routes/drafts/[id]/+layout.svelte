@@ -7,7 +7,7 @@
 
     $: id = $page.url.search?.substring(1);
 
-    onDestroy(() => { $pageSidebar = null; })
+    $pageSidebar.focused = false;
 </script>
 
 <slot />
