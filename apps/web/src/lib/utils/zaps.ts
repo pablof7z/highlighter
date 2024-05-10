@@ -122,7 +122,7 @@ export async function getTopZapsByIndividualAmount(
     return { ...topZaps, unsubscribe: () => zaps.unsubscribe() };
 }
 
-const getZapperPubkey = async (eventOrUser: NDKEvent | NDKUser) => {
+export const getZapperPubkey = async (eventOrUser: NDKEvent | NDKUser) => {
     const $ndk = get(ndk);
     return await NDKZap.getZapperPubkey($ndk, eventOrUser.pubkey);
 }

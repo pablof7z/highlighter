@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Device from 'svelte-device-info';
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
-	import { pageHeaderComponent, pageNavigationOptions } from "$stores/layout";
+	import { pageHeaderComponent, pageNavigationOptions, pageNavigationOptionsValue } from "$stores/layout";
 	import { onDestroy } from "svelte";
 
     let container: HTMLElement;
@@ -50,7 +50,11 @@
         {/if}
         
         <div class="h-[var(--layout-header-height)]">
-            <HorizontalOptionsList options={$pageNavigationOptions} class="w-full gap-0" />
+            <HorizontalOptionsList
+                options={$pageNavigationOptions}
+                bind:value={$pageNavigationOptionsValue}
+                class="w-full gap-0"
+            />
         </div>
     </div>  
 {/if}

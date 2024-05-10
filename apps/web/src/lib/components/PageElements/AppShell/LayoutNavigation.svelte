@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { openModal } from '$utils/modal';
-	import User from './../../PageSidebar/OnboardingCheckingIcons/User.svelte';
 	import { UserProfileType } from './../../../../app.d.js';
 	import { layoutNavState } from "$stores/layout";
     import OptionsList from "$components/OptionsList.svelte";
-	import { Bell, BookmarkSimple, ChalkboardSimple, ChatCircleDots, Fire, Gear, House, PaperPlaneTilt, Plus, SquaresFour, Timer } from "phosphor-svelte";
+	import { Bell, BookmarkSimple, ChalkboardSimple, Fire, Gear, House, PaperPlaneTilt, Plus, SquaresFour, Timer } from "phosphor-svelte";
 	import { NavigationOption } from "../../../../app";
 	import NewItemModal from "$modals/NewItemModal.svelte";
-    import currentUser from "$stores/currentUser";
+    import currentUser, { isGuest } from "$stores/currentUser";
 	import CurrentUser from "$components/CurrentUser.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { page } from '$app/stores';
@@ -28,16 +27,28 @@
     $: layoutNavWidth = collapsed ? "w-navbar-collapsed" : "pl-6";
 
 
-    const options: NavigationOption[] = [
+    let options: NavigationOption[] = [
         { name: "Home", icon: House, href: "/home" },
         { name: "Bookmarks",  href: "/bookmarks", icon: BookmarkSimple },
-        { name: "Creators",  href: "/creators", icon: User },
-        { name: "Chat",  href: "/chat", icon: ChatCircleDots },
-        { name: "Collections", icon: SquaresFour, href: "/collections" },
-        { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined },
+        { name: "Discover",  href: "/discover", icon: Fire },
+        { name: "Collections",  href: "/collections", icon: SquaresFour },
     ]
 
-    $: options[5] = { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined };
+    $: {
+        if ($currentUser && (!$isGuest || $hasUnreadNotifications)) {
+            options.push(
+                { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined }
+            );
+        } else {
+            // remove the option with name notifications
+            const index = options.findIndex(option => option.name === "Notifications");
+            if (index !== -1) {
+                options.splice(index, 1);
+            }
+        }
+
+        options = options;
+    }
     
     let publicationOptions: NavigationOption[] = [];
     let userOptions: NavigationOption[] = [];

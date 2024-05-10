@@ -17,6 +17,7 @@
     export let showReply = false;
     export let scrollIntoView = false;
     export let compact = false;
+    export let skipFooter = false;
 </script>
 
 <!-- <div class="flex flex-row items-center justify-between mb-4">
@@ -43,6 +44,7 @@
     placeholder="Add your thoughts about this highlight..."
     class="mb-4" {expandReplies}
     {compact}
+    {skipFooter}
     on:publish={() => {
         showReply = false;
         highlight.publish();

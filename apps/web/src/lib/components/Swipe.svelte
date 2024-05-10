@@ -26,7 +26,7 @@
     if (triggerActionRequirement > 100) { triggerActionRequirement = 100; }
 
     // Is the user dragging the element?
-    let dragging = false;
+    let dragging: boolean | undefined = undefined;
 
     // The x position of the touch start
     let startX = 0;
@@ -59,9 +59,10 @@
     }
 
     function onTouchStart(event: TouchEvent) {
-        dragging = true;
         startX = event.touches[0].clientX - positionX;
         startY = event.touches[0].clientY;
+
+        dragging = undefined;
     }
 
     function isValidDragging(offsetX: number, offsetY: number) {
@@ -82,29 +83,43 @@
         return true;
     }
 
-    const threshold = 20; // don't render the options if the user is scrolling
+    const threshold = 30; // don't render the options if the user is scrolling
 
     function onTouchMove(event: TouchEvent) {
-        if (dragging) {
-            let xOffset = event.touches[0].clientX - startX;
-            let yOffset = event.touches[0].clientY - startY;
-            goingLeft = xOffset > 0;
-            absOffsetX = Math.abs(xOffset);
-            
-            if (absOffsetX < threshold) {
-                positionX = 0;
+        let xOffset = event.touches[0].clientX - startX;
+        let yOffset = event.touches[0].clientY - startY;
+
+        // if we've already determined that this is a scroll, don't do anything
+        if (dragging === false) return;
+        
+        if (dragging === undefined) {
+            // detect if this is dragging or scrolling
+            if (Math.abs(yOffset) > threshold) {
+                dragging = false;
                 return;
             }
 
-            if (!isValidDragging(xOffset, yOffset)) {
-                return;
+            if (Math.abs(xOffset) > threshold) {
+                dragging = true;
             }
-            
-            // the larger the difference is in the y direction, the more x trends towards 0
-
-            // limit the x offset to the triggerActionRequirement
-            updatePosition(xOffset);
         }
+        
+        goingLeft = xOffset > 0;
+        absOffsetX = Math.abs(xOffset);
+        
+        if (absOffsetX < threshold) {
+            positionX = 0;
+            return;
+        }
+
+        if (!isValidDragging(xOffset, yOffset)) {
+            return;
+        }
+
+        event.preventDefault();
+
+        // limit the x offset to the triggerActionRequirement
+        updatePosition(xOffset);
     }
 
     function updatePosition(xOffset: number) {
@@ -134,7 +149,13 @@
     }
 
     function onTouchEnd(event: TouchEvent) {
-        dragging = false;
+        if (!dragging) {
+            dragging = undefined;
+            return;
+        }
+        
+        dragging = undefined;
+        
         const offsetX = event.changedTouches[0].clientX - startX;
         const offsetY = event.changedTouches[0].clientY - startY;
         goingLeft = offsetX > 0;
@@ -181,7 +202,7 @@
 <div class="w-full relative"
     style="
         touch-action: pan-y;
-    " on:touchstart={onTouchStart} on:touchmove|passive={onTouchMove} on:touchend|passive={onTouchEnd}
+    " on:touchstart={onTouchStart} on:touchmove={onTouchMove} on:touchend|passive={onTouchEnd}
 >
     <div class="options-wrapper left-0" style={`
         width: ${leftOptionWidth}px;
@@ -189,8 +210,8 @@
     `}>
         {#each leftOptions as opt, i}
             <button
-                on:click={() => { if (opt.cb() !== true) updatePosition(0); }}
-                class="option {opt.class??""}"
+                on:click={() => { if (opt.cb() !== true) setTimeout(() => updatePosition(0), 500); }}
+                class="focus:brightness-50 {opt.class??""}"
                 style={`width: ${triggerActionRequirement}px;`}
             >
                 <svelte:component this={opt.icon} class="w-12 h-12 !text-white" />
@@ -203,12 +224,12 @@
     </div>
     <div class="options-wrapper right-0" style={`
         width: ${rightOptionWidth}px;
-        opac_ity: ${(absOffsetX / triggerActionRequirement)};
+        opacity: ${(absOffsetX / triggerActionRequirement)};
     `}>
         {#each rightOptions as opt, i}  
             <button
-                on:click={() => { if (opt.cb() !== true) updatePosition(0); }}
-                class="option {opt.class??""}"
+                on:click={() => { if (opt.cb() !== true) setTimeout(() => updatePosition(0), 500); }}
+                class="focus:brightness-50 option {opt.class??""}"
                 style={`width: ${triggerActionRequirement}px;`}
             >
                 <svelte:component this={opt.icon} class="w-12 h-12" />

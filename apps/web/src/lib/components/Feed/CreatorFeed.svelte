@@ -4,9 +4,6 @@
 	import { derived } from "svelte/store";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { requiredTiersFor } from "$lib/events/tiers";
-	import { debugMode } from "$stores/session";
-
-    export let onlyBackstageContent = false;
 
     const userContent = getUserContent();
     const userGAContent = getGAUserContent();
@@ -15,20 +12,11 @@
         const ret = [...$userContent, ...$userGAContent]
             .sort((a, b) => b.created_at! - a.created_at!);
 
-        if (!onlyBackstageContent) return ret;
-
-        for (const e of ret) {
-            console.log('onlyBackstageContent', requiredTiersFor(e));
-        }
         return ret.filter((e: NDKEvent) => !requiredTiersFor(e).includes('Free'));
     });
 </script>
 
 <div class="flex flex-col w-full discussion-wrapper">
-    {#if $debugMode}
-        onlyBackstageContent = {onlyBackstageContent}
-    {/if}
-
     {#each $allContent as event (event.id)}
         <FeedEvent {event} skipAuthor={true} />
     {/each}

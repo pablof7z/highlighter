@@ -1,19 +1,32 @@
 <script lang="ts">
-	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, preview } from '$stores/post-editor.js';
+	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, preview, currentDraftItem } from '$stores/post-editor.js';
 	import { pageHeader } from "$stores/layout";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
     import { type as _type } from "$stores/post-editor";
 	import { getTierSelectionFromAllTiers } from '$lib/events/tiers';
 	import { NDKArticle, NDKEvent, NDKVideo } from '@nostr-dev-kit/ndk';
 	import PublishingStep from '$components/Editor/Pages/PublishingStep.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import AudiencePage from './AudiencePage.svelte';
 	import { debugMode } from '$stores/session';
+	import Toolbar from './Toolbar.svelte';
+	import { goto } from '$app/navigation';
+	import { ArticleCheckpoint, DraftCheckpoint } from '$stores/drafts';
+	import { Thread } from '$utils/thread';
+	import { newToasterMessage } from '@kind0/ui-common';
+	import { addDraftCheckpoint } from '$utils/drafts';
 
-    export let type: "article" | "video" | "note" | "thread";
+    export let type: "article" | "video" | "thread";
     export let article: NDKArticle | undefined = undefined;
     export let video: NDKVideo | undefined = undefined;
     export let note: NDKEvent | undefined = undefined;
+
+    export let onSaveDraft: ((manuallySaved: boolean) => void) | undefined = undefined;
+
+    /**
+     * Whether the shell should create an interval to auto-save drafts
+     */
+    export let timedDraftSave = true;
 
     onMount(() => {
         $view = 'edit';
@@ -21,11 +34,6 @@
     });
 
     $event = article ?? video ?? note!;
-    console.log(`setting event`, !!$event)
-
-    if (type === "note") {
-        $preview = undefined;
-    }
 
     $selectedTiers ??= { "Free": { name: "Free", selected: false } };
     $postType = type;
@@ -45,7 +53,56 @@
         $nonSubscribersPreview = !!$preview && !!$preview.id;
     }
 
-    $pageHeader = { component: "post-editor" }
+    $pageHeader = {
+        component: Toolbar,
+        props: {
+            onSaveDraft: saveDraft,
+        }
+    }
+
+    function saveDraft(manuallySaved = true) {
+        if (onSaveDraft) {
+            onSaveDraft(manuallySaved);
+        } else if ($event && !($event instanceof Thread)) {
+            const data: ArticleCheckpoint = {
+                event: JSON.stringify($event.rawEvent()),
+                preview: "",
+            };
+
+            if ($preview) { data.preview = JSON.stringify($preview.rawEvent()); }
+            
+            const item = addDraftCheckpoint(
+                manuallySaved,
+                $currentDraftItem,
+                data,
+                $_type!
+            );
+
+            if (item) {
+                $currentDraftItem = item;
+            }
+        }
+
+        newToasterMessage("Draft saved", "success");
+
+        if (manuallySaved && $currentDraftItem) {
+            goto(`/drafts/${$currentDraftItem.id}`);
+        }
+    }
+
+    let draftSaveInterval: any;
+
+    if (timedDraftSave) {
+        draftSaveInterval = setInterval(() => {
+            saveDraft(false);
+        }, 30000);
+    }
+
+    onDestroy(() => {
+        if (draftSaveInterval) {
+            clearInterval(draftSaveInterval);
+        }
+    })
 </script>
 
 {#if $debugMode}

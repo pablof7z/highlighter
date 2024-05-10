@@ -2,6 +2,7 @@
     import Quill from 'quill';
 	import { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher, onMount } from "svelte";
+    import QuillMarkdown from 'quilljs-markdown'
     import quillEditorMention from "./quill-editor-mention.js";
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
@@ -130,6 +131,8 @@
             content = getContents(quill);
             dispatch("contentChanged");
         });
+
+        new QuillMarkdown(quill, {})
 
         const editorChild = editorEl.firstChild as HTMLElement;
         editorChild.addEventListener("focusin", () => dispatch("focus"));

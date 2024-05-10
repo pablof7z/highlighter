@@ -17,6 +17,7 @@ export const pageHeaderComponent = writable<Component | null>(null);
  * to navigate within this page
  */
 export const pageNavigationOptions = writable<NavigationOption[]>([]);
+export const pageNavigationOptionsValue = writable<string | undefined>();
 
 export const pageMainContentMaxWidth = writable<string | undefined>();
 
@@ -43,6 +44,7 @@ export function resetLayout() {
 	pageMainContentMaxWidth.set(undefined);
 	pageSidebar.set(null);
 	detailView.set(null);
+	pageNavigationOptionsValue.set(undefined);
 }
 
 resetLayout();
@@ -59,7 +61,7 @@ export type PageHeader = {
 	/**
 	 * Component to be displayed on the main content area. If this is set, all other options will be ignored
 	 */
-	component?: ConstructorOfATypedSvelteComponent | "post-editor";
+	component?: ConstructorOfATypedSvelteComponent;
 	props?: { [key: string]: any };
 	on?: { [key: string]: (e: any) => void };
 

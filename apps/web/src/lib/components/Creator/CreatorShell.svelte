@@ -8,8 +8,8 @@
 	import { pageHeader, pageHeaderComponent, pageNavigationOptions } from '$stores/layout';
 	import type { UserProfileType } from '../../../app';
 	import CreatorHeader from "./CreatorHeader.svelte";
-	import { Article, BookmarkSimple, Notepad } from "phosphor-svelte";
-	import { HighlightIcon } from "@kind0/ui-common";
+	import { Article, BookmarkSimple, House, Notepad, User } from "phosphor-svelte";
+	import { Avatar, HighlightIcon } from "@kind0/ui-common";
 
     export let user: NDKUser;
 
@@ -62,12 +62,14 @@
         if (!hasCurations && $curations.length > 0) { hasCurations = true; }
         if (!hasHighlights && $highlights.length > 0) { hasHighlights = true; }
 
+        $pageNavigationOptions.push({ name: "Home", href: `${authorUrl}`, icon: User });
+
         $pageNavigationOptions.push({ name: "Notes", href: `${authorUrl}/notes`, icon: Notepad },)
         if (hasCurations)
             $pageNavigationOptions.push({ name: "Curations", href: `${authorUrl}/curations`, icon: BookmarkSimple },)
 
         if (hasPublications)
-            $pageNavigationOptions.push({ name: "Publications", href: authorUrl, icon: Article },)
+            $pageNavigationOptions.push({ name: "Publications", href: `${authorUrl}/posts`, icon: Article },)
 
         if (hasHighlights)
         $pageNavigationOptions.push({ name: "Highlights", href: `${authorUrl}/highlights`, icon: HighlightIcon },)

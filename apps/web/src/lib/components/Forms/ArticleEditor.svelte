@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { markdownEditor } from './../../stores/settings.ts';
     import Input from "$components/Forms/Input.svelte";
 	import { ndk } from "@kind0/ui-common";
 	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
@@ -29,7 +30,7 @@
     on:submit
     on:focus
     on:blur
-    class="font-serif text-lg"
+    class="font-serif text-lg min-h-[50vh]"
 >
     <div slot="belowToolbar" class="p-6 pb-0 w-full">
         <Input

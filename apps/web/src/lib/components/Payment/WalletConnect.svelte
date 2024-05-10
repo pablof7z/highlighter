@@ -7,7 +7,7 @@
     import { createEventDispatcher } from 'svelte';
 	import WalletConnectNwa from './WalletConnectNWA.svelte';
 	import NwcIcon from '$icons/NwcIcon.svelte';
-	import { Textarea, ZapIcon } from '@kind0/ui-common';
+	import { Textarea } from '@kind0/ui-common';
 	import WalletConnectStripe from './WalletConnectStripe.svelte';
 	import { NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
 

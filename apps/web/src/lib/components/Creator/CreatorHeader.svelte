@@ -5,7 +5,7 @@
 	import { pageHeader } from "$stores/layout";
 	import { Avatar, Name } from "@kind0/ui-common";
 	import { NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { CaretRight, Ticket } from "phosphor-svelte";
+	import { CaretRight, Star, Ticket } from "phosphor-svelte";
 	import { onDestroy, onMount } from "svelte";
 	import { Readable } from "svelte/store";
 
@@ -53,19 +53,19 @@
     max-sm:gap-4
     overflow-clip
     max-sm:py-1
-    items-end justify-between p-3 sm:px-6 sm:py-4
+    items-end justify-between p-3 sm:px-6
     gap-4
     transition-all duration-300
     w-full max-sm:w-screen
     max-sm:flex-row max-sm:items-center
 ">
-    <div dir="auto" class="flex items-center sm:items-end shrink">
-        <Avatar user={user} {userProfile} {fetching} size={collapsed ? "small" : "medium"} class="
+    <div dir="auto" class="flex items-center sm:items-end shrink gap-4">
+        <Avatar user={user} {userProfile} {fetching} class="
             transition-all duration-300 flex-none object-cover
-            {collapsed ? 'w-12 h-12 sm:w-14 sm:h-14' : 'w-16 h-16 sm:w-28 sm:h-28'}
+            {collapsed ? 'w-12 h-12 sm:w-14 sm:h-14' : 'w-16 h-16 sm:w-24 sm:h-24'}
         " />
 
-        <div class="ltr:ml-4 rtl:mr-4 overflow-clip">
+        <div class="overflow-clip">
             <div class="name text-xl font-semibold text-base-100-content truncate shrink basis-0 overflow-clip">
                 <Name {user} {userProfile} {fetching} />
             </div>
@@ -98,9 +98,9 @@
                     !text-white
                 "
             >
-                <Ticket size={24} class="inline lg:mr-2" />
+                <Star size={24} class="inline lg:mr-2" />
                 <span class="hidden lg:inline">
-                    Backstage Area
+                    Backstage
                 </span>
             </a>
         {:else if $tiers}

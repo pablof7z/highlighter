@@ -12,7 +12,7 @@
 	import MakePublicAfter from '$components/Editor/Audience/MakePublicAfter.svelte';
 
     export let article: NDKArticle;
-    export let authorUrl: string;
+    export let authorUrl: string = "";
 
     let previewContentReadLink: string;
     const domain = "https://highlighter.com";

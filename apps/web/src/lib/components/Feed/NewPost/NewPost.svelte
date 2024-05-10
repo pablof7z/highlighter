@@ -69,6 +69,7 @@
             event.id = "";
             hasFocus = false;
             await event.sign();
+            console.log("publishing", event.rawEvent());
             await event.publish(relaySet);
             event = new NDKEvent($ndk, { kind, tags: extraTags } as NostrEvent);
             content = "";

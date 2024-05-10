@@ -15,6 +15,9 @@
 	import currentUser from '$stores/currentUser';
 	import ItemFooter from '../../routes/[id]/[tagId]/ItemFooter.svelte';
 	import { page } from '$app/stores';
+	import { Share } from 'phosphor-svelte';
+	import BoostButton from './buttons/BoostButton.svelte';
+	import CurationButton from './buttons/CurationButton.svelte';
 
     export let article: NDKArticle;
     const author = article.author;
@@ -74,7 +77,12 @@
 
     <EventTags event={article} />
 
+    
     <ItemFooter event={article} urlPrefix={url} eventType="article" class="-mx-4" />
+    <div class="flex flex-row gap-2 items-center">
+        <BoostButton event={article} />
+        <CurationButton event={article} />
+    </div>
 
     {#if article.image}
         <div class="w-full  max-w-[65ch] max-h-[50vh] relative overflow-hidden">

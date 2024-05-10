@@ -63,7 +63,7 @@ export async function getBitcoinPrice(currency: string) {
 			currency.toLowerCase()
 	);
 	const data = await response.json();
-	return data.bitcoin.usd;
+	return data.bitcoin[currency.toLowerCase()]
 }
 
 /**

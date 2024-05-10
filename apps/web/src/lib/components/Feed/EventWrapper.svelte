@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BookmarkSimple, CaretRight, ChatCircle, Lightning, Quotes, Repeat, Timer } from 'phosphor-svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { Avatar, Name, RelativeTime, ZapsButton, ndk, newToasterMessage } from "@kind0/ui-common";
+	import { Avatar, Name, RelativeTime, ndk, newToasterMessage } from "@kind0/ui-common";
 	import { Hexpubkey, NDKEvent, NDKFilter, NDKHighlight, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { EventCardDropdownMenu, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
@@ -28,6 +28,10 @@
 	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
 	import { userGenericCuration } from '$stores/session';
 	import NewPostModal from '$modals/NewPostModal.svelte';
+	import { getAuthorUrl } from '$utils/url';
+	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
+	import ZapButton from '$components/buttons/ZapButton.svelte';
+	import ZapModal from '$modals/ZapModal.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -36,7 +40,6 @@
     export let op: NDKEvent = event;
     export let mostRecentActivity: number = event.created_at!;
     export let skipTitle = false;
-    export let skipReply = false;
     export let skipZaps = false;
     export let topLevel = true;
     export let maxContentLength = 1500;
@@ -78,7 +81,7 @@
     let newPostTags: NDKTag[] = [];
 
     $: {
-        replyKind = event.kind === NDKKind.Text ? NDKKind.Text : NDKKind.GroupReply;
+        replyKind = event.kind === NDKKind.GroupNote ? NDKKind.GroupReply : NDKKind.Text;
         const replyEvent = new NDKEvent($ndk, { kind: replyKind } as NostrEvent);
         let rootEventId = getRootEventId(event);
         if (!rootEventId && isEventOriginalPost(event)) rootEventId = event.id;
@@ -154,16 +157,19 @@
     let autofocusNewPost = false;
     let userProfile: UserProfileType | undefined | null;
 
-    function contentClicked(e: CustomEvent) {
+    async function contentClicked(e: CustomEvent) {
         const { type, pubkey } = e.detail;
-        console.log('in note', e)
+
+        console.log({type, pubkey});
+        
         if (type === "pubkey") {
             const user = $ndk.getUser({pubkey});
             e.preventDefault();
             e.stopImmediatePropagation();
             e.stopPropagation();
-            goto(`/${user.npub}`);
-            console.log(user.npub)
+            const authorUrl = await getAuthorUrl(user);
+            setTimeout(() => goto(authorUrl), 0);
+            console.log(user.npub, {authorUrl});
         }
     }
 
@@ -183,11 +189,11 @@
     }
 
     async function bookmark() {
-        try {
-            $userGenericCuration = await toggleBookmarkedEvent(event, $userGenericCuration);
-        } catch (e: any) {
-            newToasterMessage(e.relayErrors ?? e.message, "error")
-        }
+        // try {
+        //     $userGenericCuration = await toggleBookmarkedEvent(event, $userGenericCuration);
+        // } catch (e: any) {
+        //     newToasterMessage(e.relayErrors ?? e.message, "error")
+        // }
     }
 
     let showQuoteOptions = false;
@@ -235,7 +241,7 @@
             <div class="flex flex-row items-start w-full">
                 <!-- Avatars -->
                 {#if !compact}
-                <div class="flex flex-col items-center flex-none w-10 sm:w-16 self-stretch">
+                <div class="flex flex-col items-center flex-none w-10 sm:w-14 self-stretch">
                     <a href={authorUrl}>
                         <Avatar user={author} {userProfile} class="w-8 sm:w-12 h-8 sm:h-12 object-cover" type="circle" {fetching} />
                     </a>
@@ -258,7 +264,9 @@
                         {!compact ? "items-start" : "items-center"}
                     ">
                         {#if compact}
-                            <Avatar user={author} {userProfile} class="w-8 h-8 object-cover" type="circle" {fetching} />
+                            <a href={authorUrl}>
+                                <Avatar user={author} {userProfile} class="w-8 h-8 object-cover" type="circle" {fetching} />
+                            </a>
                         {/if}
 
                         <div class="flex flex-col items-start grow">
@@ -266,6 +274,8 @@
                                 <div class="text-lg text-white font-semibold truncate grow">{title}</div>
                             {/if}
                             <div class="text-sm opacity-80">
+                                <a href={authorUrl}>
+                                </a>
                                 <Name user={author} {userProfile} {fetching} />
                                 {#if !compact}
                                     <ClientName {event} class="ml-2 text-xs opacity-50 inline" />
@@ -310,7 +320,7 @@
                         {/if}
                         <!-- Content -->
 
-                        <a href="{urlPrefix}{event.encode()}" class="mt-2 mb-4" on:click={noteClicked}>
+                        <a href="{urlPrefix}{event.encode()}" class="mt-2 event-wrapper--content" on:click={noteClicked}>
                             {#if $$slots.default}
                                 <slot />
                             {:else if event.kind === NDKKind.Highlight}
@@ -323,16 +333,17 @@
                                     ndk={$ndk}
                                     {event}
                                     content={contentToRender}
-                                    class={`${$$props.contentClass??"text-white"}`}
+                                    class={`${$$props.topLevelContentClass??""} ${$$props.contentClass??"text-white"}`}
                                     mediaCollectionComponent={MediaCollection}
                                     on:click={contentClicked}
+                                    eventCardComponent={EmbeddedEventWrapper}
                                 />
                             {/if}
                         </a>
 
                         {#if !skipZaps}
                             <div class="flex flex-row items-center text-zinc-500 w-full max-sm:my-2" class:hidden={noZapsToShow}>
-                                <div class="flex flex-row gap-2">
+                                <div class="flex flex-row gap-2 w-full">
                                     <TopPlusRecentZaps {event} count={3} class="text-xs" bind:isNoop={noZapsToShow} />
                                 </div>
                             </div>
@@ -343,7 +354,7 @@
 
             {#if !skipFooter}
                 <div class="flex flex-row items-end gap-4 w-full footer">
-                    <div class="flex flex-col items-center justify-end flex-none w-10 sm:w-16">
+                    <div class="flex max-sm:flex-row flex-col items-center justify-end flex-none sm:w-16">
                         {#if (!expandReplies || nestedMaxLevel === 0) && !(expandThread && $eventsInThread.length > 0)}
                             {#if $replies.length > 0}
                                 <ReplyAvatars users={$commentAuthors} />
@@ -384,11 +395,9 @@
                             <!-- <div class="shrink flex flex-row gap-3 items-center text-white/50 border grow justify-between"> -->
 
                         <div class="w-1/4 flex justify-center items-end ">
-                            <ZapsButton {event}>
-                                <span slot="icon">
-                                    <Lightning class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
-                                </span>
-                            </ZapsButton>
+                            <button on:click={() => openModal(ZapModal, {event})}>
+                                <Lightning class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
+                            </button>
                         </div>
                     </div>
                 </div>

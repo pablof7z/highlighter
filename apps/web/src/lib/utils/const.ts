@@ -28,12 +28,15 @@ export const vanityUrls: Record<string, Hexpubkey> = {
     "walker": "c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11",
     "chrisliss": "6ad3e2a34818b153c81f48c58f44e5199e7b4fc8dbe37810a000dce3c90b7740",
     "onigirl": "3c9849383bdea883b0bd16fece1ed36d37e37cdde3ce43b17ea4e9192ec11289",
+    "bitcoinand": "6389be6491e7b693e9f368ece88fcd145f07c068d2c1bbae4247b9b5ef439d32",
+    "verbiricha": "7fa56f5d6962ab1e3cd424e758c3002b8665f7b0d8dcee9fe9e288d7751ac194",
+    "dergigi": "6e468422dfb74a5738702a8823b9b28168abab8655faacb6853cd0ee15deee93"
 }
 
 export const featuredCreatorPubkeys = [
     vanityUrls.maxdemarco,
     vanityUrls.chrisliss,
-    vanityUrls.walker
+    vanityUrls.walker,
 ]
 
 if (!creatorRelayPubkey) {
@@ -49,4 +52,19 @@ if (!defaultRelays.length) {
 if (!defaultVerifierPubkey) {
     console.error("No default verifier pubkey found");
     process.exit(1);
+}
+
+export const featuredCreatorsPerCategory: Record<string, Hexpubkey[]> = {
+    "Entrepreneurship": [
+        vanityUrls.svetski
+    ],
+    "Freedom Tech": [
+        vanityUrls.maxdemarco,
+        vanityUrls.chrisliss,
+        vanityUrls.pablof7z
+    ],
+    "Philosophy": [
+        vanityUrls.chrisliss,
+        vanityUrls.dergigi
+    ],
 }

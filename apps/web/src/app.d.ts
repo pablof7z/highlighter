@@ -43,6 +43,7 @@ export type NavigationOption = {
     name: string;
     tooltip?: string;
     icon?: any;
+	iconProps?: Record<string, any>;
     class?: string;
     href?: string;
 	badge?: string | true;

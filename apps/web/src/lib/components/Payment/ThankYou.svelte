@@ -1,25 +1,13 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { page } from "$app/stores";
     import { userProfile } from "$stores/session";
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { userSubscription, getReceipts, getSortedSupporters, getUserSupporters } from "$stores/user-view";
+	import { getSortedSupporters } from "$stores/user-view";
 	import { Avatar, Name, user as currentUser } from "@kind0/ui-common";
-	import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { closeModal } from '$utils/modal';
+	import type { NDKUser } from "@nostr-dev-kit/ndk";
+	import { goto } from "$app/navigation";
 
     export let user: NDKUser;
     let authorUrl: string;
-
-    function seeContentClicked() {
-        closeModal();
-        if ($page.url.pathname === authorUrl) {
-            window.location.reload();
-            return;
-        } else {
-            goto(authorUrl, { invalidateAll: true });
-        }
-    }
 
     const supporters = getSortedSupporters();
 
@@ -70,8 +58,8 @@
 
         </div>
 
-        <button on:click={seeContentClicked} class="button w-full place-self-end">
+        <a href="{authorUrl}/backstage" class="button w-full place-self-end" on:click={() => goto(`${authorUrl}/backstage`)}>
             Go backstage
-        </button>
+        </a>
     </div>
 </UserProfile>

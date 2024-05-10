@@ -44,7 +44,7 @@ async function generateJWTFromEvent(event: NDKEvent) {
 		user = await createUser(pubkey);
 		console.log('created user', user);
 	} else {
-		const nwcUri = getWalletForPubkey(pubkey);
+		const nwcUri = await getWalletForPubkey(pubkey);
 
 		nwcAvailable = !!nwcUri;
 	}

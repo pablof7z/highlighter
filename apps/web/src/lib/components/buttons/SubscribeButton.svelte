@@ -8,7 +8,7 @@
 	import { getUserSubscriptionTiersStore, getUserSupporters } from "$stores/user-view";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import type { Readable } from "svelte/store";
-	import { Ticket } from "phosphor-svelte";
+	import { Star, Ticket } from "phosphor-svelte";
 	import type { UserProfileType } from "../../../app";
 
     export let user: NDKUser;
@@ -59,7 +59,8 @@
             >
                 <span class="hidden lg:inline">
                     {#if $tiers && $tiers.length > 0}
-                        Go Backstage
+                        <Star size={24} class="w-5 h-5 inline mr-2" />
+                        Backstage
                     {:else}
                         Support
                         <CaretRight class="w-5 h-5 inline" />

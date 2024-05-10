@@ -10,6 +10,7 @@ import { ndk } from "@kind0/ui-common";
 	import { Bell } from "phosphor-svelte";
 	import { onDestroy } from "svelte";
 	import { openModal } from '$utils/modal';
+	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 
     let { user } = $page.data;
 
@@ -38,6 +39,12 @@ import { ndk } from "@kind0/ui-common";
         } else {
             console.log('Notifications denied');
         }
+    }
+
+    function color(i: number) {
+        const colors = [ "#496989", "#58A399", "#A8CD9F", "#E2F4C5" ]
+
+        return colors[i % colors.length];
     }
 </script>
 
@@ -73,10 +80,19 @@ import { ndk } from "@kind0/ui-common";
         </div>
     </div>
     
-    <div class="max-w-3xl mx-auto w-full border-x border-base-300">
-        <StoreFeed
-            feed={events}
-            urlPrefix="{authorUrl}/backstage/forum/"
-        />
-    </div>
+    <ul class="max-w-3xl mx-auto w-full border-x border-base-300 gap-2 flex flex-col">
+        {#each $events as event, i}
+            <li style="border: solid {color(i)} 4px; background: {color(i)}44;">
+                <EventWrapper
+                    {event}
+                    compact={true}
+                    expandThread={false}
+                    expandReplies={false}
+                    showReply={false}
+                    class="text-lg"
+                    urlPrefix="{authorUrl}/backstage/forum/"
+                />
+            </li>
+        {/each}
+    </ul>
 </div>

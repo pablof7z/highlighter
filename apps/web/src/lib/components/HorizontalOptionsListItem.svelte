@@ -13,7 +13,9 @@
         active = (value === (option.value || option.name) || $page.url.pathname === option.href);
         // scroll into view
         if (active) {
-            el?.scrollIntoView({ block: "center" });
+            const isInView = el?.offsetLeft < el?.scrollLeft;
+
+            if (isInView) el?.scrollIntoView({ block: "center" });
         }
 
     }
@@ -30,7 +32,7 @@
     class:active={active}
 >
     {#if option.icon}
-        <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline" />
+        <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline" {...option.iconProps??{}} />
     {/if}
     <span class="">
         {option.name}

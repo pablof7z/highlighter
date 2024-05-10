@@ -2,8 +2,9 @@
 	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
 	import LoadingScreen from "$components/LoadingScreen.svelte";
+	import { userPubkey } from "$stores/currentUser";
 	import { login } from "$utils/login";
-	import { bunkerNDK, ndk } from "@kind0/ui-common";
+	import { ndk } from "@kind0/ui-common";
 	import { onMount } from "svelte";
 
     // get pubkey from url param
@@ -15,8 +16,8 @@
         if (!pubkey) return goto('/');
 
         const user = $ndk.getUser({pubkey});
-        localStorage.setItem('pubkey', user.pubkey);
-        localStorage.setItem("nostr-key-method", 'nip46');
+        loginMethod.set('nip46');
+        userPubkey.set(user.pubkey);
 
         if (!await login('nip46', pubkey)) {
             logging = false;

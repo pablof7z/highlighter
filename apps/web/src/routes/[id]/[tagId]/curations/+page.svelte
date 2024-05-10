@@ -4,15 +4,21 @@
 	import ItemFooter from "../ItemFooter.svelte";
 	import WithItem from "../WithItem.svelte";
 
+    let id: string;
     let tagId: string;
+    let urlPrefix: string;
 
-    $: tagId = $page.params.tagId;
+    $: {
+        id = $page.params.id;
+        tagId = encodeURIComponent($page.params.tagId);
+        urlPrefix = `/${id}/${tagId}`;
+    }
 </script>
 
 {#key tagId}
     <WithItem let:event let:article let:video let:urlPrefix let:eventType let:authorUrl>
         {#if event && eventType}
-            <ItemFooter {event} {eventType} />
+            <ItemFooter {event} {eventType} {urlPrefix} />
             <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
                 <Curations filter={event.filter()} />
             </div>

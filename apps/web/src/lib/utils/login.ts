@@ -7,17 +7,20 @@ import {
 	NDKUser,
 	type NDKSigner,
 	type Hexpubkey,
-	type NDKUserProfile
+	type NDKUserProfile,
+	NDKKind,
+	NDKRelayList
 } from '@nostr-dev-kit/ndk';
 import { bunkerNDK, ndk, newToasterMessage, user } from '@kind0/ui-common';
 import { generateLoginEvent } from '$actions/signLoginEvent';
 import { get } from 'svelte/store';
 import { jwt as jwtStore, loginState } from '$stores/session';
 import createDebug from 'debug';
-import currentUser from '$stores/currentUser';
+import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
 import { goto } from '$app/navigation';
+import { vanityUrls } from './const';
 
-export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46';
+export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46' | 'guest';
 
 const d = createDebug('HL:login');
 const $ndk = get(ndk);
@@ -71,13 +74,13 @@ async function nip46Login(remotePubkey?: Hexpubkey) {
  * used, or a NIP-07 extension.
  */
 export async function login(
-	method: LoginMethod,
+	method: LoginMethod | undefined,
 	userPubkey?: string,
 ) {
 	d(`running with method ${method}`);
 
 	// Check if there is a localStorage item with the key "nostr-key-method"
-	method ??= localStorage.getItem('nostr-key-method') as LoginMethod;
+	method ??= get(loginMethod);
 	let u: NDKUser | null | undefined;
 
 	switch (method) {
@@ -85,8 +88,9 @@ export async function login(
 			loginState.set(null);
 			return null;
 		}
+		case 'guest':
 		case 'pk': {
-			const key = localStorage.getItem('nostr-key');
+			const key = get(privateKey);
 			if (!key) return null;
 			return pkLogin(key);
 		}
@@ -164,7 +168,7 @@ async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
 			user = await ndk.signer?.blockUntilReady();
 			user.ndk = ndk;
 			if (user) {
-				localStorage.setItem('nostr-key-method', 'nip07');
+				loginMethod.set('nip07');
 			}
 			localStorage.setItem('pubkey', user.pubkey);
 		} catch (e) {}
@@ -211,8 +215,8 @@ export function loggedIn(signer: NDKSigner, u: NDKUser, method: LoginMethod) {
 	console.log("DEBUG setting user (loggedIn)", u)
     loginState.set("logged-in");
 
-    localStorage.setItem('pubkey', u.pubkey);
-    localStorage.setItem('nostr-key-method', method);
+	loginMethod.set(method);
+	userPubkey.set(u.pubkey);
 }
 
 export function logout(): void {
@@ -229,16 +233,40 @@ export function logout(): void {
 	localStorage.removeItem('network-follows');
 	localStorage.removeItem('network-follows-updated-t');
 	localStorage.removeItem('currentUserNpub');
-	localStorage.removeItem('pubkey');
+	userPubkey.set(undefined);
 	localStorage.removeItem('jwt');
 
 	document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
 	// explicitly prevent auto-login with NIP-07
-	localStorage.setItem('nostr-key-method', 'none');
+	loginMethod.set('none');
 
 	goto('/');
 }
+
+const names = [
+	"Curious Reader",
+	"The Eager Explorer",
+	"A Thoughtful Thinker",
+	"The Avid Annotator",
+	"A Voracious Viewer",
+	"The Inquisitive Intellect",
+	"A Knowledge Knight",
+	"The Pensive PageTurner",
+	"A Reflective Reader",
+	"The Scholarly Seeker",
+	"A Wise Wanderer",
+	"The Captivated Curator",
+	"A Diligent Discoverer",
+	"The Open-Minded Observer",
+	"A Insightful Inquirer",
+	"The Focused Forager",
+	"A Bright Bibliophile",
+	"The Wandering Wordsmith",
+	"A Engaged Explorer",
+	"The Investigative Imbiber",
+	"A Mindful Maven"
+];
 
 export async function fillInSkeletonProfile(profile: NDKUserProfile) {
 	const images = [
@@ -246,15 +274,26 @@ export async function fillInSkeletonProfile(profile: NDKUserProfile) {
         "https://cdn.satellite.earth/c50267d41d5874cb4e949e7bd472c2d06e1b297ffffac19b2f53c291a3e052d2.png",
         "https://cdn.satellite.earth/011dc8958f86dc12c5c3a477de3551c3077fb8e71a730b7cec4a678f5c021550.png",
     ];
+	const randName = names[Math.floor(Math.random() * names.length)];
 	const randImage = images[Math.floor(Math.random() * images.length)];
 
-	profile.image = randImage;
-	profile.about = `Hi! I'm a brand new nostr user trying things out. Be nice!`;
-	profile.website = "";
+	profile.name ??= randName;
+	profile.image ??= randImage;
+	profile.about ??= `Hi! I'm a brand new nostr user trying things out. Be nice!`;
+	profile.website ??= "";
 
-	console.log('fillInSkeletonProfile', profile);
+	const followList = new NDKEvent($ndk);
+	followList.kind = NDKKind.Contacts;
+	followList.tags = Object.values(vanityUrls).map((pubkey) => [ "p", pubkey ]);
 
+	followList.publish().catch(e => console.error('Failed to publish follow list', e));
+	
 	const $user = get(user);
 	$user.profile = profile;
-    await $user.publish();
+    const r = $user.publish().catch(e => console.error('Failed to publish user profile', e));
+	console.log('publish user profile', r);
+
+	const relayList = new NDKRelayList($ndk);
+	relayList.bothRelayUrls = $ndk.pool.connectedRelays().map((r) => r.url);
+	relayList.publish().catch(e => console.error('Failed to publish relay list', e));
 }

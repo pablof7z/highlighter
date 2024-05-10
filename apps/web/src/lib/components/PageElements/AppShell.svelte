@@ -38,9 +38,31 @@
 	let detailWrapper: string;
 	let sidebarWrapper: string;
 
+	/**
+	 * This tracks the known value of layout-mode so we can react to changes in
+	 * opening a detail-view, so that we can collapse the navbar and uncollapse it
+	 * when the detail view is closed
+	 */
+	let prevLayoutMode: string;
+	let originalNavState: string;
+	
+	$: {
+		if (prevLayoutMode !== $layoutMode) {
+			prevLayoutMode = $layoutMode;
+			originalNavState = $layoutNavState;
+		} else if (originalNavState === "normal") {
+			// These are the conditions in which we might need to change the layout nav state to collapse it
+			if ($detailView) {
+				$layoutNavState = "collapsed";
+			} else {
+				$layoutNavState = "normal";
+			}
+		}
+	}
+
 	$: switch ($layoutMode) {
 		case 'full-width':
-			$layoutNavState = 'collapsed';
+			$layoutNavState = "collapsed";
 			layoutWrapper = "w-full";
 			mainAndDetailWrapper = "max-w-none w-full";
 			mainWrapper = "w-full";

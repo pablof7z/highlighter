@@ -8,6 +8,6 @@
 <EventWrapper
     {event}
     expandThread={true}
-    expandReply={true}
+    expandReplies={true}
     showReply={false}
 />

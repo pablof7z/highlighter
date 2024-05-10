@@ -82,7 +82,13 @@
                         <div class="flex flex-col w-full justify-stretch">
 
                             <div class="discussion-wrapper w-full flex flex-col">
-                                <EventWrapper {event} expandReplies={true} threadView={true} />
+                                <EventWrapper
+                                    {event}
+                                    topLevelContentClass="text-xl"
+                                    expandThread={true}
+                                    expandReplies={true}
+                                    threadView={true}
+                                />
                             </div>
                         </div>
                 {:else if eventType === 'curation'}

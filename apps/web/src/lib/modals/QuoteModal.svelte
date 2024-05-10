@@ -48,6 +48,9 @@
                         {event}
                         class="py-4 bg-base-300"
                         skipFooter={true}
+                        showReply={false}
+                        expandReplies={false}
+                        expandThread{false}
                     />
                 {/if}
             </div>

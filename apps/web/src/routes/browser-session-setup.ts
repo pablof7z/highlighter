@@ -1,7 +1,8 @@
+import { isGuest, loginMethod, privateKey, userPubkey } from '$stores/currentUser';
 import { loginState } from '$stores/session';
-import { loggedIn, login, type LoginMethod } from '$utils/login';
+import { fillInSkeletonProfile, loggedIn, login, type LoginMethod } from '$utils/login';
 import { ndk, user } from '@kind0/ui-common';
-import { NDKNip07Signer, NDKUser } from '@nostr-dev-kit/ndk';
+import { NDKNip07Signer, NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 import { get } from 'svelte/store';
 
@@ -17,7 +18,7 @@ const $ndk = get(ndk);
  * signer in the background when possible.
  */
 export async function browserSetup() {
-    const pubkey = localStorage.getItem('pubkey');
+    const pubkey = get(userPubkey);
     d({pubkey});
 
     if (pubkey) {
@@ -26,14 +27,44 @@ export async function browserSetup() {
         user.set(u);
     }
 
-    const method = localStorage.getItem('nostr-key-method') as LoginMethod;
+    const method = get(loginMethod);
 
     // No stored pubkey found, attempt to sign in with NIP-07
-    if (!pubkey && method !== "none") return newSessionTryNip07();
+    if (!pubkey && method !== "none") {
+        const loggedIn = await newSessionTryNip07();
+        const $ndk = get(ndk);
+
+        if (!$ndk.signer) {
+            return await newGuestLogin();
+        }
+
+        return;
+    }
 
     if (method) {
         return login(method, pubkey);
     }
+}
+
+export async function newGuestLogin() {
+    const pk = NDKPrivateKeySigner.generate();
+    const u = await pk.user();
+    const $ndk = get(ndk);
+
+    loginMethod.set('guest');
+    userPubkey.set(u.pubkey);
+    privateKey.set(pk.privateKey!);
+
+    login('guest', u.pubkey);
+
+    $ndk.signer = pk;
+    const us = await $ndk.signer?.blockUntilReady();
+    us.ndk = $ndk;
+    user.set(us);
+
+    fillInSkeletonProfile({
+        image: `https://api.dicebear.com/8.x/rings/svg?seed=${u.pubkey}&ringColor=FB6038`
+    });
 }
 
 export async function newSessionTryNip07() {

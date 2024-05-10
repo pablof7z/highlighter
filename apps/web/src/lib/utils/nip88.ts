@@ -29,7 +29,7 @@ export async function publishSubscriptionReceipt(
 
     d('publishing receipt', receipt.rawEvent());
 
-    await receipt.publish(getDefaultRelaySet());
+    await receipt.publish();
 
     return receipt;
 }

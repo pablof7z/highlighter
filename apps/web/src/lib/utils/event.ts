@@ -2,13 +2,6 @@ import { Hexpubkey, NDKKind, NDKRelaySet, NDKTag, type NDKEvent } from '@nostr-d
 import { getDefaultRelaySet } from './ndk';
 import { nip19 } from 'nostr-tools';
 
-/**
- * Checks whether the event is a root event.
- */
-export function isRootEvent(event: NDKEvent): boolean {
-	return !event.tagValue('e');
-}
-
 export const mainContentKinds = [
 	NDKKind.Article,
 	NDKKind.HorizontalVideo,

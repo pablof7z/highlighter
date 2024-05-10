@@ -8,6 +8,8 @@
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { createEventDispatcher } from 'svelte';
     import CaretDown from "phosphor-svelte/lib/CaretDown";
+	import { loginMethod, userPubkey } from "$stores/currentUser";
+	import { getUserFromPubkey } from "$lib/server/user";
 
     const dispatch = createEventDispatcher();
 
@@ -94,8 +96,8 @@
             const u = await remoteSigner.blockUntilReady();
             $user = u;
             $ndk.signer = remoteSigner;
-            localStorage.setItem("nostr-key-method", 'nip46');
-            localStorage.setItem('pubkey', $user.pubkey);
+            loginMethod.set('nip46');
+            userPubkey.set($user.pubkey);
             $loginState = "logged-in";
             popup?.close();
             dispatch("signed-up");

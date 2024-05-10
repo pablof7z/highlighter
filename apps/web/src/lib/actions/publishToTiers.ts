@@ -151,5 +151,5 @@ export async function publishToTiers(
 
 	debug("publishing event to relays", event.rawEvent(), opts.relaySet)
 
-	// await publishOrSchedule(event, opts.relaySet, opts.publishAt);
+	await publishOrSchedule(event, opts.relaySet, opts.publishAt);
 }

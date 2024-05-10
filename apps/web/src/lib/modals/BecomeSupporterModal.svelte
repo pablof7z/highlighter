@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ModalShell from '$components/ModalShell.svelte';
-    import { user as loggedInUser } from '@kind0/ui-common';
+    import { user as loggedInUser, ndk } from '@kind0/ui-common';
     import UserProfile from '$components/User/UserProfile.svelte';
     import { userFollows } from '$stores/session';
 	import type { NDKIntervalFrequency, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
@@ -22,6 +22,8 @@
     import {requestProvider} from 'webln';
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import RadioButton from '$components/Forms/RadioButton.svelte';
+	import { createSubscriptionEvent } from '$components/Payment/subscription-event';
+	import ManualPayment from '$components/Payment/ManualPayment.svelte';
 
     export let user: NDKUser;
 
@@ -48,6 +50,8 @@
     $: hasTiers = $tiers.length > 0;
 
     let isWeblnAvailable = false;
+
+    let manualPayment = false;
 
     onMount(() => {
         userHasWalletConnected = isNwcAvailable();
@@ -181,6 +185,26 @@
                         {/if}
                     </div>
                 </div>
+            {:else if manualPayment && selectedAmount && selectedCurrency}
+                {#await createSubscriptionEvent(
+                    $ndk, selectedAmount.toString(), selectedCurrency, selectedTerm, user, selected
+                ) then subscribeEvent}
+                    <ManualPayment
+                        event={subscribeEvent}
+                        recipient={user}
+                        on:paid={onPaid}
+                    />
+
+                    <div class="flex flex-row items-center justify-between mt-6">
+                        <button on:click={() => manualPayment = false}>
+                            Back
+                        </button>
+
+                        <button on:click={closeModal}>
+                            Cancel
+                        </button>
+                    </div>
+                {/await}
             {:else}
                 <div class="flex flex-col flex-nowrap gap-6 items-center">
                     {#if !userHasWalletConnected}
@@ -198,6 +222,12 @@
                             currency={selectedCurrency}
                             tier={selected}
                         />
+
+                        <button class="font-normal" on:click={() => { manualPayment = true }}>
+                            Or
+                            <span class="text-base-100-content">proceed without connecting a wallet</span>
+                        </button>
+                        
                     {:else if selectedAmount && selectedCurrency}
                         <Subscribe
                             amount={selectedAmount.toString()}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { pageHeader } from "$stores/layout";
+	import { pageHeader, pageNavigationOptionsValue } from "$stores/layout";
 	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter, NDKEvent, NDKTag, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
@@ -8,11 +8,12 @@
 	import { computeArticleRecommendationFromHighlightStore } from "$utils/recommendations";
 	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
 
+    $pageNavigationOptionsValue = "Home";
+
     $pageHeader = {
-        title: "Home",
         searchBar: true
     }
-
+    
     let highlightFilters: NDKFilter[];
 
     $: {
@@ -30,34 +31,6 @@
         }
 
         highlightFilters = filters;
-    }
-
-    // const allEvents = $ndk.storeSubscribe({
-    //     kinds: [NDKKind.Highlight, NDKKind.Text],
-    //     authors: Array.from($userFollows)
-    // });
-
-    // const feed = derived(allEvents, $allEvents => {
-    //     const events: NDKEvent[] = [];
-
-    //     for (const event of $allEvents) {
-    //         if (event.kind === NDKKind.Text) {
-    //             if (isRootEvent(event))
-    //                 events.push(event);
-    //         } else if (event.kind === NDKKind.Highlight) {
-    //             events.push(event);
-    //         }
-    //     }
-
-    //     // Sort by date
-    //     events.sort((a, b) => b.created_at! - a.created_at!);
-
-    //     return events;
-    // })
-
-    function clicked(e: CustomEvent) {
-        console.log(e)
-        e.preventDefault();
     }
 
     let feed: NDKEventStore<NDKEvent>;

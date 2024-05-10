@@ -4,6 +4,7 @@ import { DraftCheckpoint, DraftItem, ThreadCheckpoint, ThreadCheckpointItem } fr
 import { ndk, newToasterMessage } from "@kind0/ui-common";
 import NDK, { NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 import { Writable, get } from "svelte/store";
+import { addDraftCheckpoint } from "./drafts";
 
 export type ThreadItem = {
     event: NDKEvent,
@@ -64,49 +65,6 @@ export class Thread {
             }))
         }
     }
-}
-
-export function saveDraft(
-    manuallySaved = false,
-    draftItem: DraftItem | undefined,
-    draftStore: Writable<DraftItem[]>,
-    thread: Thread,
-): DraftItem | false {
-    const draftCheckpoints: DraftCheckpoint[] = draftItem?.checkpoints ? JSON.parse(draftItem?.checkpoints) : [];
-    const serialized = thread.serialize();
-    const checkpoint: DraftCheckpoint = {
-        time: Date.now(),
-        data: serialized,
-        manuallySaved
-    }
-
-    if (draftItem) {
-        const mostRecentCheckpoint = draftCheckpoints[0];
-        // compare the data of the most recent checkpoint with the current data
-        if (!manuallySaved && JSON.stringify(mostRecentCheckpoint.data) === JSON.stringify(serialized)) {
-            return false;
-        }
-
-        draftStore.update((drafts) => drafts.filter(d => d.id !== draftItem!.id));
-    } else {
-        draftItem = {
-            type: "thread",
-            id: Math.random().toString(36).substring(7),
-            checkpoints: "",
-        }
-    }
-
-    draftCheckpoints.unshift(checkpoint);
-    draftItem.checkpoints = JSON.stringify(draftCheckpoints);
-
-    try {
-        // unshift draftitem into the draft store
-        draftStore.update((drafts) => [draftItem!, ...drafts]);
-    } catch (e) {
-        console.error(e);
-    }
-
-    return draftItem;
 }
 
 export async function publishThread(

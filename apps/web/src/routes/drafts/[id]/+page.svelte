@@ -1,7 +1,7 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser';
 	import { page } from "$app/stores";
-    import { drafts, type ArticleCheckpoint, type DraftItem, DraftCheckpoint } from "$stores/drafts";
+    import { drafts, type ArticleCheckpoint, type DraftItem, DraftCheckpoint, ThreadCheckpoint } from "$stores/drafts";
 	import { ndk } from "@kind0/ui-common";
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
     import ArticleView from "$components/ArticleView.svelte";
@@ -35,7 +35,7 @@
             if (!draftItem) {
                 // goto("/drafts");
             } else {
-                const checkpoints = JSON.parse(draftItem.checkpoints) as DraftItem["checkpoints"];
+                const checkpoints = JSON.parse(draftItem.checkpoints) as DraftCheckpoint[];
                 let checkpoint = checkpoints.find(c => c.manuallySaved);
 
                 if (checkpointTime) {
@@ -47,13 +47,13 @@
                     case "article": {
                         const payload = checkpoint?.data as ArticleCheckpoint;
 
-                        article = new NDKArticle($ndk, JSON.parse(payload.article));
+                        article = new NDKArticle($ndk, JSON.parse(payload.event));
                         article.pubkey ??= $currentUser.pubkey;
                         article.author = $currentUser;
                         break;
                     }
                     case "thread": {
-                        const payload = checkpoint?.data;
+                        const payload = checkpoint?.data as ThreadCheckpoint;
                         thread = Thread.deserialize(payload, $currentUser, $ndk);
                         break;
                     }

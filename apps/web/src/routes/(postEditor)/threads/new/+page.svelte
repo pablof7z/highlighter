@@ -6,6 +6,7 @@
 	import currentUser from "$stores/currentUser";
 	import { Thread } from '$utils/thread.js';
 	import ThreadEditor from "$components/Editor/ThreadEditor/ThreadEditor.svelte";
+	import { currentDraftItem } from "$stores/post-editor";
 
 	const draftId = $page.url.searchParams.get("draft") || undefined;
 	let draftItem: DraftItem | undefined = undefined;
@@ -26,6 +27,8 @@
 		}
 	}
 
+	$currentDraftItem = draftItem;
+
 	thread ??= new Thread(NDKKind.Text, $currentUser!, $ndk);
 </script>
 
@@ -33,4 +36,4 @@
 	<title>New Thread</title>
 </svelte:head>
 
-<ThreadEditor {thread} bind:draftItem />
+<ThreadEditor {thread} bind:draftItem={$currentDraftItem} />

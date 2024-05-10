@@ -7,48 +7,48 @@
 	import ThreadItem from "./ThreadItem.svelte";
 	import { Plus } from "phosphor-svelte";
 	import { afterUpdate, onMount } from 'svelte';
-	import { Thread, saveDraft } from '$utils/thread.js';
-	import { currentDraftItem, event, view } from "$stores/post-editor";
+	import { Thread } from '$utils/thread.js';
+	import { event, view } from "$stores/post-editor";
 	import { debounce } from "@sveu/shared";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
-	import { derived } from "svelte/store";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import EventWrapper from "$components/Feed/EventWrapper.svelte";
+	import { addDraftCheckpoint } from "$utils/drafts";
 
     export let thread: Thread;
     export let draftItem: DraftItem | undefined = undefined;
 
     onMount(() => {
         $event = thread;
-        console.log('setting event', thread, !!draftItem)
-        $currentDraftItem = draftItem;
     })
 
 	afterUpdate(() => {
 		$event = thread;
 	});
 
-    // if (manuallySaved) goto("/drafts");
-
-	const throttleSave = debounce(() => {
-		console.log('saving draft')
-		console.log(thread.items[0].event.content)
-		const res = saveDraft(false, draftItem, drafts, thread)
-		if (res) {
+	const saveDraftNow = (manuallySaved: boolean) => {
+		const item = addDraftCheckpoint(
+			manuallySaved,
+			draftItem,
+			thread.serialize(),
+			"thread",
+		);
+		
+		if (item) {
+			draftItem = item;
 			$drafts = $drafts;
 			newToasterMessage("Draft saved", "success");
 		}
-	}, 2);
-
-	function contentChanged() {
-		throttleSave();
 	}
 
+	const throttleSave = debounce(saveDraftNow, 2);
+
+	// Automatic saving triggers
+	function contentChanged() { throttleSave(false); }
 	function removeItem(i: number) {
 		thread.items.splice(i, 1);
 		thread.items = thread.items;
-		throttleSave();
+		throttleSave(false);
 	}
 
 	let currentView = "view-edit";
@@ -78,6 +78,8 @@
 <Shell
 	type="thread"
 	on:prepare
+	onSaveDraft={saveDraftNow}
+	timedDraftSave={false}
 >
 	<UserProfile user={$currentUser} let:userProfile>
 		{#each thread.items as item, i (i)}

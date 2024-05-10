@@ -12,6 +12,7 @@
 	import { NDKArticle, NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 	import { closeModal } from '$utils/modal';
 	import { NavigationOption } from "../../app";
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 
     export let event: NDKEvent;
 
@@ -89,8 +90,10 @@
 <ModalShell color="glassy" class="w-full max-w-2xl items-stretch">
     <div class="w-full {advanced ? "max-sm:hidden" : ""}">
         <div class="w-fit basis-0 sm:bg-black p-1 rounded-full mb-4">
-            <OptionsList bind:value={selectedOption} {options} />
+            <HorizontalOptionsList bind:value={selectedOption} {options} />
         </div>
+
+        {selectedOption}
 
         {#if selectedOption === "Publish on Nostr"}
             <UserProfile user={event.author} bind:authorUrl>

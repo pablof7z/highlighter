@@ -2,15 +2,19 @@
 	import { Thread, publishThread } from '$utils/thread.js';
 	import PublishConfirmationModal from './PublishConfirmationModal.svelte';
 	import { CaretLeft, CaretRight, Timer } from "phosphor-svelte";
-    import { event, view, type, status, View, currentDraftItem, selectedTiers } from "$stores/post-editor";
+    import { event, view, type, status, View, currentDraftItem, selectedTiers, preview } from "$stores/post-editor";
 	import { openModal } from '$utils/modal';
 	import { debugMode } from '$stores/session';
     import { getUserSubscriptionTiersStore } from '$stores/user-view';
-	import { saveDraft } from '$utils/thread';
-	import { drafts } from '$stores/drafts';
 	import { goto } from '$app/navigation';
 	import ScheduleModal from '$modals/ScheduleModal.svelte';
 	import { TierSelection } from '$lib/events/tiers';
+	import { getAuthorUrl } from '$utils/url';
+	import currentUser from '$stores/currentUser';
+	import Checkbox from '$components/Forms/Checkbox.svelte';
+	import { markdownEditor } from '$stores/settings';
+
+    export let onSaveDraft: () => void;
 
     function previewAndPublish() {
         openModal(PublishConfirmationModal)
@@ -74,15 +78,8 @@
         } else if (next) $view = next.value as any;
     }
 
-    function threadSaveDraft() {
-        if ($event instanceof Thread) {
-            const draftItem = saveDraft(true, $currentDraftItem, drafts, $event);
-            goto(`/drafts/${draftItem.id}`);
-        } else {
-            console.log($event)
-        }
-    }
-
+    let publishing = false;
+    
     async function _publishThread() {
         if (!($event instanceof Thread)) {
             throw 'not a thread';
@@ -94,12 +91,20 @@
         if ($event.items[0].event.kind === 1) {
             tiers = undefined;
         }
+        
+        publishing = true;
 
-        await publishThread(
-            $event,
-            undefined,
-            tiers
-        );
+        try {
+            await publishThread(
+                $event,
+                undefined,
+                tiers
+            );
+
+            goto(await getAuthorUrl($currentUser!));
+        } finally {
+            publishing = false;
+        }
     }
 
     async function scheduleThread() {
@@ -129,6 +134,7 @@
 
     let hasStatus = $status.length;
     $: hasStatus = $status.length;
+
 </script>
 
 <div class="flex flex-row justify-between h-full w-full items-center" class:hidden={$view === "published"}>
@@ -159,9 +165,8 @@
                 <button class="truncate" on:click={togglePreview} class:button={$view === "view-preview"}>
                     Preview
                 </button>
-            {/if}
-            {#if ($type === "thread")}
-                <button class="truncate" on:click={threadSaveDraft}>
+
+                <button class="truncate" on:click={() => $$props?.onSaveDraft()}>
                     Save Draft
                 </button>
             {/if}
@@ -171,7 +176,11 @@
                     <Timer size={24} />
                 </button>
 
-                <button class="button" on:click={_publishThread}>
+                <button class="button" on:click={_publishThread} disabled={publishing}>
+                    {#if publishing}
+                        <span class="loading loading-sm"></span>
+                    {/if}
+                    
                     Publish
                 </button>
             {:else}

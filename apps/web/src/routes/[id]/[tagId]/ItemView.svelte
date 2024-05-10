@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { ndk, pageDrawerToggle, rightSidebar, user as currentUser, Avatar, Textarea, Name } from "@kind0/ui-common";
+    import { ndk } from "@kind0/ui-common";
 	import { page } from "$app/stores";
-	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
+	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NostrEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
 	import VideoView from "./VideoView.svelte";
 	import EventResponses from "$components/EventResponses.svelte";
@@ -96,6 +96,7 @@
                 />
             </div>
 
+            {urlPrefix}
             <ItemFooter {event} {urlPrefix} {eventType} {mxClass} />
         {:else if ["group-note", "short-note"].includes(eventType)}
             <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl">

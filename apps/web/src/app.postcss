@@ -59,13 +59,13 @@
 
 	.button-primary {
         @apply font-normal;
-        background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD9488ee 0%, #7092A0ee 100%);
+		@apply bg-accent2 text-white;
         @apply transition-all duration-300;
 		@apply text-lg font-medium;
 	}
 
 	.button-primary:hover {
-		background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD9488ff 0%, #7092A0ff 100%);
+		@apply brightness-150;
 	}
 
 	.button-black:disabled {
@@ -374,7 +374,7 @@ span.coming-soon {
 	@apply snap-center
 }
 
-.event-content a {
+.event-content a:not(.event-wrapper--content) {
 	@apply text-accent2 font-medium underline truncate;
 }
 

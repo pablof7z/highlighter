@@ -7,7 +7,7 @@
 	import { slide } from "svelte/transition";
 	import { nip19 } from "nostr-tools";
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
-	import currentUser from '$stores/currentUser';
+	import currentUser, { loginMethod, privateKey } from '$stores/currentUser';
 	import { loginState } from '$stores/session';
 
     export let value: string = "";
@@ -43,8 +43,8 @@
         const signer = new NDKPrivateKeySigner(key);
         const user = await signer.user();
         $ndk.signer = signer;
-        localStorage.setItem("nostr-key-method", "pk");
-        localStorage.setItem('nostr-key', key);
+        loginMethod.set('pk');
+        privateKey.set(key);
 
         _login('pk', user.pubkey);
         console.log(user.pubkey);
@@ -136,7 +136,7 @@
             $ndk.signer = remoteSigner;
             $user = await remoteSigner.user();
             $user.ndk = $ndk;
-            localStorage.setItem('nostr-key-method', 'nip46');
+            loginMethod.set('nip46');
             localStorage.setItem('pubkey', $user.pubkey);
 
             // loginNip46();

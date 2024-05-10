@@ -79,18 +79,15 @@ export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {
 		return $notifications.filter(event => event.pubkey !== currentUser.pubkey);
 	});
 
-	hasUnreadNotifications = derived([filteredNotifications, lastSeenTimestamp], ([$filteredNotifications, $lastSeenTimestamp]) => {
-		if (!$lastSeenTimestamp) {
-			return $filteredNotifications.length > 0;
-		}
-		return $filteredNotifications.some(event => event.created_at! > $lastSeenTimestamp);
-	});
-
 	unreadNotifications = derived([filteredNotifications, lastSeenTimestamp], ([$filteredNotifications, $lastSeenTimestamp]) => {
 		if (!$lastSeenTimestamp) {
 			return $filteredNotifications.length;
 		}
 		return $filteredNotifications.filter(event => event.created_at! > $lastSeenTimestamp).length;
+	});
+
+	hasUnreadNotifications = derived(unreadNotifications, $unreadNotifications => {
+		return $unreadNotifications > 0;
 	});
 }
 

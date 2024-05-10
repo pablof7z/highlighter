@@ -1,23 +1,13 @@
 <script lang="ts">
-	import { RelativeTime, ndk } from '@kind0/ui-common';
+	import { RelativeTime } from '@kind0/ui-common';
 	import currentUser from '$stores/currentUser';
     import { drafts } from "$stores/drafts";
-	import { Microphone, Play, RowsPlusBottom, TextAlignLeft, Timer, Trash } from "phosphor-svelte";
+	import { Timer, Trash } from "phosphor-svelte";
 	import DraftItem from "$components/Creator/DraftItem.svelte";
 	import DraftListVersionItem from "$components/Creator/DraftListVersionItem.svelte";
-	import { Thread, saveDraft } from '$utils/thread';
-	import { NDKKind } from '@nostr-dev-kit/ndk';
-	import { goto } from '$app/navigation';
 
     function trash(id: string) {
         $drafts = $drafts.filter(d => d.id !== id);
-    }
-
-    function newThread() {
-        const thread = new Thread(NDKKind.Text, $currentUser!, $ndk);
-        const draftItem = saveDraft(false, undefined, drafts, thread);
-        $drafts = $drafts;
-        goto(`/drafts/${draftItem.id}`);
     }
 </script>
 

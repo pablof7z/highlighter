@@ -29,7 +29,7 @@
 </script>
 
 {#if throttleZaps && $throttleZaps.length > 0}
-    <div class="flex flex-col items-start gap-2">
+    <div class="flex flex-row items-start gap-2 justify-between w-full">
         <div class="flex flex-row items-center gap-2">
             <ZapPill
                 zap={$throttleZaps[0]}

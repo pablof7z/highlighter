@@ -2,9 +2,14 @@ import 'websocket-polyfill';
 import NDK, {
 	NDKArticle,
 	NDKEvent,
+	NDKKind,
+	NDKRelayList,
+	NDKRelaySet,
 	NDKSubscriptionStart,
+	NDKSubscriptionTier,
 	NDKUser,
 	NostrEvent,
+	zapInvoiceFromEvent,
 } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 import { get } from 'svelte/store';
@@ -14,6 +19,9 @@ import { publishSubscriptionReceipt } from './nip88';
 import { getDefaultRelaySet } from './ndk';
 import { getTierIdFromSubscriptionEvent } from '../events/tiers';
 import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
+import { getZapperPubkey } from './zaps';
+import { calculateSatAmountFromAmountTag } from './currency';
+import { defaultRelays } from './const';
 
 const d = createDebug('HL:subscriptions');
 
@@ -103,7 +111,6 @@ export async function announceNewSubscription(
 	announce.publish();
 }
 
-
 export async function processNewSubscription(
 	event: NDKSubscriptionStart,
 	recipient: NDKUser,
@@ -142,4 +149,109 @@ export async function processNewSubscription(
 				})
 		})
 	]);
+}
+
+export async function validateSubscriptionStart(
+	event: NDKSubscriptionStart,
+) {
+	// check if we have a tier event
+	console.log('fetching tier');
+	const tier = await event.fetchTier();
+
+	console.log('tier from subscription start event', tier?.rawEvent());
+}
+
+export async function checkForZapReceipt(
+	event: NDKSubscriptionStart,
+	relayPubkey: string,
+	ndk: NDK
+) {
+	// validate subscription start
+	await validateSubscriptionStart(event);
+
+	// console.log('checking for existing receipt', event.encode());
+	
+	// check if we already have a kind 7003 for this event
+	// const existingReceipt = await ndk.fetchEvents(
+    //     { kinds: [7003], ...event.filter(), authors: [relayPubkey] },
+	// 	undefined, NDKRelaySet.fromRelayUrls(defaultRelays, ndk)
+    // )
+
+    // if (existingReceipt.size > 0) {
+	// 	console.log('Already processed');
+	// 	throw new Error("Already processed")
+	// }
+
+	if (!event.recipient) {
+		console.log('No recipient found');
+		throw new Error('No recipient found');
+	}
+
+	// get recipient's relays
+	// const relayList = NDKRelayList.forUser(recipientZapper, ndk);
+	// event.recipient
+
+	console.log('checking for zapped amount');
+
+	// check for zap
+	const totalZappedAmount = await totalZappedAmountForEvent(event, event.recipient, ndk);
+	const expectedAmount = await getExpectedZappedAmount(event);
+	const marginOfError = 0.05;
+
+	// hi semisol 👋
+
+	console.log({
+		totalZappedAmount,
+		expectedAmount,
+	})
+
+	if (totalZappedAmount < expectedAmount - marginOfError) {
+		console.log('Not enough zapped');
+
+		return false;
+	}
+
+	console.log('processing new subscription', event.encode());
+
+	await processNewSubscription(event, event.recipient, ndk, d);
+
+	return true;
+}
+
+export async function getExpectedZappedAmount(
+	event: NDKSubscriptionStart,
+) {
+	const amountTag = event.getMatchingTags('amount')[0];
+
+	if (!amountTag) throw new Error('Amount not found');
+
+	return await calculateSatAmountFromAmountTag(amountTag);
+}
+
+export async function totalZappedAmountForEvent(
+	event: NDKEvent,
+	recipient: NDKUser,
+	ndk: NDK
+) {
+	let totalAmount = 0;
+
+	// get recipient zapper
+	// const recipientZapper = await getZapperPubkey(recipient);
+
+	// console.log('recipient zapper', recipientZapper);
+
+	// if (!recipientZapper) throw new Error('No recipient zapper found: ' + event.encode());
+
+	const zaps = await ndk.fetchEvents({
+		kinds: [NDKKind.Zap], ...event.filter()//, authors: [recipientZapper]
+	})
+
+	console.log('zaps', zaps.size);
+
+	for (const zap of zaps) {
+		const details = zapInvoiceFromEvent(zap);
+		if (details?.amount) totalAmount += details.amount;
+	}
+
+	return totalAmount;
 }

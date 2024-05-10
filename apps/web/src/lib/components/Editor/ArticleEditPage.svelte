@@ -1,28 +1,24 @@
 <script lang="ts">
-	import { newToasterMessage, user } from "@kind0/ui-common";
 	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
     import truncateMarkdown from 'markdown-truncate';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import type { UserProfileType } from '../../../app';
-	import { type TierSelection } from "$lib/events/tiers";
-	import { drafts, type DraftItem, type DraftCheckpoint } from "$stores/drafts";
-	import { goto } from "$app/navigation";
-	import { onDestroy } from "svelte";
+	import { type DraftItem } from "$stores/drafts";
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import ArticleMetaPage from "./ArticleMetaPage.svelte";
-	import { view, preview, previewTitleChanged, previewContentChanged } from "$stores/post-editor";
+	import { view, preview, previewTitleChanged, previewContentChanged, currentDraftItem } from "$stores/post-editor";
 	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
 	import ArticleView from "$components/ArticleView.svelte";
 	import { debugMode } from "$stores/session";
+	import currentUser from "$stores/currentUser";
 
     export let article: NDKArticle;
     export let draftItem: DraftItem | undefined = undefined;
-    let draftCheckpoints: DraftCheckpoint[] = draftItem?.checkpoints ? JSON.parse(draftItem?.checkpoints) : [];
 
-    $: article.pubkey = $user?.pubkey;
+    $: $currentDraftItem = draftItem;
 
-    let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
+    $: article.pubkey = $currentUser?.pubkey;
 
     let authorUrl: string | undefined;
 
@@ -57,55 +53,6 @@
 
     let contentChangedSinceLastSave = 0;
 
-    const saveDraftInterval = setInterval(() => {
-        if (contentChangedSinceLastSave > 5) {
-            saveDraft(false);
-            contentChangedSinceLastSave = 0;
-        }
-    }, 30000);
-
-    onDestroy(() => {
-        clearInterval(saveDraftInterval);
-    })
-
-    function saveDraft(manuallySaved = true) {
-        const checkpoint: DraftCheckpoint = {
-            time: Date.now(),
-            data: {
-                article: JSON.stringify(article.rawEvent()),
-                preview: JSON.stringify($preview?.rawEvent()),
-                tiers,
-            },
-            manuallySaved
-        }
-
-        if (draftItem) {
-            $drafts = $drafts.filter(d => d.id !== draftItem!.id);
-        } else {
-            draftItem = {
-                type: "article",
-                id: Math.random().toString(36).substring(7),
-                checkpoints: "",
-            }
-        }
-
-        draftCheckpoints.unshift(checkpoint);
-        draftItem.checkpoints = JSON.stringify(draftCheckpoints);
-
-        try {
-            $drafts.unshift(draftItem);
-        } catch (e) {
-            console.error(e);
-            return;
-        }
-
-        console.log(`setting drafts`, drafts)
-        $drafts = $drafts
-
-        newToasterMessage("Draft saved", "success");
-        if (manuallySaved) goto("/dashboard/drafts");
-    }
-
     let currentView: string;
     let signedAt: number = 0;
 
@@ -121,10 +68,10 @@
     }
 </script>
 
-<UserProfile user={$user} bind:userProfile bind:authorUrl />
+<UserProfile user={$currentUser} bind:userProfile bind:authorUrl />
 
 <Shell type="article" {article}>
-    <ArticleEditor bind:article on:contentUpdate={onArticleChange} textareaClass="" />
+    <ArticleEditor bind:article on:contentUpdate={onArticleChange} />
     <div slot="meta">
         <ArticleMetaPage bind:article on:done={() => $view = "edit"}/>
     </div>

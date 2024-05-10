@@ -1,13 +1,17 @@
 <script lang="ts">
 	import SearchBar from "$components/Page/SearchBar.svelte";
-    import Toolbar from "$components/PostEditor/Toolbar.svelte";
 	import { pageHeader } from "$stores/layout";
 	import HeaderLeftButton from "../HeaderLeftButton.svelte";
 	import HeaderRightButton from "../HeaderRightButton.svelte";
 
     const hasSidebar = true;
+
+    let render = false;
+
+    $: render = !!($pageHeader?.component || $pageHeader?.searchBar || $pageHeader?.title || $pageHeader?.left || $pageHeader?.right);
 </script>
 
+{#if render}
 <div class="h-[var(--layout-header-height)]"></div>
 
 <div class="
@@ -20,11 +24,7 @@
     <div class="flex flex-row justify-between items-center h-full w-full gap-2">
         {#if $pageHeader?.component}
             <div class="sm:p-4 w-full">
-                {#if $pageHeader?.component === "post-editor"}
-                    <Toolbar />
-                {:else}
-                    <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
-                {/if}
+                <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
             </div>
         {:else if $pageHeader?.searchBar}
             <div class="
@@ -70,3 +70,4 @@
         <div class="w-10"></div>
     </div>
 </div>
+{/if}

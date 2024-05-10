@@ -31,7 +31,12 @@
         if (currency === 'msat') {
             satsAmount = Math.floor(Number(amount) / 1000);
         } else {
-            const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
+            const response = await fetch(
+                "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+                {
+                    mode: "no-cors",
+                }
+            );
             const data = await response.json();
             bitcoinPrice = data.bitcoin.usd;
 

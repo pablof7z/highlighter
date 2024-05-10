@@ -8,7 +8,7 @@ export type View = "edit" | "audience" | "view-preview" | "edit-preview" | "prev
 
 export const selectedTiers = writable<TierSelection>({})
 export const view = writable<View>("edit");
-export const type = writable<"article" | "video" | "note" | "thread" | null>(null);
+export const type = writable<"article" | "video" | "thread" | null>(null);
 export const event = writable<NDKArticle | NDKVideo | NDKEvent | Thread | null>(null);
 export const preview = writable<NDKArticle | NDKVideo | NDKEvent | false | undefined>(undefined);
 export const currentDraftItem = writable<DraftItem | undefined>(undefined);

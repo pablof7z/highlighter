@@ -5,7 +5,7 @@
     import type { NDKRelay, NDKSubscription, NDKUser } from "@nostr-dev-kit/ndk";
     import type { UserProfileType } from "../../../app";
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
-    import { createEventDispatcher, onDestroy, tick } from "svelte";
+    import { createEventDispatcher, onDestroy } from "svelte";
     import createDebug from "debug";
     import { inview } from 'svelte-inview';
 	import { vanityUrls } from "$utils/const";

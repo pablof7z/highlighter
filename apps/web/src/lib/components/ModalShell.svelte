@@ -52,6 +52,8 @@
     let height = viewport?.height;
 
     function resizeHandler() {
+        if (!containerEl) return;
+        
         if (!/iPhone|iPad|iPod/.test(window.navigator.userAgent)&& viewport?.height && height && viewport.height !== height) {
             containerEl.style.bottom = `${height - viewport.height + 10}px`;
         }

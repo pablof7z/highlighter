@@ -3,7 +3,6 @@
 	import ArticleCard from "./ArticleCard.svelte";
 	import { ndk } from "@kind0/ui-common";
 	import UserProfile from "./User/UserProfile.svelte";
-	import { urlFromEvent } from "$utils/url";
 
     export let tag: NDKTag;
     export let highlights: NDKHighlight[] = [];

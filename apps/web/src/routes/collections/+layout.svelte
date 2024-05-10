@@ -5,5 +5,4 @@
 	$layoutMode = "single-column-focused";
 </script>
 
-test
 <slot />
