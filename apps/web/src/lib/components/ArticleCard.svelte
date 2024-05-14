@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-	import { Hexpubkey, NDKHighlight, NDKUser } from '@nostr-dev-kit/ndk';
+	import { Hexpubkey, NDKEvent, NDKHighlight, NDKUser } from '@nostr-dev-kit/ndk';
 	import AvatarWithName from './User/AvatarWithName.svelte';
     import { Avatar } from '@kind0/ui-common';
 	import HighlightIcon from '$icons/HighlightIcon.svelte';
@@ -9,7 +9,7 @@
     export let image: string;
     export let author: string | NDKUser;
     export let description: string | undefined;
-    export let href: string;
+    export let href: string | undefined = undefined;
     export let highlights: NDKHighlight[] | undefined = undefined;
 
     let hover = false;
@@ -33,7 +33,7 @@
                     z-[1]
                 "
             />
-            <div class="absolute top-0 left-0 right-0 bottom-0 z-[2] bg-black bg-opacity-50 w-full h-full backdrop-blur-3xl rounded-box"></div>
+            <div class="absolute top-0 left-0 right-0 bottom-0 z-[2] bg-black bg-opacity-50 w-full h-full backdrop-blur-3xl group-hover:backdrop-blur-[0px] transition-all duration-300 rounded-box"></div>
 
             <div class="grow relative w-full rounded-box overflow-clip z-[3] p-4">
                 <h3 class="font-medium grow max-h-[64px] overflow-clip text-white text-xl truncate">

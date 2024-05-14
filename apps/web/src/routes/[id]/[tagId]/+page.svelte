@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { EventType } from './../../../../app.d.js';
 	import { page } from "$app/stores";
 	import { layoutMode, layoutNavState, resetLayout } from "$stores/layout";
 	import { onDestroy } from "svelte";
-	import ItemView from './ItemView.svelte';
+	import { EventType } from "../../../app";
+	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 
     let tagId: string;
     let eventType: EventType | undefined;

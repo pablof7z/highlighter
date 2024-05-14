@@ -6,9 +6,7 @@
     const dispatch = createEventDispatcher();
 
     export let options: NavigationOption[] = [];
-
     export let value: string = "";
-    export let name: string = "this user";
 </script>
 
 <div class="
@@ -23,14 +21,21 @@
     ">
         {#each options as option (option.id ?? option.name)}
             {#if option.component}
-                <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 p-1.5 items-center">
-                    <div class="rounded-full p-[2px]" class:text-white={value === (option.value || option.name)}>
-                        <svelte:component
-                            this={option.component.component}
-                            {...option.component.props??{}}
-                        />
+                {#if !option.component.unstyled}
+                    <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 p-1.5 items-center">
+                        <div class="rounded-full p-[2px]" class:text-white={value === (option.value || option.name)}>
+                            <svelte:component
+                                this={option.component.component}
+                                {...option.component.props??{}}
+                            />
+                        </div>
                     </div>
-                </div>
+                {:else}
+                    <svelte:component
+                        this={option.component.component}
+                        {...option.component.props??{}}
+                    />
+                {/if}
             {:else}
                 <HorizontalOptionsListItem
                     {option}

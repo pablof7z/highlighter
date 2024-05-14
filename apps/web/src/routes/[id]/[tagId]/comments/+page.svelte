@@ -1,13 +1,11 @@
 <script lang="ts">
-	import MainWrapper from '$components/Page/MainWrapper.svelte';
 	import { page } from "$app/stores";
-	import EventResponses from "$components/EventResponses.svelte";
 	import { CaretLeft } from "phosphor-svelte";
-	import ArticleBannerBackground from "../ArticleBannerBackground.svelte";
-	import ItemFooter from "../ItemFooter.svelte";
-	import WithItem from "../WithItem.svelte";
 	import { pageHeader } from "$stores/layout";
-	import type { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKArticle, type NDKVideo } from "@nostr-dev-kit/ndk";
+	import FilterFeed from '$components/Feed/FilterFeed.svelte';
+    import WithItem from '$components/Event/ItemView/WithItem.svelte';
+    import ItemFooter from '$components/Event/ItemView/ItemFooter.svelte';
 
     let tagId: string;
     let urlPrefix: string;
@@ -42,8 +40,10 @@
         {#if event && (article || video) && eventType}
             <ItemFooter {event} {urlPrefix} {eventType} />
             <!-- <ArticleBannerBackground article={article||video} /> -->
-            
-                <EventResponses {event} class="max-sm:px-4" bind:showComment />
+
+            <FilterFeed filters={[
+                { kinds: [NDKKind.Text, NDKKind.GroupReply ], ...event.filter() }
+            ]} />
         {/if}
     </WithItem>
 {/key}

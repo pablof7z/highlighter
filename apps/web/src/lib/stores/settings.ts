@@ -30,3 +30,9 @@ export const seenOnboardingPromptGridItem = persist(
 	createLocalStorage(),
 	'seen-onboarding-prompt-grid-item'
 );
+
+export const wysiwygEditor = persist(
+	writable<boolean>(true),
+	createLocalStorage(),
+	'wysiwyg'
+)

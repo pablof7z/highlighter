@@ -11,8 +11,6 @@
 	import { TierSelection } from '$lib/events/tiers';
 	import { getAuthorUrl } from '$utils/url';
 	import currentUser from '$stores/currentUser';
-	import Checkbox from '$components/Forms/Checkbox.svelte';
-	import { markdownEditor } from '$stores/settings';
 
     export let onSaveDraft: () => void;
 
@@ -166,7 +164,7 @@
                     Preview
                 </button>
 
-                <button class="truncate" on:click={() => $$props?.onSaveDraft()}>
+                <button class="truncate" on:click={() => {if (onSaveDraft) onSaveDraft()}}>
                     Save Draft
                 </button>
             {/if}

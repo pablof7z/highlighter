@@ -17,7 +17,7 @@
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";
-	import { urlSuffixFromEvent } from "$utils/url";
+	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
 
     let id: string;
     let { user } = $page.data;
@@ -123,7 +123,7 @@
                         image={content.image ?? userProfile?.image}
                         description={content.summary}
                         author={content.author}
-                        href="{authorUrl}/{urlSuffixFromEvent(content)}"
+                        href={urlFromEvent(content, authorUrl)}
                     />
                 {:else if content instanceof NDKVideo}
                     <ArticleCard
@@ -131,7 +131,7 @@
                         image={content.thumbnail ?? userProfile?.image}
                         description={content.content}
                         author={content.author}
-                        href="{authorUrl}/{urlSuffixFromEvent(content)}"
+                        href={urlFromEvent(content, authorUrl)}
                     />
                 {/if}
             {/each}

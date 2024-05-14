@@ -80,6 +80,15 @@
                     </UserProfile>
                 {:else if typeof highlightedArticle === "string"}
                     <a href="/load?url={encodeURIComponent(highlightedArticle)}" class="text-white truncate">{highlightedArticle}</a>
+                {:else if highlightedArticle instanceof NDKEvent}
+                    <div class="flex flex-row items-center gap-2 overflow-hidden whitespace-nowrap truncate flex-grow">
+                        <Avatar user={highlightedArticle.author} class="w-12 h-12 object-cover" type="square" />
+                        <div class="w-full truncate text-neutral-500 font-medium">
+                            Note by
+                            <Name npubMaxLength={12} user={highlightedArticle.author} class="text-white text-sm" />
+                        </div>
+                    </div>
+                    
                 {/if}
             </a>
         {/if}

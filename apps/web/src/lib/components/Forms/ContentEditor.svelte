@@ -6,12 +6,15 @@
     import quillEditorMention from "./quill-editor-mention.js";
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
-	import { UploadButton, newToasterMessage } from '@kind0/ui-common';
+	import { Textarea, UploadButton, newToasterMessage } from '@kind0/ui-common';
     import "quill-mention";
 	import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
     import QuillImageDropAndPaste from 'quill-image-drop-and-paste';
+	import Checkbox from './Checkbox.svelte';
+	import { wysiwygEditor } from '$stores/settings.js';
 
     export let content: string = "";
+    export let placeholder = "Write your heart out...";
     export let toolbar = true;
     export let autofocus = false;
     export let allowMarkdown = true;
@@ -26,12 +29,12 @@
 
     let uploadBlob: Blob;
 
-    onMount(async () => {
+    function enableEditor() {
         Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste)
 
         const options: any = {
             theme: 'snow',
-            placeholder: $$props.placeholder ?? "Write your heart out...",
+            placeholder,
             modules: {
                 imageDropAndPaste: {
                     // add an custom image handler
@@ -139,6 +142,10 @@
         editorChild.addEventListener("focusout", () => dispatch("blur"));
 
         if (autofocus) quill.focus();
+    }
+
+    onMount(async () => {
+        if ($wysiwygEditor) enableEditor();
     })
 
     function fileUploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {
@@ -175,31 +182,63 @@
             newToasterMessage("Failed to upload image", "error");
         }
     }
+
+    function toggleEditor() {
+        if ($wysiwygEditor) {
+            enableEditor();
+        } else {
+        }
+    }
 </script>
 
 <div class="flex flex-col border-none border-neutral-800 sm:rounded-xl border grow">
     {#if toolbar}
-        <div bind:this={toolbarEl} class="-mt-4 toolbar sticky z-40 top-16 bg-base-100/80  !backdrop-blur-[50px] !border-b !border-base-200 toolbar-container">
-            <span class="ql-formats">
-                <select class="ql-header"></select>
-            </span>
-            <span class="ql-formats">
-                <button class="ql-bold"></button>
-                <button class="ql-italic"></button>
-                <button class="ql-link"></button>
-                <button>
-                    <UploadButton class="!p-0" on:uploaded={fileUploaded} bind:blob={uploadBlob}>
-                        <Image class="w-full" />
-                    </UploadButton>
-                </button>
-            </span>
+        <div bind:this={toolbarEl} class="-mt-4 toolbar sticky z-40 top-16 bg-base-100/80  !backdrop-blur-[50px] !border-b !border-base-200 toolbar-container w-full">
+            {#if $wysiwygEditor}
+                <span class="ql-formats">
+                    <select class="ql-header"></select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-bold"></button>
+                    <button class="ql-italic"></button>
+                    <button class="ql-link"></button>
+                    <button>
+                        <UploadButton class="!p-0" on:uploaded={fileUploaded} bind:blob={uploadBlob}>
+                            <Image class="w-full" />
+                        </UploadButton>
+                    </button>
+                </span>
+            {/if}
+            <div class="self-end grow flex flex-row justify-end">
+                <Checkbox
+                    class="border-none"
+                    type="switch"
+                    bind:value={$wysiwygEditor}
+                    on:change={toggleEditor}
+                >
+                    WYSIWYG
+                </Checkbox>
+            </div>
         </div>
     {/if}
     {#if $$slots.belowToolbar}
         <slot name="belowToolbar" />
     {/if}
     <div class="pt-0 flex flex-col gap-4 transition-all duration-100 {$$props.class??""}">
-        <div bind:this={editorEl} class="editor h-full {$$props.class??""}" />
+        {#if $wysiwygEditor}
+            <div bind:this={editorEl} class="
+                editor h-full {$$props.class??""}
+            " />
+        {:else}
+            <Textarea
+                bind:value={content}
+                {placeholder}
+                class="
+                    editor
+                    !bg-transparent border-none {$$props.class??""}
+                "
+            />
+        {/if}
     </div>
 </div>
 

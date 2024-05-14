@@ -6,7 +6,7 @@
     import { closeModal } from '$utils/modal';
     import Device from "svelte-device-info";
 
-    export let color: "white" | "black" | "glassy" = "white";
+    export let color: "white" | "black" | "glassy" = "glassy";
 
     const isPhone = Device.isPhone;
 

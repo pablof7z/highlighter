@@ -51,7 +51,7 @@ import currentUser from "$stores/currentUser";
                     }
                 }
 
-                eventsToPublish = eventsToPublish.sort((a, b) => a.event.created_at! + b.event.created_at!);
+                eventsToPublish = eventsToPublish.sort((a, b) => a.event.created_at! - b.event.created_at!);
                 eventsPublished = eventsPublished.sort((a, b) => a.created_at! - b.created_at!);
             } catch (e) {
                 console.error('failed to decrypt event', e);
@@ -84,7 +84,10 @@ import currentUser from "$stores/currentUser";
     <ul class="discussion-wrapper my-6">
         {#each eventsPublished as event (event.id)}
             <li class="discussion-item">
-                <EventWrapper {event} />
+                <EventWrapper
+                    {event}
+                    showReply={false}
+                />
             </li>
         {/each}
     </ul>

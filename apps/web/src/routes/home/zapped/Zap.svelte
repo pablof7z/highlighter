@@ -1,9 +1,8 @@
 <script lang="ts">
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
-	import { Avatar, Name, ndk, nicelyFormattedMilliSatNumber } from '@kind0/ui-common';
+	import { ndk, nicelyFormattedMilliSatNumber } from '@kind0/ui-common';
 	import { NDKEvent, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
 	import { Lightning } from 'phosphor-svelte';
-	import WithItem from '../../[id]/[tagId]/WithItem.svelte';
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 
     export let zapEvent: NDKEvent;

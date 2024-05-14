@@ -3,6 +3,7 @@
 	import ArticleCard from "./ArticleCard.svelte";
 	import { ndk } from "@kind0/ui-common";
 	import UserProfile from "./User/UserProfile.svelte";
+	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
 
     export let tag: NDKTag;
     export let highlights: NDKHighlight[] = [];
@@ -18,7 +19,13 @@
         }
     });
 
-    $: if (article) url = authorUrl ? [authorUrl, article.tagValue("d")].join('/') : `a/${article.encode()}`
+    $: if (article) {
+        const suffix = urlSuffixFromEvent(article);
+        if (authorUrl && suffix.length > 0)
+            url = [authorUrl, suffix].join('/')
+        else
+            url = `a/${article.encode()}`
+    }
 </script>
 
 {#if article}
@@ -28,7 +35,7 @@
             image={article.image ?? userProfile?.image}
             description={article.summary}
             author={article.author}
-            href={url}
+            href={urlFromEvent(article)}
             {highlights}
         />
     </UserProfile>

@@ -1,23 +1,22 @@
 <script lang="ts">
-	import { path } from 'node:path';
+	import { handleError } from './../../hooks.client.ts';
+	import ItemFooter from './Event/ItemView/ItemFooter.svelte';
 	import { getSummary } from '$utils/article';
-	import { goto } from "$app/navigation";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { ndk } from "@kind0/ui-common";
-	import { type NDKArticle, NDKTag, NDKKind } from "@nostr-dev-kit/ndk";
+	import { type NDKArticle, NDKTag, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
-	import ItemViewZaps from './ItemViewZaps.svelte';
 	import HighlightingArea from './HighlightingArea.svelte';
 	import HighlightedContent from './HighlightedContent.svelte';
 	import EventTags from './Events/EventTags.svelte';
 	import currentUser from '$stores/currentUser';
-	import ItemFooter from '../../routes/[id]/[tagId]/ItemFooter.svelte';
 	import { page } from '$app/stores';
-	import { Share } from 'phosphor-svelte';
 	import BoostButton from './buttons/BoostButton.svelte';
 	import CurationButton from './buttons/CurationButton.svelte';
+	import ItemViewZaps from './Event/ItemView/ItemViewZaps.svelte';
+	import { createBlossom } from '$utils/blossom.js';
 
     export let article: NDKArticle;
     const author = article.author;
@@ -59,6 +58,8 @@
         highlightTags.push(["zap", $currentUser.pubkey, "2"])
         highlightTags.push(["zap", article.pubkey, "8"])
     }
+
+    const blossom = createBlossom({ user: author });
 </script>
 
 <div dir="auto" class="w-full flex flex-col gap-4">
@@ -81,12 +82,12 @@
     <ItemFooter event={article} urlPrefix={url} eventType="article" class="-mx-4" />
     <div class="flex flex-row gap-2 items-center">
         <BoostButton event={article} />
-        <CurationButton event={article} />
+        <!-- <CurationButton event={article} /> -->
     </div>
 
     {#if article.image}
-        <div class="w-full  max-w-[65ch] max-h-[50vh] relative overflow-hidden">
-            <img class="w-full relative sm:rounded-xl object-cover object-top h-full" src={article.image} />
+        <div class="w-full max-w-[65ch] max-h-[50vh] relative overflow-hidden">
+            <img use:blossom class="w-full relative sm:rounded-xl object-cover object-top h-full min-h-[20rem]" src={article.image} />
             <div class="absolute bottom-0 w-full h-2/5 bg-gradient-to-b from-transparent to-black"></div>
         </div>
     {/if}

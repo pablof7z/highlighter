@@ -5,12 +5,20 @@
     export let href: string | undefined = undefined;
     export let label: string | undefined = undefined;
     export let active: boolean = false;
+    export let badge = false;
 </script>
 
 {#if href}
-    <a {href} class:active>
+    <a {href} class={$$props.class??""} class:active>
         <slot />
-        {#if count > 0}
+        {#if badge}
+            {#if label}
+                {label}
+            {/if}
+            {#if count > 0}
+                <span class="badge">{count}</span>
+            {/if}
+        {:else if count > 0}
             <span>{count}</span>
             {#if label}
                 <span>{pluralize(count, label)}</span>
@@ -18,9 +26,16 @@
         {/if}
     </a>
 {:else}
-    <button on:click class:active>
+    <button class={$$props.class??""} class:active>
         <slot />
-        {#if count > 0}
+        {#if badge}
+            {#if label}
+                {label}
+            {/if}
+            {#if count > 0}
+                <span class="badge bg-base-300 text-white">{count}</span>
+            {/if}
+        {:else if count > 0}
             <span>{count}</span>
             {#if label}
                 <span>{pluralize(count, label)}</span>

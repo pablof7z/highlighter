@@ -16,10 +16,8 @@
 
 {#key user.pubkey}
     <FilterFeed
-        newPostKind={NDKKind.GroupNote}
         filters={[
-            { kinds: [NDKKind.GroupNote, NDKKind.GroupReply], "#h": [user.pubkey] }
+            { kinds: [NDKKind.Article, NDKKind.HorizontalVideo], "authors": [user.pubkey] }
         ]}
-        {newPostTags}
     />
 {/key}

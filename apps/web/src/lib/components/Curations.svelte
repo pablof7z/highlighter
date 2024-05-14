@@ -10,7 +10,7 @@
     export let filter: NDKFilter;
     export let skipAuthor: boolean | undefined = undefined;
 
-    const debug = createDebug("highlighter:curations");
+    const debug = createDebug("HL:curations");
 
     const typeFilter = writable<App.FilterType[]>(["all"]);
     let selectedCategory: string;

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import Curations from "$components/Curations.svelte";
-	import ItemFooter from "../ItemFooter.svelte";
-	import WithItem from "../WithItem.svelte";
+	import ItemFooter from "$components/Event/ItemView/ItemFooter.svelte";
+	import WithItem from "$components/Event/ItemView/WithItem.svelte"
 
     let id: string;
     let tagId: string;

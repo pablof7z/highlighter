@@ -105,7 +105,7 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 	// debug(`Configuring BE NDK`, { nodeFetch: !!nodeFetch });
 
 	const fetchWrapper = async (url: string, options: RequestInit) => {
-		console.log('fetchWrapper', url, options);
+		console.trace('fetchWrapper', url, options);
 		try {
 			return await fetch(url, options);
 		} catch (error) {

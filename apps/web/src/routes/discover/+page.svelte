@@ -2,17 +2,24 @@
 	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
 	import { computeArticleRecommendationFromHighlightStore } from "$utils/recommendations";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKKind } from "@nostr-dev-kit/ndk";
+	import { NDKHighlight, NDKKind } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from 'svelte';
 	import FeaturedCreators from '$components/PageElements/FeaturedCreators.svelte';
 	import Logo from '$icons/Logo.svelte';
 	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 	import { NavigationOption } from '../../app';
 	import FeaturedReads from '$components/PageElements/FeaturedReads.svelte';
+	import { featuredCreatorsPerCategory } from "$utils/const";
+	import { GlobeStand } from "phosphor-svelte";
+	import { derived, writable } from "svelte/store";
+	import WithItem from "$components/Event/ItemView/WithItem.svelte";
 
-    const feed = $ndk.storeSubscribe({
-        kinds: [NDKKind.Highlight]
-    })
+    const allFeaturedPubkeys = Object.values(featuredCreatorsPerCategory).flat();
+
+    const feed = $ndk.storeSubscribe([
+        {kinds: [NDKKind.Highlight], authors: allFeaturedPubkeys, limit: 100 },
+        {kinds: [NDKKind.Highlight], "#p": allFeaturedPubkeys, limit: 100 },
+    ], { closeOnEose: true }, NDKHighlight)
 
     const events = $ndk.storeSubscribe([
         {kinds: [NDKKind.Subscribe], limit: 100},
@@ -23,17 +30,37 @@
         events.unsubscribe();
     });
 
-    const recommendedArticles = computeArticleRecommendationFromHighlightStore(feed);
+    let selectedFeaturedPubkeys: string[] = [];
 
-    const mainCategories: NavigationOption[] = [
-        { name: "Philosophy", value: "Philosophy" },
-        { name: "Freedom Tech", value: "Freedom Tech" },
-        { name: "Politics", value: "Politics" },
-        { name: "Literature", value: "Literature" },
-        { name: "Entrepreneurship", value: "Entrepreneurship" },
-    ]
+    const highlightIsByFeaturedAuthor = (h: NDKHighlight) => selectedFeaturedPubkeys.includes(h.pubkey);
+    const highlightTagsFeaturedAuthor = (h: NDKHighlight) => h.getMatchingTags("p").some(t => selectedFeaturedPubkeys.includes(t[1]));
+    const highlightFilter = (h: NDKHighlight) => highlightIsByFeaturedAuthor(h) || highlightTagsFeaturedAuthor(h);
 
-    let category = mainCategories[0].value;
+    const mainCategories: NavigationOption[] = Object.keys(featuredCreatorsPerCategory).map(category => ({ name: category, value: category }));
+    mainCategories.unshift({ name: 'All Topics', value: 'all', icon: GlobeStand });
+
+    let category = mainCategories[0].value!;
+    const categoryStore = writable<string>(category);
+
+    $: categoryStore.set(category);
+
+    $: if (category === 'all') {
+        selectedFeaturedPubkeys = allFeaturedPubkeys;
+    } else {
+        selectedFeaturedPubkeys = featuredCreatorsPerCategory[category];
+    }
+
+    const filteredFeed = derived([feed, categoryStore], ([$feed, $categoryStore]) => {
+        if ($categoryStore === 'all') return $feed;
+
+        return $feed.filter(highlightFilter);
+    })
+
+    const recommendedArticles = computeArticleRecommendationFromHighlightStore(filteredFeed);
+
+    const articles = derived(recommendedArticles, ($recommendedArticles) => {
+        return $recommendedArticles.filter(({tag}) => tag[0] === "a");
+    });
 </script>
 
 <!-- <h1 class="text-white font-medium text-7xl">
@@ -83,11 +110,23 @@
                 </h2>
             </header>
         
-            <FeaturedReads />
+            {#if category === "all"}
+                <WithItem tagId="naddr1qqxnzd3exsmrswfjxsurxvf3qgsxu35yyt0mwjjh8pcz4zprhxegz69t4wr9t74vk6zne58wzh0waycrqsqqqa2844arph" let:article>
+                    <FeaturedReads {article} highlights={[]} />
+                </WithItem> 
+            {:else}
+                {#key $articles[0].tag[1]}
+                    {$articles[0].tag[1]}
+                    <FeaturedReads articleTag={$articles[0].tag} highlights={$articles[0].highlights} />
+                {/key}
+            {/if}
 
         <div class="divider my-10"></div>
 
-        <MostHighlightedArticleGrid articleTagsWithHighlights={$recommendedArticles} />
+        {$feed.length}
+        {$filteredFeed.length}
+
+        <MostHighlightedArticleGrid articleTagsWithHighlights={$articles.slice(1, -1)} />
         </div>
     </section>
 

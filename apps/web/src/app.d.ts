@@ -49,7 +49,8 @@ export type NavigationOption = {
 	badge?: string | true;
     id?: string;
     component?: {
-        component: typeof SvelteComponent;
+		component: typeof SvelteComponent;
+		unstyled?: boolean;
         props?: Record<string, any>;
     }
     fn?: () => void;

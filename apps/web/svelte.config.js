@@ -2,6 +2,7 @@ import { phosphorSvelteOptimize } from "phosphor-svelte/preprocessor"
 import preprocess from 'svelte-preprocess';
 import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { preprocessMeltUI, sequence } from '@melt-ui/pp'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -10,13 +11,14 @@ const config = {
 	compilerOptions: {
 		customElement: true,
 	},
-	preprocess: [
+	preprocess: sequence([
 		vitePreprocess(),
 		phosphorSvelteOptimize(),
 		preprocess({
 			postcss: true
-		})
-	],
+		}),
+		preprocessMeltUI()
+	]),
 
 	kit: {
 		adapter: adapter(),

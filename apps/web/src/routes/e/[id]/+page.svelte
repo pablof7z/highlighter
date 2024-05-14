@@ -6,14 +6,14 @@
     import Highlight from "$components/Highlight.svelte";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { goto } from "$app/navigation";
-	import WithItem from "../../[id]/[tagId]/WithItem.svelte";
+	import WithItem from "$components/Event/ItemView/WithItem.svelte";
 	import CreatorShell from "$components/Creator/CreatorShell.svelte";
 	import MoreFromUser from "$components/Creator/MoreFromUser.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import ListView from "$components/ListView.svelte";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
-	import ItemFooter from "../../[id]/[tagId]/ItemFooter.svelte";
-	import VideoView from "../../[id]/[tagId]/VideoView.svelte";
+	import ItemFooter from "$components/Event/ItemView/ItemFooter.svelte";
+	import VideoView from "$components/Event/ItemView/VideoView.svelte";
 	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
 	import { detailView, pageMainContentMaxWidth } from "$stores/layout";
 
@@ -114,13 +114,3 @@
 
         </WithItem>
 {/key}
-<!--
-<LoadingScreen ready={!!event}>
-    <MainWrapper>
-
-        <h1 class="text-2xl font-bold mb-4">Article</h1>
-        {#if event}
-            <ArticleView article={NDKArticle.from(event)} isFullVersion={true} />
-        {/if}
-    </MainWrapper>
-</LoadingScreen> -->

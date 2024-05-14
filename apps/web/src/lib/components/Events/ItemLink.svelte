@@ -132,10 +132,4 @@
             <TopZap {event} class="text-xs" />
         {/if}
     </div>
-
-    {#if $debugMode}
-        <button on:click={() => { console.log(event.rawEvent())} }>
-            <Bug />
-        </button>
-    {/if}
 </a>

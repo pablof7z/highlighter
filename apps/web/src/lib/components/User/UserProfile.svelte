@@ -56,13 +56,27 @@
 
     if ($ndk.cacheAdapter?.fetchProfile && user?.pubkey && !checkedCache) {
         checkedCache = true
+        let profileCreatedAt: number;
         $ndk.cacheAdapter?.fetchProfile(user.pubkey).then((p) => {
             if (p) {
                 userProfile ??= p;
+                profileCreatedAt = p.created_at;
 
                 // not sure why this hack is needed
                 setTimeout(() => {userProfile ??= p;}, 100);
             }
+
+            // push a profile refresh to be grouped
+            $ndk.fetchEvent({
+                kinds: [0], authors: [user.pubkey]
+            }, { subId: 'profile-refresh', groupable: true, groupableDelay: 5000, groupableDelayType: 'at-least', closeOnEose: true, cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
+            .then((e: NDKEvent | null) => {
+                if (e && e.created_at! > profileCreatedAt) {
+                    userProfile = profileFromEvent(e) as UserProfileType;
+                    event = e;
+                    dispatch("newProfileAfterEose", userProfile);
+                }
+            });
         }).catch((e: any) => {
             console.error(e);
         });

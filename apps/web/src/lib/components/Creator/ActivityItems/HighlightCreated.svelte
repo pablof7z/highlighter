@@ -1,9 +1,7 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { Avatar, Name, RelativeTime, ndk } from "@kind0/ui-common";
-    import ArticleCard from "$components/Events/ArticleCard.svelte";
     import { NDKArticle, type NDKEvent } from "@nostr-dev-kit/ndk";
-	import { ArrowDown } from "phosphor-svelte";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 
     export let event: NDKEvent;

@@ -2,7 +2,7 @@
 	import { ArrowLeft } from 'phosphor-svelte';
 	import { page } from "$app/stores";
 	import { NDKEvent, NDKUser, isEventOriginalPost, getEventReplyIds, getRootEventId, NDKKind } from "@nostr-dev-kit/ndk";
-	import WithItem from "../../../[tagId]/WithItem.svelte";
+	import WithItem from "$components/Event/ItemView/WithItem.svelte";
 	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
 	import { ndk } from '@kind0/ui-common';
 	import { goto } from '$app/navigation';

@@ -4,37 +4,16 @@
     import Input from "$components/Forms/Input.svelte";
     import { ndk, user } from "@kind0/ui-common";
 	import { NDKEvent, NDKList, NDKKind } from "@nostr-dev-kit/ndk";
-	import { BookmarkSimple, Heart, Lock, PaperPlaneTilt, Plus } from "phosphor-svelte";
+	import { BookmarkSimple, Heart, Lock, PaperPlaneTilt, Plus, RowsPlusBottom } from "phosphor-svelte";
 
     export let event: NDKEvent;
 
     let listStore: Writable<Map<string, NDKList>>;
     let listKind: number;
 
-    switch (event.kind) {
-        case NDKKind.Article:
-            listStore = userArticleCurations;
-            listKind = NDKKind.ArticleCurationSet
-            break;
-        case NDKKind.HorizontalVideo:
-            listStore = userVideoCurations;
-            listKind = NDKKind.VideoCurationSet;
-            break;
-        default:
-            alert(`Not supported curation button for kind ${event.kind}`)
-    }
-
     let bookmarked = false;
 
     const tagId = event.tagId();
-
-    function curationHasEvent(curation: NDKList) {
-        if (curation.items.map(tag => tag[1]).includes(tagId)) {
-            return true;
-        }
-
-        return false;
-    }
 
     $: for (const curation of $listStore.values()) {
         if (curationHasEvent(curation)) {
@@ -42,38 +21,16 @@
             break;
         }
     }
-
-    async function addToCuration(curation: NDKList) {
-        if (curationHasEvent(curation)) {
-            return;
-        }
-
-        const isEncrypted = (await curation.encryptedTags()).length > 0;
-
-        await curation.addItem(event.tagReference(), undefined, isEncrypted);
-        await curation.sign();
-        await curation.publish();
-    }
-
-    async function createNewCuration() {
-        const curation = new NDKList($ndk);
-        curation.kind = listKind;
-        curation.title = newCurationName;
-        await addToCuration(curation);
-    }
-
-    let showCreate = false;
-    let newCurationName = "";
 </script>
 
 <div
-    class="dropdown dropdown-top"
+    class="dropdown"
     class:dropdown-open={showCreate}
 >
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label tabindex="0" class="cursor-pointer">
-        <BookmarkSimple
+        <RowsPlusBottom
             class="w-7 h-7
                 {bookmarked ? 'text-accent' : ''}
             " weight={bookmarked ? "fill" : "regular"}
@@ -81,56 +38,6 @@
     </label>
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
     <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow rounded-box overflow-x-clip truncate flex-nowrap">
-        {#each $listStore.values() as curation (curation.id)}
-            <li class="w-full">
-                <button
-                    class="whitespace-nowrap w-full font-normal"
-                    class:active={curationHasEvent(curation)}
-                    on:click={() => addToCuration(curation)}
-                >
-                    {#await curation.encryptedTags() then encryptedTags}
-                        {#if encryptedTags.length > 0}
-                            <Lock class="w-4 h-4 mr-2" />
-                        {/if}
-                    {/await}
-                    {curation.title}
-                </button>
-            </li>
-        {/each}
-        {#if $listStore.size > 0}
-            <div class="divider my-0"></div>
-        {/if}
-        <li class="w-full min-w-[16rem]">
-            {#if !showCreate}
-                <button
-                    class="whitespace-nowrap w-full font-normal text-accent2"
-                    on:click|preventDefault|stopPropagation|stopImmediatePropagation={() => showCreate = true}
-                >
-                    <Plus class="w-4 h-4 mr-2" />
-                    Create new curation
-                </button>
-            {:else}
-                <div class="join join-horizontal p-0">
-                    <Input
-                        class="w-52 bg-transparent !border-0 font-normal join-item"
-                        color="black"
-                        placeholder="Curation name"
-                        bind:value={newCurationName}
-                        autofocus={true}
-                        on:keydown={(e) => {
-                            if (e.key === "Enter") {
-                                showCreate = false;
-                                createNewCuration()
-                            }
-                        }}
-                        on:blur={() => showCreate = false}
-                    />
-                    <button class="btn btn-ghost join-item" on:click={createNewCuration}>
-                        <PaperPlaneTilt class="w-4 h-4 text-accent" />
-                    </button>
-                </div>
-            {/if}
-        </li>
     </ul>
 </div>
 

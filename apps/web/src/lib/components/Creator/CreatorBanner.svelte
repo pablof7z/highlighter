@@ -12,6 +12,8 @@
     export let pubkey: Hexpubkey;
     export let tierList: NDKList | undefined = undefined;
 
+    console.log({pubkey})
+    
     const userColor = '#' + pubkey.toString().slice(0, 6);
 
     const followedBy = $ndk.storeSubscribe({

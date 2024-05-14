@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import { CaretLeft } from "phosphor-svelte";
-	import ItemFooter from "../ItemFooter.svelte";
-	import WithItem from "../WithItem.svelte";
-	import ArticleBannerBackground from "../ArticleBannerBackground.svelte";
+    import ItemFooter from "$components/Event/ItemView/ItemFooter.svelte";
+	import WithItem from "$components/Event/ItemView/WithItem.svelte"
 	import Highlights from "$components/Highlights.svelte";
 	import { pageHeader } from "$stores/layout";
 	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";

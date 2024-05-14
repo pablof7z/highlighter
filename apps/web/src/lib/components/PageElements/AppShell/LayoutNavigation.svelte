@@ -27,14 +27,15 @@
     $: layoutNavWidth = collapsed ? "w-navbar-collapsed" : "pl-6";
 
 
-    let options: NavigationOption[] = [
-        { name: "Home", icon: House, href: "/home" },
-        { name: "Bookmarks",  href: "/bookmarks", icon: BookmarkSimple },
-        { name: "Discover",  href: "/discover", icon: Fire },
-        { name: "Collections",  href: "/collections", icon: SquaresFour },
-    ]
+    let options: NavigationOption[];
 
     $: {
+        options = [
+            { name: "Home", icon: House, href: "/home" },
+            { name: "Bookmarks",  href: "/bookmarks", icon: BookmarkSimple },
+            { name: "Discover",  href: "/discover", icon: Fire },
+            { name: "Collections",  href: "/collections", icon: SquaresFour },
+        ]
         if ($currentUser && (!$isGuest || $hasUnreadNotifications)) {
             options.push(
                 { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined }

@@ -30,8 +30,16 @@ export const vanityUrls: Record<string, Hexpubkey> = {
     "onigirl": "3c9849383bdea883b0bd16fece1ed36d37e37cdde3ce43b17ea4e9192ec11289",
     "bitcoinand": "6389be6491e7b693e9f368ece88fcd145f07c068d2c1bbae4247b9b5ef439d32",
     "verbiricha": "7fa56f5d6962ab1e3cd424e758c3002b8665f7b0d8dcee9fe9e288d7751ac194",
-    "dergigi": "6e468422dfb74a5738702a8823b9b28168abab8655faacb6853cd0ee15deee93"
+    "dergigi": "6e468422dfb74a5738702a8823b9b28168abab8655faacb6853cd0ee15deee93",
+    "karnage": "1bc70a0148b3f316da33fe3c89f23e3e71ac4ff998027ec712b905cd24f6a411",
+    "hodlbod": "97c70a44366a6535c145b333f973ea86dfdc2d7a99da618c40c64705ad98e322",
+    "laeserin": "dd664d5e4016433a8cd69f005ae1480804351789b59de5af06276de65633d319",
+    "hzrd149": "266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5"
 }
+
+export const vanityUrlsByPubkey: Record<Hexpubkey, string> = Object.fromEntries(
+    Object.entries(vanityUrls).map(([k, v]) => [v, k])
+);
 
 export const featuredCreatorPubkeys = [
     vanityUrls.maxdemarco,
@@ -56,15 +64,23 @@ if (!defaultVerifierPubkey) {
 
 export const featuredCreatorsPerCategory: Record<string, Hexpubkey[]> = {
     "Entrepreneurship": [
-        vanityUrls.svetski
+        vanityUrls.svetski,
+        vanityUrls.karnage
     ],
     "Freedom Tech": [
         vanityUrls.maxdemarco,
         vanityUrls.chrisliss,
-        vanityUrls.pablof7z
+        vanityUrls.pablof7z,
+        vanityUrls.karnage,
+        vanityUrls.hodlbod,
+        vanityUrls.hzrd149
+    ],
+    "UX / Design": [
+        vanityUrls.karnage
     ],
     "Philosophy": [
         vanityUrls.chrisliss,
-        vanityUrls.dergigi
+        vanityUrls.dergigi,
+        vanityUrls.hodlbod
     ],
 }

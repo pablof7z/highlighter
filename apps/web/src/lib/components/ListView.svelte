@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { detailView, pageHeader, pageSidebar } from "$stores/layout";
+	import { pageHeader, pageSidebar } from "$stores/layout";
 	import { NDKList, type NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
     import ListSidebar from "$components/PageSidebar/List.svelte";
 	import { page } from '$app/stores';
 	import { ndk } from '@kind0/ui-common';
-	import ItemView from '../../routes/[id]/[tagId]/ItemView.svelte';
+	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 	import ListViewContent from './ListViewContent.svelte';
 	import { CaretLeft } from 'phosphor-svelte';
 

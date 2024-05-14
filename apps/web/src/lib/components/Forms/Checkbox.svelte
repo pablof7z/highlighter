@@ -1,6 +1,5 @@
 <script lang="ts">
     export let value: boolean | undefined = undefined;
-    export let button: boolean = false;
     export let type: "check" | "switch" = "check";
 </script>
 

@@ -2,12 +2,15 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
     import Input from '$components/Forms/Input.svelte';
+	import SearchModal from '$modals/SearchModal.svelte';
 	import { pageHeader, searching } from '$stores/layout';
+	import { openModal } from '$utils/modal';
 	import { ndk } from '@kind0/ui-common';
 	import { nip19 } from 'nostr-tools';
 	import { MagnifyingGlass, PaperPlaneRight } from 'phosphor-svelte';
     import { createEventDispatcher, onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
+	import { Drawer } from 'vaul-svelte';
 
     export let value: string = "";
 
@@ -113,7 +116,7 @@
         class="grow basis-0 sm:bg-base-200 border-none font-normal sm:pl-14 placeholder:!text-neutral-500 !rounded-full !text-neutral-300
         sm:focus:outline sm:focus:!outline-base-300 {$$props.inputClass??""}"
         on:keyup={keyup}
-        on:focus={() => noFocus = false}
+        on:focus={() => openModal(SearchModal)}
         on:blur={() => noFocus = true}
         {...{autofocus: $$props.autofocus}}
     />
