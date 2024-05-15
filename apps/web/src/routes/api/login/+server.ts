@@ -1,5 +1,5 @@
 import { JWT_ACCESS_SECRET } from '$env/static/private';
-import { verifySignature, type Event } from 'nostr-tools';
+import { verifyEvent } from 'nostr-tools/pure';
 import { NDKEvent } from '@nostr-dev-kit/ndk';
 import { json, text } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
@@ -59,7 +59,7 @@ async function generateJWTFromEvent(event: NDKEvent) {
 
 function validateEvent(event: NDKEvent) {
 	// validate signature
-	if (!verifySignature(event.rawEvent() as Event<27235>)) {
+	if (!verifyEvent(event.rawEvent())) {
 		throw new Error('Invalid signature');
 	}
 

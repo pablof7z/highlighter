@@ -7,7 +7,7 @@ import createDebug from 'debug';
 import 'websocket-polyfill';
 import { calculateSatAmountFromAmountTag } from '$utils/currency';
 import { getTierNameFromSubscriptionEvent, processNewSubscription } from '$utils/subscriptions';
-import { verifySignature, type Event } from 'nostr-tools';
+import { Event, verifyEvent } from 'nostr-tools/pure'
 
 const debug = createDebug('HL:/api/user/subscribe');
 
@@ -97,7 +97,7 @@ export async function POST({ request }) {
 
 		// validate this event since it's not coming from a relay
 		// and we need to make sure that the signature is valid
-		if (!(await verifySignature(event.rawEvent() as Event))) {
+		if (!(verifyEvent(event.rawEvent() as Event))) {
 			throw new Error('Invalid signature');
 		}
 
