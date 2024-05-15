@@ -1,8 +1,17 @@
 import { phosphorSvelteOptimize } from "phosphor-svelte/preprocessor"
 import preprocess from 'svelte-preprocess';
-import adapter from '@sveltejs/adapter-node';
+import adapterNode from '@sveltejs/adapter-node';
+import adapterStatic from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { preprocessMeltUI, sequence } from '@melt-ui/pp'
+
+const mobile = !!process.env.MOBILE;
+
+const adapter = !mobile ? adapterNode() : adapterStatic({
+	pages: 'build',
+	assets: 'build',
+	fallback: "404.html",
+	precompress: false,
+});
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -11,19 +20,21 @@ const config = {
 	compilerOptions: {
 		customElement: true,
 	},
-	preprocess: sequence([
+	preprocess: [
 		vitePreprocess(),
 		phosphorSvelteOptimize(),
 		preprocess({
 			postcss: true
 		}),
-		preprocessMeltUI()
-	]),
+	],
 
 	kit: {
-		adapter: adapter(),
+		adapter,
 		serviceWorker: {
 			register: false,
+		},
+		prerender: {
+			handleHttpError: "warn"
 		},
 		alias: {
 			$actions: 'src/lib/actions',

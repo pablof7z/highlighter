@@ -4,7 +4,6 @@
 	import { ArrowRight } from "phosphor-svelte";
 
     export let user: NDKUser;
-    export let authorUrl: string;
 </script>
 
 <div class="backstage-box-container {$$props.class??""}">

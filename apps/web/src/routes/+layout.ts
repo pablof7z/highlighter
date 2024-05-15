@@ -1,9 +1,12 @@
-import { configureDefaultNDK } from '$utils/ndk';
+import { configureDefaultNDK } from '../lib/utils/ndk';
 import { ndk } from '@kind0/ui-common';
 import { get } from 'svelte/store';
 
+const mobileBuild = !!process.env.MOBILE;
+
 export const ssr = false;
-export const prerender = false;
+export const prerender = 'auto';
+export const trailingSlash = mobileBuild ? 'always' : 'ignore';
 
 export async function load({ fetch }) {
 	const $ndk = get(ndk);

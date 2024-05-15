@@ -11,8 +11,6 @@
     export let creatorPubkey: Hexpubkey;
     export let pubkey: Hexpubkey;
     export let position: number;
-    export let tierNames: Record<string, string> = {};
-    export let tier: string;
     export let receipt: NDKSubscriptionReceipt;
 
     const substart = $ndk.storeSubscribe(

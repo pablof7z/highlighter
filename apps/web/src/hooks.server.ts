@@ -1,5 +1,4 @@
 import {sequence} from '@sveltejs/kit/hooks';
-import * as Sentry from '@sentry/sveltekit';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { authenticateUser } from '$lib/utils/authentication';
 
