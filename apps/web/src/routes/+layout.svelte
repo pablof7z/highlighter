@@ -5,7 +5,7 @@
 	import { finalizeLogin } from '$utils/login';
 	import { prepareSession, jwt, userProfile } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
-	import { pwaInfo } from 'virtual:pwa-info';
+	// import { pwaInfo } from 'virtual:pwa-info';
 	import AppShell from '$components/PageElements/AppShell.svelte';
 	import "@fontsource/lora";
 	import "@fontsource/lora/600.css";
@@ -18,12 +18,11 @@
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { welcomeScreenSeen } from '$stores/settings';
 	import currentUser from '$stores/currentUser';
-	import { pageHeader } from '$stores/layout';
 
 	const d = createDebug('HL:layout');
 
-	let webManifestLink: string;
-	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
+	// let webManifestLink: string;
+	// $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
 
 	let hasJwt = false;
 	let mounted = false;
@@ -86,7 +85,7 @@
 </script>
 
 <svelte:head>
-	{@html webManifestLink}
+	<!-- {@html webManifestLink} -->
 </svelte:head>
 
 <!-- <NetworkHandler /> -->
