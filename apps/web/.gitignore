@@ -21,3 +21,5 @@ yarn.lock
 # Sentry Config File
 .sentryclirc
 highlighter.db
+
+resources/ios/**/*

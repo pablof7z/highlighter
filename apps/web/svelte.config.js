@@ -4,7 +4,7 @@ import adapterNode from '@sveltejs/adapter-node';
 import adapterStatic from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-const mobile = !!process.env.MOBILE;
+const mobile = !!process.env.VITE_MOBILE;
 
 const adapter = !mobile ? adapterNode() : adapterStatic({
 	pages: 'build',
@@ -35,6 +35,7 @@ const config = {
 		},
 		prerender: {
 			handleHttpError: "warn"
+
 		},
 		alias: {
 			$actions: 'src/lib/actions',
@@ -43,6 +44,7 @@ const config = {
 			$modals: 'src/lib/modals',
 			$stores: 'src/lib/stores',
 			$utils: 'src/lib/utils',
+			$views: 'src/lib/views',
 			$lib: 'src/lib',
 			$api: 'src/lib/api',
 			$db: 'src/db',

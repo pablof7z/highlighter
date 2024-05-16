@@ -1,4 +1,5 @@
     <script lang="ts">
+	import { component } from './../../../../.svelte-kit/output/server/nodes/0.js';
 	import { Thread, publishThread } from '$utils/thread.js';
 	import PublishConfirmationModal from './PublishConfirmationModal.svelte';
 	import { CaretLeft, CaretRight, Timer } from "phosphor-svelte";
@@ -11,6 +12,9 @@
 	import { TierSelection } from '$lib/events/tiers';
 	import { getAuthorUrl } from '$utils/url';
 	import currentUser from '$stores/currentUser';
+	import { appMobileView } from '$stores/app';
+	import { pageHeader, pageNavigationOptions, resetLayout } from '$stores/layout';
+	import MobileToolbarHelper from './MobileToolbarHelper.svelte';
 
     export let onSaveDraft: () => void;
 
@@ -130,11 +134,48 @@
         });
     }
 
+    let hasPreview = false;
+    $: hasPreview = ["article", "thread"].includes($type!) 
+
     let hasStatus = $status.length;
     $: hasStatus = $status.length;
 
+    // if we are in mobile view, we set the left and right buttons instead of rendering here
+    $: if ($appMobileView) {
+        $pageHeader = {};
+        if (back) {
+            $pageHeader.left = {
+                icon: CaretLeft,
+                label: back.label,
+                fn: backClicked
+            };
+        } else if (hasPreview) {
+            $pageHeader.left = {
+                component: {
+                    component: MobileToolbarHelper,
+                    props: {
+                        onSaveDraft,
+                        togglePreview
+                    }
+                }
+            }
+        }
+
+        if (next) {
+            $pageHeader.right = {
+                icon: CaretRight,
+                label: next.label,
+                fn: nextClicked
+            };
+        }
+
+        if (hasPreview) {
+            $pageHeader
+        }
+    }
 </script>
 
+{#if $appMobileView}
 <div class="flex flex-row justify-between h-full w-full items-center" class:hidden={$view === "published"}>
     {#if back}
         <button class="button button-black truncate" on:click={backClicked}>
@@ -190,3 +231,4 @@
         {/if}
     </div>
 </div>
+{/if}

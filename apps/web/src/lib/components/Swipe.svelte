@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type SvelteComponent } from 'svelte';
-    import Device from 'svelte-device-info';
     import { createEventDispatcher } from 'svelte';
+	import { appMobileView } from '$stores/app';
 
     const dispatch = createEventDispatcher();
 
@@ -198,7 +198,7 @@
     }
 </script>
 
-{#if Device.isPhone}
+{#if $appMobileView}
 <div class="w-full relative"
     style="
         touch-action: pan-y;

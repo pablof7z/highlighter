@@ -54,6 +54,8 @@ export default defineConfig({
         ...pwa,
         nodePolyfills(), mkcert()],
     optimizeDeps: {
-		exclude: ["phosphor-svelte"],
+		exclude: [
+            "phosphor-svelte",
+        ],
 	},
 });

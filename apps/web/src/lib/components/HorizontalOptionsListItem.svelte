@@ -2,9 +2,15 @@
     import { CrownSimple } from "phosphor-svelte";
 	import { page } from "$app/stores";
 	import { NavigationOption } from "../../app";
+    import { appMobileView } from "$stores/app";
+	import { Chip } from "konsta/svelte";
+	import { goto } from "$app/navigation";
+	import { createEventDispatcher } from "svelte";
 
     export let option: NavigationOption;
     export let value: string;
+
+    const dispatch = createEventDispatcher();
 
     let active = false;
     let el: HTMLElement;
@@ -20,6 +26,21 @@
 
     }
 </script>
+{#if $appMobileView}
+    <Chip class="
+        m-0.5
+        snap-center {option.class??""}
+        { active ? "!bg-accent2" : ""}
+    " onClick={() => {
+        dispatch("click");
+        if (option.href) goto(option.href);
+    }}>
+        {#if option.icon}
+            <svelte:component this={option.icon} class="w-5 h-5 inline mr-2" {...option.iconProps??{}} />
+        {/if}
+        {option.name}
+    </Chip>
+{:else}
 <a
     bind:this={el}
     href={option.href}
@@ -43,6 +64,7 @@
         {/if}
     </span>
 </a>
+{/if}
 
 <style>
     a {

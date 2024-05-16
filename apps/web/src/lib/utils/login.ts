@@ -27,7 +27,8 @@ const $ndk = get(ndk);
 const $bunkerNDK = get(bunkerNDK);
 
 export async function finalizeLogin() {
-	const hostname = import.meta.env.VITE_HOSTNAME;
+	const url = import.meta.env.VITE_BASE_URL;
+	const hostname = new URL(url).hostname;
 	// fetch jwt
 	const loginEvent = await generateLoginEvent(hostname);
 	if (!loginEvent) return null;
@@ -39,9 +40,16 @@ export async function finalizeLogin() {
 }
 
 async function pkLogin(key: string) {
-	const signer = new NDKPrivateKeySigner(key);
-	const u = await signer.user();
-	if (u) loggedIn(signer, u!, 'pk');
+	try {
+		const signer = new NDKPrivateKeySigner(key);
+		const u = await signer.user();
+		if (u) loggedIn(signer, u!, 'pk');
+	} catch {
+		loginMethod.set(undefined);
+		privateKey.set(undefined);
+		userPubkey.set(undefined);
+		login()
+	}
 }
 
 async function nip46Login(remotePubkey?: Hexpubkey) {
@@ -74,7 +82,7 @@ async function nip46Login(remotePubkey?: Hexpubkey) {
  * used, or a NIP-07 extension.
  */
 export async function login(
-	method: LoginMethod | undefined,
+	method?: LoginMethod | undefined,
 	userPubkey?: string,
 ) {
 	d(`running with method ${method}`);

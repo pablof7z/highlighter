@@ -18,8 +18,20 @@
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { welcomeScreenSeen } from '$stores/settings';
 	import currentUser from '$stores/currentUser';
+	import MobileAppShell from '$components/PageElements/Mobile/AppShell.svelte';
+	import { appMobileView } from '$stores/app';
+	import { isMobileBuild, isPhone } from '$utils/view/mobile';
+	import { defineCustomElements } from "@ionic/pwa-elements/loader";
+	import { setupIonicSvelte } from "ionic-svelte";
 
 	const d = createDebug('HL:layout');
+	
+	/** Mobile concerns */
+	$appMobileView = isMobileBuild() || isPhone();
+	$: if ($appMobileView && browser) {
+		setupIonicSvelte();
+		defineCustomElements(window);
+	}
 
 	// let webManifestLink: string;
 	// $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
@@ -71,7 +83,9 @@
 
 	$: if (mounted && $user && $ndk.signer && !hasJwt && !finalizingLogin) {
 		finalizingLogin = true;
-		finalizeLogin();
+		try {
+			finalizeLogin();
+		} catch {}
 	}
 
 	let sessionPreparationStarted = false;
@@ -90,8 +104,14 @@
 
 <!-- <NetworkHandler /> -->
 
-<LoadingScreen ready={mounted}>
-	<AppShell>
+{#if $appMobileView}
+	<MobileAppShell>
 		<slot />
-	</AppShell>
-</LoadingScreen>
+	</MobileAppShell>
+{:else}
+	<LoadingScreen ready={mounted}>
+		<AppShell>
+			<slot />
+		</AppShell>
+	</LoadingScreen>
+{/if}

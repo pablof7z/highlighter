@@ -9,6 +9,7 @@
     import createDebug from "debug";
     import { inview } from 'svelte-inview';
 	import { vanityUrls } from "$utils/const";
+	import { isMobileBuild } from "$utils/view/mobile";
 
     export let pubkey: Hexpubkey | undefined = undefined;
     export let npub: string | undefined = undefined;
@@ -29,7 +30,11 @@
     export let authorUrl: string | undefined = undefined;
 
     try {
-        authorUrl = `/${user?.npub}`;
+        if (isMobileBuild() && user) {
+            authorUrl = `/mobile/profile?userId=${user.npub}`
+        } else {
+            authorUrl = `/${user?.npub}`;
+        }
     } catch {
         authorUrl = "";
         user = undefined;
@@ -137,7 +142,7 @@
     let userHasVanityUrl = false;
 
     // if there is a user, see if we find the user's pubkey in a value, if we find it the key is the authorUrl with / prefix
-    if (user) {
+    if (user && !isMobileBuild()) {
         for (const key in vanityUrls) {
             if (vanityUrls[key] === user.pubkey) {
                 userHasVanityUrl = true;
@@ -151,12 +156,14 @@
     $: if (userProfile && userProfile.nip05 && !fetching) displayNip05 = prettifyNip05(userProfile.nip05, 999999)
     $: if (userProfile && user && userProfile.nip05 && validatedNip05 === undefined && !userHasVanityUrl) {
         user.ndk = $ndk;
-        user.validateNip05(userProfile.nip05).then((v) => {
-            validatedNip05 = true;
-            if (v) authorUrl = `/${displayNip05}`;
-        }).catch((e) => {
-            console.error(e);
-        });
+        if (!isMobileBuild()) {
+            user.validateNip05(userProfile.nip05).then((v) => {
+                validatedNip05 = true;
+                if (v) authorUrl = `/${displayNip05}`;
+            }).catch((e) => {
+                console.error(e);
+            });
+        }
     }
 </script>
 

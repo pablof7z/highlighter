@@ -1,6 +1,13 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+const konstaConfig = require('konsta/config');
+
+module.exports = konstaConfig({
 	content: ['./src/**/*.{html,js,svelte,ts}'],
+	plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography'), require('daisyui')],
+	konsta: {
+		colors: {
+			primary: "#FB6038",
+		}
+	},
 	// darkMode: 'class',
 	theme: {
 		extend: {
@@ -122,4 +129,4 @@ module.exports = {
 		],
 		darkTheme: 'black'
 	}
-};
+});

@@ -37,9 +37,7 @@
             { name: "Collections",  href: "/collections", icon: SquaresFour },
         ]
         if ($currentUser && (!$isGuest || $hasUnreadNotifications)) {
-            options.push(
-                { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined }
-            );
+            
         } else {
             // remove the option with name notifications
             const index = options.findIndex(option => option.name === "Notifications");
@@ -69,7 +67,7 @@
         if (!$currentUser) {
             userName = "Sign Up";
         } else if (profile) {
-            userName = profile.display_name || profile?.displayName || profile.name;
+            userName = (profile.display_name as string) || profile?.displayName || profile.name;
         }
 
         userName ??= "You";
@@ -182,6 +180,6 @@
         </div>
         
         <OptionsList options={userOptions} class="flex-col w-full" {collapsed} />
-      </div>
+        </div>
     </div>
 </div>
