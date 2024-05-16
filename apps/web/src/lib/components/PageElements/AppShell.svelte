@@ -10,7 +10,6 @@
 	import LayoutDetailView from "./AppShell/LayoutDetailView.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';
 	import PageSidebar from './AppShell/PageSidebar.svelte';
-	
 
 	let showSectionHeaderWithButtons = false;
 
@@ -130,7 +129,6 @@
 	_border border-red-500
 	flex flex-col min-h-screen items-stretch justify-stretch
 	gap-0 h-ful
-
 	max-w-screen overflow-x-clip
 ">
 	<div class="

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ndk } from "@kind0/ui-common";
 	import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
 	import { userFollows } from "$stores/session";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";

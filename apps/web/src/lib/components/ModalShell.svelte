@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { modalState } from '$stores/layout';
+	import { modal, modalState } from '$stores/layout';
 	import { onDestroy, onMount } from 'svelte';
 	import { onBeforeClose } from "svelte-modals";
     import { closeModal } from '$utils/modal';
     import Device from "svelte-device-info";
+	import { beforeNavigate } from '$app/navigation';
+	import { appMobileView } from '$stores/app';
 
     export let color: "white" | "black" | "glassy" = "glassy";
-
-    const isPhone = Device.isPhone;
 
     const slideAnimationDuration = 300;
 
@@ -23,7 +23,12 @@
         $modalState = "open";
     });
 
-    if (!isPhone) {
+    beforeNavigate(() => {
+        $modalState = "closing";
+        $modal = null;
+    })
+
+    if (!$appMobileView) {
         onBeforeClose(() => {
             if (mounted === true) {
                 $modalState = "closing";
@@ -60,7 +65,7 @@
     }
 </script>
 
-{#if isPhone}
+{#if $appMobileView}
     <div class="{$$props.class??""}">
         <slot />
     </div>

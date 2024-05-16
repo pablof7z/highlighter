@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ShareModal from './../../../modals/ShareModal.svelte';
     import { ndk } from "@kind0/ui-common";
 	import { page } from "$app/stores";
 	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NostrEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
@@ -16,7 +17,7 @@
 	import { goto } from "$app/navigation";
 	import ArticleView from "$components/ArticleView.svelte";
 	import { pageHeader } from "$stores/layout";
-	import { CaretLeft, Lightning } from "phosphor-svelte";
+	import { CaretLeft, Export, Lightning, Share } from "phosphor-svelte";
 	import Highlight from "$components/Highlight.svelte";
 	import { openModal } from '$utils/modal';
 	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
@@ -66,11 +67,11 @@
         },
         title: article?.title ?? video?.title,
         right: {
-            icon: Lightning,
-            label: "Subscribe",
+            icon: Export,
+            label: "Share",
             fn: () => {
                 if (event?.author) {
-                    openModal(BecomeSupporterModal, { user: event.author });
+                    openModal(ShareModal, { event });
                 }
             }
         }

@@ -6,7 +6,6 @@
 	import { pageMainContentMaxWidth } from "$stores/layout";
 	import { onMount } from "svelte";
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
-	import NewPostFloatButton from "$components/buttons/NewPostFloatButton.svelte";
 
     $pageMainContentMaxWidth = 'max-w-3xl';
     
@@ -30,10 +29,6 @@
         placeholder="What's happening?!"
         autofocus={false}
     />
-</div>
-
-<div class="sm:hidden">
-    <NewPostFloatButton />
 </div>
 
 {#if filters}

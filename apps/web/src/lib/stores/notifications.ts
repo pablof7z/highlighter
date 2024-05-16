@@ -59,8 +59,8 @@ export function markEventAsSeen(eventId: string) {
 }
 
 export let notifications: NDKEventStore<NDKEvent>;
-export let hasUnreadNotifications: Readable<boolean> | undefined;
-export let unreadNotifications: Readable<number> | undefined;
+export let hasUnreadNotifications: Readable<boolean>;
+export let unreadNotifications: Readable<number>;
 
 export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {
 	const since = get(lastSeenTimestamp);

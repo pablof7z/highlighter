@@ -49,8 +49,6 @@ export function resetLayout() {
 
 resetLayout();
 
-// @deprecated -- Don't use since this is not displayed anywhere
-export const sidebarPlacement: Writable<'left' | 'right'> = writable('left');
 export const searching: Writable<boolean> = writable(false);
 
 export const modalState: Writable<"open" | "closing" | "closed"> = writable("closed");
@@ -69,6 +67,7 @@ export type PageHeader = {
 	 * Title to be displayed
 	 */
 	title?: string;
+	subtitle?: string;
 
 	/**
 	 * Always show search bar on the main content area
@@ -80,6 +79,7 @@ export type PageHeader = {
 	 * Left button options
 	 */
 	left?: {
+		component?: Component;
 		icon?: any;
 		label?: string;
 		url?: string;

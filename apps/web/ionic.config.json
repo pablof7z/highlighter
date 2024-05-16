@@ -1,0 +1,7 @@
+{
+    "name": "konstauiapp",
+    "integrations": {
+        "capacitor": {}
+    },
+    "type": "custom"
+}

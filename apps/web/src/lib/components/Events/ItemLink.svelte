@@ -3,13 +3,14 @@
 	import { RelativeTime, user } from "@kind0/ui-common";
 	import { NDKArticle, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
-	import { urlSuffixFromEvent } from "$utils/url";
+	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import SaveForLaterButton from "$components/SaveForLaterButton.svelte";
     import { debugMode } from "$stores/session";
 	import Bug from "phosphor-svelte/lib/Bug";
 	import DurationTag from "$components/DurationTag.svelte";
 	import TopZap from "./TopZap.svelte";
+	import { isMobileBuild } from "$utils/view/mobile";
 
     export let event: NDKEvent;
     export let description: string | undefined = (event instanceof NDKArticle) ? event.summary : undefined;
@@ -23,7 +24,7 @@
     export let useProfileAsDefaultImage = true;
     export let href: string | undefined = undefined;
 
-    const hrefSet = !!href;
+    const isHrefExplicit = !!href;
 
     $: if (!image && userProfile) { image = userProfile.image || userProfile.banner }
 
@@ -37,8 +38,8 @@
     let suffixUrl = skipLink ? "#" : urlSuffixFromEvent(event);
 
     $: if (!image && useProfileAsDefaultImage) { image = userProfile?.image || userProfile?.banner }
-    $: if (!hrefSet && !skipLink) {
-        href = `${authorUrl}/${suffixUrl}`;
+    $: if (!isHrefExplicit && !skipLink) {
+        href = urlFromEvent(event, authorUrl);
     }
 
     let timestamp = (event?.published_at || event?.created_at)*1000;

@@ -28,7 +28,6 @@
 <StoreFeed
     feed={feed}
     bind:showEventsOlderThan
-    {newPostKind}
     {renderLimit}
     {newPostTags}
     {urlPrefix}

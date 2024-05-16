@@ -11,7 +11,7 @@
 
 <div class="
     justify-start items-start inline-flex whitespace-nowrap w-full
-    border-t border-base-300
+    sm:border-t border-base-300
 ">
     <div class="
         lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}
@@ -45,6 +45,7 @@
                             e.preventDefault();
                         }
                         dispatch("changed", { value: option.name });
+                        if (option.fn) option.fn();
                         value = option.name;
                     }}
                 />
@@ -52,4 +53,3 @@
         {/each}
     </div>
 </div>
-

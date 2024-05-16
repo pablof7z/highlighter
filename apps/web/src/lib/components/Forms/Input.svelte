@@ -5,7 +5,6 @@
 <input
     bind:value
     type="text"
-    tabindex={$$props.tabindex ?? undefined}
     on:change
     on:blur
     on:focus
