@@ -10,11 +10,13 @@
     import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 	import { browser } from '$app/environment';
     import { Badge } from '@capawesome/capacitor-badge';
+	import { goto } from '$app/navigation';
 
     if (isMobileBuild() && browser) {
         CapacitorApp.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
             const url = new URL(event.url);
             // get the path and query string from the URL
+            goto(url.pathname + url.search);
 
             Badge.requestPermissions();
             Badge.set({ count: 5 });
