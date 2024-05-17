@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Device from 'svelte-device-info';
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import { relaySetForEvent } from "$utils/event";
 	import { Avatar, ndk, newToasterMessage } from "@kind0/ui-common";
@@ -7,9 +6,9 @@
 	import { onMount } from "svelte";
 	import { fade } from "svelte/transition";
 	import Attachments from "./Attachments.svelte";
-	import { Feather, Timer } from "phosphor-svelte";
     import { createEventDispatcher } from "svelte";
 	import currentUser from "$stores/currentUser";
+	import { appMobileView } from '$stores/app';
 
     export let extraTags: NDKTag[] = [];
     export let kind: NDKKind;
@@ -23,6 +22,13 @@
     export let isCollapsed: boolean | undefined = undefined;
     export let mentionEvent: NDKEvent | undefined = undefined;
 
+    export let forcePublish = false;
+
+    $: if (forcePublish) {
+        forcePublish = false;
+        publish();
+    }
+
     if (collapsed === undefined) {
         isCollapsed = true;
     } else {
@@ -32,7 +38,7 @@
     const dispatch = createEventDispatcher();
 
     export let publishing = false;
-    let content = event.content;
+    export let content = event.content;
     let resetEditorAt = new Date();
 
     function cancel() {
@@ -92,9 +98,7 @@
         }
     })
 
-    const isMobile = Device.isMobile;
-
-    $: if (!isMobile) {
+    $: if (!$appMobileView) {
         if (hasFocus) {
             isCollapsed = collapsed ?? false;
         } else {
@@ -105,18 +109,16 @@
     let uploadedFiles: string[] = [];
 </script>
 
-{#if !isMobile && hasFocus && content.length > 0}
+{#if !$appMobileView && hasFocus && content.length > 0}
     <div transition:fade class="absolute right-0 bottom-0 top-0 left-0 bg-black/40 z-30"></div>
 {/if}
 
 <div class="
     relative z-[40] w-full
     flex flex-col
-    max-sm:h-[90dvh]
 " class:hidden={publishing}>
     <div class="
         flex flex-row
-        max-sm:mt-10
     ">
         {#if !skipAvatar}
             <Avatar user={$currentUser} size="small" class="ml-4 mt-4" />
@@ -153,30 +155,33 @@
             </div>
         {/key}
     </div>
-    <div class="
-        max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 sm:border-t border-base-300 w-full px-4 justify-end z-40 bottom-4 max-sm:h-16
-        max-sm:pt-0
-        {isCollapsed ? "" : "max-sm:justify-between max-sm:top-6"}
-    ">
-        {#if $$slots.buttonsBar}
-            <slot name="buttonsBar" />
-        {/if}
-        <!-- <button class="btn btn-circle btn-ghost">
-            <Timer class="w-6 h-6" />
-        </button> -->
-        <button class="
-            button
-            {isCollapsed ? "button px-6" : "max-sm:bg-accent2 max-sm:text-white px-6"}
-        " on:click={publish} disabled={content.length === 0}>
-            {#if publishing}
-                Publishing...
-            {:else}
-                Post
+    {#if !$appMobileView}
+        <div class="
+            max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 sm:border-t border-base-300 w-full px-4 justify-end z-40 bottom-4 max-sm:h-16
+            max-sm:pt-0
+            {isCollapsed ? "" : "max-sm:justify-between max-sm:top-6"}
+        ">
+            {#if $$slots.buttonsBar}
+                <slot name="buttonsBar" />
             {/if}
-        </button>
+            <!-- <button class="btn btn-circle btn-ghost">
+                <Timer class="w-6 h-6" />
+            </button> -->
+            <button class="
+                button
+                {isCollapsed ? "button px-6" : "max-sm:bg-accent2 max-sm:text-white px-6"}
+            " on:click={publish} disabled={content.length === 0}>
+                {#if publishing}
+                    Publishing...
+                {:else}
+                    Post
+                {/if}
+            </button>
 
-        <button class="" on:click={cancel}>
-            Cancel
-        </button>
-    </div>
+            <button class="" on:click={cancel}>
+                Cancel
+            </button>
+        </div>
+    {/if}
+    
 </div>

@@ -1,9 +1,13 @@
 <script lang="ts">
-	import { MenuList, MenuListItem, Panel } from "konsta/svelte";
+	import { Block, MenuList, MenuListItem, Navbar, Page, Panel, Link } from "konsta/svelte";
     import { page } from "$app/stores";
     import currentUser, { isGuest } from "$stores/currentUser";
-	import { ChalkboardSimple, Gear, House, Timer } from "phosphor-svelte";
+	import { ChalkboardSimple, Door, Gear, House, Timer } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
+	import AvatarWithName from "$components/User/AvatarWithName.svelte";
+	import { logout } from "$utils/login";
+	import { Avatar } from "@kind0/ui-common";
+	import UserProfile from "$components/User/UserProfile.svelte";
 
     export let opened = false;
 
@@ -18,7 +22,14 @@
     side="left"
     {opened}
     onBackdropClick={() => opened = false}
+    
 >
+    <Page class="h-full flex flex-col">
+        <Navbar  title="Settings">
+            <Link slot="right" onClick={() => (opened = false)}>
+              Close
+            </Link>
+          </Navbar>
     <MenuList>
         <MenuListItem
             title="Home"
@@ -52,4 +63,26 @@
             <Gear size={24} slot="media" />
         </MenuListItem>
     </MenuList>
+
+    <div class="grow"></div>
+
+        {#if $currentUser}
+            <MenuList>
+                <UserProfile user={$currentUser} let:userProfile let:authorUrl>
+                    <MenuListItem title={userProfile?.name??""} onClick={() => go(authorUrl)}>
+                        <Avatar user={$currentUser} {userProfile} size="tiny" slot="media" />
+                    </MenuListItem>
+                </UserProfile>
+                <MenuListItem
+                    title="Logout"
+                    onClick={() => {
+                        logout()
+                        opened = false
+                    }}
+                >
+                    <Door size={24} slot="media" />
+                </MenuListItem>
+            </MenuList>
+        {/if}
+    </Page>
 </Panel>

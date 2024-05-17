@@ -12,7 +12,7 @@
 	import { page } from '$app/stores';
 	import Logo from '$icons/Logo.svelte';
 	import LogoSmall from '$icons/LogoSmall.svelte';
-	import { hasUnreadNotifications, unreadNotifications } from '$stores/notifications';
+	import { hasUnreadNotifications, showNotificationOption, unreadNotifications } from '$stores/notifications';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { drafts } from '$stores/drafts';
 
@@ -36,8 +36,10 @@
             { name: "Discover",  href: "/discover", icon: Fire },
             { name: "Collections",  href: "/collections", icon: SquaresFour },
         ]
-        if ($currentUser && (!$isGuest || $hasUnreadNotifications)) {
-            
+        if ($showNotificationOption) {
+            options.push(
+                { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined }
+            );
         } else {
             // remove the option with name notifications
             const index = options.findIndex(option => option.name === "Notifications");

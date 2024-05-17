@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "456SHKPP26.com.highlighter.app",
+        "paths": ["*"]
+      }
+    ]
+  }
+}

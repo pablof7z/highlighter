@@ -3,6 +3,7 @@
 	import { goto } from "$app/navigation";
     import { Icon, Tabbar, TabbarLink, Toolbar } from "konsta/svelte";
 	import { Bell, BookmarkSimple, Fire, House, Plus } from "phosphor-svelte";
+	import { showNotificationOption } from "$stores/notifications";
 
     const isLabels = true;
     const isIcons = true;
@@ -32,20 +33,23 @@
         <svelte:fragment slot="label">Bookmarks</svelte:fragment>
     </TabbarLink>
     <TabbarLink
-        active={false}
+        active={$page.url.pathname.startsWith('/discover')}
+        onClick={() => goto("/discover")}
     >
         <svelte:fragment slot="icon">
             <Fire class="w-8 h-8" />
         </svelte:fragment>
         <svelte:fragment slot="label">Discover</svelte:fragment>
     </TabbarLink>
-    <TabbarLink
-        active={$page.url.pathname.startsWith('/notifications')}
-        onClick={() => goto("/notifications")}
-    >
-        <svelte:fragment slot="icon">
-            <Bell class="w-8 h-8" />
-        </svelte:fragment>
-        <svelte:fragment slot="label">Notifications</svelte:fragment>
-    </TabbarLink>
+    {#if $showNotificationOption}
+        <TabbarLink
+            active={$page.url.pathname.startsWith('/notifications')}
+            onClick={() => goto("/notifications")}
+        >
+            <svelte:fragment slot="icon">
+                <Bell class="w-8 h-8" />
+            </svelte:fragment>
+            <svelte:fragment slot="label">Notifications</svelte:fragment>
+        </TabbarLink>
+    {/if}
 </Tabbar>

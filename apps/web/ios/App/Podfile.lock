@@ -3,26 +3,56 @@ PODS:
     - CapacitorCordova
   - CapacitorActionSheet (6.0.0):
     - Capacitor
+  - CapacitorApp (6.0.0):
+    - Capacitor
   - CapacitorCordova (6.0.0)
+  - CapacitorPreferences (6.0.0):
+    - Capacitor
+  - CapacitorPushNotifications (6.0.0):
+    - Capacitor
+  - CapacitorShare (6.0.0):
+    - Capacitor
+  - CapawesomeCapacitorBadge (6.0.0):
+    - Capacitor
 
 DEPENDENCIES:
   - "Capacitor (from `../../../../node_modules/.pnpm/@capacitor+ios@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/ios`)"
   - "CapacitorActionSheet (from `../../../../node_modules/.pnpm/@capacitor+action-sheet@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/action-sheet`)"
+  - "CapacitorApp (from `../../../../node_modules/.pnpm/@capacitor+app@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/app`)"
   - "CapacitorCordova (from `../../../../node_modules/.pnpm/@capacitor+ios@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/ios`)"
+  - "CapacitorPreferences (from `../../../../node_modules/.pnpm/@capacitor+preferences@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/preferences`)"
+  - "CapacitorPushNotifications (from `../../../../node_modules/.pnpm/@capacitor+push-notifications@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/push-notifications`)"
+  - "CapacitorShare (from `../../../../node_modules/.pnpm/@capacitor+share@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/share`)"
+  - "CapawesomeCapacitorBadge (from `../../../../node_modules/.pnpm/@capawesome+capacitor-badge@6.0.0_@capacitor+core@6.0.0/node_modules/@capawesome/capacitor-badge`)"
 
 EXTERNAL SOURCES:
   Capacitor:
     :path: "../../../../node_modules/.pnpm/@capacitor+ios@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/ios"
   CapacitorActionSheet:
     :path: "../../../../node_modules/.pnpm/@capacitor+action-sheet@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/action-sheet"
+  CapacitorApp:
+    :path: "../../../../node_modules/.pnpm/@capacitor+app@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/app"
   CapacitorCordova:
     :path: "../../../../node_modules/.pnpm/@capacitor+ios@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/ios"
+  CapacitorPreferences:
+    :path: "../../../../node_modules/.pnpm/@capacitor+preferences@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/preferences"
+  CapacitorPushNotifications:
+    :path: "../../../../node_modules/.pnpm/@capacitor+push-notifications@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/push-notifications"
+  CapacitorShare:
+    :path: "../../../../node_modules/.pnpm/@capacitor+share@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/share"
+  CapawesomeCapacitorBadge:
+    :path: "../../../../node_modules/.pnpm/@capawesome+capacitor-badge@6.0.0_@capacitor+core@6.0.0/node_modules/@capawesome/capacitor-badge"
 
 SPEC CHECKSUMS:
   Capacitor: 559d073c4ca6c27f8e7002c807eea94c3ba435a9
   CapacitorActionSheet: de123f478f394373f84a96614ce2b1a6c30253e4
+  CapacitorApp: 9d53aec7101f7b030a950c5bdc4df8612576b279
   CapacitorCordova: 8c4bfdf69368512e85b1d8b724dd7546abeb30af
+  CapacitorPreferences: c9b839a80baa72e4ed4bdb117618e1950d3046b5
+  CapacitorPushNotifications: e18636e8a96f1d70b4c669e21c730e995bf5e5c9
+  CapacitorShare: a771200d3b924a5d7ad9d9fecbac517e4c0aa74f
+  CapawesomeCapacitorBadge: 3d0f281ad8e4a4f8db8c3d88b7622a7f4c413342
 
-PODFILE CHECKSUM: 4cdb4fea56976fcfcf562f519faf008de9dbbdf7
+PODFILE CHECKSUM: 955e5522a07536bfbe739b792d45cee5eb419a43
 
 COCOAPODS: 1.15.2

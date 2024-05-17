@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { VITE_NSECBUNKER_RETURN_URL } from './../../../.svelte-kit/ambient.d.ts';
     import { NDKPrivateKeySigner, NDKUser, NDKNip46Signer, NDKEvent } from "@nostr-dev-kit/ndk";
 	import { bunkerNDK, ndk, user } from "@kind0/ui-common";
 	import NsecBunkerProviderSelect from "$components/Forms/NsecBunkerProviderSelect.svelte";
@@ -29,8 +30,9 @@
     function redirectToAuthUrlWithCallback(url: string) {
         const redirectUrl = new URL(url);
         const callbackPath = "/auth/callback";
-        const currentUrl = new URL(window.location.href);
-        const callbackUrl = new URL(callbackPath, currentUrl.origin);
+        const returnUrl = "https://highlighter.com" || window.location.origin;
+        const callbackUrl = new URL(callbackPath, returnUrl);
+        console.log('callbackUrl is', callbackUrl.toString());
         redirectUrl.searchParams.set("callbackUrl", callbackUrl.toString());
         localStorage.setItem("intended-url", window.location.href);
         window.location.href = redirectUrl.toString();

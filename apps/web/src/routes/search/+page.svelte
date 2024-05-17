@@ -3,6 +3,7 @@
 	import Input from '$components/Forms/Input.svelte';
     import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import Search from '$views/Search.svelte';
 
     export let query: string = $page.url.searchParams.get('q') ?? '';
 
@@ -24,19 +25,4 @@
     }
 </script>
 
-<div class="max-w-xl mx-auto">
-    <div class="join join-horizontal w-full">
-        <Input
-            placeholder="Type a URL to highlight"
-            color="black"
-            bind:value={query}
-            on:keydown={onKeyDown}
-            class="w-full text-xl join-item"
-            type="search"
-            autofocus
-        />
-        <button class="button join-item px-5">
-            <MagnifyingGlass />
-        </button>
-    </div>
-</div>
+<Search bind:value={query} />

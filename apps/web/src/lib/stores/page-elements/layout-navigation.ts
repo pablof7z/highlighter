@@ -13,7 +13,7 @@ export const options = derived(
     ]) => {
     const options: NavigationOption[] = [];
 
-    options.push({ name: "Home", icon: House, href: "/home" })
+    options.push({ name: "Home2", icon: House, href: "/home" })
     options.push({ name: "Bookmarks", icon: BookmarkSimple, href: "/bookmarks" })
 
     if ($currentUser && (!$isGuest || $hasUnreadNotifications)) {

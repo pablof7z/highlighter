@@ -4,6 +4,7 @@
 	import Welcome from "./Welcome.svelte";
 	import ModalShell from '$components/ModalShell.svelte';
 	import LogoGradient from '$icons/LogoGradient.svelte';
+	import { Block } from 'konsta/svelte';
 
     export let mode: 'signup' | 'login' | 'welcome' = 'signup';
 
@@ -30,6 +31,7 @@
     color="glassy"
     class="w-full py-4 sm:p-6 sm:max-w-md"
 >
+    <Block>
     <div class="flex flex-col gap-4 w-full">
         <div class="flex flex-row items-center justify-between">
             <div class="justify-between items-center inline-flex">
@@ -69,4 +71,5 @@
             </p>
         {/if}
     </div>
+    </Block>
 </ModalShell>

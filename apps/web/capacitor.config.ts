@@ -4,7 +4,18 @@ let config: CapacitorConfig = {
   appId: 'com.highlighter.app',
   appName: 'highlighter',
   webDir: 'build',
-  
+  plugins: {
+    SplashScreen: {
+			launchShowDuration: 1
+		},
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"]
+    },
+    Badge: {
+      persist: true,
+      autoClear: false,
+    },
+  }
 };
 
 if (process.env.NODE_ENV === 'development') {

@@ -3,6 +3,7 @@ import { derived, get, writable, type Readable } from 'svelte/store';
 import type { NDKEvent, NDKFilter, NDKUser } from '@nostr-dev-kit/ndk';
 import NDKSvelte, { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 import NDK, { NDKKind } from '@nostr-dev-kit/ndk';
+import currentUser, { isGuest } from './currentUser';
 
 export const seenIds = persist(writable<Set<string>>(new Set()), createLocalStorage(), 'seen-ids');
 
@@ -59,7 +60,7 @@ export function markEventAsSeen(eventId: string) {
 }
 
 export let notifications: NDKEventStore<NDKEvent>;
-export let hasUnreadNotifications: Readable<boolean>;
+export let hasUnreadNotifications: Readable<boolean> = writable(false);
 export let unreadNotifications: Readable<number>;
 
 export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {
@@ -91,3 +92,12 @@ export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {
 	});
 }
 
+/**
+ * Whether the notification menu item should be shown
+ * (user is logged in as non guest or a guest has notifications)
+ */
+export let showNotificationOption = derived([
+	currentUser, isGuest, hasUnreadNotifications
+], ([$currentUser, $isGuest, $hasUnreadNotifications]) => {
+	return ($currentUser && (!$isGuest || $hasUnreadNotifications));
+});

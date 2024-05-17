@@ -2,6 +2,7 @@
 	import BookmarkFeed from "./BookmarkFeed.svelte";
 	import { page } from "$app/stores";
 	import { pageNavigationOptionsValue } from "$stores/layout";
+    import { PageTransition } from 'sveltekit-page-transitions'
 
     $pageNavigationOptionsValue = undefined;
 
@@ -10,6 +11,8 @@
     $: value = $page.params.mode ?? "You";
 </script>
 
+<PageTransition>
 {#key value}
     <BookmarkFeed type={value} />
 {/key}
+</PageTransition>

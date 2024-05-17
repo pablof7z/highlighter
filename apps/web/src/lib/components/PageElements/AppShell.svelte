@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { layoutMode, pageSidebar } from '$stores/layout.js';
-    import { modal, modalState, layoutNavState, detailView } from "$stores/layout";
+    import { layoutNavState, detailView } from "$stores/layout";
 	import { Toaster, pageDrawerToggle } from '@kind0/ui-common';
 	import Modal from './Modal.svelte';
-	import { fade } from 'svelte/transition';
 	import { page } from "$app/stores";
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
 	import PageNavigation from "./AppShell/PageNavigation.svelte";

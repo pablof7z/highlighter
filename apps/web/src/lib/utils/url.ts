@@ -54,9 +54,11 @@ export function urlFromEvent(
 
 	authorUrl ??= getAuthorUrlSync(event.author);
 
+	if (authorUrl.startsWith("/npub1")) authorUrl = undefined;
+
 	if (event.isParamReplaceable()) {
 		const dTag = event.tagValue("d");
-		if (dTag && dTag.length > 0) {
+		if (dTag && dTag.length > 0 && authorUrl) {
 			url.push(authorUrl);
 			url.push(dTag)
 		} else {
@@ -67,6 +69,8 @@ export function urlFromEvent(
 		url.push("a");
 		url.push(event.encode());
 	}
+
+	console.log("returning url", url.join("/"), {fullUrl, authorUrl});
 
 	return url.join("/");
 }

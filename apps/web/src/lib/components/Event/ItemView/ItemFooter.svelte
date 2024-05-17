@@ -9,6 +9,7 @@
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import { pageNavigationOptions } from "$stores/layout";
 	import ItemNavigationCurations from "./ItemNavigationCurations.svelte";
+	import { appMobileView } from "$stores/app";
 
     export let event: NDKEvent;
     export let urlPrefix: string;
@@ -19,10 +20,6 @@
     const events = $ndk.storeSubscribe(
         { kinds: [1, 12, 9735, 6, 16], ...event.filter() },
     )
-
-    onDestroy(() => {
-        events.unsubscribe();
-    })
 
     $pageNavigationOptions = [];
 
@@ -44,8 +41,36 @@
             }
         })
     }
+
+    let container: HTMLDivElement;
+    let toolbarEl: HTMLElement | null;
+    let mounted = false;
+
+    onMount(() => mounted = true);
+
+    function recomputeTop() {
+        if (toolbarEl) {
+            container.style.top = `${toolbarEl.clientHeight}px`;
+        }
+    }
+
+    $: if ($appMobileView && !toolbarEl && mounted) {
+        // get #toolbar
+        toolbarEl = document.getElementById("navbar");
+
+        recomputeTop();
+
+        window.addEventListener("resize", recomputeTop);
+    }
+
+    onDestroy(() => {
+        events.unsubscribe();
+        if (toolbarEl) {
+            window.removeEventListener("resize", recomputeTop);
+        }
+    })
 </script>
 
-<div class="sticky top-0 sm:top-[var(--layout-header-height)] z-50 mobile-nav {$$props.class??""}">
+<div bind:this={container} class="sticky sm:top-[var(--layout-header-height)] z-50 mobile-nav {$$props.class??""}">
     <HorizontalOptionsList {options} class="flex gap-4 !text-sm"  />
 </div>

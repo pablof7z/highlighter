@@ -39,15 +39,15 @@ export async function finalizeLogin() {
 	}
 }
 
-async function pkLogin(key: string) {
+async function pkLogin(key: string, method: LoginMethod = 'pk') {
 	try {
 		const signer = new NDKPrivateKeySigner(key);
 		const u = await signer.user();
-		if (u) loggedIn(signer, u!, 'pk');
+		if (u) loggedIn(signer, u!, method);
 	} catch {
 		loginMethod.set(undefined);
 		privateKey.set(undefined);
-		userPubkey.set(undefined);
+		userPubkey.set(null);
 		login()
 	}
 }
@@ -97,6 +97,9 @@ export async function login(
 			return null;
 		}
 		case 'guest':
+			const key = get(privateKey);
+			if (!key) return null;
+			return pkLogin(key, 'guest');
 		case 'pk': {
 			const key = get(privateKey);
 			if (!key) return null;
@@ -162,7 +165,7 @@ export async function fetchJWT(event: NDKEvent) {
  * This function attempts to sign in using a NIP-07 extension.
  */
 async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
-	const storedPubkey = localStorage.getItem('pubkey');
+	const storedPubkey = get(userPubkey);
 	let user: NDKUser | null = null;
 
 	if (storedPubkey) {
@@ -178,7 +181,7 @@ async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
 			if (user) {
 				loginMethod.set('nip07');
 			}
-			localStorage.setItem('pubkey', user.pubkey);
+			userPubkey.set(user.pubkey);
 		} catch (e) {}
 	}
 
@@ -240,8 +243,7 @@ export function logout(): void {
 	localStorage.removeItem('user-super-follows');
 	localStorage.removeItem('network-follows');
 	localStorage.removeItem('network-follows-updated-t');
-	localStorage.removeItem('currentUserNpub');
-	userPubkey.set(undefined);
+	userPubkey.set("");
 	localStorage.removeItem('jwt');
 
 	document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';

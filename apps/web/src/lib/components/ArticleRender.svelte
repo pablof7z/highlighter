@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { handleError } from './../../hooks.client.ts';
 	import ItemFooter from './Event/ItemView/ItemFooter.svelte';
 	import { getSummary } from '$utils/article';
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
@@ -14,7 +13,6 @@
 	import currentUser from '$stores/currentUser';
 	import { page } from '$app/stores';
 	import BoostButton from './buttons/BoostButton.svelte';
-	import CurationButton from './buttons/CurationButton.svelte';
 	import ItemViewZaps from './Event/ItemView/ItemViewZaps.svelte';
 	import { createBlossom } from '$utils/blossom.js';
 
@@ -78,7 +76,6 @@
 
     <EventTags event={article} />
 
-    
     <ItemFooter event={article} urlPrefix={url} eventType="article" class="-mx-4" />
     <div class="flex flex-row gap-2 items-center">
         <BoostButton event={article} />

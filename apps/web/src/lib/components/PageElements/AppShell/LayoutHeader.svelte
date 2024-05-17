@@ -4,8 +4,6 @@
 	import HeaderLeftButton from "../HeaderLeftButton.svelte";
 	import HeaderRightButton from "../HeaderRightButton.svelte";
 
-    const hasSidebar = true;
-
     let render = false;
 
     $: render = !!($pageHeader?.component || $pageHeader?.searchBar || $pageHeader?.title || $pageHeader?.left || $pageHeader?.right);
@@ -28,19 +26,14 @@
             </div>
         {:else if $pageHeader?.searchBar}
             <div class="
-                max-w-3xl w-full
-                {!hasSidebar ? "mx-auto" : ""}
+                max-w-3xl w-full mx-auto
             ">
                 <SearchBar inputClass="focus:!outline-none focus:!border-none" />
             </div>
         {:else}
             <div class="flex items-center justify-between px-4 w-full">
                 {#if $pageHeader?.left}
-                    <div class="
-                        {hasSidebar ?
-                            "md:hidden" :
-                            ""}
-                    ">
+                    <div class="md:hidden">
                         <HeaderLeftButton />
                     </div>
                 {/if}

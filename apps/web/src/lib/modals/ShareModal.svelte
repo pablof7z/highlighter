@@ -1,18 +1,19 @@
 <script lang="ts">
-	import { page } from "$app/stores";
 	import ItemLink from "$components/Events/ItemLink.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import Input from "$components/Forms/Input.svelte";
     import ModalShell from "$components/ModalShell.svelte";
-	import OptionsList from "$components/OptionsList.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { urlSuffixFromTagId, urlSuffixFromEvent } from "$utils/url";
+	import { urlSuffixFromTagId, urlSuffixFromEvent, urlFromEvent } from "$utils/url";
 	import { ndk } from "@kind0/ui-common";
 	import { NDKArticle, NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 	import { closeModal } from '$utils/modal';
 	import { NavigationOption } from "../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
+	import { Block, Button, Link, Segmented, SegmentedButton, Toolbar } from "konsta/svelte";
+    import { Share as ShareIcon } from "phosphor-svelte";
+    import { Share } from '@capacitor/share';
 
     export let event: NDKEvent;
 
@@ -24,6 +25,7 @@
 
     if (event.kind === NDKKind.Article) {
         article = NDKArticle.from(event);
+        summary = article.summary;
         placeholder = `What did you think of ${article.title}?`;
     }
 
@@ -32,10 +34,7 @@
     const previewId = preview?.[1];
     let previewEvent: NDKEvent | undefined;
 
-    const suffixUrl = previewId ? urlSuffixFromTagId(previewId) : urlSuffixFromEvent(event);
-    let authorUrl: string;
-    let articleUrl: string | undefined;
-    const domain = $page.url.protocol + "://" + $page.url.hostname;
+    const articleUrl = urlFromEvent(event, undefined, true);
 
     if (preview) {
         $ndk.fetchEvent(preview[1]).then((p) => {
@@ -44,12 +43,6 @@
             const previewArticle = NDKArticle.from(previewEvent);
             summary = previewArticle.summary ?? previewArticle.content;
         })
-    }
-
-    $: if (article) {
-        articleUrl = `${domain}${authorUrl}/${suffixUrl}`;
-    } else {
-        articleUrl = `${domain}/e/${event.encode()}`;
     }
 
     let publishing = false;
@@ -85,9 +78,29 @@
         },
     ];
     let selectedOption = 'Publish on Nostr';
+    let activeSegmented = 1;
 </script>
 
 <ModalShell color="glassy" class="w-full max-w-2xl items-stretch">
+    <Toolbar top>
+        <div class="left">
+            <Link onClick={() => closeModal()}>
+                Close
+            </Link>
+        </div>
+
+        <div class="right">
+            <Button onClick={publish}>
+                {#if publishing}
+                    Publishing...
+                {:else}
+                    Publish
+                {/if}
+            </Button>
+        </div>
+    </Toolbar>
+    
+    <Block>
     <div class="w-full {advanced ? "max-sm:hidden" : ""}">
         <div class="w-fit basis-0 sm:bg-black p-1 rounded-full mb-4">
             <HorizontalOptionsList bind:value={selectedOption} {options} />
@@ -96,36 +109,34 @@
         {selectedOption}
 
         {#if selectedOption === "Publish on Nostr"}
-            <UserProfile user={event.author} bind:authorUrl>
-                <ContentEditor
-                    bind:content
-                    toolbar={false}
-                    {placeholder}
-                    allowMarkdown={false}
-                    class="
-                        w-full min-h-[10rem]
-                        {$$props.class??""}
-                    "
-                />
+            <ContentEditor
+                bind:content
+                toolbar={false}
+                {placeholder}
+                allowMarkdown={false}
+                class="
+                    w-full min-h-[10rem]
+                    {$$props.class??""}
+                "
+            />
 
-                <div class="w-full max-sm:hidden">
-                    {#if article}
-                        <ItemLink event={article} />
-                    {:else}
-                        <div class="border border-base-300 rounded-box w-full">
-                            <EventWrapper
-                                {event}
-                                expandReplies={false}
-                                expandThread={false}
-                                skipFooter={true}
-                                skipReply={true}
-                                showReply={false}
-                                compact={true}
-                            />
-                        </div>
-                    {/if}
-                </div>
-            </UserProfile>
+            <div class="w-full max-sm:hidden">
+                {#if article}
+                    <ItemLink event={article} />
+                {:else}
+                    <div class="border border-base-300 rounded-box w-full">
+                        <EventWrapper
+                            {event}
+                            expandReplies={false}
+                            expandThread={false}
+                            skipFooter={true}
+                            skipReply={true}
+                            showReply={false}
+                            compact={true}
+                        />
+                    </div>
+                {/if}
+            </div>
         {:else}
             <div class="w-full">
                 <div class="flex flex-col items-start gap-2 w-full">
@@ -152,17 +163,18 @@
             </div>
         {/if}
 
-    <div class="flex flex-row items-stretch justify-end gap-8 w-full">
-        <div class="grow"></div>
-
-        <button class="" on:click={() => closeModal()}>Cancel</button>
-        <button class="button px-10" on:click={publish}>
-            {#if publishing}
-                Publishing...
-            {:else}
-                Publish
+        {#await Share.canShare() then canShare}
+            {#if canShare}
+                <Link onClick={async () => {
+                    await Share.share({
+                        title: article?.title,
+                        text: summary,
+                        url: articleUrl,
+                    });
+                }}>
+                    <ShareIcon class="w-8 h-8" />
+                </Link>
             {/if}
-        </button>
-    </div>
-
+        {/await}
+    </Block>
 </ModalShell>

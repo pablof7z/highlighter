@@ -17,21 +17,39 @@
 	import { openModal } from '$utils/modal';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { welcomeScreenSeen } from '$stores/settings';
-	import currentUser from '$stores/currentUser';
+	import currentUser, { userPubkey } from '$stores/currentUser';
 	import MobileAppShell from '$components/PageElements/Mobile/AppShell.svelte';
 	import { appMobileView } from '$stores/app';
 	import { isMobileBuild, isPhone } from '$utils/view/mobile';
-	import { defineCustomElements } from "@ionic/pwa-elements/loader";
-	import { setupIonicSvelte } from "ionic-svelte";
+
+	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
+	// import { setupIonicSvelte } from "ionic-svelte";
+	// import { PushNotifications } from '@capacitor/push-notifications';
+
+	// const registerNotifications = async () => {
+	// 	let permStatus = await PushNotifications.checkPermissions();
+
+	// 	if (permStatus.receive === 'prompt') {
+	// 		permStatus = await PushNotifications.requestPermissions();
+	// 	}
+
+	// 	if (permStatus.receive !== 'granted') {
+	// 		throw new Error('User denied permissions!');
+	// 	}
+
+	// 	await PushNotifications.register();
+	// }
+
+	// registerNotifications().catch(console.error);
 
 	const d = createDebug('HL:layout');
 	
 	/** Mobile concerns */
 	$appMobileView = isMobileBuild() || isPhone();
-	$: if ($appMobileView && browser) {
-		setupIonicSvelte();
-		defineCustomElements(window);
-	}
+	// $: if ($appMobileView && browser) {
+	// 	setupIonicSvelte();
+	// 	defineCustomElements(window);
+	// }
 
 	// let webManifestLink: string;
 	// $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
