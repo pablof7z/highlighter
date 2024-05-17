@@ -7,6 +7,7 @@
 	import { Readable } from "svelte/store";
 	import { computeArticleRecommendationFromHighlightStore } from "$utils/recommendations";
 	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
+    import { PageTransition } from 'sveltekit-page-transitions';
 
     $pageNavigationOptionsValue = "Home";
 
@@ -46,6 +47,7 @@
         <h1>Creators</h1>
     </section> -->
 
+<PageTransition>
 {#if $recommendedArticles}
     <section>
         <div class="sm:px-6">
@@ -75,6 +77,7 @@
         </div>
         <!-- <Highlights filters={highlightFilters} /> -->
     </section>
+</PageTransition>
 
 <style>
     section {

@@ -3,34 +3,31 @@
 	import { modal, modalState } from "$stores/layout";
 	import { closeModal } from "$utils/modal";
 	import { Block, Sheet } from "konsta/svelte";
-	import { Modals, openModal } from "svelte-modals";
+	import { Modals, openModal, closeModal as closeModalReal } from "svelte-modals";
 	import { fade } from "svelte/transition";
     
-    let isPhone = $appMobileView;
 	let modalOpen = false;
 
-    $: if (!isPhone && $modal?.component) {
+    $: if (!$appMobileView && $modal?.component) {
         openModal($modal.component as any, $modal.props);
 		modalOpen = true;
     }
 
-	$: if (!isPhone && modalOpen && !$modal?.component) {
-		closeModal();
+	$: if (!$appMobileView && modalOpen && !$modal?.component) {
+		closeModalReal();
 		modalOpen = false;
 	}
 </script>
 
-{#if isPhone}
+{#if $appMobileView}
 	<Sheet
-		class="pb-safe w-full"
+		class="pb-safe w-full max-h-[calc(100vh-44px)]"
 		opened={!!$modal}
 		onBackdropClick={closeModal}
 	>
-		<Block>
-			{#if $modal}
-					<svelte:component this={$modal.component} {...$modal.props} />
-				{/if}
-		</Block>
+		{#if $modal}
+			<svelte:component this={$modal.component} {...$modal.props} />
+		{/if}
 	</Sheet>
 {:else}
 	<Modals>

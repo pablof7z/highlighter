@@ -1,6 +1,5 @@
 <script lang="ts">
     import SearchBar from "$components/Page/SearchBar.svelte";
-	import Toolbar from "$components/PostEditor/Toolbar.svelte";
     import { sectionHeaderMargin, pageHeader, pageSidebar } from "$stores/layout";
 	import HeaderLeftButton from "./HeaderLeftButton.svelte";
 	import HeaderRightButton from "./HeaderRightButton.svelte";
@@ -68,11 +67,7 @@
         ">
             {#if $pageHeader?.component}
                 <div class="sm:p-4 w-full">
-                    {#if $pageHeader?.component === "post-editor"}
-                        <Toolbar />
-                    {:else}
-                        <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
-                    {/if}
+                    <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
                 </div>
             {:else if $pageHeader?.searchBar}
                 {#if $pageHeader?.title}

@@ -1,13 +1,14 @@
 <script lang="ts">
     import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import { Bell, CaretRight, Code, Keyhole, Package, ShareNetwork } from "phosphor-svelte";
+	import { Bell, CaretRight, Code, Keyhole, List, Package, ShareNetwork } from "phosphor-svelte";
 	import { logout } from "$utils/login";
 	import currentUser from "$stores/currentUser";
+	import { Block } from "konsta/svelte";
 
     let authorUrl: string;
 </script>
 
-<div class="lg:px-6">
+<Block>
 {#if $currentUser}
     <AvatarWithName user={$currentUser} bind:authorUrl nameClass="text-xl text-white font-semibold"
         spacing="gap-4"
@@ -110,7 +111,7 @@
         </li>
     </ul>
 {/if}
-</div>
+</Block>
 
 <style>
     ul {

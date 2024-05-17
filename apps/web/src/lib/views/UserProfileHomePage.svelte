@@ -82,7 +82,9 @@
 
     let userProfile: UserProfileType;
 
-    $: $pageHeader = {}
+    $: $pageHeader = {
+        title: userProfile?.name
+    }
 
     let authorUrl: string;
 </script>
@@ -97,7 +99,7 @@
     {/if}
 </svelte:head>
 
-<UserProfile {user} bind:authorUrl />
+<UserProfile {user} bind:userProfile bind:authorUrl />
 
 {#if $sortedContent && $sortedContent.length > 0}
     <div class="mb-4">

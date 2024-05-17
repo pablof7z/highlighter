@@ -28,9 +28,10 @@
 </script>
 {#if $appMobileView}
     <Chip class="
-        m-0.5
+        m-0.5 !px-4 py-2 !h-auto
+        !text-lg
         snap-center {option.class??""}
-        { active ? "!bg-accent2" : ""}
+        { active ? "!bg-accent2 text-white" : ""}
     " onClick={() => {
         dispatch("click");
         if (option.href) goto(option.href);

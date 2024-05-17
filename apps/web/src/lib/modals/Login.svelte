@@ -7,7 +7,7 @@
 	import { slide } from "svelte/transition";
 	import { nip19 } from "nostr-tools";
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
-	import currentUser, { loginMethod, privateKey } from '$stores/currentUser';
+	import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
 	import { loginState } from '$stores/session';
 
     export let value: string = "";
@@ -27,7 +27,7 @@
         $user = $ndk.getUser({npub});
         console.log($user.pubkey);
         $currentUser = $user;
-        localStorage.setItem('pubkey', $user.pubkey);
+        userPubkey.set($user.pubkey);
 
         loginState.set('logged-in');
         closeModal();
@@ -137,7 +137,7 @@
             $user = await remoteSigner.user();
             $user.ndk = $ndk;
             loginMethod.set('nip46');
-            localStorage.setItem('pubkey', $user.pubkey);
+            userPubkey.set($user.pubkey);
 
             // loginNip46();
 

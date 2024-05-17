@@ -25,12 +25,9 @@
 	import Swipe from '$components/Swipe.svelte';
 	import { openModal } from '$utils/modal';
     import QuoteModal from '$modals/QuoteModal.svelte';
-	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
-	import { userGenericCuration } from '$stores/session';
 	import NewPostModal from '$modals/NewPostModal.svelte';
 	import { getAuthorUrl } from '$utils/url';
 	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
-	import ZapButton from '$components/buttons/ZapButton.svelte';
 	import ZapModal from '$modals/ZapModal.svelte';
 
     const dispatch = createEventDispatcher();
@@ -325,7 +322,7 @@
                                 <slot />
                             {:else if event.kind === NDKKind.Highlight}
                                 <HighlightBody
-                                    class="bg-white/10 p-4 rounded-t-box"
+                                    class="bg-white/10 p-4 rounded-t-box ${$$props.contentClass??""}"
                                     highlight={NDKHighlight.from(event)}
                                 />
                             {:else}

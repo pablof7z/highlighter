@@ -1,5 +1,7 @@
 <script lang="ts">
+	import SettingsMenu from '$components/Settings/Menu.svelte';
     import { page } from "$app/stores";
+	import { appMobileView } from "$stores/app";
     import { pageHeader } from "$stores/layout";
 
     let id: string;
@@ -20,3 +22,7 @@
 <svelte:head>
     <title>Settings</title>
 </svelte:head>
+
+{#if $appMobileView}
+    <SettingsMenu />
+{/if}

@@ -4,7 +4,6 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { onBeforeClose } from "svelte-modals";
     import { closeModal } from '$utils/modal';
-    import Device from "svelte-device-info";
 	import { beforeNavigate } from '$app/navigation';
 	import { appMobileView } from '$stores/app';
 

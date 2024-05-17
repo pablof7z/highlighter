@@ -175,7 +175,6 @@
     }
 </script>
 
-{#if $appMobileView}
 <div class="flex flex-row justify-between h-full w-full items-center" class:hidden={$view === "published"}>
     {#if back}
         <button class="button button-black truncate" on:click={backClicked}>
@@ -231,4 +230,3 @@
         {/if}
     </div>
 </div>
-{/if}
