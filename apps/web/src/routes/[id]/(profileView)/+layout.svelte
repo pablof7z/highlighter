@@ -2,7 +2,7 @@
 	import CreatorShell from '$components/Creator/CreatorShell.svelte';
 	import { page } from "$app/stores";
 	import { ndk } from "@kind0/ui-common";
-	import { pageMainContentMaxWidth, resetLayout } from '$stores/layout';
+	import { resetLayout } from '$stores/layout';
 	import { onDestroy } from 'svelte';
 
     let id: string;
@@ -12,8 +12,6 @@
         id = $page.params.id;
         user.ndk = $ndk;
     }
-
-    $pageMainContentMaxWidth = 'max-w-3xl';
 
     onDestroy(resetLayout);
 

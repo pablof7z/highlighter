@@ -199,6 +199,7 @@
         searchBar: true,
         title: "Discover",
         searchFn,
+        // component: ExploreFilters
     };
 </script>
 
@@ -214,7 +215,7 @@
 
     {#if eventsForRender && $eventsForRender}
         <div class="flex flex-col gap-6 w-full">
-            <ExploreFilters bind:value={filter} bind:typeFilter={$typeFilter} bind:filters />
+            <!-- <ExploreFilters bind:value={filter} bind:typeFilter={$typeFilter} bind:filters /> -->
 
             <div class="w-full">
                 {#if filter === "add"}

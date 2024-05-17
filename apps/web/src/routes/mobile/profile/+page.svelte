@@ -17,8 +17,10 @@
 </script>
 
 {#if user}
-    {#if view === "profile"}
-        <UserProfileHomePage {user} />
-    {:else}
-    {/if}
+    {#key userId}
+        {#if view === "profile"}
+            <UserProfileHomePage {user} />
+        {:else}
+        {/if}
+    {/key}
 {/if}

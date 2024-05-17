@@ -37,5 +37,6 @@
 {:else}
     <div class="flex flex-col items-center justify-center h-full">
         No user found
+        {npub}
     </div>
 {/if}

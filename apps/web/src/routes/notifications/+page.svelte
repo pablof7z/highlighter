@@ -1,14 +1,12 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser';
 	import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
-	import { pageMainContentMaxWidth } from '$stores/layout';
 	import { lastSeenTimestamp } from '$stores/notifications';
 	import StoreFeed from '$components/Feed/StoreFeed.svelte';
 	import { ndk } from '@kind0/ui-common';
 	import { derived } from 'svelte/store';
 	import { onDestroy, onMount } from 'svelte';
 
-    $pageMainContentMaxWidth = 'max-w-3xl';
     let timeout: any;
 
     let originalLastSeenTimestamp = $lastSeenTimestamp;

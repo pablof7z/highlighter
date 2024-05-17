@@ -1,10 +1,8 @@
 <script lang="ts">
 	import AvatarWithName from './User/AvatarWithName.svelte';
-	import UserDrawer from './PageSidebar/UserDrawer.svelte';
-	import { Avatar, bunkerNDK, ndk, pageDrawerToggle } from '@kind0/ui-common';
+	import { Avatar, bunkerNDK, ndk } from '@kind0/ui-common';
 	import { fade } from 'svelte/transition';
 	import UserProfile from './User/UserProfile.svelte';
-    import { rightSidebar } from '@kind0/ui-common';
 	import currentUser from '$stores/currentUser';
 	import { UserCircle } from 'phosphor-svelte';
 	import { login } from '$utils/login';
@@ -12,14 +10,6 @@
     import SignupModal from '$modals/SignupModal.svelte';
 
     export let withName = false;
-
-    function clicked() {
-        $pageDrawerToggle = true;
-        rightSidebar.set({
-            component: UserDrawer,
-            props: {}
-        });
-    }
 
     async function openSignupModal() {
         if (window.nostr) {
@@ -38,18 +28,10 @@
     {#if $currentUser}
         <UserProfile user={$currentUser} let:userProfile let:authorUrl let:fetching>
             {#if !withName}
-                <button on:click={clicked} class="sm:hidden">
-                    <Avatar user={$currentUser} {userProfile} {fetching} class="flex-none {$$props.avatarClass??""}" />
-                </button>
-
                 <a href={authorUrl} class="max-sm:hidden">
                     <Avatar user={$currentUser} {userProfile} {fetching} class="flex-none {$$props.avatarClass??""}" />
                 </a>
             {:else}
-                <button on:click={clicked} class="sm:hidden">
-                    <AvatarWithName user={$currentUser} {userProfile} {fetching} class="flex-none" avatarClass={$$props.avatarClass??""} />
-                </button>
-
                 <a href={authorUrl} class="max-sm:hidden">
                     <AvatarWithName user={$currentUser} {userProfile} {fetching} class="flex-none" avatarClass={$$props.avatarClass??""} />
                 </a>

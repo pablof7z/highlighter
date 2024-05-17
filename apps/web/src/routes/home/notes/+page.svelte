@@ -3,12 +3,9 @@
 	import { userFollows } from "$stores/session";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 	import currentUser from "$stores/currentUser";
-	import { pageMainContentMaxWidth } from "$stores/layout";
 	import { onMount } from "svelte";
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
 
-    $pageMainContentMaxWidth = 'max-w-3xl';
-    
     const authors = Array.from($userFollows);
 
     if ($currentUser) authors.push($currentUser.id);
