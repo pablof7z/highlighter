@@ -109,7 +109,7 @@ export async function login(
 				const loadNip07Interval = setInterval(async () => {
 					if (window.nostr) {
 						clearInterval(loadNip07Interval);
-						const user = nip07SignIn(ndk);
+						const user = nip07SignIn($ndk);
 						// await finalizeLogin();
 						resolve(user);
 					}
