@@ -29,6 +29,7 @@
 	import { getAuthorUrl } from '$utils/url';
 	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
 	import ZapModal from '$modals/ZapModal.svelte';
+	import { isMobileBuild } from '$utils/view/mobile';
 
     const dispatch = createEventDispatcher();
 
@@ -45,7 +46,7 @@
     export let expandReplies = false;
     export let nestedMaxLevel = 2;
     export let showReply: boolean | undefined = undefined;
-    export let urlPrefix: string = "/e/";
+    export let urlPrefix: string | undefined = undefined;
     export let willShowReply: boolean | undefined = undefined;
     export let newPostCompact = false;
     export let placeholder: string | undefined = undefined;
@@ -53,6 +54,11 @@
     export let compact = false;
 
     export let hTag = op.tagValue("h");
+
+    if (!urlPrefix) {
+        if (isMobileBuild()) urlPrefix = "/mobile/view?eventId=";
+        else urlPrefix = "/e/";
+    }
 
     let isLastInThread: boolean;
 

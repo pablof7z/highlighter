@@ -75,7 +75,9 @@
         <svelte:fragment slot="right">
             {#if $pageHeader?.right}
                 <Link onClick={$pageHeader.right.fn}>
-                    {$pageHeader.right.label}
+                    {#if $pageHeader.right.label}
+                        {$pageHeader.right.label}
+                    {/if}
                     <svelte:component this={$pageHeader.right.icon} class="w-6 h-6 mr-2 inline" />
                 </Link>
             {:else if $pageHeader?.searchBar}

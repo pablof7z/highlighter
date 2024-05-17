@@ -6,24 +6,15 @@
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 
     let tagId: string;
-    let eventType: EventType | undefined;
 
     $: tagId = $page.params.tagId;
 
+    $layoutMode = "content-focused";
     $layoutNavState = "collapsed";
 
     onDestroy(resetLayout);
-
-    $: switch (eventType) {
-        case 'curation':
-            $layoutMode = "content-focused";
-            break;
-        default:
-            $layoutMode = 'content-focused';
-            break;
-    }
 </script>
 
 {#key tagId}
-    <ItemView bind:eventType />
+    <ItemView {tagId} />
 {/key}

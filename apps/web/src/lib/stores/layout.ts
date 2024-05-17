@@ -19,8 +19,6 @@ export const pageHeaderComponent = writable<Component | null>(null);
 export const pageNavigationOptions = writable<NavigationOption[]>([]);
 export const pageNavigationOptionsValue = writable<string | undefined>();
 
-export const pageMainContentMaxWidth = writable<string | undefined>();
-
 interface Component {
 	component: ConstructorOfATypedSvelteComponent;
 	props: { [key: string]: any };
@@ -41,7 +39,6 @@ export function resetLayout() {
 	pageHeaderComponent.set(null);
 	pageNavigationOptions.set([]);
 	pageHeader.set(null);
-	pageMainContentMaxWidth.set(undefined);
 	pageSidebar.set(null);
 	detailView.set(null);
 	pageNavigationOptionsValue.set(undefined);

@@ -1,11 +1,10 @@
 <script lang="ts">
-	import ShareModal from './../../../modals/ShareModal.svelte';
+	import ShareModal from '$modals/ShareModal.svelte';
     import { ndk } from "@kind0/ui-common";
 	import { page } from "$app/stores";
 	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NostrEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
 	import VideoView from "./VideoView.svelte";
-	import EventResponses from "$components/EventResponses.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import CreatorShell from "$components/Creator/CreatorShell.svelte";
@@ -14,13 +13,11 @@
 	import WithItem from "./WithItem.svelte";
 	import ItemFooter from "./ItemFooter.svelte";
 	import ListView from "$components/ListView.svelte";
-	import { goto } from "$app/navigation";
 	import ArticleView from "$components/ArticleView.svelte";
 	import { pageHeader } from "$stores/layout";
 	import { CaretLeft, Export, Lightning, Share } from "phosphor-svelte";
 	import Highlight from "$components/Highlight.svelte";
 	import { openModal } from '$utils/modal';
-	import BecomeSupporterModal from "$modals/BecomeSupporterModal.svelte";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
@@ -29,31 +26,15 @@
     export let backUrl = "/";
     export let backTitle: string | undefined = undefined;
 
-    let event: NDKEvent | undefined = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
+    export let event: NDKEvent | undefined = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
 
     let readReceiptPosted = false;
 
-    let hasShareApi = false;
     let authorUrl: string;
-
-    $: if (typeof navigator !== "undefined") {
-        hasShareApi = !!navigator.share;
-    }
 
     $: if (event && !readReceiptPosted) {
         readReceiptPosted = true;
         addReadReceipt(event);
-    }
-
-    function buttonClicked() {
-        if (hasShareApi) {
-            navigator.share({
-                text: event?.content,
-                url: window.location.href
-            });
-        } else {
-            goto(authorUrl);
-        }
     }
 
     let article: NDKArticle | undefined;
@@ -68,7 +49,6 @@
         title: article?.title ?? video?.title,
         right: {
             icon: Export,
-            label: "Share",
             fn: () => {
                 if (event?.author) {
                     openModal(ShareModal, { event });
@@ -77,7 +57,7 @@
         }
     };
 
-    export let eventType: EventType | undefined;
+    export let eventType: EventType | undefined = undefined;
 </script>
 
 <WithItem {user} {tagId} bind:event bind:article bind:video let:urlPrefix bind:eventType let:isFullVersion bind:authorUrl>
@@ -98,7 +78,7 @@
 
             {urlPrefix}
             <ItemFooter {event} {urlPrefix} {eventType} {mxClass} />
-        {:else if ["group-note", "short-note"].includes(eventType)}
+        {:else if ["group-note"].includes(eventType)}
             <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl">
                 <div class="w-full flex items-center flex-col justify-center">
                     <div class="w-full">
@@ -111,6 +91,13 @@
                 <EventResponses {event} /> -->
 
             </div>
+        {:else if ["short-note"].includes(eventType)}
+            <EventWrapper
+                {event}
+                expandThread={true}
+                expandReplies={true}
+
+            />
         {:else if eventType === 'curation'}
             <ListView {event} {urlPrefix} {authorUrl} />
         {:else if eventType === 'highlight'}

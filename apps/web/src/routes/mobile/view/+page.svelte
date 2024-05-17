@@ -14,4 +14,8 @@
     onDestroy(resetLayout);
 </script>
 
-<ItemView tagId={eventId} />
+{#if eventId}
+    {#key eventId}
+        <ItemView tagId={eventId} />
+    {/key}
+{/if}
