@@ -9,6 +9,7 @@
 	import { pluralize } from "$utils";
 	import GroupNote from "$components/Events/GroupNote.svelte";
 	import CurationItem from "$components/CurationItem.svelte";
+	import { goto } from "$app/navigation";
 
     export let feed: Readable<NDKEvent[]>;
     export let renderLimit = 10;
@@ -86,7 +87,9 @@
         if (isMobile) return;
         const { event, originalEvent } = e.detail;
         originalEvent.preventDefault();
-        navigateToEvent(event);
+        // navigateToEvent(event);
+
+        goto(`/e/${event.encode()}`);
     }
 </script>
 

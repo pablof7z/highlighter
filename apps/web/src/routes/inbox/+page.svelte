@@ -1,16 +1,17 @@
 <script lang="ts">
+	import StoreFeed from '$components/Feed/StoreFeed.svelte';
+	import { mainContentKinds } from '$utils/event';
     import { page } from '$app/stores';
     import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
-    import { ndk } from "@kind0/ui-common";
+    import { Avatar, ndk } from "@kind0/ui-common";
     import { userFollows } from "$stores/session";
-    import { type NDKEvent, type NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
-	import FeedEvent from "$components/Feed/FeedEvent.svelte";
+    import { type NDKEvent, type NDKFilter, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
-	import { Tray } from 'phosphor-svelte';
     import { pageHeader, pageSidebar } from "$stores/layout";
-    import InboxSidebar from "$components/PageSidebar/Inbox.svelte";
 	import { mode } from '$stores/inbox-view';
-	import MainWrapper from '$components/Page/MainWrapper.svelte';
+	import { inboxItems } from '$stores/inbox';
+	import ComplexHeaderWithBanner from '$components/PageElements/ComplexHeaderWithBanner.svelte';
+	import currentUser from '$stores/currentUser';
 
     let activeFilterCount: number | undefined = undefined;
     let activeView = $userFollows;
@@ -70,11 +71,6 @@
         }
     });
 
-    $pageSidebar = {
-        component: InboxSidebar,
-        props: {}
-    }
-
     onDestroy(() => {
         $pageSidebar = null;
     })
@@ -83,66 +79,44 @@
         title: "Inbox",
         searchBar: true
     }
+
+    const kinds = [
+        NDKKind.Highlight,
+        ...mainContentKinds
+    ]
+
+    const feed = $ndk.storeSubscribe([
+        { kinds: kinds, authors: Array.from($inboxItems)}
+    ], {
+        repostsFilters: [
+            { kinds: [6, 16], "#k": kinds.map(a => a.toString()), authors: Array.from($inboxItems), limit: 50 }
+        ],
+        cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY
+    })
 </script>
 
 <svelte:head>
     <title>Inbox</title>
 </svelte:head>
 
-<MainWrapper marginClass="max-w-3xl" paddingClass="p-6">
-    <div class="
-        flex-col justify-start items-start flex w-full
-    ">
-        {#if $userFollows.size === 0}
-            <div class="w-full bg-base-200 rounded-xl min-h-[50vh] h-full flex flex-col items-center justify-center gap-6">
-                <Tray size="64" class="text-base-300" />
-                <div class="text-xl opacity-60">
-                    You are not following anyone yet
-                </div>
-
-                <a href="/" class="text-xl">
-                    Explore Highlighter creators
-                </a>
-            </div>
-        {:else if $events?.length === 0}
-            <div class="w-full bg-base-200 rounded-xl min-h-[50vh] h-full flex flex-col items-center justify-center gap-6">
-                <Tray size="64" class="text-base-300" />
-                <div class="text-xl opacity-60">
-                    No posts to show
-                </div>
-
-                <a href="/" class="text-xl">
-                    Explore Highlighter creators
-                </a>
-            </div>
-        {:else}
-            {#if events && $events}
-                {#each $events as event (event.id)}
-                    {#if !selectedPubkey || event.pubkey === selectedPubkey}
-                        <div class="w-full item">
-                            <FeedEvent {event} />
-                        </div>
-                    {/if}
-                {/each}
+<ComplexHeaderWithBanner
+    user={$currentUser}
+    image={`https://picsum.photos/800/600?random=Inbox}`}
+>
+    <span slot="title">Inbox</span>
+    <span slot="subtitle">
+        A quiet place for the most important content.
+    </span>
+    <div slot="options" class="flex flex-row gap-2 flex-nowrap w-full scrollbar-hide overflow-x-auto p-2" let:collapsed>
+        {#each $inboxItems as item}
+            {#if item}
+                <Avatar pubkey={item} class="
+                    transition-all duration-300
+                    {collapsed ? "w-8 h-8" : "w-12 h-12"}
+                " />
             {/if}
-        {/if}
+        {/each}
     </div>
-</MainWrapper>
 
-<style lang="postcss">
-    .item:not(:first-child) {
-        margin-top: 1rem;
-    }
-
-    .item:not(:last-child) {
-        margin-bottom: 1rem;
-    }
-
-    a span.name {
-        @apply text-opacity-60;
-    }
-
-    a.active span.name {
-        @apply text-opacity-100;
-    }
-</style>
+    <StoreFeed {feed} />
+</ComplexHeaderWithBanner>

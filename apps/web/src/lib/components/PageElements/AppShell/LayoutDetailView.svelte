@@ -33,7 +33,6 @@
 <aside class="
     sticky sm:top-[var(--layout-header-height)]
     max-h-screen overflow-y-auto overflow-x-clip
-    !border-x !border-base-300
 
     max-md:fixed max-md:left-0 max-md:top-0 max-md:bottom-0 max-md:overflow-x-auto
     max-md:z-[999999]

@@ -8,8 +8,6 @@
     let startedUserView = false;
     let mounted = false;
 
-    $layoutMode = "single-column-focused";
-
     onMount(() => {
         mounted = true;
     });

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BookmarkSimple, CaretRight, ChatCircle, Lightning, Quotes, Repeat, Timer } from 'phosphor-svelte';
+	import { BookmarkSimple, CaretRight, ChatCircle, HourglassHigh, Lightning, Quotes, Repeat, Timer, Warning } from 'phosphor-svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { Avatar, Name, RelativeTime, ndk, newToasterMessage } from "@kind0/ui-common";
 	import { Hexpubkey, NDKEvent, NDKFilter, NDKHighlight, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
@@ -30,6 +30,11 @@
 	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
 	import ZapModal from '$modals/ZapModal.svelte';
 	import { isMobileBuild } from '$utils/view/mobile';
+	import FailedEventModals from '$modals/FailedEventModals.svelte';
+	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
+	import { userGenericCuration } from '$stores/session';
+	import ZapButton from '$components/buttons/ZapButton.svelte';
+	import SmallZapButton from '$components/buttons/SmallZapButton.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -52,6 +57,8 @@
     export let placeholder: string | undefined = undefined;
     export let skipFooter = false;
     export let compact = false;
+
+    export let disableSwipe = false;
 
     export let hTag = op.tagValue("h");
 
@@ -192,11 +199,11 @@
     }
 
     async function bookmark() {
-        // try {
-        //     $userGenericCuration = await toggleBookmarkedEvent(event, $userGenericCuration);
-        // } catch (e: any) {
-        //     newToasterMessage(e.relayErrors ?? e.message, "error")
-        // }
+        try {
+            $userGenericCuration = await toggleBookmarkedEvent(event, $userGenericCuration);
+        } catch (e: any) {
+            newToasterMessage(e.relayErrors ?? e.message, "error")
+        }
     }
 
     let showQuoteOptions = false;
@@ -229,11 +236,13 @@
     ]}
     on:close={() => showQuoteOptions = false}
     {rightOptions}
+    {disableSwipe}
     let:swapActive
 >
     <div class="
         w-full text-left md:p-4 pb-0 max-sm:py-4 max-sm:max-w-[100vw] flex flex-col items-start {$$props.class??""}
         !font-light
+        group
     " class:hidden={deleted}>
         <UserProfile
             user={author}
@@ -244,23 +253,23 @@
             <div class="flex flex-row items-start w-full">
                 <!-- Avatars -->
                 {#if !compact}
-                <div class="flex flex-col items-center flex-none w-10 sm:w-14 self-stretch">
-                    <a href={authorUrl}>
-                        <Avatar user={author} {userProfile} class="w-8 sm:w-12 h-8 sm:h-12 object-cover" type="circle" {fetching} />
-                    </a>
-                    <div class="
-                        w-[1px] bg-white/20 grow transition-all duration-500
-                    " style="
-                    {shouldDisplayVerticalBar ? 'opacity: 100%' : 'opacity: 0'};
-                    {shouldDisplayVerticalBar ? 'height: 100%' : 'height: 0'};
-                    min-height: {shouldExpandBeyondBox ? 'calc(100% - 76px)' : '40px'};
-                    margin-bottom: {shouldExpandBeyondBox ? '-76px' : '0'};
-                    "></div>
-                </div>
+                    <div class="flex flex-col items-center flex-none w-10 sm:w-14 self-stretch">
+                        <a href={authorUrl}>
+                            <Avatar user={author} {userProfile} class="w-8 sm:w-12 h-8 sm:h-12 object-cover" type="circle" {fetching} />
+                        </a>
+                        <div class="
+                            w-[1px] bg-white/20 grow transition-all duration-500
+                        " style="
+                        {shouldDisplayVerticalBar ? 'opacity: 100%' : 'opacity: 0'};
+                        {shouldDisplayVerticalBar ? 'height: 100%' : 'height: 0'};
+                        min-height: {shouldExpandBeyondBox ? 'calc(100% - 76px)' : '40px'};
+                        margin-bottom: {shouldExpandBeyondBox ? '-76px' : '0'};
+                        "></div>
+                    </div>
                 {/if}
 
                 <!-- Content -->
-                <div class="flex flex-col overflow-x-clip pl-2 md:pl-4 relative grow">
+                <div class="flex flex-col overflow-x-clip pl-2 md:pl-4 grow">
                     <!-- Title and time -->
                     <div class="
                         flex flex-row w-full gap-2 relative group
@@ -302,11 +311,20 @@
 
                                 <div class="flex flex-row flex-nowrap gap-2">
                                     <RelativeTime timestamp={mostRecentActivity * 1000} class="opacity-50" />
+                                    {#key event.publishStatus}
+                                        {#if event.publishStatus !== "success"}
+                                            {#if event.publishStatus === "error"}
+                                                <button on:click={() => openModal(FailedEventModals, { event })}>
+                                                    <Warning class="w-4 h-4 text-red-500" />
+                                                </button>
+                                            {/if}
+                                        {/if}
+                                    {/key}
                                     <EventCardDropdownMenu
                                         {event}
                                         enableDelete={$currentUser && $currentUser.pubkey === event.pubkey}
                                         on:delete={deleteEvent}
-                                        class="dropdown-end dropdown-end absolute !bg-base-100"
+                                        class="dropdown-end absolute !bg-base-100"
                                     />
                                 </div>
                             </div>
@@ -379,7 +397,9 @@
                         {/if}
                     </div>
 
-                    <div class:hidden={swapActive} class="flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4">
+                    <div class:hidden={swapActive} class="
+                        flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4
+                    ">
                         <div class="w-1/4 flex justify-center items-end">
                             {#if !($eventsInThread.length > 0 && !expandThread) && !($replies.length > 0 && !expandReplies)}
                                 <button class="" on:click|stopPropagation={() => { autofocusNewPost = showReply = !showReply; newPostCompact = false }}>
@@ -392,15 +412,13 @@
                             <BoostButton {event} on:publish />
                         </div>
 
-                        <div class="w-1/4 flex justify-center items-end ">
-                            <Bookmark {event} class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
+                        <div class="w-1/4 flex justify-center items-end">
+                            <Bookmark {event} />
                         </div>
                             <!-- <div class="shrink flex flex-row gap-3 items-center text-white/50 border grow justify-between"> -->
 
                         <div class="w-1/4 flex justify-center items-end ">
-                            <button on:click={() => openModal(ZapModal, {event})}>
-                                <Lightning class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5" />
-                            </button>
+                            <SmallZapButton {event} />
                         </div>
                     </div>
                 </div>

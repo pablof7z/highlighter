@@ -9,15 +9,15 @@
     export let value: string = "";
 </script>
 
+{#if options}
 <div class="
     justify-start items-start inline-flex whitespace-nowrap w-full
-    sm:border-t border-base-300
 ">
     <div class="
         lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}
-        snap-x snap-mandatory
         overflow-x-auto max-w-[100vw]
         scrollbar-hide
+        transition-all duration-300
     ">
         {#each options as option (option.id ?? option.name)}
             {#if option.component}
@@ -40,6 +40,7 @@
                 <HorizontalOptionsListItem
                     {option}
                     {value}
+                    class={$$props.itemClass??""}
                     on:click={(e) => {
                         if (!option.href) {
                             e.preventDefault();
@@ -53,3 +54,8 @@
         {/each}
     </div>
 </div>
+{:else}
+    <div class="w-full flex justify-center items-center">
+        <div class="text-base-100">No options available</div>
+    </div>
+{/if}

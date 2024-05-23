@@ -4,6 +4,7 @@
 	import { appMobileHideNewPostButton } from "$stores/app";
 	import { resetLayout } from "$stores/layout";
 	import { onDestroy } from "svelte";
+    import { PageTransition } from 'sveltekit-page-transitions';
 
     let eventId: string | null;
 
@@ -14,8 +15,10 @@
     onDestroy(resetLayout);
 </script>
 
+<PageTransition>
 {#if eventId}
     {#key eventId}
         <ItemView tagId={eventId} />
     {/key}
 {/if}
+</PageTransition>

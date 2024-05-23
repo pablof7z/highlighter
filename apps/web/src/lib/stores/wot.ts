@@ -1,4 +1,4 @@
-import { derived, get, writable } from "svelte/store";
+import { Readable, derived, get, writable } from "svelte/store";
 import { networkFollows } from "./session";
 import { NDKEvent, type Hexpubkey } from "@nostr-dev-kit/ndk";
 
@@ -14,6 +14,20 @@ export const wot = derived([networkFollows, minimumScore], ([$networkFollows, $m
 
     return pubkeys;
 });
+
+export function wotFilteredStore(event: Readable<NDKEvent[]>) {
+    return derived([event, wot], ([$event, $wot]) => {
+        if ($wot.size < 1000) return $event;
+
+        const filteredEvents: NDKEvent[] = [];
+
+        for (const e of $event) {
+            if ($wot.has(e.pubkey)) filteredEvents.push(e);
+        }
+
+        return filteredEvents;
+    });
+}
 
 export function wotFiltered(events: NDKEvent[]) {
     const $wot = get(wot);

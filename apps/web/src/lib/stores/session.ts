@@ -131,6 +131,40 @@ export const userArticleCurations = writable<Map<string, NDKList>>(new Map());
 export const userVideoCurations = writable<Map<string, NDKList>>(new Map());
 export const userGenericCuration = writable<NDKList>(new NDKList($ndk, { kind: NDKKind.BookmarkList, created_at: 0 } as NostrEvent));
 
+function wantedLists(list: NDKList) {
+	// Skip known bad names
+	const dTag = list.dTag ?? "";
+	if ([ "allowlist", "mute", "mutelists" ].includes(dTag)) return false;
+	if (dTag.startsWith("chats/")) return false;
+	if (dTag.startsWith("noticiations/")) return false;
+
+	return true;
+}
+
+export const categorizedUserLists = writable<Map<string, NDKList>>(new Map());
+export const sortedUserLists = derived(categorizedUserLists, ($categorizedUserLists) => {
+	// Lists with highest item count go first
+	// then alphabetical order (by title ?? dTag)
+	const lists = Array.from($categorizedUserLists.values());
+	return lists
+		.filter(wantedLists)
+		.sort((a, b) => {
+		const aCount = a.items.length;
+		const bCount = b.items.length;
+
+		if (aCount > bCount) return -1;
+		if (aCount < bCount) return 1;
+
+		const aTitle = a.title ?? a.dTag ?? "";
+		const bTitle = b.title ?? b.dTag ?? "";
+
+		if (aTitle < bTitle) return -1;
+		if (aTitle > bTitle) return 1;
+
+		return 0;
+	});
+});
+
 /**
  * Current user's supported people
  */
@@ -171,6 +205,7 @@ export async function prepareSession(): Promise<void> {
 			userArticleCurationsStore: userArticleCurations,
 			userVideoCurationsStore: userVideoCurations,
 			userGenericCurationStore: userGenericCuration,
+			categorizedUserListsStore: categorizedUserLists,
 			userTierStore: allUserTiers,
 			groupsListStore: groupsList,
 			tierListStore: tierList,
@@ -183,6 +218,7 @@ export async function prepareSession(): Promise<void> {
 				NDKKind.VideoCurationSet,
 				NDKKind.CategorizedHighlightList,
 				NDKKind.BookmarkList,
+				NDKKind.CategorizedPeopleList,
 			]
 		}).then(() => {
 			const $currentUserFollows = getStore(userFollows);
@@ -244,6 +280,7 @@ interface IFetchDataOptions {
 	userArticleCurationsStore?: Writable<Map<string, NDKList>>;
 	userVideoCurationsStore?: Writable<Map<string, NDKList>>;
 	userGenericCurationStore?: Writable<NDKList>;
+	categorizedUserListsStore?: Writable<Map<string, NDKList>>;
 	userTierStore?: Writable<NDKSubscriptionTier[]>;
 	groupsListStore?: Writable<NDKList | undefined>;
 	tierListStore?: Writable<NDKList | undefined>;
@@ -311,6 +348,7 @@ async function fetchData(
 			NDKKind.ArticleCurationSet,
 			NDKKind.VideoCurationSet,
 			NDKKind.BookmarkList,
+			NDKKind.CategorizedPeopleList
 		].includes(event.kind!)) {
 			processCurationList(event);
 		}
@@ -423,6 +461,17 @@ async function fetchData(
 				opts.userGenericCurationStore!.update((existingList) => {
 					if (existingList!.created_at && existingList.created_at > event.created_at!) return existingList;
 					return list;
+				});
+				break;
+			case NDKKind.CategorizedPeopleList:
+				opts.categorizedUserListsStore!.update((lists) => {
+					const dTag = list.dTag;
+					if (dTag === undefined) return lists;
+
+					const existing = lists.get(dTag);
+					if (existing && existing.created_at! > list.created_at!) return lists;
+					lists.set(list.dTag!, list);
+					return lists;
 				});
 				break;
 		}

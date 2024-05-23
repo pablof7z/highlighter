@@ -7,7 +7,7 @@
 	import { page } from '$app/stores';
     import createDebug from "debug";
 	import { derived, writable, type Readable } from 'svelte/store';
-	import { layoutMode, layoutNavState, pageHeader, resetLayout } from '$stores/layout';
+	import { layoutMode, pageHeader, resetLayout } from '$stores/layout';
 	import ExploreFilters from './ExploreFilters.svelte';
 	import ListContentDvms from './ListContentDvms.svelte';
 	import { mainContentKinds } from '$utils/event';
@@ -18,7 +18,6 @@
 	import PostGrid from '$components/Events/PostGrid.svelte';
 	import CurationItem from '$components/CurationItem.svelte';
 
-    $layoutNavState = "collapsed";
     $layoutMode = "full-width";
 
     onDestroy(resetLayout)

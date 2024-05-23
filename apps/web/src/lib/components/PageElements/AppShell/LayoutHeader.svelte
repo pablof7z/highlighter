@@ -1,32 +1,61 @@
 <script lang="ts">
 	import SearchBar from "$components/Page/SearchBar.svelte";
 	import { pageHeader } from "$stores/layout";
+	import { afterUpdate, onDestroy, onMount } from "svelte";
 	import HeaderLeftButton from "../HeaderLeftButton.svelte";
 	import HeaderRightButton from "../HeaderRightButton.svelte";
 
     let render = false;
+    let navbar: HTMLElement;
 
-    $: render = !!($pageHeader?.component || $pageHeader?.searchBar || $pageHeader?.title || $pageHeader?.left || $pageHeader?.right);
+    $: render =  !!($pageHeader?.component || $pageHeader?.searchBar || $pageHeader?.title || $pageHeader?.left || $pageHeader?.right);
+
+    const updateNavbarHeight = () => {
+        if (!navbar) return;
+        const navbarHeight = navbar.offsetHeight;
+        document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
+        console.log('Navbar height:', navbarHeight);
+    };
+
+    onMount(() => {
+
+        // Initial update
+        updateNavbarHeight();
+
+        // Update on window resize
+        window.addEventListener('resize', updateNavbarHeight);
+    });
+
+    onDestroy(() => {
+        window.removeEventListener('resize', updateNavbarHeight);
+    });
+
+    afterUpdate(() => {
+        updateNavbarHeight();
+    });
 </script>
 
 {#if render}
-<div class="h-[var(--layout-header-height)]"></div>
-
 <div class="
-    !fixed top-0 h-[var(--layout-header-height)]
+    !fixed top-0
     z-40
     mobile-nav
     w-full
-    {$$props.class??""}
-">
+" bind:this={navbar}>
     <div class="flex flex-row justify-between items-center h-full w-full gap-2">
         {#if $pageHeader?.component}
-            <div class="sm:p-4 w-full">
-                <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
+            <div class="w-full h-full">
+                <svelte:component
+                    this={$pageHeader.component}
+                    {...$pageHeader.props}
+                    containerClass={$$props.class??""}
+                    on:resize={updateNavbarHeight}
+                />
             </div>
         {:else if $pageHeader?.searchBar}
             <div class="
-                max-w-3xl w-full mx-auto
+                {$$props.class??""}
+                w-full mx-auto
             ">
                 <SearchBar inputClass="focus:!outline-none focus:!border-none" />
             </div>
@@ -60,7 +89,6 @@
                 {/if}
             </div>
         {/if}
-        <div class="w-10"></div>
     </div>
 </div>
 {/if}

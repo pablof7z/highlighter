@@ -23,7 +23,6 @@
 
         });
     }
-    
 </script>
 
 <App theme="ios" safeAreas={true} class="k-ios">

@@ -57,7 +57,6 @@
         title: list.title,
         left: {
             icon: CaretLeft,
-            url: authorUrl,
             label: "Lists"
         }
     }

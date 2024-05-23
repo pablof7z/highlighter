@@ -2,9 +2,8 @@
 	import { Block, MenuList, MenuListItem, Navbar, Page, Panel, Link } from "konsta/svelte";
     import { page } from "$app/stores";
     import currentUser, { isGuest } from "$stores/currentUser";
-	import { ChalkboardSimple, Door, Gear, House, PaperPlaneTilt, Timer } from "phosphor-svelte";
+	import { ChalkboardSimple, Door, Gear, House, PaperPlaneTilt, CardsThree, Timer } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
-	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { logout } from "$utils/login";
 	import { Avatar } from "@kind0/ui-common";
 	import UserProfile from "$components/User/UserProfile.svelte";
@@ -12,7 +11,6 @@
 	import NewItemModal from "$modals/NewItemModal.svelte";
 
     export let opened = false;
-
 
     function go(path: string) {
         goto(path);
@@ -44,6 +42,15 @@
             </MenuListItem>
 
             <MenuListItem
+                title="Collections"
+                active={$page.url.pathname.startsWith('/collections')}
+                href="/collections"
+                onClick={() => opened = false}
+            >
+                <CardsThree size={24} slot="media" />
+            </MenuListItem>
+
+            <MenuListItem
                 title="Schedule"
                 active={$page.url.pathname.startsWith('/schedule')}
                 href="/schedule"
@@ -69,7 +76,7 @@
 
             <MenuListItem
                 title="Publish"
-                active={true}
+                class="!text-accent2"
                 onClick={() => {
                     openModal(NewItemModal);
                     opened = false;

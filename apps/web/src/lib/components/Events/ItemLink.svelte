@@ -35,8 +35,6 @@
     let userProfile: UserProfileType;
     let authorUrl: string = `/${author.npub}`;
 
-    let suffixUrl = skipLink ? "#" : urlSuffixFromEvent(event);
-
     $: if (!image && useProfileAsDefaultImage) { image = userProfile?.image || userProfile?.banner }
     $: if (!isHrefExplicit && !skipLink) {
         href = urlFromEvent(event, authorUrl);

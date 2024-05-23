@@ -42,7 +42,12 @@ function nextBlossomServerToTry(
 export function createBlossom({user}: { user: NDKUser }) {
     return function(node: HTMLImageElement) {
         let originalUrl = node.src;
-        let url = new URL(originalUrl);
+        let url;
+        try {
+            url = new URL(originalUrl);
+        } catch (e) {
+            return;
+        }
         let originalServer = normalize([url.origin])[0];
         let blossomList: NDKList | undefined | null;
         let hash: string | undefined;
@@ -75,16 +80,12 @@ export function createBlossom({user}: { user: NDKUser }) {
             hash = fileHashFromUrl(originalUrl);
         }
 
-        console.log('hash', hash);
-
         async function handleLoad(event: Event) {
             // add an emoji right below the image saying that it was loaded from a different server
-            const newUrl = new URL(node.src);
-            finalStatus(`Media restored from different Blossom server ${newUrl.hostname}`);
-        }
-
-        async function sleep(ms: number) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+            if (attemptedServers.length > 1) {
+                const newUrl = new URL(node.src);
+                finalStatus(`Media restored from different Blossom server ${newUrl.hostname}`);
+            }
         }
         
         async function handleError(event: Event) {

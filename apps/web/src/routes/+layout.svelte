@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { NDKEvent, NDKPublishError, NDKRelay, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import { onMount } from 'svelte';
 	import '../app.postcss';
 	import { ndk, user } from '@kind0/ui-common';
@@ -21,6 +22,9 @@
 	import MobileAppShell from '$components/PageElements/Mobile/AppShell.svelte';
 	import { appMobileView } from '$stores/app';
 	import { isMobileBuild, isPhone } from '$utils/view/mobile';
+	import { initStoreEvent } from '$stores/events';
+
+	
 
 	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
 	// import { setupIonicSvelte } from "ionic-svelte";
@@ -67,9 +71,10 @@
 	}
 
 	onMount(async () => {
+		initStoreEvent($ndk);
+		
 		if ($ndk.cacheAdapter?.onReady && !$ndk.cacheAdapter?.ready) {
 			$ndk.cacheAdapter.onReady(() => {
-				console.log('Cache adapter ready');
 				mounted = true
 			});
 		} else {

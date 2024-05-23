@@ -1,5 +1,6 @@
 import { writable, type Writable } from 'svelte/store';
 import { NavigationOption } from '../../app';
+import { appMobileHideNewPostButton } from './app';
 
 /**
  * `list-column` - The sidebar takes about 1/3 of the screen and the main content takes about 2/3 of the screen
@@ -7,8 +8,6 @@ import { NavigationOption } from '../../app';
 type LayoutMode = "centered-feed-column" | "content-focused" | "full-width" | "single-column-focused";
 
 export const layoutMode = writable<LayoutMode>("centered-feed-column");
-
-export const layoutNavState = writable<"normal" | "collapsed">("normal");
 
 export const pageHeaderComponent = writable<Component | null>(null);
 
@@ -35,11 +34,11 @@ export const modal = writable<Component | null>(null);
 
 export function resetLayout() {
 	layoutMode.set("centered-feed-column");
-	layoutNavState.set("normal");
 	pageHeaderComponent.set(null);
 	pageNavigationOptions.set([]);
 	pageHeader.set(null);
 	pageSidebar.set(null);
+	appMobileHideNewPostButton.set(false);
 	detailView.set(null);
 	pageNavigationOptionsValue.set(undefined);
 }
@@ -93,7 +92,9 @@ export type PageHeader = {
 		url?: string;
 		fn?: () => void;
 	};
-};
 
-export const mainWrapperMargin = writable<string | null>(null);
-export const sectionHeaderMargin = writable<string | null>(null);
+	subNavbarOptions?: NavigationOption[];
+	subNavbarValue?: string;
+
+	footer?: Component;
+};

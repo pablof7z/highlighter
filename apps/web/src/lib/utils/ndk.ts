@@ -65,9 +65,6 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	$ndk.pool.on('relay:auth', (relay) => {
 		debug('relay auth', relay.url);
 	});
-	$ndk.pool.on('relay:ready', (relay) => {
-		debug('relay ready', relay.url);
-	});
 	$ndk.pool.on('relay:disconnect', (relay) => {
 		debug('relay disconnect', relay.url);
 	});

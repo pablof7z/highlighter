@@ -17,6 +17,8 @@
 
 </script>
 
-<CreatorShell {user}>
-    <slot />
-</CreatorShell>
+{#key user.pubkey}
+    <CreatorShell {user}>
+        <slot />
+    </CreatorShell>
+{/key}

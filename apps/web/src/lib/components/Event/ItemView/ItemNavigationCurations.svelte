@@ -5,7 +5,7 @@
 	import { openModal } from "$utils/modal";
 	import { ndk } from "@kind0/ui-common";
     import { NDKEvent } from "@nostr-dev-kit/ndk";
-	import { BookmarkSimple } from "phosphor-svelte";
+	import { CardsThree } from "phosphor-svelte";
 	import { onDestroy } from 'svelte';
 
     export let event: NDKEvent;
@@ -24,7 +24,7 @@
 
 <div class="flex flex-row py-2">
     <button class="pl-4 pr-2 py-1 rounded-l-full bg-base-300 hover:bg-white/10 join-item" on:click={() => openModal(AddToCuration, {event})}>
-        <BookmarkSimple
+        <CardsThree
             class="w-7 h-7
                 {bookmarked ? 'text-accent' : ''}
             " weight={bookmarked ? "fill" : "regular"}

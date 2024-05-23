@@ -9,6 +9,8 @@
     export let article: NDKArticle;
     export let editUrl: string | undefined = undefined;
 
+    console.log(article);
+
     let tags: NDKTag[] = [];
 
     if (article.url) tags.push(["r", article.url]);

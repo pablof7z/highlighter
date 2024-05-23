@@ -1,15 +1,16 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { pageHeader, pageNavigationOptions } from '$stores/layout';
+    import { pageHeader, pageHeaderComponent, pageNavigationOptions } from '$stores/layout';
 	import { Avatar } from '@kind0/ui-common';
-    import { Block, Icon, Link, Navbar, NavbarBackLink, Segmented, SegmentedButton } from 'konsta/svelte';
+    import { Block, Icon, Link, Navbar, NavbarBackLink, Segmented, SegmentedButton, Toolbar } from 'konsta/svelte';
     import currentUser, { isGuest } from "$stores/currentUser";
 	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 	import { MagnifyingGlass, User, UserCircle } from 'phosphor-svelte';
 	import { openModal } from '$utils/modal';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import UserDrawer from './UserDrawer.svelte';
-	import SearchModal from '$modals/SearchModal.svelte';
+	import { afterUpdate, onDestroy, onMount } from 'svelte';
+    import TouchSweep from 'touchsweep';
 
     let userPanelOpened = false;
 
@@ -40,22 +41,166 @@
         }
     }
 
-    $: title ??= "Highlighter";
+    let mounted = false;
+    let scrollingDown = false;
+    let subNavbar: HTMLElement;
+    let body: HTMLElement;
+
+    function scrollUp() {
+        // scale down the subnavbar
+        body?.classList.remove('scrolldown')
+        scrollingDown = false;
+
+    }
+
+    function scrollDown() {
+        body?.classList.add('scrolldown')
+        scrollingDown = true;
+    }
+
+    let instance: TouchSweep;
+
+    onMount(() => {
+        mounted = true
+        body = document.getElementsByTagName('body')[0];
+        // instance = new TouchSweep(body,
+        // { value: 1 }, 20 );
+        // body.addEventListener('swipedown', (e) => {
+        //     console.log(e.detail);
+        //     scrollUp();
+        // });
+
+        // body.addEventListener('swipeup', (e) => {
+        //     console.log(e.detail);
+        //     scrollDown();
+        // });
+
+    });
+
+    onDestroy(() => {
+        // instance.unbind();
+    })
+
+    title ??= "Highlighter";
+    let _title = title;
+    let subnavbarEl: HTMLElement;
+
+    $: if ($pageHeader?.subNavbarOptions?.length) {
+        if (scrollingDown) {
+            _title = $pageHeader.subNavbarOptions.find(option => option.value === $pageHeader.subNavbarValue)?.name ?? title!
+            if (subnavbarEl) {
+                subnavbarEl.classList.add('-translate-y-full', 'opacity-0')
+                subnavbarEl.style.height = '0px';
+            }
+        } else {
+            _title = title!;
+            if (subnavbarEl) {
+                subnavbarEl.classList.remove('-translate-y-full', 'opacity-0')
+                subnavbarEl.style.height = 'auto';
+            }
+        }
+        _title ??= "Highlighter";
+    }
 
     let withSubnavbar = false;
 
-    $: withSubnavbar = !!($pageHeader?.component || $pageNavigationOptions?.length > 0);
+    $: withSubnavbar = !!(
+        $pageHeader?.component ||
+        ($pageHeader?.subNavbarOptions && $pageHeader?.subNavbarOptions.length > 0) ||
+        $pageNavigationOptions?.length > 0
+    );
+
+    afterUpdate(() => {
+        if (subNavbar && subNavbar.parentElement) {
+            console.log(subNavbar);
+            console.log(subNavbar.parentElement);
+            subnavbarEl = subNavbar.parentElement;
+            subnavbarEl.classList.add('transition-all', 'duration-300', 'overflow-y-hidden')
+        }
+    });
 </script>
 
-{#if withSubnavbar}
-    <Navbar title={title??"Highlighter"} {subtitle} id="navbar">
+{#if mounted}
+{#if $pageHeader?.component}
+    <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
+{:else if withSubnavbar}
+    <Navbar title={_title} {subtitle}>
         <svelte:fragment slot="left">
             {#if $pageHeader?.left}
                 {#if $pageHeader.left.component}
                     <svelte:component this={$pageHeader.left.component.component} {...$pageHeader.left.component.props} />
                 {:else if $pageHeader?.left?.url}
                     <NavbarBackLink
-                        onClick={() => goto($pageHeader.left.url)}
+                        onClick={() => {
+                            if ($pageHeader?.left?.url) {
+                                goto($pageHeader.left.url)
+                            } else {
+                                window.history.back()
+                            }
+                        }}
+                    />
+                {/if}
+            {:else}
+                {#if $currentUser}
+                    <Link onClick={() => userPanelOpened = true}>
+                        <Avatar user={$currentUser} size="small" class="flex-none" />
+                    </Link>
+                {:else}
+                    <Link onClick={() => openModal(SignupModal)}>
+                        <UserCircle class="w-6 h-6 mr-2" />
+                        Login
+                    </Link>
+                {/if}
+            {/if}
+        </svelte:fragment>
+
+        <svelte:fragment slot="right">
+            {#if $pageHeader?.right}
+                <Link onClick={$pageHeader?.right?.fn}>
+                    {#if $pageHeader?.right?.label}
+                        {$pageHeader?.right?.label}
+                    {/if}
+                    <svelte:component this={$pageHeader.right.icon} class="w-6 h-6 mr-2 inline" />
+                </Link>
+            {:else if $pageHeader?.searchBar}
+                <Link href="/search">
+                    <MagnifyingGlass class="w-6 h-6" />
+                </Link>
+            {/if}
+        </svelte:fragment>
+
+        <svelte:fragment slot="subnavbar">
+            <div bind:this={subNavbar} class="flex flex-row items-end gap-0 overflow-y-hidden subnavbar">
+                {#if $pageHeader?.component}
+                    <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
+                {:else if $pageHeader?.subNavbarOptions}
+                    <HorizontalOptionsList
+                        options={$pageHeader.subNavbarOptions}
+                        bind:value={$pageHeader.subNavbarValue}
+                        class="py-2 {scrollingDown ? '' : ''}"
+                    />
+                {:else if $pageNavigationOptions && $pageNavigationOptions.length > 0}
+                    <HorizontalOptionsList options={$pageNavigationOptions} class="{scrollingDown ? 'text-sm' : 'text-sm'}" />
+                {/if}
+            </div>
+        </svelte:fragment>
+    </Navbar>
+{:else}
+    <Navbar title={_title} {subtitle}>
+        <svelte:fragment slot="left">
+            {#if $pageHeader?.left}
+                {#if $pageHeader.left.component}
+                    <svelte:component this={$pageHeader.left.component.component} {...$pageHeader.left.component.props} />
+                {:else}
+                    <NavbarBackLink
+                        onClick={() => {
+                            console.log('back', $pageHeader?.left?.url)
+                            if ($pageHeader?.left?.url) {
+                                goto($pageHeader.left.url)
+                            } else {
+                                window.history.back()
+                            }
+                        }}
                     />
                 {/if}
             {:else}
@@ -86,53 +231,8 @@
                 </Link>
             {/if}
         </svelte:fragment>
-
-        <svelte:fragment slot="subnavbar">
-            {#if $pageHeader?.component}
-                <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
-            {:else if $pageNavigationOptions && $pageNavigationOptions.length > 0}
-                <HorizontalOptionsList options={$pageNavigationOptions} />
-            {/if}
-        </svelte:fragment>
-    </Navbar>
-{:else}
-    <Navbar title={title??"Highlighter"} {subtitle} id="navbar">
-        <svelte:fragment slot="left">
-            {#if $pageHeader?.left}
-                {#if $pageHeader.left.component}
-                    <svelte:component this={$pageHeader.left.component.component} {...$pageHeader.left.component.props} />
-                {:else if $pageHeader?.left?.url}
-                    <NavbarBackLink
-                        onClick={() => goto($pageHeader.left.url)}
-                    />
-                {/if}
-            {:else}
-                {#if $currentUser}
-                    <Link onClick={() => userPanelOpened = true}>
-                        <Avatar user={$currentUser} size="small" class="flex-none" />
-                    </Link>
-                {:else}
-                    <Link onClick={() => openModal(SignupModal)}>
-                        <UserCircle class="w-6 h-6 mr-2" />
-                        Login
-                    </Link>
-                {/if}
-            {/if}
-        </svelte:fragment>
-
-        <svelte:fragment slot="right">
-            {#if $pageHeader?.right}
-                <Link onClick={$pageHeader.right.fn}>
-                    {$pageHeader.right.label}
-                    <svelte:component this={$pageHeader.right.icon} class="w-6 h-6 mr-2 inline" />
-                </Link>
-            {:else if $pageHeader?.searchBar}
-                <Link href="/search">
-                    <MagnifyingGlass class="w-6 h-6" />
-                </Link>
-            {/if}
-        </svelte:fragment>
 </Navbar>
+{/if}
 {/if}
 
 <UserDrawer bind:opened={userPanelOpened} />

@@ -100,13 +100,7 @@
 </script>
 
 <div class="flex flex-col gap-6 w-full mx-auto sm:px-4 relative max-w-3xl {$$props.class??""}">
-    {#if !$searching}
-        <MagnifyingGlass class="absolute top-1/2 max-sm:hidden sm:left-6 transform -translate-y-1/2 w-6 h-6 text-neutral-500" />
-    {:else}
-        <div class="absolute top-1/2 sm:left-4 transform -translate-y-1/2 w-6 h-6 text-neutral-500">
-            <span class="loading loading-sm text-accent2"></span>
-        </div>
-    {/if}
+    <MagnifyingGlass class="absolute top-1/2 max-sm:hidden sm:left-6 transform -translate-y-1/2 w-6 h-6 text-neutral-500" />
 
     <Input
         bind:value

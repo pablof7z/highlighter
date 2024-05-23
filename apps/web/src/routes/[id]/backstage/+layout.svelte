@@ -8,11 +8,10 @@
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { NavigationOption, UserProfileType } from '../../../app';
 	import BackstageHeader from "$components/Backstage/BackstageHeader.svelte";
-	import { layoutMode, layoutNavState, resetLayout } from '$stores/layout';
+	import { layoutMode, resetLayout } from '$stores/layout';
 	import { onDestroy } from 'svelte';
 
     $layoutMode = "full-width";
-    $layoutNavState = "collapsed";
 
     onDestroy(resetLayout);
     

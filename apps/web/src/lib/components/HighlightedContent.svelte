@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { goto, pushState } from '$app/navigation';
-	import { ndk, pageDrawerToggle, rightSidebar } from "@kind0/ui-common";
+	import { ndk } from "@kind0/ui-common";
 	import { NDKEvent, NDKEventId } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable } from "svelte/store";
     import currentUser from '$stores/currentUser';
-	import { detailView } from '$stores/layout';
 	import Highlight from './DetailView/Highlight.svelte';
     import sanitizeHtml from 'sanitize-html';
 	import { onDestroy, onMount } from 'svelte';
 	import HighlightMarks from './HighlightMarks.svelte';
+	import { openModal } from '$utils/modal';
+	import HighlightModal from '$modals/HighlightModal.svelte';
 
     export let event: NDKEvent | undefined = undefined;
     export let highlights: Readable<NDKEvent[]>;
@@ -34,10 +35,7 @@
                 pushState(`/e/${highlight.encode()}`, {
                     detailView: 'highlight'
                 });
-                $detailView = {
-                    component: Highlight,
-                    props: { highlight }
-                }
+                openModal(HighlightModal, { highlight });
             }
         }
     }

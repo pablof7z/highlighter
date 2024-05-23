@@ -29,6 +29,7 @@ export function computeArticleRecommendationFromHighlightStore(
     highlights: Readable<NDKEvent[]>
 ): Readable<{tag: NDKTag, highlights: NDKHighlight[]}[]> {
     return derived(highlights, ($highlights) => {
+        const startTime = new Date().getTime();
         const highlightsByArticle = new Map<string, NDKHighlight[]>();
         const articles = new Map<string, number>();
         const articleIdToTag = new Map<string, NDKTag>();
@@ -57,11 +58,16 @@ export function computeArticleRecommendationFromHighlightStore(
 
         const sortedArticles = Array.from(articles.entries()).sort(
             (a, b) => b[1] - a[1]
-        ).map(([articleId]) => articleId);            
+        ).map(([articleId]) => articleId);
 
-        return sortedArticles.map((articleId) => {
+        const res = sortedArticles.map((articleId) => {
             const tag = articleIdToTag.get(articleId);
             return { tag: tag!, highlights: highlightsByArticle.get(articleId)! };
         });
+
+        const endTime = new Date().getTime();
+        // console.log("computeArticleRecommendationFromHighlightStore took", endTime - startTime, "ms");
+        
+        return res;
     });
 }

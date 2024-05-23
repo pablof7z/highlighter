@@ -12,7 +12,7 @@
 <Tabbar
     labels={isLabels}
     icons={isIcons}
-    class="left-0 bottom-0 fixed"
+    class="left-0 bottom-0 fixed mobile-navbar transition-all duration-300"
 >
     <TabbarLink
         active={$page.url.pathname.startsWith('/home')}
@@ -53,3 +53,9 @@
         </TabbarLink>
     {/if}
 </Tabbar>
+
+<style lang="postcss">
+    :global(body.scrolldown .mobile-navbar) {
+        opacity: 0.40 !important;
+    }
+</style>

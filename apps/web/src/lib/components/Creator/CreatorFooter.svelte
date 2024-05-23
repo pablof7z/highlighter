@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CurrentSupporters from "$components/CurrentSupporters.svelte";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
-    import { mainWrapperMargin, pageSidebar } from "$stores/layout";
+    import { pageSidebar } from "$stores/layout";
     import type { Hexpubkey, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
 	import type { Readable } from "svelte/store";
 
@@ -25,7 +25,6 @@
     border-t border-white/20
 ">
     <div class="
-        {$mainWrapperMargin}
         w-full
         flex items-center justify-between
     ">

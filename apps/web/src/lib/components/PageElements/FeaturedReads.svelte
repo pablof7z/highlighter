@@ -3,18 +3,21 @@
 	import { Name, UserProfile, ndk } from "@kind0/ui-common";
 	import { NDKArticle, NDKHighlight, NDKSubscriptionCacheUsage, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
     import Highlight from "$components/Highlight.svelte";
-	import { onMount } from "svelte";
 	import { urlFromEvent } from "$utils/url";
+	import { Chip } from "konsta/svelte";
 
     export let article: NDKArticle | undefined = undefined;
-    export let articleTag: NDKTag;
-    export let highlights: NDKHighlight[];
+    export let articleTag: NDKTag | undefined = undefined;
+    export let highlights: NDKHighlight[] | undefined = undefined;
 
     let loadedArticleTag: NDKTag | undefined = undefined;
 
-    $: if (loadedArticleTag !== articleTag) {
+    $: if (loadedArticleTag !== articleTag && articleTag && !article) {
+        loadedArticleTag = articleTag;
         console.log("Fetching article for tag", articleTag);
-        $ndk.fetchEventFromTag(articleTag).then((event) => {
+        $ndk.fetchEventFromTag(articleTag, {
+            // cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE
+        }).then((event) => {
             if (event) {
                 article = NDKArticle.from(event);
             } else {
@@ -34,42 +37,44 @@
 
 {#if article}
 <UserProfile user={article.author} let:authorUrl let:userProfile>
-    <a href={urlFromEvent(article, authorUrl)} class="flex flex-row gap-4 items-stretch py-10">
-        <div class="w-1/2 flex flex-col gap-2">
-            <h1 class="text-4xl font-semibold text-white mb-0">
-                {article.title}
-            </h1>
-
-            <div class="text-xs">
-                by
-                <a href={authorUrl} class="text-accent2">
-                    <Name user={article.author} {userProfile} />
-                </a>
-                {#if article.published_at}
-                    /
-                    {new Date(article.published_at*1000).toLocaleDateString()}
+        <a href={urlFromEvent(article, authorUrl)} class="flex flex-row gap-4 relative w-full">
+            <img src={article.image ?? userProfile?.image} alt={article.title} class="w-full h-full object-cover absolute top-0 left-0 bottom-0 right-0 z-1 w-full opacity-50" />
+            <div class="w-full flex flex-col gap-2 z-2 absolute bottom-0 z-2 p-4">
+                {#if highlights}
+                    <div class="w-fit">
+                        <Chip class="!bg-accent2 !text-white !rounded">
+                            {highlights.length} highlights
+                        </Chip>
+                    </div>
                 {/if}
+                
+                <h1 class="text-2xl font-semibold mb-0 font-serif">
+                    {article.title}
+                </h1>
+
+                <div class="text-xs">
+                    by
+                    <a href={authorUrl} class="text-accent2">
+                        <Name user={article.author} {userProfile} />
+                    </a>
+                    {#if article.published_at}
+                        /
+                        {new Date(article.published_at*1000).toLocaleDateString()}
+                    {/if}
+                </div>
+
+                <!-- {#if highlights}
+                    <Carousel itemCount={highlights.length} class="w-full">
+                        {#each highlights as highlight (highlight.id)}
+                            <div class="w-[30vw] flex-none">
+                                <Highlight {highlight} skipArticle={true} compact={true} skipFooter={true} />
+                            </div>
+                        {/each}
+                    </Carousel>
+                {/if} -->
             </div>
-
-            <div class="text-xl h-[5rem] overflow-y-auto relative scrollbar-hidden">
-                <div class="absolute h-[1rem] bg-gradient-to-b from-transparent to-base-100 w-full bottom-0"></div>
-                {article.summary}
-            </div>
-
-            {#if highlights}
-                <Carousel itemCount={highlights.length} class="w-full">
-                    {#each highlights as highlight (highlight.id)}
-                        <div class="w-[30vw] flex-none">
-                            <Highlight {highlight} skipArticle={true} compact={true} skipFooter={true} />
-                        </div>
-                    {/each}
-                </Carousel>
-            {/if}
-        </div>
-
-        <div class="w-1/2 max-h-[25rem]">
-            <img src={article.image ?? userProfile?.image} alt={article.title} class="w-full h-full object-cover rounded-xl" />
-        </div>
-    </a>
+        </a>
 </UserProfile>
+{:else}
+    hasn't loaded
 {/if}

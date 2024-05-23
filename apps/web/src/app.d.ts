@@ -40,7 +40,7 @@ export interface UserUploadQuota {
 
 export type NavigationOption = {
     value?: string;
-    name: string;
+    name?: string;
     tooltip?: string;
     icon?: any;
 	iconProps?: Record<string, any>;
