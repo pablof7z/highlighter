@@ -104,7 +104,7 @@ export async function flushReadReceipts(): Promise<void> {
 		await event.sign(signer);
 	}
 
-	await event.publish(getDefaultRelaySet());
+	// event.publish(getDefaultRelaySet());
 }
 
 function adjustFlushTimer() {

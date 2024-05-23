@@ -18,8 +18,7 @@
 
         lg:w-[500px]
         max-sm:w-full
-        h-screen sticky top-0 border-x border-base-300
-        p-6
+        h-screen sticky top-0
     ">
         
         <svelte:component this={$pageSidebar.component} {...$pageSidebar.props} />

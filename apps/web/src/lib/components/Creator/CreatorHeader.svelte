@@ -1,114 +1,157 @@
 <script lang="ts">
-	import FollowButton from "$components/buttons/FollowButton.svelte";
-	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
-	import currentUser from "$stores/currentUser";
-	import { pageHeader } from "$stores/layout";
-	import { Avatar, Name } from "@kind0/ui-common";
-	import { NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { CaretRight, Star, Ticket } from "phosphor-svelte";
-	import { onDestroy, onMount } from "svelte";
+	import { openModal } from '$utils/modal';
+	import ShareModal from './../../modals/ShareModal.svelte';
+    import UserProfile from "$components/User/UserProfile.svelte";
+	import { Avatar, Name, ndk } from "@kind0/ui-common";
+	import { NDKEvent, NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+	import { Export } from "phosphor-svelte";
+	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import { Readable } from "svelte/store";
+	import { NavigationOption } from "../../../app";
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
+	import CreatorHeaderFollowButton from "./CreatorHeaderFollowButton.svelte";
+	import CreatorHeaderInboxButton from "./CreatorHeaderInboxButton.svelte";
+	import CreatorHeaderSupportButton from './CreatorHeaderSupportButton.svelte';
+	import { appMobileView } from '$stores/app';
+	import { NavbarBackLink } from 'konsta/svelte';
 
     export let user: NDKUser;
-    export let userProfile: NDKUserProfile;
+    let userProfile: NDKUserProfile;
     export let authorUrl: string;
     export let fetching: boolean;
     export let collapsed: boolean = false;
     export let tiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
+    export let options: NavigationOption[] = [];
+
+    const dispatch = createEventDispatcher();
+
+    let y: number = 0;
 
     onMount(() => {
-        window.addEventListener('scroll', updateScroll);
-    });
+        document.addEventListener("scroll", updateCollapsed, { passive: true });
+        document.addEventListener("touchstart", touchStart);
+        document.addEventListener("touchmove", touchMove);
+        document.addEventListener("touchend", touchEnd);
+        document.addEventListener("resize", updateCollapsed, { passive: true });
+    })
 
     onDestroy(() => {
-        window.removeEventListener('scroll', updateScroll);
-    });
+        document.removeEventListener("scroll", updateCollapsed);
+        document.addEventListener("touchmove", updateCollapsed);
+        document.removeEventListener("resize", updateCollapsed);
+    })
 
-    let scrollY = 0;
+    let touchStartY: number | undefined;
+    
+    function touchStart(e) {
+        touchStartY = e.touches[0].clientY;
+    }
 
-    function updateScroll() {
-        scrollY = window.scrollY;
-        if (scrollY > 80) {
-            collapsed = true;
-        } else if (scrollY < 20) {
-            collapsed = false;
+    function touchMove(e) {
+        if (touchStartY) {
+            let touchEndY = e.touches[0].clientY;
+            if (touchStartY - touchEndY > 0) {
+                collapsed = true;
+                dispatch("resize");
+            } else if (touchStartY - touchEndY < -300) {
+                collapsed = false;
+                dispatch("resize");
+            }
         }
     }
 
-    $: if (userProfile?.name) {
-        $pageHeader = { title: userProfile.name }
+    function touchEnd() {
+        touchStartY = undefined;
     }
+    
+    function updateCollapsed() {
+        y = window.scrollY;
+
+        if (y > 100 && !collapsed) {
+            collapsed = true;
+            dispatch("resize");
+        } else if (y < 20 && collapsed) {
+            collapsed = false;
+            dispatch("resize");
+        }
+    }
+    
 </script>
 
-<!-- <div class="relative w-full max-w-screen overflow-hidden max-sm:pb-[20vh] pb-[25%] max-sm:hidden">
-    {#if userProfile?.banner}
-        <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top lg:rounded" alt={userProfile?.name}>
-    {:else}
-        <div class="absolute w-full h-full object-cover object-top lg:rounded bg-gradient-to-b from-base-300 to-transparent via-bg-base-300" />
-    {/if}
-</div> -->
+{#key user.pubkey}
+<UserProfile {user} bind:userProfile />
 
-<div class="
-    flex
-    max-sm:gap-4
-    overflow-clip
-    max-sm:py-1
-    items-end justify-between p-3 sm:px-6
-    gap-4
-    transition-all duration-300
-    w-full max-sm:w-screen
-    max-sm:flex-row max-sm:items-center
-">
-    <div dir="auto" class="flex items-center sm:items-end shrink gap-4">
-        <Avatar user={user} {userProfile} {fetching} class="
-            transition-all duration-300 flex-none object-cover
-            {collapsed ? 'w-12 h-12 sm:w-14 sm:h-14' : 'w-16 h-16 sm:w-24 sm:h-24'}
-        " />
+<div class="sticky top-0 z-20 w-full overflow-clip {collapsed ? "" : "min-h-[15rem]"}" on:touchstart={() => {if (collapsed) collapsed = false}}>
+    <div class="relative h-full w-full bg-gradient-to-b from-base-300 to-base-100">
+        {#if userProfile?.banner}
+            <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-[1] transition-all duration-300 {collapsed ? "opacity-20" : ""}" alt={userProfile?.name}>
+            <div class="absolute w-full h-full bg-gradient-to-b from-transparent to-base-100 z-[2]"></div>
+        {/if}
 
-        <div class="overflow-clip">
-            <div class="name text-xl font-semibold text-base-100-content truncate shrink basis-0 overflow-clip">
-                <Name {user} {userProfile} {fetching} />
-            </div>
-            <p class="
-                text-sm truncate max-w-md text-neutral-500 w-full
-                { collapsed ? "max-sm:!hidden" : ""}
-            ">
-                {#if fetching && !userProfile?.about}
-                    <div class="skeleton h-15 w-48">&nbsp;</div>
-                {:else if userProfile?.about}
-                    {userProfile?.about}
-                {:else}
-                    &nbsp;
+        <!-- Container -->
+        <div class="flex flex-col pt-4 items-center relative z-50  max-sm:pt-0-safe text-white {$$props.containerClass??""} {collapsed ? "max-sm:px-2" : ""}">
+            <div class="flex {collapsed ? "flex-row" : "flex-col"} items-center justify-start gap-2 w-full transition-all duration-300">
+                {#if $appMobileView}
+                    <div class="left-2 top-0-safe {collapsed ? "" : "absolute"}">
+                        <NavbarBackLink onClick={() => { window.history.back() }} />
+                    </div>
                 {/if}
-            </p>
+                
+                <!-- Avatar -->
+                <div class="{collapsed ? "w-8 h-8" : "w-32 h-32"} transition-all duration-300">
+                    <Avatar user={user} {userProfile} {fetching} class="
+                        transition-all duration-300 flex-none object-cover w-full h-full"
+                    />
+                </div>
+                <h1 class="text-white font-semibold whitespace-nowrap mb-0 transition-all duration-300 {collapsed ? "text-sm grow" : ""}">
+                    <Name {user} {userProfile} {fetching} />
+                </h1>
+                <div class="text-sm transition-all duration-300 max-sm:text-xs max-sm:px-4 max-sm:text-center" class:hidden={collapsed}>
+                    {#if fetching && !userProfile?.about}
+                        <div class="skeleton h-15 w-48">&nbsp;</div>
+                    {:else if userProfile?.about}
+                        {userProfile.about}
+                    {:else}
+                        &nbsp;
+                    {/if}
+                </div>
+
+                {#if collapsed}
+                    <div>
+                        <div class="flex flex-row items-end justify-end gap-4">
+                            <CreatorHeaderFollowButton {user} {collapsed} />
+                            <CreatorHeaderInboxButton {user} {collapsed} />
+                            <CreatorHeaderSupportButton {user} {collapsed} />
+                            <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
+                                <Export class="" size={$appMobileView ? 25 : 20} weight="bold" />
+                                <span class="text-xs max-sm:hidden">Share</span>
+                            </button>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+
+            <div class="
+                w-full flex pb-2 {collapsed ? "mt-2" : "mt-4 sm:mt-8"}
+                {$appMobileView ? "flex-col-reverse justify-center items-center gap-4" : "flex-row justify-between "}
+            ">
+                <HorizontalOptionsList {options} on:changed={() => collapsed = true} />
+                
+                {#if !collapsed}
+                    <div class="flex flex-row items-end justify-end gap-4">
+                        <CreatorHeaderFollowButton {user} {collapsed} />
+                        <CreatorHeaderInboxButton {user} {collapsed} />
+                        <CreatorHeaderSupportButton {user} {collapsed} />
+                        <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
+                            <Export class="" size={20} weight="bold" />
+                            <span class="text-xs">Share</span>
+                        </button>
+                    </div>
+                {/if}
+            </div>
         </div>
     </div>
-
-    <div class="flex flex-row items-center gap-2">
-        {#if user.pubkey === $currentUser?.pubkey}
-            <a
-                href="{authorUrl}/backstage"
-                class="
-                    flex flex-row items-center !gap-0
-                    whitespace-nowrap text-base
-                    max-sm:px-6
-                    lg:py-3 lg:button border-accent2 w-full transition-all duration-300 group
-                    border-2 hover:bg-accent2/20 lg:bg-transparent
-                    rounded-full p-2
-                    !text-white
-                "
-            >
-                <Star size={24} class="inline lg:mr-2" />
-                <span class="hidden lg:inline">
-                    Backstage
-                </span>
-            </a>
-        {:else if $tiers}
-            <SubscribeButton {user} {userProfile} {tiers} buttonClass="
-                max-sm:bg-accent2 max-sm:!text-white max-sm:btn max-sm:btn-circle
-                max-sm:!px-0
-            " />
-        {/if}
-        <FollowButton {user} />
-    </div>
 </div>
+{/key}
+
+<slot />

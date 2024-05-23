@@ -14,13 +14,13 @@ import {
 import { bunkerNDK, ndk, newToasterMessage, user } from '@kind0/ui-common';
 import { generateLoginEvent } from '$actions/signLoginEvent';
 import { get } from 'svelte/store';
-import { jwt as jwtStore, loginState } from '$stores/session';
+import { jwt as jwtStore, loginState, userFollows, userProfile } from '$stores/session';
 import createDebug from 'debug';
 import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
 import { goto } from '$app/navigation';
 import { vanityUrls } from './const';
 
-export type LoginMethod = 'none' | 'pk' | 'nip07' | 'nip46' | 'guest';
+export type LoginMethod = 'none' | 'pk' | 'npub' | 'nip07' | 'nip46' | 'guest';
 
 const d = createDebug('HL:login');
 const $ndk = get(ndk);
@@ -67,14 +67,16 @@ async function nip46Login(remotePubkey?: Hexpubkey) {
 
 	user.set(remoteUser);
 	console.log("DEBUG setting user", remoteUser)
-	$bunkerNDK.pool.on('relay:ready', async () => {
+	const connected = async () => {
 		d('bunker relay ready');
 		loginState.set('contacting-remote-signer');
 
 		await nip46SignIn(existingPrivateKey, remoteUser!);
-	});
+	}
+	$bunkerNDK.pool.on('relay:ready', connected);
 	d('connecting to nsecbunker relay');
-	$bunkerNDK.connect(2500);
+	await $bunkerNDK.connect(2500);
+	$bunkerNDK.pool.off('relay:ready', connected);
 }
 
 /**
@@ -223,7 +225,7 @@ export function loggedIn(signer: NDKSigner, u: NDKUser, method: LoginMethod) {
 	$ndk.signer = signer;
     u.ndk = $ndk;
     user.set(u)
-	console.log("DEBUG setting user (loggedIn)", u)
+	console.trace("DEBUG setting user (loggedIn)", u)
     loginState.set("logged-in");
 
 	loginMethod.set(method);
@@ -237,6 +239,7 @@ export function logout(): void {
 	currentUser.set(undefined);
 	console.log("DEBUG setting user (logout)");
 	loginState.set('logged-out');
+	userFollows.set(new Set());
 	localStorage.removeItem('currentUserFollowPubkeysStore');
 	localStorage.removeItem('currentUserStore');
 	localStorage.removeItem('user-follows');
@@ -245,6 +248,7 @@ export function logout(): void {
 	localStorage.removeItem('network-follows-updated-t');
 	userPubkey.set("");
 	localStorage.removeItem('jwt');
+	userProfile.set(undefined);
 
 	document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 

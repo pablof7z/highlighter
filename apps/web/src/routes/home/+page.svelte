@@ -7,14 +7,10 @@
 	import { Readable } from "svelte/store";
 	import { computeArticleRecommendationFromHighlightStore } from "$utils/recommendations";
 	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
-    import { PageTransition } from 'sveltekit-page-transitions';
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 
     $pageNavigationOptionsValue = "Home";
 
-    $pageHeader = {
-        searchBar: true
-    }
-    
     let highlightFilters: NDKFilter[];
 
     $: {
@@ -47,7 +43,6 @@
         <h1>Creators</h1>
     </section> -->
 
-<PageTransition>
 {#if $recommendedArticles}
     <section>
         <div class="sm:px-6">
@@ -58,11 +53,12 @@
         </div>
     </section>
 {/if}
+    <div class="sticky top-[var(--navbar-height)] bg-base-100 z-50">
+        <HorizontalOptionsList options={$pageHeader.subNavbarOptions} bind:value={$pageHeader.subNavbarValue} />
+    </div>
 
     <section>
         <div>
-            <h1 class="sm:p-6">Highlights</h1>
-    
             <!-- <div class="discussion-wrapper flex flex-col w-full">
                 {#each $feed as event (event.id)}
                     <FeedEvent {event} />
@@ -77,7 +73,6 @@
         </div>
         <!-- <Highlights filters={highlightFilters} /> -->
     </section>
-</PageTransition>
 
 <style>
     section {

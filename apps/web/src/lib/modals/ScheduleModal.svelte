@@ -2,7 +2,6 @@
     import ModalShell from "$components/ModalShell.svelte";
     import AvatarWithName from "$components/User/AvatarWithName.svelte";
     import { RelativeTime, ndk } from "@kind0/ui-common";
-    import { NDKEvent, NDKKind, dvmSchedule } from "@nostr-dev-kit/ndk";
     import { Check } from "phosphor-svelte";
     import { closeModal } from '$utils/modal';
 

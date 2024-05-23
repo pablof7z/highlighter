@@ -11,6 +11,10 @@ module.exports = konstaConfig({
 	// darkMode: 'class',
 	theme: {
 		extend: {
+			grayscale: {
+				20: '20%',
+				50: '50%'
+			},
 			sans: ['Inter var'],
 			colors: {
 				gradient1: '#FF5E63',

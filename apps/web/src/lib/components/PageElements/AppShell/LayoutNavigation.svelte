@@ -1,16 +1,14 @@
 <script lang="ts">
+	import FailedPublishesIndicator from "$components/FailedPublishesIndicator.svelte";
 	import { openModal } from '$utils/modal';
 	import { UserProfileType } from './../../../../app.d.js';
-	import { layoutNavState } from "$stores/layout";
     import OptionsList from "$components/OptionsList.svelte";
-	import { Bell, BookmarkSimple, ChalkboardSimple, Fire, Gear, House, PaperPlaneTilt, Plus, SquaresFour, Timer } from "phosphor-svelte";
+	import { Bell, BookmarkSimple, ChalkboardSimple, Fire, Gear, House, PaperPlaneTilt, Plus, CardsThree, Timer, PlusCircle, Tray } from "phosphor-svelte";
 	import { NavigationOption } from "../../../../app";
 	import NewItemModal from "$modals/NewItemModal.svelte";
     import currentUser, { isGuest } from "$stores/currentUser";
 	import CurrentUser from "$components/CurrentUser.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { page } from '$app/stores';
-	import Logo from '$icons/Logo.svelte';
 	import LogoSmall from '$icons/LogoSmall.svelte';
 	import { hasUnreadNotifications, showNotificationOption, unreadNotifications } from '$stores/notifications';
 	import SignupModal from '$modals/SignupModal.svelte';
@@ -20,21 +18,14 @@
 
     $: hasDrafts = $drafts.length > 0;
 
-    let collapsed = false;
-    $: collapsed = $layoutNavState === "collapsed";
-    
-    let layoutNavWidth: string;
-    $: layoutNavWidth = collapsed ? "w-navbar-collapsed" : "pl-6";
-
-
     let options: NavigationOption[];
 
     $: {
         options = [
-            { name: "Home", icon: House, href: "/home" },
+            { name: "Home", icon: Fire, href: "/home" },
+            { name: "Inbox",  href: "/inbox", icon: Tray },
             { name: "Bookmarks",  href: "/bookmarks", icon: BookmarkSimple },
-            { name: "Discover",  href: "/discover", icon: Fire },
-            { name: "Collections",  href: "/collections", icon: SquaresFour },
+            { name: "Collections",  href: "/collections", icon: CardsThree },
         ]
         if ($showNotificationOption) {
             options.push(
@@ -85,9 +76,9 @@
     
     $: publishOption = {
         name: "Publish",
-        icon: PaperPlaneTilt,
+        icon: PlusCircle,
+        class: "text-accent2",
         fn: () => openModal(NewItemModal),
-        class: collapsed ? "" : 'lg:!bg-accent2 lg:!text-white'
     }
 </script>
 
@@ -96,74 +87,41 @@
 {/if}
 
 {#if $$props.class?.match(/fixed/)}
-    <div class="max-sm:hidden flex-none {layoutNavWidth}"></div>
+    <div class="flex-none w-navbar-collapsed"></div>
 {/if}
 
 <div class="
     flex flex-col
     sm:top-0
+    bg-base-100
     sm:h-full
     overflow-hidden z-10
     hover:overflow-visible
     flex-none
+    w-navbar-collapsed
+    fixed sm:left-0 border-r border-base-300
 
-    max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0
-    max-sm:w-full
-
-    {layoutNavWidth}
     {$$props.class??""}
 ">
-    <!-- Mobile view -->
-    <div class="btm-nav btm-nav-lg sm:hidden fixed z-[5000000] !bg-black">
-        <a href="/home" class:active={$page.url.pathname.startsWith('/home')}>
-            <House class="w-navbar-icon h-navbar-icon" />
-        </a>
-        <a href="/bookmarks" class:active={$page.url.pathname.startsWith('/bookmarks')}>
-            <BookmarkSimple class="w-navbar-icon h-navbar-icon" />
-        </a>
-        <button on:click={() => openModal(NewItemModal, {})}>
-            <Plus class="w-navbar-icon h-navbar-icon" weight="duotone" />
-        </button>
-        <a href="/" class:active={$page.url.pathname === '/'}>
-            <Fire class="w-navbar-icon h-navbar-icon" />
-        </a>
-        {#if $currentUser}
-            <a href="/notifications" class:active={$page.url.pathname.startsWith('/notifications')}>
-                <div class="indicator">
-                    {#if $hasUnreadNotifications}
-                        <span class="indicator-item w-2 h-2 bg-accent2"></span>
-                    {/if}
-                    <Bell class="w-navbar-icon h-navbar-icon" />
-                </div>
-            </a>
-        {:else}
-            <CurrentUser />
-        {/if}
-    </div>
-
-    <!-- Normal view -->
-    
     <div class="
-        max-sm:hidden flex flex-col h-full
-        sm:pr-6
+        flex flex-col h-full
     ">
         <div class="h-[var(--layout-header-height)] flex items-center justify-center fixed top-0 z-[99999]">
-            <Logo class="w-40 hidden {collapsed ? "" : "lg:inline"}" />
-            <LogoSmall class="w-10 m-4 {collapsed ? "" : "lg:hidden"}" />
+            <LogoSmall class="w-10 m-4" />
         </div>
 
         <div class="h-[var(--layout-header-height)] mb-6"></div>
         
-        <OptionsList {options} class="flex-col w-full" {collapsed} />
+        <OptionsList {options} class="flex-col w-full" collapsed={true} />
 
-        {#if hasDrafts}
-            <OptionsList options={publicationOptions} class="flex-col w-full" {collapsed} />
-            <OptionsList options={[publishOption]} class="flex-col w-full" {collapsed} />
+        {#if hasDrafts && false}
+            <OptionsList options={publicationOptions} class="flex-col w-full" collapsed={true} />
+            <OptionsList options={[publishOption]} class="flex-col w-full" collapsed={true} />
         {:else}
             <div class="group">
-                <OptionsList options={[publishOption]} class="flex-col w-full" {collapsed} />
+                <OptionsList options={[publishOption]} class="flex-col w-full" collapsed={true} />
                 <div class="hidden group-hover:block">
-                    <OptionsList options={publicationOptions} class="flex-col w-full" {collapsed} />
+                    <OptionsList options={publicationOptions} class="flex-col w-full" collapsed={true} />
                 </div>
             </div>
         {/if}
@@ -171,17 +129,16 @@
         
     </div>
 
-    <div
-        class="flex flex-col fixed bottom-0 max-sm:hidden items-center pb-6"
-    >
-    <div class="group">
+    <div class="flex flex-col fixed bottom-0 items-center pb-6">
+        <FailedPublishesIndicator />
+        <div class="group">
         <div class="hidden group-hover:block">
             <OptionsList options={[
                 { name: "Settings", icon: Gear, href: "/settings" }
-            ]} class="flex-col w-full" {collapsed} />
+            ]} class="flex-col w-full" collapsed={true} />
         </div>
         
-        <OptionsList options={userOptions} class="flex-col w-full" {collapsed} />
+        <OptionsList options={userOptions} class="flex-col w-full" collapsed={true} />
         </div>
     </div>
 </div>

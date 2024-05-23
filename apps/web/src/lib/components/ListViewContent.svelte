@@ -4,6 +4,7 @@
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import Article from '$components/List/Article.svelte';
 	import { page } from '$app/stores';
+	import { onDestroy } from 'svelte';
 
     export let list: NDKList;
     export let urlPrefix: string;
@@ -12,6 +13,10 @@
 
     const filters = list.filterForItems();
     const items = $ndk.storeSubscribe(filters);
+
+    onDestroy(() => {
+        items.unsubscribe();
+    });
 
     let selectedItemId: string | undefined = undefined;
     let saving = false;
@@ -40,15 +45,15 @@
     }
 </script>
 
-<div class="px-4 w-full flex flex-col gap-2">
+<div class="sm:px-4 w-full flex flex-col gap-2">
     {#if listImage}
-        <div class="-mb-10 -mx-8 relative -z-1">
+        <div class="-mb-10 relative -z-1">
             <div class="absolute w-full bottom-0 bg-gradient-to-b from-transparent to-base-100 h-32"></div>
-            <img src={listImage} alt={list.title} class="w-full h-auto object-cover rounded-2xl rounded-b-none  max-h-[20dvh] min-h-[5rem]" />
+            <img src={listImage} alt={list.title} class="w-full h-auto object-cover max-h-[20dvh] min-h-[5rem]" />
         </div>
     {/if}
 
-    <h1 class="text-white font-semibold z-1 relative">
+    <h1 class="max-sm:px-4 text-white font-semibold z-1 relative">
         {list.title}
     </h1>
 

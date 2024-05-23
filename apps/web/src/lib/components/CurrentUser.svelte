@@ -12,15 +12,15 @@
     export let withName = false;
 
     async function openSignupModal() {
-        if (window.nostr) {
-            const u = await login($ndk, $bunkerNDK, 'nip07');
-            if (u) {
-                $currentUser = u;
-                return;
-            }
-        }
+        // if (window.nostr) {
+        //     const u = await login($ndk, $bunkerNDK, 'nip07');
+        //     if (u) {
+        //         $currentUser = u;
+        //         return;
+        //     }
+        // }
 
-        openModal(SignupModal);
+        // openModal(SignupModal);
     }
 </script>
 

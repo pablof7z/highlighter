@@ -4,6 +4,7 @@
 	import AvatarWithName from './User/AvatarWithName.svelte';
     import { Avatar } from '@kind0/ui-common';
 	import HighlightIcon from '$icons/HighlightIcon.svelte';
+	import { BookmarkSimple } from 'phosphor-svelte';
 
     export let title: string;
     export let image: string;
@@ -53,17 +54,25 @@
                 {/if}
             </div>
 
-            {#if highlights}
-                <div class="z-[5] m-4 flex flex-row flex-nowrap items-center gap-2 bg-base-300 px-3 py-1 rounded-full text-base-100-content !w-fit text-xs group">
-                    <HighlightIcon class="w-5 h-5 text-base-100-content opacity-60" />
-                    {highlights.length}
-                    <div class="flex flex-row flex-nowrap -space-x-4 group-hover:space-x-0">
-                        {#each Array.from(highlighters) as highlighter (highlighter)}
-                            <Avatar pubkey={highlighter} size="tiny" class="transition-all duration-300" />
-                        {/each}
+            <div class="flex flex-row w-full justify-between items-center">
+                {#if highlights}
+                    <div class="z-[5] m-4 flex flex-row flex-nowrap items-center gap-2 bg-base-300/80 px-3 py-1 rounded-full text-base-100-content !w-fit text-xs group">
+                        <HighlightIcon class="w-5 h-5 text-base-100-content opacity-60" />
+                        {highlights.length}
+                        <div class="flex flex-row flex-nowrap -space-x-4 group-hover:space-x-0">
+                            {#each Array.from(highlighters) as highlighter (highlighter)}
+                                <Avatar pubkey={highlighter} size="tiny" class="transition-all duration-300" />
+                            {/each}
+                        </div>
                     </div>
-                </div>
-            {/if}
+                {/if}
+
+                <!-- <div class="z-[5]">
+                    <button class="rounded-full p-1 bg-base-300/80 m-4">
+                        <BookmarkSimple class="w-4 h-4" />
+                    </button>
+                </div> -->
+            </div>
         </div>
     </a>
 </div>

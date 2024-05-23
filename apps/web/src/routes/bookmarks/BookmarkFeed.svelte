@@ -37,6 +37,7 @@
 
             for (const event of events) {
                 const list = NDKList.from(event);
+                console.log(`list ${list.id} has ${list.items.length} items`)
 
                 for (const item of list.items) {
                     const val = map.get(item[1]) ?? { count: 0, tagType: item[0] };

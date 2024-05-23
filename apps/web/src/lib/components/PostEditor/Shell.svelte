@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, preview, currentDraftItem } from '$stores/post-editor.js';
-	import { pageHeader, pageHeaderComponent } from "$stores/layout";
+	import { pageHeader, pageHeaderComponent, resetLayout } from "$stores/layout";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
     import { type as _type } from "$stores/post-editor";
 	import { getTierSelectionFromAllTiers } from '$lib/events/tiers';
@@ -15,6 +15,7 @@
 	import { Thread } from '$utils/thread';
 	import { newToasterMessage } from '@kind0/ui-common';
 	import { addDraftCheckpoint } from '$utils/drafts';
+	import { appMobileHideNewPostButton } from '$stores/app';
 
     export let type: "article" | "video" | "thread";
     export let article: NDKArticle | undefined = undefined;
@@ -27,6 +28,8 @@
      * Whether the shell should create an interval to auto-save drafts
      */
     export let timedDraftSave = true;
+
+    $appMobileHideNewPostButton = true;
 
     onMount(() => {
         $view = 'edit';
@@ -99,6 +102,8 @@
     }
 
     onDestroy(() => {
+        resetLayout();
+        
         if (draftSaveInterval) {
             clearInterval(draftSaveInterval);
         }

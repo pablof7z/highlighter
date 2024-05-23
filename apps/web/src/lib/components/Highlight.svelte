@@ -2,13 +2,6 @@
     import EventWrapper from "$components/Feed/EventWrapper.svelte";
     import { NDKHighlight, NDKEvent, NDKArticle } from "@nostr-dev-kit/ndk";
 	import HighlightBody from "./HighlightBody.svelte";
-	import ContentEditor from "./Forms/ContentEditor.svelte";
-	import AvatarWithName from "./User/AvatarWithName.svelte";
-	import currentUser from "$stores/currentUser";
-	import { Lightning, Quotes, Repeat } from "phosphor-svelte";
-	import NewPost from "./Feed/NewPost/NewPost.svelte";
-	import { event } from "$stores/post-editor";
-	import Swipe from "./Swipe.svelte";
 
     export let highlight: NDKHighlight;
     export let highlightedArticle: NDKArticle | NDKEvent | string | undefined = undefined;
@@ -18,6 +11,7 @@
     export let scrollIntoView = false;
     export let compact = false;
     export let skipFooter = false;
+    export let disableSwipe = false;
 </script>
 
 <!-- <div class="flex flex-row items-center justify-between mb-4">
@@ -45,6 +39,7 @@
     class="mb-4" {expandReplies}
     {compact}
     {skipFooter}
+    {disableSwipe}
     on:publish={() => {
         showReply = false;
         highlight.publish();
@@ -56,7 +51,8 @@
         {skipArticle}
         skipHighlighter={true}
         {scrollIntoView}
-        class="p-4 max-h-[20vh] overflow-auto scrollbar-hide bg-white/10 rounded-box"
+        class="p-4 bg-white/10 rounded-box"
+        contentClass="max-h-[20vh] overflow-clip sm:overflow-auto scrollbar-hide"
     />
 </EventWrapper>
 

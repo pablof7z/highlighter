@@ -29,7 +29,7 @@
 
 <ModalShell
     color="glassy"
-    class="w-full py-4 sm:p-6 sm:max-w-md"
+    class="w-full sm:p-6 sm:max-w-md"
 >
     <Block>
     <div class="flex flex-col gap-4 w-full">

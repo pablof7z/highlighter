@@ -37,24 +37,25 @@
 {#if render}
     <div class="
         sticky
-        max-sm:top-0 top-[var(--layout-header-height)]
+        top-[var(--layout-header-height)]
         {
             $pageHeaderComponent?.component ?
             $pageHeaderComponent?.containerClass : ""
         }
         z-50
-        mobile-nav
     " bind:this={container}>
         {#if $pageHeaderComponent?.component}
             <svelte:component this={$pageHeaderComponent.component} {...$pageHeaderComponent.props} />
         {/if}
         
-        <div class="h-[var(--layout-header-height)]">
-            <HorizontalOptionsList
-                options={$pageNavigationOptions}
-                bind:value={$pageNavigationOptionsValue}
-                class="w-full gap-0"
-            />
-        </div>
+        {#if $pageNavigationOptions && $pageNavigationOptions.length > 0}
+            <div class="h-[var(--layout-header-height)]">
+                <HorizontalOptionsList
+                    options={$pageNavigationOptions}
+                    bind:value={$pageNavigationOptionsValue}
+                    class="w-full gap-0"
+                />
+            </div>
+        {/if}
     </div>  
 {/if}

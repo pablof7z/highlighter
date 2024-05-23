@@ -3,11 +3,10 @@
     import type { NDKUser } from "@nostr-dev-kit/ndk";
     import { onDestroy } from "svelte";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { layoutNavState, resetLayout } from "$stores/layout";
+	import { resetLayout } from "$stores/layout";
 
     export let user: NDKUser = $page.data.user;
 
-    $layoutNavState = "collapsed";
     onDestroy(resetLayout);
 
     $: {

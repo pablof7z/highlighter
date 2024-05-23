@@ -14,7 +14,7 @@
 
     export let leftOptions: Option[] = [];
     export let rightOptions: Option[] = [];
-    export let handle: string | undefined = undefined;
+    export let disableSwipe = false;
 
     let positionX = 0;
 
@@ -198,11 +198,11 @@
     }
 </script>
 
-{#if $appMobileView}
+{#if $appMobileView && !disableSwipe}
 <div class="w-full relative"
     style="
         touch-action: pan-y;
-    " on:touchstart={onTouchStart} on:touchmove={onTouchMove} on:touchend|passive={onTouchEnd}
+    " on:touchstart|passive={onTouchStart} on:touchmove={onTouchMove} on:touchend|passive={onTouchEnd}
 >
     <div class="options-wrapper left-0" style={`
         width: ${leftOptionWidth}px;
@@ -219,7 +219,7 @@
             </button>
         {/each}
     </div>
-    <div bind:this={element}>
+    <div class={$$props.class??""} bind:this={element}>
         <slot swapActive={true} />
     </div>
     <div class="options-wrapper right-0" style={`

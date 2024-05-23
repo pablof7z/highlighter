@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import BackstageContentArea from "$components/Backstage/BackstageContentArea.svelte";
     import UserProfile from "$components/User/UserProfile.svelte";
-	import { layoutMode, layoutNavState, pageNavigationOptions } from "$stores/layout";
+	import { layoutMode, pageNavigationOptions } from "$stores/layout";
 	import { UserProfileType } from "../../../app";
     import BackstageForumNotes from "$components/Backstage/BackstageForumNotes.svelte";
 	import BackstageZapRaisers from "$components/Backstage/BackstageZapRaisers.svelte";
@@ -12,7 +12,6 @@
     let { user } = $page.data;
 
     $layoutMode = "full-width";
-    $layoutNavState = "collapsed";
 
     let userProfile: UserProfileType;
     let authorUrl: string;

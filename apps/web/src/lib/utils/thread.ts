@@ -136,7 +136,7 @@ export async function publishThread(
             lastEvent = eventForPublish;
         }
 
-        await publishToTiers(
+        publishToTiers(
             eventForPublish, {
                 ndk: $ndk,
                 publishAt: publishAt,

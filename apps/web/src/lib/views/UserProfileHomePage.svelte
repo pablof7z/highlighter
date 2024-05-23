@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { page } from "$app/stores";
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { ndk } from "@kind0/ui-common";
 	import { NDKArticle, NDKEvent, NDKKind, NDKUser, NDKVideo, eventIsReply, isEventOriginalPost, type NDKEventId } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
-	import { pageHeader } from '$stores/layout';
 	import type { UserProfileType } from '../../app';
 	import Carousel from "$components/Page/Carousel.svelte";
 	import ArticleCard from "$components/ArticleCard.svelte";
@@ -81,11 +79,6 @@
     }
 
     let userProfile: UserProfileType;
-
-    $: $pageHeader = {
-        title: userProfile?.name
-    }
-
     let authorUrl: string;
 </script>
 

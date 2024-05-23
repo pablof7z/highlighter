@@ -56,22 +56,23 @@
 </script>
 
 {#if event.kind === NDKKind.Text || event.kind === NDKKind.Highlight}
-    <div class="dropdown dropdown-hover lg:dropdown-end" bind:this={container}>
+    <div class="dropdown lg:dropdown-end" bind:this={container}>
         <div tabindex="0" role="button">
             <ButtonWithCount
+                class="rounded-full p-2 flex hover:bg-green-400/20"
                 count={$reposts.length}
                 active={repostedByUser}
             >
                 {#if repostedByUser}
-                    <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-accent2" weight="fill" />
+                    <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-green-400/30 group-hover:text-green-500" weight="fill" />
                 {:else}
-                    <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5" weight="regular" />
+                    <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-green-400/30 group-hover:text-green-500" weight="regular" />
                 {/if}
 
             </ButtonWithCount>
         </div>
 
-        <ul tabindex="0" class="dropdown-content z-[50] p-2 bg-base-300 rounded-box w-fit flex flex-col shadow-2xl gap-2">
+        <ul tabindex="0" class="dropdown-content z-[50] relative grayscale-0 p-2 bg-base-300 rounded-box w-fit flex flex-col shadow-2xl gap-2">
             <div class="flex flex-row gap-2">
                 <li><button on:click={repost} class="group">
                     <Repeat class="w-10 h-10" />

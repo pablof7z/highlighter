@@ -7,11 +7,17 @@
 	import { onDestroy, onMount } from "svelte";
 	import ArticleRender from './ArticleRender.svelte';
 	import ItemHeader from "$components/ItemHeader.svelte";
+	import { pageHeader } from "$stores/layout";
+	import ItemFooter from "./Event/ItemView/ItemFooter.svelte";
 
     export let article: NDKArticle;
     const author = article.author;
     export let editUrl: string | undefined = undefined;
     export let isFullVersion: boolean;
+
+    /**
+     * Whether to render as just a preview instead of rendering a full article (i.e. this is viewed from the editor's preview)
+     */
     export let isPreview = false;
     export let fillInSummary = true;
 
@@ -39,6 +45,14 @@
     }
 
     editUrl ??= `/articles/${article.tagValue("d")}/edit`;
+
+    $pageHeader ??= {};
+    if (!isPreview) {
+        $pageHeader.footer = {
+            component: ItemFooter,
+            props: { event: article }
+        }
+    }
 </script>
 
 <svelte:head>

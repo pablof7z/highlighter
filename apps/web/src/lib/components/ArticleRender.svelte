@@ -15,6 +15,8 @@
 	import BoostButton from './buttons/BoostButton.svelte';
 	import ItemViewZaps from './Event/ItemView/ItemViewZaps.svelte';
 	import { createBlossom } from '$utils/blossom.js';
+	import UserProfile from './User/UserProfile.svelte';
+	import ComplexHeaderWithBanner from './PageElements/ComplexHeaderWithBanner.svelte';
 
     export let article: NDKArticle;
     const author = article.author;
@@ -60,45 +62,39 @@
     const blossom = createBlossom({ user: author });
 </script>
 
-<div dir="auto" class="w-full flex flex-col gap-4">
-    {#if article.title}
-        <div class="self-stretch text-white text-4xl font-semibold">
-            {article.title}
-        </div>
-    {/if}
-    <div class="text-xl text-white/70 font-normal" class:hidden={!getSummary(article)}>
-        {getSummary(article)}
-    </div>
-
-    {#if !isPreview}
-        <ItemViewZaps event={article} />
-    {/if}
-
-    <EventTags event={article} />
-
-    <ItemFooter event={article} urlPrefix={url} eventType="article" class="-mx-4" />
-    <div class="flex flex-row gap-2 items-center">
-        <BoostButton event={article} />
-        <!-- <CurationButton event={article} /> -->
-    </div>
-
-    {#if article.image}
-        <div class="w-full max-w-[65ch] max-h-[50vh] relative overflow-hidden">
-            <img use:blossom class="w-full relative sm:rounded-xl object-cover object-top h-full min-h-[20rem]" src={article.image} />
-            <div class="absolute bottom-0 w-full h-2/5 bg-gradient-to-b from-transparent to-black"></div>
-        </div>
-    {/if}
-
-    <div class="flex-col justify-start items-center gap-10 flex w-full max-sm:px-4 relative">
-        <HighlightingArea tags={highlightTags} class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative">
-            <HighlightedContent event={article} {highlights} />
-
-            {#if !isFullVersion}
-                <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
-                    <UpgradeButton event={article} />
+<UserProfile user={author} let:userProfile>
+    <div dir="auto" class="w-full flex flex-col gap-4">
+        <div class="max-sm:-mx-4 h-[50vh] flex relative">
+            <img use:blossom src={article.image ?? userProfile?.image} alt={article.title} class="w-full h-full object-cover absolute top-0 left-0 bottom-0 right-0 z-1 w-full opacity-50" />
+            <div class="w-full flex flex-col gap-2 absolute bottom-0 z-5 p-4 bg-gradient-to-b from-transparent via-base-100 to-base-100 pt-10">
+                {#if article.title}
+                    <div class="self-stretch text-white text-4xl font-semibold">
+                        {article.title}
+                    </div>
+                {/if}
+                <div class="text-xl text-white/70 font-normal lg:max-h-[6rem] overflow-y-auto scrollbar-hide" class:hidden={!getSummary(article)}>
+                    {getSummary(article)}
                 </div>
-            {/if}
-        </HighlightingArea>
-    </div>
-</div>
 
+                {#if !isPreview}
+                    <ItemViewZaps event={article} />
+                {/if}
+
+                <EventTags event={article} />
+                
+            </div>
+        </div>
+
+        <div class="flex-col justify-start items-center gap-10 flex w-full max-sm:px-4 relative">
+            <HighlightingArea tags={highlightTags} class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative">
+                <HighlightedContent event={article} {highlights} />
+
+                {#if !isFullVersion}
+                    <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
+                        <UpgradeButton event={article} />
+                    </div>
+                {/if}
+            </HighlightingArea>
+        </div>
+    </div>
+</UserProfile>

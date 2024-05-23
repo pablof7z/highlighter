@@ -62,15 +62,13 @@ export function urlFromEvent(
 			url.push(authorUrl);
 			url.push(dTag)
 		} else {
-			url.push("a");
+			url.push("/a");
 			url.push(event.encode());
 		}
 	} else {
 		url.push("a");
 		url.push(event.encode());
 	}
-
-	console.log("returning url", url.join("/"), {fullUrl, authorUrl});
 
 	return url.join("/");
 }

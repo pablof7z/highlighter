@@ -2,7 +2,7 @@
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import { relaySetForEvent } from "$utils/event";
 	import { Avatar, ndk, newToasterMessage } from "@kind0/ui-common";
-	import { NDKEvent, NDKKind, NDKTag, NostrEvent, getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKKind, NDKRelaySet, NDKTag, NostrEvent } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
 	import { fade } from "svelte/transition";
 	import Attachments from "./Attachments.svelte";
@@ -75,8 +75,7 @@
             event.id = "";
             hasFocus = false;
             await event.sign();
-            console.log("publishing", event.rawEvent());
-            await event.publish(relaySet);
+            event.publish(relaySet);
             event = new NDKEvent($ndk, { kind, tags: extraTags } as NostrEvent);
             content = "";
             resetEditorAt = new Date();

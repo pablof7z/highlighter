@@ -5,10 +5,10 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
-	import { pageHeader, pageHeaderComponent, pageNavigationOptions } from '$stores/layout';
-	import type { UserProfileType } from '../../../app';
+	import { pageHeader, pageHeaderComponent, resetLayout } from '$stores/layout';
+	import type { NavigationOption, UserProfileType } from '../../../app';
 	import CreatorHeader from "./CreatorHeader.svelte";
-	import { Article, BookmarkSimple, House, Notepad, User } from "phosphor-svelte";
+	import { Article, BookmarkSimple, CardsThree, House, Notepad, User } from "phosphor-svelte";
 	import { Avatar, HighlightIcon } from "@kind0/ui-common";
 
     export let user: NDKUser;
@@ -46,8 +46,6 @@
 
     let userProfile: UserProfileType | undefined = undefined;
 
-    $: $pageHeader = {}
-
     let authorUrl: string;
     let fetching: boolean;
 
@@ -55,37 +53,38 @@
     let hasHighlights = false;
     let hasPublications = false;
 
+    let options: NavigationOption[] = [];
+
     $: {
-        $pageNavigationOptions = [];
+        options = [];
 
         if (!hasPublications && ($gaContent.length > 0 || $userContent.length > 0)) { hasPublications = true; }
         if (!hasCurations && $curations.length > 0) { hasCurations = true; }
         if (!hasHighlights && $highlights.length > 0) { hasHighlights = true; }
 
-        $pageNavigationOptions.push({ name: "Home", href: `${authorUrl}`, icon: User });
+        options.push({ value: "Home", href: `${authorUrl}`, icon: House });
 
-        $pageNavigationOptions.push({ name: "Notes", href: `${authorUrl}/notes`, icon: Notepad },)
+        options.push({ name: "Notes", href: `${authorUrl}/notes`, icon: Notepad },)
         if (hasCurations)
-            $pageNavigationOptions.push({ name: "Curations", href: `${authorUrl}/curations`, icon: BookmarkSimple },)
+            options.push({ name: "Curations", href: `${authorUrl}/curations`, icon: CardsThree },)
 
         if (hasPublications)
-            $pageNavigationOptions.push({ name: "Publications", href: `${authorUrl}/posts`, icon: Article },)
+            options.push({ name: "Publications", href: `${authorUrl}/posts`, icon: Article },)
 
         if (hasHighlights)
-        $pageNavigationOptions.push({ name: "Highlights", href: `${authorUrl}/highlights`, icon: HighlightIcon },)
+        options.push({ name: "Highlights", href: `${authorUrl}/highlights`, icon: HighlightIcon },)
     }
 
-    $: {
-        $pageHeaderComponent = {
-            component: CreatorHeader,
-            props: { user, userProfile, authorUrl, fetching, tiers: userTiers },
-            containerClass: ''
+    $: $pageHeader = {
+        component: CreatorHeader,
+        props: {
+            user,
+            options,
+            tiers: userTiers
         }
-    }
+    };
 
-    onDestroy(() => {
-        $pageHeaderComponent = null;
-    })
+    onDestroy(resetLayout);
 </script>
 
 <UserProfile {user} bind:userProfile bind:fetching bind:authorUrl />

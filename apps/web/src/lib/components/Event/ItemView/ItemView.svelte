@@ -23,7 +23,7 @@
     export let rawEvent: NostrEvent | undefined = $page.data.event;
     export let tagId: string | undefined = undefined;
     export let mxClass = "mx-auto"
-    export let backUrl = "/";
+    export let backUrl: string | undefined = undefined;
     export let backTitle: string | undefined = undefined;
 
     export let event: NDKEvent | undefined = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
@@ -47,6 +47,7 @@
             label: backTitle ?? "Back"
         },
         title: article?.title ?? video?.title,
+        searchBar: true,
         right: {
             icon: Export,
             fn: () => {

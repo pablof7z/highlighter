@@ -1,4 +1,4 @@
-import { Hexpubkey, NDKKind, NDKRelaySet, NDKTag, type NDKEvent } from '@nostr-dev-kit/ndk';
+import { Hexpubkey, NDKArticle, NDKKind, NDKList, NDKRelaySet, NDKTag, NDKVideo, type NDKEvent } from '@nostr-dev-kit/ndk';
 import { getDefaultRelaySet } from './ndk';
 import { nip19 } from 'nostr-tools';
 
@@ -8,6 +8,16 @@ export const mainContentKinds = [
 	NDKKind.ArticleCurationSet,
 	NDKKind.VideoCurationSet
 ];
+
+export function eventToSpecificKind(event: NDKEvent) {
+	switch (event.kind) {
+		case NDKKind.Article: return { article: NDKArticle.from(event) };
+		case NDKKind.HorizontalVideo: return { video: NDKVideo.from(event) };
+		case NDKKind.ArticleCurationSet: return { articleList: NDKList.from(event) };
+	}
+
+	return {};
+}
 
 export function relaySetForEvent(event: NDKEvent): NDKRelaySet | undefined {
 	// if the event is kind 1, undefined

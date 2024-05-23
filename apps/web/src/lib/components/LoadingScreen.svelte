@@ -28,9 +28,9 @@
 </script>
 
 {#if ready}
-    <div class={$$props.class??""} transition:fade>
+    <!-- <div class={$$props.class??""} transition:fade> -->
         <slot />
-    </div>
+    <!-- </div> -->
 {:else}
     <div class="w-screen h-screen top-0 left-0 fixed flex flex-col gap-10 justify-center items-center loading-screen" transition:fade>
         {#if $$slots.loading}

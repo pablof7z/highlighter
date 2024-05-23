@@ -9,7 +9,8 @@
 
     fetch(`https://nostr.api.v0l.io/api/v1/preview?url=${url}`)
         .then(res => res.json()
-        .then(data => doc = data));
+        .then(data => doc = data))
+        .catch(err => console.error(err));
 
     let href = `/load?url=${encodeURIComponent(url)}`
     let siteName = new URL(url).hostname;
