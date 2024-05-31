@@ -11,6 +11,7 @@
     import CaretDown from "phosphor-svelte/lib/CaretDown";
 	import { loginMethod, userPubkey } from "$stores/currentUser";
 	import { getUserFromPubkey } from "$lib/server/user";
+	import { newGuestLogin } from '../../routes/browser-session-setup.js';
 
     const dispatch = createEventDispatcher();
 
@@ -110,6 +111,12 @@
         }
     }
 
+    function continueAsGuest() {
+        newGuestLogin().then(() => {
+            dispatch("signed-up");
+        });
+    }
+
     let usernameHasFocus = false;
 
     async function checkUsername() {
@@ -198,6 +205,10 @@
                 {:else}
                     <div class="loading loading-sm"></div>
                 {/if}
+            </button>
+
+            <button class="text-white font-normal" on:click={continueAsGuest}>
+                or continue as guest
             </button>
         {:else}
             <a href={authUrl} target="_blank" class="button button-primary transition duration-300 flex flex-col gap-1" transition:slide>

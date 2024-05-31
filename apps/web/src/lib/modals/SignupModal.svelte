@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { NavigationOption } from './../../app.d.ts';
     import Signup from './Signup.svelte';
 	import Login from "./Login.svelte";
 	import Welcome from "./Welcome.svelte";
 	import ModalShell from '$components/ModalShell.svelte';
 	import LogoGradient from '$icons/LogoGradient.svelte';
 	import { Block } from 'konsta/svelte';
+	import { DoorOpen, User } from 'phosphor-svelte';
 
     export let mode: 'signup' | 'login' | 'welcome' = 'signup';
 
@@ -25,24 +27,41 @@
             title = 'Welcome!';
             break;
     }
+    
+
+    let actionButtons: NavigationOption[] = [];
+
+    // $: switch (mode) {
+    //     case 'signup':
+    //         title = 'Sign Up';
+    //         actionButtons = [
+    //             {
+    //                 name: "Already have an account?", fn: () => mode = 'login',
+    //             },
+    //             { 
+    //                 name: "Sign Up",
+    //                 icon: DoorOpen,
+    //                 class: "button !button !button-primary",
+    //                 fn: () => mode = 'signup'
+    //             }
+    //         ]
+    //         break;
+    //     case 'login':
+    //         title = 'Log In';
+    //         break;
+    //     case 'welcome':
+    //         title = 'Welcome!';
+    //         break;
+    // }
 </script>
 
 <ModalShell
-    color="glassy"
-    class="w-full sm:p-6 sm:max-w-md"
+    class="w-full sm:max-w-md"
+    {title}
+
+    {actionButtons}
 >
-    <Block>
     <div class="flex flex-col gap-4 w-full">
-        <div class="flex flex-row items-center justify-between">
-            <div class="justify-between items-center inline-flex">
-                <div class="text-neutral-200 text-[32px] font-semibold leading-[40.96px]">
-                    {title}
-                </div>
-            </div>
-
-            <LogoGradient />
-        </div>
-
         {#if mode === 'signup'}
             <div class="w-full flex flex-col gap-5">
                 <Signup on:signed-up={signedUp} />
@@ -71,5 +90,4 @@
             </p>
         {/if}
     </div>
-    </Block>
 </ModalShell>

@@ -2,9 +2,9 @@
 	import { page } from "$app/stores";
 	import { userFollows } from "$stores/session";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
-	import { onDestroy, onMount } from "svelte";
-    import { layoutMode, pageHeader, pageSidebar, searching } from "$stores/layout";
+	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent } from "@nostr-dev-kit/ndk";
+	import { onDestroy } from "svelte";
+    import { layoutMode, searching } from "$stores/layout";
 	import { getNip50RelaySet } from "$utils/ndk";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";

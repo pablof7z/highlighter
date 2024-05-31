@@ -9,8 +9,13 @@
 	import { X } from 'phosphor-svelte';
 	import { Block, Link, Toolbar } from 'konsta/svelte';
 	import { NavigationOption } from '../../app';
+	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
 
     export let title: string | undefined = undefined;
+
+    /**
+     * Buttons to render on the shell
+     */
     export let actionButtons: NavigationOption[] = [];
 
     const slideAnimationDuration = 300;
@@ -133,6 +138,10 @@
                         {#if $$slots.footer}
                             <div class="w-full flex flex-row gap-4 items-center justify-end flex-none mt-4">
                                 <slot name="footer" />
+                            </div>
+                        {:else if actionButtons.length > 0}
+                            <div class="w-full flex flex-row gap-4 items-center justify-end flex-none mt-4">
+                                <HorizontalOptionsList options={actionButtons} />
                             </div>
                         {/if}
                     </div>

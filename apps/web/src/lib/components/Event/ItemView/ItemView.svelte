@@ -6,9 +6,10 @@
 	import { pageHeader } from "$stores/layout";
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import ListView from "$components/ListView.svelte";
+	import Whoops from "$components/PageElements/Whoops.svelte";
 
     export let event: NDKEvent;
     export let ignoreHeader: boolean = false;
@@ -34,6 +35,8 @@
         article={event}
         isFullVersion={isEventFullVersion(event)}
     />
+{:else if !event}
+    <Whoops message="Event has not been provided" devMessage="<ItemView /> component requires an event prop" />
 {:else if event.kind === NDKKind.ArticleCurationSet}
     <ListView {event} />
 {:else if event.kind === NDKKind.Text}

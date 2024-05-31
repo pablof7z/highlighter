@@ -6,13 +6,12 @@
     import { Avatar, ndk } from "@kind0/ui-common";
     import { userFollows } from "$stores/session";
     import { type NDKEvent, type NDKFilter, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
-	import { onDestroy, onMount } from "svelte";
-    import { pageHeader, pageSidebar } from "$stores/layout";
+	import { onMount } from "svelte";
+    import { pageHeader } from "$stores/layout";
 	import { mode } from '$stores/inbox-view';
 	import { inboxItems } from '$stores/inbox';
 	import ComplexHeaderWithBanner from '$components/PageElements/ComplexHeaderWithBanner.svelte';
 	import currentUser from '$stores/currentUser';
-	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 
     let activeFilterCount: number | undefined = undefined;
     let activeView = $userFollows;
@@ -71,10 +70,6 @@
             events.startSubscription();
         }
     });
-
-    onDestroy(() => {
-        $pageSidebar = null;
-    })
 
     $pageHeader = {
         title: "Inbox",

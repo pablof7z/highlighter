@@ -1,13 +1,5 @@
 <script lang="ts">
-	import SettingsMenu from '$components/Settings/Menu.svelte';
-	import { pageHeader, pageSidebar, resetLayout } from "$stores/layout";
-	import { onDestroy } from 'svelte';
-
-    $pageSidebar = {
-        component: SettingsMenu,
-        focused: false,
-        props: {}
-    }
+	import { pageHeader } from "$stores/layout";
 
     $pageHeader = {
         title: "Settings",
@@ -18,10 +10,6 @@
         right: {
         }
     }
-
-    onDestroy(() => {
-        if ($pageSidebar) $pageSidebar.focused = true;
-    })
 </script>
 
 <slot />

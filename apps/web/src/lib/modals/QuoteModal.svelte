@@ -13,7 +13,9 @@
     let publishing = false;
 </script>
 
-<ModalShell color="glassy" class="w-full sm:max-w-2xl !p-2 {publishing ? "!bg-transparent" : ""}">
+<ModalShell
+    title="Quote"
+    class="w-full sm:max-w-2xl !p-2 {publishing ? "!bg-transparent" : ""}">
     {#if publishing}
         <div class="loading loading-lg loading-dots"></div>
     {/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Checkbox from "$components/Forms/Checkbox.svelte";
-    import { pageHeader, pageSidebar } from "$stores/layout";
+    import { pageHeader } from "$stores/layout";
 	import { ndk } from "@kind0/ui-common";
 
     $pageHeader = {

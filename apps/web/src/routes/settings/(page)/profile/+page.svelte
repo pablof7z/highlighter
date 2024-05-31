@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ProfileEditPage from "$components/User/ProfileEditPage.svelte";
-	import { pageHeader, pageSidebar } from "$stores/layout";
-	import { onDestroy } from "svelte";
+	import { pageHeader } from "$stores/layout";
 	import { goto } from '$app/navigation';
 
     let forceSave = false;

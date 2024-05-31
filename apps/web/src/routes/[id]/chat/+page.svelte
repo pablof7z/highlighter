@@ -1,9 +1,7 @@
 <script lang="ts">
-	import Chat from '$components/PageSidebar/Chat.svelte';
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
     import ChatInput from "$components/Chat/Input.svelte";
 	import { page } from "$app/stores";
-	import { NDKKind, NDKRelay, NDKRelaySet, type NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKRelaySet, type NDKTag } from "@nostr-dev-kit/ndk";
 	import { ndk } from "@kind0/ui-common";
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { onDestroy, onMount } from "svelte";
@@ -11,7 +9,7 @@
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import type { UserProfileType } from '../../../app';
-	import { layoutMode, pageHeader, pageSidebar, resetLayout } from '$stores/layout';
+	import { pageHeader } from '$stores/layout';
 	import { creatorRelayPubkey } from "$utils/const";
 	import ChatNewMember from "$components/Chat/ChatNewMember.svelte";
 	import { lastSeenGroupTimestamp } from "$stores/notifications";
