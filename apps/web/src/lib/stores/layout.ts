@@ -24,8 +24,6 @@ interface Component {
 	containerClass?: string;
 }
 
-export const pageSidebar: Writable<Component & { focused: boolean } | null> = writable(null);
-
 export const detailView: Writable<Component | null> = writable(null);
 
 export const pageHeader = writable<PageHeader | null>(null);
@@ -37,7 +35,6 @@ export function resetLayout() {
 	pageHeaderComponent.set(null);
 	pageNavigationOptions.set([]);
 	pageHeader.set(null);
-	pageSidebar.set(null);
 	appMobileHideNewPostButton.set(false);
 	detailView.set(null);
 	pageNavigationOptionsValue.set(undefined);

@@ -3,7 +3,6 @@
 	import { user } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
 	import LoadingScreen from '$components/LoadingScreen.svelte';
-    import { pageSidebar } from "$stores/layout";
 
     let startedUserView = false;
     let mounted = false;
@@ -19,7 +18,6 @@
 
     onDestroy(() => {
         userSubscription?.unref();
-        $pageSidebar = null;
     })
 </script>
 

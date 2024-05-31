@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { layoutMode, pageHeader, pageSidebar } from '$stores/layout.js';
+	import { layoutMode, pageHeader } from '$stores/layout.js';
 	import { Toaster, pageDrawerToggle } from '@kind0/ui-common';
 	import Modal from './Modal.svelte';
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
-	import PageNavigation from "./AppShell/PageNavigation.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';
-	import PageSidebar from './AppShell/PageSidebar.svelte';
 
 	let checked: boolean;
 
@@ -22,11 +20,11 @@
 			layoutWrapper = "w-full";
 			mainAndDetailWrapper = "max-w-none w-full";
 			mainWrapper = "w-full";
-			if ($pageSidebar) {
-				sidebarWrapper = "w-1/3 max-w-[500px]";
-				mainAndDetailWrapper = "max-w-none w-[calc(100vw_-_500px)]";
-				mainWrapper = "w-[calc(100vw_-_500px)]";
-			}
+			// if ($pageSidebar) {
+			// 	sidebarWrapper = "w-1/3 max-w-[500px]";
+			// 	mainAndDetailWrapper = "max-w-none w-[calc(100vw_-_500px)]";
+			// 	mainWrapper = "w-[calc(100vw_-_500px)]";
+			// }
 			
 			break;
 		case 'content-focused':
@@ -34,10 +32,10 @@
 			mainAndDetailWrapper = "max-w-[var(--content-focused-wrapper-width)] mx-auto w-full justify-center";
 			mainWrapper = "max-w-[var(--content-focused-width)] w-full grow";
 
-			if ($pageSidebar) {
-				sidebarWrapper = "w-1/3 max-w-[500px] top-0";
-				mainAndDetailWrapper = "max-w-7xl mr-auto w-fit justify-center";
-			}
+			// if ($pageSidebar) {
+			// 	sidebarWrapper = "w-1/3 max-w-[500px] top-0";
+			// 	mainAndDetailWrapper = "max-w-7xl mr-auto w-fit justify-center";
+			// }
 			
 			break;
 		// case "list-column":
@@ -71,8 +69,6 @@
 	w-screen overflow-clip
 	ml-[var(--navbar-collapsed)]
 ">
-	<!-- <PageSidebar class={sidebarWrapper} /> -->
-
 	<LayoutHeader containerClass={mainWrapper} />
 
 	<div class="mb-[calc(var(--navbar-height))] w-full"></div>
@@ -81,10 +77,8 @@
 		flex-none
 		{mainWrapper}
 	">
-		<!-- <PageNavigation /> -->
 		<slot />
 	</main>
-		<!-- <LayoutDetailView class={detailWrapper} /> -->
 
 	{#if $pageHeader && $pageHeader.footer}
 		<div class="h-[8rem]"></div>

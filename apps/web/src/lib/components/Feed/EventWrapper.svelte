@@ -28,7 +28,6 @@
 	import NewPostModal from '$modals/NewPostModal.svelte';
 	import { getAuthorUrl } from '$utils/url';
 	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
-	import ZapModal from '$modals/ZapModal.svelte';
 	import { isMobileBuild } from '$utils/view/mobile';
 	import FailedEventModals from '$modals/FailedEventModals.svelte';
 	import { toggleBookmarkedEvent } from '$lib/events/bookmark';

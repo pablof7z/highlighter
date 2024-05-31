@@ -1,23 +1,12 @@
 <script lang="ts">
-	import { page } from "$app/stores";
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
-    import { pageHeader, pageSidebar } from "$stores/layout";
-	import { getDefaultRelaySet } from "$utils/ndk";
-	import { ndk } from "@kind0/ui-common";
-	import { NDKKind } from "@nostr-dev-kit/ndk";
-    import Chat from "$components/PageSidebar/Chat.svelte";
+    import { pageHeader } from "$stores/layout";
 	import { onDestroy } from "svelte";
 
     $pageHeader = { title: "Community" };
-    $pageSidebar = {
-        component: Chat,
-        props: {
-        }
-    }
 
     onDestroy(() => {
         $pageHeader = null;
-        $pageSidebar = null;
     });
 
     // const relaySet = getDefaultRelaySet();
@@ -27,7 +16,6 @@
     // )
 </script>
 
-<MainWrapper marginClass="max-w-3xl">
     <div class="flex flex-col max-w-prose w-full">
         <h1 class="text-[80px] font-semibold ">
             Community.
@@ -40,7 +28,6 @@
             Highlighter, built on Nostr, allows for direct communication between creators and their audience. It's a place where you can share your thoughts, ideas, and opinions with the world.
         </div>
     </div>
-</MainWrapper>
 
 <style>
     h1 {

@@ -1,22 +1,13 @@
 <script lang="ts">
-	import SettingsMenu from '$components/Settings/Menu.svelte';
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import currentUser from "$stores/currentUser";
 	import { onMount, onDestroy } from "svelte";
-	import { layoutMode, pageSidebar, resetLayout } from "$stores/layout";
-	import { appMobileView } from '$stores/app';
+	import { layoutMode, resetLayout } from "$stores/layout";
 
     let startedUserView = false;
     let mounted = false;
 
     $layoutMode = "single-column-focused";
-    $: if (!$appMobileView) {
-        $pageSidebar = {
-            component: SettingsMenu,
-            focused: true,
-            props: {}
-        }
-    }
 
     onMount(() => {
         mounted = true;

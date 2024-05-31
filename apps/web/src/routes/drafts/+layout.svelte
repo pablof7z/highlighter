@@ -1,7 +1,6 @@
 <script lang="ts">
-	import DraftsMenu from '$components/Drafts/Menu.svelte';
     import { page } from "$app/stores";
-    import { detailView, layoutMode, pageHeader, pageSidebar, resetLayout } from "$stores/layout";
+    import { layoutMode, pageHeader, resetLayout } from "$stores/layout";
 	import { onDestroy } from "svelte";
 
     let id: string;
@@ -13,11 +12,6 @@
     }
 
     $layoutMode = "single-column-focused";
-    $pageSidebar = {
-        component: DraftsMenu,
-        focused: true,
-        props: {}
-    }
 
     onDestroy(() => {
         resetLayout();

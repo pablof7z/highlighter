@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
-	import { pageHeader, pageSidebar } from "$stores/layout";
+	import { pageHeader } from "$stores/layout";
 	import { NDKList, type NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
-    import ListSidebar from "$components/PageSidebar/List.svelte";
 	import { page } from '$app/stores';
 	import { ndk } from '@kind0/ui-common';
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
@@ -29,21 +27,7 @@
         urlPrefix = `/a/${list.encode()}`
     }
 
-    $pageSidebar = {
-        component: ListSidebar,
-        focused: !id,
-        props: { list, urlPrefix }
-    }
-
-    $: $pageSidebar!.props.urlPrefix = urlPrefix;
-
-    onDestroy(() => {
-        pageSidebar.set(null);
-    });
-
     let user: NDKUser | null;
-
-    $: if ($pageSidebar) $pageSidebar.focused = !id;
 
     $: {
         if (id) {

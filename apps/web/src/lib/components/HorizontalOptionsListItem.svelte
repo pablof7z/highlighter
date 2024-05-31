@@ -73,7 +73,7 @@
 {/if}
 
 <style>
-    a {
+    a:not(.button) {
         @apply rounded-full;
         @apply justify-start items-center gap-2 flex;
         @apply text-base font-normal;

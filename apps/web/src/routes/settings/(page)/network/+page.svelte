@@ -1,6 +1,6 @@
 <script lang="ts">
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
-    import { pageHeader, pageSidebar } from "$stores/layout";
+    import { pageHeader } from "$stores/layout";
     import { getDefaultRelaySet } from "$utils/ndk";
 	import { Name, ndk } from "@kind0/ui-common";
 	import { RelayList } from "@nostr-dev-kit/ndk-svelte-components";

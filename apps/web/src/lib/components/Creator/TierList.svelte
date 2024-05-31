@@ -16,6 +16,7 @@
 
     export let redirectOnSave: string | false = "/dashboard";
     export let usePresetButton = false;
+    export let skipButtons = false;
     export let saving = false;
     export let forceSave = false;
 
@@ -243,7 +244,10 @@
 
         <div
             class="flex flex-col sm:flex-row justify-between items-stretch max-sm:w-full max-sm:gap-4 mr-8"
-            class:hidden={expandedTierIndex !== undefined}
+            class:hidden={
+                expandedTierIndex !== undefined ||
+                skipButtons
+            }
         >
             <button
                 class="button button-black px-6 py-3 font-medium max-sm:w-full"
