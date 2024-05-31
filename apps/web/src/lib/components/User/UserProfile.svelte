@@ -175,7 +175,7 @@
         }
     }
 
-    $: console.trace('update', userProfile?.displayName)
+    $: console.log('update', userProfile?.displayName)
 </script>
 
 <slot {userProfile} {fetching} {authorUrl} {displayNip05} {event} />

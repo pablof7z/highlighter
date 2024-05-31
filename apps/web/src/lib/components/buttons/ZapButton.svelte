@@ -8,6 +8,7 @@
     export let showHelperText = false;
 
     function open() {
+        console.log("Zap button clicked");
         openModal(ZapModal, { event });
     }
 </script>
