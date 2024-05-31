@@ -96,7 +96,7 @@
         }
     }
 
-    let top = -100
+    let top = -1000
     let left = 0;
 
     let cleanup: (() => void) | null = null;
@@ -220,7 +220,7 @@
 </script>
 
 <div class="
-    absolute top-0 left-0 whitespace-nowrap
+    absolute whitespace-nowrap
     flex-nowrap
     divide-x divide-black
     overflow-clip
@@ -230,7 +230,7 @@
 " style="
     top: {top}px;
     left: {left}px;
-    opacity: {top === -100 ? 0 : 1};
+    opacity: {top === -100 ? 0: 1};
 " bind:this={container}>
     {#if !activeHighlightId}
         <button on:click={highlight}>
