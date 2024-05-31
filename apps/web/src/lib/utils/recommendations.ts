@@ -8,10 +8,6 @@ function computeArticleScore(highlights: NDKHighlight[]): number {
     let score = 0;
     const pubkeys = new Set<string>();
 
-    const threeDaysAgo = (new Date().getTime() - 3 * 24 * 60 * 60 * 1000) / 1000;
-    
-    highlights = highlights.filter(h => h.created_at! > threeDaysAgo);
-
     // count the number of different pubkeys
     highlights.forEach((highlight) => pubkeys.add(highlight.pubkey) );
 
@@ -20,7 +16,7 @@ function computeArticleScore(highlights: NDKHighlight[]): number {
         score += 0.1;
     });
 
-    score += pubkeys.size * 0.5;
+    score += pubkeys.size * 0.1;
 
     return score;
 }
@@ -29,7 +25,6 @@ export function computeArticleRecommendationFromHighlightStore(
     highlights: Readable<NDKEvent[]>
 ): Readable<{tag: NDKTag, highlights: NDKHighlight[]}[]> {
     return derived(highlights, ($highlights) => {
-        const startTime = new Date().getTime();
         const highlightsByArticle = new Map<string, NDKHighlight[]>();
         const articles = new Map<string, number>();
         const articleIdToTag = new Map<string, NDKTag>();
@@ -53,6 +48,7 @@ export function computeArticleRecommendationFromHighlightStore(
         // compute articles score
         highlightsByArticle.forEach((highlights, articleId) => {
             const score = computeArticleScore(highlights);
+            console.log("Article", articleId, "score", score);
             articles.set(articleId, score);
         });
 
@@ -65,9 +61,6 @@ export function computeArticleRecommendationFromHighlightStore(
             return { tag: tag!, highlights: highlightsByArticle.get(articleId)! };
         });
 
-        const endTime = new Date().getTime();
-        // console.log("computeArticleRecommendationFromHighlightStore took", endTime - startTime, "ms");
-        
         return res;
     });
 }

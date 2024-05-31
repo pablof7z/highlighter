@@ -15,8 +15,6 @@
         kinds: [ getCurationKindForEvent(event) ], ...event.filter()
     });
 
-    console.log({kinds: [ getCurationKindForEvent(event) ], ...event.filter()});
-
     onDestroy(() => curations.unsubscribe());
 
     let bookmarked = false;

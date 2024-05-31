@@ -1,12 +1,24 @@
 <script lang="ts">
-	import { page } from "$app/stores";
+	import { loadedEvent } from "./store.js";
+	import { onDestroy } from "svelte";
+	import { pageHeader } from "$stores/layout";
+	import ItemHeader from "$components/ItemHeader.svelte";
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 
-    let tagId: string;
+    $pageHeader ??= {};
+    $pageHeader.component = ItemHeader;
+    $: $pageHeader.props = {
+        item: $loadedEvent,
+        class: "max-w-[var(--content-focused-width)] mx-auto w-full"
+    }
 
-    $: tagId = $page.params.tagId;
+    onDestroy(() => {
+        if ($pageHeader?.component)
+            $pageHeader.component = undefined;
+    })
+
 </script>
 
-{#key tagId}
-    <ItemView {tagId} />
-{/key}
+{#if $loadedEvent}
+    <ItemView event={$loadedEvent} ignoreHeader={true} />
+{/if}

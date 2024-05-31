@@ -23,7 +23,7 @@
         border={1}
         on:click={clicked}
     >
-        {#await $ndk.fetchEvent(id, undefined, relaySet)}
+        {#await $ndk.fetchEvent(id, { groupable: true, groupableDelay: 10000, groupableDelayType: 'at-least', subId: 'embedded-event-wrapper'}, relaySet)}
             Loading {id}
         {:then event}
             {#if event}

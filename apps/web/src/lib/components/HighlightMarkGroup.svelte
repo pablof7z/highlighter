@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {computePosition, autoUpdate, offset, flip } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.3/+esm';
+    import {computePosition, autoUpdate, offset, flip } from '@floating-ui/dom';
 	import { Avatar } from "@kind0/ui-common";
     import { NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from 'svelte';

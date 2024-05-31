@@ -50,8 +50,8 @@
                     flex flex-row items-center !gap-0
                     whitespace-nowrap text-base
                     max-sm:px-6
-                    lg:py-3 lg:button border-accent2 w-full transition-all duration-300 group
-                    border-2 hover:bg-accent2/20 lg:bg-transparent
+                    lg:py-2 lg:button border-accent2 w-full transition-all duration-300 group
+                    border-2 !bg-accent2/40
                     rounded-full p-2
                     !text-white
                     {$$props.buttonClass??""}

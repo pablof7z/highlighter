@@ -33,7 +33,6 @@
 	import FailedEventModals from '$modals/FailedEventModals.svelte';
 	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
 	import { userGenericCuration } from '$stores/session';
-	import ZapButton from '$components/buttons/ZapButton.svelte';
 	import SmallZapButton from '$components/buttons/SmallZapButton.svelte';
 
     const dispatch = createEventDispatcher();
@@ -334,7 +333,7 @@
 
                     <!-- Content / reactions / comment count -->
                     <div class="flex flex-col items-stretch justify-stretch basis-0 shrink overflow-x-clip w-full">
-                        {#if topLevel && ![NDKKind.Highlight].includes(event.kind)}
+                        {#if topLevel && ![NDKKind.Highlight, NDKKind.Zap].includes(event.kind)}
                             <div class="flex flex-row" class:hidden={noRepliesToShow}>
                                 <ViewConversation {event} {urlPrefix} bind:isNoop={noRepliesToShow} on:click={viewConversationClicked} />
                             </div>
@@ -399,6 +398,7 @@
 
                     <div class:hidden={swapActive} class="
                         flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4
+                        grayscale group-hover:grayscale-0
                     ">
                         <div class="w-1/4 flex justify-center items-end">
                             {#if !($eventsInThread.length > 0 && !expandThread) && !($replies.length > 0 && !expandReplies)}

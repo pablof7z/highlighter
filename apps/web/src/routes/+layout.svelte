@@ -6,7 +6,7 @@
 	import { finalizeLogin } from '$utils/login';
 	import { prepareSession, jwt, userProfile } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
-	// import { pwaInfo } from 'virtual:pwa-info';
+	import { pwaInfo } from 'virtual:pwa-info';
 	import AppShell from '$components/PageElements/AppShell.svelte';
 	import "@fontsource/lora";
 	import "@fontsource/lora/600.css";
@@ -50,16 +50,17 @@
 	
 	/** Mobile concerns */
 	$appMobileView = isMobileBuild() || isPhone();
+	
 	// $: if ($appMobileView && browser) {
 	// 	setupIonicSvelte();
 	// 	defineCustomElements(window);
 	// }
 
-	// let webManifestLink: string;
-	// $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
+	let webManifestLink: string;
+	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
 
 	let hasJwt = false;
-	let mounted = false;
+	let mounted = browser ? false : true;
 
 	$: if (!$user && browser) {
 		const browserSetupPromise = browserSetup();
@@ -72,7 +73,8 @@
 
 	onMount(async () => {
 		initStoreEvent($ndk);
-		
+		window.addEventListener('resize', setResponsiveView);
+
 		if ($ndk.cacheAdapter?.onReady && !$ndk.cacheAdapter?.ready) {
 			$ndk.cacheAdapter.onReady(() => {
 				mounted = true
@@ -119,13 +121,28 @@
 	}
 
 	$: $currentUser = $user;
+
+	function setResponsiveView() {
+		console.log('setResponsiveView', $appMobileView);
+		if (isMobileBuild()) {
+			$appMobileView = true;
+			return;
+		}
+
+		if (!document) return;
+
+		// if screen size is less than 768px, set mobile view
+		if (document.documentElement.clientWidth < 768) {
+			$appMobileView = true;
+		} else {
+			$appMobileView = false;
+		}
+	}
 </script>
 
-<svelte:head>
-	<!-- {@html webManifestLink} -->
-</svelte:head>
-
 <!-- <NetworkHandler /> -->
+
+appMobileView: {$appMobileView}
 
 {#if $appMobileView}
 	<MobileAppShell>

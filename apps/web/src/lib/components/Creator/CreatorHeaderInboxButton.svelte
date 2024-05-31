@@ -1,20 +1,35 @@
 <script lang="ts">
+	import HighlightUserModal from './../../modals/Helper/HighlightUserModal.svelte';
+	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import { appMobileView } from "$stores/app";
     import currentUser from "$stores/currentUser";
 	import { inboxItems, inboxList } from "$stores/inbox";
-    import { categorizedUserLists, sortedUserLists, userFollows } from "$stores/session";
-    import { ndk } from "@kind0/ui-common";
+	import { seenHighlightUserHelperModal } from "$stores/settings";
+	import { openModal } from "$utils/modal";
     import { NDKUser } from "@nostr-dev-kit/ndk";
-    import { Checkbox } from "konsta/svelte";
-    import { Check, Plus, Tray, User, UserPlus } from "phosphor-svelte";
 
     export let user: NDKUser;
     export let collapsed = false;
 
+    function hover() {
+        if (true || $inboxItems.size === 0 && !$seenHighlightUserHelperModal) {
+            $seenHighlightUserHelperModal = true;
+            openModal(HighlightUserModal, { user });
+        }
+    }
+
+    function click() {
+        if ($inboxItems.size === 0) {
+            openModal(HighlightUserModal, { user });
+        } else {
+            follow();
+        }
+    }
+
     async function follow() {
         await $inboxList.addItem(user);
         $inboxList.publishReplaceable();
-        inboxed = true;
+        highlighted = true;
     }
 
     async function unfollow() {
@@ -22,37 +37,28 @@
         if (index >= 0) {
             const list = await $inboxList.removeItem(index, false);
             list.publishReplaceable();
-            inboxed = false;
+            highlighted = false;
         }
     }
 
-    let inboxed: boolean;
-    $: inboxed = $inboxItems.has(user.pubkey);
+    let highlighted: boolean;
+    $: highlighted = $inboxItems.has(user.pubkey);
 </script>
 
 {#if $currentUser?.pubkey !== user.pubkey}
-    <div class="dropdown dropdown-hover z-50 dropdown-end">
-        {#if !inboxed}
-            <button class="flex  transition-all duration-300 {collapsed ? "flex-row" : "flex-col"} items-center gap-1 hover:text-zinc-400" on:click={follow}>
-                <Tray class="" size={$appMobileView ? 25 : 20} weight="bold" />
-                <span class="text-xs {collapsed ? "max-sm:hidden" : ""}">Inbox</span>
-            </button>
-        {:else}
-            <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col"} items-center gap-1 text-accent2 hover:grayscale" on:click={unfollow}>
-                <Tray class="" size={$appMobileView ? 25 : 20} weight="bold" />
-                <span class="text-xs {collapsed ? "max-sm:hidden" : ""}">Inbox</span>
-            </button>
-        {/if}
-        {#if $inboxItems.size === 0}
-            <div class="dropdown-content absolute menu flex flex-col items-center w-48 p-4">
-                <Tray size={48} class="text-accent2" />
-
-                <h1>Inbox</h1>
-
-                <p>
-                    Add the creators you care about the most to your inbox to receive their latest updates.
-                </p>
-            </div>
-        {/if}
-    </div>
+    {#if !highlighted}
+        <button
+            class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-2 hover:text-zinc-400"
+            on:click={click}
+            on:mouseenter={hover}
+        >
+            <HighlightIcon class="transition-all duration-300 {collapsed ? "w-5 h-5" : "w-9 h-9 py-[6px]"}" />
+            <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Highlight</span>
+        </button>
+    {:else}
+        <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-2 text-accent2 hover:grayscale" on:click={unfollow}>
+            <HighlightIcon class="transition-all duration-300 {collapsed ? "w-5 h-5" : "w-6 h-6"}" />
+            <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Highlight</span>
+        </button>
+    {/if}
 {/if}

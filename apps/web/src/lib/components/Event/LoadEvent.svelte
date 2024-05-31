@@ -13,7 +13,7 @@
     let articleList: NDKList | undefined;
 
     if (tag) $ndk.fetchEventFromTag(tag).then(process);
-    if (id) $ndk.fetchEvent(id).then(process);
+    if (id) $ndk.fetchEvent(id, {subId:'Loadevent'}).then(process);
     
     function process(e: NDKEvent | null) {
         event = e;

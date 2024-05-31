@@ -7,5 +7,7 @@
 </script>
 
 {#if topic}
-    <TopicPage {topic} />
+    {#key topic}
+        <TopicPage {topic} />
+    {/key}
 {/if}

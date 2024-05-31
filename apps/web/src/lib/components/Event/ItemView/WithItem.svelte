@@ -3,7 +3,7 @@
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, filterFromId } from "@nostr-dev-kit/ndk";
+	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, filterFromId, NIP33_A_REGEX } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
@@ -12,7 +12,7 @@
 	import { getSummary } from "$utils/article";
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { addReadReceipt } from "$utils/read-receipts";
-	import { mainContentKinds } from "$utils/event";
+	import { isEventFullVersion, mainContentKinds } from "$utils/event";
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { nip19 } from "nostr-tools";
 	import { getEventType } from "./get-event-type";
@@ -44,7 +44,7 @@
         if (events && !authed) {
             events.unsubscribe();
         }
-        events = $ndk.storeSubscribe(getFilter(), { groupable: false });
+        events = $ndk.storeSubscribe(getFilter(), { groupable: false, subId: 'with-item-fetcher' });
         events.onEose(() => { eosed = true; });
 
         authed = true;
@@ -57,8 +57,14 @@
 
     function getFilter(): NDKFilter[] {
         if (!tagId) return [{limit:0}];
-        let filters: NDKFilter[] = [{ "#d": [tagId], kinds: mainContentKinds }];
 
+        let filters: NDKFilter[] = [{ "#d": [tagId], kinds: mainContentKinds }];
+        
+        if (tagId.match(NIP33_A_REGEX)) {
+            const [kind, pubkey, dTag] = tagId.split(":");
+            filters = [{ kinds: [parseInt(kind) as NDKKind], authors: [pubkey], "#d": [dTag] }];
+        }
+        
         if (user) filters[0].authors = [user.pubkey];
 
         // A nip19 entity
@@ -115,7 +121,7 @@
     let hasAccessToFullVersion: boolean | undefined;
 
     $: if (event && !eventType) eventType = getEventType(event);
-    $: if (event && isFullVersion === undefined) isFullVersion = !event.tagValue("full");
+    $: if (event) isFullVersion = isEventFullVersion(event);
     $: if (event && tiersWithFullAccess === undefined) tiersWithFullAccess = requiredTiersFor(event);
     $: if (event && isFullVersion === false && tiersWithFullAccess && hasAccessToFullVersion === undefined) {
         hasAccessToFullVersion = tiersWithFullAccess.includes($userActiveSubscriptions.get(event.pubkey)) || $currentUser?.pubkey === event.pubkey;

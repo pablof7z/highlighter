@@ -11,6 +11,7 @@
 	import HighlightMarks from './HighlightMarks.svelte';
 	import { openModal } from '$utils/modal';
 	import HighlightModal from '$modals/HighlightModal.svelte';
+	import { browser } from '$app/environment';
 
     export let event: NDKEvent | undefined = undefined;
     export let highlights: Readable<NDKEvent[]>;
@@ -41,10 +42,10 @@
     }
 
     // add an event listener to click events on <mark> elements
-    document.addEventListener('click', onClickOpenSidebar);
+    if (browser) document.addEventListener('click', onClickOpenSidebar);
 
     onDestroy(() => {
-        document.removeEventListener('click', onClickOpenSidebar);
+        if (browser) document.removeEventListener('click', onClickOpenSidebar);
     });
 
     $: for (const highlight of $highlights) {

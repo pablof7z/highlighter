@@ -13,7 +13,7 @@
     {...$$props}
     class="
         {$$props.color === "black" ?
-            "border-base-300 !text-white text-opacity-30 font-medium !bg-transparent focus:!border-neutral-700"
+            "border-base-300 text-opacity-30 font-medium !bg-transparent focus:!border-neutral-700"
         :
             "!bg-white text-black !border-neutral-200 focus:!border-neutral-300 "
         }

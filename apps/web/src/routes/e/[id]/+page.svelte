@@ -4,16 +4,22 @@
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 	import { detailView, resetLayout } from "$stores/layout";
 	import { getAuthorUrlSync } from "$utils/url";
-	import { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { ndk, user } from "@kind0/ui-common";
+	import { NDKArticle, NDKEvent, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
+	import LoadingScreen from "$components/LoadingScreen.svelte";
+	import { eventToKind } from "$utils/event";
 
     let id: string;
-
-    $detailView = null;
+    let event: NDKEvent | NDKArticle | NDKList | NDKVideo | undefined | null;
     
-    $: id = $page.params.id;
+    $: if (id !== $page.params.id) {
+        id = $page.params.id;
 
-    let event: NDKEvent | undefined;
+        $ndk.fetchEvent(id).then((e) => {
+            event = e ? eventToKind(e) : null;
+        });
+    }
 
     $: if (event) {
         const author = event.author;
@@ -27,8 +33,10 @@
     onDestroy(resetLayout);
 </script>
 
-{#if id}
-    {#key id}
-        <ItemView bind:event tagId={id} />
+<LoadingScreen ready={event !== undefined}>
+    {#key event?.id}
+        {#if event}
+            <ItemView {event} ignoreHeader={true}  />
+        {/if}
     {/key}
-{/if}
+</LoadingScreen>

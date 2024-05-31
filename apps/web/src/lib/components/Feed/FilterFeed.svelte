@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { NDKFilter, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKFilter, NDKKind, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
 	import { ndk } from "@kind0/ui-common";
 	import { onDestroy } from "svelte";
 	import StoreFeed from "./StoreFeed.svelte";
 
     export let filters: NDKFilter[];
-    export let newPostKind: NDKKind | undefined = undefined;
     export let renderLimit = 10;
-    export let newPostTags: NDKTag[] = [];
     export let urlPrefix: string | undefined = undefined;
+    export let relaySet: NDKRelaySet | undefined = undefined;
 
-    export let feed = $ndk.storeSubscribe(filters, { subId: 'feed' });
+    export let feed = $ndk.storeSubscribe(filters, { subId: 'feed', relaySet });
     
     export let showEventsOlderThan: Date | undefined = undefined;
 
@@ -29,7 +28,6 @@
     feed={feed}
     bind:showEventsOlderThan
     {renderLimit}
-    {newPostTags}
     {urlPrefix}
     on:click
 />

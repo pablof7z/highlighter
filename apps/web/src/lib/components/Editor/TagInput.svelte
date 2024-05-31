@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
-    import GlassyInput from "$components/Forms/GlassyInput.svelte";
 	import { Textarea, ndk } from '@kind0/ui-common';
 	import { onDestroy } from 'svelte';
 	import { derived } from 'svelte/store';
 
     export let event: NDKEvent;
+    export let autofocus: boolean = false;
 
     const events = $ndk.storeSubscribe({ kinds: [event.kind!]}, { closeOnEose: true, cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE });
     const tags = derived(events, $events => {
@@ -72,16 +72,14 @@
     let hasFocus = false;
 </script>
 
-<div class="field">
-    <div class="title">
-        Tags ({tagCount})
-    </div>
-
+<div class="field w-full">
     <Textarea
-        class="w-full !bg-white/5 rounded-box focus:!border-white/20"
+        class="w-full !bg-white/5 rounded focus:!border-white/20"
         bind:value={tagString}
         on:focus={() => hasFocus = true}
         on:blur={() => hasFocus = false}
+        on:submit
+        {autofocus}
     />
     <div class="text-xs text-neutral-500">
         Separate tags with commas

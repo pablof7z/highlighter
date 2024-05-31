@@ -3,6 +3,7 @@
     import { onDestroy } from "svelte";
 	import { NavigationOption } from "../../app";
     import { User, GlobeSimple, UsersThree } from "phosphor-svelte";
+	import PageTitle from "$components/PageElements/PageTitle.svelte";
 
     const options: NavigationOption[] = [];
     
@@ -10,14 +11,17 @@
     options.push({ name: "Follows", href: '/bookmarks/follows', icon: UsersThree})
     options.push({ name: "Recent", href: '/bookmarks/recent', icon: GlobeSimple})
 
-    $pageHeader = {
-        title: "Bookmarks",
-        searchBar: true
-    }
+    let defaultTitle = "Bookmarks";
 
-    $pageNavigationOptions = options;
+    $pageHeader = {
+        title: defaultTitle,
+        subNavbarOptions: options,
+        subNavbarValue: "You"
+    }
 
     onDestroy(resetLayout);
 </script>
+
+<PageTitle title="Bookmarks" />
 
 <slot />

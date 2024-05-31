@@ -6,16 +6,17 @@
 	import { Modals, openModal, closeModal as closeModalReal } from "svelte-modals";
 	import { fade } from "svelte/transition";
     
-	let modalOpen = false;
+	let modalOpen = 0;
 
     $: if (!$appMobileView && $modal?.component) {
         openModal($modal.component as any, $modal.props);
-		modalOpen = true;
+		modalOpen++;
     }
 
 	$: if (!$appMobileView && modalOpen && !$modal?.component) {
+		console.log("Closing modal");
 		closeModalReal();
-		modalOpen = false;
+		modalOpen--;
 	}
 </script>
 
@@ -39,15 +40,3 @@
 			transition:fade={{ duration: 300 }}></div>
 	</Modals>
 {/if}
-
-<style lang="postcss">
-	.backdrop {
-		position: fixed;
-		top: 0;
-		bottom: 0;
-		right: 0;
-		backdrop-filter: blur(10px);
-		left: 0;
-		background: rgba(0,0,0,0.50)
-	}
-</style>

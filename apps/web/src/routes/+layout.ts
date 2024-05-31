@@ -4,7 +4,7 @@ import { get } from 'svelte/store';
 
 const mobileBuild = !!process.env.MOBILE;
 
-export const ssr = false;
+export const ssr = false; // !mobileBuild;
 export const prerender = 'auto';
 export const trailingSlash = mobileBuild ? 'always' : 'ignore';
 

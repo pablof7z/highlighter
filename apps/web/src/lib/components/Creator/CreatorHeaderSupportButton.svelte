@@ -46,13 +46,13 @@
 
     {#if !currentUserSubscriberTier}
         {#if hasLNPayments !== false}
-            <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col"} items-center gap-1 hover:text-zinc-400 text-xs" on:click={openSupportModal}>
+            <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-1 hover:text-zinc-400 text-xs" on:click={openSupportModal}>
                 {#if $tiers && $tiers.length > 0}
-                    <Star size={$appMobileView ? 25 : 20} />
-                    <span class="text-xs {collapsed ? "max-sm:hidden" : ""}">Backstage</span>
+                    <Star class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" />
+                    <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Backstage</span>
                 {:else}
-                    <Ticket size={$appMobileView ? 25 : 20} />
-                    <span class="text-xs {collapsed ? "max-sm:hidden" : ""}">Support</span>
+                    <Ticket class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" />
+                    <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Support</span>
                 {/if}
             </button>
         {/if}

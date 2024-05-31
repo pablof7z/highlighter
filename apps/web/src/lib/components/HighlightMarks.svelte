@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { Avatar } from "@kind0/ui-common";
     import { NDKEvent, NDKEventId, NDKHighlight } from "@nostr-dev-kit/ndk";
-	import { group } from "console";
 	import { onDestroy, onMount } from "svelte";
 	import HighlightMarkGroup from './HighlightMarkGroup.svelte';
 
-    export let event: NDKEvent;
     export let highlights: NDKEvent[];
 
     type HighlightPosition = {

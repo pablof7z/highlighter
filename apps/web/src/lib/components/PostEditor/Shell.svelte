@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, preview, currentDraftItem } from '$stores/post-editor.js';
-	import { pageHeader, pageHeaderComponent, resetLayout } from "$stores/layout";
+	import { pageHeader, resetLayout } from "$stores/layout";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
     import { type as _type } from "$stores/post-editor";
 	import { getTierSelectionFromAllTiers } from '$lib/events/tiers';
@@ -11,7 +11,7 @@
 	import { debugMode } from '$stores/session';
 	import Toolbar from './Toolbar.svelte';
 	import { goto } from '$app/navigation';
-	import { ArticleCheckpoint, DraftCheckpoint } from '$stores/drafts';
+	import { ArticleCheckpoint } from '$stores/drafts';
 	import { Thread } from '$utils/thread';
 	import { newToasterMessage } from '@kind0/ui-common';
 	import { addDraftCheckpoint } from '$utils/drafts';
@@ -56,7 +56,7 @@
         $nonSubscribersPreview = !!$preview && !!$preview.id;
     }
 
-    $pageHeaderComponent = {
+    $pageHeader = {
         component: Toolbar,
         props: {
             onSaveDraft: saveDraft,

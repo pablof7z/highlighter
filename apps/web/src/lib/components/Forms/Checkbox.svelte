@@ -4,7 +4,7 @@
 </script>
 
 <label class="text-white text-base font-medium flex flex-row gap-2 items-center justify-between {$$props.class??""}">
-    <div class="flex flex-row items-center w-full">
+    <div class="flex flex-row items-start w-full">
         {#if type === 'check'}
             <input type="checkbox" class="checkbox mr-3" bind:checked={value} on:change />
         {/if}
@@ -21,12 +21,14 @@
                 <input type="checkbox" class="toggle [--tglbg:gray] ml-3" bind:checked={value} on:change on:focus={(e) => e.target.blur()} />
             {/if}
 
+            {#if $$slots.button}
             <div class="flex shrink items-stretch max-sm:w-full whitespace-nowrap"
                 class:opacity-50={!value}
                 class:pointer-events-none={!value}
             >
                 <slot name="button" />
             </div>
+            {/if}
         </div>
     </div>
 </label>

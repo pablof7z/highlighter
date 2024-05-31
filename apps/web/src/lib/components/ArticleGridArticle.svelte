@@ -5,19 +5,19 @@
 	import UserProfile from "./User/UserProfile.svelte";
 	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
 
-    export let tag: NDKTag;
+    export let article: NDKArticle | undefined = undefined;
+    export let tag: NDKTag | undefined = undefined;
     export let highlights: NDKHighlight[] = [];
-
-    let article: NDKArticle;
 
     let url: string;
     let authorUrl: string;
     
-    $ndk.fetchEvent(tag[1]).then(event => {
-        if (event) {
-            article = NDKArticle.from(event);
-        }
-    });
+    if (!article && tag)
+        $ndk.fetchEvent(tag[1]).then(event => {
+            if (event) {
+                article = NDKArticle.from(event);
+            }
+        });
 
     $: if (article) {
         const suffix = urlSuffixFromEvent(article);

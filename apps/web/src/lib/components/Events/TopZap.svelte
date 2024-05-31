@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { UnsubscribableStore, ZapInvoiceWithEvent, getTopZapsByIndividualAmount } from "$utils/zaps";
-	import { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKZapInvoice } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import ZapPill from "./Zaps/ZapPill.svelte";
 
     export let event: NDKEvent;
     export let avatarSize: "tiny" | "small" | "medium" | "large" = "tiny";
     export let zapEvent: NDKEvent | undefined = undefined;
+    export let zapInvoice: NDKZapInvoice | undefined = undefined;
 
     let zap: UnsubscribableStore<ZapInvoiceWithEvent[]>;
 
@@ -18,6 +19,7 @@
 
     $: if (zap && $zap) {
         zapEvent = $zap[0]?.event;
+        zapInvoice = $zap[0];
     }
 </script>
 

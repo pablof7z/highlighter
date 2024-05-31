@@ -20,11 +20,9 @@
     });
 </script>
 
-<ModalShell color="glassy" class="max-w-3xl">
-    <h1 class="text-base-100-content font-medium">
-        Select a highlight to insert
-    </h1>
-
+<ModalShell class="max-w-3xl"
+    title="Select a Highlight"
+>
     <div class="grid grid-cols-1 gap-4 mt-4 overflow-y-auto">
         {#if $highlights.length === 0}
             <p class="text-base-100-content">
@@ -36,7 +34,7 @@
                     onSelect(highlight)
                     closeModal()
                 }}>
-                    <div class="text-left">
+                    <div class="text-left border border-base-300 p-4 rounded-box">
                         <HighlightBody skipHighlighter={true} {highlight} class="text-sm" />
                     </div>
                 </button>
@@ -44,9 +42,9 @@
         {/if}
     </div>
 
-    <div class="flex flex-row justify-end gap-4 mt-4">
-        <button class="btn btn-primary" on:click={closeModal}>
+    <svelte:fragment slot="footer">
+        <button class="button" on:click={closeModal}>
             Close
         </button>
-    </div>
+    </svelte:fragment>
 </ModalShell>

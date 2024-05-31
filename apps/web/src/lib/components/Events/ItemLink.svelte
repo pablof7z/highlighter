@@ -6,11 +6,9 @@
 	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import SaveForLaterButton from "$components/SaveForLaterButton.svelte";
-    import { debugMode } from "$stores/session";
-	import Bug from "phosphor-svelte/lib/Bug";
 	import DurationTag from "$components/DurationTag.svelte";
 	import TopZap from "./TopZap.svelte";
-	import { isMobileBuild } from "$utils/view/mobile";
+	import EventTags from "./EventTags.svelte";
 
     export let event: NDKEvent;
     export let description: string | undefined = (event instanceof NDKArticle) ? event.summary : undefined;
@@ -68,12 +66,13 @@
                 <div class="bg-base-200 w-full overflow-clip h-full">
                     <div class="text-lg sm:text-3xl font-semibold gradient-text whitespace-normal w-full p-2 sm:p-6 leading-relaxed flex h-full items-end">
                         {title}
+                        {durationTag}
                     </div>
                 </div>
             {/if}
         </div>
-        {#if durationTag && size === "normal"}
-            <DurationTag value={durationTag} class="absolute top-3 right-3" />
+        {#if durationTag}
+            <DurationTag value={durationTag} class="absolute top-3 right-3 z-10" />
         {/if}
 
         {#if grid}
@@ -119,15 +118,18 @@
             {title}
         </a>
         {#if description}
-            <a dir="auto" {href} class="self-stretch max-h-[1.5rem] w-full text-neutral-500 text-sm font-normal basis-0 grow overflow-clip
+            <a dir="auto" {href} class="self-stretch w-full text-neutral-500 text-sm font-normal basis-0 grow overflow-clip
                 {grid ? "" : ""}
             ">
                 {description}
             </a>
+        {:else}
+            <div class="grow"></div>
         {/if}
         <slot />
 
         {#if !grid}
+            <EventTags {event} />
             <TopZap {event} class="text-xs" />
         {/if}
     </div>

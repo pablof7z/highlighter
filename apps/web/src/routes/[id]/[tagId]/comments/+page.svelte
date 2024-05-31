@@ -1,49 +1,44 @@
 <script lang="ts">
-	import { page } from "$app/stores";
-	import { CaretLeft } from "phosphor-svelte";
+	import PageTitle from '$components/PageElements/PageTitle.svelte';
 	import { pageHeader } from "$stores/layout";
-	import { NDKKind, type NDKArticle, type NDKVideo } from "@nostr-dev-kit/ndk";
-	import FilterFeed from '$components/Feed/FilterFeed.svelte';
-    import WithItem from '$components/Event/ItemView/WithItem.svelte';
-    import ItemFooter from '$components/Event/ItemView/ItemFooter.svelte';
+	import ItemViewComments from "$views/Item/ItemViewComments.svelte";
+	import { onDestroy, onMount } from "svelte";
+	import { loadedEvent, title } from "../store";
+	import { openModal } from "$utils/modal";
+	import NewPostModal from "$modals/NewPostModal.svelte";
+	import { NDKEvent } from "@nostr-dev-kit/ndk";
 
-    let tagId: string;
-    let urlPrefix: string;
-    let article: NDKArticle | undefined;
-    let video: NDKVideo | undefined;
-    let showComment = false;
+    let event;
 
-    $: tagId = $page.params.tagId;
+    $: event = $loadedEvent;
 
-    const origTitle = $pageHeader?.title;
-    $pageHeader = {};
-
-
-    $: $pageHeader = {
-        left: {
-            label: article?.title ?? "Back",
-            url: urlPrefix,
-            icon: CaretLeft
-        },
-        title: origTitle,
-        right: {
-            label: "New Comment",
+    $: {
+        $pageHeader ??= {};
+        $pageHeader.title = "Comments";
+        $pageHeader.right = {
+            label: "Comment",
             fn: () => {
-                showComment = !showComment
+                const e = new NDKEvent();
+                e.tag(event!, "root");
+                openModal(NewPostModal, {
+                    tags: e.tags,
+                    placeholder: "Write a comment...",
+                    title: "New Comment"
+                });
             }
         }
-    };
+    }
+
+    onDestroy(() => {
+        if ($pageHeader) {
+            $pageHeader.title = undefined;
+            $pageHeader.right = undefined;
+        }
+    })
 </script>
 
-{#key tagId}
-    <WithItem let:event bind:article bind:video bind:urlPrefix let:eventType>
-        {#if event && (article || video) && eventType}
-            <ItemFooter {event} {urlPrefix} {eventType} />
-            <!-- <ArticleBannerBackground article={article||video} /> -->
+<PageTitle title="Comments" defaultTitle={$title} />
 
-            <FilterFeed filters={[
-                { kinds: [NDKKind.Text, NDKKind.GroupReply ], ...event.filter() }
-            ]} />
-        {/if}
-    </WithItem>
-{/key}
+{#if event}
+    <ItemViewComments {event} />
+{/if}

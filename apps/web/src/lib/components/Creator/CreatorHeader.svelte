@@ -81,8 +81,8 @@
 {#key user.pubkey}
 <UserProfile {user} bind:userProfile />
 
-<div class="sticky top-0 z-20 w-full overflow-clip {collapsed ? "" : "min-h-[15rem]"}" on:touchstart={() => {if (collapsed) collapsed = false}}>
-    <div class="relative h-full w-full bg-gradient-to-b from-base-300 to-base-100">
+<div class="sticky top-0 z-20 w-full {collapsed ? "" : "min-h-[15rem]"}" on:touchstart={() => {if (collapsed) collapsed = false}}>
+    <div class="relative h-full w-full">
         {#if userProfile?.banner}
             <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-[1] transition-all duration-300 {collapsed ? "opacity-20" : ""}" alt={userProfile?.name}>
             <div class="absolute w-full h-full bg-gradient-to-b from-transparent to-base-100 z-[2]"></div>
@@ -123,8 +123,8 @@
                             <CreatorHeaderInboxButton {user} {collapsed} />
                             <CreatorHeaderSupportButton {user} {collapsed} />
                             <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
-                                <Export class="" size={$appMobileView ? 25 : 20} weight="bold" />
-                                <span class="text-xs max-sm:hidden">Share</span>
+                                <Export class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
+                                <span class="max-sm:hidden {collapsed ? "max-sm:hidden text-sm" : "text-base"}">Share</span>
                             </button>
                         </div>
                     </div>
@@ -132,19 +132,19 @@
             </div>
 
             <div class="
-                w-full flex pb-2 {collapsed ? "mt-2" : "mt-4 sm:mt-8"}
-                {$appMobileView ? "flex-col-reverse justify-center items-center gap-4" : "flex-row justify-between "}
+                w-full flex pb-2  gap-4 {collapsed ? "mt-2" : "flex-col-reverse mt-4 sm:my-8"}
+                {$appMobileView ? "flex-col-reverse justify-center items-center" : "items-center"}
             ">
-                <HorizontalOptionsList {options} on:changed={() => collapsed = true} />
+                <HorizontalOptionsList class="w-fit" {options} on:changed={() => collapsed = true} />
                 
                 {#if !collapsed}
-                    <div class="flex flex-row items-end justify-end gap-4">
+                    <div class="flex flex-row items-stretch justify-end lg:gap-6 backdrop-blur-xl rounded-box px-4 py-2">
                         <CreatorHeaderFollowButton {user} {collapsed} />
                         <CreatorHeaderInboxButton {user} {collapsed} />
                         <CreatorHeaderSupportButton {user} {collapsed} />
                         <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
-                            <Export class="" size={20} weight="bold" />
-                            <span class="text-xs">Share</span>
+                            <Export class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
+                            <span class="max-sm:hidden {collapsed ? "max-sm:hidden text-sm" : "text-base"}">Share</span>
                         </button>
                     </div>
                 {/if}

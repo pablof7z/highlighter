@@ -7,8 +7,8 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "eslint": "^8.0.0",
     "@kind0/eslint-config-custom": "*",
+    "eslint": "^8.0.0",
     "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.7.0",
     "turbo": "latest"

@@ -1,6 +1,7 @@
-import { Hexpubkey, NDKArticle, NDKKind, NDKList, NDKRelaySet, NDKTag, NDKVideo, type NDKEvent } from '@nostr-dev-kit/ndk';
+import { Hexpubkey, NDKArticle, NDKKind, NDKList, NDKRelaySet, NDKTag, NDKVideo, eventIsReply, type NDKEvent } from '@nostr-dev-kit/ndk';
 import { getDefaultRelaySet } from './ndk';
 import { nip19 } from 'nostr-tools';
+import { AddressPointer, EventPointer } from 'nostr-tools/nip19';
 
 export const mainContentKinds = [
 	NDKKind.Article,
@@ -8,6 +9,49 @@ export const mainContentKinds = [
 	NDKKind.ArticleCurationSet,
 	NDKKind.VideoCurationSet
 ];
+
+export function encodeTag(tag: NDKTag) {
+	const relay = tag[2];
+	
+	if (tag[0] === "a") {
+		const [ kind, pubkey, identifier ] = tag[1].split(":");
+
+		try {
+			const opts: AddressPointer = {
+				kind: parseInt(kind),
+				pubkey: pubkey,
+				identifier: identifier,
+			};
+
+			if (relay) opts.relays = [relay];
+			
+			return nip19.naddrEncode(opts);
+		} catch {}
+	} else if (tag[0] === "e") {
+		try {
+			const opts: EventPointer = {
+				id: tag[1],
+			}
+			if (relay) opts.relays = [relay];
+			console.log(opts);
+			console.log('bech32', nip19.neventEncode(opts));
+			return nip19.neventEncode(opts);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+}
+
+export function eventToKind(event: NDKEvent) {
+	switch (event.kind) {
+		case 30818: return NDKArticle.from(event);
+		case NDKKind.Article: return NDKArticle.from(event);
+		case NDKKind.HorizontalVideo: return NDKVideo.from(event); 
+		case NDKKind.ArticleCurationSet: return NDKList.from(event);
+		case NDKKind.VideoCurationSet: return NDKList.from(event);
+		default: return event;
+	}
+}
 
 export function eventToSpecificKind(event: NDKEvent) {
 	switch (event.kind) {
@@ -38,5 +82,48 @@ export const filterValidPTags = (tags: NDKTag[]) => tags
 		try {
 			nip19.npubEncode(f);
 			return true;
-		} catch { return false; }
+		} catch {
+			return false;
+		}
 	});
+
+/**
+ * Creates a function that returns true only if the event passed in is of a certain kind(s)
+ * @returns 
+ */
+export const isKind = (n: NDKKind | NDKKind[]) => {
+	if (Array.isArray(n)) {
+		const set = new Set(n);
+		return (e: NDKEvent) => set.has(e.kind!);
+	} else 
+		return (e: NDKEvent) => e.kind === n;
+}
+
+/**
+ * Creates a function that returns unique pubkeys from a list of events
+ * @param events 
+ * @returns 
+ */
+export const uniquePubkeys = (events: NDKEvent[]) => {
+	return Array.from(
+		new Set(events.map((e: NDKEvent) => e.pubkey))
+	)
+}
+
+export const prettifyReaction = (content: string) => {
+	switch (content) {
+		case "+": return "👍";
+		case "-": return "👎";
+		default:
+			return content;
+	}
+}
+
+export const isDirectReply = (op: NDKEvent) => (event: NDKEvent) => eventIsReply(op, event);
+
+export function isEventFullVersion(event: NDKEvent) {
+	// if the event has a "full" marker then this is not the full version
+	if (!!event.tagValue("full")) return false;
+
+	return true;
+}

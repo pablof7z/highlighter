@@ -81,7 +81,7 @@
         // instance.unbind();
     })
 
-    title ??= "Highlighter";
+    title ??= "";
     let _title = title;
     let subnavbarEl: HTMLElement;
 
@@ -99,7 +99,7 @@
                 subnavbarEl.style.height = 'auto';
             }
         }
-        _title ??= "Highlighter";
+        _title ??= "";
     }
 
     let withSubnavbar = false;
@@ -122,7 +122,9 @@
 
 {#if mounted}
 {#if $pageHeader?.component}
-    <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
+    <div class="fixed top-0 w-full z-50 safe pl-2-safe pr-2-safe bg-ios-light-surface-2 dark:bg-ios-dark-surface-2 hairline-b">
+        <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
+    </div>
 {:else if withSubnavbar}
     <Navbar title={_title} {subtitle}>
         <svelte:fragment slot="left">

@@ -54,6 +54,11 @@
                     next = {label: "Continue", value: "schedule"};
                     break;
                 }
+
+                case "article": {
+                    next = {label: "Continue", value: "audience"};
+                    break;
+                }
             }
             break;
         case "view-preview":
@@ -64,10 +69,22 @@
             back = {label: "Back to Edit", value: "edit"};
             if ($tiers.length > 0) next = {label: "Continue", value: "audience"};
             else next = {label: 'Continue', value: "schedule"};
+
             break;
         }
         case "edit-preview": back = {label: 'Back', value: "audience"}; next = {label: 'Continue', value: "schedule"}; break;
-        case "audience": back = {label: 'Back', value: "meta"}; next = {label: 'Continue', value: "schedule"}; break;
+        case "audience": {
+            back = {label: 'Back', value: "meta"}; next = {label: 'Continue', value: "schedule"};
+            
+            switch ($type) {
+                case 'article': {
+                    back = {label: "Back to Edit", value: "edit"};
+                    break;
+                }
+            }
+            
+            break;
+        }
     }
 
     function backClicked() {
@@ -175,7 +192,7 @@
     }
 </script>
 
-<div class="flex flex-row justify-between h-full w-full items-center" class:hidden={$view === "published"}>
+<div class="flex flex-row justify-between h-full w-full items-center py-2 {$$props.containerClass??""}" class:hidden={$view === "published"}>
     {#if back}
         <button class="button button-black truncate" on:click={backClicked}>
             <CaretLeft size={24} />

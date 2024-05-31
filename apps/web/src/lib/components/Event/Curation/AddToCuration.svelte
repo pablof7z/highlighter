@@ -53,7 +53,7 @@
             <Input
                 class="!p-0 bg-transparent !border-0 font-normal join-item"
                 color="black"
-                placeholder="Curation name"
+                placeholder="New curation"
                 bind:value={newCurationName}
                 autofocus={true}
                 on:keydown={(e) => {

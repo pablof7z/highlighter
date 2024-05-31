@@ -8,15 +8,26 @@
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 	import ListViewContent from './ListViewContent.svelte';
 	import { CaretLeft } from 'phosphor-svelte';
+	import { getAuthorUrl } from '$utils/url';
 
     export let event: NDKEvent;
     export let list = NDKList.from(event);
-    export let urlPrefix: string;
-    export let authorUrl: string;
+    export let urlPrefix: string | undefined = undefined;
+    export let authorUrl: string | undefined = undefined;
 
     let id: string;
 
     $: id = $page.params.subId;
+
+    if (!authorUrl) getAuthorUrl(list.author).then(url => authorUrl = url)
+
+    const dTag = list.tagValue("d");
+
+    $: if (dTag) {
+        urlPrefix = [authorUrl, dTag ].join("/");
+    } else {
+        urlPrefix = `/a/${list.encode()}`
+    }
 
     $pageSidebar = {
         component: ListSidebar,
@@ -73,10 +84,8 @@
         />
     {/key}
 {:else}
-    <div class="lg:hidden">
-        <ListViewContent
-            {list}
-            {urlPrefix}
-        />
-    </div>
+    <ListViewContent
+        {list}
+        {urlPrefix}
+    />
 {/if}

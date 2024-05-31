@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { mode } from '$stores/inbox-view';
-	import { ndk, user } from '@kind0/ui-common';
+	import { ndk } from '@kind0/ui-common';
 	import { NDKEvent, NDKKind, NDKRelay, NDKSubscriptionCacheUsage, NDKSubscriptionTier, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import TierEditor from './TierEditor.svelte';
 	import type { Readable } from 'svelte/store';
@@ -13,6 +12,7 @@
 	import CollapsedTierListItem from './CollapsedTierListItem.svelte';
     import nip29 from '$lib/nip29';
 	import { defaultVerifierPubkey } from '$utils/const';
+	import currentUser from '$stores/currentUser';
 
     export let redirectOnSave: string | false = "/dashboard";
     export let usePresetButton = false;
@@ -33,8 +33,8 @@
     currentTiers = userTiers;
 
     onMount(async () => {
-        if ($currentTiers && $currentTiers.length === 0) {
-            const userTiers = await $ndk.fetchEvent({ kinds: [NDKKind.SubscriptionTier], authors: [$user.pubkey], limit: 1}, { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
+        if ($currentUser && $currentTiers && $currentTiers.length === 0) {
+            const userTiers = await $ndk.fetchEvent({ kinds: [NDKKind.SubscriptionTier], authors: [$currentUser.pubkey], limit: 1}, { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
 
             if (!userTiers && $currentTiers.length === 0) {
                 addTier();
@@ -125,9 +125,9 @@
                 ...promises
             ]);
 
-            const name = $userProfile?.displayName || undefined;
+            const name = $currentUser?.displayName || undefined;
 
-            await nip29.createGroup($ndk, $user, name, undefined, relaySet);
+            await nip29.createGroup($ndk, $currentUser, name, undefined, relaySet);
 
             if (emit) dispatch("saved", { tiers: tiersList });
 
@@ -156,7 +156,7 @@
     }
 
     async function restore(tier: NDKSubscriptionTier) {
-        let tierList = await $ndk.fetchEvent({ kinds: [NDKKind.TierList], authors: [$user.pubkey] });
+        let tierList = await $ndk.fetchEvent({ kinds: [NDKKind.TierList], authors: [$currentUser.pubkey] });
         if (!tierList) {
             tierList = new NDKEvent($ndk, {
                 kind: NDKKind.TierList,

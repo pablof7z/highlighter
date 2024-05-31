@@ -42,3 +42,14 @@ export function wotFiltered(events: NDKEvent[]) {
 
     return filteredEvents;
 }
+
+export const wotFilter = () => {
+    const $wot = get(wot);
+
+    if ($wot.size < 1000) return (events: NDKEvent[]) => [];
+
+    console.log("wotFilter", $wot.size);
+
+    return (events: NDKEvent[]) => events.filter((e) => $wot.has(e.pubkey));
+}
+

@@ -1,73 +1,59 @@
 <script lang="ts">
-	import ShareModal from '$modals/ShareModal.svelte';
-    import { ndk } from "@kind0/ui-common";
-	import { page } from "$app/stores";
-	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NostrEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
-	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
-	import VideoView from "./VideoView.svelte";
-	import EventWrapper from "$components/Feed/EventWrapper.svelte";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
-	import CreatorShell from "$components/Creator/CreatorShell.svelte";
-	import MoreFromUser from "$components/Creator/MoreFromUser.svelte";
-	import { addReadReceipt } from "$utils/read-receipts";
-	import WithItem from "./WithItem.svelte";
-	import ItemFooter from "./ItemFooter.svelte";
-	import ListView from "$components/ListView.svelte";
+	import { NDKArticle, NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
+	import { isEventFullVersion } from "$utils/event";
 	import ArticleView from "$components/ArticleView.svelte";
+	import { onDestroy, onMount } from "svelte";
 	import { pageHeader } from "$stores/layout";
-	import { CaretLeft, Export, Lightning, Share } from "phosphor-svelte";
-	import Highlight from "$components/Highlight.svelte";
-	import { openModal } from '$utils/modal';
+	import ItemHeader from "$components/ItemHeader.svelte";
+	import EventWrapper from "$components/Feed/EventWrapper.svelte";
+	import { ndk } from "@kind0/ui-common";
+	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import ListView from "$components/ListView.svelte";
 
-    export let user: NDKUser = $page.data.user;
-    export let rawEvent: NostrEvent | undefined = $page.data.event;
-    export let tagId: string | undefined = undefined;
-    export let mxClass = "mx-auto"
-    export let backUrl: string | undefined = undefined;
-    export let backTitle: string | undefined = undefined;
+    export let event: NDKEvent;
+    export let ignoreHeader: boolean = false;
 
-    export let event: NDKEvent | undefined = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
-
-    let readReceiptPosted = false;
-
-    let authorUrl: string;
-
-    $: if (event && !readReceiptPosted) {
-        readReceiptPosted = true;
-        addReadReceipt(event);
+    if (!ignoreHeader) {
+        $pageHeader ??= {};
+        $: $pageHeader.component = ItemHeader;
+        $: $pageHeader.props = {
+            item: event,
+            class: "max-w-[var(--content-focused-width)] mx-auto w-full"
+        }
     }
 
-    let article: NDKArticle | undefined;
-    let video: NDKVideo | undefined;
+    onDestroy(() => {
+        if (!ignoreHeader && $pageHeader?.component)
+            $pageHeader.component = undefined;
+    })
 
-    $: $pageHeader = {
-        left: {
-            icon: CaretLeft,
-            url: backUrl,
-            label: backTitle ?? "Back"
-        },
-        title: article?.title ?? video?.title,
-        searchBar: true,
-        right: {
-            icon: Export,
-            fn: () => {
-                if (event?.author) {
-                    openModal(ShareModal, { event });
-                }
-            }
-        }
-    };
-
-    export let eventType: EventType | undefined = undefined;
 </script>
 
-<WithItem {user} {tagId} bind:event bind:article bind:video let:urlPrefix bind:eventType let:isFullVersion bind:authorUrl>
-    {#if event && eventType}
+{#if event instanceof NDKArticle}
+    <ArticleView
+        article={event}
+        isFullVersion={isEventFullVersion(event)}
+    />
+{:else if event.kind === NDKKind.ArticleCurationSet}
+    <ListView {event} />
+{:else if event.kind === NDKKind.Text}
+    <EventWrapper
+        {event}
+        expandThread={true}
+        expandReplies={true}
+        class="text-lg p-6 rounded-box"
+    >
+        <EventContent ndk={$ndk} {event} />
+    </EventWrapper>
+{:else}
+    <EventWrapper {event} class="bg-base-200 p-6 rounded-box">
+        <EventContent ndk={$ndk} {event} class="highlight" />
+    </EventWrapper>
+{/if}
+
+    <!-- {#if event && eventType}
         {#if eventType === "article" && article}
-            <ArticleView
-                {article}
-                {isFullVersion}
-            />
+            
             <MoreFromUser user={event.author} />
         {:else if eventType === "video" && video}
             <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl py-6">
@@ -76,9 +62,6 @@
                     {isFullVersion}
                 />
             </div>
-
-            {urlPrefix}
-            <ItemFooter {event} {urlPrefix} {eventType} {mxClass} />
         {:else if ["group-note"].includes(eventType)}
             <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl">
                 <div class="w-full flex items-center flex-col justify-center">
@@ -87,18 +70,19 @@
                     </div>
                 </div>
 
-                <div class="divider my-0"></div>
+                <div class="divider my-0"></div> -->
 <!-- 
                 <EventResponses {event} /> -->
-
+<!--
             </div>
         {:else if ["short-note"].includes(eventType)}
-            <EventWrapper
-                {event}
-                expandThread={true}
-                expandReplies={true}
-
-            />
+            <HighlightingArea>
+                <EventWrapper
+                    {event}
+                    
+                />
+                
+            </HighlightingArea>
         {:else if eventType === 'curation'}
             <ListView {event} {urlPrefix} {authorUrl} />
         {:else if eventType === 'highlight'}
@@ -114,5 +98,4 @@
                 </div>
             </CreatorShell>
         {/if}
-    {/if}
-</WithItem>
+    {/if} -->

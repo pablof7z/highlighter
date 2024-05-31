@@ -6,8 +6,12 @@
     import { closeModal } from '$utils/modal';
 	import { beforeNavigate } from '$app/navigation';
 	import { appMobileView } from '$stores/app';
+	import { X } from 'phosphor-svelte';
+	import { Block, Link, Toolbar } from 'konsta/svelte';
+	import { NavigationOption } from '../../app';
 
-    export let color: "white" | "black" | "glassy" = "glassy";
+    export let title: string | undefined = undefined;
+    export let actionButtons: NavigationOption[] = [];
 
     const slideAnimationDuration = 300;
 
@@ -65,32 +69,72 @@
 </script>
 
 {#if $appMobileView}
-    <div class="{$$props.class??""}">
+    {#if actionButtons.length > 0}
+        <Toolbar top>
+            <div class="left">
+                <Link onClick={() => closeModal()}>
+                    Close
+                </Link>
+            </div>
+
+            <div class="right">
+                {#each actionButtons as item}
+                    <Link onClick={item.fn}>
+                        {item.name}
+                    </Link>
+                {/each}
+            </div>
+        </Toolbar>
+    {/if}
+    <Block class="max-h-[80vh] overflow-y-auto {$$props.class??""}">
         <slot />
-    </div>
+    </Block>
 {:else}
-    <div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none {color}" bind:this={containerEl}>
+    <div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none" bind:this={containerEl}>
         <div class="
             max-sm:fixed max-sm:top-0 max-sm:bottom-0 z-[99] max-sm:w-full  max-sm:!pb-0
             {$$props.class??""}
         ">
             {#if mounted}
                 <div class="
-                    card
                     !rounded-3xl
                     max-sm:!rounded-b-none
                     shadow-xl
-                    flex flex-col
-                    overflow-y-auto
+                    border border-base-300
                     w-fit mx-auto
+                    overflow-clip
+                    bg-base-100
                     p-6
-                    h-full
                     {$$props.class}
-                " style="pointer-events: auto; max-height: 92vh;"
+                " style="pointer-events: auto;"
                 >
-                    <div class="!rounded-3xl inner flex flex-col items-center transition-all duration-1000 gap-6
+                    <div class="inner flex flex-col items-center transition-all duration-1000
                     {$$props.class}">
-                        <slot />
+                        {#if title}
+                            <div class="flex flex-row justify-between w-full border-b border-base-300 pb-2 mb-4">
+                                <div class="flex flex-row flex-none gap-4 items-end justify-start">
+                                    <button on:click={closeModal}>
+                                        <X class="text-white w-7 h-7" />
+                                    </button>
+                                    
+                                    <h3 class="title w-full text-left text-white font-bold text-xl">{title}</h3>
+                                </div>
+
+                                {#if $$slots.titleRight}
+                                    <slot name="titleRight" />
+                                {/if}
+                            </div>
+                        {/if}
+                    
+                        <div class="overflow-y-auto max-h-[65vh] grow shrink w-full scrollbar-hide">
+                            <slot />
+                        </div>
+
+                        {#if $$slots.footer}
+                            <div class="w-full flex flex-row gap-4 items-center justify-end flex-none mt-4">
+                                <slot name="footer" />
+                            </div>
+                        {/if}
                     </div>
                 </div>
             {/if}
@@ -101,6 +145,10 @@
 
 
 <style lang="postcss">
+    .title {
+        @apply w-full text-left text-white font-bold text-lg;
+    }
+    
     .white .card .inner {
         @apply bg-white;
     }
@@ -109,7 +157,7 @@
         @apply bg-black border border-base-300 p-10;
     }
 
-    .glassy .card {
+    .card {
         @apply bg-base-200 bg-opacity-80 backdrop-blur-[48px];
         @apply border border-white/10;
     }

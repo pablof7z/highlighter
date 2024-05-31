@@ -10,6 +10,7 @@
     onDestroy(resetLayout);
 
     $: {
+        console.log($page.data)
         user = $page.data.user;
 
         try {

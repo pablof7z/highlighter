@@ -11,7 +11,7 @@
 
 {#if options}
 <div class="
-    justify-start items-start inline-flex whitespace-nowrap w-full
+    justify-start items-start inline-flex whitespace-nowrap
 ">
     <div class="
         lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}
@@ -19,7 +19,7 @@
         scrollbar-hide
         transition-all duration-300
     ">
-        {#each options as option (option.id ?? option.name)}
+        {#each options as option (option.id ?? option.name ?? option.href)}
             {#if option.component}
                 {#if !option.component.unstyled}
                     <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 p-1.5 items-center">
