@@ -11,6 +11,7 @@
 
 <ModalShell
     class="max-w-prose"
+    title="Add to Curation"
 >
     {#if $appMobileView}
         <Toolbar top title="Add to Curation">
@@ -19,10 +20,6 @@
             </Link>
         </Toolbar>
     {/if}
-
-    <h3 class="text-white">
-        Add to curation
-    </h3>
     
     <AddToCuration {event} />
 </ModalShell>

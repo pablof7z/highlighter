@@ -23,7 +23,7 @@
         container.style.marginLeft = `${leftMargin}px`;
     }
 
-    if (Device.isMobile) document.addEventListener("scroll", handleScroll);
+    if (typeof navigator !== 'undefined' && Device.isMobile) document.addEventListener("scroll", handleScroll);
 
     onDestroy(() => {
         document.removeEventListener("scroll", handleScroll);

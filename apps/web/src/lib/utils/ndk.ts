@@ -51,14 +51,13 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 		const r = $ndk.addExplicitRelay(relay, NDKRelayAuthPolicies.signIn({ ndk: $ndk }), false);
 		r.trusted = true;
 	}
-	$ndk.addExplicitRelay('wss://purplepag.es', undefined, false);
-	$ndk.addExplicitRelay('wss://nos.lol', undefined, false);
-	$ndk.addExplicitRelay('wss://relay.noswhere.com', undefined, false);
-	$ndk.addExplicitRelay('wss://relay.primal.net', undefined, false);
-	$ndk.addExplicitRelay('wss://relay.damus.io', undefined, false);
-	$ndk.addExplicitRelay('wss://njump.me', undefined, false);
-	$ndk.addExplicitRelay('wss://relay.nostr.band', undefined, false);
-	$ndk.addExplicitRelay('wss://relay.highlighter.com', undefined, false);
+	$ndk.addExplicitRelay('wss://purplepag.es/', undefined, false);
+	$ndk.addExplicitRelay('wss://nos.lol/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.noswhere.com/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.primal.net/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.damus.io/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.nostr.band/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.highlighter.com/', undefined, false);
 
 	// $ndk.connect(2000);
 

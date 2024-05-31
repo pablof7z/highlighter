@@ -9,11 +9,13 @@
 	import { Button, Link, Toolbar } from "konsta/svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { UserProfileType } from "../../app";
+	import ItemLink from "$components/Events/ItemLink.svelte";
 
     export let replyTo: NDKEvent | undefined = undefined;
     export let tags: NDKTag[] = [];
     export let placeholder = "What is happening?!";
-
+    export let title = "New Post";
+    
     if (replyTo) {
         const e = new NDKEvent($ndk);
         e.tag(replyTo, "reply");
@@ -36,51 +38,30 @@
     }
 </script>
 
-<ModalShell
-    color="glassy" class="w-full sm:max-w-2xl sm:!p-2 max-sm:h-full {publishing ? "!bg-transparent" : ""}"
+<ModalShell {title}
+    class="w-full sm:max-w-2xl sm:!p-2 max-sm:h-full {publishing ? "!bg-transparent" : ""}"
+    actionButtons={[
+        { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; } }
+    ]}
 >
-    {#if $appMobileView}
-        <Toolbar top>
-            <div class="left">
-                <Link onClick={(cancel)}>
-                    Cancel
-                </Link>
-            </div>
-
-            {#if $$slots.buttonsBar}
-                <slot name="buttonsBar" />
-            {/if}
-            
-            <div class="right">
-                <Button rounded large class="px-6" onClick={() => forcePublish = true} disabled={content?.length === 0}>
-                    {#if publishing}
-                        Publishing...
-                    {:else}
-                        Post
-                    {/if}
-                </Button>
-            </div>
-        </Toolbar>
-        {/if}
-
-    {#if publishing}
-        <div class="loading loading-lg loading-dots"></div>
-    {/if}
-
     {#if replyTo}
-        <EventWrapper
-            ndk={$ndk}
-            event={replyTo}
-            class="text-white text-xs max-sm:max-h-[30dvh] overflow-y-auto"
-            contentClass="!text-xs"
-            compact={true}
-            skipFooter={true}
-            skipReply={true}
-            skipZaps={true}
-            skipSwipe={true}
-            expandReplies={false}
-            exppandThread={false}
-        />
+        {#if replyTo.kind === 1}
+            <EventWrapper
+                ndk={$ndk}
+                event={replyTo}
+                class="text-white text-xs max-sm:max-h-[30dvh] overflow-y-auto"
+                contentClass="!text-xs"
+                compact={true}
+                skipFooter={true}
+                skipReply={true}
+                skipZaps={true}
+                skipSwipe={true}
+                expandReplies={false}
+                exppandThread={false}
+            />
+        {:else}
+            <ItemLink event={replyTo} />
+        {/if}
     {/if}
 
     <div class="w-full flex flex-col max-sm:min-h-[100dvh]">
@@ -99,8 +80,9 @@
             editorClass="text-white min-h-[7rem] h-full grow"
             skipAvatar={true}
             collapsed={false}
+            {forcePublish}
             bind:content
-            autofocus={false}
+            autofocus={true}
             extraTags={tags}
             bind:publishing
             on:publish={() => {

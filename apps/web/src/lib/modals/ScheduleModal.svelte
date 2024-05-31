@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { userProfile } from './../stores/session.ts';
     import ModalShell from "$components/ModalShell.svelte";
     import AvatarWithName from "$components/User/AvatarWithName.svelte";
-    import { RelativeTime, ndk } from "@kind0/ui-common";
+    import { RelativeTime, UserProfile, ndk } from "@kind0/ui-common";
     import { Check } from "phosphor-svelte";
     import { closeModal } from '$utils/modal';
 
@@ -58,8 +59,11 @@
     }
 </script>
 
-<ModalShell color="glassy" class="" title="Schedule Boost" on:close>
-    <div class="flex flex-col w-full text-sm border-b border-base-300 items-center pb-4">
+<ModalShell
+    title="Schedule Boost" on:close
+    class="max-w-sm w-full"
+>
+    <div class="flex flex-col w-full text-sm border-b border-base-300 items-center pb-4 mb-8">
         <div class="flex flex-row items-center gap-2 justify-center ">
             Scheduling provided by
             <AvatarWithName user={dvmUser} avatarType="circle" avatarSize="small" class="text-base-100-content" />
@@ -94,19 +98,21 @@
                 <RelativeTime timestamp={publishAt} class="text-base-100-content" />
             </span>
         {/if}
+    {/if}
 
-        <div class="flex flex-row gap-2 w-full justify-end">
+    <svelte:fragment slot="footer">
+        {#if !scheduled}
             <button class="btn btn-ghost" on:click={() => closeModal()}>
                 Cancel
             </button>
 
-            <button class="button grow" on:click={schedule} {disabled}>
+            <button class="button px-6" on:click={schedule} {disabled}>
                 {#if scheduling}
                     <span class="loading loading-sm"></span>
                 {:else}
                     Schedule
                 {/if}
             </button>
-        </div>
-    {/if}
+        {/if}
+    </svelte:fragment>
 </ModalShell>

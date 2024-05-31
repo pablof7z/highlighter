@@ -1,7 +1,8 @@
 <script lang="ts">
     import { debugMode } from "$stores/session";
-    import { Name } from "@kind0/ui-common";
-    import { NDKEvent, getRootEventId } from "@nostr-dev-kit/ndk";
+	import { encodeTag } from "$utils/event";
+    import { Name, ndk } from "@kind0/ui-common";
+    import { NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, getReplyTag, getRootEventId, getRootTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 
     export let event: NDKEvent;
@@ -13,12 +14,24 @@
 
     const dispatch = createEventDispatcher();
 
-    event.fetchRootEvent().then((e: NDKEvent | null) => rootEvent = e);
-    event.fetchReplyEvent().then((e: NDKEvent | null) => replyToEvent = e);
+    const subOpts: NDKSubscriptionOptions = {
+        groupable: true,
+        subId: 'view-conversation',
+        cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE
+    }
 
-    const rootTag = getRootEventId(event);
+    const rootTag = getRootTag(event);
+    let rootEncode = rootTag ? encodeTag(rootTag) : "";
 
-    $: isNoop = !(replyToEvent instanceof NDKEvent || rootEvent instanceof NDKEvent);
+    const replyTag = getReplyTag(event);
+
+    if (rootTag ?? replyTag) {
+        $ndk.fetchEventFromTag((replyTag ?? rootTag)!, subOpts).then((e: NDKEvent | null) => {
+            replyToEvent = e;
+        });
+    }
+    
+    $: isNoop = false;// !(replyToEvent instanceof NDKEvent || rootTag);
 
     function clicked(event: NDKEvent, e: Event) {
         dispatch("click", {event, originalEvent: e});
@@ -32,19 +45,11 @@
             @<Name npubMaxLength={12} user={replyToEvent.author} attribute="name" />
         </a>
     {/if}
-
-    {#if rootEvent instanceof NDKEvent}
-        {#if replyToEvent === undefined}
-            <a href="{urlPrefix}{rootEvent.encode()}" on:click={(e) => clicked(rootEvent, e)}>
-                reply to
-                @<Name  npubMaxLength={12} user={rootEvent.author} attribute="name" />
-            </a>
-        {:else if replyToEvent?.id !== rootEvent.id}
-            <a href="{urlPrefix}{rootEvent.encode()}" on:click={(e) => clicked(rootEvent, e)}>
-                View
-                conversation
-            </a>
-        {/if}
+    
+    {#if rootEncode && ((rootTag && rootTag?.[1] !== replyTag?.[1]) || !(replyToEvent instanceof NDKEvent))}
+        <a href="{urlPrefix}{rootEncode}">
+            View conversation
+        </a>
     {/if}
 </div>
 

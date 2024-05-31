@@ -1,9 +1,10 @@
 <script lang="ts">
-	import SearchBar from "$components/Page/SearchBar.svelte";
 	import { pageHeader } from "$stores/layout";
 	import { afterUpdate, onDestroy, onMount } from "svelte";
 	import HeaderLeftButton from "../HeaderLeftButton.svelte";
 	import HeaderRightButton from "../HeaderRightButton.svelte";
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
+	import { browser } from "$app/environment";
 
     let render = false;
     let navbar: HTMLElement;
@@ -11,28 +12,35 @@
     $: render =  !!($pageHeader?.component || $pageHeader?.searchBar || $pageHeader?.title || $pageHeader?.left || $pageHeader?.right);
 
     const updateNavbarHeight = () => {
-        if (!navbar) return;
+        console.log('updateNavbarHeight');
+        if (!navbar) {
+            document.documentElement.style.setProperty('--navbar-height', `0px`);
+            return;
+        }
         const navbarHeight = navbar.offsetHeight;
         document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
-        console.log('Navbar height:', navbarHeight);
     };
 
     onMount(() => {
-
         // Initial update
-        updateNavbarHeight();
+        if (browser) updateNavbarHeight();
 
         // Update on window resize
-        window.addEventListener('resize', updateNavbarHeight);
+        if (browser) window.addEventListener('resize', updateNavbarHeight);
     });
 
     onDestroy(() => {
-        window.removeEventListener('resize', updateNavbarHeight);
+        if (browser) window.removeEventListener('resize', updateNavbarHeight);
     });
 
     afterUpdate(() => {
-        updateNavbarHeight();
+        setTimeout(updateNavbarHeight);
     });
+
+    $: {
+        if (browser) updateNavbarHeight();
+        render = render;
+    }
 </script>
 
 {#if render}
@@ -48,44 +56,46 @@
                 <svelte:component
                     this={$pageHeader.component}
                     {...$pageHeader.props}
-                    containerClass={$$props.class??""}
+                    containerClass={$$props.containerClass}
                     on:resize={updateNavbarHeight}
                 />
             </div>
-        {:else if $pageHeader?.searchBar}
-            <div class="
-                {$$props.class??""}
-                w-full mx-auto
-            ">
-                <SearchBar inputClass="focus:!outline-none focus:!border-none" />
-            </div>
         {:else}
-            <div class="flex items-center justify-between px-4 w-full">
-                {#if $pageHeader?.left}
-                    <div class="md:hidden">
+            <div class="flex flex-col items-stretch w-full {$$props.containerClass??""}">
+                <div class="flex items-center justify-between px-4">
+                    {#if $pageHeader?.left}
                         <HeaderLeftButton />
-                    </div>
-                {/if}
+                    {/if}
 
-                <!-- If we have a sidebar, don't show the title on desktop -->
-                {#if $pageHeader?.title}
-                    <div class="
-                        flex flex-row
-                        items-center
-                        justify-center
-                        text-white
-                        font-medium
-                        gap-2
-                        w-full
-                        col-span-5
-                        text-center
-                    ">
-                        <span class="truncate">{$pageHeader?.title}</span>
-                    </div>
-                {/if}
+                    {#if $pageHeader?.title}
+                        <div class="
+                            flex flex-row
+                            items-center
+                            justify-center
+                            text-white
+                            font-medium
+                            gap-2
+                            w-full
+                            col-span-5
+                            text-center
+                            py-3
+                        ">
+                            <span class="truncate">{$pageHeader?.title}</span>
+                        </div>
+                    {/if}
 
-                {#if $pageHeader?.right}
-                    <HeaderRightButton />
+                    {#if $pageHeader?.right}
+                        <HeaderRightButton />
+                    {/if}
+                </div>
+
+                {#if $pageHeader?.subNavbarOptions}
+                    <div class="py-2 {$$props.containerClass??""}">
+                        <HorizontalOptionsList
+                            options={$pageHeader.subNavbarOptions}
+                            bind:value={$pageHeader.subNavbarValue}
+                        />
+                    </div>
                 {/if}
             </div>
         {/if}

@@ -3,15 +3,17 @@
 	import ServiceItem from './ServiceItem.svelte';
 	import { NDKKind } from '@nostr-dev-kit/ndk';
 	import BlossomSection from './BlossomSection.svelte';
+	import PageTitle from "$components/PageElements/PageTitle.svelte";
 
     $pageHeader = {
-        title: "Highlighter",
         left: {
             label: "Back",
             url: "/settings",
         }
     };
 </script>
+
+<PageTitle title="Services" defaultTitle="Settings" />
 
 <div class="flex flex-col gap-6">
     <section>

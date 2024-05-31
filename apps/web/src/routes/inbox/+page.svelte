@@ -12,6 +12,7 @@
 	import { inboxItems } from '$stores/inbox';
 	import ComplexHeaderWithBanner from '$components/PageElements/ComplexHeaderWithBanner.svelte';
 	import currentUser from '$stores/currentUser';
+	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 
     let activeFilterCount: number | undefined = undefined;
     let activeView = $userFollows;
@@ -99,24 +100,34 @@
     <title>Inbox</title>
 </svelte:head>
 
-<ComplexHeaderWithBanner
-    user={$currentUser}
-    image={`https://picsum.photos/800/600?random=Inbox}`}
->
-    <span slot="title">Inbox</span>
-    <span slot="subtitle">
-        A quiet place for the most important content.
-    </span>
-    <div slot="options" class="flex flex-row gap-2 flex-nowrap w-full scrollbar-hide overflow-x-auto p-2" let:collapsed>
-        {#each $inboxItems as item}
-            {#if item}
-                <Avatar pubkey={item} class="
-                    transition-all duration-300
-                    {collapsed ? "w-8 h-8" : "w-12 h-12"}
-                " />
-            {/if}
-        {/each}
-    </div>
+<div class="h-screen flex flex-col items-center justify-center max-w-xl">
+    <ComplexHeaderWithBanner
+        user={$currentUser}
+        image={`https://picsum.photos/800/600?random=Inbox}`}
+    >
+        <span slot="title" class="mt-8">Inbox</span>
+        <div slot="subtitle" class="flex flex-col items-center gap-8 text-lg p-6 bg-base-100/50 mt-4 rounded-box">
+            <h2 class="text-xl font-bold">A focused place for your most valuable content.</h2>
 
-    <StoreFeed {feed} />
-</ComplexHeaderWithBanner>
+            <p>
+                Your inbox is the place where you can find content from your favorite creators.
+            </p>
+
+            <p>
+                Each day you will be able to see a digest of the most important content from the creators you've highlighted.
+            </p>
+        </div>
+        <div slot="options" class="flex flex-row gap-2 flex-nowrap w-full scrollbar-hide overflow-x-auto p-2" let:collapsed>
+            {#each $inboxItems as item}
+                {#if item}
+                    <Avatar pubkey={item} class="
+                        transition-all duration-300
+                        {collapsed ? "w-8 h-8" : "w-12 h-12"}
+                    " />
+                {/if}
+            {/each}
+        </div>
+
+        <StoreFeed {feed} />
+    </ComplexHeaderWithBanner>
+</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { nip19 } from 'nostr-tools';
 	import { goto } from "$app/navigation";
 	import ItemLink from "$components/Events/ItemLink.svelte";
 	import Input from "$components/Forms/Input.svelte";
@@ -12,16 +13,21 @@
 	import { NDKArticle, NDKKind } from "@nostr-dev-kit/ndk";
 	import { ArrowRight, Check, CheckCircle, MagnifyingGlass, UserCircleCheck } from "phosphor-svelte";
 	import { SvelteComponent, createEventDispatcher } from "svelte";
+	import { page } from '$app/stores';
 
     export let value: string = "";
+    export let onSearch: (q: string) => void;
+    export let displayResults = true;
 
     const dispatch = createEventDispatcher();
 
-    type SearchMode = 'all' | 'articles';
-    type SearchResultWithUrl = SearchResult & { url: string };
+    type SearchMode = 'all' | 'articles' | 'hashtag';
+    type SearchResultWithExt = SearchResult &
+        { url: string } & // url
+        { hashtag: string };// hash
     type SearchOption = { searchMode?: SearchMode, id: string, icon: SvelteComponent, label: string, fn: () => Promise<void> };
 
-    let results: (SearchResultWithUrl | SearchOption)[] = [];
+    let results: (SearchResultWithExt | SearchOption)[] = [];
     let selectedItem = 0;
     let searchMode: SearchMode = 'all';
 
@@ -44,6 +50,15 @@
 
     async function highlightUrl() {
         goto(`/load?url=${encodeURIComponent(value)}`);
+    }
+
+    function searchAll() {
+        if ($page.url.pathname === '/search') {
+            onSearch(value);
+            dispatch("change", value);
+        } else {
+            goto('/search?q=' + encodeURIComponent(value));
+        }
     }
     
     async function searchArticle() {
@@ -70,6 +85,21 @@
             results = [];
             return;
         }
+
+        displayResults = true;
+
+        // if value is a bech32 event
+        try {
+            nip19.decode(value);
+            const e = await $ndk.fetchEvent(value);
+            if (e) {
+                if (e.isParamReplaceable()) {
+                    goto(`/a/${e.encode()}`);
+                } else {
+                    goto(`/e/${e.encode()}`);
+                }
+            }
+        } catch {} 
         
         if (event.key === "Enter") {
             const selected = results[selectedItem];
@@ -93,12 +123,20 @@
         } else if (event.key.match(/[a-zA-Z0-9]/)) {
             results = [];
 
+            if (value.match(/^\#\w+/)) {
+                results.push({ id: 'search-hashtag', label: `Search for '${value}'`, fn: () => goto(`/t/${encodeURIComponent(value.slice(1, -1))}`) });
+            }
+
             // is URI
             if (isUri()) {
-
+                console.log("is uri");
             } else {
+                console.log({searchMode});
+                results.push({ id: 'search-articles', label: `Search articles with '${value}'`, icon: MagnifyingGlass, fn: searchArticle });
+                results.push({ id: 'search-all', label: `Search everywhere for '${value}'`, icon: MagnifyingGlass, fn: searchAll });
+                results = results;
                 if ( searchMode === 'all') await users();
-                results.push({ id: 'search-articles', label: `Search articles with '${value}'`, fn: searchArticle });
+                console.log(results);
             }
 
             results = results;
@@ -115,7 +153,7 @@
         }
     }
 
-    let renderedResults: (SearchResultWithUrl | SearchOption)[] = [];
+    let renderedResults: (SearchResultWithExt | SearchOption)[] = [];
     $: {
         renderedResults = results.slice(0, 10);
         for (const result of results.slice(11, -1)) {
@@ -125,52 +163,56 @@
     }
 </script>
 
-    <div class="flex flex-row gap-2 w-full items-center">
-        {#if searching}
-            <span class="loading loading-sm text-accent2"></span>
-        {:else}
-            <MagnifyingGlass class="w-8 h-8 text-neutral-500" />
-        {/if}
-        
-        <Input
-            color="black"
-            bind:value
-            placeholder="Search"
-            autofocus={true}
-            class="bg-transparent w-full border-none text-xl"
-            on:keyup={keydown}
-        />
-    </div>
-
-    {#if value.length > 0}
-        <ul class="flex flex-col items-start grow overflow-y-auto w-full pt-6">
-            {#each renderedResults as {type, icon, label, result, id, fn}, i (id + i)}
-                {#if type === "user"}
-                    <li class:selected={i === selectedItem}>
-                        <a href="/{result.nip05}" class="flex flex-row gap-2 items-center">
-                            <AvatarWithName userProfile={result.profile} avatarSize="small" />
-                            {#if result.followed}
-                                <UserCircleCheck class="w-6 h-6 text-accent2" />
-                            {/if}
-                        </a>
-                    </li>
-                {:else if type === "event"}
-                    <li class:selected={i === selectedItem}>
-                        <ItemLink event={result} />
-                    </li>
-                {:else if fn}
-                    <li class:selected={i === selectedItem}>
-                        <button on:click={fn}>
-                            {#if icon}
-                                <svelte:component this={icon} class="w-6 h-6 mr-2 inline" />
-                            {/if}
-                            {label}
-                        </button>
-                    </li>
-                {/if}
-            {/each}
-        </ul>
+<div class="
+    flex flex-row gap-2 w-full items-center border-b border-base-300 {$$props.inputContainerClass??""}
+    {$$props.containerClass??""}
+">
+    {#if searching}
+        <span class="loading loading-sm text-accent2"></span>
+    {:else}
+        <MagnifyingGlass class="w-8 h-8 text-neutral-500" />
     {/if}
+    
+    <Input
+        color="black"
+        bind:value
+        placeholder="Search"
+        autofocus={true}
+        class="bg-transparent w-full border-none text-xl"
+        on:keyup={keydown}
+        on:focus={() => displayResults = true}
+    />
+</div>
+
+{#if value.length > 0 && displayResults}
+    <ul class="flex flex-col items-start grow overflow-y-auto w-full pt-6 {$$props.containerClass??""}">
+        {#each renderedResults as {type, icon, label, result, id, fn}, i (id + i)}
+            {#if type === "user"}
+                <li class:selected={i === selectedItem}>
+                    <a href="/{result.nip05}" class="flex flex-row gap-2 items-center">
+                        <AvatarWithName userProfile={result.profile} avatarSize="small" />
+                        {#if result.followed}
+                            <UserCircleCheck class="w-6 h-6 text-accent2" />
+                        {/if}
+                    </a>
+                </li>
+            {:else if type === "event"}
+                <li class:selected={i === selectedItem}>
+                    <ItemLink event={result} />
+                </li>
+            {:else if fn}
+                <li class:selected={i === selectedItem}>
+                    <button on:click={fn}>
+                        {#if icon}
+                            <svelte:component this={icon} class="w-6 h-6 mr-2 inline" />
+                        {/if}
+                        {label}
+                    </button>
+                </li>
+            {/if}
+        {/each}
+    </ul>
+{/if}
 
 <style lang="postcss">
     li {

@@ -3,7 +3,6 @@
 	import { page } from "$app/stores";
 	import { NavigationOption } from "../../app";
     import { appMobileView } from "$stores/app";
-	import { Chip } from "konsta/svelte";
 	import { goto } from "$app/navigation";
 	import { createEventDispatcher } from "svelte";
 
@@ -16,7 +15,7 @@
     let el: HTMLElement;
 
     $: {
-        active = (value === (option.value || option.name) || $page.url.pathname === option.href);
+        active = (value === (option.value || option.name ) || $page.url.pathname === option.href);
         // scroll into view
         if (active) {
             const isInView = el?.offsetLeft < el?.scrollLeft;

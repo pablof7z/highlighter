@@ -59,6 +59,12 @@ export const userFollows = persist(
 	'user-follows-set'
 );
 
+export const muteList = persist(
+	writable(new Set<Hexpubkey>()),
+	createLocalStorage(),
+	'user-mute-list'
+);
+
 export const networkFollows = persist(
 	writable(new Map<Hexpubkey, number>()),
 	createLocalStorage(),
@@ -136,7 +142,7 @@ function wantedLists(list: NDKList) {
 	const dTag = list.dTag ?? "";
 	if ([ "allowlist", "mute", "mutelists" ].includes(dTag)) return false;
 	if (dTag.startsWith("chats/")) return false;
-	if (dTag.startsWith("noticiations/")) return false;
+	if (dTag.startsWith("notications/")) return false;
 
 	return true;
 }
@@ -201,6 +207,7 @@ export async function prepareSession(): Promise<void> {
 		fetchData('user', $ndk, [$currentUser.pubkey], {
 			profileStore: userProfile,
 			followsStore: userFollows,
+			mutesStore: muteList,
 			blossomStore: userBlossom,
 			userArticleCurationsStore: userArticleCurations,
 			userVideoCurationsStore: userVideoCurations,
@@ -273,6 +280,7 @@ export const processUserProfile = (event: NDKEvent, store: Writable<UserProfileT
 interface IFetchDataOptions {
 	profileStore?: Writable<UserProfileType | undefined>;
 	followsStore?: Writable<Set<Hexpubkey> | PubkeysFollowCount>;
+	mutesStore?: Writable<Set<Hexpubkey>>;
 	blossomStore?: Writable<NDKEvent | null>;
 	activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
 	supportStore?: Writable<NDKEvent[]>;

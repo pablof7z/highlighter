@@ -1,7 +1,7 @@
 <script lang="ts">
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKArticle, NDKEvent, NDKKind, NDKUser, NDKVideo, eventIsReply, isEventOriginalPost, type NDKEventId } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKKind, NDKUser, NDKVideo, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
@@ -10,7 +10,7 @@
 	import ArticleCard from "$components/ArticleCard.svelte";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";
-	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
+	import { urlFromEvent } from "$utils/url";
 
     export let user: NDKUser;
 

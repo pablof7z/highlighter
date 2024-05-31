@@ -56,14 +56,14 @@
             {#if option.badge}
                 {#if option.badge === true}
                     <span class="indicator-item rounded-full bg-accent2 text-white flex items-center justify-center text-xs w-2 h-2"></span>
-                    {:else}
-                    <span class="indicator-item rounded-full bg-accent2 text-white flex items-center justify-center text-xs w-5 h-5">{$unreadNotifications}</span>
+                {:else}
+                    <span class="indicator-item rounded-full bg-accent2 text-white flex items-center justify-center text-xs w-5 h-5">{option.badge}</span>
                 {/if}
             {/if}
         <svelte:component this={option.icon}
             class="
                 flex-none
-                z-[20]
+                z-[1000]
                 w-6 h-6 inline
                 {
                     collapsed ?
@@ -77,7 +77,7 @@
     {/if}
     <span class="sm:hidden flex flex-row items-center
     {collapsed ?
-        "group-hover:inline group-hover:absolute group-hover:pl-12 group-hover:bg-base-200 group-hover:text-white group-hover:px-6 group-hover:py-2 group-hover:rounded-full group-hover:z-[19]"
+        "group-hover:inline group-hover:absolute group-hover:pl-12 group-hover:bg-base-200 group-hover:text-white group-hover:px-6 group-hover:py-2 group-hover:rounded-full group-hover:z-[999]"
         :
         "lg:inline"
         }
@@ -96,7 +96,6 @@
         @apply justify-start items-center gap-2 flex;
         @apply text-sm font-normal;
         @apply sm:text-lg p-2 px-4;
-        @apply max-sm:w-fit;
         @apply text-base-100-content;
         @apply max-sm:border-b-4 max-sm:border-base-300 max-sm:rounded-b-none;
     }

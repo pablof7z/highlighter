@@ -36,3 +36,9 @@ export const wysiwygEditor = persist(
 	createLocalStorage(),
 	'wysiwyg'
 )
+
+export const seenHighlightUserHelperModal = persist(
+	writable<boolean | undefined>(undefined),
+	createLocalStorage(),
+	'seen-highlight-user-helper-modal'
+);

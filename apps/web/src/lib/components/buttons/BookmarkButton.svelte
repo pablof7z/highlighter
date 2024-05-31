@@ -10,6 +10,6 @@
     icon={BookmarkSimple}
     buttonClass="hover:bg-red-400/20"
     bgClass="bg-red-500"
-    iconClass={active ? "text-red-500" : "text-red-400/30 group-hover:text-red-500"}
+    iconClass={active ? "text-red-500" : "text-red-400/30 group-hover:text-red-500 max-sm:text-red-500"}
     on:click
 />

@@ -10,7 +10,7 @@
     export let href: string | undefined = undefined;
 
     const summary = article.summary || getSummary(article);
-    const isFullVersion = !article.tagValue("full");
+    const isFullVersion = true;!article.tagValue("full");
     const wordCount = article.content.split(" ").length;
     const readTime = Math.ceil(wordCount / 265);
 </script>

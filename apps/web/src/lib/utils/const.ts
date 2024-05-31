@@ -17,6 +17,10 @@ export const creatorRelayPubkey = import.meta.env.VITE_CREATOR_RELAY_PUBKEY;
 export const defaultVerifierPubkey = creatorRelayPubkey;
 export const defaultRelays = [import.meta.env.VITE_RELAY];
 
+export const blacklistedTags = new Set([
+    "bitcoin",
+]);
+
 export const vanityUrls: Record<string, Hexpubkey> = {
 	"avichand": "5002cb487a6e03a781d20b4d115bfc0e96abf7802d9ba4ee49d75a0231a0d6d8",
 	"max": "fe7f6bc6f7338b76bbf80db402ade65953e20b2f23e66e898204b63cc42539a3",

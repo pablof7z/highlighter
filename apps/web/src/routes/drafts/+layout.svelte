@@ -12,7 +12,7 @@
         title: "Drafts",
     }
 
-    $layoutMode = "content-focused";
+    $layoutMode = "single-column-focused";
     $pageSidebar = {
         component: DraftsMenu,
         focused: true,

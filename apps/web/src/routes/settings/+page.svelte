@@ -23,6 +23,4 @@
     <title>Settings</title>
 </svelte:head>
 
-{#if $appMobileView}
-    <SettingsMenu />
-{/if}
+<SettingsMenu />

@@ -17,6 +17,16 @@
 		/* Navbar */
 		--navbar-collapsed: 80px;
 
+		/* max-w-7xl */
+		--content-focused-wrapper-width: 80rem;
+		--content-focused-width: 48rem;
+
+		/* max-w-3xl */
+		--feed-width: 48rem;
+
+		/* max-w-4xl */
+		--home-layout-feed-width: 56rem;
+
 		--navbar-icon-size: 32px;
 		@media (min-width: 640px) {
 			--navbar-icon: 40px;
@@ -33,6 +43,17 @@
 	body > div {
 		font-family: Inter;
 		min-height: 100%;
+	}
+
+	/* Modal */
+	.backdrop {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		backdrop-filter: blur(10px);
+		left: 0;
+		@apply bg-white/10;
 	}
 
 	/* Navbar */
@@ -153,7 +174,7 @@
 	}
 
 	.discussion-wrapper {
-		@apply border-y border-base-300 divide-y divide-base-300;
+		@apply border border-base-300 divide-y divide-base-300;
 	}
 
 	.discussion-wrapper > button, .discussion-wrapper > a, .discussion-wrapper > .discussion-item {
@@ -162,6 +183,10 @@
 
 	.discussion-wrapper > button, .discussion-wrapper > a {
 		@apply hover:bg-[#ffffff05] transition-all duration-100;
+	}
+
+	.discussion-wrapper .event-content video, .discussion-wrapper .event-content img {
+		@apply xl:max-h-[40vh];
 	}
 }
 
@@ -393,4 +418,20 @@ strong {
 .backstage-box-container > .title {
 	@apply flex flex-row justify-between items-center border-b border-white/10 -mx-6 -mt-2 px-6 pb-2;
 	@apply text-sm;
+}
+
+.article pre {
+	@apply bg-base-300;
+}
+
+.event-content img {
+	@apply max-h-[30rem];
+}
+
+blockquote.app-quote p {
+	@apply text-white/60 text-lg prose;
+}
+
+blockquote.app-quote .author {
+	@apply text-right text-base-100-content;
 }

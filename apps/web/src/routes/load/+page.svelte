@@ -36,11 +36,6 @@
     }
 
     $pageHeader = {};
-
-    $layoutMode = "content-focused";
-    onDestroy(resetLayout);
-
-    console.log(data)
 </script>
 
 {#if text}

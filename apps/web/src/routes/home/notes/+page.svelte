@@ -3,12 +3,15 @@
 	import { userFollows } from "$stores/session";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 	import currentUser from "$stores/currentUser";
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
+	import { layoutMode } from "$stores/layout";
 
+    $layoutMode = "single-column-focused";
+    
     const authors = Array.from($userFollows);
 
-    if ($currentUser) authors.push($currentUser.id);
+    if ($currentUser) authors.push($currentUser.pubkey);
 
     let filters: NDKFilter[];
     

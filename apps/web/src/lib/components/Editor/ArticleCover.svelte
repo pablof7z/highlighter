@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { NDKArticle, NDKKind } from '@nostr-dev-kit/ndk';
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
-	import AiIcon from '$icons/AiIcon.svelte';
-	import ImageIcon from '$icons/ImageIcon.svelte';
+	import { Image, Shuffle } from 'phosphor-svelte';
 
     export let article: NDKArticle;
 
@@ -10,13 +9,21 @@
         const {url} = event.detail;
         article.image = url;
     }
+
+    async function randomImage() {
+        const title = article.title || "Nature";
+        const image = await fetch(`https://picsum.photos/800/600?random=${title}`);
+        const finalUrl = image.url;
+
+        if (finalUrl) {
+            article.image = finalUrl;
+        }
+    }
+    
 </script>
 
-<section class="settings">
+<section class="w-full">
     <div class="field">
-        <div class="title">
-            Cover Image
-        </div>
         <div class="grid grid-cols-3 gap-4">
             <div class="relative rounded-box bg-base-100 col-span-2 row-span-2 flex items-stretch justify-stretch">
                 {#if article.image}
@@ -33,19 +40,16 @@
                     on:uploaded={uploaded}
                 >
                     <button class="side-button w-full" on:click={onOpen}>
-                        <ImageIcon class="w-12 h-12" />
+                        <Image class="w-12 h-12" />
                         Upload a cover image
                     </button>
                 </ImageUploader>
             </div>
 
-            <button class="side-button" disabled>
-                <AiIcon class="w-12 h-12" />
+            <button class="side-button" on:click={randomImage}>
+                <Shuffle class="w-12 h-12" />
 
-                Generate Image
-                <div class="badge">
-                    Coming soon
-                </div>
+                Random Image
             </button>
         </div>
 

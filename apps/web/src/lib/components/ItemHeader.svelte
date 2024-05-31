@@ -2,7 +2,7 @@
 	import { EventCardActions, RelativeTime } from '@kind0/ui-common';
 	import { NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
-    import { Headphones, TextAlignLeft } from 'phosphor-svelte';
+    import { CaretLeft, Headphones, TextAlignLeft } from 'phosphor-svelte';
 	import UpgradeButton from './buttons/UpgradeButton.svelte';
 	import SubscribeButton from './buttons/SubscribeButton.svelte';
 	import { EventCardDropdownMenu } from '@nostr-dev-kit/ndk-svelte-components';
@@ -11,7 +11,9 @@
 
     export let item: NDKArticle | NDKVideo;
     export let isFullVersion: boolean | undefined = undefined;
+    export let urlPrefix: string;
     export let editUrl: string | undefined = undefined;
+    export let title: string | undefined = undefined;
 
     const author = item.author;
 
@@ -19,7 +21,7 @@
     const isArticle = item instanceof NDKArticle;
 </script>
 
-<div class="flex flex-col sm:flex-row gap-6 justify-between items-center w-full">
+<div class="py-2 flex flex-col sm:flex-row gap-6 justify-between items-center w-full {$$props.class??""}">
     <div class="flex flex-row gap-6 items-center max-sm:justify-between w-full">
         <AvatarWithName user={author} spacing="gap-4" avatarType="square" class="text-white grow">
             <ClientName event={item} />
@@ -30,8 +32,8 @@
                     <a href={editUrl} class="button button-black px-6 mr-4">Edit</a>
                 </div>
             {/if}
-            <RelativeTime event={item} class="text-sm opacity-60 whitespace-nowrap" />
-            <EventCardDropdownMenu event={item} />
+
+            <SubscribeButton user={item.author} collapsed={true} />
         </div>
     </div>
 

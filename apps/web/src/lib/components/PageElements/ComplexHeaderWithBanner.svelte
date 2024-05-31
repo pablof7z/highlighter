@@ -79,15 +79,17 @@
 {#key user.pubkey}
 <UserProfile {user} bind:userProfile bind:fetching />
 
-<div class="sticky top-0 z-40 w-full overflow-clip {collapsed ? "" : "min-h-[15rem]"}" on:touchstart={() => {if (collapsed) collapsed = false}}>
-    <div class="relative h-full w-full bg-gradient-to-b from-base-300 to-base-100">
+<div class="sticky top-0 z-40 w-full overflow-clip {collapsed ? "" : "min-h-[15rem]"} {$$props.class??""}" on:touchstart={() => {if (collapsed) collapsed = false}}>
+    <div class="h-full w-full relative">
         {#if image}
             <img src={image} class="absolute w-full h-full object-cover object-top z-[1] transition-all duration-300 {collapsed ? "opacity-20" : ""}" alt={userProfile?.name}>
             <div class="absolute w-full h-full bg-gradient-to-b from-transparent to-base-100 z-[2]"></div>
         {/if}
 
         <!-- Container -->
-        <div class="flex flex-col pt-4 px-6 items-center justify-center relative z-50  max-sm:pt-0-safe text-white {$$props.containerClass??""} {collapsed ? "max-sm:px-2" : ""}">
+        <div class="
+            flex flex-col pt-4 px-6 items-center justify-center relative z-50  max-sm:pt-0-safe text-white {$$props.containerClass??""} {collapsed ? "max-sm:px-2" : ""}
+        ">
             <div class="flex {collapsed ? "flex-row" : "flex-col"} items-center justify-start gap-2 w-full transition-all duration-300">
                 {#if $appMobileView}
                     <div class="left-2 top-0-safe {collapsed ? "" : "absolute"}">
@@ -118,10 +120,10 @@
                             <CreatorHeaderFollowButton {user} {collapsed} />
                             <CreatorHeaderInboxButton {user} {collapsed} />
                             <CreatorHeaderSupportButton {user} {collapsed} />
-                            <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
-                                <Export class="" size={$appMobileView ? 25 : 20} weight="bold" />
-                                <span class="text-xs max-sm:hidden">Share</span>
-                            </button>
+                            <!-- <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
+                                <Export class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
+                                <span class="max-sm:hidden {collapsed ? "max-sm:hidden text-sm" : "text-base"}">Share</span>
+                            </button> -->
                         </div>
                     </div>
                 {/if}
@@ -144,10 +146,10 @@
                         <CreatorHeaderFollowButton {user} {collapsed} />
                         <CreatorHeaderInboxButton {user} {collapsed} />
                         <CreatorHeaderSupportButton {user} {collapsed} />
-                        <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
-                            <Export class="" size={20} weight="bold" />
-                            <span class="text-xs">Share</span>
-                        </button>
+                        <!-- <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
+                            <Export class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
+                            <span class="max-sm:hidden {collapsed ? "max-sm:hidden text-sm" : "text-base"}">Share</span>
+                        </button> -->
                     </div>
                 {/if}
             </div>

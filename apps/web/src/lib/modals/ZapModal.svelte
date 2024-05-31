@@ -7,7 +7,7 @@
 </script>
 
 <ModalShell
-    color="glassy"
+    title="Zap"
 >
     <Zap
         {event}

@@ -1,19 +1,18 @@
 <script lang="ts">
 	import { Readable, derived } from "svelte/store";
-	import { NDKArticle, NDKEvent, NDKEventId, NDKHighlight, NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKEventId, NDKHighlight, NDKKind, NDKList, NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 	import Highlight from "$components/Highlight.svelte";
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
-	import { navigateToEvent } from "./navigate-to-event";
     import { inview } from 'svelte-inview';
 	import EventWrapper from "./EventWrapper.svelte";
 	import { pluralize } from "$utils";
 	import GroupNote from "$components/Events/GroupNote.svelte";
 	import CurationItem from "$components/CurationItem.svelte";
 	import { goto } from "$app/navigation";
+	import VideoLink from "$components/Events/VideoLink.svelte";
 
     export let feed: Readable<NDKEvent[]>;
     export let renderLimit = 10;
-    export let newPostTags: NDKTag[] = [];
     export let urlPrefix: string = "/e/";
     export let showEventsOlderThan: Date | undefined = undefined;
     export let tooNewEvents = new Set<NDKEventId>();
@@ -116,6 +115,7 @@
                     on:click
                     on:open:note={openNote}
                     on:open:conversation={openNote}
+                    {...($$props.eventProps||{})}
                 />
             {:else if event.kind === NDKKind.GroupNote}
                 <GroupNote {event} {urlPrefix} />
@@ -123,9 +123,14 @@
                 <ArticleLink
                     article={NDKArticle.from(event)}
                 />
+            {:else if event.kind === NDKKind.HorizontalVideo}
+                <VideoLink
+                    video={NDKVideo.from(event)}
+                />
             {:else if event.kind === NDKKind.Highlight}
                 <Highlight
                     highlight={NDKHighlight.from(event)}
+                    {...($$props.eventProps||{})}
                 />
             {:else if event.kind === NDKKind.ArticleCurationSet}
                 <CurationItem list={NDKList.from(event)} grid={false} />
@@ -136,6 +141,7 @@
                     skipReply={true}
                     showReply={false}
                     {urlPrefix}
+                    {...($$props.eventProps||{})}
                 />
             {/if}
         {/each}

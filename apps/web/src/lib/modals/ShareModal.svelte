@@ -1,10 +1,9 @@
 <script lang="ts">
-	import ItemLink from "$components/Events/ItemLink.svelte";
+	import { BlossomClient } from 'blossom-client-sdk/client';
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import Input from "$components/Forms/Input.svelte";
     import ModalShell from "$components/ModalShell.svelte";
-	import UserProfile from "$components/User/UserProfile.svelte";
 	import { urlSuffixFromTagId, urlSuffixFromEvent, urlFromEvent } from "$utils/url";
 	import { ndk } from "@kind0/ui-common";
 	import { NDKArticle, NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
@@ -12,8 +11,14 @@
 	import { NavigationOption } from "../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import { Block, Button, Link, Segmented, SegmentedButton, Toolbar } from "konsta/svelte";
-    import { Share as ShareIcon } from "phosphor-svelte";
+    import { Export, Share as ShareIcon } from "phosphor-svelte";
     import { Share } from '@capacitor/share';
+	import { appMobileView } from "$stores/app";
+	import ShareImage from "$components/Event/ShareImage.svelte";
+    import { toBlob, toPng } from "html-to-image";
+	import { EventTemplate } from "nostr-tools";
+	import { activeBlossomServer } from '$stores/session';
+	import { onDestroy } from 'svelte';
 
     export let event: NDKEvent;
 
@@ -47,20 +52,68 @@
 
     let publishing = false;
 
+    async function sign(draft: EventTemplate) {
+        const e = new NDKEvent($ndk, draft as any);
+        await e.sign();
+        return e.toNostrEvent();
+    }
+
+    async function uploadImage() {
+        if (!shareImageEl) return;
+        const file = await toBlob(shareImageEl);
+        if (!file) throw new Error("Failed to convert image to blob");
+        const uploadAuth = await BlossomClient.getUploadAuth( file!, sign as any, "Upload share image");
+        const res = await BlossomClient.uploadBlob($activeBlossomServer, file!, uploadAuth);
+        const mediaEvent = new NDKEvent($ndk);
+        mediaEvent.kind = NDKKind.Media;
+        mediaEvent.content = event.tagValue("title") ?? "";
+        if (res.type) mediaEvent.tags.push(["m", res.type]);
+        if (res.sha256)mediaEvent.tags.push(["x", res.sha256]);
+        if (res.url) mediaEvent.tags.push(["url", res.url]);
+        if (res.size) mediaEvent.tags.push(["size", res.size.toString()]);
+        mediaEvent.tag(event!);
+        await mediaEvent.publish();
+
+        return res.url;
+    }
+
+    async function getCoverImageUrl() {
+        const cover = await $ndk.fetchEvent({
+            kinds: [NDKKind.Media], ...event.filter(), authors: [event.pubkey], limit: 1
+        });
+
+        if (cover) return cover.tagValue("url");
+    }
+
+    let coverImageUrl: string | undefined;
+    getCoverImageUrl().then((url) => coverImageUrl = url);
+
     async function publish() {
         publishing = true;
         const boostEvent = new NDKEvent($ndk);
         const boostedEvent = previewEvent ?? event;
         boostEvent.kind = NDKKind.Text;
         boostEvent.content = `${content}\n\nnostr:${event.encode()}`;
+
+        try {
+            coverImageUrl ??= await uploadImage();
+            if (coverImageUrl) {
+                boostEvent.content += `\n\n${coverImageUrl}`;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        
         if (articleUrl)
             boostEvent.content += `\n\n${articleUrl}`;
 
         boostEvent.tag(boostedEvent, "mention", false, "q");
         if (boostedEvent.kind !== NDKKind.Text) boostEvent.tags.push(["k", boostedEvent.kind!.toString()]);
         boostEvent.tag(boostedEvent.author);
+        await boostEvent.sign();
+        console.log(boostEvent.rawEvent());
         try {
-            await boostEvent.publish();
+            // await boostEvent.publish();
             closeModal();
         } finally {
             publishing = false;
@@ -70,44 +123,42 @@
     let advanced = false;
 
     let options: NavigationOption[] = [
-        {
-            name: "Publish on Nostr",
-        },
-        {
-            name: "Share manually",
-        },
+        { name: "Publish on Nostr", },
+        { name: "Share manually", },
     ];
+
     let selectedOption = 'Publish on Nostr';
-    let activeSegmented = 1;
+
+    let shareImageEl: HTMLElement;
 </script>
 
-<ModalShell color="glassy" class="w-full max-w-2xl items-stretch">
-    <Toolbar top>
-        <div class="left">
-            <Link onClick={() => closeModal()}>
-                Close
-            </Link>
-        </div>
-
-        <div class="right">
-            <Button onClick={publish}>
-                {#if publishing}
-                    Publishing...
-                {:else}
-                    Publish
-                {/if}
-            </Button>
-        </div>
-    </Toolbar>
-    
-    <Block>
-    <div class="w-full {advanced ? "max-sm:hidden" : ""}">
-        <div class="w-fit basis-0 sm:bg-black p-1 rounded-full mb-4">
+<ModalShell
+    title="Share"
+    class="w-full max-w-2xl items-stretch"
+    mobileToolbar={[
+        { name: publishing ? "Publishing" : "Publish", fn: publish }
+    ]}
+>
+    <svelte:fragment slot="titleRight">
+        <div class="flex flex-row items-center">
             <HorizontalOptionsList bind:value={selectedOption} {options} />
+            {#await Share.canShare() then canShare}
+                {#if canShare?.value}
+                    <button on:click={async () => {
+                        await Share.share({
+                            title: article?.title,
+                            text: summary,
+                            url: articleUrl,
+                        });
+                    }}>
+                        <Export class="w-8 h-8" />
+                    </button>
+                {/if}
+            {/await}
         </div>
-
-        {selectedOption}
-
+    </svelte:fragment>
+    
+    <div class="w-full {advanced ? "max-sm:hidden" : ""}">
         {#if selectedOption === "Publish on Nostr"}
             <ContentEditor
                 bind:content
@@ -120,9 +171,9 @@
                 "
             />
 
-            <div class="w-full max-sm:hidden">
+            <div class="w-full">
                 {#if article}
-                    <ItemLink event={article} />
+                    <ShareImage {article} bind:node={shareImageEl} />
                 {:else}
                     <div class="border border-base-300 rounded-box w-full">
                         <EventWrapper
@@ -162,19 +213,15 @@
                 </div>
             </div>
         {/if}
+    </div>
 
-        {#await Share.canShare() then canShare}
-            {#if canShare}
-                <Link onClick={async () => {
-                    await Share.share({
-                        title: article?.title,
-                        text: summary,
-                        url: articleUrl,
-                    });
-                }}>
-                    <ShareIcon class="w-8 h-8" />
-                </Link>
+    <svelte:fragment slot="footer">
+        <button class="button px-6" on:click={publish}>
+            {#if publishing}
+                Publishing...
+            {:else}
+                Publish
             {/if}
-        {/await}
-    </Block>
+        </button>
+    </svelte:fragment>
 </ModalShell>

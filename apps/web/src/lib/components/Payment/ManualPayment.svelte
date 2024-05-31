@@ -5,7 +5,7 @@
 	import { NDKEvent, NDKUser, NDKZap } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher, onMount } from "svelte";
     import {requestProvider} from 'webln';
-    import QrCode from "svelte-qrcode";
+    // import QrCode from "svelte-qrcode";
 	import { creatorRelayPubkey } from "$utils/const";
 	import { Check } from "phosphor-svelte";
 	import Box from "$components/PageElements/Box.svelte";
@@ -106,7 +106,7 @@
                 <div class="opacity-60 font-normal">({nicelyFormattedSatNumber(satAmount)} sats)</div>
             {/if}
 
-            <QrCode value={pr} color="#444444" size="350" />
+            <!-- <QrCode value={pr} color="#444444" size="350" /> -->
             <CopyButton label={pr} data={pr} class="truncate max-w-[350px] border border-base-300 rounded-full p-3 font-mono" />
 
             {#if provider}

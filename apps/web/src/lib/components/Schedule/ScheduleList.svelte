@@ -1,12 +1,15 @@
 <script lang="ts">
-	import EventWrapper from "$components/Feed/EventWrapper.svelte";
+	import NewItemModal from './../../modals/NewItemModal.svelte';
 	import { event, event } from "$components/Feed/NoteOld.svelte";
-import currentUser from "$stores/currentUser";
+    import currentUser from "$stores/currentUser";
 	import { ndk } from "@kind0/ui-common";
 	import { NDKEvent, NDKEventId, NDKKind } from "@nostr-dev-kit/ndk";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-	import { encode } from "punycode";
 	import ScheduleListItem from "./ScheduleListItem.svelte";
+	import Schedule from "$lib/illustrations/schedule.svelte";
+	import { openModal } from "$utils/modal";
+	import BlankState from '$components/PageElements/BlankState.svelte';
+	import PageTitle from '$components/PageElements/PageTitle.svelte';
 
     type ScheduledEvent = {
         scheduleEvent: NDKEvent;
@@ -15,7 +18,6 @@ import currentUser from "$stores/currentUser";
     
     let events: NDKEventStore<NDKEvent>;
     let eventsToPublish: ScheduledEvent[] = [];
-    let eventsPublished: NDKEvent[] = [];
     const readyEvents = new Set<NDKEventId>();
 
     $: if ($currentUser && !events) {
@@ -45,28 +47,33 @@ import currentUser from "$stores/currentUser";
 
                         if (e.created_at! > now) {
                             eventsToPublish.push({ scheduleEvent: event, event: e });
-                        } else {
-                            eventsPublished.push(e);
                         }
                     }
                 }
 
                 eventsToPublish = eventsToPublish.sort((a, b) => a.event.created_at! - b.event.created_at!);
-                eventsPublished = eventsPublished.sort((a, b) => a.created_at! - b.created_at!);
             } catch (e) {
                 console.error('failed to decrypt event', e);
             }
         })
     }
-
-
 </script>
 
-<div>
-    <h2 class="mobile-nav">Scheduled Events</h2>
+{#if eventsToPublish.length > 0}
+    <PageTitle title="Schedule" />
+{/if}
 
+<div>
     {#if eventsToPublish.length === 0}
-        <p>No scheduled posts</p>
+        <BlankState
+            cta="Start Creating"
+            on:click={() => openModal(NewItemModal)}
+            class="lg:fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2"
+        >
+            <Schedule class="w-full h-full opacity-50" />
+            You don't yet have any posts scheduled.
+            Yet.
+        </BlankState>
     {:else}
         <ul class="discussion-wrapper my-6">
             {#each eventsToPublish as { scheduleEvent, event } (event.id)}
@@ -77,22 +84,6 @@ import currentUser from "$stores/currentUser";
         </ul>
     {/if}
 </div>
-
-<div>
-    <h2 class="mobile-nav">Published Events</h2>
-    
-    <ul class="discussion-wrapper my-6">
-        {#each eventsPublished as event (event.id)}
-            <li class="discussion-item">
-                <EventWrapper
-                    {event}
-                    showReply={false}
-                />
-            </li>
-        {/each}
-    </ul>
-</div>
-
 
 <style lang="postcss">
     h2 {

@@ -3,7 +3,7 @@
 	import { openModal } from '$utils/modal';
 	import { UserProfileType } from './../../../../app.d.js';
     import OptionsList from "$components/OptionsList.svelte";
-	import { Bell, BookmarkSimple, ChalkboardSimple, Fire, Gear, House, PaperPlaneTilt, Plus, CardsThree, Timer, PlusCircle, Tray } from "phosphor-svelte";
+	import { Bell, BookmarkSimple, ChalkboardSimple, Fire, Gear, House, PaperPlaneTilt, Plus, CardsThree, Timer, PlusCircle, Tray, MagnifyingGlass } from "phosphor-svelte";
 	import { NavigationOption } from "../../../../app";
 	import NewItemModal from "$modals/NewItemModal.svelte";
     import currentUser, { isGuest } from "$stores/currentUser";
@@ -13,6 +13,7 @@
 	import { hasUnreadNotifications, showNotificationOption, unreadNotifications } from '$stores/notifications';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { drafts } from '$stores/drafts';
+	import SearchModal from "$modals/SearchModal.svelte";
 
     let hasDrafts = false;
 
@@ -23,37 +24,21 @@
     $: {
         options = [
             { name: "Home", icon: Fire, href: "/home" },
-            { name: "Inbox",  href: "/inbox", icon: Tray },
+            // { name: "Inbox",  href: "/inbox", icon: Tray },
             { name: "Bookmarks",  href: "/bookmarks", icon: BookmarkSimple },
             { name: "Collections",  href: "/collections", icon: CardsThree },
+            { name: "Search", fn: () => openModal(SearchModal), icon: MagnifyingGlass },
+            { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined },
+            { name: "Publish", icon: PlusCircle, class: "text-accent2", fn: () => openModal(NewItemModal) },
         ]
-        if ($showNotificationOption) {
-            options.push(
-                { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined }
-            );
-        } else {
-            // remove the option with name notifications
-            const index = options.findIndex(option => option.name === "Notifications");
-            if (index !== -1) {
-                options.splice(index, 1);
-            }
-        }
 
         options = options;
     }
     
-    let publicationOptions: NavigationOption[] = [];
     let userOptions: NavigationOption[] = [];
     let profile: UserProfileType;
     let authorUrl: string;
     
-    $: {
-        publicationOptions = [
-            { name: "Schedule", icon: Timer, href: "/schedule" },
-            { name: "Drafts", icon: ChalkboardSimple, href: "/drafts", badge: hasDrafts ? true : undefined },
-        ]
-    }
-
     $: {
         let userName: string | undefined;
 
@@ -70,15 +55,17 @@
         } else {
             userOptions = [{ name: userName, icon: CurrentUser, href: authorUrl ?? "/" }]
         }
-    }
 
-    let publishOption: NavigationOption;
-    
-    $: publishOption = {
-        name: "Publish",
-        icon: PlusCircle,
-        class: "text-accent2",
-        fn: () => openModal(NewItemModal),
+        userOptions = [
+            { name: "Settings", icon: Gear, href: "/settings" },
+            ...userOptions
+        ]
+
+        userOptions = [
+            { name: "Drafts", icon: PaperPlaneTilt, href: "/drafts", badge: $drafts.length > 0 ? $drafts.length.toString() : undefined },
+            { name: "Schedule", icon: Timer, href: "/schedule", },
+            ...userOptions
+        ]
     }
 </script>
 
@@ -113,32 +100,10 @@
         <div class="h-[var(--layout-header-height)] mb-6"></div>
         
         <OptionsList {options} class="flex-col w-full" collapsed={true} />
-
-        {#if hasDrafts && false}
-            <OptionsList options={publicationOptions} class="flex-col w-full" collapsed={true} />
-            <OptionsList options={[publishOption]} class="flex-col w-full" collapsed={true} />
-        {:else}
-            <div class="group">
-                <OptionsList options={[publishOption]} class="flex-col w-full" collapsed={true} />
-                <div class="hidden group-hover:block">
-                    <OptionsList options={publicationOptions} class="flex-col w-full" collapsed={true} />
-                </div>
-            </div>
-        {/if}
-        
-        
     </div>
 
     <div class="flex flex-col fixed bottom-0 items-center pb-6">
         <FailedPublishesIndicator />
-        <div class="group">
-        <div class="hidden group-hover:block">
-            <OptionsList options={[
-                { name: "Settings", icon: Gear, href: "/settings" }
-            ]} class="flex-col w-full" collapsed={true} />
-        </div>
-        
         <OptionsList options={userOptions} class="flex-col w-full" collapsed={true} />
-        </div>
     </div>
 </div>

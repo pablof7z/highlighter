@@ -49,6 +49,8 @@
         groupable: true,
         groupableDelay: 150,
     }).then(events => {
+        if (!resultForPubkeys) return;
+        
         events.forEach(event => {
             const pTag = event.tagValue('p');
 

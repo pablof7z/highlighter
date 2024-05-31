@@ -1,22 +1,56 @@
 <script lang="ts">
+	import NewItemModal from '$modals/NewItemModal.svelte';
 	import { RelativeTime } from '@kind0/ui-common';
 	import currentUser from '$stores/currentUser';
     import { drafts } from "$stores/drafts";
 	import { Timer, Trash } from "phosphor-svelte";
 	import DraftItem from "$components/Creator/DraftItem.svelte";
 	import DraftListVersionItem from "$components/Creator/DraftListVersionItem.svelte";
+	import PageTitle from '$components/PageElements/PageTitle.svelte';
+	import { openModal } from '$utils/modal';
+	import BlankState from '$components/PageElements/BlankState.svelte';
+	import { appMobileHideNewPostButton } from '$stores/app';
+    import { pageHeader } from '$stores/layout';
 
+	$pageHeader = { title: 'Drafts' }
+
+    $appMobileHideNewPostButton = true;
+    
     function trash(id: string) {
         $drafts = $drafts.filter(d => d.id !== id);
     }
+
 </script>
 
-{#if $currentUser}
+{#if $drafts.length > 0}
+    <PageTitle title="Drafts" />
+{/if}
+
+
+{#if $drafts.length === 0}
+    <BlankState
+        cta="Start making one"
+        on:click={() => openModal(NewItemModal)}
+        class="md:fixed md:top-1/2 md:-translate-y-1/2 md:left-1/2 md:-translate-x-1/2"
+    >
+        <img src="/images/drafts.png" class="mx-auto w-3/5 h-3/5 opacity-60 my-8" />
+        <blockquote slot="afterCta" class="app-quote relative my-8">
+            <p class="z-1 relative text-white/60 text-lg">
+                “And what can life be worth if the first rehearsal for life is life itself? That is why life is always like a sketch. No, "sketch" is not quite a word, because a sketch is an outline of something, the groundwork for a picture, whereas the sketch that is our life is a sketch for nothing, an outline with no picture.”
+            </p>
+
+            <div class="author">
+                Milan Kundera
+            </div>
+        </blockquote>
+        
+        <span class="text-2xl font-medium">Life is always a draft,</span>
+        <br>
+        <span class="font-light opacity-80">but you don't have one here.</span>
+    </BlankState>
+{:else if $currentUser}
     <ul class="w-full discussion-wrapper">
         {#key $drafts}
-            {#if $drafts.length === 0}
-                No drafts yet.
-            {/if}
             {#each $drafts as draft (draft.id)}
                 <div class="discussion-item">
                 <div class="max-h-[25vh] overflow-hidden">
@@ -59,10 +93,6 @@
 <style>
     ul {
         @apply flex flex-col;
-    }
-
-    .bg {
-        background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD9488aa 0%, #7092A0aa 100%);
     }
 
     a {

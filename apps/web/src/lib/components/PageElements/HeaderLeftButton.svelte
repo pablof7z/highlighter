@@ -16,8 +16,8 @@
         class="text-accent2 whitespace-nowrap flex flex-nowrap items-center max-w-[15vw]"
     >
         {#if $pageHeader.left.icon}
-            <span class="w-5 h-5 inline">
-                <svelte:component this={$pageHeader.left.icon} />
+            <span class="inline">
+                <svelte:component this={$pageHeader.left.icon} size={24} />
             </span>
         {:else if $pageHeader.left.label === "Close"}
             <X class="w-5 h-5 inline" />

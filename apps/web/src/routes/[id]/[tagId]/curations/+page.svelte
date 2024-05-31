@@ -1,28 +1,44 @@
 <script lang="ts">
-	import { page } from "$app/stores";
-	import Curations from "$components/Curations.svelte";
-	import ItemFooter from "$components/Event/ItemView/ItemFooter.svelte";
-	import WithItem from "$components/Event/ItemView/WithItem.svelte"
+	import PageTitle from '$components/PageElements/PageTitle.svelte';
+	import { pageHeader } from "$stores/layout";
+	import { onDestroy, onMount } from "svelte";
+	import { loadedEvent, title } from "../store";
+	import { openModal } from "$utils/modal";
+	import Curations from '$components/Curations.svelte';
+	import AddToCuration from '$modals/AddToCuration.svelte';
+	import { Plus } from 'phosphor-svelte';
 
-    let id: string;
-    let tagId: string;
-    let urlPrefix: string;
+    let event;
+
+    $: event = $loadedEvent;
 
     $: {
-        id = $page.params.id;
-        tagId = encodeURIComponent($page.params.tagId);
-        urlPrefix = `/${id}/${tagId}`;
+        $pageHeader ??= {};
+        $pageHeader.title = "Comments";
+        $pageHeader.right = {
+            icon: Plus,
+            label: "Add",
+            fn: () => {
+                openModal(AddToCuration, {
+                    event
+                });
+            }
+        }
     }
+
+    onDestroy(() => {
+        if ($pageHeader) {
+            $pageHeader.title = undefined;
+            $pageHeader.right = undefined;
+        }
+    })
 </script>
 
-{#key tagId}
-    <WithItem let:event let:article let:video let:urlPrefix let:eventType let:authorUrl>
-        {#if event && eventType}
-            <ItemFooter {event} {eventType} {urlPrefix} />
-            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
-                <Curations filter={event.filter()} />
-            </div>
+<PageTitle class="mb-0" title="Curations" defaultTitle={$title} />
+<h2 class="mb-4 mt-0 pt-0 text-lg">
+    Curations where {$title} is included
+</h2>
 
-        {/if}
-    </WithItem>
-{/key}
+{#if event}
+    <Curations filter={event.filter()} />
+{/if}

@@ -48,6 +48,7 @@
                 user={article.author}
                 spacing="gap-4"
                 avatarSize="tiny"
+                class="text-xs"
                 bind:userProfile
                 bind:authorUrl
             />

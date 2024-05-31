@@ -1,5 +1,4 @@
 <script lang="ts">
-    import Quill from 'quill';
 	import { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher, onMount } from "svelte";
     import QuillMarkdown from 'quilljs-markdown'
@@ -7,9 +6,7 @@
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
 	import { Textarea, UploadButton, newToasterMessage } from '@kind0/ui-common';
-    import "quill-mention";
 	import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
-    import QuillImageDropAndPaste from 'quill-image-drop-and-paste';
 	import Checkbox from './Checkbox.svelte';
 	import { wysiwygEditor } from '$stores/settings.js';
 
@@ -25,11 +22,14 @@
     let editorEl: HTMLElement;
     let toolbarEl: HTMLElement;
 
-    let quill: Quill;
+    let quill: any;
 
     let uploadBlob: Blob;
 
-    function enableEditor() {
+    async function enableEditor() {
+        const {default: Quill} = await import('quill');
+        const { default: QuillImageDropAndPaste } = await import ('quill-image-drop-and-paste');
+        await import ("quill-mention");
         Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste)
 
         const options: any = {
@@ -210,14 +210,14 @@
                 </span>
             {/if}
             <div class="self-end grow flex flex-row justify-end">
-                <Checkbox
+                <!-- <Checkbox
                     class="border-none"
                     type="switch"
                     bind:value={$wysiwygEditor}
                     on:change={toggleEditor}
                 >
                     WYSIWYG
-                </Checkbox>
+                </Checkbox> -->
             </div>
         </div>
     {/if}

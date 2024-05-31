@@ -1,43 +1,35 @@
 <script lang="ts">
-	import { page } from "$app/stores";
-	import { CaretLeft } from "phosphor-svelte";
-    import ItemFooter from "$components/Event/ItemView/ItemFooter.svelte";
-	import WithItem from "$components/Event/ItemView/WithItem.svelte"
+	import PageTitle from '$components/PageElements/PageTitle.svelte';
+	import { Export } from 'phosphor-svelte';
+	import ShareModal from '$modals/ShareModal.svelte';
 	import Highlights from "$components/Highlights.svelte";
-	import { pageHeader } from "$stores/layout";
-	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { loadedEvent, title } from "../store";
+	import { openModal } from '$utils/modal';
+	import { pageHeader } from '$stores/layout';
+	import { onDestroy } from 'svelte';
 
-    let tagId: string;
-    let urlPrefix: string;
-    let article: NDKArticle | undefined;
-    let video: NDKVideo | undefined;
+    let event;
 
-    $: tagId = $page.params.tagId;
+    $: event = $loadedEvent;
 
-    const origTitle = $pageHeader?.title;
+    $: {
+        $pageHeader ??= {};
+        $pageHeader.title = "Highlights";
+        $pageHeader.right = {
+            icon: Export,
+            fn: () => {
+                openModal(ShareModal, { event });
+            }
+        }
+    }
 
-    $pageHeader = {};
-
-    $: $pageHeader = {
-        left: {
-            label: article?.title ?? "Back",
-            url: urlPrefix,
-            icon: CaretLeft
-        },
-        title: origTitle,
-    };
+    onDestroy(() => {
+        if ($pageHeader.right) $pageHeader.right = undefined;
+    })
 </script>
 
-{#key tagId}
-    <WithItem let:event bind:article bind:video bind:urlPrefix let:eventType>
-        {#if event && article && eventType}
-        <!-- <ArticleBannerBackground {article} /> -->
-        <ItemFooter {event} {urlPrefix} {eventType} />
+<PageTitle title="Highlights" defaultTitle={$title} />
 
-            <div class="flex-col justify-start items-start gap-8 flex mx-auto max-w-3xl">
-                <Highlights filter={article.filter()} />
-            </div>
-
-        {/if}
-    </WithItem>
-{/key}
+{#if event}
+    <Highlights filter={event.filter()} />
+{/if}

@@ -3,12 +3,23 @@
 	import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { ndk } from "@kind0/ui-common";
-	import { type NDKArticle, NDKKind, type NDKEventId } from "@nostr-dev-kit/ndk";
+	import { type NDKArticle, NDKKind, type NDKEventId, NDKEvent, NDKZapInvoice } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import ArticleRender from './ArticleRender.svelte';
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import { pageHeader } from "$stores/layout";
 	import ItemFooter from "./Event/ItemView/ItemFooter.svelte";
+	import { getAuthorUrl, urlFromEvent } from "$utils/url";
+	import { derived } from "svelte/store";
+	import { isDirectReply } from "$utils/event";
+	import StoreFeed from "./Feed/StoreFeed.svelte";
+	import HorizontalOptionsList from "./HorizontalOptionsList.svelte";
+	import { CardsThree, ChatCircle } from "phosphor-svelte";
+	import HighlightIcon from "$icons/HighlightIcon.svelte";
+	import TopZap from "./Events/TopZap.svelte";
+	import EventWrapper from "./Feed/EventWrapper.svelte";
+	import ItemView from "./Event/ItemView/ItemView.svelte";
+	import ItemViewComments from "$views/Item/ItemViewComments.svelte";
 
     export let article: NDKArticle;
     const author = article.author;
@@ -46,20 +57,39 @@
 
     editUrl ??= `/articles/${article.tagValue("d")}/edit`;
 
+    let authorUrl: string | undefined;
+    let urlPrefix: string;
+    
+    $: urlPrefix = urlFromEvent(article, authorUrl);
+
+    getAuthorUrl(author).then(url => authorUrl = url);
+
     $pageHeader ??= {};
-    if (!isPreview) {
+    $: if (!isPreview) {
+        if ($pageHeader?.props)
+            $pageHeader.props.editUrl = editUrl;
         $pageHeader.footer = {
             component: ItemFooter,
-            props: { event: article }
+            props: {
+                event: article,
+                urlPrefix
+            }
         }
     }
 </script>
 
-<svelte:head>
-    <title>{article.title}</title>
-</svelte:head>
-
 <div class="flex flex-col gap-2 px-4">
-    <ItemHeader item={article} {editUrl} />
     <ArticleRender {article} {isFullVersion} {isPreview} {fillInSummary} />
 </div>
+
+{#if !isPreview}
+    <div class="flex flex-col">
+        <HorizontalOptionsList options={[
+            { name: "Comments", href: `${urlPrefix}/comments`, icon: ChatCircle, badge: "1" },
+            { name: "Highlights", href: `${urlPrefix}/highlights`, icon: HighlightIcon },
+            { name: "Curations", href: `${urlPrefix}/curations`, icon: CardsThree },
+        ]} value="Comments" class="my-4" />
+
+        <ItemViewComments event={article} />
+    </div>
+{/if}
