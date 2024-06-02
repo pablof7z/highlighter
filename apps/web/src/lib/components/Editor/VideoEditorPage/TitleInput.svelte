@@ -32,7 +32,7 @@
     <Input
         bind:value={title}
         color="black"
-        class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
+        class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 !text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
         placeholder="Add a title"
         on:keydown={onTitleKeyDown}
         on:keyup={onTitleKeyUp}

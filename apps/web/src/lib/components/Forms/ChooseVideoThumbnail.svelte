@@ -4,6 +4,7 @@
 	import ImageIcon from "$icons/ImageIcon.svelte";
 	import Carousel from '$components/Page/Carousel.svelte';
 	import { slide } from 'svelte/transition';
+	import { Image } from 'phosphor-svelte';
 
     export let title: string;
     export let content: string;
@@ -180,7 +181,7 @@
     </div>
 
     <label class="cursor-pointer side-button">
-        <ImageIcon class="w-12 h-12" />
+        <Image class="w-12 h-12" />
         {#if thumbnails.length > 0}
             or upload an image
         {:else}

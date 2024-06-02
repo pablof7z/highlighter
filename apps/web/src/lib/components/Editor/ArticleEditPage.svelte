@@ -6,7 +6,6 @@
 	import type { UserProfileType } from '../../../app';
 	import { type DraftItem } from "$stores/drafts";
 	import Shell from "$components/PostEditor/Shell.svelte";
-	import ArticleMetaPage from "./ArticleMetaPage.svelte";
 	import { view, preview, previewTitleChanged, previewContentChanged, currentDraftItem } from "$stores/post-editor";
 	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
 	import ArticleView from "$components/ArticleView.svelte";
@@ -72,7 +71,6 @@
         switch ($view) {
             case 'edit':
                 $pageHeader.props.showPublish = true;
-                $pageHeader.props.showSchedule = true;
                 $pageHeader.props.showPreview = true;
                 $pageHeader.props.showSaveDraft = true;
                 $pageHeader.props.showAudience = true;
@@ -80,7 +78,6 @@
             case 'view-preview':
                 $pageHeader.props.shoEdit = true;
                 $pageHeader.props.showPublish = true;
-                $pageHeader.props.showSchedule = true;
                 break;
         }
     }

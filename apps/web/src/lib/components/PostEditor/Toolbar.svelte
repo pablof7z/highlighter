@@ -10,12 +10,13 @@
 
     export let onSaveDraft: () => void;
     export let onPublish: () => void;
+    export let onNext: () => void;
     export let showEdit = true;
     export let showSaveDraft = true;
     export let showPreview = true;
-    export let showSchedule = true;
     export let showPublish = true;
     export let showAudience = true;
+    export let showNext = false;
     export let publishing = false;
 
     let modeBeforePreview: View | undefined;
@@ -219,6 +220,14 @@
                     {:else}
                         Publish
                     {/if}
+                </button>
+            </div>
+        {/if}
+
+        {#if showNext}
+            <div class="flex flex-row flex-nowrap gap-2">
+                <button class="button" on:click={onNext} disabled={publishing}>
+                    Next
                 </button>
             </div>
         {/if}
