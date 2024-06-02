@@ -26,7 +26,7 @@
 >
     Release full-version for free after
 
-    <select slot="button" class="select rounded-full text-black self-center text-base bg-neutral-200 pl-4 py-0 min-h-0 h-10" bind:value={$makePublicAfter} on:change={updateMakePublic}>
+    <select slot="button" class="select text-black self-center text-base bg-neutral-200 pl-4 py-0 min-h-0 h-10" bind:value={$makePublicAfter} on:change={updateMakePublic}>
         <option value={false}>never</option>
         <option value={1}>1 day</option>
         <option value={7}>1 week</option>

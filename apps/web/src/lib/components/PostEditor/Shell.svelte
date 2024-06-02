@@ -5,7 +5,7 @@
     import { type as _type } from "$stores/post-editor";
 	import { getTierSelectionFromAllTiers } from '$lib/events/tiers';
 	import { NDKArticle, NDKEvent, NDKVideo } from '@nostr-dev-kit/ndk';
-	import PublishingStep from '$components/Editor/Pages/PublishingStep.svelte';
+	import PublishComplete from '$components/Editor/Pages/PublishComplete.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import AudiencePage from './AudiencePage.svelte';
 	import Toolbar from './Toolbar.svelte';
@@ -32,11 +32,8 @@
     $appMobileHideNewPostButton = true;
 
     onMount(() => {
-        $view = 'publish';
+        $view = 'edit';
         $_type = type;
-        $event.title = "hi";
-        $event.summary = 'here';
-        $event.content = "hello"
     });
 
     $event = article ?? video ?? note!;
@@ -68,7 +65,7 @@
     }
 
     function publish() {
-        $view = "published";
+        $view = "publish";
     }
 
     function saveDraft(manuallySaved = true) {
@@ -135,5 +132,5 @@
 {:else if $view === "publish"}
     <Publish />
 {:else if $view === "published"}
-    <PublishingStep />
+    <PublishComplete />
 {/if}

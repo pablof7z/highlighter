@@ -67,7 +67,7 @@ export class Thread {
     }
 }
 
-export async function publishThread(
+export async function prepareThreadForPublish(
     thread: Thread,
     publishAt?: Date,
     selectedTiers?: TierSelection,
@@ -78,11 +78,14 @@ export async function publishThread(
     let lastPublishTime: number;
     const timestampEventsEvery = 5; // seconds
 
+    let preparedEvents: NDKEvent[] = [];
+
     const kind1 = thread.items[0].event.kind === NDKKind.Text;
 
     // if publishAt is set, use it, in seconds
     if (publishAt) {
         lastPublishTime = Math.floor(publishAt.getTime() / 1000);
+        console.log({publishAt, lastPublishTime});
     } else {
         lastPublishTime = Math.floor(Date.now() / 1000); // now
     }
@@ -106,12 +109,12 @@ export async function publishThread(
             if (lastEvent) { event.tag(lastEvent, "reply", true); }
         }
 
-        let eventForPublish: NDKEvent | undefined;
+        let preparedEvent: NDKEvent | undefined;
 
         if (kind1) {
-            eventForPublish = event;
+            preparedEvent = event;
         } else {
-            eventForPublish = (await prepareEventsForTierPublish(
+            preparedEvent = (await prepareEventsForTierPublish(
                 event,
                 selectedTiers,
                 {
@@ -122,27 +125,22 @@ export async function publishThread(
             ))[0]
         }
 
-        if (!eventForPublish) {
+        if (!preparedEvent) {
             throw new Error("Failed to prepare event for publish");
         };
 
         // sign, we need Ids
-        await eventForPublish.sign();
-        eventForPublish.rawEvent();
+        await preparedEvent.sign();
+        preparedEvent.rawEvent();
 
         if (!rootEvent) {
-            rootEvent = eventForPublish;
+            rootEvent = preparedEvent;
         } else {
-            lastEvent = eventForPublish;
+            lastEvent = preparedEvent;
         }
 
-        publishToTiers(
-            eventForPublish, {
-                ndk: $ndk,
-                publishAt: publishAt,
-            }
-        )
+        preparedEvents.push(preparedEvent);
     }
 
-    return rootEvent;
+    return preparedEvents;
 }

@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { goto, pushState, replaceState } from "$app/navigation";
 	import TierList from "$components/Creator/TierList.svelte";
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
-	import currentUser from "$stores/currentUser";
 	import { pageHeader } from "$stores/layout";
-	import { startUserView } from '$stores/user-view';
-	import { onMount } from "svelte";
 
     let saving = false;
     let forceSave = false;

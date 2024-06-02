@@ -35,13 +35,12 @@
 
     onMount(async () => {
         if ($currentUser && $currentTiers && $currentTiers.length === 0) {
-            const userTiers = await $ndk.fetchEvent({ kinds: [NDKKind.SubscriptionTier], authors: [$currentUser.pubkey], limit: 1}, { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
+            // const userTiers = await $ndk.fetchEvent({ kinds: [NDKKind.SubscriptionTier], authors: [$currentUser.pubkey], limit: 1})
 
-            if (!userTiers && $currentTiers.length === 0) {
-                addTier();
-            } else {
-                usePresetButton = false;
-            }
+            // if (!userTiers && $currentTiers.length === 0) {
+            // } else {
+            //     usePresetButton = false;
+            // }
 
             ready = true;
         }
@@ -250,7 +249,7 @@
             }
         >
             <button
-                class="button button-black px-6 py-3 font-medium max-sm:w-full"
+                class="button-black max-sm:w-full"
                 disabled={!canAddTier}
                 on:click={addTier}
             >
@@ -261,7 +260,7 @@
             <div class="flex flex-col sm:flex-row gap-4 max-sm:items-stretch justify-end items-stretch max-sm:w-full">
                 {#if usePresetButton}
                     <button
-                        class="button button-black flex flex-col font-medium items-center gap-0 px-4 max-sm:w-full py-3"
+                        class="button-black flex flex-col font-medium items-center gap-0 px-4 max-sm:w-full py-3"
                         on:click={skip}
                     >
                         Skip using sample tiers for now
@@ -290,7 +289,7 @@
             {#if showInactive}
                 {#each $inactiveUserTiers as tier}
                     <CollapsedTierListItem {tier} />
-                    <button class="self-end button button-black" on:click={() => restore(tier)}>Restore</button>
+                    <button class="self-end button-black" on:click={() => restore(tier)}>Restore</button>
                 {/each}
             {/if}
         {/if}

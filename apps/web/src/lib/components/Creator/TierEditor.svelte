@@ -175,7 +175,7 @@
                 </div>
             </div>
 
-            <button class="button font-semibold text-sm flex flex-row gap-2 px-6 self-start"
+            <button class="button-black self-start"
                     on:click={addPerk}
                     in:slide
                 >
@@ -208,7 +208,7 @@
                 {/each}
             </div>
 
-            <button class="button font-semibold text-sm flex flex-row gap-2 px-6 self-start"
+            <button class="button-black self-start"
                     in:slide
                     on:click={addAmountLine}
                 >

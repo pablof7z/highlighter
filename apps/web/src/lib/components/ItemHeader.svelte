@@ -29,7 +29,7 @@
         <div class="flex flex-row items-center">
             {#if item.pubkey === $currentUser?.pubkey && editUrl}
                 <div class="flex flex-row gap-4">
-                    <a href={editUrl} class="button button-black px-6 mr-4">Edit</a>
+                    <a href={editUrl} class="button-black px-6 mr-4">Edit</a>
                 </div>
             {/if}
 

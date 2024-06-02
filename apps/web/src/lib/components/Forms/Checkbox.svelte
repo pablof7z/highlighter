@@ -1,10 +1,11 @@
 <script lang="ts">
     export let value: boolean | undefined = undefined;
     export let type: "check" | "switch" = "check";
+    export let compact = false;
 </script>
 
-<label class="text-white text-base font-medium flex flex-row gap-2 items-center justify-between {$$props.class??""}">
-    <div class="flex flex-row items-start w-full">
+<label class="text-white text-base font-medium flex flex-row gap-2 items-center justify-between {$$props.class??""} {compact ? "compact" : ""}">
+    <div class="flex flex-row items-center w-full">
         {#if type === 'check'}
             <input type="checkbox" class="checkbox mr-3" bind:checked={value} on:change />
         {/if}
@@ -34,7 +35,7 @@
 </label>
 
 <style lang="postcss">
-    label {
+    label:not(.compact) {
         @apply border border-base-300 p-4 rounded-xl;
     }
 </style>

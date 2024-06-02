@@ -110,7 +110,7 @@
 
         {#if requests.size > 0 || results.size > 0}
             <div class="flex flex-row justify-between w-full items-end pl-16">
-                <button class="button button-black px-6 py-2" on:click={select}>
+                <button class="button-black px-6 py-2" on:click={select}>
                     Select
                 </button>
 

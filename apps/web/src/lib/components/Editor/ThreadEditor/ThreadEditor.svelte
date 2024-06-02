@@ -14,6 +14,7 @@
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { addDraftCheckpoint } from "$utils/drafts";
+	import { pageHeader } from "$stores/layout";
 
     export let thread: Thread;
     export let draftItem: DraftItem | undefined = undefined;
@@ -70,6 +71,25 @@
 			currentView = $view;
         } else {
             currentView = $view;
+        }
+    }
+
+	$: if ($pageHeader?.props) {
+		$pageHeader.props.showAudience = false;
+
+        switch ($view) {
+            case 'edit':
+                $pageHeader.props.showPublish = true;
+                $pageHeader.props.showSchedule = true;
+                $pageHeader.props.showPreview = true;
+                $pageHeader.props.showSaveDraft = true;
+                
+                break;
+            case 'view-preview':
+                $pageHeader.props.shoEdit = true;
+                $pageHeader.props.showPublish = true;
+                $pageHeader.props.showSchedule = true;
+                break;
         }
     }
 </script>

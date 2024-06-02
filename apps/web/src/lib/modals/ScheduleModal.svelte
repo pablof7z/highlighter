@@ -9,6 +9,7 @@
     export let action: string = "Post will be published";
     // async function
     export let onSchedule: (timestamp: number) => Promise<void>;
+    export let cta = "Schedule";
 
     // make this configurable
     const dvmUser = $ndk.getUser({npub: 'npub1shpq6dmqaa8pjas8rftflvmr7nlssm9fqanflw23vlxu2vzexngslu90nm'});
@@ -110,7 +111,7 @@
                 {#if scheduling}
                     <span class="loading loading-sm"></span>
                 {:else}
-                    Schedule
+                    {cta}
                 {/if}
             </button>
         {/if}

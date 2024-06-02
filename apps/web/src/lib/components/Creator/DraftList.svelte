@@ -27,7 +27,7 @@
                 <div class="dropdown dropdown-end">
                     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                     <!-- svelte-ignore a11y-label-has-associated-control -->
-                    <label class="button button-black" tabindex="0">
+                    <label class="button-black" tabindex="0">
                         Versions
                     </label>
                     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->

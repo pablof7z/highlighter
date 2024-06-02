@@ -63,7 +63,6 @@
                             slot="button"
                             on:click={() => $view = "edit-preview"}
                         >
-                            <Pen />
                             Edit Preview
                         </button>
                     </Checkbox>

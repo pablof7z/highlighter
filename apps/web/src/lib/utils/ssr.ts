@@ -3,6 +3,7 @@ import { ndk } from '@kind0/ui-common';
 import { get } from 'svelte/store';
 import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKRelaySet } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
+import { defaultRelays } from "./const";
 
 export const ssr = true;
 
@@ -34,10 +35,11 @@ export async function fetchEvent(id: string) {
     try {
         await $ndk.connect(1000);
     } catch (e) {
-
+        console.log("error", e)
+        return {};
     }
 
-    const relaySet = NDKRelaySet.fromRelayUrls(["wss://relay.highlighter.com"], $ndk);
+    const relaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
 
     try {
         const decode = nip19.decode(id);

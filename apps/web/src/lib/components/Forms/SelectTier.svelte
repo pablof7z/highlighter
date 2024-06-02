@@ -98,9 +98,7 @@
 
                     {#if tier === "Free"}
                         <button
-                            class="text-xs whitespace-nowrap"
-                            class:button={!onlyFree}
-                            class:button-black={!onlyFree}
+                            class="button-black text-nowrap"
                             on:click={toggleOnlyFree}
                         >
                             Only
@@ -113,7 +111,7 @@
             </li>
         {/each}
         <li class="mt-2">
-            <button class="button button-black" on:click={addNewTier}>
+            <button class="button-black" on:click={addNewTier}>
                 <Plus size={24} />
                 Add a new tier
             </button>

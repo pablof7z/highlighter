@@ -67,9 +67,15 @@
 		@apply text-white !border-t-4 !border-accent2;	
 	}
 
+	.text-primary-foreground {
+		--tw-text-opacity: 1;
+		color: #000;
+	}
+
 	.button {
-		@apply inline-flex items-center justify-center gap-2 rounded-full bg-neutral-200 px-3 py-1.5;
-		@apply text-base font-semibold text-black;
+		@apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-primary-foreground hover:bg-white/90 h-10 px-4 py-2;
+		/* @apply inline-flex items-center justify-center gap-2 rounded-full bg-neutral-200 px-3 py-1.5;
+		@apply text-base font-semibold text-black; */
 	}
 
 	.button:disabled {
@@ -100,8 +106,7 @@
 	}
 
 	.button-black {
-		@apply border border-base-300 bg-black;
-		@apply text-neutral-200;
+		@apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-base-300 bg-base-100 hover:bg-white/5 hover:text-white h-10 px-4 py-2;
 	}
 
 	.button-primary:disabled {
