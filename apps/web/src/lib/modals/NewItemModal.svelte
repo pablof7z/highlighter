@@ -1,15 +1,25 @@
 <script lang="ts">
 	import ModalShell from "$components/ModalShell.svelte";
-	import NewPost from '$components/Creator/NewPost.svelte';
-	import { closeModal } from "$utils/modal";
+	import NewPost from "$components/Creator/NewPost.svelte";
+	import { NavigationOption } from "../../app";
+	import NewPostModalInner from "./NewPostModalInner.svelte";
+
+	let title = "New Publication";
+	let wrapperClass = "lg:max-w-3xl md:w-full overflow-hidden gap-0";
+	let actionButtons: NavigationOption[] = [];
+
+	let showNewShortPost = false;
+
+	function onNewShortPost() {
+		title = "New Post";
+		showNewShortPost = true;
+	}
 </script>
 
-<ModalShell title="New Publication" class="sm:w-80 lg:max-w-3xl md:w-full overflow-hidden gap-0">
-    <NewPost boxClass="px-0 pb-0 !bg-transparent" />
-
-	<svelte:fragment slot="footer">
-		<button class="button" on:click={closeModal}>
-			Close
-		</button>
-	</svelte:fragment>
+<ModalShell {title} class={wrapperClass} {actionButtons}>
+	{#if !showNewShortPost}
+		<NewPost boxClass="px-0 pb-0 !bg-transparent" {onNewShortPost} />
+	{:else}
+		<NewPostModalInner bind:title bind:wrapperClass bind:actionButtons />
+	{/if}
 </ModalShell>

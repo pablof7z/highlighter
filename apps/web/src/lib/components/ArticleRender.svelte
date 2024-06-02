@@ -74,7 +74,7 @@
 <UserProfile user={author} bind:userProfile>
     <ArticleRenderShell {isFullVersion} {isPreview}>
         <div slot="title">
-            {article.title}
+            {article.title??"Untitled"}
         </div>
 
         <div slot="summary" class:hidden={!summary}>

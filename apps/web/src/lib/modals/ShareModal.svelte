@@ -6,7 +6,7 @@
     import ModalShell from "$components/ModalShell.svelte";
 	import { urlSuffixFromTagId, urlSuffixFromEvent, urlFromEvent } from "$utils/url";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKArticle, NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
 	import { closeModal } from '$utils/modal';
 	import { NavigationOption } from "../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
@@ -21,12 +21,12 @@
 	import { onDestroy } from 'svelte';
 
     export let event: NDKEvent;
+    export let content: string = "";
+    export let tags: NDKTag[] = [];
 
     let article: NDKArticle | undefined = undefined;
     let summary: string | undefined;
     let placeholder: string = "Write something";
-
-    let content: string;
 
     if (event.kind === NDKKind.Article) {
         article = NDKArticle.from(event);
@@ -36,7 +36,6 @@
 
     // Check if there is a preview version
     const preview = event.getMatchingTags("preview")[0];
-    const previewId = preview?.[1];
     let previewEvent: NDKEvent | undefined;
 
     const articleUrl = urlFromEvent(event, undefined, true);
@@ -59,9 +58,6 @@
     }
 
     async function uploadImage() {
-        if (!shareImageEl) return;
-        const file = await toBlob(shareImageEl);
-        if (!file) throw new Error("Failed to convert image to blob");
         const uploadAuth = await BlossomClient.getUploadAuth( file!, sign as any, "Upload share image");
         const res = await BlossomClient.uploadBlob($activeBlossomServer, file!, uploadAuth);
         const mediaEvent = new NDKEvent($ndk);
@@ -108,12 +104,17 @@
             boostEvent.content += `\n\n${articleUrl}`;
 
         boostEvent.tag(boostedEvent, "mention", false, "q");
+        
+        for (const tag of tags) {
+            boostEvent.tags.push(tag);
+        }
         if (boostedEvent.kind !== NDKKind.Text) boostEvent.tags.push(["k", boostedEvent.kind!.toString()]);
         boostEvent.tag(boostedEvent.author);
         await boostEvent.sign();
         console.log(boostEvent.rawEvent());
+        const relaySet = NDKRelaySet.fromRelayUrls(["ws://localhost:5577"], $ndk);
         try {
-            // await boostEvent.publish();
+            await boostEvent.publish(relaySet);
             closeModal();
         } finally {
             publishing = false;
@@ -163,7 +164,7 @@
             <ContentEditor
                 bind:content
                 toolbar={false}
-                {placeholder}
+                autofocus
                 allowMarkdown={false}
                 class="
                     w-full min-h-[10rem]

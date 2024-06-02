@@ -142,10 +142,10 @@
                         <CreatorHeaderFollowButton {user} {collapsed} />
                         <CreatorHeaderInboxButton {user} {collapsed} />
                         <CreatorHeaderSupportButton {user} {collapsed} />
-                        <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
+                        <!-- <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
                             <Export class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
                             <span class="max-sm:hidden {collapsed ? "max-sm:hidden text-sm" : "text-base"}">Share</span>
-                        </button>
+                        </button> -->
                     </div>
                 {/if}
             </div>

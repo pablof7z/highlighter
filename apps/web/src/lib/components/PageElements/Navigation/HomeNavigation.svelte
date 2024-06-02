@@ -7,7 +7,7 @@
     const options: Option[] = [];
 
     options.push({ name: "Feed", href: "/home/notes", icon: Notepad})
-    options.push({ name: "Articles", href: "/home/articles", icon: NewspaperClipping})
+    options.push({ name: "Reads", href: "/home/articles", icon: NewspaperClipping})
     options.push({ name: "Highlights", href: "/home", icon: HighlightIcon})
     options.push({ name: "For You", href: "/home/for-you", icon: User})
     options.push({ name: "Bookmarks", href: "/home/bookmarks", icon: Bookmark})

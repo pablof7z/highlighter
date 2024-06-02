@@ -45,8 +45,10 @@
     <div class="flex flex-row gap-4 relative w-full min-h-[max(30vh,10rem)] overflow-hidden bg-black" bind:this={node}>
         <img src={article.image ?? userProfile?.image} alt={article.title} class="h-full object-cover absolute top-0 left-0 bottom-0 right-0 z-1 w-full opacity-50" />
 
+        <slot />
+
         <div class="w-full flex flex-col gap-2 z-2 absolute bottom-0 z-2">
-            <div class="flex flex-col bg-black/50 p-4">
+            <div class="flex flex-col bg-black/70 p-4">
                 {#if showHighlight}
                     <button class="group relative" on:click={() => showHighlight = !showHighlight}>
                         {#if $selectedHighlight}
@@ -63,16 +65,16 @@
                     </button>
                 {/if}
                 
-                <h1 class="text-3xl font-semibold mb-1 font-serif whitespace-nowrap">
+                <h1 class="text-3xl font-semibold mb-1 font-serif max-h-24 overflow-clip">
                     {article.title}
                 </h1>
 
-                <div class="text-xs whitespace-nowrap flex flex-row items-end">
+                <div class="text-xs flex flex-row items-end max-h-12 overflow-clip">
                     <Name user={article.author} avatarType="square" avatarSize="small" class="text-accent2" />
                 </div>
 
                 {#if article.summary}
-                    <div class="text-lg">
+                    <div class="text-lg max-h-12  overflow-clip">
                         {article.summary}
                     </div>
                 {/if}

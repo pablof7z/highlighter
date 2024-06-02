@@ -8,7 +8,6 @@
 	import PublishingStep from '$components/Editor/Pages/PublishingStep.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import AudiencePage from './AudiencePage.svelte';
-	import { debugMode } from '$stores/session';
 	import Toolbar from './Toolbar.svelte';
 	import { goto } from '$app/navigation';
 	import { ArticleCheckpoint } from '$stores/drafts';
@@ -16,6 +15,7 @@
 	import { newToasterMessage } from '@kind0/ui-common';
 	import { addDraftCheckpoint } from '$utils/drafts';
 	import { appMobileHideNewPostButton } from '$stores/app';
+	import Publish from './Publish.svelte';
 
     export let type: "article" | "video" | "thread";
     export let article: NDKArticle | undefined = undefined;
@@ -32,8 +32,11 @@
     $appMobileHideNewPostButton = true;
 
     onMount(() => {
-        $view = 'edit';
+        $view = 'publish';
         $_type = type;
+        $event.title = "hi";
+        $event.summary = 'here';
+        $event.content = "hello"
     });
 
     $event = article ?? video ?? note!;
@@ -60,7 +63,12 @@
         component: Toolbar,
         props: {
             onSaveDraft: saveDraft,
+            onPublish: publish,
         }
+    }
+
+    function publish() {
+        $view = "published";
     }
 
     function saveDraft(manuallySaved = true) {
@@ -110,11 +118,6 @@
     })
 </script>
 
-{#if $debugMode}
-    $nonSubscribersPreview = {$nonSubscribersPreview}
-    $selectedTiers = {JSON.stringify($selectedTiers)}
-{/if}
-
 <div class="w-full" class:hidden={$view !== 'edit'}>
     <slot />
 </div>
@@ -129,6 +132,8 @@
 </div>
 {#if $view === "audience"}
     <AudiencePage />
+{:else if $view === "publish"}
+    <Publish />
 {:else if $view === "published"}
     <PublishingStep />
 {/if}

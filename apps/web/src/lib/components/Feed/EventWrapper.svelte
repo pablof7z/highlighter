@@ -226,6 +226,16 @@
             replyTo: event,
         });
     }
+
+    function reply() {
+        if (event.pubkey === $currentUser?.pubkey) {
+            willShowReply = true;
+        } else {
+            openModal(NewPostModal, {
+                replyTo: event,
+            });
+        }
+    }
 </script>
 
 <Swipe
@@ -401,7 +411,7 @@
                     ">
                         <div class="w-1/4 flex justify-center items-end">
                             {#if !($eventsInThread.length > 0 && !expandThread) && !($replies.length > 0 && !expandReplies)}
-                                <button class="" on:click|stopPropagation={() => { autofocusNewPost = showReply = !showReply; newPostCompact = false }}>
+                                <button class="" on:click|stopPropagation={reply}>
                                     <CommentsButton {event} prefetchedReplies={replies} />
                                 </button>
                             {/if}
@@ -430,14 +440,15 @@
         <NewPost
             kind={replyKind}
             extraTags={newPostTags}
-            bind:showReply
             autofocus={autofocusNewPost}
             placeholder={placeholder||newPostPlaceholder}
             bind:collapsed={newPostCompact}
             on:publish={() => {
                 showReply = false;
+                expandThread = true;
                 dispatch('publish', event);
             }}
+            on:cancel={() => showReply = false}
         />
     </div>
 {/if}

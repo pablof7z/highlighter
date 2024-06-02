@@ -26,7 +26,7 @@
         {/if}
     </a>
 {:else}
-    <button class={$$props.class??""} class:active>
+    <button class={$$props.class??""} class:active on:click>
         <slot />
         {#if badge}
             {#if label}

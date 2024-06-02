@@ -50,11 +50,18 @@ export function urlFromEvent(
 		return `/mobile/view?eventId=${event.encode()}`;
 	}
 
-	if (fullUrl) url.push(BASE_URL);
-
 	authorUrl ??= getAuthorUrlSync(event.author);
 
 	if (authorUrl.startsWith("/npub1")) authorUrl = undefined;
+
+	if (fullUrl) {
+		if (authorUrl)
+			url.push(BASE_URL + authorUrl);
+		else
+			url.push(BASE_URL);
+	} else if (authorUrl) {
+		url.push(authorUrl);
+	}
 
 	if (event.isParamReplaceable()) {
 		const dTag = event.tagValue("d");
@@ -62,13 +69,16 @@ export function urlFromEvent(
 			url.push(authorUrl);
 			url.push(dTag)
 		} else {
-			url.push("/a");
+			if (fullUrl) url.push("a");
+			else url.push("/a");
 			url.push(event.encode());
 		}
 	} else {
 		url.push("a");
 		url.push(event.encode());
 	}
+
+	console.log({url});
 
 	return url.join("/");
 }

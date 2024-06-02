@@ -142,8 +142,6 @@
 
 <!-- <NetworkHandler /> -->
 
-appMobileView: {$appMobileView}
-
 {#if $appMobileView}
 	<MobileAppShell>
 		<slot />

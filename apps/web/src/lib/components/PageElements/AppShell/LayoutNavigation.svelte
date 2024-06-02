@@ -3,7 +3,7 @@
 	import { openModal } from '$utils/modal';
 	import { UserProfileType } from './../../../../app.d.js';
     import OptionsList from "$components/OptionsList.svelte";
-	import { Bell, BookmarkSimple, ChalkboardSimple, Fire, Gear, House, PaperPlaneTilt, Plus, CardsThree, Timer, PlusCircle, Tray, MagnifyingGlass } from "phosphor-svelte";
+	import { Bell, BookmarkSimple, ChalkboardSimple, Fire, Gear, House, PaperPlaneTilt, Plus, CardsThree, Timer, PlusCircle, Tray, MagnifyingGlass, TextAlignLeft, YoutubeLogo } from "phosphor-svelte";
 	import { NavigationOption } from "../../../../app";
 	import NewItemModal from "$modals/NewItemModal.svelte";
     import currentUser, { isGuest } from "$stores/currentUser";
@@ -23,9 +23,10 @@
 
     $: {
         options = [
-            { name: "Home", icon: Fire, href: "/home" },
+            { name: "Home", icon: House, href: "/home" },
             // { name: "Inbox",  href: "/inbox", icon: Tray },
-            { name: "Bookmarks",  href: "/bookmarks", icon: BookmarkSimple },
+            { name: "Reads",  href: "/home/reads", icon: TextAlignLeft },
+            { name: "Watch",  href: "/videos", icon: YoutubeLogo },
             { name: "Collections",  href: "/collections", icon: CardsThree },
             { name: "Search", fn: () => openModal(SearchModal), icon: MagnifyingGlass },
             { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined },

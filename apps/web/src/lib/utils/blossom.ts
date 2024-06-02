@@ -1,10 +1,30 @@
 // a blossom URL should finish with a 64 characters hex string and an optional file extension
 
 import { ndk } from "@kind0/ui-common";
-import { NDKKind, NDKList, NDKUser, normalize } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKKind, NDKList, NDKUser, normalize } from "@nostr-dev-kit/ndk";
+import { BlobDescriptor, EventTemplate } from "blossom-client-sdk/client";
 import { get } from "svelte/store";
 
 const blossomUrlRegex = /\/[0-9a-f]{64}(\.\w+)?$/;
+
+export async function sign(draft: EventTemplate) {
+    const $ndk = get(ndk);
+    const e = new NDKEvent($ndk, draft as any);
+    await e.sign();
+    return e.toNostrEvent();
+}
+
+export function generateMediaEventFromBlobDescriptor(blob: BlobDescriptor) {
+    const $ndk = get(ndk);
+    const mediaEvent = new NDKEvent($ndk);
+    mediaEvent.kind = NDKKind.Media;
+    if (blob.type) mediaEvent.tags.push(["m", blob.type]);
+    if (blob.sha256) mediaEvent.tags.push(["x", blob.sha256]);
+    if (blob.url) mediaEvent.tags.push(["url", blob.url]);
+    if (blob.size) mediaEvent.tags.push(["size", blob.size.toString()]);
+
+    return mediaEvent;
+}
 
 // like https://cdn.hzrd149.com/2759c395ad643686baccdc3693b316ad968b7d95e5d9b764261532b44f42d29c.png
 function isBlossomUrl(url: string) {

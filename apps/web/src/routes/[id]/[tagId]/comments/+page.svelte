@@ -2,19 +2,17 @@
 	import PageTitle from '$components/PageElements/PageTitle.svelte';
 	import { pageHeader } from "$stores/layout";
 	import ItemViewComments from "$views/Item/ItemViewComments.svelte";
-	import { onDestroy, onMount } from "svelte";
-	import { loadedEvent, title } from "../store";
+	import { onDestroy } from "svelte";
+	import { loadedEvent, title } from "$lib/stores/item-view.js";
 	import { openModal } from "$utils/modal";
 	import NewPostModal from "$modals/NewPostModal.svelte";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 
     let event;
-
     $: event = $loadedEvent;
 
     $: {
         $pageHeader ??= {};
-        $pageHeader.title = "Comments";
         $pageHeader.right = {
             label: "Comment",
             fn: () => {
@@ -31,7 +29,6 @@
 
     onDestroy(() => {
         if ($pageHeader) {
-            $pageHeader.title = undefined;
             $pageHeader.right = undefined;
         }
     })

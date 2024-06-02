@@ -13,7 +13,6 @@
     export let extraTags: NDKTag[] = [];
     export let kind: NDKKind;
     export let event: NDKEvent = new NDKEvent($ndk, { kind } as NostrEvent);
-    export let showReply: boolean | undefined = undefined;
     export let placeholder = "Reply...";
     export let hasFocus = false;
     export let autofocus = false;
@@ -21,6 +20,8 @@
     export let skipAvatar = false;
     export let isCollapsed: boolean | undefined = undefined;
     export let mentionEvent: NDKEvent | undefined = undefined;
+    export let skipButtons = false;
+    export let skipFadeMode = false;
 
     export let forcePublish = false;
 
@@ -46,7 +47,6 @@
         resetEditorAt = new Date();
         hasFocus = false;
         isCollapsed = collapsed ?? true;
-        showReply = false;
         dispatch("cancel");
     }
 
@@ -108,7 +108,7 @@
     let uploadedFiles: string[] = [];
 </script>
 
-{#if !$appMobileView && hasFocus && content.length > 0}
+{#if !$appMobileView && hasFocus && content.length > 0 && !skipFadeMode}
     <div transition:fade class="absolute right-0 bottom-0 top-0 left-0 bg-black/40 z-30"></div>
 {/if}
 
@@ -154,7 +154,7 @@
             </div>
         {/key}
     </div>
-    {#if !$appMobileView}
+    {#if !$appMobileView && !skipButtons}
         <div class="
             max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 sm:border-t border-base-300 w-full px-4 justify-end z-40 bottom-4 max-sm:h-16
             max-sm:pt-0

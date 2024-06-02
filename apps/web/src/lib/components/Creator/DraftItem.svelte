@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ArticleCheckpoint, DraftCheckpoint, DraftItem } from "$stores/drafts";
-	import { ndk, user } from "@kind0/ui-common";
+	import { ndk } from "@kind0/ui-common";
+    import currentUser from "$stores/currentUser";
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import ArticleLink from '$components/Events/ArticleLink.svelte';
     import ThreadItem from "$components/Drafts/Items/Thread.svelte";
@@ -18,7 +19,7 @@
     switch (item.type) {
         case "article":
             article = new NDKArticle($ndk, JSON.parse((payload as ArticleCheckpoint).event));
-            article.pubkey = $user.pubkey;
+            if ($currentUser) article.pubkey = $currentUser.pubkey;
             break;
     }
 </script>

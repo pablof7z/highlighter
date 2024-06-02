@@ -41,11 +41,11 @@
 </script>
 
 <ButtonWithCount
-    href={urlPrefix ? `${urlPrefix}/comments` : "#a"}
+    class="rounded-full p-2 flex hover:bg-zinc-400/20"
     count={$replies.length}
     {label}
     active={commentedByUser}
-    on:click={e => { if (!urlPrefix) e.preventDefault() }}
+    on:click
 >
     {#if !label || $replies.length === 0}
         <ChatCircle

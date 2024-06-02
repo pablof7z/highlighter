@@ -4,7 +4,7 @@ import { NDKArticle, NDKEvent, NDKVideo } from "@nostr-dev-kit/ndk";
 import { writable } from "svelte/store";
 import { DraftItem } from "./drafts";
 
-export type View = "edit" | "audience" | "view-preview" | "edit-preview" | "preview" | "distribution" | "meta" | "published";
+export type View = "edit" | "audience" | "view-preview" | "edit-preview" | "preview" | "publish" | "distribution" | "meta" | "published";
 
 export const selectedTiers = writable<TierSelection>({})
 export const view = writable<View>("edit");

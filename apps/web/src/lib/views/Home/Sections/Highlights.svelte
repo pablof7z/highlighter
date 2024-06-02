@@ -15,6 +15,7 @@
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import HighlightBody from '$components/HighlightBody.svelte';
 	import ArticleGridArticle from '$components/ArticleGridArticle.svelte';
+	import { appMobileView } from '$stores/app';
 
     register();
 
@@ -50,13 +51,21 @@
             Highlights
         </h1>
 
+        <StoreFeed
+            feed={highlights}
+            eventProps={{compact: true}}
+        />
+
+        {#if false}
         {#each Array.from(articleCount.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10) as [articleId, count]}
             <WithItem tagId={articleId} let:article>
                 {#if article}
                     <div class="flex flex-row w-full">
-                        <div class="w-1/4">
-                            <ArticleGridArticle {article} highlights={highlightsPerArticle[articleId]} />
-                        </div>
+                        {#if !$appMobileView}
+                            <div class="w-1/4">
+                                <ArticleGridArticle {article} highlights={highlightsPerArticle[articleId]} />
+                            </div>
+                        {/if}
                         <!-- <h1>{article.title}</h1>
                         <div class="text-lg font-light">
                             {article.summary}
@@ -83,7 +92,7 @@
                         </div> -->
 
                         <swiper-container
-                            class="w-3/4"
+                            class="sm:w-3/4 w-full"
                             freemode
                             mousewheel
                             pagination-clickable="true"
@@ -109,6 +118,7 @@
                 {/if}
             </WithItem>
         {/each}
+        {/if}
     </div>
 </div>
 

@@ -1,25 +1,47 @@
 <script lang="ts">
-	import { prepareEventsForTierPublish, publishToTiers } from "$actions/publishToTiers";
-	import FeedGroupPost from "$components/Feed/FeedGroupPost.svelte";
-	import TiersLabel from "$components/Forms/TiersLabel.svelte";
-	import Box from "$components/PageElements/Box.svelte";
+	import ShareModal from '$modals/ShareModal.svelte';
+	import ArticleLink from "$components/Events/ArticleLink.svelte";
+	import VideoLink from "$components/Events/VideoLink.svelte";
+	import RadioButton from "$components/Forms/RadioButton.svelte";
+    import { event, nonSubscribersPreview, previewExtraContent, status } from "$stores/post-editor";
+	import { NDKArticle, NDKKind, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { closeModal, openModal } from '$utils/modal';
+    import { prepareEventsForTierPublish, publishToTiers } from "$actions/publishToTiers";
 	import { dvmScheduleEvent } from "$lib/dvm";
 	import { getSelectedTiers } from "$lib/events/tiers";
-	import { type, publishAt, makePublicAfter, preview, view, selectedTiers } from "$stores/post-editor";
-	import { RelativeTime, ndk, newToasterMessage } from "@kind0/ui-common";
-	import { NDKEvent, type NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { Check, Info } from "phosphor-svelte";
+	import { publishAt, makePublicAfter, preview, view, selectedTiers } from "$stores/post-editor";
+	import { ndk, newToasterMessage } from "@kind0/ui-common";
+	import { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { debugMode } from "$stores/session";
+	import PublishValidation from "./PublishValidation.svelte";
+	import { Thread } from "$utils/thread";
+	import currentUser from "$stores/currentUser";
+	import ThreadItem from "$components/Editor/ThreadEditor/ThreadItem.svelte";
+	import { goto } from "$app/navigation";
+	import { publishThread } from "$lib/utils/thread";
+	import { WarningItem } from "./warnings";
+	import ShareImage from "$components/Event/ShareImage.svelte";
+	import ShareImageUploader from "$components/ShareImageUploader.svelte";
+	import { Check } from "phosphor-svelte";
+	import { getAuthorUrl, urlFromEvent } from '$utils/url';
 
-    export let article: NDKArticle | undefined = undefined;
-    export let video: NDKEvent | undefined = undefined;
-    export let note: NDKEvent | undefined = undefined;
-    export let schedule = false;
+    $: if ($event && $currentUser) {
+        $event.pubkey = $currentUser?.pubkey;
+        $event.author = $currentUser;
+    }
 
-    let event = article ?? video ?? note!;
+    let mode: "now" | "schedule" = "now";
+
+    let publishing = false;
     let eventPublished = false;
     let previewPublished = false;
     let makePublicScheduled = false;
     let publishAtVal: string | undefined = $publishAt?.toISOString().slice(0, -1);
+
+    const tiers = getSelectedTiers($selectedTiers);
+    if (Object.values($selectedTiers).length === tiers.length) {
+        $nonSubscribersPreview = false;
+    }
 
     $: if (publishAtVal) {
         try {
@@ -28,19 +50,49 @@
         } catch(e) { console.log(e) }
     }
 
-    async function publish() {
-        const tiers = getSelectedTiers($selectedTiers);
+    async function _publishThread(thread: Thread) {
+        try {
+            const e = await publishThread(
+                thread,
+                $publishAt,
+                $selectedTiers
+            )
+        } catch (e) {
+            newToasterMessage(e.message, 'error');
+        }
 
-        if (Object.values($selectedTiers).length === tiers.length) {
-            $preview = undefined;
+        if (e) goto(`/e/${e.encode()}`);
+    }
+
+    async function publish() {
+        publishing = true;
+
+        if (!$event) {
+            publishing = false;
+            return;
+        }
+
+        if ($event instanceof Thread) {
+            return _publishThread($event);
+        }
+
+        // add preview content
+        if ($preview) {
+            if ($previewExtraContent?.before) {
+                $preview.content = $previewExtraContent.before + `\n\n\n` + $preview.content;
+            }
+
+            if ($previewExtraContent?.after) {
+                $preview.content = $preview.content + `\n\n\n` + $previewExtraContent.after;
+            }
         }
 
         const [ eventForPublish, teaserForPublish ] = await prepareEventsForTierPublish(
-            event,
+            $event,
             $selectedTiers,
             {
                 ndk: $ndk,
-                teaserEvent: $preview as NDKEvent,
+                teaserEvent: $nonSubscribersPreview ? $preview as NDKEvent : undefined,
                 publishAt: $publishAt
             }
         )
@@ -56,124 +108,133 @@
             eventPublished = true;
             if ($preview) previewPublished = true;
         } catch (e: any) {
+            console.trace(e);
             newToasterMessage(e.message, "error");
+            publishing = false;
             return;
         }
 
         if ($makePublicAfter && $preview) {
             // Publish a delete of the preview
-            const publishDate = event.created_at! + ($makePublicAfter * 24 * 60 * 60);
-            const deleteEvent = await $preview.delete(`Superseded by full article ${event.encode()}`);
+            const publishDate = $event.created_at! + ($makePublicAfter * 24 * 60 * 60);
+            const deleteEvent = await $preview.delete(`Superseded by full article ${$event.encode()}`);
             deleteEvent.created_at = publishDate;
             await deleteEvent.sign();
             await dvmScheduleEvent(deleteEvent);
 
             // Remove all tier mentions from event
             const tagsToRemove = ["tier", "f", "preview"]
-            event.tags = event.tags.filter(tag => !tagsToRemove.includes(tag[0]));
+            $event.tags = $event.tags.filter(tag => !tagsToRemove.includes(tag[0]));
             for (const tier of Object.keys($selectedTiers)) {
-                event.tags.push(["f", tier]);
+                $event.tags.push(["f", tier]);
             }
-            event.id = "";
-            event.sig = "";
-            event.created_at! += $makePublicAfter * 24 * 60 * 60;
-            await event.sign();
-            // console.log("scheduling event", event.rawEvent());
-            await dvmScheduleEvent(event);
+            $event.id = "";
+            $event.created_at! += $makePublicAfter * 24 * 60 * 60;
+
+            if ($event.sig !== "") {
+                $event.sig = "";
+            } else {
+                $event.removeTag("published_at");
+            }
+            await $event.sign();
+            await dvmScheduleEvent($event);
             makePublicScheduled = true;
         }
 
+        publishing = false;
+
         $view = "published";
+        closeModal();
+        // reset("published");
     }
 
     let timeToPublish = 0;
 
     $: timeToPublish = $publishAt ? new Date($publishAt).getTime() - Date.now() : 0;
+
+    let dateInput: HTMLInputElement;
+
+    // Fill in preview fields if they are empty
+    $: if ($preview) {
+        if ($event instanceof NDKArticle && $preview instanceof NDKArticle) {
+            const title = $event.title;
+            const summary = $event.summary;
+            const image = $event.image;
+
+            if (title && !$preview.title) $preview.title = title;
+            if (summary && !$preview.summary) $preview.summary = summary;
+            if (image && !$preview.image) $preview.image = image;
+        } else if ($event instanceof NDKVideo && $preview instanceof NDKVideo) {
+            const title = $event.title;
+            const thumbnail = $event.thumbnail;
+
+            if (title && !$preview.title) $preview.title = title;
+            if ($event.content && !$preview.content) $preview.content = $event.content;
+            if (thumbnail && !$preview.thumbnail) $preview.thumbnail = thumbnail;
+        }
+    }
+
+    let canPublish: boolean;
+
+    let statusLength: number;
+
+    $: {
+        $status.length;
+        setTimeout(() => statusLength = $status.length, 500);
+    }
+
+    let warnings: WarningItem[] = [];
+    let progress = 0;
+    let uploadStatus = 'initial';
+    let url: string | undefined;
 </script>
 
-<Box title="Publishing">
-    <div class="flex flex-col w-full gap-2 p-4 bg-white/5 rounded-box">
-        {#if article}
-            {#if !article.image || !article.summary}
-                <div class="flex flex-col sm:flex-row gap-4 justify-between">
-                    <div class="flex flex-row items-center">
-                    <Info size={24} class="inline mr-2" />
-                    Article is missing a cover or summary.
-                    </div>
-                    <button class="button" on:click={() => $view = 'meta'}>
-                        Edit article attributes
-                    </button>
-                </div>
+{#key statusLength}
+    <PublishValidation bind:warnings bind:canPublish />
+    {#key canPublish}
+        {#if $event && $currentUser}
+            {#if publishing}
+                <h1>Publishing</h1>
+            {:else}
+                <button class="button" on:click={() => publishing = true}>Publish</button>
             {/if}
-        {:else if note}
-            <FeedGroupPost event={note} />
+        
+            {#if $event.kind === NDKKind.Article}
+                <ShareImageUploader
+                    article={$event}
+                    bind:progress
+                    bind:status={uploadStatus}
+                    bind:url
+                    addEventTagsToMedia={true}
+                    publishMedia={true}
+                    forceGenerate={publishing}
+                    forceUpload={true}
+                    on:uploaded={(e) => { console.log(e.detail) }}
+                />
+                {#if url}
+                    Uploaded to {url}
+                    <Check class="text-green-500" />
+                {/if}
+            {:else if $event.kind === NDKKind.HorizontalVideo}
+                <div class="md:min-w-[40rem] border border-white/20 rounded-box p-3">
+                    <VideoLink video={$event} skipLink={true} />
+                </div>
+            {:else if $event instanceof Thread}
+                <div class="max-h-[50vh] overflow-y-auto discussion-wrapper w-full sm:min-w-[35rem]">
+                    {#each $event.items as item, i }
+                        <div class="w-full discussion-item">
+                            <ThreadItem
+                                item={item}
+                                shouldDisplayVerticalBar={i !== $event.items.length - 1}
+                                readOnly={true}
+                            />
+
+                        </div>
+                    {/each}
+                </div>
+            {:else}
+                {$event.kind}
+            {/if}
         {/if}
-    </div>
-
-    {#if $preview}
-        <Box>
-            <div>
-                <Check class="w-4 h-4 inline mr-2 {eventPublished ? "text-success" : ""}" />
-                Publish {$type} to tiers: <TiersLabel tiers={$selectedTiers} />
-            </div>
-
-            {#if $preview}
-                <div>
-                    <Check class="w-4 h-4 inline mr-2 {previewPublished ? "text-success" : ""}" />
-                    A preview
-                    will be
-                    published
-                </div>
-
-                {#if $makePublicAfter}
-                    <div>
-                        <Check class="w-4 h-4 inline mr-2 {makePublicScheduled ? "text-success" : ""}" />
-                        Article will be made public after {$makePublicAfter} days
-                    </div>
-                {/if}
-            {/if}
-        </Box>
-    {/if}
-
-
-    {#if schedule}
-        <section class="settings w-full my-10">
-            <div class="title">
-                Schedule publication
-            </div>
-            <div class="field">
-                <div class="title">Publish at</div>
-                <input type="datetime-local" bind:value={publishAtVal} class="input rounded-full !bg-white/5" />
-                {#if $publishAt}
-                    <span class="text-sm text-neutral-500">
-                        This {$type} will be published
-                        <RelativeTime timestamp={$publishAt.getTime()} />
-                        {#if $makePublicAfter}
-                            and made public {$makePublicAfter} days after
-                        {/if}
-                    </span>
-                {/if}
-            </div>
-
-            <div class="flex flex-row gap-4 items-stretch w-full justify-between">
-                <button class="text-white px-10" on:click={() => {
-                    $publishAt = undefined;
-                    publish();
-                }}>
-                    Publish Now
-                </button>
-
-                <button class="button button-primary px-10 text-white" on:click={publish} disabled={!$publishAt || new Date($publishAt) < new Date()}>
-                    Schedule
-                </button>
-            </div>
-        </section>
-
-    {:else}
-        <div class="flex flex-row gap-4 items-center w-full justify-center my-10">
-            <button class="button button-primary px-10" on:click={publish}>
-                Publish Now
-            </button>
-        </div>
-    {/if}
-</Box>
+    {/key}
+{/key}

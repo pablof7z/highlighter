@@ -66,7 +66,7 @@
 	min-h-screen items-stretch justify-stretch
 	gap-0
 	flex flex-col
-	w-screen overflow-clip
+	w-screen sm:w-[calc(100vw-var(--navbar-collapsed))] overflow-clip
 	ml-[var(--navbar-collapsed)]
 ">
 	<LayoutHeader containerClass={mainWrapper} />

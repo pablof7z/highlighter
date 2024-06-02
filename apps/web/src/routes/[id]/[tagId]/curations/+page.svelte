@@ -2,7 +2,7 @@
 	import PageTitle from '$components/PageElements/PageTitle.svelte';
 	import { pageHeader } from "$stores/layout";
 	import { onDestroy, onMount } from "svelte";
-	import { loadedEvent, title } from "../store";
+	import { loadedEvent, title } from "$lib/stores/item-view.js";
 	import { openModal } from "$utils/modal";
 	import Curations from '$components/Curations.svelte';
 	import AddToCuration from '$modals/AddToCuration.svelte';
@@ -14,7 +14,6 @@
 
     $: {
         $pageHeader ??= {};
-        $pageHeader.title = "Comments";
         $pageHeader.right = {
             icon: Plus,
             label: "Add",
@@ -28,7 +27,6 @@
 
     onDestroy(() => {
         if ($pageHeader) {
-            $pageHeader.title = undefined;
             $pageHeader.right = undefined;
         }
     })

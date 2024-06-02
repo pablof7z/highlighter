@@ -113,7 +113,7 @@
                     {$$props.class}
                 " style="pointer-events: auto;"
                 >
-                    <div class="inner flex flex-col items-center transition-all duration-1000
+                    <div class="inner flex flex-col items-center transition-all duration-300
                     {$$props.class}">
                         {#if title}
                             <div class="flex flex-row justify-between w-full border-b border-base-300 pb-2 mb-4">

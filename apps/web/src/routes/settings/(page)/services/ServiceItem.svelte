@@ -12,7 +12,10 @@
     export let kind: number;
     let profile: NDKUserProfile | undefined;
 
-    $: {
+    let fetchedEventId: string;
+
+    $: if (eventId !== fetchedEventId) {
+        fetchedEventId = eventId;
         const appHandlerEvent = $userAppHandlers.get(kind);
         if (appHandlerEvent && appHandlerEvent.size > 0) {
             const e = appHandlerEvent.values().next().value;

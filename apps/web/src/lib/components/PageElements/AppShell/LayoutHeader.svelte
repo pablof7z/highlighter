@@ -46,6 +46,7 @@
 {#if render}
 <div class="
     !fixed top-0
+    left-[var(--navbar-collapsed)]
     z-40
     mobile-nav
     w-full

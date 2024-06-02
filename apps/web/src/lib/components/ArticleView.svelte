@@ -1,24 +1,16 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { ndk } from "@kind0/ui-common";
 	import { type NDKArticle, NDKKind, type NDKEventId, NDKEvent, NDKZapInvoice } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import ArticleRender from './ArticleRender.svelte';
-	import ItemHeader from "$components/ItemHeader.svelte";
 	import { pageHeader } from "$stores/layout";
 	import ItemFooter from "./Event/ItemView/ItemFooter.svelte";
 	import { getAuthorUrl, urlFromEvent } from "$utils/url";
-	import { derived } from "svelte/store";
-	import { isDirectReply } from "$utils/event";
-	import StoreFeed from "./Feed/StoreFeed.svelte";
 	import HorizontalOptionsList from "./HorizontalOptionsList.svelte";
 	import { CardsThree, ChatCircle } from "phosphor-svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
-	import TopZap from "./Events/TopZap.svelte";
-	import EventWrapper from "./Feed/EventWrapper.svelte";
-	import ItemView from "./Event/ItemView/ItemView.svelte";
 	import ItemViewComments from "$views/Item/ItemViewComments.svelte";
 
     export let article: NDKArticle;
@@ -78,9 +70,7 @@
     }
 </script>
 
-<div class="flex flex-col gap-2 px-4">
-    <ArticleRender {article} {isFullVersion} {isPreview} {fillInSummary} />
-</div>
+<ArticleRender {article} {isFullVersion} {isPreview} {fillInSummary} />
 
 {#if !isPreview}
     <div class="flex flex-col">

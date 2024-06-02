@@ -5,7 +5,7 @@
 	import { ndk } from "@kind0/ui-common";
 	import { onDestroy, onMount } from "svelte";
 	import { NavigationOption } from "../../../app";
-	import { CardsThree, ChatCircle, BookOpen, BookmarkSimple, Recycle, Repeat, Export, Lightning } from "phosphor-svelte";
+	import { CardsThree, ChatCircle, BookOpen, BookmarkSimple, Recycle, Repeat, Export, Lightning, Watch, YoutubeLogo } from "phosphor-svelte";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import { pageNavigationOptions } from "$stores/layout";
@@ -32,10 +32,13 @@
 
         if (event.kind === NDKKind.Article)
             options.push({ name: $appMobileView ? "Read" : undefined, value: 'article', href: urlPrefix, icon: BookOpen })
+        else if (event.kind === NDKKind.HorizontalVideo)
+            options.push({ name: $appMobileView ? "Watch" : undefined, value: 'video', href: urlPrefix, icon: YoutubeLogo })
 
         options.push({ name: $appMobileView ? "Comments" : undefined, value: 'comments', href: `${urlPrefix}/comments`, icon: ChatCircle })
 
-        options.push({ name: $appMobileView ? "Highlights" : undefined, value: 'highlights', href: `${urlPrefix}/highlights`, icon: HighlightIcon })
+        if (event.kind === NDKKind.Article)
+            options.push({ name: $appMobileView ? "Highlights" : undefined, value: 'highlights', href: `${urlPrefix}/highlights`, icon: HighlightIcon })
 
         if (mainContentKinds.includes(event.kind!))
             options.push({ name: $appMobileView ? "Curations" : undefined, value: 'curations', href: `${urlPrefix}/curations`, icon: CardsThree })

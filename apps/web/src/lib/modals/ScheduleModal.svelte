@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { userProfile } from './../stores/session.ts';
     import ModalShell from "$components/ModalShell.svelte";
     import AvatarWithName from "$components/User/AvatarWithName.svelte";
-    import { RelativeTime, UserProfile, ndk } from "@kind0/ui-common";
+    import { RelativeTime, ndk } from "@kind0/ui-common";
     import { Check } from "phosphor-svelte";
     import { closeModal } from '$utils/modal';
 
+    export let title = "Schedule Boost";
     export let action: string = "Post will be published";
     // async function
     export let onSchedule: (timestamp: number) => Promise<void>;
@@ -60,7 +60,7 @@
 </script>
 
 <ModalShell
-    title="Schedule Boost" on:close
+    {title} on:close
     class="max-w-sm w-full"
 >
     <div class="flex flex-col w-full text-sm border-b border-base-300 items-center pb-4 mb-8">
