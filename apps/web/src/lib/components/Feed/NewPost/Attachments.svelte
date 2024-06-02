@@ -1,7 +1,6 @@
 <script lang="ts">
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
 	import { isImage, isVideo } from "$utils/media";
-	import { UploadButton } from "@kind0/ui-common";
 	import { NDKTag } from "@nostr-dev-kit/ndk";
 	import { Image, X } from "phosphor-svelte";
 	import { slide } from "svelte/transition";

@@ -16,12 +16,8 @@
     const allTiers = getUserSubscriptionTiersStore();
     $: tiers = getTierSelectionFromAllTiers($allTiers);
 
-    let authorUrl: string | undefined;
-
     $: teaser.content = video.content;
 </script>
-
-<UserProfile user={$user} bind:authorUrl />
 
 <Page1
     bind:video={video}

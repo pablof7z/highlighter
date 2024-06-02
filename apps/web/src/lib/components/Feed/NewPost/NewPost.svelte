@@ -145,9 +145,41 @@
                     {$$props.class??""}"
                 />
 
-                <div class="px-4 mb-4 shrink" class:hidden={isCollapsed}>
-                    <Attachments buttonClass="btn btn-circle btn-ghost" bind:uploadedFiles />
+                <div class="flex flex-row w-full justify-between items-end">
+                    <div class="px-4 mb-4 shrink" class:hidden={isCollapsed}>
+                        <Attachments buttonClass="btn btn-circle btn-ghost" bind:uploadedFiles />
+                    </div>
+
+                    {#if !$appMobileView && !skipButtons}
+                        <div class="
+                            max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 w-full px-4 justify-end z-40 bottom-4 max-sm:h-16
+                            max-sm:pt-0
+                            {isCollapsed ? "" : "max-sm:justify-between max-sm:top-6"}
+                        ">
+                            {#if $$slots.buttonsBar}
+                                <slot name="buttonsBar" />
+                            {/if}
+                            <!-- <button class="btn btn-circle btn-ghost">
+                                <Timer class="w-6 h-6" />
+                            </button> -->
+                            <button class="
+                                button
+                                {isCollapsed ? "button px-6" : "max-sm:bg-accent2 max-sm:text-white px-6"}
+                            " on:click={publish} disabled={content.length === 0}>
+                                {#if publishing}
+                                    Publishing...
+                                {:else}
+                                    Post
+                                {/if}
+                            </button>
+
+                            <button class="" on:click={cancel}>
+                                Cancel
+                            </button>
+                        </div>
+                    {/if}
                 </div>
+                
 
                 {#if $$slots.afterContent}
                     <div class="mt-2">
@@ -157,33 +189,4 @@
             </div>
         {/key}
     </div>
-    {#if !$appMobileView && !skipButtons}
-        <div class="
-            max-sm:fixed -z-1 left-0 flex flex-row gap-6 py-4 sm:border-t border-base-300 w-full px-4 justify-end z-40 bottom-4 max-sm:h-16
-            max-sm:pt-0
-            {isCollapsed ? "" : "max-sm:justify-between max-sm:top-6"}
-        ">
-            {#if $$slots.buttonsBar}
-                <slot name="buttonsBar" />
-            {/if}
-            <!-- <button class="btn btn-circle btn-ghost">
-                <Timer class="w-6 h-6" />
-            </button> -->
-            <button class="
-                button
-                {isCollapsed ? "button px-6" : "max-sm:bg-accent2 max-sm:text-white px-6"}
-            " on:click={publish} disabled={content.length === 0}>
-                {#if publishing}
-                    Publishing...
-                {:else}
-                    Post
-                {/if}
-            </button>
-
-            <button class="" on:click={cancel}>
-                Cancel
-            </button>
-        </div>
-    {/if}
-    
 </div>

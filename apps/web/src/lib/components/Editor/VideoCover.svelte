@@ -7,7 +7,6 @@
 
     export let videoFile: File | undefined = undefined;
     export let video: NDKVideo;
-    let pendingStatus: string | undefined;
 
     const st = "Uploading thumbnail";
 

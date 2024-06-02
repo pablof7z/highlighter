@@ -7,6 +7,7 @@
 	import { preview, previewContentChanged, previewTitleChanged, view } from "$stores/post-editor";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { user } from "@kind0/ui-common";
+	import { pageHeader } from "$stores/layout";
 
     export let video: NDKVideo;
     export let videoFile: File | undefined = undefined;
@@ -19,6 +20,25 @@
         $preview.tags.push(...video.getMatchingTags("t"))
         if (!$previewTitleChanged) $preview.title = video.title;
         if (!$previewContentChanged) $preview.content = video.content;
+    }
+
+    $: if ($pageHeader?.props) {
+        $pageHeader.props.onNext = () => $view = "meta";
+        $pageHeader.props.showNext = false;
+
+        switch ($view) {
+            case 'edit':
+                $pageHeader.props.showNext = true;
+                $pageHeader.props.showPublish = false;
+                $pageHeader.props.showPreview = false;
+                $pageHeader.props.showSaveDraft = false;
+                $pageHeader.props.showAudience = true;
+                break;
+            case 'meta':
+                $pageHeader.props.showPublish = true;
+                $pageHeader.props.shoEdit = true;
+                break;
+        }
     }
 </script>
 

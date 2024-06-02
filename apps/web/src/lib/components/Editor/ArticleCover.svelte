@@ -1,22 +1,36 @@
 <script lang="ts">
-	import { NDKArticle, NDKKind } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
 	import { Image, Shuffle } from 'phosphor-svelte';
 
-    export let article: NDKArticle;
+    export let article: NDKArticle | undefined = undefined;
+    export let video: NDKVideo | undefined = undefined;
+
+    let title: string | undefined;
+    $: title = article?.title ?? video?.title;
+
+    let image: string | undefined;
+    $: image = article?.image ?? video?.thumbnail;
+
+    function setUrl(url: string) {
+        if (article)
+            article.image = url;
+        else if (video)
+            video.thumbnail = url;
+    }
 
     function uploaded(event: CustomEvent<{url: string}>) {
         const {url} = event.detail;
-        article.image = url;
+        setUrl(url);
     }
 
     async function randomImage() {
-        const title = article.title || "Nature";
-        const image = await fetch(`https://picsum.photos/800/600?random=${title}`);
+        const k = title || "Nature";
+        const image = await fetch(`https://picsum.photos/800/600?random=${k}`);
         const finalUrl = image.url;
 
         if (finalUrl) {
-            article.image = finalUrl;
+            setUrl(finalUrl);
         }
     }
     
@@ -26,15 +40,15 @@
     <div class="field">
         <div class="grid grid-cols-3 gap-4">
             <div class="relative rounded-box bg-base-100 col-span-2 row-span-2 flex items-stretch justify-stretch">
-                {#if article.image}
-                    <img class="w-full md:!h-72 object-cover" src={article.image} />
+                {#if image}
+                    <img class="w-full md:!h-72 object-cover" src={image} />
                 {/if}
             </div>
 
             <div class="relative">
                 <ImageUploader
                     wrapperClass="w-full"
-                    bind:url={article.image}
+                    bind:url={image}
                     alwaysUseSlot={true}
                     let:onOpen
                     on:uploaded={uploaded}
