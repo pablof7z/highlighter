@@ -10,6 +10,8 @@
 	import { onMount } from "svelte";
 	import { Thread } from "$utils/thread";
 	import ThreadEditor from "$components/Editor/ThreadEditor/ThreadEditor.svelte";
+	import ArticleRender from '$components/ArticleRender.svelte';
+	import { pageHeader } from '$stores/layout';
 
     let draftId: string;
     let draftItem: DraftItem | undefined;
@@ -33,7 +35,7 @@
             draftItem = $drafts.find(d => d.id === draftId);
 
             if (!draftItem) {
-                // goto("/drafts");
+                goto("/drafts");
             } else {
                 const checkpoints = JSON.parse(draftItem.checkpoints) as DraftCheckpoint[];
                 let checkpoint = checkpoints.find(c => c.manuallySaved);
@@ -50,6 +52,15 @@
                         article = new NDKArticle($ndk, JSON.parse(payload.event));
                         article.pubkey ??= $currentUser.pubkey;
                         article.author = $currentUser;
+
+                        $pageHeader = {
+                            title: "Draft",
+                            right: {
+                                label: "Continue Editing",
+                                url: `/articles/new?draft=${draftId}`
+                            }
+                        }
+                        
                         break;
                     }
                     case "thread": {
@@ -67,14 +78,13 @@
 
         fetchDrafItem(draftId);
     }
+
+
 </script>
 
 {#key draftId + checkpointTime??""}
     {#if article}
-        <a href="/articles/new?draft={draftId}" class="button text-lg">
-            Continue editing
-        </a>
-        <ArticleView {article} isFullVersion={true} />
+        <ArticleRender {article} isFullVersion={true} isPreview={true} fillInSummary={false} />
     {:else if thread}
         <ThreadEditor bind:thread bind:draftItem />
     {/if}

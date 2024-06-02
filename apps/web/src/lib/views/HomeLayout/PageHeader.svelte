@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { HighlightIcon } from "@kind0/ui-common";
-	import { Notepad, Note, Article, Lightning, House } from "phosphor-svelte";
+	import { Notepad, Note, Article, Lightning, House, BookOpen, BookOpenText, TextAlignLeft } from "phosphor-svelte";
 	import { NavigationOption } from "../../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import SearchBar from "$components/Page/SearchBar.svelte";
@@ -8,9 +8,9 @@
     const options: NavigationOption[] = [
         { value: "Home",  href: "/home", icon: House },
         { name: "Notes",  href: "/home/notes", icon: Note },
-        { name: "Articles",  href: "/home/articles", icon: Article },
+        { name: "Reads",  href: "/home/reads", icon: TextAlignLeft },
         { name: "Highlights",  href: "/home/highlights", icon: HighlightIcon },
-        { name: "Zapped",  href: "/home/zapped", icon: Lightning },
+        // { name: "Zapped",  href: "/home/zapped", icon: Lightning },
     ]
 </script>
 

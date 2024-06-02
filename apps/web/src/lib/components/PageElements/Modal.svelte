@@ -5,19 +5,6 @@
 	import { Block, Sheet } from "konsta/svelte";
 	import { Modals, openModal, closeModal as closeModalReal } from "svelte-modals";
 	import { fade } from "svelte/transition";
-    
-	let modalOpen = 0;
-
-    $: if (!$appMobileView && $modal?.component) {
-        openModal($modal.component as any, $modal.props);
-		modalOpen++;
-    }
-
-	$: if (!$appMobileView && modalOpen && !$modal?.component) {
-		console.log("Closing modal");
-		closeModalReal();
-		modalOpen--;
-	}
 </script>
 
 {#if $appMobileView}

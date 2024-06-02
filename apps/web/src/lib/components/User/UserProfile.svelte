@@ -67,13 +67,9 @@
                 userProfile ??= p;
                 profileCreatedAt = p.created_at;
 
-                console.log('loaded profile from cache', user?.pubkey, p, {profileCreatedAt});
-
                 // not sure why this hack is needed
                 setTimeout(() => {userProfile ??= p;}, 100);
             }
-
-            console.log("scheduling profile push for user", user.pubkey, userProfile?.name)
 
             // push a profile refresh to be grouped
             $ndk.fetchEvents({

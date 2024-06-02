@@ -12,6 +12,7 @@
 	import ArticleView from "$components/ArticleView.svelte";
 	import { debugMode } from "$stores/session";
 	import currentUser from "$stores/currentUser";
+	import { pageHeader } from "$stores/layout";
 
     export let article: NDKArticle;
     export let draftItem: DraftItem | undefined = undefined;
@@ -64,6 +65,23 @@
             });
         } else {
             currentView = $view;
+        }
+    }
+
+    $: if ($pageHeader?.props) {
+        switch ($view) {
+            case 'edit':
+                $pageHeader.props.showPublish = true;
+                $pageHeader.props.showSchedule = true;
+                $pageHeader.props.showPreview = true;
+                $pageHeader.props.showSaveDraft = true;
+                $pageHeader.props.showAudience = true;
+                break;
+            case 'view-preview':
+                $pageHeader.props.shoEdit = true;
+                $pageHeader.props.showPublish = true;
+                $pageHeader.props.showSchedule = true;
+                break;
         }
     }
 </script>

@@ -3,7 +3,7 @@
 	import TopicPage from '$views/TopicPage.svelte';
     let topic: string;
 
-    $: topic = $page.params.topic;
+    $: topic = decodeURIComponent($page.params.topic);
 </script>
 
 {#if topic}

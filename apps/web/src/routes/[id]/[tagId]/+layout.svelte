@@ -4,7 +4,7 @@
 	import WithItem from '$components/Event/ItemView/WithItem.svelte';
 	import ItemShell from '$views/ItemShell.svelte';
 	import { NDKArticle, NDKEvent, NDKUser } from '@nostr-dev-kit/ndk';
-	import { loadedEvent, title } from './store';
+	import { loadedEvent, title } from "$stores/item-view.js"
 	import { onDestroy } from 'svelte';
 
     let user: NDKUser;
@@ -16,10 +16,14 @@
     $: user = $page.data.user;
     $: tagId = $page.params.tagId;
 
-    $: $loadedEvent = article || video || event;
+    $: {
+        console.log('setting loaded event', article, video, event);
+        $loadedEvent = article ?? video ?? event;
+    }
     $: $title = (article || video)?.title;
 
     onDestroy(() => {
+        console.log('removing loaded event');
         loadedEvent.set(null);
     });
 </script>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
 	import { isImage, isVideo } from "$utils/media";
 	import { UploadButton } from "@kind0/ui-common";
 	import { NDKTag } from "@nostr-dev-kit/ndk";
@@ -44,7 +45,7 @@
 {/if}
 
 <div class="flex flex-row items-center text-white gap-4">
-    <UploadButton class="flex-none p-1 {$$props.buttonClass??""}" on:uploaded={uploaded}>
+    <BlossomUpload class="flex-none p-1 {$$props.buttonClass??""}" on:uploaded={uploaded}>
         <Image class="w-6 h-6" />
-    </UploadButton>
+    </BlossomUpload>
 </div>

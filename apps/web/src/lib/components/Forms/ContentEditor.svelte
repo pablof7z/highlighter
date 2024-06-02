@@ -9,6 +9,7 @@
 	import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
 	import Checkbox from './Checkbox.svelte';
 	import { wysiwygEditor } from '$stores/settings.js';
+	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
 
     export let content: string = "";
     export let placeholder = "Write your heart out...";
@@ -203,9 +204,9 @@
                     <button class="ql-italic"></button>
                     <button class="ql-link"></button>
                     <button>
-                        <UploadButton class="!p-0" on:uploaded={fileUploaded} bind:blob={uploadBlob}>
+                        <BlossomUpload class="!p-0" on:uploaded={fileUploaded} bind:blob={uploadBlob}>
                             <Image class="w-full" />
-                        </UploadButton>
+                        </BlossomUpload>
                     </button>
                 </span>
             {/if}

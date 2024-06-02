@@ -6,7 +6,7 @@
 </script>
 
 <div dir="auto" class="w-full flex flex-col">
-    <div class="max-sm:-mx-4 flex sm:relative {($$slots.image && !isPreview) ? 'max-sm:h-screen min-h-[20vh] sm:h-[30vh]' : "h-[10vh]"}">
+    <div class="max-sm:-mx-4 flex sm:relative {$$slots.image ? 'max-sm:h-screen min-h-[20vh] sm:h-[30vh]' : "h-[10vh]"}">
         <div class="w-full h-full absolute top-0 left-0 bottom-0 right-0 z-1 overflow-hidden">
             <slot name="image" />
         </div>

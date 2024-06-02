@@ -96,7 +96,7 @@
         }
     }
 
-    let top = -1000
+    let top = 10000;
     let left = 0;
 
     let cleanup: (() => void) | null = null;
@@ -220,7 +220,7 @@
 </script>
 
 <div class="
-    absolute whitespace-nowrap
+    absolute top-0 left-0 whitespace-nowrap
     flex-nowrap
     divide-x divide-black
     overflow-clip

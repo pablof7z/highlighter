@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { loadedEvent } from "./store.js";
 	import { onDestroy } from "svelte";
 	import { pageHeader } from "$stores/layout";
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
+	import { loadedEvent } from "$stores/item-view";
 
     $pageHeader ??= {};
     $pageHeader.component = ItemHeader;

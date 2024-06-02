@@ -4,6 +4,18 @@
 	import StreamIcon from "$icons/StreamIcon.svelte";
 	import Box from "$components/PageElements/Box.svelte";
 	import { drafts } from "$stores/drafts";
+	import { openModal, replaceModal } from "$utils/modal";
+	import NewPostModal from "$modals/NewPostModal.svelte";
+
+    export let onNewShortPost: (() => void) | undefined = undefined;
+
+    function shortNote() {
+        if (!!onNewShortPost) {
+            onNewShortPost();
+        } else {
+            openModal(NewPostModal);
+        }
+    }
 </script>
 
 <Box class={$$props.boxClass} innerClass="flex-col">
@@ -15,7 +27,7 @@
         grid-cols-3 md:grid-cols-3
         justify-center
     ">
-        <NewPostItem icon={Note} title="Short Note"  href="/threads/new" />
+        <NewPostItem icon={Note} title="Short Note" on:click={shortNote} />
         <NewPostItem icon={TextAlignLeft} title="Article" href="/articles/new" />
         <NewPostItem icon={Play} title="Video" href="/videos/new" />
         <NewPostItem icon={RowsPlusBottom} title="Thread" href="/threads/new" />

@@ -23,7 +23,7 @@
     });
 </script>
 
-<div class="w-full hidden sm:block">
+<div class="w-full hidden sm:block discussion-wrapper">
     <NewPost
         kind={NDKKind.Text}
         placeholder="What's happening?!"

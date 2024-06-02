@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKKind, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { isEventFullVersion } from "$utils/event";
 	import ArticleView from "$components/ArticleView.svelte";
 	import { onDestroy, onMount } from "svelte";
@@ -10,6 +10,9 @@
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import ListView from "$components/ListView.svelte";
 	import Whoops from "$components/PageElements/Whoops.svelte";
+	import ListShell from "$views/List/ListShell.svelte";
+	import VideoView from "./VideoView.svelte";
+	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 
     export let event: NDKEvent;
     export let ignoreHeader: boolean = false;
@@ -35,22 +38,33 @@
         article={event}
         isFullVersion={isEventFullVersion(event)}
     />
+{:else if event instanceof NDKVideo}
+    <VideoView
+        video={event}
+        isFullVersion={isEventFullVersion(event)}
+    />
 {:else if !event}
     <Whoops message="Event has not been provided" devMessage="<ItemView /> component requires an event prop" />
 {:else if event.kind === NDKKind.ArticleCurationSet}
-    <ListView {event} />
+    <ListShell list={NDKList.from(event)} />
 {:else if event.kind === NDKKind.Text}
-    <EventWrapper
-        {event}
-        expandThread={true}
-        expandReplies={true}
-        class="text-lg p-6 rounded-box"
-    >
-        <EventContent ndk={$ndk} {event} />
-    </EventWrapper>
+    <div class="discussion-wrapper">
+        <EventWrapper
+            {event}
+            expandThread={true}
+            expandReplies={true}
+            class="text-lg p-6 rounded-box"
+        >
+            <EventContent
+                ndk={$ndk}
+                {event}
+                eventCardComponent={EmbeddedEventWrapper}
+            />
+        </EventWrapper>
+    </div>
 {:else}
     <EventWrapper {event} class="bg-base-200 p-6 rounded-box">
-        <EventContent ndk={$ndk} {event} class="highlight" />
+        <EventContent ndk={$ndk} {event} class="highlight" eventCardComponent={EmbeddedEventWrapper} />
     </EventWrapper>
 {/if}
 

@@ -32,7 +32,7 @@ import StoreFeed from "$components/Feed/StoreFeed.svelte";
 </script>
 
 <div class="max-w-[var(--home-layout-feed-width)] w-full flex flex-row-reverse gap-8">
-    <div class="w-3/4 mx-auto">
+    <div class="lg:w-3/4 w-full mx-auto">
         <StoreFeed
             feed={filteredArticles}
         />

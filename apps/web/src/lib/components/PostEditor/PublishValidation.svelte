@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { WarningItem } from './warnings.js';
 	import { type, event, preview, view, status } from "$stores/post-editor";
 	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { Warning } from "phosphor-svelte";
@@ -7,16 +8,7 @@
 
     export let canPublish: boolean | undefined = undefined;
 
-    type Warning = {
-        message: string;
-        showStopper?: boolean;
-        link?: {
-            text: string;
-            fn: () => void;
-        }
-    }
-
-    let warnings: Warning[] = [];
+    export let warnings: WarningItem[] = [];
 
     $: {
         warnings = [];
