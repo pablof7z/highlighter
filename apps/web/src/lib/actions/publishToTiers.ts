@@ -5,6 +5,7 @@ import { requiredTiersFor, type TierSelection } from '$lib/events/tiers';
 import { urlFromEvent } from '$utils/url';
 import { dvmScheduleEvent } from '$lib/dvm';
 import createDebug from "debug";
+import { relaySetForEvent } from '$utils/event';
 
 const debug = createDebug('HL:publishToTiers');
 
@@ -87,10 +88,8 @@ export async function prepareEventsForTierPublish(
 	if (teaser) teaser.sig = undefined;
 
 	// update created_at date
-	console.log(`publishAt: ${publishAt}`);
 	event.created_at = opts.explicitCreatedAt ?? Math.floor(publishAt.getTime() / 1000);
 	if (teaser) teaser.created_at = opts.explicitCreatedAt ?? Math.floor(publishAt.getTime() / 1000);
-	console.log(`event.created_at: ${event.created_at}`);
 
 	if (!opts.skipHTag) addHTag(event, user);
 	if (teaser) addHTag(teaser, user);
@@ -103,16 +102,23 @@ export async function prepareEventsForTierPublish(
 	await addPointerTags(event, teaser);
 
 	if (teaser) await teaser.sign();
+	await event.sign();
 
 	return [ event, teaser ];
 }
 
-async function publishOrSchedule(
+/**
+ * Either publishes right now or schedules a publish with a DVM if the created_at of the event
+ * is more than two minutes in the future
+ */
+export async function publishOrSchedule(
 	event: NDKEvent,
-	relaySet: NDKRelaySet | undefined,
-	publishAt?: Date,
 ) {
-	if (!publishAt) {
+	const relaySet = relaySetForEvent(event);
+	const twoMinutesFromNow = Math.floor(Date.now() / 1000);
+	const schedule = event.created_at! > twoMinutesFromNow;
+
+	if (!schedule) {
 		await event.publish(relaySet);
 	} else {
 		const relays = relaySet ? Array.from(relaySet.relays).map(r => r.url) : undefined;
@@ -131,13 +137,7 @@ export async function publishToTiers(
 ) {
 	const teaser = opts.teaserEvent;
 
-	const eventHasFreeTier = requiredTiersFor(event).includes('Free');
-
-	if (eventHasFreeTier) {
-		opts.relaySet = undefined;
-	} else {
-		opts.relaySet = getDefaultRelaySet();
-	}
+	opts.relaySet = relaySetForEvent(event);
 
 	if (teaser) {
 		await teaser.sign();

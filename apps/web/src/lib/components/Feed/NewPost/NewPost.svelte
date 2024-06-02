@@ -76,11 +76,14 @@
             hasFocus = false;
             await event.sign();
             event.publish(relaySet);
+            console.log('dispatch', event.rawEvent(), event.encode());
+            dispatch("publish", event);
+
+            // reset
             event = new NDKEvent($ndk, { kind, tags: extraTags } as NostrEvent);
             content = "";
             resetEditorAt = new Date();
             isCollapsed = collapsed ?? true;
-            dispatch("publish");
         } catch (e) {
             console.error(e);
             newToasterMessage(e.relayErrors ?? e.message, "error");

@@ -19,7 +19,7 @@
     />
 
     <svelte:fragment slot="footer">
-        <button class="button button-black py-3 w-fit">
+        <button class="button-black py-3 w-fit">
             <PlusCircle class="w-6 h-6 inline mr-2" />
             New Tier
         </button>
@@ -27,7 +27,7 @@
         <div class="grow"></div>
         
         <button
-            class="button button-black py-3 w-fit self-center"
+            class="button-black py-3 w-fit self-center"
             on:click|stopPropagation|preventDefault={closeModal}
         >
             Close

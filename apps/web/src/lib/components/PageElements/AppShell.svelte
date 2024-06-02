@@ -12,41 +12,20 @@
 	let layoutWrapper: string;
 	let mainAndDetailWrapper: string;
 	let mainWrapper: string;
-	let detailWrapper: string;
-	let sidebarWrapper: string;
 
 	$: switch ($layoutMode) {
 		case 'full-width':
 			layoutWrapper = "w-full";
 			mainAndDetailWrapper = "max-w-none w-full";
 			mainWrapper = "w-full";
-			// if ($pageSidebar) {
-			// 	sidebarWrapper = "w-1/3 max-w-[500px]";
-			// 	mainAndDetailWrapper = "max-w-none w-[calc(100vw_-_500px)]";
-			// 	mainWrapper = "w-[calc(100vw_-_500px)]";
-			// }
-			
 			break;
 		case 'content-focused':
 			layoutWrapper = "w-full";
 			mainAndDetailWrapper = "max-w-[var(--content-focused-wrapper-width)] mx-auto w-full justify-center";
 			mainWrapper = "max-w-[var(--content-focused-width)] w-full grow";
-
-			// if ($pageSidebar) {
-			// 	sidebarWrapper = "w-1/3 max-w-[500px] top-0";
-			// 	mainAndDetailWrapper = "max-w-7xl mr-auto w-fit justify-center";
-			// }
-			
 			break;
-		// case "list-column":
-		// 	layoutWrapper = "w-full";
-		// 	mainAndDetailWrapper = "flex-row-reverse w-[calc(100vw_-_5rem)]";
-		// 	mainWrapper = "w-2/3 grow lg:px-6";
-		// 	detailWrapper = "w-1/3 max-w-[500px] lg:p-6";
-		// 	break;
 		case "single-column-focused":
 			mainAndDetailWrapper = "";
-			detailWrapper = "";
 
 			mainAndDetailWrapper = "max-w-5xl mx-auto w-full";
 			mainWrapper = "max-w-3xl mx-auto w-screen";
@@ -69,7 +48,7 @@
 	w-screen sm:w-[calc(100vw-var(--navbar-collapsed))] overflow-clip
 	ml-[var(--navbar-collapsed)]
 ">
-	<LayoutHeader containerClass={mainWrapper} />
+	<LayoutHeader containerClass="sm:-translate-x-[calc(var(--navbar-collapsed)/2)] {mainWrapper}" />
 
 	<div class="mb-[calc(var(--navbar-height))] w-full"></div>
 

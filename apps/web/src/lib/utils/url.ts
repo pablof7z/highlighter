@@ -54,23 +54,18 @@ export function urlFromEvent(
 
 	if (authorUrl.startsWith("/npub1")) authorUrl = undefined;
 
-	if (fullUrl) {
-		if (authorUrl)
-			url.push(BASE_URL + authorUrl);
-		else
-			url.push(BASE_URL);
-	} else if (authorUrl) {
-		url.push(authorUrl);
-	}
+	if (fullUrl) url.push(BASE_URL);
 
-	if (event.isParamReplaceable()) {
+	// strip prefix / from authorUrl
+	if (authorUrl && authorUrl[0] === '/') authorUrl = authorUrl.slice(1);
+
+	if (event.isParamReplaceable() && authorUrl) {
 		const dTag = event.tagValue("d");
 		if (dTag && dTag.length > 0 && authorUrl) {
 			url.push(authorUrl);
 			url.push(dTag)
 		} else {
-			if (fullUrl) url.push("a");
-			else url.push("/a");
+			url.push("a")
 			url.push(event.encode());
 		}
 	} else {
@@ -78,9 +73,11 @@ export function urlFromEvent(
 		url.push(event.encode());
 	}
 
-	console.log({url});
+	let u = url.join("/");
 
-	return url.join("/");
+	if (!fullUrl) u = "/" + u;
+
+	return u;
 }
 
 export function urlSuffixFromEvent(event: NDKEvent): string {

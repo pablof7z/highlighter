@@ -4,25 +4,23 @@
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import Input from "$components/Forms/Input.svelte";
     import ModalShell from "$components/ModalShell.svelte";
-	import { urlSuffixFromTagId, urlSuffixFromEvent, urlFromEvent } from "$utils/url";
+	import { urlFromEvent } from "$utils/url";
 	import { ndk } from "@kind0/ui-common";
-	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
 	import { closeModal } from '$utils/modal';
 	import { NavigationOption } from "../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
-	import { Block, Button, Link, Segmented, SegmentedButton, Toolbar } from "konsta/svelte";
-    import { Export, Share as ShareIcon } from "phosphor-svelte";
+    import { Export } from "phosphor-svelte";
     import { Share } from '@capacitor/share';
-	import { appMobileView } from "$stores/app";
 	import ShareImage from "$components/Event/ShareImage.svelte";
-    import { toBlob, toPng } from "html-to-image";
 	import { EventTemplate } from "nostr-tools";
 	import { activeBlossomServer } from '$stores/session';
-	import { onDestroy } from 'svelte';
 
     export let event: NDKEvent;
     export let content: string = "";
     export let tags: NDKTag[] = [];
+    export let created_at: number | undefined;
+    export let repost = false;
 
     let article: NDKArticle | undefined = undefined;
     let summary: string | undefined;
@@ -121,8 +119,6 @@
         }
     }
 
-    let advanced = false;
-
     let options: NavigationOption[] = [
         { name: "Publish on Nostr", },
         { name: "Share manually", },
@@ -159,7 +155,7 @@
         </div>
     </svelte:fragment>
     
-    <div class="w-full {advanced ? "max-sm:hidden" : ""}">
+    <div class="w-full">
         {#if selectedOption === "Publish on Nostr"}
             <ContentEditor
                 bind:content
@@ -217,12 +213,29 @@
     </div>
 
     <svelte:fragment slot="footer">
-        <button class="button px-6" on:click={publish}>
-            {#if publishing}
-                Publishing...
+        <!-- <div class="self-start">
+            <Checkbox class="text-sm" bind:checked={repost}>
+                Repost 8 hours later
+                <span class="text-xs font-light" slot="description">
+                    Reach followers in other timezones
+                </span>
+            </Checkbox>
+        </div> -->
+        
+        <div class="grow flex justify-end">
+            {#if selectedOption === "Publish on Nostr"}
+                <button class="button" on:click={publish}>
+                    {#if publishing}
+                        Publishing...
+                    {:else}
+                        Publish
+                    {/if}
+                </button>
             {:else}
-                Publish
+                <button class="button" on:click={closeModal}>
+                    Close
+                </button>
             {/if}
-        </button>
+        </div>
     </svelte:fragment>
 </ModalShell>

@@ -119,7 +119,7 @@
             <div>
                 <button
                     class="
-                        button min-w-[6rem]
+                        button-black min-w-[6rem]
                         {!warning.showStopper ? 'button-black py-2 px-4' : ''}
                     "
                     on:click={warning.link.fn}

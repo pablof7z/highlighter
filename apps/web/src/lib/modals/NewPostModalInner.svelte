@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ModalShell from "$components/ModalShell.svelte";
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
 	import { NDKEvent, NDKKind, NDKTag, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import { closeModal } from "$utils/modal";
@@ -9,6 +8,7 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { NavigationOption, UserProfileType } from "../../app";
 	import ItemLink from "$components/Events/ItemLink.svelte";
+	import { goto } from "$app/navigation";
 
     export let replyTo: NDKEvent | undefined = undefined;
     export let tags: NDKTag[] = [];
@@ -94,9 +94,10 @@
         bind:publishing
         skipButtons
         skipFadeMode
-        on:publish={() => {
+        on:publish={(e) => {
+            const event = e.detail;
+            goto(`/e/${event.encode()}`);
             closeModal();
         }}
-        on:cancel={closeModal}
     />
 </div>

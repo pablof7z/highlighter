@@ -50,7 +50,7 @@ import ModalShell from "$components/ModalShell.svelte";
                     </p>
 
                     <div class="flex flex-col gap-2">
-                        <button class="button button-black text-lg text-white px-8 py-4" on:click={highlight}>
+                        <button class="button-black text-lg text-white px-8 py-4" on:click={highlight}>
                             Highlight
                             <Name {user} />
                         </button>
@@ -87,7 +87,7 @@ import ModalShell from "$components/ModalShell.svelte";
                     </Checkbox>
 
                     <div class="flex flex-col gap-2">
-                        <button class="button button-black text-lg text-white px-8 py-4" on:click={() => closeModal()}>
+                        <button class="button-black text-lg text-white px-8 py-4" on:click={() => closeModal()}>
                             Close
                         </button>
                         <button class="text-xs" on:click={undo}>Undo</button>
