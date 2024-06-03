@@ -12,13 +12,12 @@ export function filterArticle(
         // if it's followed by the user, we want to show it
         if ($userFollows.has(article.pubkey)) return true;
 
-        // If the title strats with "News", we don't want to show it
+        // If the title starts with "News", we don't want to show it
         if (article.title?.startsWith('News')) return false;
 
         // If it doesn't have an image
         if (!article.image) return false;
         
-        // If the article has the tag nostrcooking, we don't want to show it
         const wordCount = article.content.split(/ /).length;
         if (wordCount < minWordCount) return false;
         

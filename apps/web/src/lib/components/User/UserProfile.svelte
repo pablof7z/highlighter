@@ -78,7 +78,7 @@
             .then((ev: Set<NDKEvent> | null) => {
                 const e = ev?.values().next().value;
                 if (e && e.created_at! > profileCreatedAt) {
-                    console.log('new profile event', user?.pubkey, e.rawEvent())
+                    // console.log('new profile event', user?.pubkey, e.rawEvent())
                     userProfile = profileFromEvent(e) as UserProfileType;
                     event = e;
                     dispatch("newProfileAfterEose", userProfile);
@@ -109,11 +109,11 @@
             { groupableDelayType: 'at-most', subId, groupable, closeOnEose, cacheUsage, ...subsOptions},
             undefined, false
         );
-        console.log('fetching profile', user?.pubkey, subscription)
+        // console.log('fetching profile', user?.pubkey, subscription)
 
         if (subscription) {
             subscription.on("event", (e: NDKEvent, r: NDKRelay) => {
-                console.log('event profile', user?.pubkey, e.rawEvent())
+                // console.log('event profile', user?.pubkey, e.rawEvent())
                 
                 const noKind0Event = !kind0Event;
                 const kind0EventIsOlder = kind0Event?.created_at! < e.created_at!;
@@ -171,7 +171,7 @@
         }
     }
 
-    $: console.log('update', userProfile?.displayName)
+    // $: console.log('update', userProfile?.displayName)
 </script>
 
 <slot {userProfile} {fetching} {authorUrl} {displayNip05} {event} />

@@ -13,7 +13,7 @@
     }
 </script>
 
-<button class="button group w-fit transition-all duration-300 {$$props.class??""}" on:click={open}>
+<button class="button gap-2 group w-fit transition-all duration-300 {$$props.class??""}" on:click={open}>
     <Lightning size={20} />
     Zap
     <span class="

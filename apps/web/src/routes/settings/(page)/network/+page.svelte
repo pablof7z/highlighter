@@ -19,7 +19,7 @@
     const creatorRelays = getDefaultRelaySet();
 </script>
 
-{{<section class="settings">
+<section class="settings">
     <div class="title">
         Relays
     </div>
@@ -59,7 +59,7 @@
 </section>
 
 <style lang="postcss">
-    h1 {}}
+    h1 {
         @apply text-2xl font-semibold text-white;
         @apply mb-4;
     }

@@ -171,14 +171,14 @@
                         >Cancel</button>
                         {#if selectedAmount && selectedCurrency}
                             <button
-                                class="button px-10 text-lg grow"
+                                class="button"
                                 disabled={!selectedAmount}
                                 on:click={() => bitcoin = true}
                             >
                                 {#if hasTiers}
-                                    Go backstage
-                                {:else}
                                     Subscribe
+                                {:else}
+                                    Support
                                 {/if}
                                 for {currencyFormat(selectedCurrency, selectedAmount)}/{termToShort(selectedTerm)}
                             </button>

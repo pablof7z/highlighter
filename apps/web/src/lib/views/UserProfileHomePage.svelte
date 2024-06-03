@@ -11,6 +11,7 @@
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";
 	import { urlFromEvent } from "$utils/url";
+	import { wot } from "$stores/wot";
 
     export let user: NDKUser;
 
@@ -122,5 +123,7 @@
         </Carousel>
     </div>
 {/if}
+
+in wot? {$wot.has(user.pubkey)}
 
 <StoreFeed {feed} />

@@ -49,6 +49,8 @@
             showReply={false}
             skipFooter={true}
             skipZaps={true}
+            class="text-sm border border-base-300 !p-0"
+            disableSwipe
         />
     {/if}
 </div>
