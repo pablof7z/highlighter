@@ -1,6 +1,5 @@
 <script lang="ts">
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
-	import { user } from '@kind0/ui-common';
     import { createEventDispatcher } from 'svelte';
 	import { pageHeader } from '$stores/layout.js';
 	import ProfileEditPage from '$components/User/ProfileEditPage.svelte';

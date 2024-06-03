@@ -238,10 +238,6 @@
         transition-all duration-300 ease-in-out;
     }
 
-    a:hover, button:hover {
-        @apply bg-base-300/60;
-    }
-
     a > div > span:first-child, button > div > span:first-child {
         @apply font-normal flex flex-row items-center gap-4 text-neutral-300 flex-grow;
     }

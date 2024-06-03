@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Hexpubkey, NDKArticle, NDKHighlight, NDKKind, NDKRelaySet } from "@nostr-dev-kit/ndk";
     import UserProfile from "$components/User/UserProfile.svelte";
-	import { Name, ndk } from "@kind0/ui-common";
 	import currentUser from "$stores/currentUser";
 	import HighlightBody from "$components/HighlightBody.svelte";
 	import { derived } from "svelte/store";
@@ -71,7 +70,7 @@
                 </h1>
 
                 <div class="text-xs flex flex-row items-end max-h-12 overflow-clip">
-                    <Name user={article.author} avatarType="square" avatarSize="small" class="text-accent2" />
+                    <Name user={article.author} avatarType="square" avatarSize="small" class="text-accent" />
                 </div>
 
                 {#if article.summary}

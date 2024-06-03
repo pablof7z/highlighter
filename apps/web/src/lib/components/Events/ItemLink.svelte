@@ -1,6 +1,5 @@
 <script lang="ts">
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import { RelativeTime, user } from "@kind0/ui-common";
 	import { NDKArticle, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
 	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";

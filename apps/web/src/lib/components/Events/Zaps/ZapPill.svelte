@@ -1,7 +1,6 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import ButtonWithExtraText from "$components/buttons/ButtonWithExtraText.svelte";
-	import { Avatar, nicelyFormattedMilliSatNumber } from "@kind0/ui-common";
 	import { NDKZapInvoice } from "@nostr-dev-kit/ndk";
 	import { Lightning } from "phosphor-svelte";
 	import { SvelteComponent } from "svelte";

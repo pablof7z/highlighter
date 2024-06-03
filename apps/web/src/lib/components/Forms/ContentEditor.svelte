@@ -5,7 +5,6 @@
     import quillEditorMention from "./quill-editor-mention.js";
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
-	import { Textarea, UploadButton, newToasterMessage } from '@kind0/ui-common';
 	import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
 	import Checkbox from './Checkbox.svelte';
 	import { wysiwygEditor } from '$stores/settings.js';
@@ -315,7 +314,7 @@
     }
 
     :global(.ql-mention-list-item.selected) {
-        @apply bg-base-300 text-accent2;
+        @apply bg-base-300 text-accent;
     }
 
     :global(.ql-tooltip) {
@@ -331,7 +330,7 @@
     }
 
     :global(.ql-editor span.mention) {
-        @apply text-accent2;
+        @apply text-accent;
     }
 
     :global(span.mention[data-id="npub1mygerccwqpzyh9pvp6pv44rskv40zutkfs38t0hqhkvnwlhagp6s3psn5p"]) {

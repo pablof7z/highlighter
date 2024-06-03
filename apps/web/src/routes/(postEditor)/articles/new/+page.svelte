@@ -2,7 +2,6 @@
 	import { page } from "$app/stores";
 	import { drafts, type DraftItem, type ArticleCheckpoint, DraftCheckpoint } from "$stores/drafts";
 	import ArticleEditPage from "$components/Editor/ArticleEditPage.svelte";
-	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { nonSubscribersPreview } from "$stores/post-editor";
 

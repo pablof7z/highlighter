@@ -2,7 +2,6 @@
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import { relaySetForEvent } from "$utils/event";
 	import { getDefaultRelaySet } from "$utils/ndk";
-	import { Name, Textarea, ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKEvent, NDKKind, NDKRelay, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { PaperPlaneTilt } from "phosphor-svelte";
 
@@ -49,7 +48,7 @@
         <div class="flex flex-col w-full">
             {#if showReplyingTo && event}
                 {#key event?.pubkey}
-                    <span class="text-xs text-accent2">Replying to <Name pubkey={event.pubkey} /></span>
+                    <span class="text-xs text-accent">Replying to <Name pubkey={event.pubkey} /></span>
                 {/key}
             {/if}
             <ContentEditor
@@ -71,7 +70,7 @@
 
     <div class="z-50 right-2 flex justify-end items-center bottom-0">
         {#if publishing}
-            <div class="loading loading-sm text-accent2 loading-bars"></div>
+            <div class="loading loading-sm text-accent loading-bars"></div>
         {:else}
             <button class="button rounded-full w-10 h-10 p-0.5 opacity-80">
                 <PaperPlaneTilt class="text-black" />

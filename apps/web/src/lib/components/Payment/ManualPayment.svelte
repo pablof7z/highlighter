@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { calculateSatAmountFromAmountTag, currencyFormat } from "$utils/currency";
-	import { CopyButton, ndk, nicelyFormattedSatNumber } from "@kind0/ui-common";
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { NDKEvent, NDKUser, NDKZap } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher, onMount } from "svelte";

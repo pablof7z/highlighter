@@ -2,7 +2,6 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { currencyFormat, currencySymbol } from "$utils/currency";
 	import { termToShort } from "$utils/term";
-	import { Avatar, Name, RelativeTime, ndk } from "@kind0/ui-common";
 import { NDKArticle, NDKEvent, profileFromEvent, type NDKUserProfile, type NDKIntervalFrequency } from "@nostr-dev-kit/ndk";
 	import { ArrowDown } from "phosphor-svelte";
 

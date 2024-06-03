@@ -11,7 +11,6 @@ import {
 	NDKKind,
 	NDKRelayList
 } from '@nostr-dev-kit/ndk';
-import { bunkerNDK, ndk, newToasterMessage, user } from '@kind0/ui-common';
 import { generateLoginEvent } from '$actions/signLoginEvent';
 import { get } from 'svelte/store';
 import { jwt as jwtStore, loginState, userFollows, userProfile } from '$stores/session';

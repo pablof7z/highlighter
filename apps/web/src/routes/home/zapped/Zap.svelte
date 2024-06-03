@@ -1,6 +1,5 @@
 <script lang="ts">
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
-	import { ndk, nicelyFormattedMilliSatNumber } from '@kind0/ui-common';
 	import { NDKEvent, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
 	import { Lightning } from 'phosphor-svelte';
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';

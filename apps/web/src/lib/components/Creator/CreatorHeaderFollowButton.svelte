@@ -30,7 +30,7 @@
                 <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Follow</span>
             </button>
         {:else}
-            <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-1 text-accent2 hover:grayscale" on:click={follow}>
+            <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-1 text-accent hover:grayscale" on:click={follow}>
                 <Check class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
                 <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Following</span>
             </button>

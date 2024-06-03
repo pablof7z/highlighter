@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
-	import { Textarea, ndk } from '@kind0/ui-common';
 	import { onDestroy } from 'svelte';
 	import { derived } from 'svelte/store';
 

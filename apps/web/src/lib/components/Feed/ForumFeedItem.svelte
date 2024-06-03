@@ -3,7 +3,6 @@
 	import { page } from "$app/stores";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { getDefaultRelaySet } from "$utils/ndk";
-	import { Avatar, Name, RelativeTime, ndk } from "@kind0/ui-common";
 	import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";

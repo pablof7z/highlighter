@@ -1,7 +1,7 @@
-import { isGuest, loginMethod, privateKey, userPubkey } from '$stores/currentUser';
+import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
+import { ndk } from '$stores/ndk';
 import { loginState } from '$stores/session';
-import { fillInSkeletonProfile, loggedIn, login, type LoginMethod } from '$utils/login';
-import { ndk, user } from '@kind0/ui-common';
+import { fillInSkeletonProfile, loggedIn, login } from '$utils/login';
 import { NDKNip07Signer, NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 import { get } from 'svelte/store';
@@ -24,7 +24,7 @@ export async function browserSetup() {
     if (pubkey) {
         const u = $ndk.getUser({pubkey});
         loginState.set("logging-in");
-        user.set(u);
+        currentUser.set(u);
     }
 
     const method = get(loginMethod);
@@ -60,7 +60,7 @@ export async function newGuestLogin() {
     $ndk.signer = pk;
     const us = await $ndk.signer?.blockUntilReady();
     us.ndk = $ndk;
-    user.set(us);
+    currentUser.set(us);
 
     fillInSkeletonProfile({
         image: `https://api.dicebear.com/8.x/rings/svg?seed=${u.pubkey}&ringColor=FB6038`

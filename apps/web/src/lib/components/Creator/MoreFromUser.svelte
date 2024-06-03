@@ -3,7 +3,6 @@
 	import PostGrid from "$components/Events/PostGrid.svelte";
 	import VideoLink from "$components/Events/VideoLink.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { Name, ndk } from "@kind0/ui-common";
     import { NDKKind, type NDKFilter, type NDKUser, NDKSubscriptionCacheUsage, NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 

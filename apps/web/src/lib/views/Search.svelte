@@ -170,7 +170,7 @@ import { ndk } from "$stores/ndk.js";
     {$$props.containerClass??""}
 ">
     {#if searching}
-        <span class="loading loading-sm text-accent2"></span>
+        <span class="loading loading-sm text-accent"></span>
     {:else}
         <MagnifyingGlass class="w-8 h-8 text-neutral-500" />
     {/if}
@@ -194,7 +194,7 @@ import { ndk } from "$stores/ndk.js";
                     <a href="/{result.nip05}" class="flex flex-row gap-2 items-center">
                         <AvatarWithName userProfile={result.profile} avatarSize="small" />
                         {#if result.followed}
-                            <UserCircleCheck class="w-6 h-6 text-accent2" />
+                            <UserCircleCheck class="w-6 h-6 text-accent" />
                         {/if}
                     </a>
                 </li>

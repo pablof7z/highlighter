@@ -2,7 +2,6 @@
 	import { NDKEvent, NDKKind, NDKSubscriptionReceipt, NostrEvent } from '@nostr-dev-kit/ndk';
 	import { Hexpubkey } from '@nostr-dev-kit/ndk';
     import UserProfile from "$components/User/UserProfile.svelte";
-	import { ndk, Avatar, Name, RelativeTime, user as currentUser, Textarea } from "@kind0/ui-common";
 	import { onDestroy } from 'svelte';
 	import { EventContent } from '@nostr-dev-kit/ndk-svelte-components';
 	import { getDefaultRelaySet } from '$utils/ndk';

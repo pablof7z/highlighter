@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ndk, newToasterMessage, nip96Upload } from "@kind0/ui-common";
 	import type { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 

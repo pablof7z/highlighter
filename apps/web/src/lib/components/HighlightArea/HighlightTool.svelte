@@ -259,6 +259,6 @@
     }
 
     button span {
-        @apply text-base-100-content text-opacity-80 group-hover:text-opacity-100 font-medium text-sm;
+        @apply text-opacity-80 group-hover:text-opacity-100 font-medium text-sm;
     }
 </style>

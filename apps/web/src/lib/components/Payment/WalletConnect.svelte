@@ -7,7 +7,6 @@
     import { createEventDispatcher } from 'svelte';
 	import WalletConnectNwa from './WalletConnectNWA.svelte';
 	import NwcIcon from '$icons/NwcIcon.svelte';
-	import { Textarea } from '@kind0/ui-common';
 	import WalletConnectStripe from './WalletConnectStripe.svelte';
 	import { NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
 
@@ -136,7 +135,7 @@
     <!-- {#if !mode || mode === 'nwa'}
     <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch rounded-b-box" on:click={() => mode = "nwa"} transition:slide>
         <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded-box flex-none">
-            <ZapIcon class="w-8 h-8 mask mask-squircle text-accent2" />
+            <ZapIcon class="w-8 h-8 mask mask-squircle text-accent" />
         </div>
         <div class="flex flex-col items-start w-full">
             <div class="font-normal text-lg text-white">

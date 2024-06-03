@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { ndk, user as currentUser } from "@kind0/ui-common";
     import { userProfile as currentUserProfile } from "$stores/session";
     import { profileFromEvent, type Hexpubkey, type NDKEvent, type NDKSubscriptionOptions, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
     import type { NDKRelay, NDKSubscription, NDKUser } from "@nostr-dev-kit/ndk";

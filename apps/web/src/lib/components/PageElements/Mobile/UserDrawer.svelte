@@ -76,7 +76,7 @@
 
             <MenuListItem
                 title="Publish"
-                class="!text-accent2"
+                class="!text-accent"
                 onClick={() => {
                     openModal(NewItemModal);
                     opened = false;

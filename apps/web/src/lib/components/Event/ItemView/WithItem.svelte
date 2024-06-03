@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { ndk, user as currentUser } from "@kind0/ui-common";
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";

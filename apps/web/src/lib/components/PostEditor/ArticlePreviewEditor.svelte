@@ -5,7 +5,6 @@
     import { makePublicAfter, preview, previewExtraContent } from "$stores/post-editor";
 	import Box from "$components/PageElements/Box.svelte";
 	import { previewContentChanged, previewTitleChanged } from "$stores/post-editor";
-	import { Textarea, ndk, pageDrawerToggle } from "@kind0/ui-common";
 	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
     import truncateMarkdown from 'markdown-truncate';
 	import { Info } from "phosphor-svelte";

@@ -41,7 +41,7 @@
     {#if !showCreate}
         <li class="w-full p-09">
             <button
-                class="whitespace-nowrap w-full font-normal text-accent2 flex flex-row gap-2 items-center"
+                class="whitespace-nowrap w-full font-normal text-accent flex flex-row gap-2 items-center"
                 on:click|preventDefault|stopPropagation|stopImmediatePropagation={() => showCreate = true}
             >
                 <Plus class="w-4 h-4 mr-2" />

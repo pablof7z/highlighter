@@ -1,7 +1,6 @@
 import { prepareEventsForTierPublish, publishToTiers } from "$actions/publishToTiers";
 import { TierSelection } from "$lib/events/tiers";
 import { DraftCheckpoint, DraftItem, ThreadCheckpoint, ThreadCheckpointItem } from "$stores/drafts";
-import { ndk, newToasterMessage } from "@kind0/ui-common";
 import NDK, { NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 import { Writable, get } from "svelte/store";
 import { addDraftCheckpoint } from "./drafts";

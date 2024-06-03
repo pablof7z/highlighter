@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { RelativeTime, ndk } from '@kind0/ui-common';
 	import PageSidebar from "$components/PageSidebar.svelte";
 	import { NDKArticle, type NDKList } from "@nostr-dev-kit/ndk";
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
@@ -39,6 +38,6 @@
     }
 
     .tab-active {
-        @apply !text-accent2;
+        @apply !text-accent;
     }
 </style>

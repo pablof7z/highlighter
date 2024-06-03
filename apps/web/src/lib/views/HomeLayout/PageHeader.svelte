@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { HighlightIcon } from "@kind0/ui-common";
 	import { Notepad, Note, Article, Lightning, House, BookOpen, BookOpenText, TextAlignLeft } from "phosphor-svelte";
 	import { NavigationOption } from "../../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";

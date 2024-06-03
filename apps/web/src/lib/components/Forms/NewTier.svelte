@@ -1,6 +1,5 @@
 <script lang="ts">
     import Input from "./Input.svelte";
-	import { Textarea } from "@kind0/ui-common";
 	import CurrencyInput from "./CurrencyInput.svelte";
 
     let name: string;

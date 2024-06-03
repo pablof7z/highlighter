@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { BookmarkSimple, CaretRight, ChatCircle, HourglassHigh, Lightning, Quotes, Repeat, Timer, Warning } from 'phosphor-svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { Avatar, Name, RelativeTime, ndk, newToasterMessage } from "@kind0/ui-common";
 	import { Hexpubkey, NDKEvent, NDKFilter, NDKHighlight, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { EventCardDropdownMenu, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
@@ -240,7 +239,7 @@
 
 <Swipe
     leftOptions={[
-        { label: 'Reply', icon: ChatCircle, class: "bg-accent2", cb: onSwipeToReply },
+        { label: 'Reply', icon: ChatCircle, class: "bg-accent", cb: onSwipeToReply },
     ]}
     on:close={() => showQuoteOptions = false}
     {rightOptions}

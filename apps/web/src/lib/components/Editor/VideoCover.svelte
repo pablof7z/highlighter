@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { NDKVideo } from '@nostr-dev-kit/ndk';
-	import { ndk, newToasterMessage, nip96Upload, uploadToSatelliteCDN } from '@kind0/ui-common';
     import { status } from '$stores/post-editor';
 	import ChooseVideoThumbnail from '$components/Forms/ChooseVideoThumbnail.svelte';
     import createDebug from "debug";

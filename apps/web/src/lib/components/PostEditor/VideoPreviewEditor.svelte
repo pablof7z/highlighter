@@ -3,7 +3,6 @@
     import Input from '$components/Forms/Input.svelte';
     import VideoPlayer from "$components/Events/VideoPlayer.svelte";
 	import type { NDKVideo } from "@nostr-dev-kit/ndk";
-	import { Textarea, user } from "@kind0/ui-common";
 	import ImageIcon from "$icons/ImageIcon.svelte";
 	import VideoUploader from "$components/Forms/VideoUploader.svelte";
 	import { onMount } from "svelte";

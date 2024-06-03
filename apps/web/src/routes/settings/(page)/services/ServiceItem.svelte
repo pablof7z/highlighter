@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
-	import { appHandlers, ndk } from "@kind0/ui-common";
 	import { NDKKind, type NDKEvent, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { CaretDown } from 'phosphor-svelte';
 	import ServiceProviderItem from './ServiceProviderItem.svelte';
@@ -126,9 +125,5 @@
 <style lang="postcss">
     button.main {
         @apply flex flex-row justify-between gap-4 p-4 items-center bg-base-300 rounded-box;
-    }
-
-    button.main:hover {
-        @apply bg-base-300/60;
     }
 </style>

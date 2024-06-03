@@ -9,7 +9,6 @@
 	import type { NavigationOption, UserProfileType } from '../../../app';
 	import CreatorHeader from "./CreatorHeader.svelte";
 	import { Article, BookmarkSimple, CardsThree, House, Notepad, User } from "phosphor-svelte";
-	import { Avatar, HighlightIcon } from "@kind0/ui-common";
 
     export let user: NDKUser;
 

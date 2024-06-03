@@ -1,6 +1,5 @@
 <script lang="ts">
 	import ModalShell from '$components/ModalShell.svelte';
-    import { user as loggedInUser, ndk } from '@kind0/ui-common';
     import UserProfile from '$components/User/UserProfile.svelte';
     import { userFollows } from '$stores/session';
 	import type { NDKIntervalFrequency, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";

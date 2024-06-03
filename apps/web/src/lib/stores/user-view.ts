@@ -1,4 +1,3 @@
-import { ndk, user as currentUser } from '@kind0/ui-common';
 import { NDKKind, NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionTier, NDKSubscriptionReceipt } from '@nostr-dev-kit/ndk';
 import { type NDKUser, type NDKFilter, type Hexpubkey, NDKHighlight } from '@nostr-dev-kit/ndk';
 import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';

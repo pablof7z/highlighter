@@ -1,6 +1,5 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { Avatar, Name, RelativeTime, ndk } from "@kind0/ui-common";
     import { NDKArticle, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 

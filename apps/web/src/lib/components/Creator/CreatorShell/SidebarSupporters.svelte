@@ -6,7 +6,6 @@
 <script lang="ts">
 	import { getUserSubscriptionTiersStore, getUserSupporters } from "$stores/user-view";
 	import { creatorRelayPubkey } from "$utils/const";
-	import { Avatar, Name, ndk, user as currentUser } from "@kind0/ui-common";
 	import { NDKKind, type Hexpubkey, NDKSubscription, NDKSubscriptionReceipt, NDKSubscriptionStart, NDKUser, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import { derived, type Readable } from "svelte/store";

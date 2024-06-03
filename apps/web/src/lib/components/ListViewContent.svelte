@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { RelativeTime, Textarea, ndk, user } from '@kind0/ui-common';
 	import { NDKArticle, type NDKList } from "@nostr-dev-kit/ndk";
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import Article from '$components/List/Article.svelte';

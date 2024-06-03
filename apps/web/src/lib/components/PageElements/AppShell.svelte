@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { layoutMode, pageHeader } from '$stores/layout.js';
-	import { Toaster, pageDrawerToggle } from '@kind0/ui-common';
 	import Modal from './Modal.svelte';
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';

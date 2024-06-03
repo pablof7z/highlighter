@@ -1,6 +1,5 @@
 <script lang="ts">
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
-	import { AvatarWithName, RelativeTime, ndk } from "@kind0/ui-common";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Repeat } from "phosphor-svelte";
 
@@ -24,7 +23,7 @@
 
 {#if repostEvent}
 <div class="text-white">
-    <Repeat size={20} class="text-accent2 inline" />
+    <Repeat size={20} class="text-accent inline" />
     Repost 
     <RelativeTime timestamp={repostEvent.created_at*1000} />
 </div>

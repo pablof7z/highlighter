@@ -30,7 +30,7 @@
             { name: "Collections",  href: "/collections", icon: CardsThree },
             { name: "Search", fn: () => openModal(SearchModal), icon: MagnifyingGlass },
             { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined },
-            { name: "Publish", icon: PlusCircle, class: "text-accent2", fn: () => openModal(NewItemModal) },
+            { name: "Publish", icon: PlusCircle, class: "text-accent", fn: () => openModal(NewItemModal) },
         ]
 
         options = options;

@@ -1,7 +1,6 @@
 <script lang="ts">
     import SubscriptionListItem from "$components/Subscriptions/SubscriptionListItem.svelte";
 	import { pageHeader } from "$stores/layout";
-	import { ndk, user } from '@kind0/ui-common';
 	import { NDKKind, NDKSubscriptionStart } from '@nostr-dev-kit/ndk';
 	import { onDestroy } from 'svelte';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';

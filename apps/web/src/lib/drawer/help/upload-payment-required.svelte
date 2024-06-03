@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { pageDrawerToggle } from "@kind0/ui-common";
 	import { Coin, Link, Money } from "phosphor-svelte";
 
     function closeDrawer() {

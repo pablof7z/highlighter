@@ -1,6 +1,5 @@
 <script lang="ts">
 	import VideoPlayer from "$components/Events/VideoPlayer.svelte";
-	import { UploadButton, pageDrawerToggle, rightSidebar } from "@kind0/ui-common";
     import Input from "./Input.svelte";
 	import type { NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { Upload, Link } from "phosphor-svelte";

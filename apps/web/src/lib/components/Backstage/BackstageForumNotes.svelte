@@ -2,7 +2,6 @@
 	import NewGroupPostModal from "$modals/NewGroupPostModal.svelte";
 	import currentUser from "$stores/currentUser";
 	import { openModal } from "$utils/modal";
-	import { Avatar, RelativeTime, ndk } from "@kind0/ui-common";
 	import { NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 	import { ArrowRight } from "phosphor-svelte";
 

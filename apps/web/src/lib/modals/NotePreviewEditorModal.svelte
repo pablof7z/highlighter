@@ -3,7 +3,6 @@
     import ModalShell from "$components/ModalShell.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import GuideToPreviews from '$lib/drawer/help/guide-to-previews.svelte';
-	import { Avatar, Name, Textarea, ndk, pageDrawerToggle, rightSidebar, user } from "@kind0/ui-common";
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Check, Info } from "phosphor-svelte";

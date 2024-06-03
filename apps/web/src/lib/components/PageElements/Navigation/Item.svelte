@@ -74,6 +74,6 @@
     } */
 
     .highlight {
-        @apply !bg-accent2 p-2 rounded-2xl text-neutral-200;
+        @apply !bg-accent p-2 rounded-2xl text-neutral-200;
     }
 </style>

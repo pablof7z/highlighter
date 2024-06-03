@@ -69,7 +69,7 @@
 {#if listKind}
     <div class="tooltip tooltip-left {$$props.class??""}"  data-tip={`Add to "${listTitle}"`}>
         <button
-            class:text-accent2={saved}
+            class:text-accent={saved}
             on:click|stopImmediatePropagation|preventDefault|capture={save}
         >
             <BookmarksSimple

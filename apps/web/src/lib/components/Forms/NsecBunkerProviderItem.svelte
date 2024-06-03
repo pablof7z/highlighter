@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Avatar, Name, RelativeTime, bunkerNDK, ndk } from "@kind0/ui-common";
 	import { type Hexpubkey, NDKUser, type NDKUserProfile, NDKEvent, NDKPrivateKeySigner, NDKNostrRpc, type NDKRpcResponse } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
     import { createEventDispatcher } from "svelte";
