@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ndk, newToasterMessage, nicelyFormattedSatNumber } from "@kind0/ui-common";
 	import { onMount } from "svelte";
     import { NDKSubscriptionTier, type NDKEvent, type NDKIntervalFrequency, type NDKUser, NDKSubscriptionStart, type NDKTag } from "@nostr-dev-kit/ndk";
     import { defaultRelays } from "$lib/utils/const";

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import NewItemModal from '$modals/NewItemModal.svelte';
-	import { RelativeTime } from '@kind0/ui-common';
 	import currentUser from '$stores/currentUser';
     import { drafts } from "$stores/drafts";
 	import { Timer, Trash } from "phosphor-svelte";

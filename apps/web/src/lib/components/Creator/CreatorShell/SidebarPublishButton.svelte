@@ -9,8 +9,8 @@
 </script>
 
 <button class="
-    lg:py-3 lg:button border-accent2 w-full transition-all duration-300 group
-    border-2 lg:hover:bg-accent2/20 lg:bg-transparent
+    lg:py-3 lg:button border-accent w-full transition-all duration-300 group
+    border-2 lg:hover:bg-accent/20 lg:bg-transparent
     rounded-full p-2
     !text-white
 " on:click={open}>

@@ -250,7 +250,7 @@
                             {/if}
                         </LoadEvent>
                     {/each}
-                    <a href="#" class="text-accent2 text-sm">View all</a>
+                    <a href="#" class="text-accent text-sm">View all</a>
                 {/if}
             </div>
         </swiper-slide>
@@ -351,7 +351,7 @@
                         {/if}
                     </LoadEvent>
                 {/each}
-                <a href="#" class="text-accent2 text-sm">View all</a>
+                <a href="#" class="text-accent text-sm">View all</a>
             {/if}
         </div>
     </section>
@@ -445,7 +445,7 @@
         <header class="flex flex-col gap-10">
             <h1 class="text-7xl">
                 Are you a content
-                <span class="border-b-8 border-accent2">creator</span>?
+                <span class="border-b-8 border-accent">creator</span>?
             </h1>
             
             <div class="flex flex-row gap-10">
@@ -468,7 +468,7 @@
                     Get started
                 </button>
                 
-                <a href="#" class="button text-xl bg-base-100 text-base-100-content font-medium p-4 border-4 border-accent2 px-8">
+                <a href="#" class="button text-xl bg-base-100 text-base-100-content font-medium p-4 border-4 border-accent px-8">
                     how Nostr helps grow your reach
                 </a>
             </div>
@@ -500,7 +500,7 @@
     }
 
     span.accent {
-        @apply text-accent2 font-medium;
+        @apply text-accent font-medium;
     }
 
     swiper-container {

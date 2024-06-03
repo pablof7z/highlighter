@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { VITE_NSECBUNKER_RETURN_URL } from './../../../.svelte-kit/ambient.d.ts';
     import { NDKPrivateKeySigner, NDKUser, NDKNip46Signer, NDKEvent } from "@nostr-dev-kit/ndk";
-	import { bunkerNDK, ndk, user } from "@kind0/ui-common";
 	import NsecBunkerProviderSelect from "$components/Forms/NsecBunkerProviderSelect.svelte";
 	import type { NsecBunkerProvider } from "../../app";
 	import { slide } from "svelte/transition";

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Carousel from "$components/Page/Carousel.svelte";
-	import { Name, UserProfile, ndk } from "@kind0/ui-common";
 	import { NDKArticle, NDKHighlight, NDKSubscriptionCacheUsage, NDKKind, NDKTag, NDKUserProfile, NDKList } from "@nostr-dev-kit/ndk";
     import Highlight from "$components/Highlight.svelte";
 	import { urlFromEvent } from "$utils/url";
@@ -43,7 +42,7 @@
 
             <div class="text-xs">
                 by
-                <a href={authorUrl} class="text-accent2">
+                <a href={authorUrl} class="text-accent">
                     <Name user={articleList.author} {userProfile} />
                 </a>
                 {#if articleList.created_at}
@@ -59,7 +58,7 @@
             <Article article={NDKArticle.from(item)} class="max-h-[6rem] overflow-y-clip" />
         {/each}
         {#if $items.length > 3}
-            <a href={urlFromEvent(articleList, authorUrl)} class="text-accent2 text-sm">View all</a>
+            <a href={urlFromEvent(articleList, authorUrl)} class="text-accent text-sm">View all</a>
         {/if}
     </div>
 </div>

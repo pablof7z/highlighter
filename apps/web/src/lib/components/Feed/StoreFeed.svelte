@@ -96,7 +96,7 @@
     <div class="discussion-wrapper w-full flex flex-col">
         {#if tooNewEvents.size > 0}
             <div class="w-full flex flex-row items-center justify-center discussion-item transition-all duration-300 sticky top-0 z-50 ">
-                <button class="w-fit whitespace-nowrap rounded-full bg-accent2 text-base-100-content p-4"
+                <button class="w-fit whitespace-nowrap rounded-full bg-accent text-base-100-content p-4"
                     on:click={() => { showEventsOlderThan = new Date(); }}
                 >
                     {tooNewEvents.size} new

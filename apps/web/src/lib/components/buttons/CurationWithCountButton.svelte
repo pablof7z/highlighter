@@ -118,7 +118,7 @@
             <li class="w-full min-w-[16rem]">
                 {#if !showCreate}
                     <button
-                        class="whitespace-nowrap w-full font-normal text-accent2"
+                        class="whitespace-nowrap w-full font-normal text-accent"
                         on:click|preventDefault|stopPropagation|stopImmediatePropagation={() => showCreate = true}
                     >
                         <Plus class="w-4 h-4 mr-2" />
@@ -169,6 +169,6 @@
 
 <style lang="postcss">
     button.active {
-        @apply border-l-4 border-accent2 rounded-l-none !text-white font-semibold;
+        @apply border-l-4 border-accent rounded-l-none !text-white font-semibold;
     }
 </style>

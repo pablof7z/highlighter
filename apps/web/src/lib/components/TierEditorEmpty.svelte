@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { currencySymbol } from "$utils/currency";
-	import { Textarea } from "@kind0/ui-common";
 	import { Pencil, Plus } from "phosphor-svelte";
 
 </script>

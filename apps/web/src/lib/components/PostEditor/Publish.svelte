@@ -6,7 +6,6 @@
 	import { dvmScheduleEvent } from "$lib/dvm";
 	import { getSelectedTiers } from "$lib/events/tiers";
 	import { publishAt, makePublicAfter, preview, view, selectedTiers } from "$stores/post-editor";
-	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import PublishValidation from "./PublishValidation.svelte";
 	import { Thread, prepareThreadForPublish } from "$utils/thread";

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Input } from "@kind0/ui-common";
 
     export let amount: string;
     export let currency: string;

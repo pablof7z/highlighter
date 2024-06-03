@@ -131,17 +131,3 @@
         </div>
     {/each}
 </div>
-
-<style lang="postcss">
-    .alert {
-        @apply !rounded-none;
-    }
-
-    .alert:first-child {
-        @apply !rounded-t-box;
-    }
-
-    .alert:last-child {
-        @apply !rounded-b-box;
-    }
-</style>

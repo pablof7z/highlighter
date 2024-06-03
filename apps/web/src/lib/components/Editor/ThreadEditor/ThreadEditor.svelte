@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { drafts, type DraftItem, DraftCheckpoint } from "$stores/drafts";
-	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import currentUser from "$stores/currentUser";
@@ -119,8 +118,8 @@
 			<button class="
 				btn btn-circle bg-zinc-800 text-white
 				transition-all duration-300
-				hover:!bg-accent2
-				hover:ring-8 ring-accent2/30
+				hover:!bg-accent
+				hover:ring-8 ring-accent/30
 			" on:click={() => { thread.newItem(); thread.items = thread.items }}>
 				<Plus size={24} weight="bold" />
 			</button>

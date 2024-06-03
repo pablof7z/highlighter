@@ -5,7 +5,6 @@
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { ndk } from "$stores/ndk.js";
     import { NDKKind, type NDKFilter, type NDKTag, NDKEvent } from "@nostr-dev-kit/ndk";
-    import { user as currentUser } from "@kind0/ui-common";
 	import { onDestroy } from "svelte";
 	import { lastSeenGroupTimestamp } from "$stores/notifications";
 	import { mainContentKinds } from "$utils/event";

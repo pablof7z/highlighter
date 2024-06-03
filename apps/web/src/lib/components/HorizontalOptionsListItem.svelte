@@ -64,7 +64,7 @@
     <span class="" class:hidden={!option.name}>
         {option.name}
         {#if option.premiumOnly}
-            <span class="text-accent2">
+            <span class="text-accent">
                 <CrownSimple class="w-5 h-5 ml-2 lg:w-fit lg:h-fit inline" weight="fill" />
             </span>
         {/if}
@@ -80,7 +80,6 @@
         @apply transition-all duration-100;
         @apply p-2 px-4;
         @apply w-fit;
-        @apply text-base-100-content;
         @apply bg-base-200;
     }
 

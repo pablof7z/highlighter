@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import { drafts, type DraftItem } from "$stores/drafts";
-	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKKind } from "@nostr-dev-kit/ndk";
 	import currentUser from "$stores/currentUser";
 	import { Thread } from '$utils/thread.js';

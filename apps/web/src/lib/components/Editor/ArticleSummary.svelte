@@ -1,6 +1,5 @@
 <script lang="ts">
 	import DurationTag from "$components/DurationTag.svelte";
-	import { Textarea } from "@kind0/ui-common";
 	import type { NDKArticle, NDKKind } from "@nostr-dev-kit/ndk";
     import { countWords } from "$utils/article";
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
-    import { Avatar, Name, RelativeTime, ndk } from "@kind0/ui-common";
     import currentUser from "$stores/currentUser";
 	import { NDKKind, type NDKEvent, NDKArticle, Hexpubkey } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";

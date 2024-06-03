@@ -2,7 +2,6 @@
 	import { NDKEvent, NDKPublishError, NDKRelay, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import { onMount } from 'svelte';
 	import '../app.postcss';
-	import { ndk, user } from '@kind0/ui-common';
 	import { finalizeLogin } from '$utils/login';
 	import { prepareSession, jwt, userProfile } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
@@ -23,7 +22,8 @@
 	import { appMobileView } from '$stores/app';
 	import { isMobileBuild, isPhone } from '$utils/view/mobile';
 	import { initStoreEvent } from '$stores/events';
-
+	import { ModeWatcher } from "mode-watcher";
+	import { ndk } from '$stores/ndk';
 	
 
 	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
@@ -141,6 +141,8 @@
 </script>
 
 <!-- <NetworkHandler /> -->
+
+<ModeWatcher />
 
 {#if $appMobileView}
 	<MobileAppShell>

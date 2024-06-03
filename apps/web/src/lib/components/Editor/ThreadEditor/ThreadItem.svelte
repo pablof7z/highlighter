@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Avatar, Name, RelativeTime, ndk } from "@kind0/ui-common";
 	import { NDKHighlight, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import Attachments from "$components/Feed/NewPost/Attachments.svelte";

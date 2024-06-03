@@ -28,7 +28,7 @@
 <div class="w-full my-2">
     {#if event === undefined || event === null}
         <StylishContainer
-            class="bg-base-300/50 hover:bg-base-300/60 transition-all duration-300 rounded-box max-md:p-4"
+            class="bg-base-300/50 transition-all duration-300 rounded-box max-md:p-4"
             border={1}
             on:click={clicked}
         >

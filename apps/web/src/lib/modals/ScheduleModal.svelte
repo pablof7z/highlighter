@@ -75,7 +75,7 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 
     {#if scheduled}
         <div class="flex flex-col items-center gap-4">
-            <span class="text-2xl text-accent2">
+            <span class="text-2xl text-accent">
                 <Check class="w-12 h-12 text-success" />
             </span>
             <span class="text-xl text-base-100-content">Scheduled!</span>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { NDKEvent, NDKKind, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
-    import { Avatar, Name, Textarea, ndk, newToasterMessage, user } from "@kind0/ui-common";
     import UserProfile from "$components/User/UserProfile.svelte";
     import { userActiveSubscriptions } from "$stores/session";
     import { createEventDispatcher } from "svelte";

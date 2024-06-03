@@ -160,7 +160,7 @@
     }
 
     section h1 {
-        @apply text-3xl font-semibold text-base-100-content;
+        @apply text-3xl font-semibold;
     }
 </style>
 

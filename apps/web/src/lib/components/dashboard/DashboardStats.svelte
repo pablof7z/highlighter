@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Box from "$components/PageElements/Box.svelte";
 	import { getUserSupporters } from "$stores/user-view";
-	import { ndk, nicelyFormattedMilliSatNumber, user } from "@kind0/ui-common";
 	import { zapInvoiceFromEvent, type Hexpubkey, NDKKind, NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import type { Readable } from "svelte/store";

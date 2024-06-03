@@ -1,7 +1,6 @@
 <script lang="ts">
     import { debugMode } from "$stores/session";
 	import { encodeTag } from "$utils/event";
-    import { Name, ndk } from "@kind0/ui-common";
     import { NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, getReplyTag, getRootEventId, getRootTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 
@@ -61,6 +60,6 @@
 
 <style lang="postcss">
     a {
-        @apply text-sm text-accent2;
+        @apply text-sm text-accent;
     }
 </style>

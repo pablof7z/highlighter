@@ -56,7 +56,7 @@
             <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Highlight</span>
         </button>
     {:else}
-        <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-2 text-accent2 hover:grayscale" on:click={unfollow}>
+        <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-2 text-accent hover:grayscale" on:click={unfollow}>
             <HighlightIcon class="transition-all duration-300 {collapsed ? "w-5 h-5" : "w-6 h-6"}" />
             <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Highlight</span>
         </button>

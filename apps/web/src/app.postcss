@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -24,6 +28,8 @@
 
   .light {
     --background: 240 10% 3.9%;
+    --background-200: 240 10% 3.9%;
+    --background-300: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -46,6 +52,8 @@
   
   .dark {
     --background: 240 10% 3.9%;
+    --background-200: 240 10% 6.9%;
+    --background-300: 240 10% 9.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -64,5 +72,32 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+
+  .text-base-100-content {
+    color: hsl(var(--foreground));
+  }
+
+  .border-base-100, .border-base-200, .border-base-300 {
+    border-color: hsl(var(--border));
+  }
+
+  .bg-base-100 { background-color: hsl(var(--background)); }
+  .bg-base-200 { background-color: hsl(var(--background-200)); }
+  .bg-base-300 { background-color: hsl(var(--background-300)); }
+
+  .rounded-box {
+    border-radius: var(--radius);
   }
 }

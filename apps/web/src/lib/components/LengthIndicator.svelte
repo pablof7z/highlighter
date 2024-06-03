@@ -21,10 +21,10 @@
 
 {#if length > 0}
     {#if length > maxLength}
-        <div class="text-accent2 text-xs">{overText}</div>
+        <div class="text-accent text-xs">{overText}</div>
     {/if}
 
-    <div class:text-accent2={percentage > 80} class="radial-progress" style="--value:{percentage}; --size:2rem; --thickness:2px;" role="progressbar">
+    <div class:text-accent={percentage > 80} class="radial-progress" style="--value:{percentage}; --size:2rem; --thickness:2px;" role="progressbar">
         <span class="text-xs font-light">{length}</span>
     </div>
 {/if}

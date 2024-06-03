@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { bunkerNDK, ndk } from "@kind0/ui-common";
 	import { NDKKind, type Hexpubkey, NDKEvent, NDKNostrRpc, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
 	import type { NsecBunkerProvider } from "../../../app";
 	import NsecBunkerProviderItem from "./NsecBunkerProviderItem.svelte";

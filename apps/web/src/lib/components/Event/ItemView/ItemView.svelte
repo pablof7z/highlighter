@@ -6,7 +6,6 @@
 	import { pageHeader } from "$stores/layout";
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
-	import { ndk, newToasterMessage } from "@kind0/ui-common";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import ListView from "$components/ListView.svelte";
 	import Whoops from "$components/PageElements/Whoops.svelte";

@@ -3,7 +3,6 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import throttleStore from "$utils/stores/throttle";
 	import { UnsubscribableStore, ZapScore, getTopZapsByAggregatedAmount } from "$utils/zaps";
-	import {nicelyFormattedMilliSatNumber} from "@kind0/ui-common";
 	import { NDKUser } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { Readable } from "svelte/store";

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import { relaySetForEvent } from "$utils/event";
-	import { Avatar, ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKEvent, NDKKind, NDKRelaySet, NDKTag, NostrEvent } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
 	import { fade } from "svelte/transition";
@@ -164,7 +163,7 @@
                             </button> -->
                             <button class="
                                 button
-                                {isCollapsed ? "button px-6" : "max-sm:bg-accent2 max-sm:text-white px-6"}
+                                {isCollapsed ? "button px-6" : "max-sm:bg-accent max-sm:text-white px-6"}
                             " on:click={publish} disabled={content.length === 0}>
                                 {#if publishing}
                                     Publishing...

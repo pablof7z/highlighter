@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { getContent } from "$stores/user-view";
-	import { EventCard, } from "@kind0/ui-common";
 
     const content = getContent();
 </script>

@@ -2,7 +2,6 @@
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
 	import { NDKEvent, NDKKind, NDKTag, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import { closeModal } from "$utils/modal";
-	import { Name, ndk } from "@kind0/ui-common";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { appMobileView } from "$stores/app";
 	import UserProfile from "$components/User/UserProfile.svelte";
@@ -76,7 +75,7 @@
         <UserProfile user={replyTo.author} bind:userProfile={replyToUserProfile}>
             <div class="text-xs translate-y-2">
                 Replying to
-                <Name user={replyTo.author} userProfile={replyToUserProfile} class="text-accent2" />
+                <Name user={replyTo.author} userProfile={replyToUserProfile} class="text-accent" />
             </div>
         </UserProfile>
     {/if}

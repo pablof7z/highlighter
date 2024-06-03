@@ -1,7 +1,6 @@
 <script lang="ts">
 	import TierAmountLine from './TierAmountLine.svelte';
     import type { NDKSubscriptionAmount, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
-	import { Textarea, ndk, user } from "@kind0/ui-common";
     import { createEventDispatcher } from "svelte";
 	import { Check, Trash, Plus } from 'phosphor-svelte';
 	import { slide } from 'svelte/transition';

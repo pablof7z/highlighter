@@ -6,7 +6,6 @@ import ModalShell from "$components/ModalShell.svelte";
 	import { inboxList } from "$stores/inbox";
 	import { createBlossom } from "$utils/blossom";
 	import { closeModal } from "$utils/modal";
-	import { HighlightIcon, Avatar, Name } from "@kind0/ui-common";
 	import { NDKUser } from "@nostr-dev-kit/ndk";
     export let user: NDKUser;
 
@@ -39,7 +38,7 @@ import ModalShell from "$components/ModalShell.svelte";
                 <div class="w-full flex flex-col gap-8 items-center text-lg text-center p-6">
                     <h1 class="text-center text-5xl">
                         Highlight your
-                        <div class="text-accent2 whitespace-nowrap">
+                        <div class="text-accent whitespace-nowrap">
                             favorite creators
                         </div>
                         from the crowd
@@ -73,7 +72,7 @@ import ModalShell from "$components/ModalShell.svelte";
                         Hooray!
                     </h1>
                     <h1 class="text-center text-3xl">
-                        <Name {user} {userProfile} class="text-accent2" />'s
+                        <Name {user} {userProfile} class="text-accent" />'s
                         highlights are now
                         in your inbox
                     </h1>
@@ -81,7 +80,7 @@ import ModalShell from "$components/ModalShell.svelte";
                     <Checkbox bind:value={receiveDms} class="text-lg w-full items-start">
                         <span class="text-left">
                             Receive direct messages
-                            with <Name {user} {userProfile} class="text-accent2" />'s
+                            with <Name {user} {userProfile} class="text-accent" />'s
                             new content
                         </span>
                     </Checkbox>

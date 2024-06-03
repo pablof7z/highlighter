@@ -6,7 +6,6 @@
 	import { dvmScheduleEvent } from "$lib/dvm";
 	import { getSelectedTiers } from "$lib/events/tiers";
 	import { type, publishAt, makePublicAfter, preview, view, selectedTiers } from "$stores/post-editor";
-	import { RelativeTime, ndk, newToasterMessage } from "@kind0/ui-common";
 	import { NDKEvent, type NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { Check, Info } from "phosphor-svelte";
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Textarea, ndk, newToasterMessage, user } from "@kind0/ui-common";
 	import { NDKArticle, NDKEvent, NDKKind, NDKList, NDKRelaySet, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { page } from '$app/stores';
 	import ArticleEditPage from '$components/Editor/ArticleEditPage.svelte';

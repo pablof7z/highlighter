@@ -21,7 +21,7 @@
             button text-lg
             whitespace-nowrap
         "
-        class:bg-accent2={interestList.has(category)}
+        class:bg-accent={interestList.has(category)}
         class:text-white={interestList.has(category)}
         on:click={() => toggleInterest(category)}
     >

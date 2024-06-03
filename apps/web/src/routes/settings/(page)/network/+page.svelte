@@ -1,7 +1,6 @@
 <script lang="ts">
     import { pageHeader } from "$stores/layout";
     import { getDefaultRelaySet } from "$utils/ndk";
-	import { Name, ndk } from "@kind0/ui-common";
 	import { RelayList } from "@nostr-dev-kit/ndk-svelte-components";
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 	import { creatorRelayPubkey } from '$utils/const';

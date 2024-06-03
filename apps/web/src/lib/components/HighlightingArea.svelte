@@ -178,7 +178,7 @@
         <button class="
             transition-all duration-300
             max-sm:text-white
-            text-neutral-800 hover:text-accent2
+            text-neutral-800 hover:text-accent
         " on:click={() => {}}>
             <Lightning class="max-sm:w-8 max-sm:h-8 w-6 h-6" weight="fill" />
         </button>
@@ -188,7 +188,7 @@
         <button class="
             transition-all duration-300
             max-sm:text-white
-            text-neutral-800 hover:text-accent2
+            text-neutral-800 hover:text-accent
         " on:click={createParagraphHighlight}>
             <LogoGradient class="max-sm:w-5 max-sm:h-5 w-6 h-6" />
             <!-- <HighlightIcon class="max-sm:w-8 max-sm:h-8 w-6 h-6" /> -->
@@ -226,7 +226,7 @@
         @apply pl-4;
         height: 100%;
         position: absolute;
-        @apply border-l-4 border-accent2;
+        @apply border-l-4 border-accent;
         @apply opacity-0;
     }
 

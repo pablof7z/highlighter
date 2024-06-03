@@ -7,7 +7,6 @@ import {
 } from '@nostr-dev-kit/ndk';
 import { getDefaultRelaySet } from './ndk';
 import { get } from 'svelte/store';
-import { ndk, user } from '@kind0/ui-common';
 import createDebug from 'debug';
 import { writeAppHandler } from './app-handler';
 import { browser } from '$app/environment';

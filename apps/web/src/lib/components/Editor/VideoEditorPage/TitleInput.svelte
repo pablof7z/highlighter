@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { NDKVideo } from "@nostr-dev-kit/ndk";
     import Input from '$components/Forms/Input.svelte';
-    import { Textarea } from '@kind0/ui-common';
     import { createEventDispatcher } from 'svelte';
 
     export let video: NDKVideo;

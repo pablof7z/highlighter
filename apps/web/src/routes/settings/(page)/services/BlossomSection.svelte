@@ -92,7 +92,7 @@
 {/if}
 
 <div class="flex flex-row items-center gap-4">
-    <button class="button bg-accent2 text-white px-6 w-fit" on:click={save}>
+    <button class="button bg-accent text-white px-6 w-fit" on:click={save}>
         Save
     </button>
 

@@ -2,7 +2,6 @@
     import { userProfile } from "$stores/session";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { getSortedSupporters } from "$stores/user-view";
-	import { Avatar, Name, user as currentUser } from "@kind0/ui-common";
 	import type { NDKUser } from "@nostr-dev-kit/ndk";
 	import { goto } from "$app/navigation";
 

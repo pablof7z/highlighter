@@ -115,7 +115,7 @@
         {...{autofocus: $$props.autofocus}}
     />
     <button class="absolute top-1/2
-        right-0 sm:right-4 transform -translate-y-1/2 w-6 h-6 text-neutral-500 hover:!text-accent2 focus:!text-accent2 transition-all duration-300" on:click={search}>
+        right-0 sm:right-4 transform -translate-y-1/2 w-6 h-6 text-neutral-500 hover:!text-accent focus:!text-accent transition-all duration-300" on:click={search}>
         <PaperPlaneRight class="w-full h-full" />
     </button>
 </div>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { LoginMethod, login as _login } from '$utils/login';
-	import { ndk, bunkerNDK, user } from "@kind0/ui-common";
 	import { NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
 	import { closeModal } from '$utils/modal';

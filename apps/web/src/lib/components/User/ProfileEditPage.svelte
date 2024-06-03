@@ -1,7 +1,6 @@
 <script lang="ts">
 	import EditableAvatar from '$components/User/EditableAvatar.svelte';
     import currentUser from '$stores/currentUser';
-	import { ndk, newToasterMessage } from '@kind0/ui-common';
     import { debugMode, processUserProfile, userProfile } from '$stores/session';
     import { createEventDispatcher, onMount } from 'svelte';
 	import { NDKEvent, serializeProfile, type NostrEvent, NDKRelaySet, NDKSubscriptionCacheUsage, NDKRelayList, NDKRelay } from '@nostr-dev-kit/ndk';

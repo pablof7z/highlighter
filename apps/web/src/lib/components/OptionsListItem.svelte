@@ -55,9 +55,9 @@
         <div class="indicator">
             {#if option.badge}
                 {#if option.badge === true}
-                    <span class="indicator-item rounded-full bg-accent2 text-white flex items-center justify-center text-xs w-2 h-2"></span>
+                    <span class="indicator-item rounded-full bg-accent text-white flex items-center justify-center text-xs w-2 h-2"></span>
                 {:else}
-                    <span class="indicator-item rounded-full bg-accent2 text-white flex items-center justify-center text-xs w-5 h-5">{option.badge}</span>
+                    <span class="indicator-item rounded-full bg-accent text-white flex items-center justify-center text-xs w-5 h-5">{option.badge}</span>
                 {/if}
             {/if}
         <svelte:component this={option.icon}
@@ -84,7 +84,7 @@
     ">
         {option.name}
         {#if option.premiumOnly}
-            <span class="text-accent2">
+            <span class="text-accent">
                 <CrownSimple class="w-5 h-5 ml-2 lg:w-fit lg:h-fit inline" weight="fill" />
             </span>
         {/if}
@@ -96,13 +96,12 @@
         @apply justify-start items-center gap-2 flex;
         @apply text-sm font-normal;
         @apply sm:text-lg p-2 px-4;
-        @apply text-base-100-content;
         @apply max-sm:border-b-4 max-sm:border-base-300 max-sm:rounded-b-none;
     }
 
     a.active, a:hover {
         @apply bg-base-200 text-white;
-        @apply max-sm:border-accent2;
+        @apply max-sm:border-accent;
         @apply max-sm:bg-base-300;
     }
 </style>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Avatar, ndk, user as currentUser, UploadButton } from "@kind0/ui-common";
     import { NDKEvent, NDKSubscriptionCacheUsage, type NDKTag, type NDKUser, type NDKUserProfile } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from 'svelte';
 

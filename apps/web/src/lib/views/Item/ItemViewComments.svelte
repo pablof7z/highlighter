@@ -8,7 +8,6 @@
 	import { isDirectReply } from "$utils/event";
 	import { openModal } from "$utils/modal";
 	import { UnsubscribableStore, ZapInvoiceWithEvent, getTopZapsByIndividualAmount } from "$utils/zaps";
-	import { ndk, nicelyFormattedMilliSatNumber } from "@kind0/ui-common";
 	import { NDKEvent, NDKKind, NDKZapInvoice } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Lightning } from "phosphor-svelte";
@@ -64,7 +63,7 @@
             <AvatarWithName pubkey={zapInvoice?.zappee} />
 
             <div class="flex flex-row gap-2 items-center text-white font-semibold">
-                <Lightning size={24} class="text-accent2" weight="fill" />
+                <Lightning size={24} class="text-accent" weight="fill" />
                 TOP ZAP
             </div>
         </div>

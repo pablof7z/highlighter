@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Highlights } from '$components/Highlights.svelte';
 	import Carousel from "$components/Page/Carousel.svelte";
-	import { Name, UserProfile, ndk } from "@kind0/ui-common";
 	import { NDKArticle, NDKHighlight, NDKSubscriptionCacheUsage, NDKKind, NDKTag, NDKRelay, NDKRelaySet, NDKFilter } from "@nostr-dev-kit/ndk";
     import Highlight from "$components/Highlight.svelte";
 	import { urlFromEvent } from "$utils/url";
@@ -102,7 +101,7 @@
             
             {#if highlights}
                 <div class="w-fit">
-                    <Chip class="!bg-accent2 !text-white !rounded">
+                    <Chip class="!bg-accent !text-white !rounded">
                         {highlights.length + $dedupedExtraHighlights?.length ?? 0} highlights
                     </Chip>
                 </div>
@@ -116,7 +115,7 @@
 
                     <div class="text-xs whitespace-nowrap">
                         by
-                        <a href={authorUrl} class="text-accent2">
+                        <a href={authorUrl} class="text-accent">
                             <Name user={article.author} {userProfile} />
                         </a>
                         {#if article.published_at}
