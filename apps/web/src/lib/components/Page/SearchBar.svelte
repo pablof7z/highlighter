@@ -5,7 +5,7 @@
 	import SearchModal from '$modals/SearchModal.svelte';
 	import { pageHeader, searching } from '$stores/layout';
 	import { openModal } from '$utils/modal';
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import { nip19 } from 'nostr-tools';
 	import { MagnifyingGlass, PaperPlaneRight } from 'phosphor-svelte';
     import { createEventDispatcher, onMount } from 'svelte';

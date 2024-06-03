@@ -2,7 +2,7 @@
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 	import currentUser from "$stores/currentUser";
 	import { userFollows } from "$stores/session";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import NDK, { NDKFilter, NDKKind, NDKEventId, NDKList } from "@nostr-dev-kit/ndk";
 
     export let type: "You" | "follows" = "You";

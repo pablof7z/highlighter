@@ -5,7 +5,7 @@
 	import Input from "$components/Forms/Input.svelte";
     import ModalShell from "$components/ModalShell.svelte";
 	import { urlFromEvent } from "$utils/url";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
 	import { closeModal } from '$utils/modal';
 	import { NavigationOption } from "../../app";

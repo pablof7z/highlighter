@@ -1,5 +1,5 @@
 import { get as getStore, type Writable, derived, get } from 'svelte/store';
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import {
 	NDKEvent,
 	NDKList,

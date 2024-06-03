@@ -1,6 +1,6 @@
 <script lang="ts">
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 

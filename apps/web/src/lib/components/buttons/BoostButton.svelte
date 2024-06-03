@@ -1,6 +1,6 @@
 <script lang="ts">
 	import BoostModal from '$modals/ShareModal.svelte';
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { type NDKEvent, NDKKind, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher, onDestroy } from "svelte";
 	import { openModal } from '$utils/modal';

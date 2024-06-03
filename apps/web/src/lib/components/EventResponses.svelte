@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { NDKKind, type NDKEvent, NDKUser, type Hexpubkey, type NDKFilter } from "@nostr-dev-kit/ndk";
     import Comment from "./Forms/Comment.svelte";
-	import { ndk, user } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
+import currentUser from "$stores/currentUser.js";
 	import RootReply from "./RepliesViewer/RootReply.svelte";
 	import { onDestroy } from "svelte";
 	import { slide } from "svelte/transition";

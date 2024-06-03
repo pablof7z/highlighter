@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ArticleCheckpoint, DraftCheckpoint, DraftItem } from "$stores/drafts";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import currentUser from "$stores/currentUser";
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import ArticleLink from '$components/Events/ArticleLink.svelte';

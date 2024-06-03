@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import CreatorShell from "$components/Creator/CreatorShell.svelte";
 	import UserProfileHomePage from "$views/UserProfileHomePage.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKUser } from "@nostr-dev-kit/ndk";
 
     let userId: string | null;

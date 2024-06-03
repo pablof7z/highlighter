@@ -3,7 +3,7 @@
 	import { userProfile } from "$stores/session";
 	import { welcomeScreenSeen } from "$stores/settings";
 	import { fillInSkeletonProfile } from "$utils/login";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import currentUser from "$stores/currentUser";
 	import { NDKRelaySet, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { NDKFilter, NDKKind, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { onDestroy } from "svelte";
 	import StoreFeed from "./StoreFeed.svelte";
 

@@ -5,7 +5,7 @@
 	import { isKind } from '$utils/event';
 	import { page } from "$app/stores";
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, NDKKind, NDKTag, getRootEventId } from "@nostr-dev-kit/ndk";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { Readable, derived, writable } from "svelte/store";

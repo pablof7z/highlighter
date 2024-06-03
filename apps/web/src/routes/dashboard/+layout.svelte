@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { user } from "@kind0/ui-common";
+	import currentUser from "$stores/currentUser.js";
 	import { onMount } from "svelte";
 
     let mounted = false;

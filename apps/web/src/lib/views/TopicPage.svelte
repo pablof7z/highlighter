@@ -4,7 +4,7 @@
 	import currentUser from "$stores/currentUser";
 import { wotFiltered, wotFilteredStore } from "$stores/wot";
 	import { mainContentKinds } from "$utils/event";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 
     export let topic: string;
 

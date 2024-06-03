@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Hexpubkey, NDKArticle, NDKHighlight, NDKKind, NDKRelaySet } from "@nostr-dev-kit/ndk";
-	import { Avatar, Name, UserProfile, ndk } from "@kind0/ui-common";
+    import UserProfile from "$components/User/UserProfile.svelte";
+	import { Name, ndk } from "@kind0/ui-common";
 	import currentUser from "$stores/currentUser";
 	import HighlightBody from "$components/HighlightBody.svelte";
 	import { derived } from "svelte/store";

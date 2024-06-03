@@ -1,13 +1,10 @@
 <script lang="ts">
 	import AvatarWithName from './User/AvatarWithName.svelte';
-	import { Avatar, bunkerNDK, ndk } from '@kind0/ui-common';
 	import { fade } from 'svelte/transition';
 	import UserProfile from './User/UserProfile.svelte';
 	import currentUser from '$stores/currentUser';
 	import { UserCircle } from 'phosphor-svelte';
-	import { login } from '$utils/login';
-	import { openModal } from '$utils/modal';
-    import SignupModal from '$modals/SignupModal.svelte';
+	import Avatar from './User/Avatar.svelte';
 
     export let withName = false;
 

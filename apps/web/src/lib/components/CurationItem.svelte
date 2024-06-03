@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ndk } from "@kind0/ui-common";
+    import { ndk } from "$stores/ndk.js";
 	import { NDKSubscriptionCacheUsage, type NDKList } from "@nostr-dev-kit/ndk";
 	import ItemLink from "./Events/ItemLink.svelte";
 	import UserProfile from "./User/UserProfile.svelte";

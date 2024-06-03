@@ -12,7 +12,7 @@
 	import { goto } from '$app/navigation';
 	import { ArticleCheckpoint } from '$stores/drafts';
 	import { Thread } from '$utils/thread';
-	import { newToasterMessage } from '@kind0/ui-common';
+	import { newToasterMessage } from '$stores/toaster';
 	import { addDraftCheckpoint } from '$utils/drafts';
 	import { appMobileHideNewPostButton } from '$stores/app';
 	import Publish from './Publish.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import { NDKEvent, NDKKind, NDKRelay, NDKSubscriptionCacheUsage, NDKSubscriptionTier, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import TierEditor from './TierEditor.svelte';
 	import type { Readable } from 'svelte/store';

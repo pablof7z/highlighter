@@ -1,6 +1,6 @@
 // a blossom URL should finish with a 64 characters hex string and an optional file extension
 
-import { ndk } from "@kind0/ui-common";
+import { ndk } from "$stores/ndk.js";
 import { NDKEvent, NDKKind, NDKList, NDKUser, normalize } from "@nostr-dev-kit/ndk";
 import { BlobDescriptor, EventTemplate } from "blossom-client-sdk/client";
 import { get } from "svelte/store";

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { NDKSubscriptionTier, type NDKSubscriptionStart, NDKIntervalFrequency } from "@nostr-dev-kit/ndk";
 	import { createSubscriptionEvent } from "./subscription-event";
 	import { onMount } from "svelte";

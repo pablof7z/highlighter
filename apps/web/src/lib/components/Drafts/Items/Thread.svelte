@@ -3,7 +3,7 @@
 	import { DraftItem } from "$stores/drafts";
 	import { pluralize } from "$utils";
 	import { Thread, ThreadItem as ThreadItemType } from "$utils/thread";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { EventContent } from '@nostr-dev-kit/ndk-svelte-components';
 	import { RowsPlusBottom } from "phosphor-svelte";
 

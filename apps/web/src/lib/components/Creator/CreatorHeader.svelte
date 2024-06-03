@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { openModal } from '$utils/modal';
-	import ShareModal from './../../modals/ShareModal.svelte';
+	import ShareModal from '$modals/ShareModal.svelte';
     import UserProfile from "$components/User/UserProfile.svelte";
-	import { Avatar, Name, ndk } from "@kind0/ui-common";
-	import { NDKEvent, NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+	import { NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { Export } from "phosphor-svelte";
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import { Readable } from "svelte/store";
@@ -14,6 +13,8 @@
 	import CreatorHeaderSupportButton from './CreatorHeaderSupportButton.svelte';
 	import { appMobileView } from '$stores/app';
 	import { NavbarBackLink } from 'konsta/svelte';
+	import Avatar from '$components/User/Avatar.svelte';
+	import Name from '$components/User/Name.svelte';
 
     export let user: NDKUser;
     let userProfile: NDKUserProfile;

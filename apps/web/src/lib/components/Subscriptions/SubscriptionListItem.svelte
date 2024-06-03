@@ -3,7 +3,7 @@
     import AvatarWithName from "$components/User/AvatarWithName.svelte";
     import UserProfile from "$components/User/UserProfile.svelte";
     import SubscriptionReceipt from "$components/Subscriptions/SubscriptionReceipt.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { NDKSubscriptionReceipt, type NDKSubscriptionStart } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { currencyFormat } from "$utils/currency";

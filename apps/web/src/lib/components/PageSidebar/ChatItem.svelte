@@ -3,7 +3,7 @@
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { getDefaultRelaySet } from "$utils/ndk";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { NDKKind, type NDKFilter, type NDKTag, NDKEvent } from "@nostr-dev-kit/ndk";
     import { user as currentUser } from "@kind0/ui-common";
 	import { onDestroy } from "svelte";

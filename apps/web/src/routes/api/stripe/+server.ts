@@ -1,4 +1,4 @@
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import { json } from '@sveltejs/kit';
 import Stripe from 'stripe';
 import { get } from 'svelte/store';

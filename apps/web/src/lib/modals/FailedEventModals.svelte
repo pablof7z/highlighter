@@ -3,7 +3,7 @@
 import ModalShell from "$components/ModalShell.svelte";
 	import { failedPublishEvents } from "$stores/events";
 	import { pluralize } from "$utils";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 
     let retryingId = new Set();

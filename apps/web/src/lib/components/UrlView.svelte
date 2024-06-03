@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { type NDKArticle, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
 	import { pageHeader } from '$stores/layout';
 	import HighlightingArea from './HighlightingArea.svelte';

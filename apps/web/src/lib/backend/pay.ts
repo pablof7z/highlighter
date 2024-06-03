@@ -1,5 +1,5 @@
 import { getWalletForPubkey } from '$lib/server/wallet';
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import type { Hexpubkey } from '@nostr-dev-kit/ndk';
 import { NDKNwc } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';

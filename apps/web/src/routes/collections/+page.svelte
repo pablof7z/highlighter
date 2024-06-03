@@ -3,7 +3,7 @@
 	import PageTitle from "$components/PageElements/PageTitle.svelte";
 	import { userFollows } from "$stores/session";
 	import { wotFiltered } from "$stores/wot";
-    import { ndk } from "@kind0/ui-common";
+    import { ndk } from "$stores/ndk.js";
     import { NDKEvent, NDKKind, NDKRelay, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { derived } from "svelte/store";

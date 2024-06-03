@@ -3,7 +3,7 @@
 	import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
 	import { lastSeenTimestamp } from '$stores/notifications';
 	import StoreFeed from '$components/Feed/StoreFeed.svelte';
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import { derived } from 'svelte/store';
 	import { onDestroy, onMount } from 'svelte';
 

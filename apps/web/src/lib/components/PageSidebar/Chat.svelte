@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Hexpubkey, NDKFilter } from '@nostr-dev-kit/ndk';
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import { NDKEvent, NDKKind, NDKSubscriptionCacheUsage, NDKUser } from '@nostr-dev-kit/ndk';
     import { userFollows } from "$stores/session";
 	import ChatItem from './ChatItem.svelte';

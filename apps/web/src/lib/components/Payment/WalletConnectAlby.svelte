@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
     import { webln } from "@getalby/sdk";
     import { createEventDispatcher } from "svelte";
-	import { newToasterMessage } from "@kind0/ui-common";
+	import { newToasterMessage } from "$stores/toaster.js";
 	import { CheckCircle } from "phosphor-svelte";
 
     const dispatch = createEventDispatcher();

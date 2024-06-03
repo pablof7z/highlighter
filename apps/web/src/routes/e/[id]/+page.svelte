@@ -4,7 +4,8 @@
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 	import { detailView, resetLayout } from "$stores/layout";
 	import { getAuthorUrlSync } from "$utils/url";
-	import { ndk, user } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
+import currentUser from "$stores/currentUser.js";
 	import { NDKArticle, NDKEvent, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import LoadingScreen from "$components/LoadingScreen.svelte";

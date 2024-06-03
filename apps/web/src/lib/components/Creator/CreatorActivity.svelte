@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { ndk, user } from "@kind0/ui-common";
+    import { ndk } from "$stores/ndk.js";
+import currentUser from "$stores/currentUser.js";
 	import CreatorActivityItem from "./CreatorActivityItem.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { onDestroy } from "svelte";

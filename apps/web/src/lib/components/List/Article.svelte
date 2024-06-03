@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getSummary } from "$utils/article";
-	import { Name } from "@kind0/ui-common";
+	import Name from '$components/User/Name.svelte';
 	import type { NDKArticle } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
 	import { urlSuffixFromEvent } from "$utils/url";

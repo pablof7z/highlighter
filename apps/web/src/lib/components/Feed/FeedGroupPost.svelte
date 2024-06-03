@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MediaCollection from "$components/Events/MediaCollection.svelte";
 	import FeedEventWrapper from "$components/Feed/EventWrapper.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 

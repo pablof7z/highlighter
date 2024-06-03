@@ -1,6 +1,6 @@
 <script lang="ts">
     import Input from "$components/Forms/Input.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 	import ContentEditor from './ContentEditor.svelte';

@@ -1,4 +1,4 @@
-import { ndk } from "@kind0/ui-common";
+import { ndk } from "$stores/ndk.js";
 import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, NDKUser, NDKZap, NDKZapInvoice, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
 import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 import { Readable, derived, get, readable } from "svelte/store";

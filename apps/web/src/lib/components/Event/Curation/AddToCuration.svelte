@@ -3,7 +3,7 @@
 	import { curationHasEvent, toggleItemInCuration, createNewCuration, getStoreForCurationEvent } from "$utils/curations";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
     import Input from "$components/Forms/Input.svelte";
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 
     export let event: NDKEvent;
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Name } from "@kind0/ui-common";
+	import Name from '$components/User/Name.svelte';
     import { NDKEvent } from "@nostr-dev-kit/ndk";
 
     export let event: NDKEvent;

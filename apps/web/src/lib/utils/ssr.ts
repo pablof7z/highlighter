@@ -1,5 +1,5 @@
 import "websocket-polyfill";
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import { get } from 'svelte/store';
 import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKRelaySet } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";

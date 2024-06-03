@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { EventCardActions, RelativeTime } from '@kind0/ui-common';
 	import { NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
     import { CaretLeft, Headphones, TextAlignLeft } from 'phosphor-svelte';
-	import UpgradeButton from './buttons/UpgradeButton.svelte';
 	import SubscribeButton from './buttons/SubscribeButton.svelte';
-	import { EventCardDropdownMenu } from '@nostr-dev-kit/ndk-svelte-components';
 	import ClientName from './ClientName.svelte';
 	import currentUser from '$stores/currentUser';
 

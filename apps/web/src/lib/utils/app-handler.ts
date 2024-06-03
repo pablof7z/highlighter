@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { userAppHandlers } from '$stores/session';
 import { NDKEvent, NDKKind } from '@nostr-dev-kit/ndk';
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 
 export async function writeAppHandler(kind: NDKKind, force = false) {
 	if (!force) {

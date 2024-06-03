@@ -2,7 +2,8 @@
 	import { slide } from 'svelte/transition';
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import { userFollows } from '$stores/session';
-	import { Avatar, ndk } from '@kind0/ui-common';
+	import Avatar from '$components/User/Avatar.svelte';
+import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, type Hexpubkey, type NDKUserProfile, NDKKind, type NostrEvent } from '@nostr-dev-kit/ndk';
     import { createEventDispatcher } from 'svelte';
 

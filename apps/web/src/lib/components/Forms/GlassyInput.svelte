@@ -1,4 +1,4 @@
-<script lang="ts">
+b<script lang="ts">
     import {startTyping} from "@sveu/actions"
 
     export let value: string = "";

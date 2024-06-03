@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { urlSuffixFromEvent } from "$utils/url";
-	import { Avatar, Name } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
+import Name from '$components/User/Name.svelte';
 	import type { NDKArticle, NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
 

@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import { Hexpubkey, NDKEvent, NDKHighlight, NDKUser } from '@nostr-dev-kit/ndk';
-	import AvatarWithName from './User/AvatarWithName.svelte';
-    import { Avatar } from '@kind0/ui-common';
+	import Avatar from '$components/User/Avatar.svelte';
+    import AvatarWithName from './User/AvatarWithName.svelte';
 	import HighlightIcon from '$icons/HighlightIcon.svelte';
-	import { BookmarkSimple } from 'phosphor-svelte';
 
     export let title: string;
     export let image: string;

@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { openModal } from '$utils/modal';
     import UserProfile from "$components/User/UserProfile.svelte";
-	import { Avatar, Name, ndk } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
+import Name from '$components/User/Name.svelte';
+import { ndk } from "$stores/ndk.js";
 	import { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { Export } from "phosphor-svelte";
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";

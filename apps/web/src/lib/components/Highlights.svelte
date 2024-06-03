@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import ClipItem from "$components/Clips/ClipItem.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKHighlight } from "@nostr-dev-kit/ndk";
     import createDebug from "debug";
 	import { onDestroy } from "svelte";

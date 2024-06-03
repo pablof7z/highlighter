@@ -1,6 +1,6 @@
 <script lang="ts">
     import {computePosition, autoUpdate, offset, flip } from '@floating-ui/dom';
-	import { Avatar } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
     import { NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from 'svelte';
 

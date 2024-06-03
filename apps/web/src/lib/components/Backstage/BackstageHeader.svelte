@@ -2,7 +2,8 @@
 	import { NDKUser } from "@nostr-dev-kit/ndk";
 	import { UserProfileType } from "../../../app";
 	import BackstageHeaderTopBackers from "./BackstageHeaderTopBackers.svelte";
-	import { Avatar, Name } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
+import Name from '$components/User/Name.svelte';
 	import BackstageHeaderTopZappedBy from "./BackstageHeaderTopZappedBy.svelte";
 	import StylishContainer from "$components/PageElements/StylishContainer.svelte";
 

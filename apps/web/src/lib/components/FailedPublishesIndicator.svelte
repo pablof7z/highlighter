@@ -2,7 +2,7 @@
 	import FailedEventModals from "$modals/FailedEventModals.svelte";
 	import { failedPublishEvents } from "$stores/events";
 	import { openModal } from "$utils/modal";
-	import { newToasterMessage } from "@kind0/ui-common";
+	import { newToasterMessage } from "$stores/toaster.js";
 	import { Warning } from "phosphor-svelte";
 
     function showErrors() {

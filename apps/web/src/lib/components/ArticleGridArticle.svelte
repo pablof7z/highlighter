@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { NDKArticle, NDKHighlight, type NDKTag, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import ArticleCard from "./ArticleCard.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import UserProfile from "./User/UserProfile.svelte";
 	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
 

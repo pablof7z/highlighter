@@ -1,4 +1,4 @@
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import { NDKUser } from '@nostr-dev-kit/ndk';
 import { nip05 } from 'nostr-tools';
 import { get } from 'svelte/store';

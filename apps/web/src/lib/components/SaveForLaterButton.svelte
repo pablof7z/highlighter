@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { ndk, user } from "@kind0/ui-common";
+	import currentUser from "$stores/currentUser";
+	import { ndk } from "$stores/ndk";
 	import { NDKKind, type NDKEvent, NDKList, type NostrEvent } from "@nostr-dev-kit/ndk";
     import BookmarksSimple from "phosphor-svelte/lib/BookmarkSimple";
 	import { onDestroy } from "svelte";
@@ -25,7 +26,7 @@
     const lists = $ndk.storeSubscribe({
         kinds: [listKind],
         "#d": ["saved"],
-        authors: [$user.pubkey]
+        authors: [$currentUser.pubkey]
     }, {
         subId: 'save-for-later-button',
         groupable: true,

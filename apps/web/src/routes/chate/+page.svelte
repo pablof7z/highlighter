@@ -3,7 +3,7 @@
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
 	import { pageHeader } from "$stores/layout";
 	import { userFollows } from "$stores/session";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { derived } from "svelte/store";
 	import { goto } from '$app/navigation';

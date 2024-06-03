@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent, NDKList } from "@nostr-dev-kit/ndk";
     import createDebug from "debug";
 	import { onDestroy } from "svelte";

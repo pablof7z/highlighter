@@ -5,7 +5,7 @@
     import ZapModal from "$modals/ZapModal.svelte";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import currentUser from "$stores/currentUser";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { onDestroy } from "svelte";
 

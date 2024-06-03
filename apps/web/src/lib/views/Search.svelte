@@ -9,7 +9,9 @@
 	import { getNip50RelaySet } from "$utils/ndk";
 	import { SearchResult } from "$utils/search";
 	import { searchUser } from "$utils/search/user";
-	import { Avatar, Name, ndk } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
+import Name from '$components/User/Name.svelte';
+import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, NDKKind } from "@nostr-dev-kit/ndk";
 	import { ArrowRight, Check, CheckCircle, MagnifyingGlass, UserCircleCheck } from "phosphor-svelte";
 	import { SvelteComponent, createEventDispatcher } from "svelte";

@@ -8,7 +8,7 @@
 	import { layoutMode, resetLayout } from "$stores/layout";
 	import { eventToKind, isEventFullVersion } from "$utils/event";
 	import { getAuthorUrl } from "$utils/url";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { NDKArticle, NDKEvent, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { Block } from "konsta/svelte";
 	import { onDestroy } from "svelte";

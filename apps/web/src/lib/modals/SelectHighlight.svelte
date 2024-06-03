@@ -4,7 +4,7 @@
     import ModalShell from "$components/ModalShell.svelte";
     import currentUser from "$stores/currentUser";
 	import { closeModal } from "$utils/modal";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKHighlight, NDKKind } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 

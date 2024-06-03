@@ -4,7 +4,7 @@
 	import LogoGradient from "$icons/LogoGradient.svelte";
 	import { getParagraph, getText } from '$utils/text';
 	import { onMount } from 'svelte';
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import { detailView } from '$stores/layout';
 	import { pushState } from '$app/navigation';
 	import HighlightTool from './HighlightArea/HighlightTool.svelte';

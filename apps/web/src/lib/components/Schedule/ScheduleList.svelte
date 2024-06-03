@@ -2,7 +2,7 @@
 	import NewItemModal from './../../modals/NewItemModal.svelte';
 	import { event, event } from "$components/Feed/NoteOld.svelte";
     import currentUser from "$stores/currentUser";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, NDKEventId, NDKKind } from "@nostr-dev-kit/ndk";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import ScheduleListItem from "./ScheduleListItem.svelte";

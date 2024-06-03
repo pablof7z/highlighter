@@ -3,7 +3,7 @@ import 'websocket-polyfill';
 import { json } from '@sveltejs/kit';
 import createDebug from 'debug';
 import { getNwcString, sendPayment } from '$lib/backend/pay.js';
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import { get } from 'svelte/store';
 import type { Session } from '../../../../../app';
 import { NDKNwc } from '@nostr-dev-kit/ndk';

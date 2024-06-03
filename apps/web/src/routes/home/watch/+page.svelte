@@ -4,7 +4,7 @@
 	import { onDestroy } from "svelte";
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";
 	import { wotFilteredStore } from "$stores/wot";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { derived } from "svelte/store";
 	import { filterArticle } from "$utils/article-filter";
 

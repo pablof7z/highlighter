@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { networkFollows } from "$stores/session";
-	import { Avatar } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
 	import { Hexpubkey, NDKSubscriptionOptions } from "@nostr-dev-kit/ndk";
 
     export let users: Hexpubkey[];

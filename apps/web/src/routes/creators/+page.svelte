@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CreatorBanner from "$components/Creator/CreatorBanner.svelte";
 	import { blacklistedPubkeys, featuredCreatorPubkeys } from "$utils/const";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { type Hexpubkey, NDKKind, NDKList, NDKSubscriptionStart } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { derived } from "svelte/store";

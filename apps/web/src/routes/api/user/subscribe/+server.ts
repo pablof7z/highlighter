@@ -1,5 +1,5 @@
 import { sendPayment } from '$lib/backend/pay';
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import { NDKEvent, NDKSubscriptionStart, NDKUser, NDKZap, type NostrEvent, type NDKTag } from '@nostr-dev-kit/ndk';
 import { json, text } from '@sveltejs/kit';
 import { get } from 'svelte/store';

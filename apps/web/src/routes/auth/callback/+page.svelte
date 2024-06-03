@@ -4,7 +4,7 @@
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { userPubkey } from "$stores/currentUser";
 	import { login } from "$utils/login";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { onMount } from "svelte";
 
     // get pubkey from url param

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { pageHeader, pageHeaderComponent, pageNavigationOptions } from '$stores/layout';
-	import { Avatar } from '@kind0/ui-common';
+	import Avatar from '$components/User/Avatar.svelte';
     import { Block, Icon, Link, Navbar, NavbarBackLink, Segmented, SegmentedButton, Toolbar } from 'konsta/svelte';
     import currentUser, { isGuest } from "$stores/currentUser";
 	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
