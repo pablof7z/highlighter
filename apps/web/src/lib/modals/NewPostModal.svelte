@@ -12,5 +12,10 @@
     class={wrapperClass}
     {actionButtons}
 >
-    <NewPostModalInner bind:title bind:wrapperClass bind:actionButtons />
+    <NewPostModalInner
+        bind:title
+        bind:wrapperClass
+        bind:actionButtons
+        {...$$props}
+    />
 </ModalShell>

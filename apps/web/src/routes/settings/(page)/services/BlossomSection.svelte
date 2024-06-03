@@ -24,10 +24,11 @@
 
     async function save() {
         $userBlossom!.removeTag("r");
+        $userBlossom!.removeTag("server");
         
         $userBlossom.tags = [
             ...$userBlossom.tags,
-            ...items.map((item) => ["r", item])
+            ...items.map((item) => ["server", item])
         ];
         $userBlossom.kind = 10063;
         $userBlossom.created_at = Math.floor(Date.now() / 1000);
@@ -46,6 +47,7 @@
 {#if $userBlossom}
     <ul class="flex flex-col">
         {#key $activeBlossomServer}
+        <pre>{JSON.stringify($userBlossom.rawEvent(), null, 4)}</pre>
         {#each items as item, index}
             <li class="flex flex-row items-center gap-4 relative">
                 <!-- try to display favicon -->
@@ -67,8 +69,6 @@
                         disabled={index === 0}
                         class="w-fit px-6 absolute right-5 font-normal text-sm"
                         class:text-success={index === 0}
-                        class:button={index !== 0}
-                        class:button-black={index !== 0}
                         on:click={() => makeDefault(item)}
                     >
                         {#if index === 0}

@@ -76,7 +76,7 @@
     $: bookmarked = $userGenericCuration.has(event.tagId());
 </script>
 
-<div bind:this={container} class="mobile-nav {$$props.class??""}">
+<div bind:this={container} class="mobile-nav {$$props.containerClass??""} {$$props.class??""}">
     <div class="
         flex justify-between items-stretch
         {$appMobileView ? "flex-col-reverse" : "flex-row"}

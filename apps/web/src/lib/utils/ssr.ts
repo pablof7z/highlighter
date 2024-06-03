@@ -5,10 +5,13 @@ import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKRelaySet } from "@nostr-dev
 import { nip19 } from "nostr-tools";
 import { defaultRelays } from "./const";
 
-export const ssr = true;
+export const ssr = false;
 
 const timeout = (time: number) => new Promise((_, reject) => {
-    setTimeout(() => { reject(new Error("Timeout")); }, time);
+    setTimeout(() => {
+        console.log('rejecting')
+        reject(new Error("Timeout"));
+    }, time);
 });
 
 function chooseImageFromMediaEvents(mediaEvents: NDKEvent[], author: Hexpubkey) {
@@ -73,7 +76,7 @@ export async function fetchEvent(id: string) {
         promises.push(timeout(1500));
 
         console.log("waiting for promises");
-        await Promise.race(promises);
+        await Promise.race(promises).catch(() => console.log('caught'));
         console.log("promises done");
     } catch { return {}; }
 

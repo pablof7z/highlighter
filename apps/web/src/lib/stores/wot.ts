@@ -17,12 +17,17 @@ export const wot = derived([networkFollows, minimumScore], ([$networkFollows, $m
 
 export function wotFilteredStore(event: Readable<NDKEvent[]>) {
     return derived([event, wot], ([$event, $wot]) => {
-        if ($wot.size < 1000) return $event;
+        console.log($wot.size + ' wot size')
+        // if ($wot.size < 1000) {
+            
+        //     return $event;
+        // }
 
         const filteredEvents: NDKEvent[] = [];
 
         for (const e of $event) {
             if ($wot.has(e.pubkey)) filteredEvents.push(e);
+            else console.log('removing ')
         }
 
         return filteredEvents;

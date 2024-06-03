@@ -22,7 +22,10 @@
     $: if (id !== $page.params.id) {
         id = $page.params.id;
 
+        console.log('loading event '+id);
+        
         $ndk.fetchEvent(id).then((e) => {
+            console.log('back with ', e?.rawEvent())
             event = e ? eventToKind(e) : null;
         });
     }

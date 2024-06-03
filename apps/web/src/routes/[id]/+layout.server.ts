@@ -12,6 +12,7 @@ const vanityUrls = {
 const debug = createDebug('HL:user-layout');
 
 export async function load({ params }) { 
+	console.log('starting load')
 	const { id } = params;
 	let user: NDKUser | undefined;
 
@@ -19,8 +20,11 @@ export async function load({ params }) {
 
 	if (id.startsWith('npub')) {
 		user = new NDKUser({ npub: id });
+		console.log('finish load');
 		return { pubkey: user.pubkey };
 	}
+
+	console.log('finish load');
 
 	if (vanityUrls[id]) {
 		return { pubkey: vanityUrls[id] };

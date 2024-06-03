@@ -11,7 +11,6 @@
     export let startUpload = true;
     export let blob: Blob | undefined = undefined;
     export let videoDuration: number | void | undefined = undefined;
-    export let provider: string = "nostr.build";
 
     const dispatch = createEventDispatcher();
 

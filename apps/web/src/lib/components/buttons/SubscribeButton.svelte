@@ -47,26 +47,16 @@
             <button
                 on:click={openSupportModal}
                 class="
-                    flex flex-row items-center !gap-0
-                    whitespace-nowrap text-base
-                    max-sm:px-6
-                    lg:py-2 lg:button border-accent2 w-full transition-all duration-300 group
-                    border-2 !bg-accent2/40
-                    rounded-full p-2
-                    !text-white
-                    {$$props.buttonClass??""}
+                button
                 "
             >
                 <span class="hidden lg:inline">
                     {#if $tiers && $tiers.length > 0}
-                        <Star size={24} class="w-5 h-5 inline mr-2" />
-                        Backstage
+                        Subscribe
                     {:else}
                         Support
-                        <CaretRight class="w-5 h-5 inline" />
                     {/if}
                 </span>
-                <Ticket size={24} class="inline lg:hidden" />
             </button>
         {/if}
     {/if}

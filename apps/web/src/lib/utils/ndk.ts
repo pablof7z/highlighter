@@ -1,4 +1,5 @@
 import { get as getStore } from 'svelte/store';
+import 'websocket-polyfill';
 import { ndk, newToasterMessage } from '@kind0/ui-common';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
 import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
@@ -53,13 +54,13 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	}
 
 	$ndk.addExplicitRelay('ws://localhost:5577', undefined, false);
-	// $ndk.addExplicitRelay('wss://purplepag.es/', undefined, false);
-	// $ndk.addExplicitRelay('wss://nos.lol/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.noswhere.com/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.primal.net/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.damus.io/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.nostr.band/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.highlighter.com/', undefined, false);
+	$ndk.addExplicitRelay('wss://purplepag.es/', undefined, false);
+	$ndk.addExplicitRelay('wss://nos.lol/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.noswhere.com/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.primal.net/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.damus.io/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.nostr.band/', undefined, false);
+	$ndk.addExplicitRelay('wss://relay.highlighter.com/', undefined, false);
 
 	// $ndk.connect(2000);
 
@@ -102,6 +103,8 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 		await configureDefaultNDK(nodeFetch);
 	}
 
+	debug('relay count' + $ndk.explicitRelayUrls!.length)
+
 	// debug(`Configuring BE NDK`, { nodeFetch: !!nodeFetch });
 
 	const fetchWrapper = async (url: string, options: RequestInit) => {
@@ -126,7 +129,7 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 	//     });
 	// });
 	Promise.all([
-		// $ndk.connect(2000)
+		$ndk.connect(2000)
 		// redisConnected
 	]);
 
