@@ -2,7 +2,8 @@
 	import { type Writable } from 'svelte/store';
 	import { userArticleCurations, userVideoCurations } from "$stores/session";
     import Input from "$components/Forms/Input.svelte";
-    import { ndk, user } from "@kind0/ui-common";
+    import { ndk } from "$stores/ndk.js";
+import currentUser from "$stores/currentUser.js";
 	import { NDKEvent, NDKList, NDKKind } from "@nostr-dev-kit/ndk";
 	import { BookmarkSimple, Heart, Lock, PaperPlaneTilt, Plus, RowsPlusBottom } from "phosphor-svelte";
 

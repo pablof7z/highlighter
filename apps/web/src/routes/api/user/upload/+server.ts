@@ -2,7 +2,7 @@
 // import { NDKEvent, type NostrEvent } from '@nostr-dev-kit/ndk';
 // import createDebug from "debug";
 // import type { Session } from '../../../../app';
-// import { ndk } from '@kind0/ui-common';
+// import { ndk } from "$stores/ndk";
 // import { get } from 'svelte/store';
 // import { fail, json } from '@sveltejs/kit';
 

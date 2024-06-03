@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-	import { newToasterMessage } from "@kind0/ui-common";
+	import { newToasterMessage } from "$stores/toaster.js";
 	import { activeBlossomServer } from "$stores/session";
 	import { Uploader } from "$utils/upload";
 

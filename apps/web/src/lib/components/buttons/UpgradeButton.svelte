@@ -1,20 +1,18 @@
 <script lang="ts">
+	import currentUser from '$stores/currentUser';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import BecomeSupporterModal from '$modals/BecomeSupporterModal.svelte';
-	import { requiredTiersFor } from "$lib/events/tiers";
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { LockSimple } from "phosphor-svelte";
 	import { openModal } from '$utils/modal';
-    import { user } from "@kind0/ui-common";
 
     export let event: NDKEvent;
     export let text = "Get a backstage pass";
 
-    const requiredTier = requiredTiersFor(event)[0];
     const author = event.author;
 
     function upgrade() {
-        if (!$user) {
+        if (!$currentUser) {
             openModal(SignupModal, { redirect: window.location.pathname });
         } else {
             openModal(BecomeSupporterModal, { user: author });

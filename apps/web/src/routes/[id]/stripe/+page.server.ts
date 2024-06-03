@@ -1,4 +1,4 @@
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import { NDKSubscriptionStart } from '@nostr-dev-kit/ndk';
 import { redirect } from '@sveltejs/kit';
 import Stripe from 'stripe';

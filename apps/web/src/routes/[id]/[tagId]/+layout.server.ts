@@ -1,6 +1,6 @@
 import { EVENT_ID_SUFFIX_LENGTH } from '$utils/url';
 import { NDKSubscription, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import type { NDKEvent, NDKFilter } from '@nostr-dev-kit/ndk';
 import { get } from 'svelte/store';
 

@@ -1,7 +1,7 @@
 import { get as getStore } from 'svelte/store';
 import NDK, { NDKEvent, type NostrEvent } from '@nostr-dev-kit/ndk';
-import { newToasterMessage } from '@kind0/ui-common';
-import { ndk } from '@kind0/ui-common';
+import { newToasterMessage } from '$stores/toaster';
+import { ndk } from "$stores/ndk";
 
 export async function generateLoginEvent(hostname: string): Promise<NDKEvent | undefined> {
 	const $ndk = getStore(ndk);

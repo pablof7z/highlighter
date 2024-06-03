@@ -2,7 +2,7 @@
 	import { pageHeader } from "$stores/layout";
 	import { NDKList, type NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 	import { page } from '$app/stores';
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 	import ListViewContent from './ListViewContent.svelte';
 	import { CaretLeft } from 'phosphor-svelte';

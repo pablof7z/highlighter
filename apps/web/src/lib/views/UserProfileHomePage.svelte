@@ -1,6 +1,6 @@
 <script lang="ts">
     import UserProfile from "$components/User/UserProfile.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, NDKEvent, NDKKind, NDKUser, NDKVideo, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
 	import { onDestroy, onMount } from "svelte";

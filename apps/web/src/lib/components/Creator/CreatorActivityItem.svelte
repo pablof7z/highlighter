@@ -4,7 +4,9 @@
 	import EventActionButtons from "$components/buttons/EventActionButtons.svelte";
 	import { debugMode } from "$stores/session";
 	import { urlSuffixFromEvent } from "$utils/url";
-	import { Avatar, Name, ndk } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
+import Name from '$components/User/Name.svelte';
+import { ndk } from "$stores/ndk.js";
 	import { NDKKind, NDKArticle, type NDKEvent, type NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 

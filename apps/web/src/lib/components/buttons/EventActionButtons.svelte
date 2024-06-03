@@ -5,7 +5,7 @@
     import { createEventDispatcher, onDestroy } from "svelte";
 	import { ChatCircle } from "phosphor-svelte";
 	import { derived } from "svelte/store";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import CurationButton from "./CurationButton.svelte";
 	import { mainContentKinds } from "$utils/event";
 

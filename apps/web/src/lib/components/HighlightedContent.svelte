@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto, pushState } from '$app/navigation';
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, NDKEventId } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable } from "svelte/store";

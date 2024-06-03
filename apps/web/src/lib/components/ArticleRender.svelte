@@ -3,7 +3,7 @@
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { type NDKArticle, NDKTag, NDKKind, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import HighlightingArea from './HighlightingArea.svelte';

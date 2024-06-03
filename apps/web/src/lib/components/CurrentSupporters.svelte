@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { Avatar, user as currentUser } from "@kind0/ui-common";
-	import type { NDKUser, Hexpubkey, NDKArticle } from "@nostr-dev-kit/ndk";
+	import type { NDKUser, Hexpubkey } from "@nostr-dev-kit/ndk";
+	import Avatar from "./User/Avatar.svelte";
+	import currentUser from "$stores/currentUser";
 
     export let user: NDKUser;
     export let supporters: Record<Hexpubkey, string | undefined | true>;

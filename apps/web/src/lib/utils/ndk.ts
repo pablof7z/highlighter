@@ -1,10 +1,11 @@
 import { get as getStore } from 'svelte/store';
 import 'websocket-polyfill';
-import { ndk, newToasterMessage } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
+import { newToasterMessage } from '$stores/toaster';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
 import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
-import { userFollows, debugMode } from '$stores/session';
+import { debugMode } from '$stores/session';
 import { defaultRelays } from './const';
 import NDKSigVerificationWorker from "@nostr-dev-kit/ndk/workers/sig-verification?worker";
 

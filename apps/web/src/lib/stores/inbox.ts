@@ -1,6 +1,6 @@
 import { derived, get } from "svelte/store";
 import { categorizedUserLists } from "./session";
-import { ndk } from "@kind0/ui-common";
+import { ndk } from "$stores/ndk.js";
 import { Hexpubkey, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 
 const INBOX_DTAG = "Highlights";

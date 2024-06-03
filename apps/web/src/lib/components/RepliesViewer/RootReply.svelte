@@ -1,7 +1,7 @@
 <script lang="ts">
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { NDKKind, type NDKEvent, type NDKFilter } from "@nostr-dev-kit/ndk";
-    import { ndk } from "@kind0/ui-common";
+    import { ndk } from "$stores/ndk.js";
     import { EventThread } from "@nostr-dev-kit/ndk-svelte-components";
 
     export let event: NDKEvent;

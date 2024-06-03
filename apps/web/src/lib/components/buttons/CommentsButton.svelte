@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { ndk, user } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
+import currentUser from "$stores/currentUser.js";
 	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import { ChatCircle } from 'phosphor-svelte';

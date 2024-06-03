@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Box from "$components/PageElements/Box.svelte";
-    import { ndk, user } from "@kind0/ui-common";
+    import { ndk } from "$stores/ndk.js";
+import currentUser from "$stores/currentUser.js";
 	import { NDKKind } from "@nostr-dev-kit/ndk";
 
     const scheduleInfo = $ndk.storeSubscribe([

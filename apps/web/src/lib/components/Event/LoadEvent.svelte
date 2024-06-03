@@ -1,7 +1,7 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { eventToSpecificKind } from "$utils/event";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { NDKArticle, NDKEvent, NDKList, NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 
     export let tag: NDKTag | undefined = undefined;

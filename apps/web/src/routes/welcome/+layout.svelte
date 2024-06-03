@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { user } from "@kind0/ui-common";
+	import currentUser from "$stores/currentUser.js";
 	import { onDestroy, onMount } from "svelte";
 	import LoadingScreen from '$components/LoadingScreen.svelte';
 

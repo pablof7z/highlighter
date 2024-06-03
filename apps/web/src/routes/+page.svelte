@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKList, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
-    import { ndk } from "@kind0/ui-common";
+    import { ndk } from "$stores/ndk.js";
 	import { onDestroy, onMount } from 'svelte';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { page } from '$app/stores';

@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Avatar, Name, ndk } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
+import Name from '$components/User/Name.svelte';
+import { ndk } from "$stores/ndk.js";
 	import type { Hexpubkey } from "@nostr-dev-kit/ndk";
 	import { slide } from "svelte/transition";
     import UserProfile from "$components/User/UserProfile.svelte";

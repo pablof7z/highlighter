@@ -2,7 +2,7 @@
     import ChatInput from "$components/Chat/Input.svelte";
 	import { page } from "$app/stores";
 	import { NDKKind, NDKRelaySet, type NDKTag } from "@nostr-dev-kit/ndk";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import { derived } from "svelte/store";

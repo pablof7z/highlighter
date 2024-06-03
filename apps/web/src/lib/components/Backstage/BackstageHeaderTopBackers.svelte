@@ -2,7 +2,7 @@
 	import SidebarSupporterItem from "$components/Creator/CreatorShell/SidebarSupporterItem.svelte";
 	import currentUser from "$stores/currentUser";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { Hexpubkey, NDKKind, NDKSubscriptionCacheUsage, NDKSubscriptionReceipt, NDKUser } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { derived } from "svelte/store";

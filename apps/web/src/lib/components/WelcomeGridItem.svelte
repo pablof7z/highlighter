@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-    import { user } from "@kind0/ui-common";
+    import currentUser from "$stores/currentUser.js";
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { seenOnboardingPromptGridItem } from "$stores/settings";
 	import { CaretRight, X } from "phosphor-svelte";

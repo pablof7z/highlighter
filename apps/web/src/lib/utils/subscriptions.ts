@@ -13,7 +13,7 @@ import NDK, {
 } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 import { get } from 'svelte/store';
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import nip29 from '$lib/nip29';
 import { publishSubscriptionReceipt } from './nip88';
 import { getDefaultRelaySet } from './ndk';

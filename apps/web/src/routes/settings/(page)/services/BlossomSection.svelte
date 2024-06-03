@@ -1,7 +1,7 @@
 <script lang="ts">
 	import GlassyInput from "$components/Forms/GlassyInput.svelte";
     import { activeBlossomServer, userBlossom } from "$stores/session";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKList } from "@nostr-dev-kit/ndk";
 
     const URL_REGEX = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;

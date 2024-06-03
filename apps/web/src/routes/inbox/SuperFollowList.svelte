@@ -4,7 +4,7 @@
 	import { MagicWand } from 'phosphor-svelte';
 	import { page } from '$app/stores';
 	import SuperFollowListItem from './SuperFollowListItem.svelte';
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import { derived } from 'svelte/store';
 
     export let mode: "all" | "paid" = "all";

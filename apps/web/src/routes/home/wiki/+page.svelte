@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { userFollows } from "$stores/session";
 	import { derived } from "svelte/store";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { onDestroy } from "svelte";
 	import { Card } from "konsta/svelte";
 

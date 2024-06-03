@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { type NDKArticle, NDKKind, type NDKEventId, NDKEvent, NDKZapInvoice } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import ArticleRender from './ArticleRender.svelte';

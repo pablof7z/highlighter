@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import createDebug from 'debug';
 import type { Session } from '../../../../app.js';
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import { get } from 'svelte/store';
 import { NDKPrivateKeySigner, type Hexpubkey, type NDKEvent } from '@nostr-dev-kit/ndk';
 import { creatorRelayPubkey } from '$utils/const.js';

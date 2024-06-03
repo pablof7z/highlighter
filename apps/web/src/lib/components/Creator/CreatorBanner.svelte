@@ -4,7 +4,8 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import currentUser from '$stores/currentUser';
 	import { userFollows } from '$stores/session';
-	import { Avatar, ndk } from '@kind0/ui-common';
+	import Avatar from '$components/User/Avatar.svelte';
+import { ndk } from "$stores/ndk.js";
     import { Hexpubkey, NDKEvent, NDKKind, NDKList, NDKSubscriptionTier, NDKUser } from "@nostr-dev-kit/ndk";
 	import { EventContent } from '@nostr-dev-kit/ndk-svelte-components';
 	import { derived } from 'svelte/store';

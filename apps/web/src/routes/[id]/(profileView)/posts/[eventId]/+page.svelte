@@ -4,7 +4,7 @@
 	import { NDKEvent, NDKUser, isEventOriginalPost, getEventReplyIds, getRootEventId, NDKKind } from "@nostr-dev-kit/ndk";
 	import WithItem from "$components/Event/ItemView/WithItem.svelte";
 	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import { goto } from '$app/navigation';
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 

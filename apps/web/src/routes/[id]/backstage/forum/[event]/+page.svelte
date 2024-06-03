@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 
     let event: string;

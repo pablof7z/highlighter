@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
     import EventWrapper from "$components/Feed/EventWrapper.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { NDKHighlight, type NDKEvent, NDKArticle } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 

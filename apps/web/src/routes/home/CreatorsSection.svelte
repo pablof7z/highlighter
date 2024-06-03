@@ -2,7 +2,8 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { blacklistedPubkeys } from "$utils/const";
 	import { mainContentKinds } from "$utils/event";
-import { Avatar, ndk } from "@kind0/ui-common";
+import Avatar from '$components/User/Avatar.svelte';
+import { ndk } from "$stores/ndk.js";
 	import { type Hexpubkey, NDKKind, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { derived } from "svelte/store";

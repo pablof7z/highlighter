@@ -1,4 +1,4 @@
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import type { NDKEvent, NDKUser } from '@nostr-dev-kit/ndk';
 import { get } from 'svelte/store';
 import { vanityUrlsByPubkey } from './const';

@@ -6,7 +6,7 @@
 	import VideoPreviewEditor from "$components/PostEditor/VideoPreviewEditor.svelte";
 	import { preview, previewContentChanged, previewTitleChanged, view } from "$stores/post-editor";
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { user } from "@kind0/ui-common";
+	import currentUser from "$stores/currentUser.js";
 	import { pageHeader } from "$stores/layout";
 
     export let video: NDKVideo;

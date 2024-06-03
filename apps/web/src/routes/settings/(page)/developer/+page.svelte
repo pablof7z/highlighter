@@ -1,7 +1,7 @@
 <script lang="ts">
     import { pageHeader } from "$stores/layout";
 	import NDKCacheAdapterDexie, { db } from '@nostr-dev-kit/ndk-cache-dexie';
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import { browser } from '$app/environment';
 	import { networkFollows, userFollows } from '$stores/session';
 	import { minimumScore, wot } from '$stores/wot';

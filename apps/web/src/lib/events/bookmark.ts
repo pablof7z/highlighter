@@ -1,5 +1,5 @@
 import { userGenericCuration } from "$stores/session";
-import { ndk } from "@kind0/ui-common";
+import { ndk } from "$stores/ndk.js";
 import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { get } from "svelte/store";
 

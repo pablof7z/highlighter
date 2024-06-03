@@ -2,7 +2,7 @@
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { NDKKind, type NDKEvent, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../app";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 
     export let dvm: NDKEvent | undefined = undefined;
     export let event: NDKEvent | undefined = undefined;

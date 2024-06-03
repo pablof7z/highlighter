@@ -2,7 +2,7 @@
 	import { NDKHighlight, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import EventWrapper from "./Feed/EventWrapper.svelte";
 	import HighlightBody from "./HighlightBody.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { removeQuotedEvent } from "$utils/highlight";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 

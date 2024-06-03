@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Checkbox from "$components/Forms/Checkbox.svelte";
     import { pageHeader } from "$stores/layout";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 
     $pageHeader = {
         title: "Privacy",

@@ -4,7 +4,7 @@
 	import OptionsList from "$components/OptionsList.svelte";
 	import { pageNavigationOptions } from "$stores/layout";
 	import { userFollows } from "$stores/session";
-	import { user } from "@kind0/ui-common";
+	import currentUser from "$stores/currentUser.js";
 	import { NDKKind, type NDKFilter } from "@nostr-dev-kit/ndk";
 	import { Globe } from "phosphor-svelte";
     import BookmarkSimple from "phosphor-svelte/lib/BookmarkSimple";

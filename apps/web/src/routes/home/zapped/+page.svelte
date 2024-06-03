@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
 	import { userFollows } from '$stores/session';
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { onDestroy } from "svelte";
     import Zap from "./Zap.svelte";
 	import { layoutMode } from "$stores/layout";

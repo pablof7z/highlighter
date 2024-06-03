@@ -1,6 +1,7 @@
 <script lang="ts">
 	import currentUser from "$stores/currentUser";
-import { Avatar, ndk } from "@kind0/ui-common";
+import Avatar from '$components/User/Avatar.svelte';
+import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 	import { ArrowRight } from "phosphor-svelte";
 

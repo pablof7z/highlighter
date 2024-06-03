@@ -2,7 +2,7 @@
 	import Highlight from '$components/Highlight.svelte';
 	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
 	import { computeArticleRecommendationFromHighlightStore } from "$utils/recommendations";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKDVMJobResult, NDKEvent, NDKHighlight, NDKKind, NDKRelaySet, NDKSubscriptionCacheUsage, NostrEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from 'svelte';
 	import FeaturedCreators from '$components/PageElements/FeaturedCreators.svelte';

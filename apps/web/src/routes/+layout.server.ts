@@ -1,6 +1,6 @@
 import 'websocket-polyfill';
 import { configureBeNDK } from '$utils/ndk';
-import { ndk } from '@kind0/ui-common';
+import { ndk } from "$stores/ndk";
 import { get } from 'svelte/store';
 import { RELAY_PRIVATE_KEY } from '$env/static/private';
 

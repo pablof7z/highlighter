@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getDefaultRelaySet } from "$utils/ndk";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
     import { Readable, derived } from "svelte/store";

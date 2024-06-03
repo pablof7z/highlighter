@@ -5,7 +5,7 @@
 	import { ChalkboardSimple, Door, Gear, House, PaperPlaneTilt, CardsThree, Timer } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
 	import { logout } from "$utils/login";
-	import { Avatar } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { openModal } from "$utils/modal";
 	import NewItemModal from "$modals/NewItemModal.svelte";

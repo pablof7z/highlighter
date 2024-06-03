@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import UserProfileHomePage from "$views/UserProfileHomePage.svelte";
 
     let id: string;

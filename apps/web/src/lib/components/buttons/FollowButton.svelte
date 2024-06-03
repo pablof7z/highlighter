@@ -1,7 +1,7 @@
 <script lang="ts">
 import currentUser from "$stores/currentUser";
     import { categorizedUserLists, sortedUserLists, userFollows } from "$stores/session";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { NDKUser } from "@nostr-dev-kit/ndk";
 	import { Checkbox } from "konsta/svelte";
 	import { Plus, User, UserPlus } from "phosphor-svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getUserSubscriptionTiersStore, startUserView } from '$stores/user-view';
-	import { user } from "@kind0/ui-common";
+	import currentUser from "$stores/currentUser.js";
 	import { onMount } from 'svelte';
 	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { pageHeader } from "$stores/layout";

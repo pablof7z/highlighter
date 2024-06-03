@@ -1,7 +1,7 @@
 <script lang="ts">
 	import StylishContainer from './../PageElements/StylishContainer.svelte';
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
-	import { ndk } from '@kind0/ui-common';
+	import { ndk } from "$stores/ndk";
 	import { NDKEvent, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { eventToKind, mainContentKinds } from '$utils/event';
 	import ItemLink from './ItemLink.svelte';

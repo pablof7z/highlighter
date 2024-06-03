@@ -1,7 +1,8 @@
 <script lang="ts">
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { getSummary } from "$utils/article";
-	import { RelativeTime, ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
+import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import type { NDKArticle } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
 	import { urlSuffixFromEvent } from "$utils/url";

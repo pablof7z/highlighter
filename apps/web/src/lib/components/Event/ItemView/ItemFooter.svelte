@@ -2,7 +2,7 @@
 	import { mainContentKinds } from '$utils/event';
 	import ShareModal from '$modals/ShareModal.svelte';
 	import { NDKKind, type NDKEvent } from "@nostr-dev-kit/ndk";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { onDestroy, onMount } from "svelte";
 	import { NavigationOption } from "../../../app";
 	import { CardsThree, ChatCircle, BookOpen, BookmarkSimple, Recycle, Repeat, Export, Lightning, Watch, YoutubeLogo } from "phosphor-svelte";

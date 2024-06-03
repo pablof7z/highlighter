@@ -4,7 +4,7 @@
 	import { page } from "$app/stores";
 	import { loadedEvent } from "$stores/item-view";
 	import { eventToKind } from "$utils/event";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, NDKEvent, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 
     let id: string;

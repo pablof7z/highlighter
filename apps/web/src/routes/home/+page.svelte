@@ -8,7 +8,7 @@
 	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
 	import FeaturedReads from "$components/PageElements/FeaturedReads.svelte";
 	import WithItem from "$components/Event/ItemView/WithItem.svelte";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import Highlights from "$views/Home/Sections/Highlights.svelte";
 	import Articles from "$views/Home/Sections/Articles.svelte";
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";

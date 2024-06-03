@@ -3,7 +3,7 @@
 	import AddToCuration from "$modals/AddToCuration.svelte";
 	import { getCurationKindForEvent } from "$utils/curations";
 	import { openModal } from "$utils/modal";
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
     import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { CardsThree } from "phosphor-svelte";
 	import { onDestroy } from 'svelte';

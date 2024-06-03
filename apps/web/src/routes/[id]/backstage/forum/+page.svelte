@@ -5,7 +5,7 @@
 	import StylishContainer from "$components/PageElements/StylishContainer.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import NewGroupPostModal from "$modals/NewGroupPostModal.svelte";
-import { ndk } from "@kind0/ui-common";
+import { ndk } from "$stores/ndk.js";
 	import { NDKFilter, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
 	import { Bell } from "phosphor-svelte";
 	import { onDestroy } from "svelte";

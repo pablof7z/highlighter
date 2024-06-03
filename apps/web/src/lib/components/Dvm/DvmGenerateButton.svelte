@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Avatar, Name, ndk } from "@kind0/ui-common";
+	import Avatar from '$components/User/Avatar.svelte';
+import Name from '$components/User/Name.svelte';
+import { ndk } from "$stores/ndk.js";
 	import { NDKAppHandlerEvent, NDKDVMJobFeedback, NDKDVMJobResult, NDKEvent, NDKKind, NDKUser, type NDKTag, type NostrEvent, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { CaretDown, MagicWand } from "phosphor-svelte";
 	import { derived, type Readable } from "svelte/store";

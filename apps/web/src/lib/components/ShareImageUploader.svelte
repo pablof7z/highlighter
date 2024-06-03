@@ -5,7 +5,7 @@
 	import { toBlob } from "html-to-image";
 	import { Uploader } from "$utils/upload";
 	import { activeBlossomServer } from "$stores/session";
-	import { newToasterMessage } from '@kind0/ui-common';
+	import { newToasterMessage } from '$stores/toaster';
 
     export let article: NDKArticle;
     export let status: "initial" | "uploading" | "uploaded" | "error" = "initial";

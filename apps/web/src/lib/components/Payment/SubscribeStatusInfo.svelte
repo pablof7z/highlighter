@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-	import { ndk } from "@kind0/ui-common";
+	import { ndk } from "$stores/ndk.js";
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Check } from "phosphor-svelte";
 	import { onDestroy } from "svelte";

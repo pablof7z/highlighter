@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ndk } from "@kind0/ui-common";
+    import { ndk } from "$stores/ndk.js";
 	import { NDKKind } from "@nostr-dev-kit/ndk";
 	import DvmProfile from "./DvmProfile.svelte";
 
