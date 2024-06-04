@@ -7,11 +7,11 @@
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
-	import ListView from "$components/ListView.svelte";
 	import Whoops from "$components/PageElements/Whoops.svelte";
 	import ListShell from "$views/List/ListShell.svelte";
 	import VideoView from "./VideoView.svelte";
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
+	import { ndk } from "$stores/ndk";
 
     export let event: NDKEvent;
     export let ignoreHeader: boolean = false;

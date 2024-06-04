@@ -5,6 +5,7 @@
     import { appMobileView } from "$stores/app";
 	import { goto } from "$app/navigation";
 	import { createEventDispatcher } from "svelte";
+	import { badgeVariants } from "./ui/badge";
 
     export let option: NavigationOption;
     export let value: string = "";
@@ -52,8 +53,8 @@
     href={option.href}
     class="
         snap-center {option.class??""}
-        cursor-pointer
-        {option.premiumOnly ? "premium" : ""}
+        {badgeVariants({ variant: "outline" })}
+        !p-2 !px-4 !text-base gap-2 bg-background
     "
     on:click
     class:active={active}
@@ -73,16 +74,6 @@
 {/if}
 
 <style>
-    a:not(.button) {
-        @apply rounded-full;
-        @apply justify-start items-center gap-2 flex;
-        @apply text-base font-normal;
-        @apply transition-all duration-100;
-        @apply p-2 px-4;
-        @apply w-fit;
-        @apply bg-base-200;
-    }
-
     a.active {
         @apply font-bold;
         @apply bg-base-300 text-white;

@@ -8,7 +8,7 @@
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 	import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
 	import { loginState } from '$stores/session';
-	import { Button } from 'konsta/svelte';
+	import { bunkerNDK, ndk } from '$stores/ndk';
 
     export let value: string = "";
     export let nsec: string = "";
@@ -25,9 +25,9 @@
     });
 
     async function loginWithNpub() {
-        $user = $ndk.getUser({npub});
-        $currentUser = $user;
-        userPubkey.set($user.pubkey);
+        $currentUser = $ndk.getUser({npub});
+        $currentUser = $currentUser;
+        userPubkey.set($currentUser.pubkey);
         loginState.set('logged-in');
         closeModal();
     }
@@ -81,10 +81,10 @@
 
             // nip46ConnectionStatus = 'Authorized';
             $ndk.signer = remoteSigner;
-            $user = await remoteSigner.user();
-            $user.ndk = $ndk;
+            $currentUser = await remoteSigner.user();
+            $currentUser.ndk = $ndk;
             loginMethod.set('nip46');
-            userPubkey.set($user.pubkey);
+            userPubkey.set($currentUser.pubkey);
 
             // loginNip46();
 

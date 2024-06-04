@@ -3,6 +3,7 @@
 	import { NavigationOption } from "../../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import SearchBar from "$components/Page/SearchBar.svelte";
+	import HighlightIcon from "$icons/HighlightIcon.svelte";
 
     const options: NavigationOption[] = [
         { value: "Home",  href: "/home", icon: House },

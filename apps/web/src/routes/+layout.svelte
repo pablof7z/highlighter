@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { NDKEvent, NDKPublishError, NDKRelay, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import { onMount } from 'svelte';
 	import '../app.postcss';
 	import { finalizeLogin } from '$utils/login';
@@ -17,7 +16,7 @@
 	import { openModal } from '$utils/modal';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import { welcomeScreenSeen } from '$stores/settings';
-	import currentUser, { userPubkey } from '$stores/currentUser';
+	import currentUser from '$stores/currentUser';
 	import MobileAppShell from '$components/PageElements/Mobile/AppShell.svelte';
 	import { appMobileView } from '$stores/app';
 	import { isMobileBuild, isPhone } from '$utils/view/mobile';
@@ -62,7 +61,7 @@
 	let hasJwt = false;
 	let mounted = browser ? false : true;
 
-	$: if (!$user && browser) {
+	$: if (!$currentUser && browser) {
 		const browserSetupPromise = browserSetup();
 		configureFeNDK().then(async () => {
 			await browserSetupPromise;
@@ -106,7 +105,7 @@
 		d(`hasJwt`, hasJwt);
 	}
 
-	$: if (mounted && $user && $ndk.signer && !hasJwt && !finalizingLogin) {
+	$: if (mounted && $currentUser && $ndk.signer && !hasJwt && !finalizingLogin) {
 		finalizingLogin = true;
 		try {
 			finalizeLogin();
@@ -119,8 +118,6 @@
 		sessionPreparationStarted = true;
 		prepareSession();
 	}
-
-	$: $currentUser = $user;
 
 	function setResponsiveView() {
 		console.log('setResponsiveView', $appMobileView);

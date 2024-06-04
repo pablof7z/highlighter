@@ -8,9 +8,10 @@
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { createEventDispatcher } from 'svelte';
     import CaretDown from "phosphor-svelte/lib/CaretDown";
-	import { loginMethod, userPubkey } from "$stores/currentUser";
+	import currentUser, { loginMethod, userPubkey } from "$stores/currentUser";
 	import { getUserFromPubkey } from "$lib/server/user";
 	import { newGuestLogin } from '../../routes/browser-session-setup.js';
+	import { bunkerNDK, ndk } from '$stores/ndk.js';
 
     const dispatch = createEventDispatcher();
 
@@ -96,10 +97,10 @@
             const createdPubkey = await signer.createAccount(username, domain, email);
             const remoteSigner = new NDKNip46Signer($bunkerNDK, createdPubkey, localSigner);
             const u = await remoteSigner.blockUntilReady();
-            $user = u;
+            $currentUser = u;
             $ndk.signer = remoteSigner;
             loginMethod.set('nip46');
-            userPubkey.set($user.pubkey);
+            userPubkey.set($currentUser.pubkey);
             $loginState = "logged-in";
             popup?.close();
             dispatch("signed-up");

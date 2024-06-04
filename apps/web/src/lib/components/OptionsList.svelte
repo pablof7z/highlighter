@@ -8,7 +8,6 @@
     export let options: NavigationOption[] = [];
 
     export let value: string = "";
-    export let name: string = "this user";
     export let collapsed = false;
 </script>
 

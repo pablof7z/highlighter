@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Name } from '$components/User/Name.svelte';
 	import { Highlights } from '$components/Highlights.svelte';
 	import Carousel from "$components/Page/Carousel.svelte";
 	import { NDKArticle, NDKHighlight, NDKSubscriptionCacheUsage, NDKKind, NDKTag, NDKRelay, NDKRelaySet, NDKFilter } from "@nostr-dev-kit/ndk";
@@ -11,6 +12,9 @@
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { Readable, derived, writable } from "svelte/store";
 	import EventTags from '$components/Events/EventTags.svelte';
+	import UserProfile from '$components/User/UserProfile.svelte';
+	import { ndk } from '$stores/ndk';
+	import { Name } from 'drizzle-orm';
 
     register();
 

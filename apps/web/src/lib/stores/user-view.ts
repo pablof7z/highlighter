@@ -6,6 +6,8 @@ import { userActiveSubscriptions } from './session';
 import createDebug from 'debug';
 import { mainContentKinds } from '$utils/event';
 import { creatorRelayPubkey } from '$utils/const';
+import currentUser from './currentUser';
+import { ndk } from './ndk';
 
 const d = createDebug('HL:user-view');
 

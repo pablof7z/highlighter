@@ -8,6 +8,8 @@
 	import { NavigationOption, UserProfileType } from "../../app";
 	import ItemLink from "$components/Events/ItemLink.svelte";
 	import { goto } from "$app/navigation";
+	import { ndk } from "$stores/ndk";
+	import Name from "$components/User/Name.svelte";
 
     export let replyTo: NDKEvent | undefined = undefined;
     export let tags: NDKTag[] = [];

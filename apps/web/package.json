@@ -136,7 +136,7 @@
 		"tailwind-variants": "^0.2.0",
 		"throttle-debounce": "^5.0.0",
 		"touchsweep": "^2.2.0",
-		"vaul-svelte": "^0.3.0",
+		"vaul-svelte": "^0.3.1",
 		"vidstack": "^1.9.6",
 		"vite-plugin-mkcert": "^1.17.1",
 		"vite-plugin-pwa": "^0.17.4",

@@ -8,6 +8,8 @@
 	import { creatorRelayPubkey } from "$utils/const";
 	import { Check } from "phosphor-svelte";
 	import Box from "$components/PageElements/Box.svelte";
+	import { nicelyFormattedSatNumber } from "$utils";
+	import { ndk } from "$stores/ndk";
 
     export let event: NDKEvent;
     export let recipient: NDKUser;

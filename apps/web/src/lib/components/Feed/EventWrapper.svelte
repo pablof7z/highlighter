@@ -32,6 +32,10 @@
 	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
 	import { userGenericCuration } from '$stores/session';
 	import SmallZapButton from '$components/buttons/SmallZapButton.svelte';
+	import { ndk } from '$stores/ndk';
+	import Name from '$components/User/Name.svelte';
+	import Avatar from '$components/User/Avatar.svelte';
+	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
 
     const dispatch = createEventDispatcher();
 

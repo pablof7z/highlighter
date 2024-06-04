@@ -3,6 +3,8 @@
 	import { onMount } from "svelte";
     import { createEventDispatcher } from "svelte";
     import createDebug from "debug";
+	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
+	import { bunkerNDK, ndk } from "$stores/ndk";
 
     const debug = createDebug("HL:nsecbunker");
 
@@ -16,7 +18,6 @@
     export let pubkey = provider.pubkey;
 
     export let rpc: NDKNostrRpc;
-    export let pingRpcUser: NDKUser;
 
     let lastSeenAt: number = 0;
 

@@ -18,6 +18,8 @@ import createDebug from 'debug';
 import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
 import { goto } from '$app/navigation';
 import { vanityUrls } from './const';
+import { ndk, bunkerNDK } from '$stores/ndk';
+import { newToasterMessage } from '$stores/toaster';
 
 export type LoginMethod = 'none' | 'pk' | 'npub' | 'nip07' | 'nip46' | 'guest';
 
