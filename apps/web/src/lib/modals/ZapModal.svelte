@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Zap from "$components/Events/Zaps/Zap.svelte";
 	import ModalShell from "$components/ModalShell.svelte";
     import { NDKEvent } from "@nostr-dev-kit/ndk";
 

@@ -4,6 +4,8 @@
 	import currentUser from "$stores/currentUser";
 	import HighlightBody from "$components/HighlightBody.svelte";
 	import { derived } from "svelte/store";
+	import { ndk } from "$stores/ndk";
+	import Name from "$components/User/Name.svelte";
 
     export let article: NDKArticle;
     export let node: HTMLElement;

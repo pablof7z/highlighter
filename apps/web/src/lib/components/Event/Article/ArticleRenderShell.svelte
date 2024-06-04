@@ -1,6 +1,8 @@
 <script lang="ts">
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
+	import { NDKEvent } from "@nostr-dev-kit/ndk";
 
+    export let event: NDKEvent;
     export let isFullVersion: boolean;
     export let isPreview = false;
 </script>
@@ -38,7 +40,7 @@
 
                 {#if !isFullVersion}
                     <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
-                        <UpgradeButton event={article} />
+                        <UpgradeButton {event} />
                     </div>
                 {/if}
             </div>

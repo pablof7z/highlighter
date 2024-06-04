@@ -1,6 +1,7 @@
 <script lang="ts">
     import { userProfile as currentUserProfile } from "$stores/session";
     import { profileFromEvent, type Hexpubkey, type NDKEvent, type NDKSubscriptionOptions, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
+    import currentUser from "$stores/currentUser";
     import type { NDKRelay, NDKSubscription, NDKUser } from "@nostr-dev-kit/ndk";
     import type { UserProfileType } from "../../../app";
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
@@ -9,6 +10,7 @@
     import { inview } from 'svelte-inview';
 	import { vanityUrls } from "$utils/const";
 	import { isMobileBuild } from "$utils/view/mobile";
+	import { ndk } from "$stores/ndk";
 
     export let pubkey: Hexpubkey | undefined = undefined;
     export let npub: string | undefined = undefined;

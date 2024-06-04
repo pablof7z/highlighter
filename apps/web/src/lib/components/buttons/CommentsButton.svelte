@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ndk } from "$stores/ndk.js";
-import currentUser from "$stores/currentUser.js";
+    import currentUser from "$stores/currentUser.js";
 	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import { ChatCircle } from 'phosphor-svelte';
@@ -33,7 +33,7 @@ import currentUser from "$stores/currentUser.js";
     let commentedByUser = false;
 
     function findUserComment(r: NDKEvent) {
-        return r.pubkey === $user?.pubkey;
+        return r.pubkey === $currentUser?.pubkey;
     }
 
     const replies = prefetchedReplies || responses!;

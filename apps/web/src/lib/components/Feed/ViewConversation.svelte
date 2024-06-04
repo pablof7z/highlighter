@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Name from "$components/User/Name.svelte";
+	import { ndk } from "$stores/ndk";
     import { debugMode } from "$stores/session";
 	import { encodeTag } from "$utils/event";
     import { NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, getReplyTag, getRootEventId, getRootTag } from "@nostr-dev-kit/ndk";

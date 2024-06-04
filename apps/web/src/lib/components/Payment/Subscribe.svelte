@@ -10,6 +10,9 @@
 	import SubscribeStatusInfo from "./SubscribeStatusInfo.svelte";
 	import { bookmarkGroup } from "$lib/nip29";
 	import { groupsList } from "$stores/session";
+	import { ndk } from "$stores/ndk";
+	import { newToasterMessage } from "$stores/toaster";
+	import { nicelyFormattedSatNumber } from "$utils";
 
     export let amount: string;
     export let currency: string;

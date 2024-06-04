@@ -19,17 +19,13 @@
     export let event: NDKEvent;
     export let content: string = "";
     export let tags: NDKTag[] = [];
-    export let created_at: number | undefined;
-    export let repost = false;
 
     let article: NDKArticle | undefined = undefined;
     let summary: string | undefined;
-    let placeholder: string = "Write something";
 
     if (event.kind === NDKKind.Article) {
         article = NDKArticle.from(event);
         summary = article.summary;
-        placeholder = `What did you think of ${article.title}?`;
     }
 
     // Check if there is a preview version

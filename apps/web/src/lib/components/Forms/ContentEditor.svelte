@@ -6,7 +6,6 @@
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
 	import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
-	import Checkbox from './Checkbox.svelte';
 	import { wysiwygEditor } from '$stores/settings.js';
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
 
@@ -230,7 +229,7 @@
                 editor h-full {$$props.class??""}
             " />
         {:else}
-            <Textarea
+            <textarea
                 bind:value={content}
                 {placeholder}
                 class="

@@ -8,6 +8,9 @@
     import { createEventDispatcher } from "svelte";
 	import currentUser from "$stores/currentUser";
 	import { appMobileView } from '$stores/app';
+	import { ndk } from "$stores/ndk";
+	import { newToasterMessage } from "$stores/toaster";
+	import Avatar from "$components/User/Avatar.svelte";
 
     export let extraTags: NDKTag[] = [];
     export let kind: NDKKind;

@@ -5,6 +5,7 @@
     import { createEventDispatcher, onMount } from "svelte";
 	import { derived } from "svelte/store";
     import createDebug from "debug";
+	import { ndk, bunkerNDK } from "$stores/ndk";
 
     const debug = createDebug("HL:nsecbunker");
 

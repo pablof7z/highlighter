@@ -4,6 +4,7 @@
 	import { getSortedSupporters } from "$stores/user-view";
 	import type { NDKUser } from "@nostr-dev-kit/ndk";
 	import { goto } from "$app/navigation";
+	import currentUser from "$stores/currentUser";
 
     export let user: NDKUser;
     let authorUrl: string;

@@ -3,10 +3,7 @@
 	import Modal from './Modal.svelte';
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';
-
-	let checked: boolean;
-
-	$: checked = $pageDrawerToggle;
+	import Toaster from './Toaster.svelte';
 
 	let layoutWrapper: string;
 	let mainAndDetailWrapper: string;

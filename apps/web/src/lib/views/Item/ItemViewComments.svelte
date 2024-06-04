@@ -13,6 +13,7 @@
 	import { Lightning } from "phosphor-svelte";
 	import { onDestroy } from "svelte";
 	import { derived } from "svelte/store";
+	import { ndk } from "$stores/ndk";
 
     export let event: NDKEvent;
 

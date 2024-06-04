@@ -3,6 +3,8 @@
 	import { Lightning } from "phosphor-svelte";
 	import { openModal } from '$utils/modal';
     import ZapModal from "$modals/ZapModal.svelte";
+	import Button from "$components/ui/button/button.svelte";
+    
 
     export let event: NDKEvent;
     export let showHelperText = false;
@@ -13,7 +15,7 @@
     }
 </script>
 
-<button class="button gap-2 group w-fit transition-all duration-300 {$$props.class??""}" on:click={open}>
+<Button variant="outline" class="gap-2 {$$props.class??""}" on:click={open}>
     <Lightning size={20} />
     Zap
     <span class="
@@ -23,4 +25,4 @@
         Like what you see?
         Reward the creator!
     </span>
-</button>
+</Button>

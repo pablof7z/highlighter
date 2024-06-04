@@ -4,6 +4,7 @@
 	import Article from '$components/List/Article.svelte';
 	import { page } from '$app/stores';
 	import { onDestroy } from 'svelte';
+	import { ndk } from "$stores/ndk";
 
     export let list: NDKList;
     export let urlPrefix: string;

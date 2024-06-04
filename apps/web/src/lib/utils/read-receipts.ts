@@ -5,14 +5,14 @@ import {
 	type NostrEvent,
 	NDKPrivateKeySigner
 } from '@nostr-dev-kit/ndk';
-import { getDefaultRelaySet } from './ndk';
 import { get } from 'svelte/store';
 import createDebug from 'debug';
 import { writeAppHandler } from './app-handler';
 import { browser } from '$app/environment';
+import currentUser from '$stores/currentUser';
 
 let flushTimer: number | undefined = 10000;
-let disabledReceipts = false;
+let disabledReceipts = true;
 
 if (browser) {
 	const stored = localStorage.getItem('read-receipts-flush-timer')
@@ -34,9 +34,9 @@ let signer: NDKPrivateKeySigner | undefined = NDKPrivateKeySigner.generate();
  */
 export function addReadReceipt(eventOrUser: NDKEvent | NDKUser): void {
 	if (disabledReceipts) return;
-	const $user = get(user);
+	const $user = get(currentUser);
 
-	if ($user?.pubkey === eventOrUser.pubkey) return;
+	if ($currentUser?.pubkey === eventOrUser.pubkey) return;
 
 	if (eventOrUser instanceof NDKEvent) {
 		const tags = eventOrUser.referenceTags();

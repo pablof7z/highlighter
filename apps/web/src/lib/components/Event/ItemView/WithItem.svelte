@@ -3,11 +3,11 @@
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, filterFromId, NIP33_A_REGEX } from "@nostr-dev-kit/ndk";
-	import { onDestroy, onMount } from "svelte";
+	import { onDestroy } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { requiredTiersFor } from "$lib/events/tiers";
-	import { EVENT_ID_SUFFIX_LENGTH, urlSuffixFromEvent } from "$utils/url";
+	import { urlSuffixFromEvent } from "$utils/url";
 	import { getSummary } from "$utils/article";
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { addReadReceipt } from "$utils/read-receipts";
@@ -16,6 +16,8 @@
 	import { nip19 } from "nostr-tools";
 	import { getEventType } from "./get-event-type";
 	import { EventType } from "../../../../app";
+	import currentUser from "$stores/currentUser";
+	import { ndk } from "$stores/ndk";
 
     export let user: NDKUser = $page.data.user;
     export let rawEvent: NostrEvent | undefined = $page.data.event;
