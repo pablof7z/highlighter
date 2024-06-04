@@ -410,8 +410,8 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0
       vaul-svelte:
-        specifier: ^0.3.0
-        version: 0.3.0(svelte@4.2.12)
+        specifier: ^0.3.1
+        version: 0.3.1(svelte@4.2.12)
       vidstack:
         specifier: ^1.9.6
         version: 1.9.6
@@ -5300,20 +5300,6 @@ packages:
       magic-string: 0.30.10
       svelte: 4.2.12
     dev: true
-
-  /@melt-ui/svelte@0.68.0(svelte@4.2.12):
-    resolution: {integrity: sha512-/QvA98hnYEodZtHJ71+ocum/WWp30hVNt3F8uiZKnNYwZDaiQYjlyR9AaGKYcZLCe6R68op1mfCzc0kTzJilyA==}
-    peerDependencies:
-      svelte: '>=3 <5'
-    dependencies:
-      '@floating-ui/core': 1.4.1
-      '@floating-ui/dom': 1.6.3
-      '@internationalized/date': 3.5.3
-      dequal: 2.0.3
-      focus-trap: 7.5.2
-      nanoid: 5.0.7
-      svelte: 4.2.12
-    dev: false
 
   /@melt-ui/svelte@0.76.2(svelte@4.2.12):
     resolution: {integrity: sha512-7SbOa11tXUS95T3fReL+dwDs5FyJtCEqrqG3inRziDws346SYLsxOQ6HmX+4BkIsQh1R8U3XNa+EMmdMt38lMA==}
@@ -10578,17 +10564,6 @@ packages:
       file-uri-to-path: 1.0.0
     dev: false
 
-  /bits-ui@0.16.0(svelte@4.2.12):
-    resolution: {integrity: sha512-HEkuVDyUG9dTWtKujKpdDsGOe9GRmuYOEF9yGbjVwNazxMQDQa9deUX8vM3ofGBWaJgr1cEu88p38kP5Z5gQ8w==}
-    peerDependencies:
-      svelte: ^4.0.0
-    dependencies:
-      '@internationalized/date': 3.5.3
-      '@melt-ui/svelte': 0.68.0(svelte@4.2.12)
-      nanoid: 5.0.7
-      svelte: 4.2.12
-    dev: false
-
   /bits-ui@0.21.10(svelte@4.2.12):
     resolution: {integrity: sha512-KuweEOKO0Rr8XX87dQh46G9mG0bZSmTqNxj5qBazz4OTQC+oPKui04/wP/ISsCOSGFomaRydTULqh4p+nsyc2g==}
     peerDependencies:
@@ -14054,6 +14029,7 @@ packages:
     resolution: {integrity: sha512-p6vGNNWLDGwJCiEjkSK6oERj/hEyI9ITsSwIUICBoKLlWiTWXJRfQibCwcoi50rTZdbi87qDtUlMCmQwsGSgPw==}
     dependencies:
       tabbable: 6.2.0
+    dev: true
 
   /focus-trap@7.5.4:
     resolution: {integrity: sha512-N7kHdlgsO/v+iD/dMoJKtsSqs5Dz/dXZVebRgJw23LDk+jMi/974zyiOYDziY2JPp8xivq9BmUGwIJMiuSBi7w==}
@@ -22560,7 +22536,7 @@ packages:
       joycon: 3.1.1
       postcss-load-config: 4.0.1(ts-node@10.9.2)
       resolve-from: 5.0.0
-      rollup: 3.29.4
+      rollup: 3.28.1
       source-map: 0.8.0-beta.0
       sucrase: 3.34.0
       tree-kill: 1.2.2
@@ -23343,12 +23319,12 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
-  /vaul-svelte@0.3.0(svelte@4.2.12):
-    resolution: {integrity: sha512-+PBfKDWl+xfloe8Tm1G8x3TqbCiUWoyUedU2WC5iE3v6LOYPKo8FyEtzNC5ZqFVVnUKSKNg+4Fi73nuzMkT7JA==}
+  /vaul-svelte@0.3.1(svelte@4.2.12):
+    resolution: {integrity: sha512-tCIJQMlwHZMPBvBLhLJhzYw6EvQLm808rWVzmd0uTFbfS/12Z6MJ4JGP6z9Fy/sW7Jl7xQVF625N2Zk3cwN1iQ==}
     peerDependencies:
       svelte: ^4.0.0
     dependencies:
-      bits-ui: 0.16.0(svelte@4.2.12)
+      bits-ui: 0.21.10(svelte@4.2.12)
       svelte: 4.2.12
     dev: false
 
