@@ -16,8 +16,8 @@
 <UserProfile pubkey={zap.zappee} let:userProfile let:fetching let:authorUrl>
     {#key fetching}
         <a href={authorUrl} class="
-            relative overflow-hidden text-white
-            flex flex-row rounded-full group bg-base-300 px-2 py-1 items-center {$$props.class??""}
+            relative overflow-hidden text-foreground
+            flex flex-row rounded-full group bg-foreground/20 px-2 py-1 items-center {$$props.class??""}
             transition-all duration-300 w-auto group
         ">
             <span class="font-light mr-3 whitespace-nowrap">

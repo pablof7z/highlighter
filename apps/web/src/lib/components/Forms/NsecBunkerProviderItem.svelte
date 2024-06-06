@@ -103,10 +103,10 @@
             class="border-b flex border-white/10 items-center text-left gap-4 px-4 py-3 w-full"
             on:click={clicked}
         >
-            <img src={profile.image??"https://cdn.satellite.earth/fb0e24f6cd8f581c8873e834656163dd497dce47dab8b878d73caf4aae3def89.png"} class="w-12 h-12 p-0 object-cover rounded flex-none overflow-clip bg-base-300" alt="" />
+            <img src={profile.image??"https://cdn.satellite.earth/fb0e24f6cd8f581c8873e834656163dd497dce47dab8b878d73caf4aae3def89.png"} class="w-12 h-12 p-0 object-cover rounded flex-none overflow-clip bg-foreground/20" alt="" />
 
             <div class="flex flex-col gap-1 whitespace-nowrap items-start grow">
-                <span class="mr-2 font-normal text-white">
+                <span class="mr-2 font-normal text-foreground">
                     {#if username}<span class="!font-normal opacity-40">{username}@</span>{/if}{domain}
                 </span>
                 <!-- if lastseen is older than 2 days show the date -->

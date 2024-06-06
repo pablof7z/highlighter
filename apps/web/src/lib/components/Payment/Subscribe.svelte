@@ -114,7 +114,7 @@
 
 <div class="text-lg font-medium flex flex-col items-center gap-1">
     {#if currency !== 'msat'}
-        <div class="text-4xl text-white font-bold">
+        <div class="text-4xl text-foreground font-bold">
             {currencyFormat(currency, parseInt(amount))}/{termToShort(term)}
         </div>
 

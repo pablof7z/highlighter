@@ -33,7 +33,7 @@
                 {label}
             {/if}
             {#if count > 0}
-                <span class="badge bg-base-300 text-white">{count}</span>
+                <span class="badge bg-foreground/20 text-foreground">{count}</span>
             {/if}
         {:else if count > 0}
             <span>{count}</span>
@@ -50,6 +50,6 @@
     }
 
     a.active, button.active {
-        @apply text-white;
+        @apply text-foreground;
     }
 </style>

@@ -5,6 +5,7 @@
 	import { CaretDown } from 'phosphor-svelte';
 	import ServiceProviderItem from './ServiceProviderItem.svelte';
 	import { userAppHandlers } from '$stores/session';
+	import { ndk } from '$stores/ndk';
 
     export let eventId: string;
     export let title: string;
@@ -71,19 +72,19 @@
 {#if profile}
     <div class="flex flex-col">
         <div class="w-full flex flex-row justify-between items-center">
-            <div class="text-white/80 text-xs font-semibold tracking-widest uppercase">
+            <div class="text-foreground/80 text-xs font-semibold tracking-widest uppercase">
                 {title}
             </div>
-            <button class="text-white text-opacity-30 text-sm font-normal leading-6" on:click={toggleMore}>What’s this?</button>
+            <button class="text-foreground text-opacity-30 text-sm font-normal leading-6" on:click={toggleMore}>What’s this?</button>
         </div>
 
         {#if more}
-            <div class="border border-base-300 rounded-box p-4 text-sm my-4" transition:slide>
+            <div class="border border-border rounded p-4 text-sm my-4" transition:slide>
                 <slot name="about" />
             </div>
         {/if}
 
-        <div class="w-full text-left border-r border-l border-b border-base-300 rounded-box flex flex-col">
+        <div class="w-full text-left border-r border-l border-b border-border rounded flex flex-col">
             <button
                 class="
                     main
@@ -94,7 +95,7 @@
                 <AvatarWithName
                     userProfile={profile}
                     class="!items-start"
-                    nameClass="font-medium text-white text-lg"
+                    nameClass="font-medium text-foreground text-lg"
                     spacing="gap-4"
                 >
                     <div class="text-sm text-neutral-500 text-left">
@@ -112,7 +113,7 @@
 
         {#if showProviders}
             {#await fetchProviders() then events}
-                <ul class="border-2 border-base-300" class:hidden={loading}>
+                <ul class="border-2 border-border" class:hidden={loading}>
                     {#each events as event}
                         <ServiceProviderItem {event} {kind} on:ready={readyToDisplay} {forceDisplay} />
                     {/each}
@@ -124,6 +125,6 @@
 
 <style lang="postcss">
     button.main {
-        @apply flex flex-row justify-between gap-4 p-4 items-center bg-base-300 rounded-box;
+        @apply flex flex-row justify-between gap-4 p-4 items-center bg-foreground/20 rounded;
     }
 </style>

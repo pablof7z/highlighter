@@ -27,7 +27,7 @@
     <div class="divider my-0"></div>
 {/if}
 
-<div class="bg-white/10 flex flex-col gap-6 p-6 grow rounded-box">
+<div class="bg-white/10 flex flex-col gap-6 p-6 grow rounded">
     <div class="flex flex-row justify-between items-center">
         <span class="text-sm">
             Backstage Content

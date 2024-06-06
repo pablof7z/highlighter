@@ -54,7 +54,7 @@
 
 {#if rpc}
     <div class:hidden={!open}>
-        <ul class="bg-black/50 border border-white/10 flex-nowrap rounded-box p-0 overflow-y-auto h-fit">
+        <ul class="bg-black/50 border border-white/10 flex-nowrap rounded p-0 overflow-y-auto h-fit">
             {#each $dedupedProviders as provider (provider.id)}
                 <NsecBunkerProviderItem
                     {provider}

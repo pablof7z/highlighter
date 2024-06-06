@@ -43,11 +43,11 @@
 </script>
 
 <UserProfile {pubkey} let:userProfile let:fetching let:authorUrl>
-    <a href={authorUrl} class="rounded-box flex flex-col gap-2 items-start justify-between discussion-item">
+    <a href={authorUrl} class="rounded flex flex-col gap-2 items-start justify-between discussion-item">
         <div class="flex flex-row gap-2 justify-stretch items-start grow w-full">
             <Avatar {pubkey} {userProfile} {fetching} type="square" size="small" />
             <div class="flex flex-col grow">
-                <Name  npubMaxLength={12} {pubkey} {userProfile} {fetching} class="text-white truncate grow" />
+                <Name  npubMaxLength={12} {pubkey} {userProfile} {fetching} class="text-foreground truncate grow" />
                 {#if $substart.length > 0}
                     <div class="text-xs text-neutral-500">
                         Since
@@ -56,7 +56,7 @@
                 {/if}
             </div>
             <div class="flex flex-col gap-0 items-center justify-center flex-none">
-                <div class="text-xl font-black text-white opacity-80 flex flex-row items-end">
+                <div class="text-xl font-black text-foreground opacity-80 flex flex-row items-end">
                     <span class="opacity-50 font-normal">#</span>{position+1}
                 </div>
             </div>
@@ -65,7 +65,7 @@
             {#if $supporterNote.length > 0}
                 <EventContent event={$supporterNote[0]} ndk={$ndk} class="text-base text-neutral-300" />
             {:else if $currentUser?.pubkey === pubkey && !showForm}
-                <button class="self-start button bg-white/10 text-white/60 mt-4 px-4 py-3 truncate max-w-[20rem]" on:click|stopImmediatePropagation|preventDefault={() => showForm = !showForm}>
+                <button class="self-start button bg-white/10 text-foreground/60 mt-4 px-4 py-3 truncate max-w-[20rem]" on:click|stopImmediatePropagation|preventDefault={() => showForm = !showForm}>
                     Click to add a note
                 </button>
             {:else if showForm}

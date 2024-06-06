@@ -5,6 +5,8 @@
     import { createEventDispatcher, onMount } from "svelte";
 	import { openModal } from '$utils/modal';
 	import TiersLabel from './TiersLabel.svelte';
+	import Checkbox from './Checkbox.svelte';
+	import Button from '$components/ui/button/button.svelte';
 
     export let show = false;
     export let tiers: TierSelection;
@@ -82,45 +84,49 @@
             <CaretDown color="white"/>
         </div>
     {/if}
-    <ul class="{$$props.containerClass??""}">
+    <ul class="rounded overflow-clip flex flex-col {$$props.containerClass??""}">
         {#each Object.keys(tiers) as tier}
             <li
                 class="
-                    px-4
-                    { tiers[tier].selected ? 'bg-white/10' : 'bg-white/5' }
-                    { tier === "Free" ? 'border-t border-base-300' : '' }
+                    p-4 flex flex-row justify-between items-center border border-border
+                    { tiers[tier].selected ? 'text-foreground' : 'text-muted-foreground' }
+                    { tier === "Free" ? 'border-t border-border' : '' }
                 "
             >
-                <label class="w-full flex flex-row gap-4 py-3">
-                    <input type="checkbox" class="checkbox" bind:checked={tiers[tier].selected} on:change={(e) => { updateSelectedString(tier); onlyFree = false; }} />
-                    <span class="w-full"
+                <Checkbox
+                    bind:value={tiers[tier].selected}
+                    on:change={(e) => { updateSelectedString(tier); onlyFree = false; }}
+                    class="w-full"
+                >
+                    <span class="w-full whitespace-nowrap"
                     >{tiers[tier].name}</span>
+                </Checkbox>
 
                     {#if tier === "Free"}
-                        <button
-                            class="button-black text-nowrap"
+                        <Button
+                            variant="outline" size="sm"
+                            class="text-nowrap"
                             on:click={toggleOnlyFree}
                         >
                             Only
                             {#if onlyFree}
                                 non-subscribers will see this content
                             {/if}
-                        </button>
+                        </Button>
                     {/if}
-                </label>
             </li>
         {/each}
         <li class="mt-2">
-            <button class="button-black" on:click={addNewTier}>
+            <Button variant="secondary" on:click={addNewTier}>
                 <Plus size={24} />
                 Add a new tier
-            </button>
+            </Button>
         </li>
     </ul>
 </div>
 
 <style>
     .dropdown-open .dropdown-button {
-        @apply border border-base-300;
+        @apply border border-border;
     }
 </style>

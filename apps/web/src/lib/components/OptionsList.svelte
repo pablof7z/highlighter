@@ -13,18 +13,19 @@
 
 <div class="
     justify-start items-start inline-flex whitespace-nowrap w-full
-    max-sm:border-t border-base-300
+    max-sm:border-t border-border
 ">
     <div class="
-        lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}
+        flex w-full {$$props.class??""}
         snap-x snap-mandatory
         max-sm:overflow-x-auto max-sm:max-w-[100vw]
         max-sm:scrollbar-hide
+        items-center justify-center
     ">
         {#each options as option (option.id ?? option.name)}
             {#if option.component}
                 <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 p-1.5 items-center">
-                    <div class="rounded-full p-[2px]" class:text-white={value === (option.value || option.name)}>
+                    <div class="rounded-full p-[2px]" class:text-foreground={value === (option.value || option.name)}>
                         <svelte:component
                             this={option.component.component}
                             {...option.component.props??{}}

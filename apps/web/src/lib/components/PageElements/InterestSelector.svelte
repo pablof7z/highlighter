@@ -22,7 +22,7 @@
             whitespace-nowrap
         "
         class:bg-accent={interestList.has(category)}
-        class:text-white={interestList.has(category)}
+        class:text-foreground={interestList.has(category)}
         on:click={() => toggleInterest(category)}
     >
         {category}

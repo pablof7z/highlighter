@@ -12,7 +12,7 @@
     highlight.getArticle().then(result => highlightedArticle = result);
 </script>
 
-<EventWrapper {event} class="border border-base-200 p-6 rounded-box {$$props.class??""}">
+<EventWrapper {event} class="border border-border p-6 rounded {$$props.class??""}">
     {#if highlightedArticle instanceof NDKArticle}
         <ArticleLink article={highlightedArticle} skipAuthor={true} size="small" />
     {/if}

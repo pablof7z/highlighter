@@ -26,7 +26,7 @@
 {#if $debouncedTopZaps && $debouncedTopZaps.length > 0}
 	<div class="flex flex-col discussion-wrapper w-full">
 		<div class="discussion-item">
-			<h2 class="text-white font-semibold text-lg">
+			<h2 class="text-foreground font-semibold text-lg">
 				Top Zappers
 			</h2>
 			<div class="text-xs font-light">

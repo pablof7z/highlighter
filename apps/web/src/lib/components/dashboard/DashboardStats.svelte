@@ -5,21 +5,22 @@
 	import { onDestroy, onMount } from "svelte";
 	import type { Readable } from "svelte/store";
 	import StatItem from "./StatItem.svelte";
-	import { mainContentKinds } from "$utils/event";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
+	import { ndk } from "$stores/ndk";
+	import currentUser from "$stores/currentUser";
 
     let disseminationEosed = false;
     const disseminations = $ndk.storeSubscribe(
-        { kinds: [ NDKKind.Highlight, NDKKind.GenericRepost], "#p": [$user.pubkey]},
+        { kinds: [ NDKKind.Highlight, NDKKind.GenericRepost], "#p": [$currentUser.pubkey]},
     );
     disseminations.onEose(() => { disseminationEosed = true });
 
     const zaps = $ndk.subscribe(
-        { kinds: [9735], "#p": [$user.pubkey] },
+        { kinds: [9735], "#p": [$currentUser.pubkey] },
     )
 
     const views = $ndk.storeSubscribe([
-        { kinds: [15], "#p": [$user.pubkey] }
+        { kinds: [15], "#p": [$currentUser.pubkey] }
     ])
     let viewsEosed = false;
     views.onEose(() => { viewsEosed = true });
@@ -29,7 +30,7 @@
     let myContentEosed = false;
     let myContentViewEosed = false;
     const myContent = $ndk.storeSubscribe(
-        { kinds: [ NDKKind.Article, NDKKind.HorizontalVideo], authors: [$user.pubkey] }
+        { kinds: [ NDKKind.Article, NDKKind.HorizontalVideo], authors: [$currentUser.pubkey] }
     );
     myContent.onEose(() => {
         myContentEosed = true;

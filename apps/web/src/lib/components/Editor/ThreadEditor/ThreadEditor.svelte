@@ -14,6 +14,8 @@
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { addDraftCheckpoint } from "$utils/drafts";
 	import { pageHeader } from "$stores/layout";
+	import { ndk } from "$stores/ndk";
+	import { newToasterMessage } from "$stores/toaster";
 
     export let thread: Thread;
     export let draftItem: DraftItem | undefined = undefined;
@@ -116,7 +118,7 @@
 		{/each}
 		<div class="flex flex-col items-center flex-none w-10 sm:w-16 self-stretch">
 			<button class="
-				btn btn-circle bg-zinc-800 text-white
+				btn btn-circle bg-zinc-800 text-foreground
 				transition-all duration-300
 				hover:!bg-accent
 				hover:ring-8 ring-accent/30

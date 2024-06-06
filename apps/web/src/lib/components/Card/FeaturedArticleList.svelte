@@ -26,8 +26,8 @@
 </script>
 
 <div class="flex flex-col">
-<!-- <a href={urlFromEvent(articleList, authorUrl)} class="gap-4 relative w-full grid grid-rows-2 sticky top-[40px] bg-base-100 z-2 h-[30dvh]"> -->
-    <a href={urlFromEvent(articleList, authorUrl)} class="gap-4 relative w-full grid grid-rows-2 bg-base-100 z-2 max-h-[50vh]">
+<!-- <a href={urlFromEvent(articleList, authorUrl)} class="gap-4 relative w-full grid grid-rows-2 sticky top-[40px] bg-background z-2 h-[30dvh]"> -->
+    <a href={urlFromEvent(articleList, authorUrl)} class="gap-4 relative w-full grid grid-rows-2 bg-background z-2 max-h-[50vh]">
         <!-- cover image -->
         <img src={listImage} alt="" class="object-cover z-1 w-full" />
 
@@ -36,7 +36,7 @@
                 {articleList.title}
             </h1>
 
-            <h2 class="text-base-100-content text-lg">
+            <h2 class="text-foreground text-lg">
                 {articleList.description}
             </h2>
 

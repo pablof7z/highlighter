@@ -4,6 +4,8 @@
 	import ArticleEditPage from "$components/Editor/ArticleEditPage.svelte";
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { nonSubscribersPreview } from "$stores/post-editor";
+	import { ndk } from "$stores/ndk";
+	import { newToasterMessage } from "$stores/toaster";
 
     let article = new NDKArticle($ndk);
 	let preview = new NDKArticle($ndk);

@@ -4,31 +4,45 @@
 	import { logout } from "$utils/login";
 	import currentUser from "$stores/currentUser";
 	import { Block } from "konsta/svelte";
+	import { Button } from "$components/ui/button";
+    import { Button } from "$lib/components/ui/button/index.js";
+	import { Moon, Sun } from 'phosphor-svelte';
+    import { toggleMode } from "mode-watcher";
 
     let authorUrl: string;
 </script>
 
 <Block>
 {#if $currentUser}
-    <AvatarWithName user={$currentUser} bind:authorUrl nameClass="text-xl text-white font-semibold"
+    <AvatarWithName user={$currentUser} bind:authorUrl nameClass="text-xl text-foreground font-semibold"
         spacing="gap-4"
         avatarSize="large" avatarClass="w-16 h-16"
     />
 
-    <div class="flex max-sm :flex-col flex-row gap-4 items-stretch justify-evenly w-full">
-        <a href={authorUrl} class="btn btn-neutral sm:w-1/3">
+    <div class="flex max-sm :flex-col flex-row gap-4 items-stretch w-full mb-10">
+        <Button on:click={toggleMode} variant="outline" size="icon">
+            <Sun
+              class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+            />
+            <Moon
+              class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+            />
+            <span class="sr-only">Toggle theme</span>
+        </Button>
+        
+        <Button href={authorUrl} variant="outline">
             View Profile
-        </a>
-        <a href="/settings/profile" class="btn btn-neutral sm:w-1/3">
+        </Button>
+        <Button href="/settings/profile" variant="outline">
             Edit Profile
-        </a>
-        <button class="btn btn-neutral sm:w-1/3" on:click={logout}>
+        </Button>
+        <Button variant="outline" on:click={logout}>
             Log out
-        </button>
+        </Button>
     </div>
 
-    <section class="w-full">
-        <div class="text-neutral-400 uppercase tracking-wider">
+    <section class="w-full text-muted-foreground">
+        <div class="uppercase tracking-wider">
             Account
         </div>
 
@@ -57,7 +71,7 @@
 
     <div class="divider my-0"></div>
 
-    <ul class="w-full">
+    <ul class="w-full text-muted-foreground">
         <li>
             <a href="/settings/notifications">
                 <span>
@@ -115,7 +129,7 @@
 
 <style>
     ul {
-        @apply flex flex-col;
+        @apply flex flex-col mb-10;
     }
 
     li a {
@@ -124,7 +138,7 @@
     }
 
     li a:hover {
-        @apply text-white;
+        @apply text-foreground;
     }
 
     li a span {
@@ -132,7 +146,7 @@
     }
 
     li:not(:last-child) {
-        @apply border-b-2 border-base-200;
+        @apply border-b border-border;
     }
 
 </style>

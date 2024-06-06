@@ -146,7 +146,7 @@
             </label>
             <div class="
                 border flex flex-row flex-nowrap
-                !bg-black/30 !border-opacity-20 rounded-full text-lg text-white/80
+                !bg-black/30 !border-opacity-20 rounded-full text-lg text-foreground/80
                 w-full items-center placeholder:!text-zinc-400 !ring-none
                 border-white overflow-clip gap-2
                 justify-between
@@ -173,11 +173,11 @@
                 </div>
             </div>
             <div class="text-sm opacity-60 transition-all duration-300 -mt-1 hidden">
-                <span class="text-white">Don't worry you can change it later.</span>
+                <span class="text-foreground">Don't worry you can change it later.</span>
             </div>
 
             {#if usernameTaken}
-                <div class="alert alert-error bg-error/20 text-white/80 py-3 my-3 text-sm font-medium" transition:slide>
+                <div class="alert alert-error bg-error/20 text-foreground/80 py-3 my-3 text-sm font-medium" transition:slide>
                     This username is already taken.
                 </div>
             {/if}
@@ -198,7 +198,7 @@
         {#if !popupNotOpened}
             <button class="
                 button transition duration-300 flex flex-col
-                py-4 font-medium rounded-box leading-none
+                py-4 font-medium rounded leading-none
             " on:click={signup} disabled={username?.length === 0 || !nsecBunker?.pubkey || creating} transition:slide>
                 {#if !creating}
                     Let's go!
@@ -207,7 +207,7 @@
                 {/if}
             </button>
 
-            <button class="text-white font-normal" on:click={continueAsGuest}>
+            <button class="text-foreground font-normal" on:click={continueAsGuest}>
                 or continue as guest
             </button>
         {:else}
@@ -224,6 +224,6 @@
     }
 
     label {
-        @apply text-white text-lg;
+        @apply text-foreground text-lg;
     }
 </style>

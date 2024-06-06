@@ -182,7 +182,7 @@
             <div class="w-full flex flex-col gap-4">
                 <div class="flex-col justify-start items-start gap-3 inline-flex">
                     <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                        <div class="text-white text-base font-medium leading-normal">Username / Nostr address</div>
+                        <div class="text-foreground text-base font-medium leading-normal">Username / Nostr address</div>
                         <GlassyInput bind:value type="text" placeholder="eg. bob@nostr.me" on:keyup={identifyLoginType} />
                     </div>
                 </div>
@@ -206,7 +206,7 @@
                     {/if}
                 </button>
 
-                <button class="text-white text-sm text-opacity-50" on:click={() => advanced = !advanced}>
+                <button class="text-foreground text-sm text-opacity-50" on:click={() => advanced = !advanced}>
                     Advanced
                 </button>
             </div>
@@ -215,7 +215,7 @@
     <div class="w-full" transition:slide>
         <div class="w-full flex flex-col gap-4">
             <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                <div class="text-white text-base font-medium leading-normal">Browser Extension Login</div>
+                <div class="text-foreground text-base font-medium leading-normal">Browser Extension Login</div>
                 <button class="button py-3 group w-full" disabled={!window.nostr}>
                     Continue
                 </button>
@@ -228,7 +228,7 @@
 
             <div class="divider my-0"></div>
 
-            <button class="text-white text-sm text-opacity-50" on:click={() => advanced = !advanced}>
+            <button class="text-foreground text-sm text-opacity-50" on:click={() => advanced = !advanced}>
                 Back
             </button>
         </div>

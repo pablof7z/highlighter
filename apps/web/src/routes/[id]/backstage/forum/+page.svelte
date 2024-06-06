@@ -54,7 +54,7 @@ import { ndk } from "$stores/ndk.js";
     <div class="flex flex-col gap-6 lg:w-1/4 h-fit">
         <!-- <div class="h-fit">
             <StylishContainer class="p-6">
-                <div class="text-lg text-base-100-content font-medium">
+                <div class="text-lg text-foreground font-medium">
                     Stay up-to-date
                 </div>
 
@@ -66,7 +66,7 @@ import { ndk } from "$stores/ndk.js";
         </div> -->
         
         <div class="backstage-box-container h-fit">
-            <div class="text-lg text-base-100-content font-medium">
+            <div class="text-lg text-foreground font-medium">
                 Backstage forum
             </div>
     
@@ -80,7 +80,7 @@ import { ndk } from "$stores/ndk.js";
         </div>
     </div>
     
-    <ul class="max-w-3xl mx-auto w-full border-x border-base-300 gap-2 flex flex-col">
+    <ul class="max-w-3xl mx-auto w-full border-x border-border gap-2 flex flex-col">
         {#each $events as event, i}
             <li style="border: solid {color(i)} 4px; background: {color(i)}44;">
                 <EventWrapper

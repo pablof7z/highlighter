@@ -87,6 +87,6 @@
 
 <style lang="postcss">
     h2 {
-        @apply text-white text-xl font-medium sticky top-0 z-50 p-6;
+        @apply text-foreground text-xl font-medium sticky top-0 z-50 p-6;
     }
 </style>

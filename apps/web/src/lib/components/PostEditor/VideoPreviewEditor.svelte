@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { Info } from "phosphor-svelte";
-    import Input from '$components/Forms/Input.svelte';
+    import Input from '$components/ui/input/input.svelte';
     import VideoPlayer from "$components/Events/VideoPlayer.svelte";
 	import type { NDKVideo } from "@nostr-dev-kit/ndk";
 	import ImageIcon from "$icons/ImageIcon.svelte";
 	import VideoUploader from "$components/Forms/VideoUploader.svelte";
-	import { onMount } from "svelte";
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { makePublicAfter, previewExtraContent, status } from "$stores/post-editor";
 	import { slide } from "svelte/transition";
 	import MakePublicAfter from "$components/Editor/Audience/MakePublicAfter.svelte";
+	import currentUser from "$stores/currentUser";
 
     export let video: NDKVideo;
     export let teaser: NDKVideo;
@@ -25,9 +25,9 @@
 
     let teaserUrl: string | undefined = undefined;
 
-    $: if ($user) {
-        teaser.pubkey = $user.pubkey;
-        teaser.author = $user;
+    $: if ($currentUser) {
+        teaser.pubkey = $currentUser.pubkey;
+        teaser.author = $currentUser;
     }
 
     function teaserUploaded(e: CustomEvent<{url: string}>): void {
@@ -57,9 +57,9 @@
     }
 </script>
 
-<div class="flex flex-col w-full p-6 bg-white/5 rounded-box">
+<div class="flex flex-col w-full p-6 bg-foreground/5 rounded">
     <div class="flex flex-row justify-between items-center w-full">
-        <h3 class="text-white text-sm flex flex-row items-center">
+        <h3 class="text-foreground text-sm flex flex-row items-center">
             <Info class="w-4 h-4 text-info inline mr-2" />
             This is how your video will look to non-subscribers
         </h3>
@@ -83,8 +83,8 @@
 
 <MakePublicAfter />
 
-{#if video && $user}
-    <div class="mockup-window flex items-start justify-start border border-base-300 w-full mt-10">
+{#if video && $currentUser}
+    <div class="mockup-window flex items-start justify-start border border-border w-full mt-10">
         <div class="p-6 w-full flex flex-col gap-6">
             {#key teaserUrl}
                 <ItemHeader item={teaser} />
@@ -95,7 +95,7 @@
                         {#if teaser.thumbnail}
                             <img class="w-full rounded-[20px] h-[30rem] mx-auto object-cover" src={teaser.thumbnail} />
                         {:else}
-                            <div class="w-full bg-base-300 rounded-xl h-[30vh] mx-auto" />
+                            <div class="w-full bg-foreground/20 rounded-xl h-[30vh] mx-auto" />
                         {/if}
                         <div class="absolute top-0 left-0 w-full h-full bg-black/50 flex flex-col items-center justify-center">
                             <UpgradeButton event={teaser} />
@@ -113,7 +113,7 @@
                     <Input
                         bind:value={teaser.title}
                         color="black"
-                        class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
+                        class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-foreground font-['InterDisplay'] font-semibold placeholder:text-foreground/50 placeholder:font-normal"
                         placeholder="Add a title"
                     />
 
@@ -135,7 +135,7 @@
                     <Textarea
                         bind:value={teaser.content}
                         class="
-                            !bg-transparent border-none !px-4 -mx-4 rounded-lg text-white
+                            !bg-transparent border-none !px-4 -mx-4 rounded-lg text-foreground
                             focus:ring-0 text-opacity-60
                             resize-none min-h-[2rem] text-lg
                         "
@@ -161,6 +161,6 @@
 
 <style lang="postcss">
     .side-button {
-        @apply py-6 rounded-box flex justify-center items-center gap-4 bg-white/5 hover:bg-white/10 text-white whitespace-nowrap px-8;
+        @apply py-6 rounded flex justify-center items-center gap-4 bg-foreground/5 hover:bg-foreground/10 text-foreground whitespace-nowrap px-8;
     }
 </style>

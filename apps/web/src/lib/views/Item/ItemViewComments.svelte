@@ -63,7 +63,7 @@
         <div class="flex flex-row w-full justify-between">
             <AvatarWithName pubkey={zapInvoice?.zappee} />
 
-            <div class="flex flex-row gap-2 items-center text-white font-semibold">
+            <div class="flex flex-row gap-2 items-center text-foreground font-semibold">
                 <Lightning size={24} class="text-accent" weight="fill" />
                 TOP ZAP
             </div>
@@ -92,6 +92,6 @@
     feed={onlyRootEvents}
     eventProps={{
         compact: true,
-        class: 'bg-base-300 p-4 my-2 rounded-box border border-white/10'
+        class: 'bg-foreground/20 p-4 my-2 rounded border border-white/10'
     }}
 />

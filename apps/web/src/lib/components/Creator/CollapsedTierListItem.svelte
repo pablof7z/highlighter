@@ -8,7 +8,7 @@
 </script>
 
 <button
-    class="border border-base-300 px-4 py-3 flex flex-col gap-2 hover:bg-white/10 transition-all duration-300 w-full rounded-md"
+    class="border border-border px-4 py-3 flex flex-col gap-2 hover:bg-white/10 transition-all duration-300 w-full rounded-md"
     on:click
 >
     <div class="flex flex-row justify-between whitespace-nowrap truncate w-full">
@@ -17,7 +17,7 @@
         </h1>
 
         {#if tier.getMatchingTags("amount")}
-            <h2 class="text-xl font-semibold text-success">
+            <h2 class="text-xl font-semibold text-green-500">
                 {currencyFormat(
                     tier.getMatchingTags("amount")[0][2],
                     parseInt(tier.getMatchingTags("amount")[0][1])
@@ -35,7 +35,7 @@
             {/if}
             {#each tier.getMatchingTags("perk") as perkTags}
                 <li class="flex flex-row items-center">
-                    <Check class="w-5 h-5 mr-2 text-success" weight="duotone" />
+                    <Check class="w-5 h-5 mr-2 text-green-500" weight="duotone" />
                     {perkTags[1]}
                 </li>
             {/each}

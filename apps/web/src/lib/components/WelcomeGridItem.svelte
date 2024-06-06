@@ -40,7 +40,7 @@
 
 {#if display}
 <div class="w-full bg-gradient p-[1px] flex transition-all duration-300 mb-2" transition:slide>
-    <div class="w-full flex flex-row items-center bg-base-100/30 p-3 lg:p-1 text-base gap-10 justify-center">
+    <div class="w-full flex flex-row items-center bg-background/30 p-3 lg:p-1 text-base gap-10 justify-center">
         <div class="flex flex-col">
             <h1 class="text-lg lg:text-base font-bold">
                 Are you a content creator?

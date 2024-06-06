@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { NDKVideo } from "@nostr-dev-kit/ndk";
-    import Input from '$components/Forms/Input.svelte';
+    import Input from '$components/ui/input/input.svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let video: NDKVideo;
@@ -31,7 +31,7 @@
     <Input
         bind:value={title}
         color="black"
-        class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 !text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
+        class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 !text-foreground font-['InterDisplay'] font-semibold placeholder:text-foreground/50 placeholder:font-normal"
         placeholder="Add a title"
         on:keydown={onTitleKeyDown}
         on:keyup={onTitleKeyUp}
@@ -42,7 +42,7 @@
         on:keyup={() => {dispatch("contentUpdate", video.content); video = video}}
         bind:element={contentAreaElement}
         class="
-            !bg-transparent border-none !px-4 -mx-4 rounded-lg text-white
+            !bg-transparent border-none !px-4 -mx-4 rounded-lg text-foreground
             focus:ring-0 text-opacity-60
             resize-none min-h-[2rem] text-lg
         "

@@ -1,8 +1,10 @@
 <script lang="ts">
 	import TagInput from "$components/Editor/TagInput.svelte";
     import ModalShell from "$components/ModalShell.svelte";
+	import { Button } from "$components/ui/button";
 	import { closeModal } from "$utils/modal";
     import { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { NavigationOption } from "../../app";
 
     export let event: NDKEvent;
     export let onSave: ((event: NDKEvent) => void) | undefined = undefined;
@@ -11,18 +13,16 @@
         if (onSave) onSave(event);
         closeModal();
     }
+
+    let actionButtons: NavigationOption[] = [
+        { name: "Save", fn: save }
+    ]
 </script>
 
-<ModalShell class="max-w-sm w-full" color="glassy" title="Tags">
+<ModalShell class="max-w-sm w-full" title="Tags" {actionButtons}>
     <TagInput
         bind:event
         autofocus={true}
         on:submit={save}
     />
-
-    <div class="flex flex-row justify-end">
-        <button class="button" on:click={save}>
-            Save
-        </button>
-    </div>
 </ModalShell>

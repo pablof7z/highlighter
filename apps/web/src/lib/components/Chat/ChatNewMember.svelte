@@ -10,7 +10,7 @@
 {#if pubkey}
 
 <div class="text-sm text-neutral-300 text-center font-normal w-fit mx-auto rounded-full bg-gradient p-[1px]">
-    <div class="bg-base-100/80 rounded-full px-10 py-3">
+    <div class="bg-background/80 rounded-full px-10 py-3">
         <Name {pubkey} /> joined the community!
     </div>
 </div>

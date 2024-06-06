@@ -88,11 +88,11 @@
     ">
         {#each $eventsToRender as event (event.id)}
             {#if event.kind === NDKKind.Highlight}
-                <Highlight highlight={NDKHighlight.from(event)} class="bg-base-100/60" />
+                <Highlight highlight={NDKHighlight.from(event)} class="bg-background/60" />
             {:else if event.kind === NDKKind.Text}
-                <HighlightNote note={event} class="bg-base-100/60" />
+                <HighlightNote note={event} class="bg-background/60" />
             {:else}
-                <ClipItem {event} class="bg-base-100/60" />
+                <ClipItem {event} class="bg-background/60" />
             {/if}
         {/each}
     </div>

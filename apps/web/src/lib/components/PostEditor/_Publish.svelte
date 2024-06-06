@@ -91,7 +91,7 @@
 </script>
 
 <Box title="Publishing">
-    <div class="flex flex-col w-full gap-2 p-4 bg-white/5 rounded-box">
+    <div class="flex flex-col w-full gap-2 p-4 bg-white/5 rounded">
         {#if article}
             {#if !article.image || !article.summary}
                 <div class="flex flex-col sm:flex-row gap-4 justify-between">
@@ -112,13 +112,13 @@
     {#if $preview}
         <Box>
             <div>
-                <Check class="w-4 h-4 inline mr-2 {eventPublished ? "text-success" : ""}" />
+                <Check class="w-4 h-4 inline mr-2 {eventPublished ? "text-green-500" : ""}" />
                 Publish {$type} to tiers: <TiersLabel tiers={$selectedTiers} />
             </div>
 
             {#if $preview}
                 <div>
-                    <Check class="w-4 h-4 inline mr-2 {previewPublished ? "text-success" : ""}" />
+                    <Check class="w-4 h-4 inline mr-2 {previewPublished ? "text-green-500" : ""}" />
                     A preview
                     will be
                     published
@@ -126,7 +126,7 @@
 
                 {#if $makePublicAfter}
                     <div>
-                        <Check class="w-4 h-4 inline mr-2 {makePublicScheduled ? "text-success" : ""}" />
+                        <Check class="w-4 h-4 inline mr-2 {makePublicScheduled ? "text-green-500" : ""}" />
                         Article will be made public after {$makePublicAfter} days
                     </div>
                 {/if}
@@ -155,14 +155,14 @@
             </div>
 
             <div class="flex flex-row gap-4 items-stretch w-full justify-between">
-                <button class="text-white px-10" on:click={() => {
+                <button class="text-foreground px-10" on:click={() => {
                     $publishAt = undefined;
                     publish();
                 }}>
                     Publish Now
                 </button>
 
-                <button class="button button-primary px-10 text-white" on:click={publish} disabled={!$publishAt || new Date($publishAt) < new Date()}>
+                <button class="button button-primary px-10 text-foreground" on:click={publish} disabled={!$publishAt || new Date($publishAt) < new Date()}>
                     Schedule
                 </button>
             </div>

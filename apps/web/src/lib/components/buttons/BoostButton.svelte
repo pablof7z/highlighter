@@ -9,6 +9,8 @@
 	import currentUser from '$stores/currentUser';
 	import Scheduler from '$modals/Scheduler.svelte';
 	import QuoteModal from '$modals/QuoteModal.svelte';
+    import * as HoverCard from "$lib/components/ui/hover-card/index.js";
+	import { Button } from '$components/ui/button';
 
     export let event: NDKEvent;
 
@@ -56,43 +58,45 @@
 </script>
 
 {#if event.kind === NDKKind.Text || event.kind === NDKKind.Highlight}
-    <div class="dropdown lg:dropdown-end" bind:this={container}>
-        <div tabindex="0" role="button">
-            <ButtonWithCount
-                class="rounded-full p-2 flex hover:bg-green-400/20"
-                count={$reposts.length}
-                active={repostedByUser}
-            >
-                {#if repostedByUser}
-                    <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-green-400/30 group-hover:text-green-500" weight="fill" />
-                {:else}
-                    <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-green-400/30 group-hover:text-green-500" weight="regular" />
-                {/if}
+<HoverCard.Root
+    closeOnEscape
+    openDelay={0}
+>
+    <HoverCard.Trigger>
+        <ButtonWithCount
+            class="rounded-full p-2 flex hover:bg-green-400/20"
+            count={$reposts.length}
+            active={repostedByUser}
+        >
+            {#if repostedByUser}
+                <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-[var(--boost-button)]/30 group-hover:text-[var(--boost-button)]" weight="fill" />
+            {:else}
+                <Repeat class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-[var(--boost-button)]/30 group-hover:text-[var(--boost-button)]" weight="regular" />
+            {/if}
 
-            </ButtonWithCount>
-        </div>
+        </ButtonWithCount>
+    </HoverCard.Trigger>
 
-        <ul tabindex="0" class="dropdown-content z-[50] relative grayscale-0 p-2 bg-base-300 rounded-box w-fit flex flex-col shadow-2xl gap-2">
-            <div class="flex flex-row gap-2">
-                <li><button on:click={repost} class="group">
-                    <Repeat class="w-10 h-10" />
-                    <span class="text-base-100-content/80 group-hover:text-base-100-content">Repost</span>
-                </button></li>
-                <li><button on:click={boost} class="group">
-                    <Quotes class="w-10 h-10" />
-                <span class="text-base-100-content/80 group-hover:text-base-100-content">Quote</span>
-                </button></li>
-            </div>
-            <li><button class="!flex-row group !h-12 !w-full" on:click={scheduleBoost}>
-                <Timer class="w-6 h-6" />
-                <span class="text-base-100-content/80 group-hover:text-base-100-content whitespace-nowrap">Scheduled Repost</span>
-            </button></li>
-
+    <HoverCard.Content class="w-auto flex flex-col gap-2">
+        <ul class="flex flex-row gap-2">
+            <Button variant="secondary" on:click={repost} class="flex flex-col items-center gap-2 w-24 h-24 text-secondary-content">
+                <Repeat class="w-10 h-10" />
+                <span class="">Repost</span>
+            </Button>
+            <Button variant="secondary" on:click={boost} class="flex flex-col items-center gap-2 w-24 h-24 text-secondary-content">
+                <Quotes class="w-10 h-10" />
+            <span class="">Quote</span>
+            </Button>
         </ul>
-    </div>
+        <Button variant="secondary" class="!flex-row group !h-12 !w-full text-secondary-content" on:click={scheduleBoost}>
+            <Timer class="w-6 h-6" />
+            <span class="whitespace-nowrap">Scheduled Repost</span>
+        </Button>
+    </HoverCard.Content>
+</HoverCard.Root>
 {:else}
     <button on:click|stopPropagation|preventDefault={share}
-        class="flex flex-row items-center gap-2 {repostedByUser ? 'text-base-100-content' : ''}"
+        class="flex flex-row items-center gap-2 {repostedByUser ? 'text-foreground' : ''}"
     >
         {#if repostedByUser}
             <ShareNetwork class="sm:w-5 w-6 sm:h-5 h-6 text-accent" />
@@ -104,7 +108,7 @@
 
 <style lang="postcss">
     ul button {
-        @apply bg-base-100 border border-base-100 hover:border-white/50 hover:bg-base-200 rounded-box p-4 flex flex-col items-center gap-2 w-24 h-24;
+        @apply bg-background border border-border hover:border-white/50 hover:bg-foreground/10 rounded p-4 flex flex-col items-center gap-2 w-24 h-24;
     }
 
     ul button span {

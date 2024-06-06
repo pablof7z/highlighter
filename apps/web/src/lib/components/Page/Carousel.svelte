@@ -62,7 +62,7 @@
         </button>
     </div>
 
-    <div class="carousel carousel-center rounded-box {$$props.class??""}" bind:this={carousel}>
+    <div class="carousel carousel-center rounded {$$props.class??""}" bind:this={carousel}>
         <slot />
     </div>
 </div>

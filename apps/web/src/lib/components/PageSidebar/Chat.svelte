@@ -92,7 +92,7 @@
         {#if groupMembersEvent.dTag !== activeUser?.pubkey}
             <ChatItem
                 {groupMembersEvent}
-                class="{i % 2 === 0 ? 'bg-base-200/80' : 'bg-base-100'}"
+                class="{i % 2 === 0 ? 'bg-foreground/10/80' : 'bg-background'}"
             />
         {/if}
     {/each}

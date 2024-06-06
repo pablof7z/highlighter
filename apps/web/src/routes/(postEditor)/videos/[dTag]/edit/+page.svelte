@@ -7,6 +7,8 @@
 	import { debugMode } from "$stores/session";
 	import { nonSubscribersPreview, selectedTiers } from "$stores/post-editor";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
+	import { ndk } from "$stores/ndk";
+	import { newToasterMessage } from "$stores/toaster";
 
 	let dTag: string;
 
@@ -20,7 +22,7 @@
 		dTag = $page.params.dTag;
 
 		$ndk.fetchEvents({
-			kinds: [NDKKind.HorizontalVideo], authors: [$user.pubkey], "#d": [dTag]
+			kinds: [NDKKind.HorizontalVideo], authors: [$currentUser.pubkey], "#d": [dTag]
 		}).then(async (events: Set<NDKEvent>) => {
 			if (!events.size) {
 				newToasterMessage("Video not found", "error");

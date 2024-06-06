@@ -2,8 +2,8 @@
     import { categories as allCategories } from "$utils/categories";
 	import { CaretDown } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
-	import Input from "./Input.svelte";
     import { createEventDispatcher } from "svelte";
+	import { Input } from "$components/ui/input";
 
     export let categories: string[] = [];
     export let show = true;
@@ -56,7 +56,7 @@
 </script>
 
 <div class="self-stretch rounded-xl border border-neutral-800 items-start inline-flex bg-transparent flex-col justify-start gap-4">
-    <button on:click={() => show = !show} class="text-neutral-300 text-base px-4 py-3 font-normal w-full text-left flex flex-row justify-between bg-black !rounded-box">
+    <button on:click={() => show = !show} class="text-neutral-300 text-base px-4 py-3 font-normal w-full text-left flex flex-row justify-between bg-black !rounded">
         <div class="flex flex-row items-end gap-4">
             {selectedString}
             {#if selectedString === "Free"}

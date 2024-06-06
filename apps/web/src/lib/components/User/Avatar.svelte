@@ -38,7 +38,7 @@
             shapeClass = 'rounded-full';
             break;
         case 'square':
-            shapeClass = 'mask mask-squircle';
+            shapeClass = 'rounded';
             break;
     }
 

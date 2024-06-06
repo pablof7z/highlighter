@@ -2,25 +2,20 @@
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import currentUser from "$stores/currentUser.js";
 	import { onDestroy, onMount } from "svelte";
-	import LoadingScreen from '$components/LoadingScreen.svelte';
-
-    let startedUserView = false;
-    let mounted = false;
+	import { goto } from "$app/navigation";
 
     onMount(() => {
-        mounted = true;
+        if (!$currentUser) {
+            goto("/");
+            return;
+        }
+        
+        startUserView($currentUser);
     });
-
-    $: if (!!$user && !startedUserView && mounted) {
-        startUserView($user);
-        startedUserView = true;
-    }
 
     onDestroy(() => {
         userSubscription?.unref();
     })
 </script>
 
-<LoadingScreen ready={!!startedUserView}>
-    <slot />
-</LoadingScreen>
+<slot />

@@ -13,7 +13,7 @@
     <a
         href={$pageHeader.right.url??"#"}
         on:click={clicked}
-        class="text-accent whitespace-nowrap flex flex-nowrap items-center max-w-[15vw]"
+        class="text-primary whitespace-nowrap flex flex-nowrap items-center max-w-[15vw]"
     >
         {#if $pageHeader.right.icon}
             <span class="inline">

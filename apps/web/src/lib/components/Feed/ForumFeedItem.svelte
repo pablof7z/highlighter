@@ -95,7 +95,7 @@
                     <div class="flex flex-row items-start w-full gap-2 relative">
                         <div class="flex flex-col items-start grow">
                             {#if title && !skipTitle && !threadView}
-                                <div class="text-lg text-white font-semibold truncate grow">{title}</div>
+                                <div class="text-lg text-foreground font-semibold truncate grow">{title}</div>
                             {/if}
                             <div class="text-xs opacity-50">
                                 <Name npubMaxLength={12} user={event.author} {userProfile} {fetching} />
@@ -136,7 +136,7 @@
 
                         <!-- Content -->
                         <div class="flex flex-col grow w-full">
-                            <div class="flex flex-row items-center gap-4 text-xs text-white/50">
+                            <div class="flex flex-row items-center gap-4 text-xs text-foreground/50">
                                 {#if $eventsInThread.length > 0}
                                     <button class="opacity-60">
                                         View thread
@@ -193,7 +193,7 @@
         </div>
     {:else}
         <a href="{authorUrl}/posts/{event.encode()}" class="p-4">
-            <div class="text-xs text-white/50">
+            <div class="text-xs text-foreground/50">
                 View discussion
                 <CaretRight class="w-4 h-4 inline-block" />
             </div>

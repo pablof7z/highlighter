@@ -6,6 +6,8 @@
 	import { Thread } from '$utils/thread.js';
 	import ThreadEditor from "$components/Editor/ThreadEditor/ThreadEditor.svelte";
 	import { currentDraftItem } from "$stores/post-editor";
+	import { ndk } from "$stores/ndk";
+	import { newToasterMessage } from "$stores/toaster";
 
 	const draftId = $page.url.searchParams.get("draft") || undefined;
 	let draftItem: DraftItem | undefined = undefined;

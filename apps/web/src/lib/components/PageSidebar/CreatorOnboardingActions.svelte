@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { CaretRight, Check } from "phosphor-svelte";
-    import User from "./OnboardingCheckingIcons/User.svelte";
+	import { CaretRight, Check, CirclesFour, HandWaving, PaperPlaneTilt, SquareLogo, StarFour, User } from "phosphor-svelte";
     import Tiers from "./OnboardingCheckingIcons/Tiers.svelte";
 	import Post from "./OnboardingCheckingIcons/Post.svelte";
 	import { openModal } from '$utils/modal';
@@ -9,6 +8,9 @@
 	import { onMount } from "svelte";
 	import type { NDKEvent, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
 	import type { Readable } from "svelte/motion";
+	import { Button } from "$components/ui/button";
+	import { Block } from "konsta/svelte";
+	import { appMobileView } from "$stores/app";
 
     export let sidebarView = false;
     export let forceView = sidebarView;
@@ -18,7 +20,8 @@
 
     let hasTiers = false;
     let hasContent = false;
-    let hasProfileBanner  = true;
+    let hasProfileBanner = true;
+    let hasIntroduction = false;
 
     onMount(() => {
         currentTiers = getUserSubscriptionTiersStore();
@@ -42,84 +45,53 @@
 
 {#if hiddenOrCompleted === false || forceView}
     <div
-        class="flex flex-col gap-5"
-        class:py-6={sidebarView}
-        class:px-4={sidebarView}
+        class="
+            flex flex-col gap-5 max-sm:px-
+            {$appMobileView ? "text-sm z-10 relative pl-4-safe pr-4-safe my-8" : ""}
+        "
     >
-        <div class="flex flex-row justify-between items-end">
-            <h2 class="text-2xl text-white">What's next?</h2>
-            {#if !sidebarView}
-                <button class="btn btn-base-300 text-sm" on:click={hide}>
-                    Hide
-                </button>
-            {/if}
+        <div class="flex flex-col sm:grid lg:grid-cols-3 gap-4">
+            <Button class="flex flex-col sm:h-32 h-auto items-center justify-center text-primary-foreground normal-case max-sm:p-4" href="/welcome/profile">
+                <User class="w-24 h-24 opacity-20 text-primary-foreground" />
+                <span class="text-2xl font-medium text-primary-foreground">
+                    Personalize
+                </span>
+                <span class="whitespace-normal text-center text-sm text-primary-foreground">
+                    Make your account, yours...
+                </span>
+            </Button>
+
+            <Button variant={hasTiers ? "secondary" : "default"} class="flex flex-col items-center h-auto justify-start normal-case max-sm:p-4" href="/welcome/tiers">
+                <SquareLogo class="w-24 h-24 opacity-20 text-primary-foreground" />
+                <span class="text-xl font-medium text-primary-foreground">
+                    Subscription Tiers
+                </span>
+
+                <span class="whitespace-normal text-center text-sm text-primary-foreground">Create support options for your most ravvid supporters?</span>
+            </Button>
+
+            <Button variant={hasContent ? "secondary" : "default"} class="flex flex-col items-center h-auto justify-start normal-case" on:click={() => openModal(NewItemModal)}>
+                <PaperPlaneTilt class="w-24 h-24 opacity-20 text-primary-foreground" />
+                <span class="text-xl font-medium text-primary-foreground">
+                    Publish
+                </span>
+
+                <span class="whitespace-normal text-center text-sm text-primary-foreground">
+                    Publish your first post
+                </span>
+            </Button>
+
+            <Button variant={hasIntroduction ? "secondary" : "default"} class="col-span-3 flex flex-col sm:flex-row gap-4 items-center h-auto justify-start normal-case max-sm:p-4" href="/welcome/tiers">
+                <HandWaving class="w-12 h-12 max-sm:w-24 max-sm:h-24 opacity-20 text-primary-foreground" />
+                <span class="text-xl font-medium text-primary-foreground">
+                    Say Hi!
+                </span>
+
+                <span class="whitespace-normal text-center text-sm text-primary-foreground">
+                    Introduce yourself so others know what you make and care about!
+                </span>
+            </Button>
         </div>
-
-        <div class="settings-like-section-title -mb-4">
-            First steps
-        </div>
-
-        <a href="/welcome/profile">
-            <div>
-                <span>
-                    <User />
-                    Complete your profile
-                </span>
-
-                <!-- <span>
-                    {#if !sidebarView}
-                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#BD9488] to-[#7092A0]">
-                            2 of 4 Completed
-                        </span>
-                    {/if}
-                </span> -->
-            </div>
-
-            <span class="caret">
-                <CaretRight class="w-6 h-6" />
-            </span>
-        </a>
-
-        <a href="/welcome/tiers">
-            <div>
-                <span>
-                    {#if !hasTiers}
-                        <Tiers />
-                    {:else}
-                        <Check class="text-success" weight="duotone" />
-                    {/if}
-                    <div class="flex flex-col items-start">
-                        <span>Set up your membership tiers</span>
-                        <div class="text-xs text-neutral-500">
-                            <span>
-                                Manage membership prices and perks
-                            </span>
-                        </div>
-                    </div>
-                </span>
-            </div>
-
-            <span class="caret">
-                <CaretRight class="w-6 h-6" />
-            </span>
-        </a>
-
-        <button on:click={() => openModal(NewItemModal)}>
-            <div>
-                <span>
-                    {#if !hasContent}
-                        <Post />
-                    {:else}
-                        <Check class="text-success" weight="duotone" />
-                    {/if}
-                    <span>Publish your first post</span>
-                </span>
-            </div>
-
-            <span class="caret">
-                <CaretRight class="w-6 h-6" />
-            </span>
-        </button>
 
         <div class="divider"></div>
 
@@ -127,7 +99,7 @@
             Subscribers
         </div>
 
-        <a href="#" class="relative opacity-30 pointer-events-none cursor-not-allowed">
+        <a href="#" class="opacity-30 pointer-events-none cursor-not-allowed">
             <div class="coming-soon">
                 <span class="coming-soon">
                     Coming soon
@@ -234,7 +206,7 @@
 
 <style>
     a, button {
-        @apply flex flex-row justify-between border border-base-300 p-4 rounded-box bg-base-200
+        @apply flex flex-row justify-between border border-border p-4 rounded bg-foreground/10
         transition-all duration-300 ease-in-out;
     }
 

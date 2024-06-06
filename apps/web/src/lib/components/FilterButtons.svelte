@@ -50,7 +50,7 @@
 <style lang="postcss">
     button {
         @apply sm:!p-3 !rounded-2xl justify-start items-center gap-1.5 flex;
-        @apply btn bg-base-300 sm:w-12 font-normal;
+        @apply btn bg-foreground/20 sm:w-12 font-normal;
     }
 
     button.active {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
+	import currentUser from '$stores/currentUser.js';
     import { createEventDispatcher } from 'svelte';
 	import { pageHeader } from '$stores/layout.js';
 	import ProfileEditPage from '$components/User/ProfileEditPage.svelte';
@@ -30,14 +30,12 @@
 	};
 </script>
 
-<MainWrapper marginClass="max-w-3xl">
-    <LoadingScreen ready={!!$user}>
-        <ProfileEditPage {forceSave} on:saved={() => goto('/welcome/tiers')} />
-    </LoadingScreen>
-</MainWrapper>
+<LoadingScreen ready={!!$currentUser}>
+	<ProfileEditPage {forceSave} on:saved={() => goto('/welcome/tiers')} />
+</LoadingScreen>
 
 <style lang="postcss">
     h3 {
-        @apply text-3xl text-white font-semibold;
+        @apply text-3xl text-foreground font-semibold;
     }
 </style>

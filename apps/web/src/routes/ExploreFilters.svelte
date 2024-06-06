@@ -46,7 +46,7 @@
         // { name: "Controversial", tooltip: "Coming Soon", icon: CircleHalfTilt },
         { name: "Curated", icon: BookmarkSimple },
         // { name: "Backstage", icon: Shapes },
-        // { name: "", value: 'add', icon: Plus, class: "!bg-zinc-800 !text-white" },
+        // { name: "", value: 'add', icon: Plus, class: "!bg-zinc-800 !text-foreground" },
     ]
 
     $: if ($user && !options[1]!.filters![0].authors) {

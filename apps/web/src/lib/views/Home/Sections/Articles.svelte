@@ -39,14 +39,14 @@ import StoreFeed from "$components/Feed/StoreFeed.svelte";
     </div>
 
     <div class="hidden md:flex w-1/4 sticky top-[var(--navbar-height)] flex-col gap-4 max-h-screen overflow-y-auto items-end">
-        <h1 class="text-white font-semibold">
+        <h1 class="text-foreground font-semibold">
             Articles
         </h1>
         
         {#each $tags as [tag, count] (tag)}
             <a
                 href="/t/{encodeURIComponent(tag)}"
-                class="flex-row gap-2 text-base-100-content text-sm inline flex-inline bg-white/10 rounded-full px-3 py-1 whitespace-nowrap w-fit"
+                class="flex-row gap-2 text-foreground text-sm inline flex-inline bg-white/10 rounded-full px-3 py-1 whitespace-nowrap w-fit"
             >
                 <span class="opacity-30">#</span><span class="opacity-80">{tag}</span>
             </a>

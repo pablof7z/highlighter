@@ -52,7 +52,7 @@
             {event}
             expandThread={true}
             expandReplies={true}
-            class="text-lg p-6 rounded-box"
+            class="text-lg p-6 rounded"
         >
             <EventContent
                 ndk={$ndk}
@@ -62,7 +62,7 @@
         </EventWrapper>
     </div>
 {:else}
-    <EventWrapper {event} class="bg-base-200 p-6 rounded-box">
+    <EventWrapper {event} class="bg-foreground/10 p-6 rounded">
         <EventContent ndk={$ndk} {event} class="highlight" eventCardComponent={EmbeddedEventWrapper} />
     </EventWrapper>
 {/if}
@@ -82,7 +82,7 @@
             <div class="flex-col justify-start items-start gap-8 flex {mxClass} max-w-3xl">
                 <div class="w-full flex items-center flex-col justify-center">
                     <div class="w-full">
-                        <FeedGroupPost {event} class="bg-base-200 rounded-box p-6" />
+                        <FeedGroupPost {event} class="bg-foreground/10 rounded p-6" />
                     </div>
                 </div>
 
@@ -108,7 +108,7 @@
         {:else}
             <CreatorShell user={event.author}>
                 <div class="{mxClass} max-w-3xl">
-                    <EventWrapper {event} class="bg-base-200 p-6 rounded-box">
+                    <EventWrapper {event} class="bg-foreground/10 p-6 rounded">
                         <EventContent ndk={$ndk} {event} class="prose highlight" />
                     </EventWrapper>
                 </div>

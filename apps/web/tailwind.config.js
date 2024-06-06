@@ -1,4 +1,6 @@
 import { fontFamily } from "tailwindcss/defaultTheme";
+const konstaConfig = require('konsta/config');
+
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -12,6 +14,9 @@ const config = {
 			screens: {
 				"2xl": "1400px"
 			}
+		},
+		fontFamily: {
+			serif: ["Lora"]
 		},
 		extend: {
 			colors: {
@@ -61,4 +66,4 @@ const config = {
 	},
 };
 
-export default config;
+export default konstaConfig(config);

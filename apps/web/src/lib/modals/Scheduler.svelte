@@ -68,10 +68,10 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 </script>
 
 <ModalShell color="glassy" class="" title="Schedule Boost" on:close>
-    <div class="flex flex-col w-full text-sm border-b border-base-300 items-center pb-4">
+    <div class="flex flex-col w-full text-sm border-b border-border items-center pb-4">
         <div class="flex flex-row items-center gap-2 justify-center ">
             Scheduling provided by
-            <AvatarWithName user={dvmUser} avatarType="circle" avatarSize="small" class="text-base-100-content" />
+            <AvatarWithName user={dvmUser} avatarType="circle" avatarSize="small" class="text-foreground" />
         </div>
         <a href="/settings/services" class="text-xs underline">Configure a different provider</a>
     </div>
@@ -79,9 +79,9 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
     {#if scheduled}
         <div class="flex flex-col items-center gap-4">
             <span class="text-2xl text-accent">
-                <Check class="w-12 h-12 text-success" />
+                <Check class="w-12 h-12 text-green-500" />
             </span>
-            <span class="text-xl text-base-100-content">Scheduled!</span>
+            <span class="text-xl text-foreground">Scheduled!</span>
         </div>
     {:else}
         <ul class="menu w-full">
@@ -98,9 +98,9 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
         </div>
 
         {#if publishAt}
-            <span class="text-sm text-base-100-content/50">
+            <span class="text-sm text-foreground/50">
                 Schedule repost will be published&nbsp;
-                <RelativeTime timestamp={publishAt} class="text-base-100-content" />
+                <RelativeTime timestamp={publishAt} class="text-foreground" />
             </span>
         {/if}
 

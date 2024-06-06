@@ -6,6 +6,7 @@
 	import { goto } from "$app/navigation";
 	import { createEventDispatcher } from "svelte";
 	import { badgeVariants } from "./ui/badge";
+	import Button from "./ui/button/button.svelte";
 
     export let option: NavigationOption;
     export let value: string = "";
@@ -26,7 +27,7 @@
 
     }
 </script>
-{#if $appMobileView}
+{#if $appMobileView && false}
     <button class="
         flex flex-row items-center
         py-1 !h-auto
@@ -42,41 +43,55 @@
             <svelte:component this={option.icon} class="w-5 h-5 inline mr-2" {...option.iconProps??{}} />
         {/if}
         {#if option.name}
-            <span class="transition-all duration-300 { active ? "text-2xl font-bold text-white" : "text-base text-zinc-500"}">
+            <span class="transition-all duration-300 { active ? "text-2xl font-bold text-foreground" : "text-base text-zinc-500"}">
                 {option.name}
             </span>
         {/if}
     </button>
 {:else}
-<a
-    bind:this={el}
-    href={option.href}
-    class="
-        snap-center {option.class??""}
-        {badgeVariants({ variant: "outline" })}
-        !p-2 !px-4 !text-base gap-2 bg-background
-    "
-    on:click
-    class:active={active}
->
-    {#if option.icon}
-        <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline" {...option.iconProps??{}} />
-    {/if}
-    <span class="" class:hidden={!option.name}>
-        {option.name}
-        {#if option.premiumOnly}
-            <span class="text-accent">
-                <CrownSimple class="w-5 h-5 ml-2 lg:w-fit lg:h-fit inline" weight="fill" />
+    {#if option.href}
+        <a
+            bind:this={el}
+            href={option.href}
+            class="
+                snap-center {option.class??""}
+                {badgeVariants({ variant: active ? "default" : "secondary" })}
+                sm:!p-1 sm:!px-3 !text-base gap-2
+            "
+            on:click
+        >
+            {#if option.icon}
+                <svelte:component this={option.icon} weight="light" class="w-6 lg:w-5 h-6 lg:h-5 inline {active ? "text-primary-foreground" : "text-muted-foreground"}" {...option.iconProps??{}} />
+            {/if}
+            <span class="{active ? "font-bold text-primary-foreground" : "sm:!font-light font-normal text-muted-foreground"}" class:hidden={!option.name}>
+                {option.name}
+                {#if option.premiumOnly}
+                    <span class="text-accent">
+                        <CrownSimple class="w-5 h-5 ml-2 lg:w-fit lg:h-fit inline" weight="fill" />
+                    </span>
+                {/if}
             </span>
-        {/if}
-    </span>
-</a>
+        </a>
+    {:else}
+        <Button
+            {...option.buttonProps??{}}
+            on:click={() => {
+                dispatch("click");
+                if (option.fn) option.fn();
+                value = option.value ?? option.name;
+            }}
+        >
+            {#if option.icon}
+                <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline mr-2" {...option.iconProps??{}} />
+            {/if}
+            <span class="" class:hidden={!option.name}>
+                {option.name}
+                {#if option.premiumOnly}
+                    <span class="text-accent">
+                        <CrownSimple class="w-5 h-5 ml-2 lg:w-fit lg:h-fit inline mr-2" weight="fill" />
+                    </span>
+                {/if}
+            </span>
+        </Button>
+    {/if}
 {/if}
-
-<style>
-    a.active {
-        @apply font-bold;
-        @apply bg-base-300 text-white;
-        @apply inset-4;
-    }
-</style>

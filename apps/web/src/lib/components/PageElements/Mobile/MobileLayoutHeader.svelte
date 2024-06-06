@@ -11,11 +11,35 @@
 	import UserDrawer from './UserDrawer.svelte';
 	import { afterUpdate, onDestroy, onMount } from 'svelte';
     import TouchSweep from 'touchsweep';
+	import { browser } from '$app/environment';
 
     let userPanelOpened = false;
 
     let title: string | undefined;
     let subtitle: string | undefined;
+
+    let navbar: HTMLElement;
+
+    const updateNavbarHeight = () => {
+        if (!navbar) {
+            document.documentElement.style.setProperty('--navbar-height', `0px`);
+            return;
+        }
+        const navbarHeight = navbar.offsetHeight;
+        document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
+    };
+
+    onDestroy(() => {
+        if (browser) window.removeEventListener('resize', updateNavbarHeight);
+    });
+
+    afterUpdate(() => {
+        setTimeout(updateNavbarHeight);
+    });
+
+    $: {
+        if (browser) updateNavbarHeight();
+    }
 
     $: {
         title = $pageHeader?.title;
@@ -63,6 +87,11 @@
     onMount(() => {
         mounted = true
         body = document.getElementsByTagName('body')[0];
+        // Initial update
+        if (browser) updateNavbarHeight();
+
+        // Update on window resize
+        if (browser) window.addEventListener('resize', updateNavbarHeight);
         // instance = new TouchSweep(body,
         // { value: 1 }, 20 );
         // body.addEventListener('swipedown', (e) => {
@@ -76,10 +105,6 @@
         // });
 
     });
-
-    onDestroy(() => {
-        // instance.unbind();
-    })
 
     title ??= "";
     let _title = title;
@@ -122,11 +147,11 @@
 
 {#if mounted}
 {#if $pageHeader?.component}
-    <div class="fixed top-0 w-full z-50 safe pl-2-safe pr-2-safe bg-ios-light-surface-2 dark:bg-ios-dark-surface-2 hairline-b">
+    <div class="fixed top-0 w-full z-50 safe pl-2-safe pr-2-safe bg-ios-light-surface-2 dark:bg-ios-dark-surface-2 hairline-b" bind:this={navbar}>
         <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
     </div>
 {:else if withSubnavbar}
-    <Navbar title={_title} {subtitle}>
+    <Navbar title={_title} {subtitle} bind:this={navbar}>
         <svelte:fragment slot="left">
             {#if $pageHeader?.left}
                 {#if $pageHeader.left.component}

@@ -226,7 +226,7 @@
     overflow-clip
     z-50
 
-    p-2 bg-base-300 rounded-box w-fit flex flex-row shadow-2xl gap-2
+    p-2 bg-foreground/20 rounded w-fit flex flex-row shadow-2xl gap-2
 " style="
     top: {top}px;
     left: {left}px;
@@ -255,7 +255,7 @@
 
 <style lang="postcss">
     button {
-        @apply bg-base-100 border border-base-100 hover:border-white/50 hover:bg-base-200 rounded-box p-4 flex flex-col items-center gap-2 w-24 h-24;
+        @apply bg-background border border-border hover:border-white/50 hover:bg-foreground/10 rounded p-4 flex flex-col items-center gap-2 w-24 h-24;
     }
 
     button span {

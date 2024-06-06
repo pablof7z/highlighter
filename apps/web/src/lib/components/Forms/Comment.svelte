@@ -134,9 +134,9 @@
             <Avatar user={$user} {userProfile} class="flex-none w-12 h-12" />
 
             <div class="flex flex-col gap-4 w-full items-start">
-                <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
+                <Name user={$user} {userProfile} class="text-foreground font-semibold leading-8" />
                 <Textarea
-                    class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-base-200 !border-base-300 focus:!border-base-300 text-neutral-400 p-6"
+                    class="w-full sm:rounded-xl max-sm:border-none flex-grow font-normal text-lg leading-normal !bg-foreground/10 !border-border focus:!border-border text-neutral-400 p-6"
                     placeholder="Write a response..."
                     bind:value={content}
                     on:focus
@@ -159,7 +159,7 @@
     ">
             <div class="flex flex-row gap-4 w-full items-center">
                 <Avatar user={$user} {userProfile} class="flex-none w-12 h-12" />
-                <Name user={$user} {userProfile} class="text-white font-semibold leading-8" />
+                <Name user={$user} {userProfile} class="text-foreground font-semibold leading-8" />
             </div>
 
             {#if canComment}
@@ -167,11 +167,11 @@
                 flex flex-col gap-4
                 max-sm:w-screen max-sm:h-[100vh]
                 max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:right-0 max-sm:bottom-0
-                max-sm:bg-base-100 max-sm:bg-opacity-50 max-sm:backdrop-filter max-sm:backdrop-blur-sm max-sm:overflow-scroll max-sm:z-50
+                max-sm:bg-background max-sm:bg-opacity-50 max-sm:backdrop-filter max-sm:backdrop-blur-sm max-sm:overflow-scroll max-sm:z-50
             ">
                 <Textarea
                     class="
-                        flex-grow w-full min-h-[6rem] border-base-300 focus:!border-white/30 round
+                        flex-grow w-full min-h-[6rem] border-border focus:!border-white/30 round
                         text-xl
                         !bg-transparent
                     "
@@ -196,7 +196,7 @@
     {/if}
 
     {#if debugView && reply}
-        <pre class="bg-base-200 p-4 overflow-scroll">{JSON.stringify(reply?.rawEvent(), null, 2)}</pre>
+        <pre class="bg-foreground/10 p-4 overflow-scroll">{JSON.stringify(reply?.rawEvent(), null, 2)}</pre>
     {/if}
 </UserProfile>
 

@@ -20,10 +20,6 @@
         
         <div class="flex flex-row items-center justify-between w-full">
             <HorizontalOptionsList {options} />
-
-            <button class="button">
-                New
-            </button>
         </div>
     </div>
 </div>

@@ -2,7 +2,7 @@
     export let title: string | undefined = undefined;
 </script>
 
-<!-- <div class="border-b border-base-300 flex flex-row items-center justify-between gap-8 p-6 relative">
+<!-- <div class="border-b border-border flex flex-row items-center justify-between gap-8 p-6 relative">
     <h1 class="2xl:absolute">
         Discover
     </h1> -->
@@ -15,7 +15,7 @@
 
     lg:flex-none
     h-full
-    bg-base-100 max-lg:mobile-nav
+    bg-background max-lg:mobile-nav
     flex-col justify-start items-start gap-6 inline-flex shrink-0 {$$props.class??""}
 ">
     {#if title}
@@ -25,7 +25,7 @@
             overflow-clip truncate
         ">
             <h1 class="
-                grow shrink basis-0 text-white font-semibold
+                grow shrink basis-0 text-foreground font-semibold
                 flex flex-row items-center gap-2
                 text-left
                 max-lg:text-lg

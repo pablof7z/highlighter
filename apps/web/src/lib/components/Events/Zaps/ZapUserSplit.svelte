@@ -26,7 +26,7 @@
         <Avatar {pubkey} class="w-12 h-12" />
         <div class="w-0 flex flex-col flex-grow">
             <span class="truncate whitespace-nowrap">
-                <Name ndk={$ndk} {pubkey} class="text-base-100-content font-normal text-normal"/>
+                <Name ndk={$ndk} {pubkey} class="text-foreground font-normal text-normal"/>
             </span>
             <span class="text-sm font-normal text-accent2">
                 {Number.isNaN(satSplit) ? `0 sats` : `${nicelyFormattedSatNumber(satSplit)} sats`}

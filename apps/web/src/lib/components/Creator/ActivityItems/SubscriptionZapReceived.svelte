@@ -26,16 +26,16 @@
                 <Avatar {userProfile} {fetching} size="medium" />
                 <div class="grow shrink basis-0 flex-col justify-center items-start gap-1 inline-flex">
                     <div class="self-stretch justify-between items-center inline-flex">
-                        <div class="text-white font-semibold leading-5">
+                        <div class="text-foreground font-semibold leading-5">
                             <Name {userProfile} {fetching} />
                         </div>
                     </div>
-                    <div class="text-white text-opacity-60 font-normal leading-5 text-xs">
+                    <div class="text-foreground text-opacity-60 font-normal leading-5 text-xs">
                         <RelativeTime {event} />
                     </div>
                 </div>
 
-                <div class="!text-success font-semibold leading-5">
+                <div class="!text-green-500 font-semibold leading-5">
                     + {nicelyFormattedMilliSatNumber(zap?.amount ?? 0)} sats
                 </div>
             </div>
@@ -43,7 +43,7 @@
 
         <!-- <ArticleCard {article} skipSummary={true} imageClass="w-1/12" /> -->
         {#if event.content.length > 0}
-            <EventContent ndk={$ndk} {event} showEntire={true} maxLength={9999} class="text-lg text-white !font-light" />
+            <EventContent ndk={$ndk} {event} showEntire={true} maxLength={9999} class="text-lg text-foreground !font-light" />
         {/if}
     </div>
     </UserProfile>

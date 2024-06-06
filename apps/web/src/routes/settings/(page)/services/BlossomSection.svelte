@@ -3,6 +3,8 @@
     import { activeBlossomServer, userBlossom } from "$stores/session";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKList } from "@nostr-dev-kit/ndk";
+	import { Input } from "$components/ui/input";
+	import Button from "$components/ui/button/button.svelte";
 
     const URL_REGEX = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
 
@@ -47,7 +49,6 @@
 {#if $userBlossom}
     <ul class="flex flex-col">
         {#key $activeBlossomServer}
-        <pre>{JSON.stringify($userBlossom.rawEvent(), null, 4)}</pre>
         {#each items as item, index}
             <li class="flex flex-row items-center gap-4 relative">
                 <!-- try to display favicon -->
@@ -58,31 +59,26 @@
                         class="w-8 h-8 absolute left-5"
                     />
                 {/if}
-                <GlassyInput bind:value={item} class="
-                    pl-16
+                <Input bind:value={item} class="
+                    pl-16 focus-visible:ring-0
                     {index === 0 ? "rounded-t-xl" : "rounded-t-none !border-t-0"}
                     {index === items.length - 1 ? "rounded-b-xl" : "rounded-b-none"}
                 " />
 
                 {#if item.match(URL_REGEX)}
-                    <button
-                        disabled={index === 0}
-                        class="w-fit px-6 absolute right-5 font-normal text-sm"
-                        class:text-success={index === 0}
-                        on:click={() => makeDefault(item)}
-                    >
-                        {#if index === 0}
-                            Default
-                        {:else}
+                    {#if index === 0}
+                        <span class="absolute right-5 text-green-500">Default</span>
+                    {:else}
+                        <Button variant="outline" class="w-fit absolute right-5 font-normal" size="xs" on:click={() => makeDefault(item)}>
                             Make Default
-                        {/if}
-                    </button>
+                        </Button>
+                    {/if}
                 {:else}
-                    <button class="button w-fit absolute right-5 text-sm" on:click={() => {
+                    <Button class="w-fit absolute right-5 text-sm" on:click={() => {
                         items = items.filter((i) => i !== item);
                     }}>
                         Remove
-                    </button>
+                    </Button>
                 {/if}
                 
             </li>
@@ -92,13 +88,13 @@
 {/if}
 
 <div class="flex flex-row items-center gap-4">
-    <button class="button bg-accent text-white px-6 w-fit" on:click={save}>
+    <Button size="lg" on:click={save}>
         Save
-    </button>
+    </Button>
 
-    <button class="button w-fit px-6" on:click={() => {
+    <Button variant="secondary" class="w-fit px-6" on:click={() => {
         items = [...items, ""];
     }}>
         Add New Server
-    </button>
+    </Button>
 </div>

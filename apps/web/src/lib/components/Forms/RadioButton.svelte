@@ -20,7 +20,7 @@
 <div class="container"
     class:selected
 >
-    <button class="text-white text-base font-medium flex flex-row gap-2 items-center justify-between w-full {$$props.class??""}" on:click={onClick}>
+    <button class="text-foreground text-base font-medium flex flex-row gap-2 items-center justify-between w-full {$$props.class??""}" on:click={onClick}>
         <div class="flex flex-row items-start w-full">
             <div class="flex flex-row gap-2 justify-stretch items-start w-full">
                 <div class="flex flex-col items-start grow w-full">
@@ -31,7 +31,7 @@
                 </div>
 
                 {#if !$$props.skipCheck}
-                    <Check class="text-white {!selected ? 'hidden' : ''}" />
+                    <Check class="text-foreground {!selected ? 'hidden' : ''}" />
                 {/if}
             </div>
         </div>

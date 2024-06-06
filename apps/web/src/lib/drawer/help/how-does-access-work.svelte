@@ -1,13 +1,12 @@
 <script lang="ts">
 
     function closeDrawer() {
-        pageDrawerToggle.set(false);
     }
 </script>
 
 <div class="w-full flex flex-col items-stretch gap-4">
     <div class="flex flex-row items-center justify-between w-full">
-        <h1 class="text-white text-2xl font-semibold leading-8">
+        <h1 class="text-foreground text-2xl font-semibold leading-8">
             Configuring a post's reach
         </h1>
     </div>
@@ -22,7 +21,7 @@
         which provides an opportunity to organically grow your audience without doing any additional work.
     </p>
 
-    <p class="font-bold text-white">
+    <p class="font-bold text-foreground">
         Your work speaks for itself.
     </p>
 

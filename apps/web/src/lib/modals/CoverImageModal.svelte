@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ArticleCover from "$components/Editor/ArticleCover.svelte";
     import ModalShell from "$components/ModalShell.svelte";
+	import Button from "$components/ui/button/button.svelte";
 	import { closeModal } from "$utils/modal";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
 
@@ -23,11 +24,11 @@
     <ArticleCover bind:article={article} />
 
     <svelte:fragment slot="footer">
-        <button class="hover:text-white" on:click={noImage}>
+        <Button variant="secondary" on:click={noImage}>
             No image
-        </button>
-        <button class="button px-6" on:click={save}>
+        </Button>
+        <Button on:click={save}>
             Save
-        </button>
+        </Button>
     </svelte:fragment>
 </ModalShell>

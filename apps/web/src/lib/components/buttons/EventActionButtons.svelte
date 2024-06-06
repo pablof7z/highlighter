@@ -55,7 +55,7 @@
         <BoostButton {event} />
     </div>
     {#if $reactions.length > 0 || $replies.length > 0 || $reposts.length > 0}
-        <div class="self-stretch text-right text-white text-opacity-60 text-sm font-normal leading-6">
+        <div class="self-stretch text-right text-foreground text-opacity-60 text-sm font-normal leading-6">
             {#if ($reactions.length > 0)}
                 {$reactions.length} reactions
             {/if}

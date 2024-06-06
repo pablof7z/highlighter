@@ -73,7 +73,7 @@ import { ndk } from "$stores/ndk.js";
                         style={`background: linear-gradient(180deg, ${userColor}aa 50%, ${userColor}00 100%);`} />
                 {/if}
                 <div class="w-full -translate-y-1/2 -mb-20">
-                <AvatarWithName {userProfile} {authorUrl} {pubkey} avatarClass="w-40 h-40" class="text-2xl font-medium text-white !items-center flex-col" spacing="gap-4">
+                <AvatarWithName {userProfile} {authorUrl} {pubkey} avatarClass="w-40 h-40" class="text-2xl font-medium text-foreground !items-center flex-col" spacing="gap-4">
                 </AvatarWithName>
                 </div>
 

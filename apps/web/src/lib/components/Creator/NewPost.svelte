@@ -31,8 +31,6 @@
         <NewPostItem icon={TextAlignLeft} title="Article" href="/articles/new" />
         <NewPostItem icon={Play} title="Video" href="/videos/new" />
         <NewPostItem icon={RowsPlusBottom} title="Thread" href="/threads/new" />
-        <NewPostItem icon={StreamIcon} title="Live stream" comingSoon={true} />
-        <NewPostItem icon={Microphone} title="Podcast" comingSoon={true} />
     </div>
     {#if $drafts?.length > 0}
         <div class="self-start">

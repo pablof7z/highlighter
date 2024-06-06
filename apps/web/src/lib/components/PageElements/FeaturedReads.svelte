@@ -1,9 +1,6 @@
 <script lang="ts">
-	import { Name } from '$components/User/Name.svelte';
-	import { Highlights } from '$components/Highlights.svelte';
-	import Carousel from "$components/Page/Carousel.svelte";
-	import { NDKArticle, NDKHighlight, NDKSubscriptionCacheUsage, NDKKind, NDKTag, NDKRelay, NDKRelaySet, NDKFilter } from "@nostr-dev-kit/ndk";
-    import Highlight from "$components/Highlight.svelte";
+	import Name from '$components/User/Name.svelte';
+	import { NDKArticle, NDKKind, NDKTag, NDKRelaySet, NDKFilter, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { urlFromEvent } from "$utils/url";
 	import { Chip } from "konsta/svelte";
 	import HighlightBody from "$components/HighlightBody.svelte";
@@ -14,7 +11,6 @@
 	import EventTags from '$components/Events/EventTags.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import { ndk } from '$stores/ndk';
-	import { Name } from 'drizzle-orm';
 
     register();
 
@@ -89,14 +85,14 @@
                     {#each highlights as highlight (highlight.id)}
                         <HighlightBody
                             {highlight}
-                            class="bg-base-100/50 px-6 py-4 rounded-box backdrop-blur-2xl w-96"
+                            class="bg-background/50 px-6 py-4 rounded backdrop-blur-2xl w-96"
                             skipArticle={true} compact={true} skipFooter={true} />
                     {/each}
                     {#if $dedupedExtraHighlights}
                         {#each $dedupedExtraHighlights as highlight (highlight.id)}
                             <HighlightBody
                                 {highlight}
-                                class="bg-base-100/50 px-6 py-4 rounded-box backdrop-blur-2xl w-96"
+                                class="bg-background/50 px-6 py-4 rounded backdrop-blur-2xl w-96"
                                 skipArticle={true} compact={true} skipFooter={true} />
                         {/each}
                     {/if}
@@ -105,7 +101,7 @@
             
             {#if highlights}
                 <div class="w-fit">
-                    <Chip class="!bg-accent !text-white !rounded">
+                    <Chip class="!bg-accent !text-foreground !rounded">
                         {highlights.length + $dedupedExtraHighlights?.length ?? 0} highlights
                     </Chip>
                 </div>

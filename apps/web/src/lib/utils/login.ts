@@ -66,7 +66,7 @@ async function nip46Login(remotePubkey?: Hexpubkey) {
 
 	if (!remoteUser) return;
 
-	user.set(remoteUser);
+	currentUser.set(remoteUser);
 	console.log("DEBUG setting user", remoteUser)
 	const connected = async () => {
 		d('bunker relay ready');
@@ -123,7 +123,7 @@ export async function login(
 				const loadNip07Interval = setInterval(async () => {
 					if (window.nostr) {
 						clearInterval(loadNip07Interval);
-						const user = nip07SignIn(ndk);
+						const user = nip07SignIn($ndk);
 						// await finalizeLogin();
 						resolve(user);
 					}
@@ -225,7 +225,7 @@ async function nip46SignIn(
 export function loggedIn(signer: NDKSigner, u: NDKUser, method: LoginMethod) {
 	$ndk.signer = signer;
     u.ndk = $ndk;
-    user.set(u)
+    currentUser.set(u)
 	console.trace("DEBUG setting user (loggedIn)", u)
     loginState.set("logged-in");
 
@@ -236,7 +236,7 @@ export function loggedIn(signer: NDKSigner, u: NDKUser, method: LoginMethod) {
 export function logout(): void {
 	const $ndk = get(ndk);
 	$ndk.signer = undefined;
-	user.set(undefined);
+	currentUser.set(undefined);
 	currentUser.set(undefined);
 	console.log("DEBUG setting user (logout)");
 	loginState.set('logged-out');
@@ -303,7 +303,7 @@ export async function fillInSkeletonProfile(profile: NDKUserProfile) {
 
 	followList.publish().catch(e => console.error('Failed to publish follow list', e));
 	
-	const $user = get(user);
+	const $user = get(currentUser);
 	$user.profile = profile;
     const r = $user.publish().catch(e => console.error('Failed to publish user profile', e));
 	console.log('publish user profile', r);

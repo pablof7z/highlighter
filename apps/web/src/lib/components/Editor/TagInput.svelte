@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Textarea } from "$components/ui/textarea";
+	import { ndk } from "$stores/ndk";
 	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from 'svelte';
 	import { derived } from 'svelte/store';
@@ -73,11 +75,11 @@
 
 <div class="field w-full">
     <Textarea
-        class="w-full !bg-white/5 rounded focus:!border-white/20"
         bind:value={tagString}
         on:focus={() => hasFocus = true}
         on:blur={() => hasFocus = false}
         on:submit
+        class="focus-visible:ring-0 focus-visible:outline-0"
         {autofocus}
     />
     <div class="text-xs text-neutral-500">

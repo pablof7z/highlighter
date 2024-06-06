@@ -177,7 +177,7 @@
     <!-- <div class="sm:tooltip tooltip-left" data-tip="Zap!">
         <button class="
             transition-all duration-300
-            max-sm:text-white
+            max-sm:text-foreground
             text-neutral-800 hover:text-accent
         " on:click={() => {}}>
             <Lightning class="max-sm:w-8 max-sm:h-8 w-6 h-6" weight="fill" />
@@ -187,7 +187,7 @@
     <div class="tooltip tooltip-left" data-tip="Highlight paragraph">
         <button class="
             transition-all duration-300
-            max-sm:text-white
+            max-sm:text-foreground
             text-neutral-800 hover:text-accent
         " on:click={createParagraphHighlight}>
             <LogoGradient class="max-sm:w-5 max-sm:h-5 w-6 h-6" />

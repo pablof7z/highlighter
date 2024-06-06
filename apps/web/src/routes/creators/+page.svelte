@@ -77,7 +77,7 @@
     <title>Discover Creators on Nostr</title>
 </svelte:head>
 
-<h1 class="text-white">
+<h1 class="text-foreground">
     Featured Creators
 </h1>
 

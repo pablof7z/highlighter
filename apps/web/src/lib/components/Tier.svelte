@@ -97,7 +97,7 @@
                 <div class="flex flex-col gap-2 perks">
                     {#each tier.perks as perk}
                         <div class="perk">
-                            <i><Check class="w-5 h-5 {selected ? 'text-success' : ''}" weight="bold" /></i>
+                            <i><Check class="w-5 h-5 {selected ? 'text-green-500' : ''}" weight="bold" /></i>
                             <span>{perk}</span>
                         </div>
                     {/each}

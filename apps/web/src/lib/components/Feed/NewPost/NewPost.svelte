@@ -11,6 +11,7 @@
 	import { ndk } from "$stores/ndk";
 	import { newToasterMessage } from "$stores/toaster";
 	import Avatar from "$components/User/Avatar.svelte";
+	import Button from "$components/ui/button/button.svelte";
 
     export let extraTags: NDKTag[] = [];
     export let kind: NDKKind;
@@ -140,7 +141,7 @@
                     on:submit={publish}
                     class="{
                         $$props.editorClass ? $$props.editorClass : (
-                            `text-white ${(
+                            `text-foreground ${(
                                 isCollapsed ? "sm:min-h-[7rem]" : "sm:min-h-[10rem] flex-grow"
                             )}`
                         )}
@@ -164,20 +165,19 @@
                             <!-- <button class="btn btn-circle btn-ghost">
                                 <Timer class="w-6 h-6" />
                             </button> -->
-                            <button class="
-                                button
-                                {isCollapsed ? "button px-6" : "max-sm:bg-accent max-sm:text-white px-6"}
+                            <Button variant="ghost" on:click={cancel}>
+                                Cancel
+                            </Button>
+                            
+                            <Button class="
+                                {isCollapsed ? "px-6" : "max-sm:bg-accent max-sm:text-foreground px-6"}
                             " on:click={publish} disabled={content.length === 0}>
                                 {#if publishing}
                                     Publishing...
                                 {:else}
                                     Post
                                 {/if}
-                            </button>
-
-                            <button class="" on:click={cancel}>
-                                Cancel
-                            </button>
+                            </Button>
                         </div>
                     {/if}
                 </div>

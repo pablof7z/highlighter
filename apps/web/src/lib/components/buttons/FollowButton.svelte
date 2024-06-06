@@ -36,12 +36,12 @@ import currentUser from "$stores/currentUser";
                 </button>
             </span>
         {/if}
-        <ul class="dropdown-content bg-base-300 menu flex flex-col items-start whitespace-nowrap">
+        <ul class="dropdown-content bg-foreground/20 menu flex flex-col items-start whitespace-nowrap">
             {#each $sortedUserLists as list}
                 <li>
                     <button class="flex flex-row items-center gap-2 w-full">
                         {#if list.items.map(t => t[1]).includes(user.pubkey)}
-                            <Checkbox class="w-5 h-5 text-success" />
+                            <Checkbox class="w-5 h-5 text-green-500" />
                         {:else}
                             <Plus class="w-5 h-5 text-zinc-500" />
                         {/if}

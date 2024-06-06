@@ -32,7 +32,7 @@ import { ndk } from "$stores/ndk.js";
                     <Name
                         {userProfile}
                         {fetching}
-                        class="text-right text-white text-[15px] font-medium"
+                        class="text-right text-foreground text-[15px] font-medium"
                     />
                 </span>
                 <div class="truncate text-xs font-light text-neutral-500">
@@ -46,6 +46,6 @@ import { ndk } from "$stores/ndk.js";
 <style lang="postcss">
     .active {
         @apply w-full;
-        @apply text-white p-3;
+        @apply text-foreground p-3;
     }
 </style>

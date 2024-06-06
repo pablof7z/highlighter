@@ -26,7 +26,7 @@ import Name from '$components/User/Name.svelte';
 </script>
 
 <a href={articleLink} class="grow shrink basis-0 flex-col justify-between items-start gap-4 inline-flex h-full">
-    <div class="w-72 h-40 flex-grow bg-base-200 p-6 text-lg overflow-hidden relative rounded-lg">
+    <div class="w-72 h-40 flex-grow bg-foreground/10 p-6 text-lg overflow-hidden relative rounded-lg">
         <div class="w-96">
             {event.content}
         </div>
@@ -40,16 +40,16 @@ import Name from '$components/User/Name.svelte';
             </div>
         {/if}
         <div class="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex">
-            <div class="self-stretch text-white text-[15px] font-medium">
+            <div class="self-stretch text-foreground text-[15px] font-medium">
 
             </div>
             <div class="self-stretch h-[38px] flex-col justify-start items-start gap-1 flex">
                 {#if !skipAuthor}
-                    <div class="self-stretch text-white text-opacity-60 text-sm font-medium">
+                    <div class="self-stretch text-foreground text-opacity-60 text-sm font-medium">
                         <Name  npubMaxLength={12} {user} {userProfile} />
                     </div>
                 {/if}
-                <div class="self-stretch text-white text-opacity-60 text-sm font-medium">
+                <div class="self-stretch text-foreground text-opacity-60 text-sm font-medium">
                     {readTime} min read
                 </div>
             </div>

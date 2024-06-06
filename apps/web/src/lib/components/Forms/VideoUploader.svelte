@@ -1,10 +1,10 @@
 <script lang="ts">
 	import VideoPlayer from "$components/Events/VideoPlayer.svelte";
-    import Input from "./Input.svelte";
+	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
+	import Input from "$components/ui/input/input.svelte";
 	import type { NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { Upload, Link } from "phosphor-svelte";
-    import { createEventDispatcher, onMount } from "svelte";
-	import UploadPaymentRequired from "$lib/drawer/help/upload-payment-required.svelte";
+    import { createEventDispatcher } from "svelte";
 
     export let video: NDKVideo;
     export let videoUrl: string | undefined = undefined;
@@ -22,14 +22,6 @@
         if (!file) return;
 
         videoFile = file;
-
-        const fileSize = file.size;
-
-        if (fileSize < 25 * 1024 * 1024) {
-            provider = "nostr.build";
-        } else {
-            provider = "satellite";
-        }
 
         startUpload = true;
 
@@ -81,17 +73,11 @@
     }
 
     function onPaymentRequired() {
-        $pageDrawerToggle = true;
         startUpload = false;
-        $rightSidebar = {
-            component: UploadPaymentRequired,
-            props: {}
-        }
-
     }
 </script>
 
-<div class="bg-base-300 rounded-md w-full flex flex-col items-center justify-center relative {$$props.wrapperClass}">
+<div class="bg-foreground/20 rounded-md w-full flex flex-col items-center justify-center relative {$$props.wrapperClass}">
     {#if videoUrl}
         <VideoPlayer url={videoUrl} />
     {:else}
@@ -102,15 +88,14 @@
         {/if}
         {#if uploadProgress !== undefined}
             <div class="h-2 bg-accent bottom-0 absolute z-30 left-0 transition-all duration-300" style="width: {uploadProgress}%;"></div>
-            <div class="h-2 bg-base-300 w-full bottom-0 absolute z-20"></div>
+            <div class="h-2 bg-foreground/20 w-full bottom-0 absolute z-20"></div>
         {/if}
 
         <div class="z-10 absolute top-0 w-full h-full bg-black/80"></div>
         <div class="max-w-lg w-full z-10 flex flex-col items-center">
-            <UploadButton
+            <BlossomUpload
                 class="button px-8 py-3 w-fit"
                 progressClass="h-10 w-10"
-                {provider}
                 bind:progress={uploadProgress}
                 type="video"
                 on:uploaded={uploadedVideo}
@@ -120,12 +105,12 @@
             >
                 <Upload class="w-6 h-6" />
                 Upload
-            </UploadButton>
+            </BlossomUpload>
             <div class="flex flex-col w-full border-opacity-50 mt-2">
                 <div class="divider">OR</div>
             </div>
             {#if !showExistingUrlInput}
-                <button class="text-white flex px-8 w-fit whitespace-nowrap" on:click={() => showExistingUrlInput = true}>
+                <button class="text-foreground flex px-8 w-fit whitespace-nowrap" on:click={() => showExistingUrlInput = true}>
                     <Link class="w-6 h-6 mr-2" />
                     Use existing URL
                 </button>
@@ -143,6 +128,6 @@
     {/if}
 
     {#if videoUrl}
-        <button class="font-semibold text-white border rounded-lg px-4 py-2 text-sm my-2 self-start absolute top-2 right-2 z-50" on:click={() => videoUrl = undefined }>Reset</button>
+        <button class="font-semibold text-foreground border rounded-lg px-4 py-2 text-sm my-2 self-start absolute top-2 right-2 z-50" on:click={() => videoUrl = undefined }>Reset</button>
     {/if}
 </div>

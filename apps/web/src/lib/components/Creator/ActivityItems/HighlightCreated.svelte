@@ -23,11 +23,11 @@
             <Avatar {userProfile} {fetching} size="medium" />
             <div class="grow shrink basis-0 flex-col justify-center items-start gap-1 inline-flex">
                 <div class="self-stretch justify-between items-center inline-flex">
-                    <div class="text-white font-semibold leading-5">
+                    <div class="text-foreground font-semibold leading-5">
                         <Name {userProfile} {fetching} />
                     </div>
                 </div>
-                <div class="text-white text-opacity-60 font-normal leading-5">
+                <div class="text-foreground text-opacity-60 font-normal leading-5">
                     <RelativeTime {event} />
                 </div>
             </div>
@@ -35,11 +35,11 @@
     </div>
 
     {#if article}
-        <div class="!text-white font-semibold leading-5">
+        <div class="!text-foreground font-semibold leading-5">
             Shared a highlight of {article.title}
         </div>
     {:else}
-        <div class="!text-white font-semibold leading-5">
+        <div class="!text-foreground font-semibold leading-5">
             Shared a highlight
         </div>
     {/if}

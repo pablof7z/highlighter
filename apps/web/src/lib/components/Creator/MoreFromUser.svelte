@@ -24,8 +24,8 @@
 </script>
 
 <UserProfile {user} let:userProfile let:fetching>
-    <div class="bg-base-200 rounded-box p-6 flex flex-col w-full gap-10">
-        <h1 class="text-white font-semibold text-2xl">
+    <div class="bg-foreground/10 rounded p-6 flex flex-col w-full gap-10">
+        <h1 class="text-foreground font-semibold text-2xl">
             More from
             <Name {userProfile} {fetching} />
         </h1>

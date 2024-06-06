@@ -28,12 +28,12 @@
                 {:else if isVideo(url)}
                     <video src={url} class="w-full h-full object-cover rounded-xl" />
                 {:else}
-                    <div class="bg-base-300h-full overflow-hidden p-4 rounded-xl">
+                    <div class="bg-foreground/20h-full overflow-hidden p-4 rounded-xl">
                         {url}
                     </div>
                 {/if}
                 <button
-                    class="absolute top-2 right-2 p-2 hidden group-hover:block rounded-full bg-opacity-20 cursor-pointer hover:bg-black/50 hover:text-white transition-all duration-200"
+                    class="absolute top-2 right-2 p-2 hidden group-hover:block rounded-full bg-opacity-20 cursor-pointer hover:bg-black/50 hover:text-foreground transition-all duration-200"
                     on:click={() => {uploadedFiles = uploadedFiles.filter(u => u !== url)}}
                 >
                     <X class="w-6 h-6" />
@@ -43,7 +43,7 @@
     </div>
 {/if}
 
-<div class="flex flex-row items-center text-white gap-4">
+<div class="flex flex-row items-center text-foreground gap-4">
     <BlossomUpload class="flex-none p-1 {$$props.buttonClass??""}" on:uploaded={uploaded}>
         <Image class="w-6 h-6" />
     </BlossomUpload>

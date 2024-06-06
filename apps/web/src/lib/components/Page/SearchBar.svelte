@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-    import Input from '$components/Forms/Input.svelte';
+    import Input from '$components/ui/input/input.svelte';
 	import SearchModal from '$modals/SearchModal.svelte';
 	import { pageHeader, searching } from '$stores/layout';
 	import { openModal } from '$utils/modal';
@@ -107,8 +107,7 @@
         color="black"
         label="Search"
         placeholder="Search or enter a URL to highlight"
-        class="grow basis-0 sm:bg-base-200 border-none font-normal sm:pl-14 placeholder:!text-neutral-500 !rounded-full !text-neutral-300
-        sm:focus:outline sm:focus:!outline-base-300 {$$props.inputClass??""}"
+        class="sm:pl-14 {$$props.inputClass??""}"
         on:keyup={keyup}
         on:focus={() => openModal(SearchModal)}
         on:blur={() => noFocus = true}
@@ -123,7 +122,7 @@
 {#if !noFocus}
     <button
         class="
-            absolute sm:fixed top-16 left-0 w-screen h-screen bg-base-100 opacity-80 z-40
+            absolute sm:fixed top-16 left-0 w-screen h-screen bg-background opacity-80 z-40
             sm:pl-20
         "
         on:click={() => dispatch("dismiss")}

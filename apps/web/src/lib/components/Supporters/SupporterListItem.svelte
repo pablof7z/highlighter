@@ -44,13 +44,13 @@
 </script>
 
 <UserProfile {pubkey} let:userProfile let:fetching let:authorUrl>
-    <a href={authorUrl} class="rounded-box flex flex-row gap-8 justify-between discussion-item">
+    <a href={authorUrl} class="rounded flex flex-row gap-8 justify-between discussion-item">
         <div class="flex flex-row gap-4 justify-stretch grow">
             <a href={authorUrl} class="flex-none">
                 <Avatar {pubkey} {userProfile} {fetching} class="w-24 h-24 border-2 border-black" type="square" />
             </a>
             <div class="flex flex-col items-start w-full">
-                <Name {pubkey} {userProfile} {fetching} class="font-medium text-white text-xl" />
+                <Name {pubkey} {userProfile} {fetching} class="font-medium text-foreground text-xl" />
                 {#if tier}
                     <div class="text-xs text-neutral-500">{tierNames[tier]??tier}</div>
                 {/if}
@@ -65,7 +65,7 @@
                 {#if $supporterNote.length > 0}
                     <EventContent event={$supporterNote[0]} ndk={$ndk} class="text-base text-neutral-300" />
                 {:else if $currentUser?.pubkey === pubkey && !showForm}
-                    <button class="self-start button bg-white/10 text-white/60 mt-4 px-4 py-3 truncate max-w-[20rem]" on:click|stopImmediatePropagation|preventDefault={() => showForm = !showForm}>
+                    <button class="self-start button bg-white/10 text-foreground/60 mt-4 px-4 py-3 truncate max-w-[20rem]" on:click|stopImmediatePropagation|preventDefault={() => showForm = !showForm}>
                         Click to add a note
                     </button>
                 {:else if showForm}
@@ -87,10 +87,10 @@
         </div>
 
         <div class="flex flex-col gap-0 items-center justify-center bg-gradient w-[7rem] h-[7rem] mask mask-hexagon flex-none">
-            <div class="text-5xl font-black text-white opacity-80 flex flex-row items-end">
+            <div class="text-5xl font-black text-foreground opacity-80 flex flex-row items-end">
                 <span class="text-2xl opacity-80 absolute -translate-x-5">#</span>{position+1}
             </div>
-            <div class="text-xs text-white">
+            <div class="text-xs text-foreground">
                 Supporter
             </div>
         </div>

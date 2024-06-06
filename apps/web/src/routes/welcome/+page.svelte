@@ -8,8 +8,4 @@
 	};
 </script>
 
-<MainWrapper
-	marginClass="max-w-3xl mx-auto"
->
-    <CreatorOnboardingActions forceView={true} />
-</MainWrapper>
+<CreatorOnboardingActions forceView={true} />

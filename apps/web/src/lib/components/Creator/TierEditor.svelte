@@ -5,6 +5,9 @@
 	import { Check, Trash, Plus } from 'phosphor-svelte';
 	import { slide } from 'svelte/transition';
 	import GlassyInput from '$components/Forms/GlassyInput.svelte';
+    import { Textarea } from "$lib/components/ui/textarea";
+	import Input from '$components/ui/input/input.svelte';
+	import { Button } from '$components/ui/button';
 
     export let tier: NDKSubscriptionTier;
     export let autofocus = false;
@@ -110,30 +113,25 @@
     let perkWithFocus: number | undefined;
 </script>
 
-<div class="w-full rounded-xl flex-col border border-base-200">
+<div class="w-full rounded-xl flex-col border border-border text-muted-foreground">
     <div class="self-stretch flex-col justify-start items-start gap-6 flex">
         <section class="settings w-full">
-            <h1 class="title">Basic details</h1>
+            <h3 class="text-foreground font-semibold uppercase">Basic details</h3>
             <div class="description">
                 Your potential subscribers will see this before deciding to support your work.
             </div>
 
             <div class="field">
-                <div class="title">
+                <div class="text-foreground uppercase text-sm my-2">
                     Name & Description
                 </div>
-                <GlassyInput
-                    label="Tier Name"
+                <Input
                     placeholder="Tier Name"
-                    class="w-full !bg-white/10 !rounded-2xl placeholder:!text-neutral-500 !text-base font-normal border-none"
                     bind:value={name}
+                    class="text-xl py-4 h-fit font-semibold"
                     {autofocus}
                 />
-                <Textarea
-                    color="black"
-                    class="w-full !rounded-2xl !bg-white/10 placeholder:!text-neutral-500 border-none"
-                    bind:value={description}
-                />
+                <Textarea bind:value={description} />
             </div>
             <div class="field">
                 <div class="title">Perks</div>
@@ -142,49 +140,45 @@
                 </div>
 
                 <div class="
-                    flex flex-col gap-2 rounded-box p-2
-                    {perks.length > 0 ? "bg-white/10" : ""}
+                    flex flex-col gap-2 rounded p-2
                 ">
                     {#each perks as perk, i}
-                        <div class="flex flex-row gap-2 w-full items-center group perk-item" in:slide>
+                        <div class="flex flex-row gap-2 w-full items-center group perk-item">
                             <div class="relative w-full flex-grow flex flex-row items-center">
-                                <GlassyInput
+                                <Input
                                     tabindex={i+1}
                                     autofocus={i === perks.length - 1 && name.length > 0}
                                     bind:value={perk}
                                     on:focus={() => perkWithFocus = i}
                                     on:blur={() => perkWithFocus = undefined}
                                     on:keydown={perkKeyDown}
-                                    class="w-full pl-12 text-sm !rounded-2xl !bg-transparent border-none font-normal !py-1"
+                                    class="px-12 text-sm"
                                 />
                                 <Check
-                                    class="w-8 absolute left-2 text-success"
+                                    class="w-8 absolute left-2 text-green-500"
                                 />
+                                <button class="
+                                    absolute right-2 text-foreground font-semibold text-sm flex flex-row gap-2 px-2 transition-all duration-300
+                                    {perkWithFocus === i ? "sm" : "sm:opacity-0 group-hover:sm:opacity-100" }
+                                "
+                                    on:click={() => deletePerk(i)}
+                                >
+                                    <Trash />
+                                </button>
                             </div>
-                            <button class="
-                                text-white font-semibold text-sm flex flex-row gap-2 px-2 transition-all duration-300
-                                {perkWithFocus === i ? "sm" : "sm:opacity-0 group-hover:sm:opacity-100" }
-                            "
-                                on:click={() => deletePerk(i)}
-                            >
-                                <Trash />
-                            </button>
                         </div>
                     {/each}
                 </div>
             </div>
 
-            <button class="button-black self-start"
-                    on:click={addPerk}
-                    in:slide
-                >
-                    <Plus />
-                    Add Perk
-                </button>
+            <Button variant="secondary" class="self-start" on:click={addPerk}
+            >
+                <Plus class="inline mr-2" /> Add Perk
+            </Button>
         </section>
 
         <section class="settings w-full">
-            <div class="title">Pricing Options</div>
+            <h3 class="text-foreground font-semibold uppercase">Pricing Options</h3>
             <div class="description flex flex-col gap-2">
                 <p>
                     You can use different currencies and paying intervals.
@@ -207,15 +201,12 @@
                 {/each}
             </div>
 
-            <button class="button-black self-start"
-                    in:slide
-                    on:click={addAmountLine}
-                >
-                    <Plus class="w-5 h-5 ml-2" />
-                    Add pricing option
-                </button>
+            <Button variant="secondary" class="self-start" on:click={addAmountLine}>
+                <Plus class="w-5 h-5 mr-2" />
+                Add pricing option
+            </Button>
         </section>
-
+<!-- 
         <div class="px-3 py-1.5 rounded-lg justify-between w-full items-center gap-2 flex">
             <button
                 class="text-rose-400 text-[15px] font-normal leading-snug"
@@ -225,7 +216,7 @@
             <button class="button" on:click={() => dispatch('close')}>
                 Continue
             </button>
-        </div>
+        </div> -->
     </div>
 </div>
 
@@ -262,11 +253,11 @@
     }
 
     section .section-info .title {
-        @apply text-white font-medium text-lg whitespace-nowrap;
+        @apply text-foreground font-medium text-lg whitespace-nowrap;
     }
 
     section .section-info .description {
-        @apply text-white/60 font-light text-sm;
+        @apply text-foreground/60 font-light text-sm;
     }
 
     section .section-info button {

@@ -2,7 +2,7 @@
 	import { nip19 } from 'nostr-tools';
 	import { goto } from "$app/navigation";
 	import ItemLink from "$components/Events/ItemLink.svelte";
-	import Input from "$components/Forms/Input.svelte";
+    import Input from '$components/ui/input/input.svelte';
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { userFollows } from "$stores/session";
 	import { vanityUrls, vanityUrlsByPubkey } from "$utils/const";
@@ -166,7 +166,7 @@ import { ndk } from "$stores/ndk.js";
 </script>
 
 <div class="
-    flex flex-row gap-2 w-full items-center border-b border-base-300 {$$props.inputContainerClass??""}
+    flex flex-row gap-2 w-full items-center border-b border-border {$$props.inputContainerClass??""}
     {$$props.containerClass??""}
 ">
     {#if searching}
@@ -176,11 +176,10 @@ import { ndk } from "$stores/ndk.js";
     {/if}
     
     <Input
-        color="black"
         bind:value
         placeholder="Search"
         autofocus={true}
-        class="bg-transparent w-full border-none text-xl"
+        class="w-full border-none text-xl focus-visible:!outline-none focus-visible:!ring-0 foucs-visible:!outline-offset-0"
         on:keyup={keydown}
         on:focus={() => displayResults = true}
     />
@@ -222,6 +221,6 @@ import { ndk } from "$stores/ndk.js";
     }
     
     li.selected, li:hover {
-        @apply bg-base-300;
+        @apply bg-foreground/10;
     }
 </style>

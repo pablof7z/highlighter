@@ -2,7 +2,7 @@
 	import { Plus, Lock, PaperPlaneTilt } from 'phosphor-svelte';
 	import { curationHasEvent, toggleItemInCuration, createNewCuration, getStoreForCurationEvent } from "$utils/curations";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
-    import Input from "$components/Forms/Input.svelte";
+    import Input from '$components/ui/input/input.svelte';
 	import { ndk } from "$stores/ndk";
 
     export let event: NDKEvent;
@@ -71,7 +71,7 @@
 
 <style lang="postcss">
     li {
-        @apply p-2 w-full hover:bg-base-300;
+        @apply p-2 w-full hover:bg-foreground/20;
     }
 
     button {

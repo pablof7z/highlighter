@@ -57,7 +57,7 @@
     </div>
 {:else if success}
     <div class="flex flex-col items-center justify-center text-black gap-6">
-        <div class="flex flex-row text-success gap-6 items-center">
+        <div class="flex flex-row text-green-500 gap-6 items-center">
             <CheckCircle class="w-12 h-12" />
             <div class="text-2xl font-semibold">Connected!</div>
         </div>

@@ -67,7 +67,7 @@
     >
         <img src="/images/published.png" class="mx-auto w-3/5 h-3/5 opacity-60 my-8" />
         <blockquote slot="afterCta" class="app-quote relative my-8">
-            <p class="z-1 relative text-white/60 text-lg">
+            <p class="z-1 relative text-foreground/60 text-lg">
                 “And what can life be worth if the first rehearsal for life is life itself? That is why life is always like a sketch. No, "sketch" is not quite a word, because a sketch is an outline of something, the groundwork for a picture, whereas the sketch that is our life is a sketch for nothing, an outline with no picture.”
             </p>
 
@@ -101,7 +101,7 @@
             {/if}
 
             <blockquote class="app-quote relative my-8">
-                <p class="z-1 relative text-white/60 text-lg">
+                <p class="z-1 relative text-foreground/60 text-lg">
                     “And what can life be worth if the first rehearsal for life is life itself? That is why life is always like a sketch. No, "sketch" is not quite a word, because a sketch is an outline of something, the groundwork for a picture, whereas the sketch that is our life is a sketch for nothing, an outline with no picture.”
                 </p>
 

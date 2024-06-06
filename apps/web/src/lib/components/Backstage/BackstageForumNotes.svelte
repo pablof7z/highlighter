@@ -37,7 +37,7 @@
     </div>
 
     {#if eosed && $forumActivity.length === 0}
-        <div class="text-white text-center">
+        <div class="text-foreground text-center">
             No forum activity
         </div>
     {:else}
@@ -48,7 +48,7 @@
                     <div class="flex flex-col items-start">
                         <div class="text-base truncate">
                             {#if e.tagValue("title")}
-                                <span class="text-white font-medium">
+                                <span class="text-foreground font-medium">
                                     {e.tagValue("title")}
                                 </span>
                             {:else}
@@ -67,7 +67,7 @@
     {/if}
 
     {#if user.pubkey === $currentUser?.pubkey}
-        <div class="text-white">
+        <div class="text-foreground">
             <button class="button" on:click={newPost}>
                 Create New Post
             </button>

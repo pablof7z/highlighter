@@ -52,7 +52,7 @@
         align-items: center;
         justify-content: center;
         height: 100vh;
-        background-color: #000;
+        @apply bg-background;
     }
 
     .shadow {

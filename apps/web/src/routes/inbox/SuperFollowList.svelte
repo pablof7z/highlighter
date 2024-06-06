@@ -53,7 +53,7 @@
     <div class="w-11 h-11 p-2.5 bg-zinc-800 rounded-[100px] justify-center items-center flex">
         <MagicWand class="w-5 h-5 relative flex-col justify-start items-start flex"></MagicWand>
     </div>
-    <span class="text-right text-white text-[15px] font-medium name">All Feeds</span>
+    <span class="text-right text-foreground text-[15px] font-medium name">All Feeds</span>
 </a>
 {#each activeView as pubkey (pubkey)}
     <button class="w-full" on:click={() => open = false}>

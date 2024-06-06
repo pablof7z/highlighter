@@ -21,7 +21,7 @@
     <div class="relative">
         <Textarea
             bind:value={article.summary}
-            class="min-h-[10rem] w-full !bg-white/5 rounded-box focus:!border-white/20"
+            class="min-h-[10rem] w-full !bg-white/5 rounded focus:!border-white/20"
         />
         {#if duration}
             <DurationTag value={duration} class="absolute bottom-2 right-2" />

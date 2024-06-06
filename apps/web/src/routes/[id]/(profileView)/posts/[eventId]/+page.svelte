@@ -84,7 +84,7 @@
                                 Back to Community posts
                             </button>
 
-                            <button class="text-left truncate text-2xl font-bold text-white">{event.tagValue("title")}</button>
+                            <button class="text-left truncate text-2xl font-bold text-foreground">{event.tagValue("title")}</button>
                         </div>
                     {/if}
 
