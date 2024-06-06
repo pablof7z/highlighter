@@ -6,6 +6,7 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import { NDKEvent, dvmSchedule } from "@nostr-dev-kit/ndk";
 	import { Check } from "phosphor-svelte";
 	import { closeModal } from '$utils/modal';
+	import ScheduleModal from "./ScheduleModal.svelte";
 
     export let event: NDKEvent;
 
@@ -47,12 +48,12 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
     let scheduling = false;
     let scheduled = false;
 
-    async function schedule() {
+    async function schedule(time: number) {
         scheduling = true;
         try {
-            if (!publishAt) return;
+            if (!time) return;
             const repost = await event.repost(false);
-            repost.created_at = Math.floor(publishAt / 1000);
+            repost.created_at = Math.floor(time / 1000);
             repost.id = "";
             repost.sig = "";
             await repost.sign();
@@ -67,55 +68,8 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
     }
 </script>
 
-<ModalShell color="glassy" class="" title="Schedule Boost" on:close>
-    <div class="flex flex-col w-full text-sm border-b border-border items-center pb-4">
-        <div class="flex flex-row items-center gap-2 justify-center ">
-            Scheduling provided by
-            <AvatarWithName user={dvmUser} avatarType="circle" avatarSize="small" class="text-foreground" />
-        </div>
-        <a href="/settings/services" class="text-xs underline">Configure a different provider</a>
-    </div>
-
-    {#if scheduled}
-        <div class="flex flex-col items-center gap-4">
-            <span class="text-2xl text-accent">
-                <Check class="w-12 h-12 text-green-500" />
-            </span>
-            <span class="text-xl text-foreground">Scheduled!</span>
-        </div>
-    {:else}
-        <ul class="menu w-full">
-            <li><button on:click={setTime(60)}>In an hour</button></li>
-            <li><button on:click={setTime(60*3)}>In 3 hours</button></li>
-            <li><button on:click={setTime(60*8)}>In 8 hours</button></li>
-            <li><button on:click={setTime(60*24)}>In 24 hours</button></li>
-            <li><button on:click={setRelativeTime(1, 9)}>Tomorrow 9am</button></li>
-            <li><button on:click={setTime(60*24*7)}>Next week</button></li>
-        </ul>
-
-        <div class="flex flex-row gap-2">
-            <input type="datetime-local" bind:value={publishAtVal} class="input rounded-full !bg-white/5" />
-        </div>
-
-        {#if publishAt}
-            <span class="text-sm text-foreground/50">
-                Schedule repost will be published&nbsp;
-                <RelativeTime timestamp={publishAt} class="text-foreground" />
-            </span>
-        {/if}
-
-        <div class="flex flex-row gap-2 w-full justify-end">
-            <button class="btn btn-ghost" on:click={() => closeModal()}>
-                Cancel
-            </button>
-
-            <button class="button grow" on:click={schedule} {disabled}>
-                {#if scheduling}
-                    <span class="loading loading-sm"></span>
-                {:else}
-                    Schedule
-                {/if}
-            </button>
-        </div>
-    {/if}
-</ModalShell>
+<ScheduleModal
+    title="Schedule Boost"
+    onSchedule=(schedule}
+    action="Repost will be published&nbsp;"
+/>

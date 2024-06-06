@@ -83,7 +83,7 @@
             </div>
 
             <div class="right">
-                {#each actionButtons as item}
+                {#each actionButtons as item, i}
                     <Button onClick={item.fn} class="!bg-accent !text-accent-foreground">
                         {item.name}2
                     </Button>

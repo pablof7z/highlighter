@@ -85,8 +85,8 @@
 <div class="z-20 w-full {collapsed ? "" : "min-h-[15rem]"}" on:touchstart={() => {if (collapsed) collapsed = false}}>
     <div class="relative h-full w-full">
         {#if userProfile?.banner}
-            <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-[1] transition-all duration-300 {collapsed ? "opacity-20" : ""}" alt={userProfile?.name}>
-            <div class="absolute w-full h-full bg-gradient-to-b from-transparent to-base-100 z-[2]"></div>
+            <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-1 transition-all duration-300 {collapsed ? "opacity-20" : ""}" alt={userProfile?.name}>
+            <div class="absolute w-full h-full bg-gradient-to-b from-transparent to-base-100 z-2"></div>
         {/if}
 
         <!-- Container -->

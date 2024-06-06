@@ -9,6 +9,7 @@
 	import NwcIcon from '$icons/NwcIcon.svelte';
 	import WalletConnectStripe from './WalletConnectStripe.svelte';
 	import { NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
+	import Textarea from '$components/ui/textarea/textarea.svelte';
 
     type Mode = "stripe" | "alby" | "mutiny" | "nwc" | "nwa" | "zap";
 
@@ -45,9 +46,9 @@
     }
 </script>
 
-<div class="flex flex-col gap-[1px] rounded w-full">
+<div class="flex flex-col w-full">
     {#if mode}
-        <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded flex flex-row gap-4 items-center mb-4" on:click={() => mode = undefined} transition:slide>
+        <button class="bg-secondary hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded flex flex-row gap-4 items-center mb-4" on:click={() => mode = undefined} transition:slide>
             <div class="w-12 h-12 flex flex-col items-center bg-black justify-center mask mask-squircle flex-none">
                 <ArrowLeft class="w-8 h-8 text-neutral-500" />
             </div>
@@ -64,7 +65,7 @@
         {/if}
 
         {#if !mode || mode === 'stripe'}
-        <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded flex flex-row gap-4 items-stretch" on:click={() => mode = "stripe"} transition:slide>
+        <button class="bg-secondary hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded flex flex-row gap-4 items-stretch" on:click={() => mode = "stripe"} transition:slide>
                 <img src="/images/cc.png" class="w-12 h-12 mask mask-squircle bg-zinc-700" />
                 <div class="flex flex-col items-start w-full">
                     <div class="font-normal text-lg text-foreground">
@@ -83,23 +84,24 @@
     <h2 class="text-foreground text-lg font-medium mt-4">Pay in Bitcoin</h2>
     {/if}
 
+    <div class="rounded w-full border border-border flex flex-col">
     {#if !mode || mode === 'alby'}
-    <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded-t-box flex flex-row gap-4 items-stretch" on:click={() => mode = "alby"} transition:slide>
-        <img src="https://raw.githubusercontent.com/getAlby/media/4647cca3705445f81d204fc6cd19287f085dc644/Alby-logo-icons/Alby%20logo.jpg" class="w-12 h-12 mask mask-squircle bg-zinc-700" />
-        <div class="flex flex-col items-start w-full">
-            <div class="font-normal text-lg text-foreground">
-                Alby Wallet
-            </div>
+        <button class="bg-secondary hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded-t-box flex flex-row gap-4 items-stretch" on:click={() => mode = "alby"} transition:slide>
+            <img src="https://raw.githubusercontent.com/getAlby/media/4647cca3705445f81d204fc6cd19287f085dc644/Alby-logo-icons/Alby%20logo.jpg" class="w-12 h-12 mask mask-squircle bg-zinc-700" />
+            <div class="flex flex-col items-start w-full">
+                <div class="font-normal text-lg text-foreground">
+                    Alby Wallet
+                </div>
 
-            <div class="font-normal text-sm text-neutral-500">
-                Connect with your Alby wallet
+                <div class="font-normal text-sm text-neutral-500">
+                    Connect with your Alby wallet
+                </div>
             </div>
-        </div>
-    </button>
+        </button>
     {/if}
 
     {#if !mode || mode === 'mutiny'}
-    <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch" on:click={() => mode = "mutiny"} transition:slide>
+    <button class="bg-secondary hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch" on:click={() => mode = "mutiny"} transition:slide>
         <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded flex-none">
             <img src="https://void.cat/d/CZPXhnwjqRhULSjPJ3sXTE.webp" class="w-12 h-12 mask mask-squircle bg-zinc-700" />
         </div>
@@ -116,7 +118,7 @@
     {/if}
 
     {#if !mode || mode === 'nwc'}
-    <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch" on:click={() => mode = "nwc"} transition:slide>
+    <button class="bg-secondary hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch" on:click={() => mode = "nwc"} transition:slide>
         <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded flex-none">
             <NwcIcon class="w-12 h-12 mask mask-squircle" />
         </div>
@@ -133,7 +135,7 @@
     {/if}
 
     <!-- {#if !mode || mode === 'nwa'}
-    <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch rounded-b-box" on:click={() => mode = "nwa"} transition:slide>
+    <button class="bg-secondary hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch rounded-b-box" on:click={() => mode = "nwa"} transition:slide>
         <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded flex-none">
             <ZapIcon class="w-8 h-8 mask mask-squircle text-accent" />
         </div>
@@ -148,6 +150,7 @@
         </div>
     </button>
     {/if} -->
+    </div>
 </div>
 
 
