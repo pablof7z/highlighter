@@ -30,7 +30,7 @@
                 </div>
             {/if}
 
-            <SubscribeButton user={item.author} collapsed={true} />
+            <SubscribeButton user={item.author} />
         </div>
     </div>
 

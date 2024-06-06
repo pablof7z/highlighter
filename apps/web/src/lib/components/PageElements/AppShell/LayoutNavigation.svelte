@@ -91,8 +91,8 @@
     <div class="
         flex flex-col h-full
     ">
-        <div class="h-[var(--layout-header-height)] flex items-center justify-center fixed top-0 z-[99999]">
-            <LogoSmall class="w-10 m-4" />
+        <div>
+            <LogoSmall class="w-full h-full scale-75 hover:scale-100 transition-all duration-300" />
         </div>
 
         <div class="h-[var(--layout-header-height)] mb-6"></div>

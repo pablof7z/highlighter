@@ -1,18 +1,14 @@
 <script lang="ts">
     import ModalShell from "$components/ModalShell.svelte";
-    import AvatarWithName from "$components/User/AvatarWithName.svelte";
     import { ndk } from "$stores/ndk.js";
-import RelativeTime from "$components/PageElements/RelativeTime.svelte";
     import { Check } from "phosphor-svelte";
-    import { closeModal } from '$utils/modal';
 	import Button from "$components/ui/button/button.svelte";
 	import { NavigationOption } from "../../app";
-	import currentUser from "$stores/currentUser";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import Avatar from "$components/User/Avatar.svelte";
 	import Name from "$components/User/Name.svelte";
-    import * as HoverCard from "$lib/components/ui/hover-card/index.js";
 	import { Input } from "$components/ui/input";
+	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 
     export let title = "Schedule Boost";
     export let action: string = "Post will be published";
@@ -84,9 +80,9 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
     <div class="flex" slot="footerExtra">
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-                <Button variant="outline" size="sm" class="flex flex-row items-center gap-2">
+                <Button variant="outline" size="sm" class="flex flex-row items-center gap-1 text-xs">
                     <Avatar user={dvmUser} type="circle" size="tiny" />
-                    <Name user={dvmUser} />
+                    via <Name user={dvmUser} />
                 </Button>
             </DropdownMenu.Trigger>
 
@@ -115,8 +111,15 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
             <li><button on:click={setTime(60*24*7)}>Next week</button></li>
         </ul>
 
-        <div class="flex flex-row gap-2 p-1 mt-6">
+        <div class="flex flex-col gap-2 p-1 mt-6">
             <Input type="datetime-local" class="justify-center text-lg font-light" bind:value={publishAtVal} />
+
+            {#if action}
+                <span class="text-sm text-muted-foreground">
+                    {action}
+                    <RelativeTime timestamp={publishAt} class="text-foreground" />
+                </span>
+            {/if}
         </div>
     {/if}
 </ModalShell>
@@ -131,7 +134,7 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
     }
 
     button {
-        @apply text-foreground text-sm font-light w-full p-4 text-left;
+        @apply text-foreground text-sm font-light w-full px-4 py-2 text-left;
         @apply hover:bg-secondary;
     }
 </style>

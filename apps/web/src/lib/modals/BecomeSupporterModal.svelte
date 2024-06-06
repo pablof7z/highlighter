@@ -25,6 +25,8 @@
 	import ManualPayment from '$components/Payment/ManualPayment.svelte';
 	import currentUser from '$stores/currentUser';
 	import { ndk } from '$stores/ndk';
+	import { Button } from '$components/ui/button';
+    import * as Tabs from "$lib/components/ui/tabs";
 
     export let user: NDKUser;
 
@@ -115,21 +117,17 @@
 
         {#if !paid}
             {#if !bitcoin}
-                <div class="flex flex-col flex-nowrap gap-6 items-stretch sm:items-center">
+                <div class="flex flex-col flex-nowrap gap-6 items-center justify-self-center sm:items-center">
                     {#if $availableCurrencies.length > 1}
-                        <div class="flex flex-row gap-2 bg-white/10 rounded">
-                            {#each $availableCurrencies as currency}
-                                <RadioButton
-                                    bind:currentValue={selectedCurrency}
-                                    value={currency}
-                                    label={currencyCode(currency)}
-                                    class="w-fit whitespace-nowrap !p-2 !px-4"
-                                    skipCheck={true}
-                                >
-                                    {currencyCode(currency)}
-                                </RadioButton>
-                            {/each}
-                        </div>
+                        <Tabs.Root bind:value={selectedCurrency}>
+                            <Tabs.List>
+                                {#each $availableCurrencies as currency}
+                                    <Tabs.Trigger value={currency}>
+                                        <span class="">{currencyCode(currency)}</span>
+                                    </Tabs.Trigger>
+                                {/each}
+                            </Tabs.List>
+                        </Tabs.Root>
                     {/if}
 
                     <div class="
@@ -164,15 +162,15 @@
                     </div>
 
                     <div
-                        class="justify-center items-stretch gap-5 flex-col-reverse sm:flex-row flex w-full"
+                        class="justify-center items-center gap-5 flex-col-reverse sm:flex-row flex w-full"
                     >
-                        <button
-                            class="button !bg-white/10 text-neutral-400 font-normal btn-rounded px-6"
+                        <Button
+                            variant="outline"
                             on:click={() => closeModal() }
-                        >Cancel</button>
+                        >Cancel</Button>
                         {#if selectedAmount && selectedCurrency}
-                            <button
-                                class="button"
+                            <Button
+                                size="lg"
                                 disabled={!selectedAmount}
                                 on:click={() => bitcoin = true}
                             >
@@ -182,7 +180,7 @@
                                     Support
                                 {/if}
                                 for {currencyFormat(selectedCurrency, selectedAmount)}/{termToShort(selectedTerm)}
-                            </button>
+                            </Button>
                         {/if}
                     </div>
                 </div>
@@ -224,10 +222,10 @@
                             tier={selected}
                         />
 
-                        <button class="font-normal" on:click={() => { manualPayment = true }}>
+                        <Button variant="outline" class="font-normal" on:click={() => { manualPayment = true }}>
                             Or
-                            <span class="text-foreground">proceed without connecting a wallet</span>
-                        </button>
+                            proceed without connecting a wallet
+                        </Button>
                         
                     {:else if selectedAmount && selectedCurrency}
                         <Subscribe

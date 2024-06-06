@@ -45,7 +45,7 @@
 
     {#if !currentUserSubscriberTier}
         {#if hasLNPayments !== false}
-            <Button on:click={openSupportModal}>
+            <Button variant="accent" on:click={openSupportModal}>
                 <span class="hidden lg:inline">
                     {#if $tiers && $tiers.length > 0}
                         Subscribe

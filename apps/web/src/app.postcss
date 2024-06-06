@@ -311,20 +311,22 @@ section.settings .field {
 
 .tier-container {
 	@apply max-sm:w-full;
-	@apply !rounded bg-white/10;
+	@apply !rounded bg-secondary;
 	padding: 1px;
 }
 
 .tier-container.selected {
-	background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD9488ff 0%, #7092A0ff 100%);
+	@apply bg-primary;
 }
 
 .tier {
-	@apply self-stretch !rounded justify-between items-start flex-col max-sm:w-full sm:w-[400px] inline-flex h-full bg-black/20;
-	@apply flex flex-col text-neutral-300
+	@apply self-stretch !rounded justify-between items-start flex-col max-sm:w-full sm:w-[400px] inline-flex h-full bg-secondary;
+	@apply flex flex-col text-secondary-foreground;
 }
 
-.tier.selected { @apply bg-black/80; }
+.tier.selected {
+	@apply text-secondary-foreground;
+}
 
 .tier > div {
 	@apply py-4 px-6;
@@ -337,7 +339,7 @@ section.settings .field {
 .tier .title { @apply flex flex-col items-start w-full; }
 
 .tier .title {
-	@apply text-2xl font-medium w-full items-start text-foreground text-left;
+	@apply text-2xl font-medium w-full items-start text-left;
 }
 
 .tier > .price {
@@ -345,15 +347,18 @@ section.settings .field {
 }
 
 .tier > .price .price {
-	@apply text-2xl text-neutral-500 font-medium;
+	@apply text-2xl font-medium;
 }
 
 .tier.selected > .price .price {
-	@apply text-foreground;
 }
 
 .tier > .description-and-perks {
-	@apply flex flex-col items-start gap-4 text-neutral-400;
+	@apply flex flex-col items-start gap-4 text-muted-foreground;
+}
+
+.tier.selected > .description-and-perks {
+	@apply text-secondary-foreground;
 }
 
 .tier .description { @apply text-base text-left; }
@@ -372,7 +377,7 @@ section.settings .field {
 }
 
 button.name, button span.name {
-	@apply font-semibold !text-primary;
+	@apply font-semibold;
 }
 
 .note-media--wrapper {
