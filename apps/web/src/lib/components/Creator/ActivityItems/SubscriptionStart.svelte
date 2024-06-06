@@ -47,37 +47,37 @@ import { NDKArticle, NDKEvent, profileFromEvent, type NDKUserProfile, type NDKIn
     <div class="self-stretch justify-start items-center inline-flex">
         <div class="grow shrink basis-0 justify-start items-center gap-4 flex">
             <div class="w-12 h-12 p-2 bg-neutral-700 rounded-full justify-center items-center flex">
-                <ArrowDown class="text-success" />
+                <ArrowDown class="text-green-500" />
             </div>
             <div class="grow shrink basis-0 flex-col justify-center items-start gap-1 inline-flex">
                 <div class="self-stretch justify-between items-center inline-flex">
-                    <div class="text-white font-semibold leading-5">New Subscriber!</div>
+                    <div class="text-foreground font-semibold leading-5">New Subscriber!</div>
                     {#if amountTag}
-                        <div class="!text-success font-semibold leading-5">
+                        <div class="!text-green-500 font-semibold leading-5">
                             {currencyFormat(currency, parseInt(amount))}/{termToShort(term)}
                         </div>
                     {/if}
                 </div>
-                <div class="text-white text-opacity-60 font-normal leading-5 text-xs">
+                <div class="text-foreground text-opacity-60 font-normal leading-5 text-xs">
                     <RelativeTime {event} />
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="flex flex-row gap-2 items-end p-6 bg-base-300 rounded-box w-full">
+    <div class="flex flex-row gap-2 items-end p-6 bg-foreground/20 rounded w-full">
         <Avatar {userProfile} {fetching} size="small" />
         <div>
-            <Name {userProfile} {fetching} class="text-white font-semibold" />
+            <Name {userProfile} {fetching} class="text-foreground font-semibold" />
 
             {#if tierEvent}
                 subscribed to
-                <span class="text-white font-semibold">{tierEvent.title}</span>
+                <span class="text-foreground font-semibold">{tierEvent.title}</span>
             {/if}
 
             {#if clientTag}
                 via
-                <span class="text-white">
+                <span class="text-foreground">
                     {#if clientProfile}
                         {clientProfile.name}
                         {#if clientProfile.image}
@@ -93,7 +93,7 @@ import { NDKArticle, NDKEvent, profileFromEvent, type NDKUserProfile, type NDKIn
 
 
     {#if event.content.length > 0}
-        <div class="self-stretch text-white font-normal leading-5">
+        <div class="self-stretch text-foreground font-normal leading-5">
             {event.content}
         </div>
     {/if}

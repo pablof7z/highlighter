@@ -45,7 +45,7 @@ import { ndk } from "$stores/ndk.js";
 <div class="w-full " bind:this={container}>
     <div class="flex flex-col gap-6 {$$props.class??""}">
         <div class="flex flex-col gap-3 {$$props.contentClass??""}">
-            <EventContent ndk={$ndk} event={highlight} class="highlight font-serif leading-8 text-lg" />
+            <EventContent ndk={$ndk} event={highlight} class="highlight leading-8 font-serif" />
             {#if !skipHighlighter}
                 <AvatarWithName user={highlight.author} avatarSize="tiny" class="text-xs text-opacity-60" leadingText="highlighted by" />
             {/if}
@@ -55,8 +55,8 @@ import { ndk } from "$stores/ndk.js";
     {#key highlightedArticle}
         {#if highlightedArticle}
             <a href={highlightedArticleLink} class="
-                flex bg-white/5 border-t-2 border-base-300 p-4 text-neutral-500
-                hover:bg-white/10
+                flex bg-secondary border-t-2 border-border p-4
+                hover:bg-foreground/10
                 hover:text-neutral-400 transition-all duration-200
                 rounded-b-box
                 truncate
@@ -65,7 +65,7 @@ import { ndk } from "$stores/ndk.js";
                     <UserProfile user={highlightedArticle.author} bind:authorUrl={articleAuthorUrl} let:userProfile let:fetching>
                         <div class="flex flex-row gap-4 items-stretch w-full">
                             {#if highlightedArticle.image}
-                                <img src={highlightedArticle.image} class="w-12 h-12 object-cover mask mask-squircle" />
+                                <img src={highlightedArticle.image} class="w-12 h-12 object-cover rounded" />
                             {:else}
                                 <Avatar {userProfile} {fetching} class="w-12 h-12 object-cover" type="square" />
                             {/if}
@@ -81,13 +81,13 @@ import { ndk } from "$stores/ndk.js";
                         </div>
                     </UserProfile>
                 {:else if typeof highlightedArticle === "string"}
-                    <a href="/load?url={encodeURIComponent(highlightedArticle)}" class="text-white truncate">{highlightedArticle}</a>
+                    <a href="/load?url={encodeURIComponent(highlightedArticle)}" class="text-foreground truncate">{highlightedArticle}</a>
                 {:else if highlightedArticle instanceof NDKEvent}
                     <div class="flex flex-row items-center gap-2 overflow-hidden whitespace-nowrap truncate flex-grow">
                         <Avatar user={highlightedArticle.author} class="w-12 h-12 object-cover" type="square" />
                         <div class="w-full truncate text-neutral-500 font-medium">
                             Note by
-                            <Name npubMaxLength={12} user={highlightedArticle.author} class="text-white text-sm" />
+                            <Name npubMaxLength={12} user={highlightedArticle.author} class="text-foreground text-sm" />
                         </div>
                     </div>
                     

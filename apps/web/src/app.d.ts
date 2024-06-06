@@ -55,6 +55,7 @@ export type NavigationOption = {
     }
     fn?: () => void;
     premiumOnly?: boolean;
+	buttonProps?: Record<string, any>;
 };
 
 declare global {

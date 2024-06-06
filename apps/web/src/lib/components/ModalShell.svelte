@@ -7,7 +7,7 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { appMobileView } from '$stores/app';
 	import { X } from 'phosphor-svelte';
-	import { Block, Link, Toolbar } from 'konsta/svelte';
+	import { Block, Button, Link, Toolbar } from 'konsta/svelte';
 	import { NavigationOption } from '../../app';
 	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
 
@@ -84,11 +84,20 @@
 
             <div class="right">
                 {#each actionButtons as item}
-                    <Link onClick={item.fn}>
-                        {item.name}
-                    </Link>
+                    <Button onClick={item.fn} class="!bg-accent !text-accent-foreground">
+                        {item.name}2
+                    </Button>
                 {/each}
             </div>
+        </Toolbar>
+        {#if $$slots.titleRight}
+            <div class="mx-auto">
+                <slot name="titleRight" />
+            </div>
+        {/if}
+    {:else if $$slots.titleRight}
+        <Toolbar translucent top class="mx-auto !w-fit mt-4">
+            <slot name="titleRight" />
         </Toolbar>
     {/if}
     <Block class="max-h-[80vh] overflow-y-auto {$$props.class??""}">
@@ -104,11 +113,10 @@
                 <div class="
                     !rounded-3xl
                     max-sm:!rounded-b-none
-                    shadow-xl
-                    border border-base-300
+                    border border-border
                     w-fit mx-auto
                     overflow-clip
-                    bg-base-100
+                    bg-background
                     p-6
                     {$$props.class}
                 " style="pointer-events: auto;"
@@ -116,13 +124,13 @@
                     <div class="inner flex flex-col items-center transition-all duration-300
                     {$$props.class}">
                         {#if title}
-                            <div class="flex flex-row justify-between w-full border-b border-base-300 pb-2 mb-4">
+                            <div class="flex flex-row justify-between w-full border-b border-border pb-2 mb-4">
                                 <div class="flex flex-row flex-none gap-4 items-end justify-start">
                                     <button on:click={closeModal}>
-                                        <X class="text-white w-7 h-7" />
+                                        <X class="text-foreground w-7 h-7" />
                                     </button>
                                     
-                                    <h3 class="title w-full text-left text-white font-bold text-xl">{title}</h3>
+                                    <h3 class="title w-full text-left text-foreground font-bold text-xl">{title}</h3>
                                 </div>
 
                                 {#if $$slots.titleRight}
@@ -140,7 +148,13 @@
                                 <slot name="footer" />
                             </div>
                         {:else if actionButtons.length > 0}
-                            <div class="w-full flex flex-row gap-4 items-center justify-end flex-none mt-4">
+                            <div class="w-full flex flex-row gap-4 items-center justify-between flex-none mt-4">
+                                {#if $$slots.footerExtra}
+                                    <slot name="footerExtra" />
+                                {:else}
+                                    <div class="grow"></div>
+                                {/if}
+                                
                                 <HorizontalOptionsList options={actionButtons} />
                             </div>
                         {/if}
@@ -155,19 +169,6 @@
 
 <style lang="postcss">
     .title {
-        @apply w-full text-left text-white font-bold text-lg;
-    }
-    
-    .white .card .inner {
-        @apply bg-white;
-    }
-
-    .black .card .inner {
-        @apply bg-black border border-base-300 p-10;
-    }
-
-    .card {
-        @apply bg-base-200 bg-opacity-80 backdrop-blur-[48px];
-        @apply border border-white/10;
+        @apply w-full text-left text-foreground font-bold text-lg;
     }
 </style>

@@ -21,7 +21,7 @@
     <TopZap {event} class="text-sm w-fit whitespace-nowrap" avatarSize="small" bind:zapEvent={topZapEvent} />
     <div class="flex flex-row gap-2 items-center text-sm" class:hidden={!topZapEvent}>
         <CrownSimple class="w-6 h-6 text-accent" />
-        <div class="text-white whitespace-nowrap">Top Zapper</div>
+        <div class="text-foreground whitespace-nowrap">Top Zapper</div>
     </div>
 </div>
 

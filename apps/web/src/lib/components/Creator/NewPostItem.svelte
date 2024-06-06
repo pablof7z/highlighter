@@ -25,7 +25,7 @@
     <div class="bg w-10 h-10 rounded-lg backdrop-blur-lg justify-center items-center gap-2.5 inline-flex p-2">
         <svelte:component this={icon} class="w-full h-full" weight="fill" />
     </div>
-    <div class="text-white text-opacity-70 text-sm font-medium">
+    <div class="text-foreground text-opacity-70 text-sm font-medium">
         {title}
     </div>
 </a>

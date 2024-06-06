@@ -49,7 +49,7 @@
             class:list-item--active={active}
         >
             <div class="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex max-h-36 overflow-clip">
-                <div class="self-stretch text-white text-base font-medium leading-relaxed max-h-12 overflow-clip">
+                <div class="self-stretch text-foreground text-base font-medium leading-relaxed max-h-12 overflow-clip">
                     <AvatarWithName {user} {userProfile} {fetching} class="max-w-[15rem] truncate">
                         {#if $lastMessage}
                             <EventContent ndk={$ndk} event={$lastMessage} class="text-sm text-neutral-500 truncate" />
@@ -63,7 +63,7 @@
             </div>
 
             {#if $messagesSinceLastRead.length > 0}
-                <div class="flex items-center justify-center w-8 h-8 shrink rounded-full bg-base-200">
+                <div class="flex items-center justify-center w-8 h-8 shrink rounded-full bg-foreground/10">
                     {$messagesSinceLastRead.length}
                 </div>
             {:else}

@@ -34,7 +34,6 @@
         {skipArticle}
         skipHighlighter={true}
         {scrollIntoView}
-        class="p-4 bg-white/10 rounded-box"
         contentClass="overflow-clip sm:overflow-auto scrollbar-hide"
     />
 </EventWrapper>

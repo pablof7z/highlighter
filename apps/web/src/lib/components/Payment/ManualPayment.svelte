@@ -99,7 +99,7 @@
 ">
     {#if pr}
         <div class="flex flex-col items-center gap-4">
-            <div class="text-4xl text-white font-bold">
+            <div class="text-4xl text-foreground font-bold">
                 {currencyFormat(currency, parseInt(amount))}
             </div>
 
@@ -108,7 +108,7 @@
             {/if}
 
             <!-- <QrCode value={pr} color="#444444" size="350" /> -->
-            <CopyButton label={pr} data={pr} class="truncate max-w-[350px] border border-base-300 rounded-full p-3 font-mono" />
+            <CopyButton label={pr} data={pr} class="truncate max-w-[350px] border border-border rounded-full p-3 font-mono" />
 
             {#if provider}
                 <button class="button px-6" on:click={() => provider.sendPayment(pr)}>
@@ -123,7 +123,7 @@
                         <span class="loading loading-sm" />
                         Waiting for payment
                     {:else}
-                        <Check class="w-5 h-5 text-success" />
+                        <Check class="w-5 h-5 text-green-500" />
                         Payment received
                     {/if}
                 </div>
@@ -133,7 +133,7 @@
                         <span class="loading loading-sm" />
                         Waiting for subscription receipt
                     {:else}
-                        <Check class="w-5 h-5 text-success" />
+                        <Check class="w-5 h-5 text-green-500" />
                         Subscription receipt received
                     {/if}
                 </div>
@@ -147,7 +147,7 @@
     {/if}
 
     <!-- <StylishContainer class="p-4 max-w-[45ch]" border={1}>
-        <div class="text-base-100-content font-semibold">
+        <div class="text-foreground font-semibold">
             This is a one-off payment
         </div>
 

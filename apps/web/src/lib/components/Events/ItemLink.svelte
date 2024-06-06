@@ -64,7 +64,7 @@
                 <img src={image} alt={title} class="w-full h-full absolute top-0 left-0 z-[1] backdrop-blur-xl" style="filter: blur(50px)" />
                 <img src={image} alt={title} class="object-fit sm:rounded max-sm:max-h-[35vh] absolute z-[5]" />
             {:else}
-                <div class="bg-base-200 w-full overflow-clip h-full">
+                <div class="bg-foreground/10 w-full overflow-clip h-full">
                     <div class="text-lg sm:text-3xl font-semibold gradient-text whitespace-normal w-full p-2 sm:p-6 leading-relaxed flex h-full items-end">
                         {title}
                         {durationTag}
@@ -113,7 +113,7 @@
             <UserProfile bind:userProfile user={author} bind:authorUrl />
         {/if}
         <a dir="auto" {href} class="
-            self-stretch text-base-100-content font-semibold leading-relaxed
+            self-stretch text-foreground font-semibold leading-relaxed
             {grid ? "max-sm:text-xl max-sm:font-[InterDisplay]" : "sm:text-xl"}
         ">
             {title}

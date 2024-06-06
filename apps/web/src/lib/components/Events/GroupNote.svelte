@@ -16,5 +16,5 @@
     showReply={false}
     {urlPrefix}
 >
-    <EventContent {event} ndk={$ndk} class="text-lg text-base-100-content/20" />
+    <EventContent {event} ndk={$ndk} class="text-lg text-foreground/20" />
 </EventWrapper>

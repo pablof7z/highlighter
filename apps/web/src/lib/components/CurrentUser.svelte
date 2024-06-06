@@ -26,11 +26,11 @@
         <UserProfile user={$currentUser} let:userProfile let:authorUrl let:fetching>
             {#if !withName}
                 <a href={authorUrl} class="max-sm:hidden">
-                    <Avatar user={$currentUser} {userProfile} {fetching} class="flex-none {$$props.avatarClass??""}" />
+                    <Avatar user={$currentUser} {userProfile} {fetching} size="medium" class="flex-none {$$props.avatarClass??""}" />
                 </a>
             {:else}
                 <a href={authorUrl} class="max-sm:hidden">
-                    <AvatarWithName user={$currentUser} {userProfile} {fetching} class="flex-none" avatarClass={$$props.avatarClass??""} />
+                    <AvatarWithName user={$currentUser} {userProfile} {fetching} size="medium" class="flex-none" avatarClass={$$props.avatarClass??""} />
                 </a>
             {/if}
         </UserProfile>

@@ -57,8 +57,8 @@ import { ndk } from "$stores/ndk.js";
 
         {#if rootEvent}
             <div class="text-sm font-normal">
-                <span class="text-white text-opacity-60">Replied to </span>
-                <a href={itemUrl} class="text-white text-opacity-80 leading-[17px]">
+                <span class="text-foreground text-opacity-60">Replied to </span>
+                <a href={itemUrl} class="text-foreground text-opacity-80 leading-[17px]">
                     {#if rootEvent instanceof NDKArticle}
                         {rootEvent.title}
                     {:else}
@@ -72,13 +72,13 @@ import { ndk } from "$stores/ndk.js";
             <div class="justify-start items-center gap-4 flex">
                 <div class="justify-center items-center gap-3 inline-flex">
                     <Avatar {userProfile} {fetching} class="w-8 h-8" />
-                    <div class="text-white text-[15px] font-semibold leading-snug">
+                    <div class="text-foreground text-[15px] font-semibold leading-snug">
                         <Name {userProfile} {fetching} />
                     </div>
                 </div>
             </div>
         </div>
-        <div class="self-stretch text-white font-normal prose">
+        <div class="self-stretch text-foreground font-normal prose">
             <EventContent ndk={$ndk} {event} />
         </div>
         <div class="flex w-full flex-row justify-end">

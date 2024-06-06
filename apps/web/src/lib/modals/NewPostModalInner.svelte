@@ -1,4 +1,4 @@
-<script lang="ts">
+    <script lang="ts">
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
 	import { NDKEvent, NDKKind, NDKTag, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import { closeModal } from "$utils/modal";
@@ -40,11 +40,11 @@
 
     $: {
         actionButtons = [
-            { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, class: "button main-modal-button" }
+            { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, buttonProps: {variant: "default"} }
         ];
 
         if (!$appMobileView) {
-            actionButtons.unshift({ name: "Cancel", fn: closeModal, class: ""});
+            actionButtons.unshift({ name: "Cancel", fn: closeModal, class: "", buttonProps: {variant: "ghost"}});
         }
     }
 
@@ -56,7 +56,7 @@
         <EventWrapper
             ndk={$ndk}
             event={replyTo}
-            class="text-white text-xs max-sm:max-h-[30dvh] overflow-y-auto"
+            class="text-foreground text-xs max-sm:max-h-[30dvh] overflow-y-auto border border-border rounded"
             contentClass="!text-xs"
             compact={true}
             showReply={false}
@@ -75,7 +75,7 @@
 <div class="w-full flex flex-col max-sm:min-h-[100dvh]">
     {#if replyTo}
         <UserProfile user={replyTo.author} bind:userProfile={replyToUserProfile}>
-            <div class="text-xs translate-y-2">
+            <div class="text-xs translate-y-2 my-2">
                 Replying to
                 <Name user={replyTo.author} userProfile={replyToUserProfile} class="text-accent" />
             </div>
@@ -85,7 +85,7 @@
     <NewPost
         kind={NDKKind.Text}
         {placeholder}
-        editorClass="text-white min-h-[7rem] h-full grow"
+        editorClass="text-foreground min-h-[7rem] h-full grow"
         skipAvatar={true}
         collapsed={false}
         {forcePublish}

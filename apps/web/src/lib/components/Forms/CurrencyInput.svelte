@@ -12,7 +12,7 @@
     />
     <Input
         bind:value={currency}
-        class="!bg-transparent border border-neutral-800 rounded-xl text-white text-xl rounded-l-none w-24"
+        class="!bg-transparent border border-neutral-800 rounded-xl text-foreground text-xl rounded-l-none w-24"
         placeholder="Currency"
     />
 </div>

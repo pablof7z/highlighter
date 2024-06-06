@@ -12,7 +12,6 @@
     $: render =  !!($pageHeader?.component || $pageHeader?.searchBar || $pageHeader?.title || $pageHeader?.left || $pageHeader?.right);
 
     const updateNavbarHeight = () => {
-        console.log('updateNavbarHeight');
         if (!navbar) {
             document.documentElement.style.setProperty('--navbar-height', `0px`);
             return;
@@ -53,13 +52,22 @@
 " bind:this={navbar}>
     <div class="flex flex-row justify-between items-center h-full w-full gap-2">
         {#if $pageHeader?.component}
-            <div class="w-full h-full">
+            <div class="w-full h-full flex flex-col">
                 <svelte:component
                     this={$pageHeader.component}
                     {...$pageHeader.props}
                     containerClass={$$props.containerClass}
                     on:resize={updateNavbarHeight}
                 />
+
+                {#if $pageHeader?.subNavbarOptions}
+                    <div class="py-2 {$$props.containerClass??""}">
+                        <HorizontalOptionsList
+                            options={$pageHeader.subNavbarOptions}
+                            bind:value={$pageHeader.subNavbarValue}
+                        />
+                    </div>
+                {/if}
             </div>
         {:else}
             <div class="flex flex-col items-stretch w-full {$$props.containerClass??""}">
@@ -73,7 +81,7 @@
                             flex flex-row
                             items-center
                             justify-center
-                            text-white
+                            text-foreground
                             font-medium
                             gap-2
                             w-full

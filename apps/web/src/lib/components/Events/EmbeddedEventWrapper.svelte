@@ -28,7 +28,7 @@
 <div class="w-full my-2">
     {#if event === undefined || event === null}
         <StylishContainer
-            class="bg-base-300/50 transition-all duration-300 rounded-box max-md:p-4"
+            class="bg-foreground/20/50 transition-all duration-300 rounded max-md:p-4"
             border={1}
             on:click={clicked}
         >
@@ -49,7 +49,7 @@
             showReply={false}
             skipFooter={true}
             skipZaps={true}
-            class="text-sm border border-base-300 !p-0"
+            class="text-sm border border-border md:!p-2 rounded"
             disableSwipe
         />
     {/if}

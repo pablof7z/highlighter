@@ -1,7 +1,10 @@
 <script lang="ts">
 	import Checkbox from "$components/Forms/Checkbox.svelte";
 import ModalShell from "$components/ModalShell.svelte";
+	import Avatar from "$components/User/Avatar.svelte";
+	import Name from "$components/User/Name.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
+	import Button from "$components/ui/button/button.svelte";
 	import { appMobileView } from "$stores/app";
 	import { inboxList } from "$stores/inbox";
 	import { createBlossom } from "$utils/blossom";
@@ -35,10 +38,10 @@ import ModalShell from "$components/ModalShell.svelte";
     <UserProfile {user} let:userProfile>
         {#if !highlighted}
             <div class="flex flex-col-reverse justify-stretch items-stretch">
-                <div class="w-full flex flex-col gap-8 items-center text-lg text-center p-6">
+                <div class="w-full flex flex-col gap-8 items-center text-lg text-center p-6 text-muted-foreground">
                     <h1 class="text-center text-5xl">
                         Highlight your
-                        <div class="text-accent whitespace-nowrap">
+                        <div class="text-foreground whitespace-nowrap">
                             favorite creators
                         </div>
                         from the crowd
@@ -48,11 +51,11 @@ import ModalShell from "$components/ModalShell.svelte";
                         and tune-in into their highest quality content.
                     </p>
 
-                    <div class="flex flex-col gap-2">
-                        <button class="button-black text-lg text-white px-8 py-4" on:click={highlight}>
+                    <div class="flex flex-col gap-2 w-full">
+                        <Button class="w-full" variant="default" size="lg" on:click={highlight}>
                             Highlight
-                            <Name {user} />
-                        </button>
+                            <Name {user} class="!text-red-500" />
+                        </Button>
                         <button class="text-xs" on:click={() => closeModal()}>Close</button>
                     </div>
                 </div>
@@ -86,7 +89,7 @@ import ModalShell from "$components/ModalShell.svelte";
                     </Checkbox>
 
                     <div class="flex flex-col gap-2">
-                        <button class="button-black text-lg text-white px-8 py-4" on:click={() => closeModal()}>
+                        <button class="button-black text-lg text-foreground px-8 py-4" on:click={() => closeModal()}>
                             Close
                         </button>
                         <button class="text-xs" on:click={undo}>Undo</button>

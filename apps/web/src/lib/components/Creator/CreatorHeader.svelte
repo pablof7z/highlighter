@@ -82,7 +82,7 @@
 {#key user.pubkey}
 <UserProfile {user} bind:userProfile />
 
-<div class="sticky top-0 z-20 w-full {collapsed ? "" : "min-h-[15rem]"}" on:touchstart={() => {if (collapsed) collapsed = false}}>
+<div class="z-20 w-full {collapsed ? "" : "min-h-[15rem]"}" on:touchstart={() => {if (collapsed) collapsed = false}}>
     <div class="relative h-full w-full">
         {#if userProfile?.banner}
             <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-[1] transition-all duration-300 {collapsed ? "opacity-20" : ""}" alt={userProfile?.name}>
@@ -90,7 +90,7 @@
         {/if}
 
         <!-- Container -->
-        <div class="flex flex-col pt-4 items-center relative z-50  max-sm:pt-0-safe text-white {$$props.containerClass??""} {collapsed ? "max-sm:px-2" : ""}">
+        <div class="flex flex-col pt-4 items-center relative z-50  max-sm:pt-0-safe text-foreground {$$props.containerClass??""} {collapsed ? "max-sm:px-2" : ""}">
             <div class="flex {collapsed ? "flex-row" : "flex-col"} items-center justify-start gap-2 w-full transition-all duration-300">
                 {#if $appMobileView}
                     <div class="left-2 top-0-safe {collapsed ? "" : "absolute"}">
@@ -104,7 +104,7 @@
                         transition-all duration-300 flex-none object-cover w-full h-full"
                     />
                 </div>
-                <h1 class="text-white font-semibold whitespace-nowrap mb-0 transition-all duration-300 {collapsed ? "text-sm grow" : ""}">
+                <h1 class="text-foreground font-semibold whitespace-nowrap mb-0 transition-all duration-300 {collapsed ? "text-sm grow" : ""}">
                     <Name {user} {userProfile} {fetching} />
                 </h1>
                 <div class="text-sm transition-all duration-300 max-sm:text-xs max-sm:px-4 max-sm:text-center" class:hidden={collapsed}>
@@ -139,7 +139,7 @@
                 <HorizontalOptionsList class="w-fit" {options} on:changed={() => collapsed = true} />
                 
                 {#if !collapsed}
-                    <div class="flex flex-row items-stretch justify-end lg:gap-6 backdrop-blur-xl rounded-box px-4 py-2">
+                    <div class="flex flex-row items-stretch justify-end sm:gap-6 backdrop-blur-xl rounded px-4 py-2 max-sm:w-full max-sm:justify-evenly">
                         <CreatorHeaderFollowButton {user} {collapsed} />
                         <CreatorHeaderInboxButton {user} {collapsed} />
                         <CreatorHeaderSupportButton {user} {collapsed} />

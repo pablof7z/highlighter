@@ -79,9 +79,9 @@
         component: CreatorHeader,
         props: {
             user,
-            options,
             tiers: userTiers
-        }
+        },
+        subNavbarOptions: options
     };
 
     onDestroy(resetLayout);

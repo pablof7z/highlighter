@@ -29,7 +29,7 @@
         <div class="pl-12 flex flex-col gap-4">
             <HighlightBody highlight={quotedHighlight} class="leading-5" />
 
-            <EventContent ndk={$ndk} event={note} content={noteWithoutEmbed} class="leading-8 text-white" />
+            <EventContent ndk={$ndk} event={note} content={noteWithoutEmbed} class="leading-8 text-foreground" />
         </div>
     </EventWrapper>
 {/if}

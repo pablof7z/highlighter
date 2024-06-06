@@ -192,7 +192,7 @@
 
 <div class="flex flex-col border-none border-neutral-800 sm:rounded-xl border grow">
     {#if toolbar}
-        <div bind:this={toolbarEl} class="-mt-4 toolbar sticky z-40 top-16 bg-base-100/80  !backdrop-blur-[50px] !border-b !border-base-200 toolbar-container w-full">
+        <div bind:this={toolbarEl} class="-mt-4 toolbar sticky z-40 top-[var(--navbar-height)] bg-background/80  !backdrop-blur-[50px] !border-b !border-border toolbar-container w-full">
             {#if $wysiwygEditor}
                 <span class="ql-formats">
                     <select class="ql-header"></select>
@@ -243,24 +243,27 @@
 
 <style>
     .editor {
-        @apply text-lg;
         @apply w-full border-0;
-        @apply flex flex-col items-stretch justify-stretch p-4;
+        @apply flex flex-col items-stretch justify-stretch text-foreground;
     }
 
     .toolbar-container {
         @apply p-2;
         @apply !border-t-0 !border-l-0 !border-r-0;
-        @apply flex flex-row items-center gap-1;
+        @apply flex flex-row items-center gap-1 mb-4;
     }
 
     :global(.ql-editor.ql-blank::before) {
-        @apply text-zinc-500;
+        @apply text-muted-foreground left-0 right-0;
         font-style: normal;
     }
 
     :global(.ql-editor) {
-        @apply p-0 grow focus:!ring-0 focus:!outline-none !border-0;
+        @apply !p-0 grow focus:!ring-0 focus:!outline-0 focus-visible:!outline-none !border-0;
+    }
+
+    :global(.ql-container) {
+        @apply !text-xl;
     }
 
     .toolbar button {
@@ -268,7 +271,7 @@
     }
 
     .toolbar button:hover, .toolbar .button:hover {
-        @apply !bg-base-300;
+        @apply !bg-foreground/20;
     }
 
     :global(.ql-snow.ql-toolbar button svg *) {
@@ -280,7 +283,7 @@
     }
 
     :global(.ql-active) {
-        @apply !text-white !bg-base-300;
+        @apply !text-foreground !bg-foreground/20;
     }
 
     :global(.ql-active .ql-stroke) {
@@ -292,20 +295,20 @@
     }
 
     :global(.ql-picker-options) {
-        @apply !bg-base-300 !border-0 rounded-box !p-4 !z-50;
-        @apply text-white/50
+        @apply !bg-foreground/20 !border-0 rounded !p-4 !z-50;
+        @apply text-foreground/50
     }
 
     :global(.ql-picker-item:hover, .ql-picker-item.ql-selected) {
-        @apply !text-white;
+        @apply !text-foreground;
     }
 
     :global(.ql-editor .mention) {
-        @apply text-white font-medium;
+        @apply text-foreground font-medium;
     }
 
     :global(.ql-mention-list) {
-        @apply bg-base-200 font-sans py-2 rounded-box absolute z-50;
+        @apply bg-background font-sans py-2 rounded absolute z-50;
     }
 
     :global(.ql-mention-list-item) {
@@ -313,23 +316,23 @@
     }
 
     :global(.ql-mention-list-item.selected) {
-        @apply bg-base-300 text-accent;
+        @apply bg-secondary text-primary;
     }
 
     :global(.ql-tooltip) {
-        @apply !bg-base-300 !border-0 rounded-box !px-4 !py-2 font-sans !text-white/80 !shadow-none;
+        @apply !bg-secondary !border-0 rounded !px-4 !py-2 font-sans !text-foreground/80 !shadow-none;
     }
 
     :global(.ql-tooltip input) {
-        @apply !bg-base-200 !border-0 rounded-box !p-6 !text-white/80;
+        @apply !bg-foreground/10 !border-0 rounded !p-6 !text-foreground/80;
     }
 
     :global(.ql-editor a) {
-        @apply !text-white;
+        @apply !text-foreground;
     }
 
     :global(.ql-editor span.mention) {
-        @apply text-accent;
+        @apply text-primary;
     }
 
     :global(span.mention[data-id="npub1mygerccwqpzyh9pvp6pv44rskv40zutkfs38t0hqhkvnwlhagp6s3psn5p"]) {

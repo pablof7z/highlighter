@@ -10,6 +10,9 @@
 	import CurationItem from "$components/CurationItem.svelte";
 	import { goto } from "$app/navigation";
 	import VideoLink from "$components/Events/VideoLink.svelte";
+	import BoostButton from "$components/buttons/BoostButton.svelte";
+	import Bookmark from "$components/Bookmark.svelte";
+	import SmallZapButton from "$components/buttons/SmallZapButton.svelte";
 
     export let feed: Readable<NDKEvent[]>;
     export let renderLimit = 10;
@@ -96,7 +99,7 @@
     <div class="discussion-wrapper w-full flex flex-col">
         {#if tooNewEvents.size > 0}
             <div class="w-full flex flex-row items-center justify-center discussion-item transition-all duration-300 sticky top-0 z-50 ">
-                <button class="w-fit whitespace-nowrap rounded-full bg-accent text-base-100-content p-4"
+                <button class="w-fit whitespace-nowrap rounded-full bg-accent p-4"
                     on:click={() => { showEventsOlderThan = new Date(); }}
                 >
                     {tooNewEvents.size} new
@@ -120,9 +123,19 @@
             {:else if event.kind === NDKKind.GroupNote}
                 <GroupNote {event} {urlPrefix} />
             {:else if event.kind === NDKKind.Article}
-                <ArticleLink
-                    article={NDKArticle.from(event)}
-                />
+                <div class="flex flex-col">
+                    <ArticleLink
+                        article={NDKArticle.from(event)}
+                    />
+
+                    <div class="flex flex-row w-full justify-evenly items-center">
+                        <BoostButton {event} on:publish />
+
+                        <Bookmark {event} />
+
+                        <SmallZapButton {event} />
+                    </div>
+                </div>
             {:else if event.kind === NDKKind.HorizontalVideo}
                 <VideoLink
                     video={NDKVideo.from(event)}
@@ -155,10 +168,3 @@
         load more
     </button>
 </div>
-
-
-<style lang="postcss">
-    :global(.article p) {
-        @apply font-light text-white text-opacity-60 text-lg leading-7;
-    }
-</style>

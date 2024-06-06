@@ -1,3 +1,4 @@
+import { ndk } from '$stores/ndk';
 import { userFollows } from '$stores/session';
 import { searchUser } from '$utils/search/user';
 import { get } from 'svelte/store';

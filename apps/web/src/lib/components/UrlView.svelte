@@ -37,7 +37,7 @@
             <div class="grow shrink basis-0 flex-col justify-center items-start gap-10 inline-flex">
                 <div class="self-stretch flex-col justify-center items-start flex">
                     <div class="self-stretch flex-col justify-start items-start gap-1 flex">
-                        <div class="self-stretch text-white text-4xl font-medium">
+                        <div class="self-stretch text-foreground text-4xl font-medium">
                             {article.title}
                         </div>
                         <div class="flex-row justify-between items-center gap-4 flex w-full">
@@ -60,9 +60,5 @@
 <style lang="postcss">
     :global(.float-element) {
         box-shadow: 0 0 10px #000;
-    }
-
-    :global(.article pre) {
-        @apply whitespace-normal mb-4;
     }
 </style>

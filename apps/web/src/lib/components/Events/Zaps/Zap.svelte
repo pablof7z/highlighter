@@ -134,7 +134,7 @@
                 <ZapSent class="h-[267px]"/>
             </div>
             <!-- <button on:click={closeModal} class="w-fit">
-                <span class="glow flex items-center gap-3 text-base-100-content text-base leading-normal font-normal">
+                <span class="glow flex items-center gap-3 text-foreground text-base leading-normal font-normal">
                     <CheckSimple class="text-accent"/>
                     Zap Sent
                 </span>

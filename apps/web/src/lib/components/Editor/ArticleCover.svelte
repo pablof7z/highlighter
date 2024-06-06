@@ -2,6 +2,7 @@
 	import { NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
 	import { Image, Shuffle } from 'phosphor-svelte';
+	import Button from '$components/ui/button/button.svelte';
 
     export let article: NDKArticle | undefined = undefined;
     export let video: NDKVideo | undefined = undefined;
@@ -38,8 +39,8 @@
 
 <section class="w-full">
     <div class="field">
-        <div class="grid grid-cols-3 gap-4">
-            <div class="relative rounded-box bg-base-100 col-span-2 row-span-2 flex items-stretch justify-stretch">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="relative col-span-2 row-span-2 flex items-stretch justify-stretch bg-secondary/50 rounded" class:max-sm:hidden={!image}>
                 {#if image}
                     <img class="w-full md:!h-72 object-cover" src={image} />
                 {/if}
@@ -53,18 +54,18 @@
                     let:onOpen
                     on:uploaded={uploaded}
                 >
-                    <button class="side-button w-full" on:click={onOpen}>
+                    <Button variant="secondary" class="py-4 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit" on:click={onOpen}>
                         <Image class="w-12 h-12" />
                         Upload a cover image
-                    </button>
+                    </Button>
                 </ImageUploader>
             </div>
 
-            <button class="side-button" on:click={randomImage}>
+            <Button variant="secondary" class="py-4 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit" on:click={randomImage}>
                 <Shuffle class="w-12 h-12" />
 
                 Random Image
-            </button>
+            </Button>
         </div>
 
         <!-- {#if article.title}
@@ -72,9 +73,3 @@
         {/if} -->
     </div>
 </section>
-
-<style lang="postcss">
-    .side-button {
-        @apply py-6 rounded-box flex flex-col justify-center items-center gap-2 bg-white/5 text-white whitespace-nowrap;
-    }
-</style>

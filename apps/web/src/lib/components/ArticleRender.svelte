@@ -16,6 +16,7 @@
 	import UserProfile from './User/UserProfile.svelte';
 	import { UserProfileType } from '../../app';
 	import ArticleRenderShell from './Event/Article/ArticleRenderShell.svelte';
+	import { EventContent } from '@nostr-dev-kit/ndk-svelte-components';
 
     export let article: NDKArticle;
     const author = article.author;
@@ -69,10 +70,14 @@
     }
 
     const summary = getSummary(article);
+
+    let skipImage = true;
+
+    $: skipImage = !article.image;
 </script>
 
 <UserProfile user={author} bind:userProfile>
-    <ArticleRenderShell {isFullVersion} {isPreview}>
+    <ArticleRenderShell {skipImage} {isFullVersion} {isPreview}>
         <div slot="title">
             {article.title??"Untitled"}
         </div>
@@ -85,28 +90,36 @@
             <EventTags event={article} />
         </div>
 
-        <div slot="image">
-            {#if image}
-                <img use:blossom src={image} alt={article.title} class="w-full h-full object-cover opacity-50" />
-            {:else}
-                <div class="w-full h-full bg-base-100 opacity-50"></div>
-            {/if}
-        </div>
+        <svelte:element
+            this={image ? 'img' : 'div'}
+            slot="image"
+            use:blossom
+            class="w-full h-full object-cover opacity-50 bg-secondary"
+            {...(image ? { src: image } : {})}
+        />
 
         <div slot="zaps">
             <ItemViewZaps event={article} />
         </div>
 
         <div slot="content">
-            <HighlightingArea tags={highlightTags}>
-                <HighlightedContent event={article} {highlights} />
+            {#if !isPreview}
+                <HighlightingArea tags={highlightTags}>
+                    <HighlightedContent event={article} {highlights} />
 
-                {#if !isFullVersion}
-                    <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
-                        <UpgradeButton event={article} />
-                    </div>
-                {/if}
-            </HighlightingArea>
+                    {#if !isFullVersion}
+                        <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
+                            <UpgradeButton event={article} />
+                        </div>
+                    {/if}
+                </HighlightingArea>
+            {:else}
+                <EventContent
+                    ndk={$ndk}
+                    event={article}
+                    class="prose-lg leading-8"
+                />
+            {/if}
         </div>
     </ArticleRenderShell>
 </UserProfile>

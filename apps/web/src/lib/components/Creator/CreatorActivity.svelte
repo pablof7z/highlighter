@@ -83,7 +83,7 @@ import currentUser from "$stores/currentUser.js";
 </div>
 
 <div class="flex flex-col gap-10">
-    <div class="flex flex-col items-stretch bg-base-200 rounded-box divide-y divide-base-300">
+    <div class="flex flex-col items-stretch bg-foreground/10 rounded divide-y divide-base-300">
         {#each $eventsToRender as event (event.id)}
             <div class="p-6 flex flex-col items-stretch">
                 {#if event.kind === 7001}
@@ -99,7 +99,7 @@ import currentUser from "$stores/currentUser.js";
         {/each}
 
         {#if $eventsToRender.length === 0}
-            <div class="text-white text-opacity-60 font-normal leading-5">
+            <div class="text-foreground text-opacity-60 font-normal leading-5">
                 No activity yet
             </div>
         {/if}

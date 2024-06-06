@@ -70,7 +70,12 @@
     }
 </script>
 
-<ArticleRender {article} {isFullVersion} {isPreview} {fillInSummary} />
+<ArticleRender
+    {article}
+    {isFullVersion}
+    {isPreview}
+    {fillInSummary}
+/>
 
 {#if !isPreview}
     <div class="flex flex-col">

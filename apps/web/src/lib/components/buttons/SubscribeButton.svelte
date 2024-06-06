@@ -10,6 +10,7 @@
 	import type { Readable } from "svelte/store";
 	import { Star, Ticket } from "phosphor-svelte";
 	import type { UserProfileType } from "../../../app";
+	import Button from "$components/ui/button/button.svelte";
 
     export let user: NDKUser;
     export let tiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
@@ -44,12 +45,7 @@
 
     {#if !currentUserSubscriberTier}
         {#if hasLNPayments !== false}
-            <button
-                on:click={openSupportModal}
-                class="
-                button
-                "
-            >
+            <Button on:click={openSupportModal}>
                 <span class="hidden lg:inline">
                     {#if $tiers && $tiers.length > 0}
                         Subscribe
@@ -57,7 +53,7 @@
                         Support
                     {/if}
                 </span>
-            </button>
+            </Button>
         {/if}
     {/if}
 {/if}

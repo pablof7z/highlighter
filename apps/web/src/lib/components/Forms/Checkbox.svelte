@@ -1,13 +1,15 @@
 <script lang="ts">
+    import { Checkbox } from "$lib/components/ui/checkbox";
+    
     export let value: boolean | undefined = undefined;
     export let type: "check" | "switch" = "check";
     export let compact = false;
 </script>
 
-<label class="text-white text-base font-medium flex flex-row gap-2 items-center justify-between {$$props.class??""} {compact ? "compact" : ""}">
-    <div class="flex flex-row items-center w-full">
+<label class="items-top space-x-2 text-foreground text-base font-medium flex flex-row gap-2 items-center justify-between {$$props.class??""}">
+    <div class="flex flex-row items-center w-full space-x-2">
         {#if type === 'check'}
-            <input type="checkbox" class="checkbox mr-3" bind:checked={value} on:change />
+            <Checkbox id="terms1" bind:checked={value} on:change />
         {/if}
 
         <div class="flex flex-col sm:flex-row gap-2 justify-stretch items-center w-full">
@@ -33,9 +35,3 @@
         </div>
     </div>
 </label>
-
-<style lang="postcss">
-    label:not(.compact) {
-        @apply border border-base-300 p-4 rounded-xl;
-    }
-</style>

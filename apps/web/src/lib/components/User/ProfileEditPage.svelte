@@ -6,8 +6,13 @@
 	import { NDKEvent, serializeProfile, type NostrEvent, NDKRelaySet, NDKSubscriptionCacheUsage, NDKRelayList, NDKRelay } from '@nostr-dev-kit/ndk';
 	import ImageUploader from "$components/Forms/ImageUploader.svelte";
     import { Image, Warning } from "phosphor-svelte";
-	import GlassyInput from "$components/Forms/GlassyInput.svelte";
 	import CategorySelector from '$components/Forms/CategorySelector.svelte';
+	import { ndk } from '$stores/ndk';
+	import { newToasterMessage } from '$stores/toaster';
+	import { Input } from '$components/ui/input';
+	import BlossomUpload from '$components/buttons/BlossomUpload.svelte';
+	import { defaultRelays } from '$utils/const';
+	import Button from '$components/ui/button/button.svelte';
 
     export let forceSave = false;
 
@@ -22,7 +27,8 @@
     })
 
     const relaySet = NDKRelaySet.fromRelayUrls([
-        "wss://purplepag.es/", "wss://profiles.nos.lol", "wss://relay.damus.io", "wss://relay.primal.net"
+        // "wss://purplepag.es/", "wss://profiles.nos.lol", "wss://relay.damus.io", "wss://relay.primal.net",
+        ...defaultRelays
     ], $ndk);
     for (const relay of $ndk.pool.connectedRelays()) {
         relaySet.addRelay(relay);
@@ -31,7 +37,7 @@
     NDKRelayList.forUser($currentUser?.pubkey!, $ndk).then((relayList) => {
         if (!relayList) return;
         for (const writeRelay of relayList.writeRelayUrls) {
-            const r = new NDKRelay(writeRelay, $ndk);
+            const r = new NDKRelay(writeRelay, undefined);
             relaySet.addRelay(r);
         }
     })
@@ -40,8 +46,8 @@
     const fetchingProfile = new Promise<void>((resolve) => {
         const fetching = $ndk.subscribe(
             {kinds: [0], authors:[$currentUser?.pubkey!]},
-            { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
-            relaySet
+            // { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
+            // relaySet
         );
 
         fetching.on("event", (e) => {
@@ -160,23 +166,23 @@
     {/if}
 
     <div class="flex flex-col">
-        <div class="relative w-full h-[20rem] overflow-hidden rounded-box">
-            <ImageUploader bind:url={banner} wrapperClass="overflow-hidden" alwaysUseSlot={true}>
+        <div class="relative w-full h-[20rem] overflow-hidden rounded">
+            <BlossomUpload bind:url={banner} class="w-full">
                 {#if $userProfile?.banner}
                     <img src={$userProfile?.banner} class="w-full h-full object-cover object-top lg:rounded" alt={$userProfile?.name}>
-                    <div class="flex flex-col items-center gap-4 text-base opacity-70 text-white z-40">
+                    <div class="flex flex-col items-center gap-4 text-base opacity-70 text-foreground z-40">
                         <Image size={42} />
                         Upload a Cover Image
                     </div>
                 {:else}
-                    <div class="h-[25dvh] w-full input-background rounded-box flex items-center justify-center">
-                        <div class="flex flex-col items-center gap-4 text-base opacity-70 text-white">
+                    <div class="h-[25dvh] w-full input-background rounded flex items-center justify-center">
+                        <div class="flex flex-col items-center gap-4 text-base opacity-70 text-foreground">
                             <Image size={42} />
                             Upload a Cover Image
                         </div>
                     </div>
                 {/if}
-            </ImageUploader>
+            </BlossomUpload>
         </div>
 
         <div class="mb-10 -mt-7 z-20">
@@ -189,7 +195,7 @@
                     />
                 </div>
 
-                <GlassyInput bind:value={name} placeholder="Name" color="black" class="text-lg text-white font-medium" />
+                <Input bind:value={name} placeholder="Name" class="text-lg text-foreground font-medium" />
             </div>
 
         </div>
@@ -197,12 +203,12 @@
         <section class="settings">
             <div class="field">
                 <div class="title">About you</div>
-                <GlassyInput bind:value={about} placeholder="About" class="text-sm" />
+                <Input bind:value={about} placeholder="About" class="text-sm" />
             </div>
 
             <div class="field">
                 <div class="title">LN Wallet</div>
-                <GlassyInput bind:value={lud16} placeholder="LN Wallet" class="text-sm" />
+                <Input bind:value={lud16} placeholder="LN Wallet" class="text-sm" />
             </div>
 
             <div class="field">
@@ -217,13 +223,13 @@
     </div>
 
     <div class="flex flex-col-reverse sm:flex-row sm:gap-2 max-sm:items-stretch w-full justify-end">
-        <button class="button px-10 sm:py-3" on:click={saveClicked}>
+        <Button size="lg" on:click={saveClicked}>
             {#if saving}
                 <span class="loading loading-sm"></span>
             {:else}
                 Save
             {/if}
-        </button>
+        </Button>
     </div>
 {/await}
 

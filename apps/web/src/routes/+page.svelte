@@ -221,15 +221,15 @@
                     <h1 class="text-5xl mb-2 font-bold">
                         Coming Soon
                     </h1>
-                    <h2 class="text-2xl !text-white/70 mb-4">
+                    <h2 class="text-2xl !text-foreground/70 mb-4">
                         Content Discovery DVMs
                     </h2>
                     <ListContentDvms />
                 {:else if filter === "Controversial"}
                     <div class="max-w-3xl mx-auto flex flex-col items-start text-lg">
                         <div class="flex flex-col justify-between items-start w-full">
-                            <h1 class="text-white text-5xl font-bold mb-2">Controversial</h1>
-                            <div class="badge badge-lg bg-base-300 mb-4 text-xl text-white/80 p-4">Coming soon</div>
+                            <h1 class="text-foreground text-5xl font-bold mb-2">Controversial</h1>
+                            <div class="badge badge-lg bg-foreground/20 mb-4 text-xl text-foreground/80 p-4">Coming soon</div>
                         </div>
 
                         <h2 class="text-xl">

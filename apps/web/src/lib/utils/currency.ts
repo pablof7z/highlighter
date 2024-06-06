@@ -1,3 +1,4 @@
+import { nicelyFormattedMilliSatNumber } from '$utils';
 import type { NDKTag } from '@nostr-dev-kit/ndk';
 
 export const possibleCurrencies = ['USD', 'EUR', 'msat'];

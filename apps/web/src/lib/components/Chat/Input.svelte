@@ -1,8 +1,9 @@
 <script lang="ts">
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
+	import { ndk } from "$stores/ndk";
 	import { relaySetForEvent } from "$utils/event";
-	import { getDefaultRelaySet } from "$utils/ndk";
 	import { NDKEvent, NDKKind, NDKRelay, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { Name } from "drizzle-orm";
 	import { PaperPlaneTilt } from "phosphor-svelte";
 
     export let event: NDKEvent;
@@ -59,7 +60,7 @@
                 bind:content
                 rows={1}
                 enterSubmits={true}
-                class="!min-h-none w-full grow rounded-box p-4 overflow-hidden !bg-transparent !border-0"
+                class="!min-h-none w-full grow rounded p-4 overflow-hidden !bg-transparent !border-0"
                 on:keydown={onkeydown}
                 on:submit={submit}
                 {placeholder}

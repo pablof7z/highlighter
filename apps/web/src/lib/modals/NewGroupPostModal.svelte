@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ModalShell from "$components/ModalShell.svelte";
-    import Input from "$components/Forms/Input.svelte";
+    import Input from '$components/ui/input/input.svelte';
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
 	import { Hexpubkey, NDKEvent, NDKHighlight, NDKKind, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
@@ -40,7 +40,7 @@
         <NewPost
             kind={NDKKind.GroupNote}
             placeholder="Write a post..."
-            editorClass="text-white min-h-[7rem]"
+            editorClass="text-foreground min-h-[7rem]"
             skipAvatar={true}
             collapsed={false}
             autofocus={false}
@@ -54,7 +54,7 @@
         >
             <div slot="buttonsBar" class="w-full ">
                 {#if creator}
-                    <AvatarWithName user={creator} avatarSize="small" class="text-base font-medium text-base-100-content">
+                    <AvatarWithName user={creator} avatarSize="small" class="text-base font-medium text-foreground">
                         <div class="text-xs opacity-50">Subscribers-only thread</div>
                     </AvatarWithName>
                 {/if}

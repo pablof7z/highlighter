@@ -5,6 +5,14 @@
 import RelativeTime from "$components/PageElements/RelativeTime.svelte";
     import { Check } from "phosphor-svelte";
     import { closeModal } from '$utils/modal';
+	import Button from "$components/ui/button/button.svelte";
+	import { NavigationOption } from "../../app";
+	import currentUser from "$stores/currentUser";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import Avatar from "$components/User/Avatar.svelte";
+	import Name from "$components/User/Name.svelte";
+    import * as HoverCard from "$lib/components/ui/hover-card/index.js";
+	import { Input } from "$components/ui/input";
 
     export let title = "Schedule Boost";
     export let action: string = "Post will be published";
@@ -22,14 +30,15 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
     $: if (publishAtVal) {
         try {
             const date = new Date(publishAtVal);
-            if (date.getTime() > Date.now()) { publishAt = date.getDate(); }
+            console.log({date})
+            publishAt = date.getTime();
         } catch(e) { publishAt = undefined }
     }
 
     function setTime(minutes: number) {
         return () => {
             publishAt = Date.now() + minutes * 60 * 1000;
-            // publishAtVal = new Date(publishAt).toISOString().slice(0, 16);
+            publishAtVal = new Date(publishAt).toISOString().slice(0, 16);
         }
     }
 
@@ -39,7 +48,7 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
             date.setDate(date.getDate() + inXDays);
             date.setHours(atYHour, 0, 0, 0);
             publishAt = date.getTime();
-            // publishAtVal = date.toISOString().slice(0, 16);
+            publishAtVal = date.toISOString().slice(0, 16);
         }
     }
 
@@ -59,29 +68,45 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
             scheduling = false;
         });
     }
+
+    let actionButtons: NavigationOption[];
+    
+    $: actionButtons = [
+        { name: cta, fn: schedule, buttonProps: {disabled} }
+    ]
 </script>
 
 <ModalShell
     {title} on:close
     class="max-w-sm w-full"
+    {actionButtons}
 >
-    <div class="flex flex-col w-full text-sm border-b border-base-300 items-center pb-4 mb-8">
-        <div class="flex flex-row items-center gap-2 justify-center ">
-            Scheduling provided by
-            <AvatarWithName user={dvmUser} avatarType="circle" avatarSize="small" class="text-base-100-content" />
-        </div>
-        <a href="/settings/services" class="text-xs underline">Configure a different provider</a>
+    <div class="flex" slot="footerExtra">
+        <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+                <Button variant="outline" size="sm" class="flex flex-row items-center gap-2">
+                    <Avatar user={dvmUser} type="circle" size="tiny" />
+                    <Name user={dvmUser} />
+                </Button>
+            </DropdownMenu.Trigger>
+
+            <DropdownMenu.Content class="absolute z-[999999]">
+                <DropdownMenu.Group>
+                    <Button variant="ghost" href="/settings/services">Configure a different provider</Button>
+                </DropdownMenu.Group>
+            </DropdownMenu.Content>
+        </DropdownMenu.Root>
     </div>
 
     {#if scheduled}
         <div class="flex flex-col items-center gap-4">
             <span class="text-2xl text-accent">
-                <Check class="w-12 h-12 text-success" />
+                <Check class="w-12 h-12 text-green-500" />
             </span>
-            <span class="text-xl text-base-100-content">Scheduled!</span>
+            <span class="text-xl text-foreground">Scheduled!</span>
         </div>
     {:else}
-        <ul class="menu w-full">
+        <ul class="w-full">
             <li><button on:click={setTime(60)}>In an hour</button></li>
             <li><button on:click={setTime(60*3)}>In 3 hours</button></li>
             <li><button on:click={setTime(60*8)}>In 8 hours</button></li>
@@ -90,31 +115,23 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
             <li><button on:click={setTime(60*24*7)}>Next week</button></li>
         </ul>
 
-        <div class="flex flex-row gap-2">
-            <input type="datetime-local" bind:value={publishAtVal} class="input rounded-full !bg-white/5" />
+        <div class="flex flex-row gap-2 p-1 mt-6">
+            <Input type="datetime-local" class="justify-center text-lg font-light" bind:value={publishAtVal} />
         </div>
-
-        {#if publishAt}
-            <span class="text-sm text-base-100-content/50">
-                {action}
-                <RelativeTime timestamp={publishAt} class="text-base-100-content" />
-            </span>
-        {/if}
     {/if}
-
-    <svelte:fragment slot="footer">
-        {#if !scheduled}
-            <button class="btn btn-ghost" on:click={() => closeModal()}>
-                Cancel
-            </button>
-
-            <button class="button px-6" on:click={schedule} {disabled}>
-                {#if scheduling}
-                    <span class="loading loading-sm"></span>
-                {:else}
-                    {cta}
-                {/if}
-            </button>
-        {/if}
-    </svelte:fragment>
 </ModalShell>
+
+<style lang="postcss">
+    ul {
+        @apply flex flex-col border border-border border-b-0;
+    }
+
+    li {
+        @apply flex flex-row border-b border-border;
+    }
+
+    button {
+        @apply text-foreground text-sm font-light w-full p-4 text-left;
+        @apply hover:bg-secondary;
+    }
+</style>

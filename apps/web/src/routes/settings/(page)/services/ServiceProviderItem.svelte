@@ -97,11 +97,11 @@ import { ndk } from "$stores/ndk.js";
 </script>
 
 {#if emittedReady || forceDisplay}
-    <div class="flex flex-col gap-4 py-4 border-b border-base-300 px-4" transition:slide>
+    <div class="flex flex-col gap-4 py-4 border-b border-border px-4" transition:slide>
         <AvatarWithName
             userProfile={profile}
             class="!items-start"
-            nameClass="font-medium text-white text-lg"
+            nameClass="font-medium text-foreground text-lg"
             spacing="gap-4"
         >
             <div class="text-sm text-neutral-500 text-left">

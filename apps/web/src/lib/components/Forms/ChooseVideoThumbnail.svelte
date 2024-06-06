@@ -167,7 +167,7 @@
 <canvas bind:this={canvas} class="hidden"></canvas>
 
 <div class="grid grid-cols-3 grid-rows-2 overflow-hidden gap-4">
-    <div class="relative rounded-box bg-base-100 col-span-2 row-span-2 flex items-stretch justify-stretch">
+    <div class="relative rounded bg-background col-span-2 row-span-2 flex items-stretch justify-stretch">
         {#if generatingThumbnails}
             <div class="flex w-full flex-row items-center justify-center gap-4">
                 Generating thumbnails...
@@ -227,6 +227,6 @@
     }
 
     .side-button {
-        @apply py-6 rounded-box flex flex-col justify-center items-center gap-2 bg-white/5 text-white whitespace-nowrap;
+        @apply py-6 rounded flex flex-col justify-center items-center gap-2 bg-white/5 text-foreground whitespace-nowrap;
     }
 </style>

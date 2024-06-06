@@ -3,7 +3,6 @@
     import { event, nonSubscribersPreview, previewExtraContent, status } from "$stores/post-editor";
 	import { NDKArticle, NDKKind, NDKVideo } from "@nostr-dev-kit/ndk";
     import { prepareEventsForTierPublish, publishOrSchedule, publishToTiers } from "$actions/publishToTiers";
-	import { dvmScheduleEvent } from "$lib/dvm";
 	import { getSelectedTiers } from "$lib/events/tiers";
 	import { publishAt, makePublicAfter, preview, view, selectedTiers } from "$stores/post-editor";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
@@ -16,6 +15,8 @@
 	import { Check } from "phosphor-svelte";
 	import { sleep } from "@sveu/shared";
 	import { getAuthorUrl, urlFromEvent } from "$utils/url";
+	import { ndk } from "$stores/ndk";
+	import { newToasterMessage } from "$stores/toaster";
 
     $: if ($event instanceof NDKEvent && $currentUser) {
         $event.pubkey = $currentUser?.pubkey;
@@ -217,7 +218,7 @@
                     <Check class="text-green-500" />
                 {/if}
             {:else if $event.kind === NDKKind.HorizontalVideo}
-                <div class="md:min-w-[40rem] border border-white/20 rounded-box p-3">
+                <div class="md:min-w-[40rem] border border-white/20 rounded p-3">
                     <VideoLink video={$event} skipLink={true} />
                 </div>
             {:else if $event instanceof Thread}

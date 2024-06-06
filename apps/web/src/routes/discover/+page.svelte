@@ -241,7 +241,7 @@
         </swiper-slide>
         <swiper-slide>
             <div class="flex flex-col overflow-y-auto scrollbar-hide max-h-[90vh]">
-                <h1 class="text-white">Notes you missed</h1>
+                <h1 class="text-foreground">Notes you missed</h1>
                 {#if $dvmResp?.[0] && $dvmResp[0].result}
                     {#each JSON.parse($dvmResp[0].result).slice(0, ) as tag}
                         <LoadEvent tag={tag} let:event let:authorUrl let:userProfile>
@@ -342,7 +342,7 @@
     </section>
     <section>
         <div class="flex flex-col overflow-y-auto scrollbar-hide max-h-[90vh]">
-            <h1 class="text-white">Notes you missed</h1>
+            <h1 class="text-foreground">Notes you missed</h1>
             {#if $dvmResp?.[0] && $dvmResp[0].result}
                 {#each JSON.parse($dvmResp[0].result).slice(0, ) as tag}
                     <LoadEvent tag={tag} let:event let:authorUrl let:userProfile>
@@ -360,7 +360,7 @@
 
 </LoadingScreen>
 
-<!-- <h1 class="text-white font-medium text-7xl">
+<!-- <h1 class="text-foreground font-medium text-7xl">
     Discover your next guilty pleasure
 </h1> -->
 
@@ -368,16 +368,16 @@
 <!-- 
 <div class="min-h-[70vh] max-sm:hidden">
     <div class="max-w-7xl mx-auto flex flex-col gap-8 py-10">
-        <Logo class="w-52 text-base-100-content opacity-80" />
+        <Logo class="w-52 text-foreground opacity-80" />
         <div class="flex flex-col gap-6">
-            <h1 class="text-7xl font-semibold text-white leading-[80px]">
+            <h1 class="text-7xl font-semibold text-foreground leading-[80px]">
                 Discover content
                 <span class="accent">you want</span>,
                 from creators
                 <span class="accent">you care about</span>.
             </h1>
 
-            <h2 class="text-5xl font-light text-white leading-[80px]">
+            <h2 class="text-5xl font-light text-foreground leading-[80px]">
                 Zero intermediaries.
             </h2>
         </div>
@@ -385,7 +385,7 @@
 </div> -->
 <!-- 
 <div class="hidden">
-    <div class="sticky top-0 h-[4rem] bg-base-200/70 backdrop-blur-xl z-50 max-sm:hidden">
+    <div class="sticky top-0 h-[4rem] bg-foreground/10/70 backdrop-blur-xl z-50 max-sm:hidden">
         <div class="max-w-7xl mx-auto flex flex-row items-center text-xl">
             <HorizontalOptionsList
                 options={mainCategories}
@@ -429,7 +429,7 @@
 
     <section>
         <div class="max-w-7xl mx-auto w-full">
-            <h1 class="text-7xl sticky top-[4rem] z-50 w-full bg-base-100 py-2 h-[7rem] flex items-center bg-base-200/70 backdrop-blur-xl z-50">
+            <h1 class="text-7xl sticky top-[4rem] z-50 w-full bg-background py-2 h-[7rem] flex items-center bg-foreground/10/70 backdrop-blur-xl z-50">
                 <span class="gradient-text">
                     Discover: creators you love
                 </span>
@@ -440,7 +440,7 @@
     </section>
 </div>
 
-<section class=" bg-base-300 !text-white min-h-screen flex items-center justify-center !hidden">
+<section class=" bg-foreground/20 !text-foreground min-h-screen flex items-center justify-center !hidden">
     <div class="max-w-7xl mx-auto sticky top-0">
         <header class="flex flex-col gap-10">
             <h1 class="text-7xl">
@@ -468,7 +468,7 @@
                     Get started
                 </button>
                 
-                <a href="#" class="button text-xl bg-base-100 text-base-100-content font-medium p-4 border-4 border-accent px-8">
+                <a href="#" class="button text-xl bg-background text-foreground font-medium p-4 border-4 border-accent px-8">
                     how Nostr helps grow your reach
                 </a>
             </div>
@@ -492,7 +492,7 @@
     }
 
     section header h2 {
-        @apply text-3xl font-light text-white;
+        @apply text-3xl font-light text-foreground;
     }
 
     section .header > h3 {

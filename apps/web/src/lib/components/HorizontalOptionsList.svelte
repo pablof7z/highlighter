@@ -16,14 +16,14 @@
     <div class="
         lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}
         overflow-x-auto max-w-[100vw]
-        scrollbar-hide
+        scrollbar-hide gap-2
         transition-all duration-300
     ">
         {#each options as option (option.id ?? option.name ?? option.href)}
             {#if option.component}
                 {#if !option.component.unstyled}
                     <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 p-1.5 items-center">
-                        <div class="rounded-full p-[2px]" class:text-white={value === (option.value || option.name)}>
+                        <div class="rounded-full p-[2px]" class:text-foreground={value === (option.value || option.name)}>
                             <svelte:component
                                 this={option.component.component}
                                 {...option.component.props??{}}

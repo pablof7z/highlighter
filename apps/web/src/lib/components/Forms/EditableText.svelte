@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Input from "$components/Forms/Input.svelte";
+    import Input from '$components/ui/input/input.svelte';
 
     export let value: string = "";
     export let editing = false;

@@ -26,7 +26,7 @@ import { ndk } from "$stores/ndk.js";
     </div>
 
     {#if memberList === null}
-        <div class="text-white text-center">
+        <div class="text-foreground text-center">
             No forum activity
         </div>
     {:else if memberList}
@@ -42,7 +42,7 @@ import { ndk } from "$stores/ndk.js";
     {/if}
 
     {#if user.pubkey === $currentUser?.pubkey}
-        <div class="text-white">
+        <div class="text-foreground">
             <button class="button">
                 Add new members
             </button>

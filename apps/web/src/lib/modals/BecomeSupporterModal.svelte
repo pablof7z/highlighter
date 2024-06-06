@@ -23,6 +23,8 @@
 	import RadioButton from '$components/Forms/RadioButton.svelte';
 	import { createSubscriptionEvent } from '$components/Payment/subscription-event';
 	import ManualPayment from '$components/Payment/ManualPayment.svelte';
+	import currentUser from '$stores/currentUser';
+	import { ndk } from '$stores/ndk';
 
     export let user: NDKUser;
 
@@ -97,7 +99,7 @@
     async function onPaid() {
         paid = true;
         if ($userFollows.has(user.pubkey)) return;
-        $loggedInUser.follow(user);
+        $currentUser.follow(user);
     }
 </script>
 
@@ -107,7 +109,7 @@
     <div on:click|preventDefault|stopPropagation={() => {}} class="w-full relative transition-all duration-1000">
         <div class="w-full flex justify-center mb-4">
             <UserProfile {user}>
-                <AvatarWithName {user} avatarType="square" spacing="gap-4" nameClass="text-white text-xl" />
+                <AvatarWithName {user} avatarType="square" spacing="gap-4" nameClass="text-foreground text-xl" />
             </UserProfile>
         </div>
 
@@ -115,7 +117,7 @@
             {#if !bitcoin}
                 <div class="flex flex-col flex-nowrap gap-6 items-stretch sm:items-center">
                     {#if $availableCurrencies.length > 1}
-                        <div class="flex flex-row gap-2 bg-white/10 rounded-box">
+                        <div class="flex flex-row gap-2 bg-white/10 rounded">
                             {#each $availableCurrencies as currency}
                                 <RadioButton
                                     bind:currentValue={selectedCurrency}
@@ -207,7 +209,7 @@
             {:else}
                 <div class="flex flex-col flex-nowrap gap-6 items-center">
                     {#if !userHasWalletConnected}
-                        <h1 class="text-2xl text-center text-white font-semibold leading-normal">
+                        <h1 class="text-2xl text-center text-foreground font-semibold leading-normal">
                             Connect your wallet
                         </h1>
 
@@ -224,7 +226,7 @@
 
                         <button class="font-normal" on:click={() => { manualPayment = true }}>
                             Or
-                            <span class="text-base-100-content">proceed without connecting a wallet</span>
+                            <span class="text-foreground">proceed without connecting a wallet</span>
                         </button>
                         
                     {:else if selectedAmount && selectedCurrency}

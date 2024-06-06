@@ -10,11 +10,7 @@
 </script>
 
 {#if articleTagsWithHighlights && articleTagsWithHighlights.length > 0}
-<div class="mb-4">
-    <Carousel
-        class="overflow-auto w-full gap-6 rounded-none"
-        itemCount={articleTagsWithHighlights.length}
-    >
+<div class="mb-4 overflow-x-auto w-full flex-nowrap flex flex-row gap-4">
         {#each articleTagsWithHighlights.slice(0, 20) as {tag: articleTag, highlights} (articleTag[1])}
             {#if articleTag[0] === "a"}
                 <ArticleGridArticle tag={articleTag} {highlights} />
@@ -22,6 +18,5 @@
                 <ArticleGridUrlItem url={articleTag[1]} {highlights} />
             {/if}
         {/each}
-    </Carousel>
 </div>
 {/if}

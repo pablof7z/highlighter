@@ -62,6 +62,6 @@
 
 <style lang="postcss">
     a {
-        @apply text-sm text-accent;
+        @apply text-sm text-primary;
     }
 </style>

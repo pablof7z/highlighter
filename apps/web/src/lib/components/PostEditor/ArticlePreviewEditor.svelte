@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-    import Input from "$components/Forms/Input.svelte";
-	import GuideToPreviews from './../../drawer/help/guide-to-previews.svelte';
+    import Input from '$components/ui/input/input.svelte';
     import { makePublicAfter, preview, previewExtraContent } from "$stores/post-editor";
 	import Box from "$components/PageElements/Box.svelte";
 	import { previewContentChanged, previewTitleChanged } from "$stores/post-editor";
@@ -9,6 +8,7 @@
     import truncateMarkdown from 'markdown-truncate';
 	import { Info } from "phosphor-svelte";
 	import MakePublicAfter from '$components/Editor/Audience/MakePublicAfter.svelte';
+	import { ndk } from '$stores/ndk';
 
     export let article: NDKArticle;
     export let authorUrl: string = "";
@@ -52,20 +52,11 @@
     if (!$previewContentChanged) $preview.content = generatePreviewContent();
 
     function openGuide() {
-        if (!$pageDrawerToggle) {
-            $pageDrawerToggle = true;
-            const $rightSidebar = {
-                component: GuideToPreviews,
-                props: {}
-            }
-        } else {
-            $pageDrawerToggle = false;
-        }
     }
 </script>
 
 <Box innerClass="">
-    <h3 class="text-white text-sm">
+    <h3 class="text-foreground text-sm">
         <Info class="w-4 h-4 text-info inline ml-2" />
         You're editing your article's preview for non-subscribers
     </h3>
@@ -83,7 +74,7 @@
         <Input
             bind:value={$preview.title}
             color="black"
-            class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-white font-['InterDisplay'] font-semibold placeholder:text-white/50 placeholder:font-normal"
+            class="!bg-transparent text-2xl border-none !p-0 rounded-lg focus:ring-0 text-foreground font-['InterDisplay'] font-semibold placeholder:text-foreground/50 placeholder:font-normal"
             placeholder="Add a title"
             on:change={() => $previewTitleChanged = true}
         />
@@ -91,7 +82,7 @@
     <div class="p-6 pt-0 flex flex-col">
         {#if Number($makePublicAfter) > 0}
             <div class="flex flex-col justify-stretch w-full" transition:slide>
-                <Textarea
+                <textarea
                     bind:value={$previewExtraContent.before}
                     class="
                         !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg
@@ -103,7 +94,7 @@
                 <div class="border-b border-neutral-700 pb-2"></div>
             </div>
         {/if}
-        <Textarea
+        <textarea
             bind:value={$preview.content}
             on:change={() => $previewContentChanged = true}
             class="
@@ -115,7 +106,7 @@
             placeholder="Write your heart out..."
         />
         <div class="border-t border-neutral-700 pt-4"></div>
-        <Textarea
+        <textarea
             bind:value={$previewExtraContent.after}
             class="
                 !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg

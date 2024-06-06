@@ -42,7 +42,7 @@ import currentUser from "$stores/currentUser.js";
 
 <a
     href={url.toString()}
-    class="flex flex-row items-center gap-2 {commentedByUser ? 'text-white' : ''}"
+    class="flex flex-row items-center gap-2 {commentedByUser ? 'text-foreground' : ''}"
 >
     <ChatCircle
         class="w-7 h-7"

@@ -56,7 +56,7 @@
 
     {#if sortedReceipts && $sortedReceipts?.length > 0 && false}
         <div class="flex flex-col">
-            <h2 class="text-white font-semibold text-lg px-4 pb-2">
+            <h2 class="text-foreground font-semibold text-lg px-4 pb-2">
                 Top Supporters
             </h2>
             <div class="flex flex-col discussion-wrapper w-full">

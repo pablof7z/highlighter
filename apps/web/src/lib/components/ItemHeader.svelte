@@ -20,7 +20,7 @@
 
 <div class="py-2 flex flex-col sm:flex-row gap-6 justify-between items-center w-full {$$props.containerClass??""} {$$props.class??""}">
     <div class="flex flex-row gap-6 items-center max-sm:justify-between w-full">
-        <AvatarWithName user={author} spacing="gap-4" avatarType="square" class="text-white grow">
+        <AvatarWithName user={author} spacing="gap-4" avatarType="square" class="text-foreground grow">
             <ClientName event={item} />
         </AvatarWithName>
         <div class="flex flex-row items-center">

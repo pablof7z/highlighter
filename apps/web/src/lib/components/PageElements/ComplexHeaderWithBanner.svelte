@@ -90,7 +90,7 @@ import { ndk } from "$stores/ndk.js";
 
         <!-- Container -->
         <div class="
-            flex flex-col pt-4 px-6 items-center justify-center relative z-50  max-sm:pt-0-safe text-white {$$props.containerClass??""} {collapsed ? "max-sm:px-2" : ""}
+            flex flex-col pt-4 px-6 items-center justify-center relative z-50  max-sm:pt-0-safe text-foreground {$$props.containerClass??""} {collapsed ? "max-sm:px-2" : ""}
         ">
             <div class="flex {collapsed ? "flex-row" : "flex-col"} items-center justify-start gap-2 w-full transition-all duration-300">
                 {#if $appMobileView}
@@ -106,7 +106,7 @@ import { ndk } from "$stores/ndk.js";
                     </div>
                 {/if}
                 <h1 class="
-                    text-white font-semibold flex whitespace-nowrap mb-0 transition-all duration-300 {collapsed ? "text-xl grow" : "justify-center items-center"}
+                    text-foreground font-semibold flex whitespace-nowrap mb-0 transition-all duration-300 {collapsed ? "text-xl grow" : "justify-center items-center"}
                 ">
                     <slot name="title" />
                 </h1>

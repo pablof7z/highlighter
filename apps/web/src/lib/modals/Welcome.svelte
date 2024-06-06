@@ -82,7 +82,7 @@
     <a href="/welcome" class="button text-lg font-normal w-full" on:click={() => { goto("/welcome"); closeModal()} }>
         Start publishing & earning
     </a>
-    <button class="button bg-white/5 text-white/70 font-normal py-3" on:click={() => closeModal() }>
+    <button class="button bg-white/5 text-foreground/70 font-normal py-3" on:click={() => closeModal() }>
         Join as a fan
     </button>
 </div>

@@ -12,11 +12,11 @@
         </div>
         <div class="w-full flex flex-col gap-2 absolute bottom-0 z-5 p-4 bg-gradient-to-b from-transparent via-base-100 to-base-100 pt-10">
             {#if $$slots.title}
-                <div class="self-stretch text-white text-4xl font-semibold">
+                <div class="self-stretch text-foreground text-4xl font-semibold">
                     <slot name="title" />
                 </div>
             {/if}
-            <div class="text-xl text-white/70 font-normal lg:max-h-[6rem] overflow-y-auto scrollbar-hide" class:hidden={!$$slots.summary}>
+            <div class="text-xl text-foreground/70 font-normal lg:max-h-[6rem] overflow-y-auto scrollbar-hide" class:hidden={!$$slots.summary}>
                 <slot name="summary" />
             </div>
 

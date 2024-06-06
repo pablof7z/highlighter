@@ -53,7 +53,7 @@
         </div>
     {/if}
 
-    <h1 class="max-sm:px-4 text-white font-semibold z-1 relative">
+    <h1 class="max-sm:px-4 text-foreground font-semibold z-1 relative">
         {list.title}
     </h1>
 
@@ -70,7 +70,7 @@
         {#if list.pubkey === $user?.pubkey}
             {#if editDescription === null}
                 <button
-                    class="cursor-pointer w-full hover:bg-base-300"
+                    class="cursor-pointer w-full hover:bg-foreground/20"
                     on:click={() => editDescription = list.content??""}>
                     <div class="items-start text-left text-lg">
                         {#if list.content.length > 0}
@@ -104,7 +104,7 @@
     </div>
 </div>
 
-<div class="h-full overflow-y-auto flex flex-col mt-5   border-t border-base-300">
+<div class="h-full overflow-y-auto flex flex-col mt-5   border-t border-border">
     {#each $items as item (item.id)}
         <Article
             article={NDKArticle.from(item)}

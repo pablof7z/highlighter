@@ -36,7 +36,7 @@
 
 <style lang="postcss">
     h1 {
-        @apply text-2xl font-semibold text-white;
+        @apply text-2xl font-semibold text-foreground;
         @apply mb-4;
     }
 

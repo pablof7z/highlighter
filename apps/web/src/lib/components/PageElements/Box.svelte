@@ -13,7 +13,7 @@
 
 <div class="
     w-full
-    p-4 bg-base-200 rounded-box flex-col justify-start items-start gap-3 flex
+    p-4 bg-foreground/10 rounded flex-col justify-start items-start gap-3 flex
     {$$props.class??""}
 ">
     {#if title}

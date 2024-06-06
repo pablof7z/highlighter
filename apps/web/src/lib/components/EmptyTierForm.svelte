@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { termToShort, type Term, possibleTerms } from "$utils/term";
-	import GlassyInput from "./Forms/GlassyInput.svelte";
-    import Input from "./Forms/Input.svelte";
+    import Input from '$components/ui/input/input.svelte';
 
     export let currency: string = 'USD';
     export let term: Term;
@@ -38,7 +37,7 @@
         </div>
     </div>
     <div class="flex flex-row gap-4">
-        <GlassyInput
+        <Input
             type="number"
             bind:value={amount}
             autofocus={true}

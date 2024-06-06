@@ -21,7 +21,7 @@
 </script>
 
 <div class="flex flex-row py-2">
-    <button class="pl-4 pr-2 py-1 rounded-l-full bg-base-300 hover:bg-white/10 join-item" on:click={() => openModal(AddToCuration, {event})}>
+    <button class="pl-4 pr-2 py-1 rounded-l-full bg-foreground/20 hover:bg-white/10 join-item" on:click={() => openModal(AddToCuration, {event})}>
         <CardsThree
             class="w-7 h-7
                 {bookmarked ? 'text-accent' : ''}
@@ -33,6 +33,6 @@
         count={$curations.length}
         label="Curations"
         {href}
-        class="pr-4 pl-2 join-item bg-base-200 rounded-r-full hover:bg-white/10"
+        class="pr-4 pl-2 join-item bg-foreground/10 rounded-r-full hover:bg-white/10"
     />
 </div>

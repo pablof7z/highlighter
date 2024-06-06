@@ -22,7 +22,7 @@
 </script>
 
 {#if repostEvent}
-<div class="text-white">
+<div class="text-foreground">
     <Repeat size={20} class="text-accent inline" />
     Repost 
     <RelativeTime timestamp={repostEvent.created_at*1000} />
@@ -38,5 +38,5 @@
 
 <div class="text-xs font-white flex flex-row items-center gap-2">
     Scheduling provided by
-    <AvatarWithName user={dvmUser} avatarType="circle" avatarSize="small" class="text-base-100-content" />
+    <AvatarWithName user={dvmUser} avatarType="circle" avatarSize="small" class="text-foreground" />
 </div>

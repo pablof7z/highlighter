@@ -21,9 +21,3 @@
         <FeedEvent {event} skipAuthor={true} />
     {/each}
 </div>
-
-<style lang="postcss">
-    :global(.article p) {
-        @apply font-light text-white text-opacity-60 text-lg leading-7;
-    }
-</style>

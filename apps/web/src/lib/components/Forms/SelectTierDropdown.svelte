@@ -68,7 +68,7 @@
         {selectedString}
         <CaretDown class="ml-2" size={24} />
     </label>
-    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 bg-base-100 rounded-box">
+    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 bg-background rounded">
         {#each Object.keys(tiers) as tier}
             <li>
                 <label class="w-full flex flex-row gap-4">
@@ -78,7 +78,7 @@
 
                     {#if tier === "Free"}
                         <button
-                            class="text-xs text-white whitespace-nowrap ml-12"
+                            class="text-xs text-foreground whitespace-nowrap ml-12"
                             class:button={!onlyFree}
                             class:button-black={!onlyFree}
                             on:click={toggleOnlyFree}
@@ -92,8 +92,8 @@
                 </label>
             </li>
         {/each}
-        <li class="border-t border-base-300">
-            <button class="text-white w-full flex flex-row gap-4" on:click={addNewTier}>
+        <li class="border-t border-border">
+            <button class="text-foreground w-full flex flex-row gap-4" on:click={addNewTier}>
                 Add a new tier
             </button>
         </li>
@@ -102,7 +102,7 @@
 
 <style lang="postcss">
     .dropdown .dropdown-content {
-        @apply !bg-base-100/10  !backdrop-blur-[50px];
+        @apply !bg-background/10  !backdrop-blur-[50px];
         @apply !outline-black p-4;
     }
 </style>

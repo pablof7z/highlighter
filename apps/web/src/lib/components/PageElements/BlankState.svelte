@@ -1,14 +1,19 @@
-<div class="max-w-xl mx-auto flex flex-col items-center gap-4  rounded-box p-4 lg:p-10 {$$props.class??""}">
+<script>
+
+	import Button from "$components/ui/button/button.svelte";
+
+</script>
+<div class="max-w-xl mx-auto flex flex-col items-center gap-4  rounded p-4 lg:p-10 {$$props.class??""}">
     <slot name="illustration" />
     <!-- <img src="/images/drafts.png" /> -->
 
-    <p class="text-center text-white text-lg">
+    <p class="text-center text-foreground text-lg">
         <slot />
     </p>
 
-    <button class="button w-fit text-lg px-6" on:click>
+    <Button forceNonMobile size="lg" variant="default" on:click>
         {$$props.cta}
-    </button>
+    </Button>
 
     {#if $$slots.afterCta}
         <slot name="afterCta" />

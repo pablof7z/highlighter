@@ -68,7 +68,7 @@ import currentUser from "$stores/currentUser.js";
 </script>
 
 <button
-    class="flex flex-row items-center gap-2 {reactedByUser ? 'text-white' : ''}"
+    class="flex flex-row items-center gap-2 {reactedByUser ? 'text-foreground' : ''}"
     on:click|stopPropagation|preventDefault={react}
 >
     <Heart

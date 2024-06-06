@@ -6,6 +6,7 @@
 	import { creatorRelayPubkey } from '$utils/const';
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
+	import { ndk } from "$stores/ndk";
 
     $pageHeader = {
         title: "Network Settings",
@@ -59,7 +60,7 @@
 
 <style lang="postcss">
     h1 {
-        @apply text-2xl font-semibold text-white;
+        @apply text-2xl font-semibold text-foreground;
         @apply mb-4;
     }
 

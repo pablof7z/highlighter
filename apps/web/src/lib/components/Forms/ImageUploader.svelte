@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { newToasterMessage } from "$stores/toaster";
 	import type { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 
@@ -50,25 +51,6 @@
             console.error(`Failed to upload image: ${xhr.statusText}`);
             newToasterMessage(`Failed to upload image: ${xhr.statusText}`, "error");
         });
-
-        try {
-            const res = await nip96Upload(xhr, $ndk, file, "nostr.build");
-            console.log(res);
-
-            if (res.status !== "success") {
-                newToasterMessage(res.message, res.status);
-                return;
-            }
-
-            url = res.nip94_event.tags.find((t: NDKTag) => t[0] === "url")![1];
-            done = true;
-            tags = res.tags;
-
-            dispatch("uploaded", { url, tags });
-        } catch (err) {
-            console.error(err);
-            newToasterMessage(`Failed to upload image: ${err}`, "error");
-        }
     }
 </script>
 
@@ -90,7 +72,7 @@
     {/if}
     {#if uploadProgress !== undefined && !done}
         <div class="h-2 bg-accent top-0 absolute z-30 left-0 transition-all duration-300" style="width: {uploadProgress}%;"></div>
-        <div class="h-2 bg-base-300 w-full top-0 absolute z-20"></div>
+        <div class="h-2 bg-foreground/20 w-full top-0 absolute z-20"></div>
     {/if}
     <input type="file" bind:this={fileUpload} id="fileUploader" accept="image/*" class="hidden" on:change={handleFileUpload}>
 </label>

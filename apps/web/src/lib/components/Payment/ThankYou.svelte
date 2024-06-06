@@ -5,6 +5,8 @@
 	import type { NDKUser } from "@nostr-dev-kit/ndk";
 	import { goto } from "$app/navigation";
 	import currentUser from "$stores/currentUser";
+	import Avatar from "$components/User/Avatar.svelte";
+	import Name from "$components/User/Name.svelte";
 
     export let user: NDKUser;
     let authorUrl: string;
@@ -28,10 +30,10 @@
                 <div
                     class="flex flex-col gap-0 items-center justify-center bg-gradient w-32 h-32 flex-none mask mask-squircle"
                 >
-                    <div class="text-6xl font-black text-white opacity-80">
+                    <div class="text-6xl font-black text-foreground opacity-80">
                         <span class="opacity-40">#</span>{position}
                     </div>
-                    <div class="text-sm text-white/80">
+                    <div class="text-sm text-foreground/80">
                         Supporter
                     </div>
                 </div>
@@ -39,7 +41,7 @@
             </div>
 
             <div class="flex flex-col gap-2">
-                <h1 class="text-white text-7xl font-black">Hooray!</h1>
+                <h1 class="text-foreground text-7xl font-black">Hooray!</h1>
                     {#if position !== undefined}
                         <h1 class="text-2xl text-neutral-500 font-medium grow opacity-50">
                             You've become

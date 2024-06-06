@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { type Writable } from 'svelte/store';
 	import { userArticleCurations, userVideoCurations } from "$stores/session";
-    import Input from "$components/Forms/Input.svelte";
+    import Input from '$components/ui/input/input.svelte';
     import { ndk } from "$stores/ndk.js";
-	import { NDKEvent, NDKList, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
-	import { BookmarkSimple, List, Lock, PaperPlaneTilt, Plus, PlusCircle } from "phosphor-svelte";
+	import { NDKEvent, NDKList, NDKKind } from "@nostr-dev-kit/ndk";
+	import { BookmarkSimple, List, Lock, PaperPlaneTilt, Plus } from "phosphor-svelte";
 	import { onDestroy } from 'svelte';
 
     export let event: NDKEvent;
@@ -79,7 +79,7 @@
 </script>
 
 <div
-    class="flex flex-row items-center gap-2 group {bookmarked ? 'text-white' : ''}"
+    class="flex flex-row items-center gap-2 group {bookmarked ? 'text-foreground' : ''}"
 >
 <div
     class="dropdown dropdown-top"
@@ -95,7 +95,7 @@
             />
         </label>
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-        <ul tabindex="0" class="dropdown-content z-50 menu p-2 rounded-box overflow-x-clip truncate flex-nowrap">
+        <ul tabindex="0" class="dropdown-content z-50 menu p-2 rounded overflow-x-clip truncate flex-nowrap">
             {#each $listStore.values() as curation (curation.id)}
                 <li class="w-full">
                     <button
@@ -169,6 +169,6 @@
 
 <style lang="postcss">
     button.active {
-        @apply border-l-4 border-accent rounded-l-none !text-white font-semibold;
+        @apply border-l-4 border-accent rounded-l-none !text-foreground font-semibold;
     }
 </style>

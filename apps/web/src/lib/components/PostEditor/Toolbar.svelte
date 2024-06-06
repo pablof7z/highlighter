@@ -1,10 +1,11 @@
     <script lang="ts">
 	import { CaretLeft, Eye, Eye, Timer, UsersThree } from "phosphor-svelte";
-    import { event, view, type, status, View, currentDraftItem, selectedTiers, preview, publishAt, selectedTiers } from "$stores/post-editor";
+    import { event, view, type, status, View, selectedTiers, preview, publishAt, selectedTiers } from "$stores/post-editor";
 	import { closeModal, openModal } from '$utils/modal';
 	import ScheduleModal from '$modals/ScheduleModal.svelte';
 	import { appMobileView } from '$stores/app';
-	import { Actions, ActionsButton, ActionsGroup, ActionsLabel, Button, Link, Toolbar } from 'konsta/svelte';
+    import Button from "$components/ui/button/button.svelte";
+	import { Actions, ActionsButton, ActionsGroup, ActionsLabel, Link, Button as MobileButton, Toolbar } from 'konsta/svelte';
     import { NavbarBackLink } from 'konsta/svelte';
 	import TiersLabel from "$components/Forms/TiersLabel.svelte";
 
@@ -30,7 +31,9 @@
         }
     }
 
-    async function schedule() {
+    async function schedule(
+        schedule = false
+    ) {
         let action: string;
 
         if ($type === "thread") {
@@ -44,14 +47,15 @@
         } else {
             action = "Publish"
         }
-        
+
         openModal(ScheduleModal, {
             title: `Schedule`,
-            cta: "Continue",
+            cta: schedule ? "Schedule" : "Continue",
             action,
             onSchedule: async (timestamp: number) => {
                 $publishAt = new Date(timestamp);
                 closeModal();
+                if (schedule) $view = "publish";
             }
         });
     }
@@ -121,25 +125,25 @@
 
         <div class="right">
             {#if showPublish}
-                <Link onClick={showPublishModal} disabled={publishing}>
+                <MobileButton onClick={showPublishModal} disabled={publishing} class="!bg-accent !text-accent-foreground">
                     Next
-                </Link>
+                </MobileButton>
             {/if}
         </div>
     </Toolbar>
 
     <Actions
         opened={actionsOneOpened}
-        onBackdropClick={() => (actionsOneOpened = false)}
+        onBackdropClick={() => {(actionsOneOpened = false)}}
     >
         <ActionsGroup>
-        <ActionsButton onClick={() => (actionsOneOpened = false)} bold>
+        <ActionsButton onClick={() => {(actionsOneOpened = false)}} bold>
             Publish
         </ActionsButton>
-        <ActionsButton onClick={() => (actionsOneOpened = false)}>
+        <ActionsButton onClick={() => {schedule(true); (actionsOneOpened = false)}}>
             Schedule
         </ActionsButton>
-        <ActionsButton onClick={() => (actionsOneOpened = false)}>
+        <ActionsButton onClick={() => {(actionsOneOpened = false)}}>
             Cancel
         </ActionsButton>
         </ActionsGroup>
@@ -148,24 +152,24 @@
 <div class="flex flex-row justify-between h-full w-full items-center py-2 {$$props.containerClass??""}" class:hidden={$view === "published"}>
     <div class="flex flex-row gap-4 self-end">
         {#if showEdit && $view !== "edit"}
-            <button class="button-black" on:click={() => $view = 'edit'}>
+            <Button variant="outline" on:click={() => $view = 'edit'}>
                 <CaretLeft class="inline mr-2" size={20} />
                 Edit
-            </button>
+            </Button>
         {/if}
     
         {#if showAudience && !['audience', 'edit-preview', 'view-preview'].includes($view)}
-            <button class="button-black" on:click={() => $view = 'audience'}>
+            <Button variant="outline" on:click={() => $view = 'audience'}>
                 <UsersThree class="inline mr-2" size={20} />
                 <TiersLabel tiers={$selectedTiers} />
-            </button>
+            </Button>
         {/if}
 
         {#if showPreview &&  !['audience', 'view-preview', 'edit-preview'].includes($view)}
-            <button class="button-black" on:click={togglePreview}>
+            <Button variant="outline" on:click={togglePreview}>
                 <Eye class="inline mr-2" size={20} />
                 Preview
-            </button>
+            </Button>
         {/if}
         
         {#if $status.length > 0}
@@ -178,39 +182,12 @@
     </div>
 
     <div class="flex flex-row gap-4 self-end">
-        <!-- {#if next}
-            {#if ($type === "article" || $type === "thread")} 
-                
-
-                <button class="truncate" on:click={() => {if (onSaveDraft) onSaveDraft()}}>
-                    Save Draft
-                </button>
-            {/if}
-
-            {#if $type === "thread" && next.value === "schedule"}
-                
-
-                <button class="button" on:click={_publishThread} disabled={publishing}>
-                    {#if publishing}
-                        <span class="loading loading-sm"></span>
-                    {/if}
-                    
-                    Publish
-                </button>
-            {:else}
-                <button class="button" on:click={nextClicked} disabled={$view === "view-preview"}>
-                    {next.label}
-                    <CaretRight size={24} />
-                </button>
-            {/if}
-        {/if} -->
-
         {#if showPublish}
             <div class="flex flex-row flex-nowrap gap-2">
-                <button class="button-black rounded-full" on:click={schedule}>
+                <Button size="icon" variant="secondary" on:click={schedule}>
                     <Timer size={24} />
-                </button>
-                <button class="button" on:click={onPublish} disabled={publishing}>
+                </Button>
+                <Button on:click={onPublish} disabled={publishing}>
                     {#if publishing}
                         <span class="loading loading-sm"></span>
                     {/if}
@@ -220,7 +197,7 @@
                     {:else}
                         Publish
                     {/if}
-                </button>
+                </Button>
             </div>
         {/if}
 

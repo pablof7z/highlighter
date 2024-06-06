@@ -36,7 +36,7 @@ import currentUser from "$stores/currentUser.js";
     <div class="tooltip line-clamp-1 overflow-clip" data-tip="View article highlights" transition:slide={{axis: 'y'}}>
         <a
             href="{urlPrefix}/highlights"
-            class="flex flex-row items-center gap-2 {highlightedByUser ? 'text-white' : ''}"
+            class="flex flex-row items-center gap-2 {highlightedByUser ? 'text-foreground' : ''}"
         >
             <HighlightIcon
                 class="w-6 h-6"

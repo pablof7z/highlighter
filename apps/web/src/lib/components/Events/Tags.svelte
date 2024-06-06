@@ -1,4 +1,9 @@
 <script lang="ts">
+	import { badgeVariants } from "$components/ui/badge";
+	import Badge from "$components/ui/badge/badge.svelte";
+
+
+    
     export let tags: string[];
     export let clickable = true;
 
@@ -10,25 +15,22 @@
         <div class="
             flex flex-row gap-4 flex-nowrap
             snap snap-x snap-start snap-mandatory
+            whitespace-nowrap
         ">
             {#each tags as tag, i (i)}
                 {#if clickable}
                     <a
                         href="/t/{encodeURIComponent(tag)}"
-                        class="tag"
+                        class="{badgeVariants({variant: "secondary"})}"
                     >
                         <span>{tag}</span>
                     </a>
                 {:else}
-                    <span class="tag">{tag}</span>
+                    <Badge variant="secondary">
+                        <span>{tag}</span>
+                    </Badge>
                 {/if}
             {/each}
         </div>
     </div>
 {/if}
-
-<style lang="postcss">
-    .tag {
-        @apply flex-row gap-2 text-white/50 text-sm inline bg-white/10 rounded-full px-3 py-1 whitespace-nowrap snap-center;
-    }
-</style>

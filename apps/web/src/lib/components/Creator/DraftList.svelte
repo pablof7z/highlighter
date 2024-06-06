@@ -31,7 +31,7 @@
                         Versions
                     </label>
                     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box">
+                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-background rounded">
                         {#each JSON.parse(draft.checkpoints) as checkpoint}
                             <DraftListVersionItem {draft} {checkpoint} />
                         {/each}

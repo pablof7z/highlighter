@@ -102,7 +102,7 @@ import { ndk } from "$stores/ndk.js";
         image={`https://picsum.photos/800/600?random=Inbox}`}
     >
         <span slot="title" class="mt-8">Inbox</span>
-        <div slot="subtitle" class="flex flex-col items-center gap-8 text-lg p-6 bg-base-100/50 mt-4 rounded-box">
+        <div slot="subtitle" class="flex flex-col items-center gap-8 text-lg p-6 bg-background/50 mt-4 rounded">
             <h2 class="text-xl font-bold">A focused place for your most valuable content.</h2>
 
             <p>

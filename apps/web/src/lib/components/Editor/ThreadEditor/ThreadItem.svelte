@@ -10,6 +10,10 @@
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { openModal } from "$utils/modal";
 	import SelectHighlight from "$modals/SelectHighlight.svelte";
+	import Avatar from "$components/User/Avatar.svelte";
+	import Name from "$components/User/Name.svelte";
+	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
+	import { ndk } from "$stores/ndk";
 
     const dispatch = createEventDispatcher();
 
@@ -71,7 +75,7 @@
         <div class="flex flex-row items-start w-full gap-2 relative">
             <div class="flex flex-col items-start grow">
                 {#if title && !threadView}
-                    <div class="text-lg text-white font-semibold truncate grow">{title}</div>
+                    <div class="text-lg text-foreground font-semibold truncate grow">{title}</div>
                 {/if}
                 <div class="text-sm opacity-80">
                     <Name npubMaxLength={12} {userProfile} />
@@ -91,7 +95,7 @@
 
                             <button
                                 class="
-                                    btn btn-ghost btn-sm font-normal text-white group-hover:!opacity-100
+                                    btn btn-ghost btn-sm font-normal text-foreground group-hover:!opacity-100
                                     {confirmRemove ? "!bg-error/80" : "btn-neutral"}
                                 "
                                 class:btn-circle={!confirmRemove}
@@ -139,7 +143,7 @@
                 </div>
             {:else}
                 <Name npubMaxLength={12} {userProfile} user={$currentUser} class="text-sm mb-4" />
-                <div class="text-white min-h-[4rem]">
+                <div class="text-foreground min-h-[4rem]">
                     <EventContent ndk={$ndk} event={item.event} />
                 </div>
             {/if}

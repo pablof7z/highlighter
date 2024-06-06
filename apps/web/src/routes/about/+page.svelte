@@ -16,7 +16,7 @@
             <h1 class="mb-5 text-[calc(24px_+_5vw)] flex flex-col items-center">
                 is different
             </h1>
-            <p class="mb-5 text-white text-[calc(12px_+_1vw)]">
+            <p class="mb-5 text-foreground text-[calc(12px_+_1vw)]">
                 Own the relationship with your fans
             </p>
         </div>

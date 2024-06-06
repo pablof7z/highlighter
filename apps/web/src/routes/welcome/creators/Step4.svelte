@@ -22,7 +22,7 @@
             You're now ready to start monetizing your content while your subscribers enjoy your content
             and organically disseminate it among their networks.
         </h2>
-        <h2 class="text-xl text-white">
+        <h2 class="text-xl text-foreground">
             The future of content publishing and monetization is here.
         </h2>
     </div>
@@ -86,7 +86,7 @@
     }
 
     .section-links {
-        @apply border rounded-box border-base-300;
+        @apply border rounded border-border;
         @apply divide-y divide-base-300 flex flex-col;
     }
 
@@ -125,7 +125,7 @@
     }
 
     .opt:hover span.icon, .opt.default span.icon {
-        @apply opacity-100 text-white;
+        @apply opacity-100 text-foreground;
     }
 
     .opt > div {
@@ -133,7 +133,7 @@
     }
 
     .opt .title {
-        @apply text-lg font-medium text-white lg:brightness-90 lg:text-opacity-80 transition-all duration-100;
+        @apply text-lg font-medium text-foreground lg:brightness-90 lg:text-opacity-80 transition-all duration-100;
     }
 
     .opt:hover .title, .opt.default .title {

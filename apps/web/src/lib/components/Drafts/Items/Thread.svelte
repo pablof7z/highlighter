@@ -34,7 +34,7 @@
                 <EventContent ndk={$ndk} event={item.event} class="mb-2 text-lg" />
             {/if}
         </div>
-        <div class="badge rounded-full bg-base-300">
+        <div class="badge rounded-full bg-foreground/20">
             {thread.items.length}
         </div>
     </a>

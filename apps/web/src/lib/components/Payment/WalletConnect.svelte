@@ -1,6 +1,6 @@
 <script lang="ts">
 	import WalletConnectAlby from './WalletConnectAlby.svelte';
-    import Input from "$components/Forms/Input.svelte";
+    import Input from '$components/ui/input/input.svelte';
 	import { ArrowDown, ArrowLeft } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
 	import { finalizeLogin } from '$utils/login';
@@ -45,14 +45,14 @@
     }
 </script>
 
-<div class="flex flex-col gap-[1px] rounded-box w-full">
+<div class="flex flex-col gap-[1px] rounded w-full">
     {#if mode}
-        <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded-box flex flex-row gap-4 items-center mb-4" on:click={() => mode = undefined} transition:slide>
+        <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded flex flex-row gap-4 items-center mb-4" on:click={() => mode = undefined} transition:slide>
             <div class="w-12 h-12 flex flex-col items-center bg-black justify-center mask mask-squircle flex-none">
                 <ArrowLeft class="w-8 h-8 text-neutral-500" />
             </div>
 
-                <div class="font-normal text-lg text-white">
+                <div class="font-normal text-lg text-foreground">
                     Back
                 </div>
         </button>
@@ -60,14 +60,14 @@
 
     {#if currency === 'USD'}
         {#if !mode}
-            <h2 class="text-white text-lg font-medium">Pay in fiat</h2>
+            <h2 class="text-foreground text-lg font-medium">Pay in fiat</h2>
         {/if}
 
         {#if !mode || mode === 'stripe'}
-        <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded-box flex flex-row gap-4 items-stretch" on:click={() => mode = "stripe"} transition:slide>
+        <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded flex flex-row gap-4 items-stretch" on:click={() => mode = "stripe"} transition:slide>
                 <img src="/images/cc.png" class="w-12 h-12 mask mask-squircle bg-zinc-700" />
                 <div class="flex flex-col items-start w-full">
-                    <div class="font-normal text-lg text-white">
+                    <div class="font-normal text-lg text-foreground">
                         Debit / Credit Card
                     </div>
 
@@ -80,14 +80,14 @@
     {/if}
 
     {#if !mode}
-    <h2 class="text-white text-lg font-medium mt-4">Pay in Bitcoin</h2>
+    <h2 class="text-foreground text-lg font-medium mt-4">Pay in Bitcoin</h2>
     {/if}
 
     {#if !mode || mode === 'alby'}
     <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 rounded-t-box flex flex-row gap-4 items-stretch" on:click={() => mode = "alby"} transition:slide>
         <img src="https://raw.githubusercontent.com/getAlby/media/4647cca3705445f81d204fc6cd19287f085dc644/Alby-logo-icons/Alby%20logo.jpg" class="w-12 h-12 mask mask-squircle bg-zinc-700" />
         <div class="flex flex-col items-start w-full">
-            <div class="font-normal text-lg text-white">
+            <div class="font-normal text-lg text-foreground">
                 Alby Wallet
             </div>
 
@@ -100,11 +100,11 @@
 
     {#if !mode || mode === 'mutiny'}
     <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch" on:click={() => mode = "mutiny"} transition:slide>
-        <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded-box flex-none">
+        <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded flex-none">
             <img src="https://void.cat/d/CZPXhnwjqRhULSjPJ3sXTE.webp" class="w-12 h-12 mask mask-squircle bg-zinc-700" />
         </div>
         <div class="flex flex-col items-start w-full">
-            <div class="font-normal text-lg text-white">
+            <div class="font-normal text-lg text-foreground">
                 Mutiny
             </div>
 
@@ -117,11 +117,11 @@
 
     {#if !mode || mode === 'nwc'}
     <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch" on:click={() => mode = "nwc"} transition:slide>
-        <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded-box flex-none">
+        <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded flex-none">
             <NwcIcon class="w-12 h-12 mask mask-squircle" />
         </div>
         <div class="flex flex-col items-start w-full">
-            <div class="font-normal text-lg text-white">
+            <div class="font-normal text-lg text-foreground">
                 Nostr Wallet Connect
             </div>
 
@@ -134,11 +134,11 @@
 
     <!-- {#if !mode || mode === 'nwa'}
     <button class="bg-black/30 hover:bg-white/5 transition-all duration-300 px-6 py-4 flex flex-row gap-4 items-stretch rounded-b-box" on:click={() => mode = "nwa"} transition:slide>
-        <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded-box flex-none">
+        <div class="w-12 h-12 flex flex-col items-center justify-center bg-black rounded flex-none">
             <ZapIcon class="w-8 h-8 mask mask-squircle text-accent" />
         </div>
         <div class="flex flex-col items-start w-full">
-            <div class="font-normal text-lg text-white">
+            <div class="font-normal text-lg text-foreground">
                 Nostr Wallet Auth
             </div>
 
@@ -154,7 +154,7 @@
 {#if mode === "nwc"}
     <div class="flex-col w-full justify-start items-center gap-3 inline-flex flex-nowrap" transition:slide>
         <div class="self-stretch flex-col justify-start items-start gap-4 flex">
-            <div class="text-white text-base font-medium leading-normal">Nostr Wallet Connect</div>
+            <div class="text-foreground text-base font-medium leading-normal">Nostr Wallet Connect</div>
             <Textarea
                 class="w-full min-h-[8rem] textarea-bordered"
                 placeholder="Wallet connect URL / pairing secret (nostr+walletconnect://...)"
@@ -169,7 +169,7 @@
     </div>
 {:else if mode === "mutiny"}
     <div class="flex-col w-full justify-start items-center gap-3 inline-flex flex-nowrap" transition:slide>
-        <div class="text-white">
+        <div class="text-foreground">
 
             Add a new Wallet Connection from:
             <div class="text-center flex flex-col items-center">

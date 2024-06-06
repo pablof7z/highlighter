@@ -9,6 +9,10 @@
 	import { isKind, prettifyReaction, uniquePubkeys } from "$utils/event";
 	import { pluralize } from "$utils";
 	import { CursorClick, ShareFat } from "phosphor-svelte";
+	import Name from "$components/User/Name.svelte";
+	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
+	import { ndk } from "$stores/ndk";
+	import Avatar from "$components/User/Avatar.svelte";
 
     export let event: NDKEvent;
     export let detailed = false;
@@ -63,15 +67,15 @@
     </a>
     <div
         class="
-            bubble-container rounded-box flex items-stretch justify-stretch w-fit max-w-[90%] chat-bubble !p-0
+            bubble-container rounded flex items-stretch justify-stretch w-fit max-w-[90%] chat-bubble !p-0
             {isGradient ? "sm:min-w-[28rem]" : ""}
         "
         class:bg-gradient={isGradient}
-        class:!bg-base-200={!isGradient}
+        class:!bg-foreground={!isGradient}
     >
         <div class="
             chat-bubble w-full flex-1 grow !max-w-none
-            {isGradient ? "!bg-base-200/50 m-[1px]" : ""}]
+            {isGradient ? "!bg-foreground/10/50 m-[1px]" : ""}]
         ">
             <div class="chat-header">
             <Name {userProfile} {fetching} />

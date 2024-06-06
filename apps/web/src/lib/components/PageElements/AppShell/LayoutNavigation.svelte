@@ -30,7 +30,7 @@
             { name: "Collections",  href: "/collections", icon: CardsThree },
             { name: "Search", fn: () => openModal(SearchModal), icon: MagnifyingGlass },
             { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined },
-            { name: "Publish", icon: PlusCircle, class: "text-accent", fn: () => openModal(NewItemModal) },
+            { name: "Publish", icon: PlusCircle, class: "text-primary", fn: () => openModal(NewItemModal) },
         ]
 
         options = options;
@@ -74,20 +74,17 @@
     <UserProfile bind:userProfile={profile} bind:authorUrl user={$currentUser} />
 {/if}
 
-{#if $$props.class?.match(/fixed/)}
-    <div class="flex-none w-navbar-collapsed"></div>
-{/if}
-
 <div class="
     flex flex-col
     sm:top-0
-    bg-base-100
+    bg-background
     sm:h-full
     overflow-hidden z-10
     hover:overflow-visible
     flex-none
-    w-navbar-collapsed
-    fixed sm:left-0 border-r border-base-300
+    w-[var(--navbar-collapsed)]
+    fixed sm:left-0 border-r border-border
+    px-3
 
     {$$props.class??""}
 ">

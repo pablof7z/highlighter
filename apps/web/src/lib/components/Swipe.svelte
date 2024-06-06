@@ -214,8 +214,8 @@
                 class="focus:brightness-50 {opt.class??""}"
                 style={`width: ${triggerActionRequirement}px;`}
             >
-                <svelte:component this={opt.icon} class="w-12 h-12 !text-white" />
-                <span class="text-white">{opt.label}</span>
+                <svelte:component this={opt.icon} class="w-12 h-12 !text-foreground" />
+                <span class="text-foreground">{opt.label}</span>
             </button>
         {/each}
     </div>
@@ -233,7 +233,7 @@
                 style={`width: ${triggerActionRequirement}px;`}
             >
                 <svelte:component this={opt.icon} class="w-12 h-12" />
-                <span class="text-white">{opt.label}</span>
+                <span class="text-foreground">{opt.label}</span>
             </button>
         {/each}
     </div>
@@ -244,7 +244,7 @@
 
 <style lang="postcss">
     .options-wrapper {
-        @apply absolute top-0 bottom-0 flex flex-row items-stretch overflow-clip text-white;
+        @apply absolute top-0 bottom-0 flex flex-row items-stretch overflow-clip text-foreground;
         min-height: 32px;
     }
 

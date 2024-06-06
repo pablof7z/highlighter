@@ -24,7 +24,7 @@
 <div class="flex justify-center w-full py-2 gap-2">
     {#each links as link, i}
         <a href="#item{i}" on:click={updateI} class="
-            flex-none !text-white/60 h-2 w-2 rounded-full
+            flex-none !text-foreground/60 h-2 w-2 rounded-full
             {currentI === i ? 'bg-white/100' : 'bg-white/40'}
         ">
         </a>

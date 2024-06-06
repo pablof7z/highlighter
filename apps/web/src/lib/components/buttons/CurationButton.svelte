@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { type Writable } from 'svelte/store';
 	import { userArticleCurations, userVideoCurations } from "$stores/session";
-    import Input from "$components/Forms/Input.svelte";
-    import { ndk } from "$stores/ndk.js";
-import currentUser from "$stores/currentUser.js";
 	import { NDKEvent, NDKList, NDKKind } from "@nostr-dev-kit/ndk";
 	import { BookmarkSimple, Heart, Lock, PaperPlaneTilt, Plus, RowsPlusBottom } from "phosphor-svelte";
+	import { curationHasEvent } from '$utils/curations';
 
     export let event: NDKEvent;
 
@@ -38,7 +36,7 @@ import currentUser from "$stores/currentUser.js";
         />
     </label>
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow rounded-box overflow-x-clip truncate flex-nowrap">
+    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow rounded overflow-x-clip truncate flex-nowrap">
     </ul>
 </div>
 

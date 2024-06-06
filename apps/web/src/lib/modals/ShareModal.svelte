@@ -2,7 +2,7 @@
 	import { BlossomClient } from 'blossom-client-sdk/client';
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
-	import Input from "$components/Forms/Input.svelte";
+	import Input from '$components/ui/input/input.svelte';
     import ModalShell from "$components/ModalShell.svelte";
 	import { urlFromEvent } from "$utils/url";
 	import { ndk } from "$stores/ndk.js";
@@ -15,6 +15,8 @@
 	import ShareImage from "$components/Event/ShareImage.svelte";
 	import { EventTemplate } from "nostr-tools";
 	import { activeBlossomServer } from '$stores/session';
+    import * as Tabs from "$lib/components/ui/tabs";
+	import Checkbox from '$components/Forms/Checkbox.svelte';
 
     export let event: NDKEvent;
     export let content: string = "";
@@ -123,6 +125,27 @@
     let selectedOption = 'Publish on Nostr';
 
     let shareImageEl: HTMLElement;
+    let repost = true;
+    let selectedView = "nostr";
+
+    let actionButtons: NavigationOption[];
+
+    function share() {
+        Share.share({
+            title: article?.title,
+            text: summary,
+            url: articleUrl,
+        });
+        selectedView = "nostr";
+    }
+
+    $: if (selectedView === "nostr") {
+        actionButtons = [
+            { name: publishing ? "Publishing" : "Publish", fn: publish }
+        ];
+    } else {
+        actionButtons = [];
+    }
 </script>
 
 <ModalShell
@@ -131,44 +154,38 @@
     mobileToolbar={[
         { name: publishing ? "Publishing" : "Publish", fn: publish }
     ]}
+    {actionButtons}
 >
-    <svelte:fragment slot="titleRight">
-        <div class="flex flex-row items-center">
-            <HorizontalOptionsList bind:value={selectedOption} {options} />
+    <Tabs.Root bind:value={selectedView} slot="titleRight">
+        <Tabs.List>
+            <Tabs.Trigger value="nostr">Publish on Nostr</Tabs.Trigger>
+            <Tabs.Trigger value="advanced">Advanced</Tabs.Trigger>
             {#await Share.canShare() then canShare}
-                {#if canShare?.value}
-                    <button on:click={async () => {
-                        await Share.share({
-                            title: article?.title,
-                            text: summary,
-                            url: articleUrl,
-                        });
-                    }}>
-                        <Export class="w-8 h-8" />
-                    </button>
-                {/if}
+                <Tabs.Trigger value="extra" on:click={share}>
+                    <Export class="w-5 h-5" />
+                </Tabs.Trigger>
             {/await}
-        </div>
-    </svelte:fragment>
-    
-    <div class="w-full">
-        {#if selectedOption === "Publish on Nostr"}
+        </Tabs.List>
+    </Tabs.Root>
+
+    <Tabs.Root bind:value={selectedView}>
+        <Tabs.Content value="nostr">
             <ContentEditor
                 bind:content
                 toolbar={false}
                 autofocus
+                placeholder="Comment"
                 allowMarkdown={false}
                 class="
                     w-full min-h-[10rem]
                     {$$props.class??""}
                 "
             />
-
-            <div class="w-full">
-                {#if article}
-                    <ShareImage {article} bind:node={shareImageEl} />
-                {:else}
-                    <div class="border border-base-300 rounded-box w-full">
+            <div class="w-full px-4 flex flex-col gap-4">
+                <div class="w-full border border-border rounded overflow-clip">
+                    {#if article}
+                        <ShareImage {article} bind:node={shareImageEl} />
+                    {:else}
                         <EventWrapper
                             {event}
                             expandReplies={false}
@@ -178,10 +195,11 @@
                             showReply={false}
                             compact={true}
                         />
-                    </div>
-                {/if}
+                    {/if}
+                </div>
             </div>
-        {:else}
+        </Tabs.Content>
+        <Tabs.Content value="advanced">
             <div class="w-full">
                 <div class="flex flex-col items-start gap-2 w-full">
                     <div class="font-normal text-left w-full">URL</div>
@@ -189,7 +207,7 @@
                     <Input
                         color="black"
                         value={articleUrl}
-                        class="w-full rounded-md border !border-base-300 !bg-transparent font-mono"
+                        class="w-full rounded-md border !border-border !bg-transparent font-mono"
                         readonly
                     />
                 </div>
@@ -200,38 +218,22 @@
                     <Input
                         color="black"
                         value={`nostr:${event.encode()}`}
-                        class="w-full rounded-md border !border-base-300 !bg-transparent font-mono"
+                        class="w-full rounded-md border !border-border !bg-transparent font-mono"
                         readonly
                     />
                 </div>
             </div>
-        {/if}
-    </div>
+        </Tabs.Content>
+    </Tabs.Root>
 
-    <svelte:fragment slot="footer">
-        <!-- <div class="self-start">
+    <svelte:fragment slot="footerExtra">
+        {#if selectedView === "nostr"}
             <Checkbox class="text-sm" bind:checked={repost}>
                 Repost 8 hours later
                 <span class="text-xs font-light" slot="description">
                     Reach followers in other timezones
                 </span>
             </Checkbox>
-        </div> -->
-        
-        <div class="grow flex justify-end">
-            {#if selectedOption === "Publish on Nostr"}
-                <button class="button" on:click={publish}>
-                    {#if publishing}
-                        Publishing...
-                    {:else}
-                        Publish
-                    {/if}
-                </button>
-            {:else}
-                <button class="button" on:click={closeModal}>
-                    Close
-                </button>
-            {/if}
-        </div>
+        {/if}
     </svelte:fragment>
 </ModalShell>

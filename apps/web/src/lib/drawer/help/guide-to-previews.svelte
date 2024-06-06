@@ -1,13 +1,12 @@
 <script lang="ts">
 
     function closeDrawer() {
-        pageDrawerToggle.set(false);
     }
 </script>
 
 <div class="w-full flex flex-col items-stretch gap-4">
     <div class="flex flex-row items-center justify-between w-full">
-        <h1 class="text-white text-2xl font-semibold leading-8">
+        <h1 class="text-foreground text-2xl font-semibold leading-8">
             Creating good previews
         </h1>
     </div>
@@ -18,7 +17,7 @@
 
     <div class="leading-relaxed max-w-prose text-lg">
         Something to be mindful of is that
-        <span class="text-white">the preview should be enticing and
+        <span class="text-foreground">the preview should be enticing and
         provide value on its own</span>.
         People not familiar with your work will likely see this, and it's your chance to make a good
         first impression.
@@ -28,7 +27,7 @@
         Previews should have enough context to stand on their own among people who are first hearing of you.
     </div>
 
-    <h1 class="text-white text-2xl font-semibold leading-8">
+    <h1 class="text-foreground text-2xl font-semibold leading-8">
         Publishing previews widely
     </h1>
 

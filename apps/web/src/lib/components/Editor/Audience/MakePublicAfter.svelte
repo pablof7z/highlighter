@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Checkbox from "$components/Forms/Checkbox.svelte";
 	import { makePublicAfter } from "$stores/post-editor";
+    import * as Select from "$lib/components/ui/select";
 
     let makeFreeCheck = $makePublicAfter !== undefined && Number($makePublicAfter) > 0;
 
@@ -13,12 +14,23 @@
             makeFreeCheck = true;
         }
     }
+
+    const opts = [
+        { label: 'never', value: false },
+        { label: '1 day', value: 1 },
+        { label: '1 week', value: 7 },
+        { label: '2 weeks', value: 14 },
+        { label: '1 month', value: 30 },
+    ]
+    
+    let selected = opts.find(o => o.value === $makePublicAfter) || opts[0]
+
+    $: if (selected !== null) $makePublicAfter = selected.value as number | false;
 </script>
 
 <Checkbox
     bind:value={makeFreeCheck}
     button={true}
-    class="bg-white/5 !text-neutral-300 font-normal col-span-3 grow w-full"
     on:change={() => {
         if (makeFreeCheck) $makePublicAfter = 7
         else $makePublicAfter = false
@@ -26,11 +38,16 @@
 >
     Release full-version for free after
 
-    <select slot="button" class="select text-black self-center text-base bg-neutral-200 pl-4 py-0 min-h-0 h-10" bind:value={$makePublicAfter} on:change={updateMakePublic}>
-        <option value={false}>never</option>
-        <option value={1}>1 day</option>
-        <option value={7}>1 week</option>
-        <option value={14}>2 weeks</option>
-        <option value={30}>1 month</option>
-    </select>
+    <Select.Root loop slot="button" bind:selected  on:change={(e) => console.log(e)}>
+        <Select.Trigger class="w-32">
+            <Select.Item value={selected.value}>{selected.label}</Select.Item>
+        </Select.Trigger>
+        <Select.Content>
+            <Select.Item class="text-nowrap" value={false}>never</Select.Item>
+            <Select.Item class="text-nowrap" value={1}>1 day</Select.Item>
+            <Select.Item class="text-nowrap" value={7}>1 week</Select.Item>
+            <Select.Item class="text-nowrap" value={14}>2 weeks</Select.Item>
+            <Select.Item class="text-nowrap" value={30}>1 month</Select.Item>
+        </Select.Content>
+    </Select.Root>
 </Checkbox>

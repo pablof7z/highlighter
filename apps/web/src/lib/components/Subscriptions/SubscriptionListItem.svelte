@@ -29,14 +29,14 @@
     <Box innerClass="w-full">
         <div class="flex flex-row justify-between w-full">
             {#if userProfile}
-                <AvatarWithName bind:authorUrl {userProfile} {fetching} avatarType="square" avatarSize="large" nameClass="text-white text-lg">
+                <AvatarWithName bind:authorUrl {userProfile} {fetching} avatarType="square" avatarSize="large" nameClass="text-foreground text-lg">
                     <a href={authorUrl} class="button button-primary text-xs">
                         Go Backstage
                         <CaretRight class="inline" />
                     </a>
                 </AvatarWithName>
             {/if}
-            <div class="text-lg font-medium text-white">
+            <div class="text-lg font-medium text-foreground">
                 {currencyFormat(amount?.currency, amount?.amount)}/{termToShort(amount?.term)}
             </div>
         </div>

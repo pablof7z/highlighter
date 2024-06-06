@@ -33,7 +33,7 @@
     </div>
 
     <div class="grow shrink basis-0 flex-col justify-between items-start gap-2 inline-flex max-h-36 overflow-clip">
-        <div class="self-stretch text-white text-base font-medium leading-relaxed overflow-clip">
+        <div class="self-stretch text-foreground text-base font-medium leading-relaxed overflow-clip">
             {article.title}
             <div class="text-sm text-neutral-400">
                 {summary}

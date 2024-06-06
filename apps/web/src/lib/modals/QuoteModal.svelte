@@ -23,7 +23,7 @@
     <NewPost
         kind={1}
         placeholder="What are your thoughts?"
-        editorClass="text-white min-h-[7rem]"
+        editorClass="text-foreground min-h-[7rem]"
         collapsed={false}
         autofocus={true}
         extraTags={tags}
@@ -43,14 +43,15 @@
                         skipHighlighter={false}
                         scrollIntoView={true}
                         contentClass="max-h-[10vh] overflow-y-auto"
-                        class="py-4 bg-base-300"
+                        class="py-4 bg-foreground/20"
                     />
                 {:else}
                     <EventWrapper
                         {event}
-                        class="py-4 bg-base-300"
+                        class="py-4 bg-foreground/20"
                         skipFooter={true}
                         showReply={false}
+                        compact
                         expandReplies={false}
                         expandThread{false}
                     />

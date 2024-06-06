@@ -7,11 +7,13 @@
 	import LogoGradient from '$icons/LogoGradient.svelte';
 	import { Block } from 'konsta/svelte';
 	import { DoorOpen, User } from 'phosphor-svelte';
+	import { closeModal } from '$utils/modal.js';
 
     export let mode: 'signup' | 'login' | 'welcome' = 'signup';
 
     function signedUp() {
-        mode = 'welcome';
+        closeModal();
+        // mode = 'welcome';
     }
 
     let title: string;
@@ -81,12 +83,12 @@
         {#if mode === 'signup'}
             <p class="text-center text-neutral-500 text-base my-2">
                 Already have a Nostr account?
-                <button on:click={() => mode = 'login'} class="text-white font-semibold underline">Log in</button>
+                <button on:click={() => mode = 'login'} class="text-foreground font-semibold underline">Log in</button>
             </p>
         {:else}
             <p class="text-center text-neutral-500 text-base my-2">
                 Don’t have an account?
-                <button on:click={() => mode = 'signup'} class="text-white/50 font-semibold underline">Sign Up</button>
+                <button on:click={() => mode = 'signup'} class="text-foreground/50 font-semibold underline">Sign Up</button>
             </p>
         {/if}
     </div>

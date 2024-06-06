@@ -212,7 +212,7 @@
 
     $: if (!showQuoteOptions) {
         rightOptions = [
-            { label: "Quote", icon: Quotes, class: "bg-white/10 !text-success", cb: () => { showQuoteOptions = true; return true; } },
+            { label: "Quote", icon: Quotes, class: "bg-white/10 !text-green-500", cb: () => { showQuoteOptions = true; return true; } },
             { label: 'Bookmark', icon: BookmarkSimple, class: "bg-white/20 !text-red-500", cb: bookmark },
             { label: 'Zap!', icon: Lightning, class: "bg-white/30 !text-yellow-500", cb: () => {} }
         ]
@@ -253,6 +253,7 @@
     <div class="
         w-full text-left md:p-4 pb-0 max-sm:py-4 max-sm:max-w-[100vw] flex flex-col items-start {$$props.class??""}
         !font-light
+        hover:bg-foreground/5
         group
     " class:hidden={deleted}>
         <UserProfile
@@ -280,7 +281,7 @@
                 {/if}
 
                 <!-- Content -->
-                <div class="flex flex-col overflow-x-clip pl-2 md:pl-4 grow">
+                <div class="flex flex-col overflow-x-clip pl-2 grow">
                     <!-- Title and time -->
                     <div class="
                         flex flex-row w-full gap-2 relative group
@@ -294,7 +295,7 @@
 
                         <div class="flex flex-col items-start grow">
                             {#if title && !skipTitle && !threadView}
-                                <div class="text-lg text-white font-semibold truncate grow">{title}</div>
+                                <div class="text-lg text-foreground font-semibold truncate grow">{title}</div>
                             {/if}
                             <div class="text-sm opacity-80">
                                 <a href={authorUrl}>
@@ -335,7 +336,7 @@
                                         {event}
                                         enableDelete={$currentUser && $currentUser.pubkey === event.pubkey}
                                         on:delete={deleteEvent}
-                                        class="dropdown-end absolute !bg-base-100"
+                                        class="dropdown-end absolute !bg-background"
                                     />
                                 </div>
                             </div>
@@ -365,7 +366,7 @@
                                     ndk={$ndk}
                                     {event}
                                     content={contentToRender}
-                                    class={`${$$props.topLevelContentClass??""} ${$$props.contentClass??"text-white"}`}
+                                    class={`${$$props.topLevelContentClass??""} ${$$props.contentClass??""}`}
                                     mediaCollectionComponent={MediaCollection}
                                     on:click={contentClicked}
                                     eventCardComponent={EmbeddedEventWrapper}
@@ -427,7 +428,7 @@
                         <div class="w-1/4 flex justify-center items-end">
                             <Bookmark {event} />
                         </div>
-                            <!-- <div class="shrink flex flex-row gap-3 items-center text-white/50 border grow justify-between"> -->
+                            <!-- <div class="shrink flex flex-row gap-3 items-center text-foreground/50 border grow justify-between"> -->
 
                         <div class="w-1/4 flex justify-center items-end ">
                             <SmallZapButton {event} />
@@ -495,7 +496,7 @@
         </div>
     {:else}
         <a href="{urlPrefix}{event.encode()}" class="p-4">
-            <div class="text-xs text-white/50">
+            <div class="text-xs text-foreground/50">
                 View discussion
                 <CaretRight class="w-4 h-4 inline-block" />
             </div>

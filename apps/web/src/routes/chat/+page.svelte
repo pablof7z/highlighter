@@ -31,7 +31,7 @@
 
 <style>
     h1 {
-        @apply text-white leading-tight text-[80px];
+        @apply text-foreground leading-tight text-[80px];
     }
 
     h2 {

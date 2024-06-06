@@ -3,8 +3,8 @@
 	import type { UserProfileType } from "../../../app";
 	import UserProfile from "./UserProfile.svelte";
 	import Avatar from '$components/User/Avatar.svelte';
-import Name from '$components/User/Name.svelte';
-import { ndk } from "$stores/ndk.js";
+    import Name from '$components/User/Name.svelte';
+    import { ndk } from "$stores/ndk.js";
 
     export let pubkey: string | undefined = undefined;
     export let user: NDKUser | undefined = !pubkey ? undefined : $ndk.getUser({ pubkey });

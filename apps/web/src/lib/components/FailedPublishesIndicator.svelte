@@ -24,7 +24,7 @@
 {#if failedCount > 0}
     <Warning size={24} class="text-error" />
     <span class="badge">
-        <span class="indicator-item rounded-full bg-accent text-white flex items-center justify-center text-xs w-5 h-5">
+        <span class="indicator-item rounded-full bg-accent text-foreground flex items-center justify-center text-xs w-5 h-5">
             {failedCount}
         </span>
     </span>

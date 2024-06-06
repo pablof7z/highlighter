@@ -34,7 +34,7 @@
             eventId="naddr1qqy8x6rfwpukzunyqgsgtssdxasw7nsewcr3545lkd3lflcgdj5swe5lh9gk0nw9xpvnf5grqsqqql8kvkq450"
         >
             <div slot="about">
-                <span class="text-white inline">Highlighter</span>
+                <span class="text-foreground inline">Highlighter</span>
                 uses DVMs to schedule posts.
                 These services allow you to schedule posts from any nostr-compatible application.
             </div>
@@ -58,11 +58,11 @@
 
     h2 {
         @apply text-xl font-semibold;
-        @apply text-white/80;
+        @apply text-foreground/80;
         @apply mb-2;
     }
 
     section {
-        @apply bg-base-200 rounded-box p-4 flex flex-col gap-6;
+        @apply bg-foreground/10 rounded p-4 flex flex-col gap-6;
     }
 </style>

@@ -33,7 +33,7 @@
     {#if !$online}
         <div class="
             fixed bottom-2 left-20 mobile-nav !bg-red-500/30 border border-red-500 z-50 px-6 py-3
-            sm:rounded-box text-white min-w-[10rem] text-center whitespace-nowrap
+            sm:rounded text-foreground min-w-[10rem] text-center whitespace-nowrap
         ">
             <p>Your device is offline</p>
         </div>

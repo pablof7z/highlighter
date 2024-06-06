@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Input from "$components/Forms/Input.svelte";
+    import Input from '$components/ui/input/input.svelte';
 	import Trash from "phosphor-svelte/lib/Trash";
     import { createEventDispatcher } from "svelte";
 	import CurrencySelect from "./CurrencySelect.svelte";
@@ -38,7 +38,7 @@
 <div
     class="
         w-full
-        self-stretch justify-start items-center gap-2 inline-flex rounded-box
+        self-stretch justify-start items-center gap-2 inline-flex rounded
     "
 >
     {#if !(value.currency && value.term && value.amount) || forceOpen}
@@ -50,11 +50,11 @@
                 </div>
                 <div
                     class="
-                        flex flex-row bg-base-200 rounded-2xl
+                        flex flex-row bg-foreground/10 rounded-2xl
                         {(!amount || !value.currency) ? "shadow shadow-red-800/50" : ""}
                     "
                 >
-                    <Input on:blur={blurInput} bind:value={amount} color="black" label="Price" placeholder="Price" class="grow basis-0 text-sm text-right !w-20 !bg-white/10 shrink !border-none rounded-l-2xl rounded-r-none" />
+                    <Input on:blur={blurInput} bind:value={amount} placeholder="Price" class="grow basis-0 text-sm text-right !w-20" />
                     <div class="flex-grow">
                         <CurrencySelect bind:currency={value.currency} class="!bg-black/10 rounded-l-none border-0 pl-2 ml-0 !outline-none" />
                     </div>
@@ -65,7 +65,7 @@
                 <div class="title" class:hidden={!open}>
                     Cadence
                 </div>
-                <TermSelect bind:term={value.term} class={!value.term ? "shadow shadow-red-800/50 rounded-box" : ""} />
+                <TermSelect bind:term={value.term} class={!value.term ? "shadow shadow-red-800/50 rounded" : ""} />
             </div>
         </div>
 

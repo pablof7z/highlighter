@@ -26,7 +26,7 @@
     {#each statusEvent.getMatchingTags('status') as [_, text, status]}
         <div class="flex flex-row items-center gap-3" transition:slide>
             {#if status === "done"}
-                <Check class="text-success" weight="bold" />
+                <Check class="text-green-500" weight="bold" />
             {:else if status === "processing"}
                 <span class="loading loading-xs text-neutral-500"></span>
             {/if}

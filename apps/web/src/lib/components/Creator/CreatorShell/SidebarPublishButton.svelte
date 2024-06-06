@@ -12,7 +12,7 @@
     lg:py-3 lg:button border-accent w-full transition-all duration-300 group
     border-2 lg:hover:bg-accent/20 lg:bg-transparent
     rounded-full p-2
-    !text-white
+    !text-foreground
 " on:click={open}>
     <span class="hidden lg:inline">New Post</span>
     <PaperPlane class="

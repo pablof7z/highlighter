@@ -38,7 +38,6 @@
     $: if ($view !== "edit-preview") {
         if ($preview instanceof NDKArticle) {
             $preview.image = article.image;
-            $preview.summary = article.summary;
             $preview.tags.push(...article.getMatchingTags("t"))
             if (!$previewTitleChanged) $preview.title = article.title;
             if (!$previewContentChanged) $preview.content = generatePreviewContent()
@@ -88,12 +87,11 @@
 <Shell type="article" {article}>
     <ArticleEditor bind:article on:contentUpdate={onArticleChange} />
     <div slot="viewPreview">
-        {#key signedAt}
-            <ArticleView bind:article isFullVersion={true} isPreview={true} fillInSummary={false} />
-            {#if $debugMode}
-                <pre>{JSON.stringify(article.rawEvent())}</pre>
-            {/if}
-        {/key}
+        {#if $view === "view-preview"}
+            {#key signedAt}
+                <ArticleView bind:article isFullVersion={true} isPreview={true} fillInSummary={false} />
+            {/key}
+        {/if}
     </div>
     <div slot="editPreview">
         <ArticlePreviewEditor {article} {authorUrl} />

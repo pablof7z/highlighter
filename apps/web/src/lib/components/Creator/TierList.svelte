@@ -7,7 +7,6 @@
 	import { goto } from '$app/navigation';
 	import { CaretDown, CaretUp, Plus, Trash } from 'phosphor-svelte';
     import { createEventDispatcher, onMount, tick } from 'svelte';
-	import LoadingScreen from '$components/LoadingScreen.svelte';
 	import { inactiveUserTiers, userProfile, userTiers } from '$stores/session';
 	import CollapsedTierListItem from './CollapsedTierListItem.svelte';
     import nip29 from '$lib/nip29';
@@ -19,17 +18,17 @@
     export let skipButtons = false;
     export let saving = false;
     export let forceSave = false;
+    export let editTier: NDKSubscriptionTier | undefined = undefined;
 
     const dispatch = createEventDispatcher();
 
-    let tiers: NDKSubscriptionTier[] = [];
+    export let tiers: NDKSubscriptionTier[] = [];
     let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
-    let expandedTierIndex: number | undefined = undefined;
+    export let expandedTierIndex: number | undefined = undefined;
 
     // Tracks the deleted tiers so we don't re-add them
     let deletedDtags = new Set<string>();
     let autofocus: number | undefined = undefined;
-    let ready = false;
 
     currentTiers = userTiers;
 
@@ -41,8 +40,6 @@
             // } else {
             //     usePresetButton = false;
             // }
-
-            ready = true;
         }
     })
 
@@ -64,7 +61,6 @@
 
         tiers = tiers;
         tick();
-        if (tiers.length > 0 && !ready) ready = true;
     }
 
     let canAddTier = false;
@@ -75,7 +71,7 @@
     );
 
     function addTier() {
-        const tier = new NDKSubscriptionTier($ndk);
+        editTier = new NDKSubscriptionTier($ndk);
         autofocus = tiers.length;
 
         // if the last tier is expanded then remove it from the expanded tiers
@@ -87,7 +83,7 @@
             !tiers[lastIndex].getMatchingTags("amount").length
         )) return;
 
-        tiers.push(tier);
+        tiers.push(editTier);
         expandedTierIndex = tiers.length-1;
         tiers = tiers;
     }
@@ -193,105 +189,103 @@
     }
 </script>
 
-<LoadingScreen {ready}>
-    <div class="flex flex-col gap-4 items-stretch w-full">
-        {#if tiers.length === 0}
-            <div class="alert alert-neutral">
-                <h1 class="text-lg py-12">
-                    Create support tiers to allow your fans to support you!
-                </h1>
-            </div>
-        {/if}
-
-        <ul class="flex flex-col w-full gap-4">
-            {#if expandedTierIndex !== undefined}
-                <TierEditor
-                    bind:tier={tiers[expandedTierIndex]}
-                    autofocus={true}
-                    on:close={() => {
-                        expandedTierIndex = undefined;
-                    }}
-                    on:delete={() => {
-                        if (tiers[expandedTierIndex]?.dTag) deletedDtags.add(tiers[expandedTierIndex].dTag);
-                        tiers = tiers.filter((_, j) => expandedTierIndex !== j);
-                        expandedTierIndex = undefined;
-                    }}
-                />
-            {:else}
-                {#each tiers as tier, i (i)}
-                    <div class="w-full group flex flex-row items-stretch">
-                        <CollapsedTierListItem {tier}
-                            on:click={() => {expandedTierIndex = i}}
-                        />
-                        <div class="flex flex-col items-center gpa-2 transition-all duration-300 self-stretch opacity-10 group-hover:opacity-100 w-8">
-                            <button class="" on:click={() => {moveUp(i)}} disabled={i === 0}>
-                                <CaretUp class="w-5 h-5" />
-                            </button>
-
-                            <button class="" on:click={() => moveDown(i)} disabled={i === tiers.length - 1}>
-                                <CaretDown class="w-5 h-5" />
-                            </button>
-
-                            <button class="text-red-500 mt-2" on:click={() => deleteTier(tier)}>
-                                <Trash class="w-5 h-5" />
-                            </button>
-                        </div>
-                    </div>
-                {/each}
-            {/if}
-        </ul>
-
-        <div
-            class="flex flex-col sm:flex-row justify-between items-stretch max-sm:w-full max-sm:gap-4 mr-8"
-            class:hidden={
-                expandedTierIndex !== undefined ||
-                skipButtons
-            }
-        >
-            <button
-                class="button-black max-sm:w-full"
-                disabled={!canAddTier}
-                on:click={addTier}
-            >
-                <Plus class="w-5 h-5 mr-2" />
-                Add Tier
-            </button>
-
-            <div class="flex flex-col sm:flex-row gap-4 max-sm:items-stretch justify-end items-stretch max-sm:w-full">
-                {#if usePresetButton}
-                    <button
-                        class="button-black flex flex-col font-medium items-center gap-0 px-4 max-sm:w-full py-3"
-                        on:click={skip}
-                    >
-                        Skip using sample tiers for now
-                    </button>
-                {/if}
-
-                <button class="button px-6" disabled={saving} on:click={() => save()}>
-                    {#if saving}
-                        <div class="loading loading-sm"></div>
-                    {:else if $$slots.saveButton}
-                        <slot name="saveButton" />
-                    {:else}
-                        Save
-                    {/if}
-                </button>
-            </div>
+<div class="flex flex-col gap-4 items-stretch w-full">
+    {#if tiers.length === 0}
+        <div class="alert alert-neutral">
+            <h1 class="text-lg py-12">
+                Create support tiers to allow your fans to support you!
+            </h1>
         </div>
+    {/if}
 
-        {#if $inactiveUserTiers.length > 0}
-            <div class="divider"></div>
+    <ul class="flex flex-col w-full gap-4">
+        {#if expandedTierIndex !== undefined}
+            <TierEditor
+                bind:tier={tiers[expandedTierIndex]}
+                autofocus={true}
+                on:close={() => {
+                    expandedTierIndex = undefined;
+                }}
+                on:delete={() => {
+                    if (tiers[expandedTierIndex]?.dTag) deletedDtags.add(tiers[expandedTierIndex].dTag);
+                    tiers = tiers.filter((_, j) => expandedTierIndex !== j);
+                    expandedTierIndex = undefined;
+                }}
+            />
+        {:else}
+            {#each tiers as tier, i (i)}
+                <div class="w-full group flex flex-row items-stretch">
+                    <CollapsedTierListItem {tier}
+                        on:click={() => {expandedTierIndex = i}}
+                    />
+                    <div class="flex flex-col items-center gpa-2 transition-all duration-300 self-stretch opacity-10 group-hover:opacity-100 w-8">
+                        <button class="" on:click={() => {moveUp(i)}} disabled={i === 0}>
+                            <CaretUp class="w-5 h-5" />
+                        </button>
 
-            <button class="self-start button" on:click={() => showInactive = !showInactive}>
-                Inactive subscription tiers
-            </button>
+                        <button class="" on:click={() => moveDown(i)} disabled={i === tiers.length - 1}>
+                            <CaretDown class="w-5 h-5" />
+                        </button>
 
-            {#if showInactive}
-                {#each $inactiveUserTiers as tier}
-                    <CollapsedTierListItem {tier} />
-                    <button class="self-end button-black" on:click={() => restore(tier)}>Restore</button>
-                {/each}
-            {/if}
+                        <button class="text-red-500 mt-2" on:click={() => deleteTier(tier)}>
+                            <Trash class="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            {/each}
         {/if}
+    </ul>
+
+    <div
+        class="flex flex-col sm:flex-row justify-between items-stretch max-sm:w-full max-sm:gap-4 mr-8"
+        class:hidden={
+            expandedTierIndex !== undefined ||
+            skipButtons
+        }
+    >
+        <button
+            class="button-black max-sm:w-full"
+            disabled={!canAddTier}
+            on:click={addTier}
+        >
+            <Plus class="w-5 h-5 mr-2" />
+            Add Tier
+        </button>
+
+        <div class="flex flex-col sm:flex-row gap-4 max-sm:items-stretch justify-end items-stretch max-sm:w-full">
+            {#if usePresetButton}
+                <button
+                    class="button-black flex flex-col font-medium items-center gap-0 px-4 max-sm:w-full py-3"
+                    on:click={skip}
+                >
+                    Skip using sample tiers for now
+                </button>
+            {/if}
+
+            <button class="button px-6" disabled={saving} on:click={() => save()}>
+                {#if saving}
+                    <div class="loading loading-sm"></div>
+                {:else if $$slots.saveButton}
+                    <slot name="saveButton" />
+                {:else}
+                    Save
+                {/if}
+            </button>
+        </div>
     </div>
-</LoadingScreen>
+
+    {#if $inactiveUserTiers.length > 0}
+        <div class="divider"></div>
+
+        <button class="self-start button" on:click={() => showInactive = !showInactive}>
+            Inactive subscription tiers
+        </button>
+
+        {#if showInactive}
+            {#each $inactiveUserTiers as tier}
+                <CollapsedTierListItem {tier} />
+                <button class="self-end button-black" on:click={() => restore(tier)}>Restore</button>
+            {/each}
+        {/if}
+    {/if}
+</div>

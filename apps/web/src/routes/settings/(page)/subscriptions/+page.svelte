@@ -4,6 +4,8 @@
 	import { NDKKind, NDKSubscriptionStart } from '@nostr-dev-kit/ndk';
 	import { onDestroy } from 'svelte';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
+	import { ndk } from "$stores/ndk";
+	import currentUser from "$stores/currentUser";
 
 	$pageHeader = {
 		title: "Subscriptions",
@@ -15,7 +17,7 @@
 
     const subscriptionStart: NDKEventStore<NDKSubscriptionStart> = $ndk.storeSubscribe({
         kinds: [ NDKKind.Subscribe ],
-        authors: [$user.pubkey],
+        authors: [$currentUser.pubkey],
     }, { groupable: false, subId: "subscriptions" }, NDKSubscriptionStart)
 
     onDestroy(() => subscriptionStart.unsubscribe())

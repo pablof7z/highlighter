@@ -57,7 +57,7 @@
                             <HighlightBody
                                 highlight={$selectedHighlight}
                                 skipArticle
-                                class="mb-10 italic bg-base-100/50 rounded-box p-6"
+                                class="mb-10 italic bg-background/50 rounded p-6"
                             />
                         {/if}
 

@@ -25,7 +25,7 @@
 >
     <div class="grid grid-cols-1 gap-4 mt-4 overflow-y-auto">
         {#if $highlights.length === 0}
-            <p class="text-base-100-content">
+            <p class="text-foreground">
                 You don't have any highlights yet.
             </p>
         {:else}
@@ -34,7 +34,7 @@
                     onSelect(highlight)
                     closeModal()
                 }}>
-                    <div class="text-left border border-base-300 p-4 rounded-box">
+                    <div class="text-left border border-border p-4 rounded">
                         <HighlightBody skipHighlighter={true} {highlight} class="text-sm" />
                     </div>
                 </button>

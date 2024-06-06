@@ -51,7 +51,7 @@ import currentUser from "$stores/currentUser.js";
         {#if video.thumbnail}
             <img class="w-full sm:rounded-[20px] max-h-[70vh] h-[30rem] mx-auto object-cover" src={video.thumbnail} />
         {:else}
-            <div class="w-full bg-base-300 sm:rounded-xl h-[50vh] mx-auto" />
+            <div class="w-full bg-foreground/20 sm:rounded-xl h-[50vh] mx-auto" />
         {/if}
         <div class="absolute top-0 left-0 w-full h-full bg-black/50 flex flex-col items-center justify-center">
             <UpgradeButton event={video} />
@@ -65,7 +65,7 @@ import currentUser from "$stores/currentUser.js";
 
 <div class="flex-col justify-center items-start gap-6 flex overflow-x-hidden max-sm:max-w-[90vw]">
     <div class="self-stretch flex-col justify-start items-start gap-6 flex">
-        <div class="flex flex-row w-full justify-between items-center text-white text-2xl font-medium">
+        <div class="flex flex-row w-full justify-between items-center text-foreground text-2xl font-medium">
             <div>{video.title}</div>
         </div>
         {#if $user?.pubkey === video.pubkey}
