@@ -91,11 +91,11 @@
     <div class="
         flex flex-col h-full
     ">
-        <div>
-            <LogoSmall class="w-full h-full scale-75 hover:scale-100 transition-all duration-300" />
-        </div>
+        <a href="/">
+            <LogoSmall class="w-full h-full scale-75 hover:scale-100 transition-all duration-300 hover:text-accent" />
+        </a>
 
-        <div class="h-[var(--layout-header-height)] mb-6"></div>
+        <!-- <div class="h-[var(--layout-header-height)] mb-6"></div> -->
         
         <OptionsList {options} class="flex-col w-full" collapsed={true} />
     </div>

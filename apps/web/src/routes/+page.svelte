@@ -242,7 +242,7 @@
                         {#key filter}
                             {#each $eventsForRender as event (event.id)}
                                 {#if event.kind === NDKKind.Article}
-                                    <ArticleLink article={NDKArticle.from(event)} grid={true} />
+                                    <ArticleLink article={NDKArticle.from(event)} grid={true} class="row-span-2" />
                                 {:else if event.kind === NDKKind.HorizontalVideo}
                                     <VideoLink video={NDKVideo.from(event)} grid={true} />
                                 {:else if event.kind === NDKKind.GroupNote}

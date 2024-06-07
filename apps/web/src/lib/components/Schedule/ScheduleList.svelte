@@ -76,7 +76,7 @@
         </BlankState>
     {:else}
         <ul class="discussion-wrapper my-6">
-            {#each eventsToPublish as { scheduleEvent, event } (event.id)}
+            {#each eventsToPublish as { scheduleEvent, event }}
                 <li class="discussion-item">
                     <ScheduleListItem {scheduleEvent} {event} />
                 </li>

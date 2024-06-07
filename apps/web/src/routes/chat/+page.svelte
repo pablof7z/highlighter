@@ -1,5 +1,4 @@
 <script lang="ts">
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
     import { pageHeader } from "$stores/layout";
 	import { onDestroy } from "svelte";
 

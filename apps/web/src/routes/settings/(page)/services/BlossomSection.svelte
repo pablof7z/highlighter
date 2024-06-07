@@ -1,5 +1,4 @@
 <script lang="ts">
-	import GlassyInput from "$components/Forms/GlassyInput.svelte";
     import { activeBlossomServer, userBlossom } from "$stores/session";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKList } from "@nostr-dev-kit/ndk";

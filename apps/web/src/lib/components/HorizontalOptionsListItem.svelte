@@ -49,7 +49,7 @@
         {/if}
     </button>
 {:else}
-    {#if option.href}
+    {#if option.href && false}
         <a
             bind:this={el}
             href={option.href}
@@ -74,24 +74,29 @@
         </a>
     {:else}
         <Button
+            href={option.href}
+            variant={active ? "default" : "secondary"}
             {...option.buttonProps??{}}
             on:click={() => {
                 dispatch("click");
                 if (option.fn) option.fn();
                 value = option.value ?? option.name;
             }}
+            class="gap-2"
         >
             {#if option.icon}
-                <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline mr-2" {...option.iconProps??{}} />
+                <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline" {...option.iconProps??{}} />
             {/if}
-            <span class="" class:hidden={!option.name}>
-                {option.name}
-                {#if option.premiumOnly}
-                    <span class="text-accent">
-                        <CrownSimple class="w-5 h-5 ml-2 lg:w-fit lg:h-fit inline mr-2" weight="fill" />
-                    </span>
-                {/if}
-            </span>
+            {#if option.name}
+                <span class="" class:hidden={!option.name}>
+                    {option.name}
+                    {#if option.premiumOnly}
+                        <span class="text-accent">
+                            <CrownSimple class="w-5 h-5 ml-2 lg:w-fit lg:h-fit inline mr-2" weight="fill" />
+                        </span>
+                    {/if}
+                </span>
+            {/if}
         </Button>
     {/if}
 {/if}

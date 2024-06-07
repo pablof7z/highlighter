@@ -52,9 +52,9 @@ import ModalShell from "$components/ModalShell.svelte";
                     </p>
 
                     <div class="flex flex-col gap-2 w-full">
-                        <Button class="w-full" variant="default" size="lg" on:click={highlight}>
-                            Highlight
-                            <Name {user} class="!text-red-500" />
+                        <Button class="w-full text-lg" variant="accent" size="lg" on:click={highlight}>
+                            Highlight&nbsp;
+                            <Name {user} class="font-bold" />
                         </Button>
                         <button class="text-xs" on:click={() => closeModal()}>Close</button>
                     </div>

@@ -2,11 +2,11 @@
     import { pageHeader } from "$stores/layout";
     import { getDefaultRelaySet } from "$utils/ndk";
 	import { RelayList } from "@nostr-dev-kit/ndk-svelte-components";
-	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 	import { creatorRelayPubkey } from '$utils/const';
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import { ndk } from "$stores/ndk";
+	import Input from "$components/ui/input/input.svelte";
 
     $pageHeader = {
         title: "Network Settings",
@@ -31,7 +31,7 @@
 
             {#each creatorRelays.relays as relay}
             <div class="flex flex-row items-center gap-4 relative">
-                <GlassyInput
+                <Input
                     type="text"
                     readonly={true}
                     value={relay.url}

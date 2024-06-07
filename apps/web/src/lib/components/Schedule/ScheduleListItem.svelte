@@ -1,5 +1,8 @@
 <script lang="ts">
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
+	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
+	import AvatarWithName from "$components/User/AvatarWithName.svelte";
+	import { ndk } from "$stores/ndk";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Repeat } from "phosphor-svelte";
 

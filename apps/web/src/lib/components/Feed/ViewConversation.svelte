@@ -3,7 +3,7 @@
 	import { ndk } from "$stores/ndk";
     import { debugMode } from "$stores/session";
 	import { encodeTag } from "$utils/event";
-    import { NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, getReplyTag, getRootEventId, getRootTag } from "@nostr-dev-kit/ndk";
+    import { NDKEvent, NDKKind, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, getReplyTag, getRootEventId, getRootTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 
     export let event: NDKEvent;
@@ -62,6 +62,6 @@
 
 <style lang="postcss">
     a {
-        @apply text-sm text-primary;
+        @apply text-sm text-foreground font-medium;
     }
 </style>

@@ -1,16 +1,9 @@
 <script lang="ts">
 	import VideoPlayer from "$components/Events/VideoPlayer.svelte";
-	import ItemHeader from "$components/ItemHeader.svelte";
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import Box from "$components/PageElements/Box.svelte";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
-	import { requiredTiersFor } from "$lib/events/tiers";
-	import { debugMode } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import Avatar from '$components/User/Avatar.svelte';
-import Name from '$components/User/Name.svelte';
 import { ndk } from "$stores/ndk.js";
-import currentUser from "$stores/currentUser.js";
 	import type { NDKVideo } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";

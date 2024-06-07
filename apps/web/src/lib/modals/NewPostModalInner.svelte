@@ -40,7 +40,7 @@
 
     $: {
         actionButtons = [
-            { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, buttonProps: {variant: "default"} }
+            { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, buttonProps: {variant: "accent"} }
         ];
 
         if (!$appMobileView) {

@@ -4,8 +4,6 @@ export function isNwcAvailable() {
 
 	try {
 		const jwtPayload = JSON.parse(Buffer.from(jwt.split('.')[1], 'base64').toString('utf-8'));
-
-		console.log({jwtPayload})
 		
 		return !!jwtPayload?.nwcAvailable;
 	} catch {

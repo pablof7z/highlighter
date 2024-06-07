@@ -5,10 +5,10 @@
 	import { closeModal } from '$utils/modal';
 	import { slide } from "svelte/transition";
 	import { nip19 } from "nostr-tools";
-	import GlassyInput from '$components/Forms/GlassyInput.svelte';
 	import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
 	import { loginState } from '$stores/session';
 	import { bunkerNDK, ndk } from '$stores/ndk';
+	import { Input } from '$components/ui/select';
 
     export let value: string = "";
     export let nsec: string = "";
@@ -183,7 +183,7 @@
                 <div class="flex-col justify-start items-start gap-3 inline-flex">
                     <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
                         <div class="text-foreground text-base font-medium leading-normal">Username / Nostr address</div>
-                        <GlassyInput bind:value type="text" placeholder="eg. bob@nostr.me" on:keyup={identifyLoginType} />
+                        <Input bind:value type="text" placeholder="eg. bob@nostr.me" on:keyup={identifyLoginType} />
                     </div>
                 </div>
 

@@ -14,9 +14,9 @@
     ]
 </script>
 
-<div class="py-2 mx-auto w-full max-w-4xl {$$props.containerClass??""}">
+<div class="py-2 mx-auto max-w-4xl w-full {$$props.containerClass??""}">
     <div class="flex flex-col w-full gap-2">
-        <SearchBar class="!max-w-4xl" />
+        <SearchBar />
         
         <div class="flex flex-row items-center justify-between w-full">
             <HorizontalOptionsList {options} />

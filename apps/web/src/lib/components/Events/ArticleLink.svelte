@@ -25,4 +25,5 @@
     title={article.title}
     description={summary}
     durationTag={isFullVersion ? `${readTime} min read` : undefined}
+    class={$$props.class??""}
 />

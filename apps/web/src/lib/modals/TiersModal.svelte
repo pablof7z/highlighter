@@ -5,7 +5,6 @@
 	import { closeModal } from '$utils/modal';
 	import { PlusCircle } from "phosphor-svelte";
 	import { Button } from '$components/ui/button';
-	import NewTier from '$components/Forms/NewTier.svelte';
 	import { NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
 	import { ndk } from '$stores/ndk';
 
@@ -40,7 +39,7 @@
     $: if (expandedTierIndex !== undefined) {
         actionButtons = [
             { name: "Cancel", buttonProps: {variant: 'secondary'}, fn: cancelEditTier },
-            { name: "Continue", fn: cont },
+            { name: "Continue", fn: cont, buttonProps: { variant: 'accent' } },
         ]
     } else {
         actionButtons = [ { name: "Save", fn: () => { forceSave = true } } ]

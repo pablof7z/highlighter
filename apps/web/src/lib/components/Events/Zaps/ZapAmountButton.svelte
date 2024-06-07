@@ -1,14 +1,27 @@
 <script lang="ts">
+	import Button from "$components/ui/button/button.svelte";
+
     export let title: string;
-    export let buttonActive = false
-    export let onClick = async () => {return}
+    export let active = false;
+    export let value: number | boolean;
+    export let group: number | boolean;
+    
+    $: active = group === value;
+
+    function click() {
+        group = value;
+    }
 </script>
 
-<div class="flex flex-col items-center">
-    <button on:click={onClick} class="w-11 h-11 btn-circle bg-foreground/20 mb-2 grid place-items-center { buttonActive ? 'text-accent border border-accent hover:bg-accent hover:bg-opacity-20' : 'text-zinc-400 hover:border hover:border-zinc-400 hover:bg-opacity-30'} {$$props.class || ``} ">
+<div class="flex flex-col items-center gap-1">
+    <Button forceNonMobile variant={active ? "default" : "secondary"} on:click={click} class="grid place-items-center {$$props.class || ``} ">
         <slot />
-    </button>
-    <span class="text-xs font-normal text-foreground">
+    </Button>
+    <span
+        class="text-xs font-normal"
+        class:text-muted-foreground={!active}
+        class:text-foreground={active}
+    >
         {title}
     </span>
 </div>

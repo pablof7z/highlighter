@@ -68,7 +68,7 @@
     let actionButtons: NavigationOption[];
     
     $: actionButtons = [
-        { name: cta, fn: schedule, buttonProps: {disabled} }
+        { name: cta, fn: schedule, buttonProps: {disabled}, buttonProps: { variant: 'accent', size: 'lg' } }
     ]
 </script>
 
