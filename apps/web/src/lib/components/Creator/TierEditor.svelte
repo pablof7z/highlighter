@@ -4,7 +4,6 @@
     import { createEventDispatcher } from "svelte";
 	import { Check, Trash, Plus } from 'phosphor-svelte';
 	import { slide } from 'svelte/transition';
-	import GlassyInput from '$components/Forms/GlassyInput.svelte';
     import { Textarea } from "$lib/components/ui/textarea";
 	import Input from '$components/ui/input/input.svelte';
 	import { Button } from '$components/ui/button';

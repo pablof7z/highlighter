@@ -4,8 +4,6 @@
     import { drafts, type ArticleCheckpoint, type DraftItem, DraftCheckpoint, ThreadCheckpoint } from "$stores/drafts";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
-    import ArticleView from "$components/ArticleView.svelte";
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 	import { Thread } from "$utils/thread";

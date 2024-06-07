@@ -252,7 +252,6 @@
 >
     <div class="
         w-full text-left md:p-4 pb-0 max-sm:py-4 max-sm:max-w-[100vw] flex flex-col items-start {$$props.class??""}
-        !font-light
         hover:bg-foreground/5
         group
     " class:hidden={deleted}>

@@ -84,10 +84,11 @@
                             text-foreground
                             font-medium
                             gap-2
-                            w-full
                             col-span-5
                             text-center
-                            py-3
+                            p-3
+                            grow truncate
+                            w-8/12
                         ">
                             <span class="truncate">{$pageHeader?.title}</span>
                         </div>

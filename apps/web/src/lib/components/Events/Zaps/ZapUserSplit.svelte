@@ -28,7 +28,7 @@
             <span class="truncate whitespace-nowrap">
                 <Name ndk={$ndk} {pubkey} class="text-foreground font-normal text-normal"/>
             </span>
-            <span class="text-sm font-normal text-accent2">
+            <span class="text-sm font-normal text-accent">
                 {Number.isNaN(satSplit) ? `0 sats` : `${nicelyFormattedSatNumber(satSplit)} sats`}
             </span>
         </div>

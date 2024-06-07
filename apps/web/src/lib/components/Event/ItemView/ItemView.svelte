@@ -58,6 +58,7 @@
                 ndk={$ndk}
                 {event}
                 eventCardComponent={EmbeddedEventWrapper}
+                class="text-foreground"
             />
         </EventWrapper>
     </div>

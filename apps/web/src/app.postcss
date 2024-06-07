@@ -17,7 +17,7 @@
 		--muted: 240 4.8% 95.9%;
 		--muted-foreground: 240 3.8% 46.1%;
 		--accent: 20 100% 50%;
-		--accent-foreground: #ffffff;
+		--accent-foreground: 0 0 100;
 		--destructive: 0 72.22% 50.59%;
 		--destructive-foreground: 0 0% 98%;
 		--border: 240 5.9% 90%;
@@ -180,8 +180,8 @@
 		@apply text-muted-foreground font-serif text-xl leading-10;
 	}
 
-	.article mark {
-		@apply cursor-pointer bg-orange-500 text-white;
+	mark {
+		@apply cursor-pointer bg-accent text-white font-bold text-lg;
 	}
 
 	.article h1 {
@@ -374,10 +374,6 @@ section.settings .field {
 
 .event-card {
 	@apply !bg-white/10  rounded;
-}
-
-button.name, button span.name {
-	@apply font-semibold;
 }
 
 .note-media--wrapper {

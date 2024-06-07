@@ -44,6 +44,7 @@
 
 <a class="
     flex gap-2 flex-nowrap relative group w-full overflow-clip
+    {$$props.class??""}
     {grid ? "flex-col sm:flex-col" : "max-sm:flex-col flex-row sm:gap-6"}
 
 " {href} class:!cursor-default={skipLink}>

@@ -27,6 +27,6 @@
 
 <div class="flex flex-row gap-2 flex-nowrap items-center overflow-x-auto scrollbar-hide">
     <ZapButton {event} class="text-xs" {showHelperText} />
-    <div class="w-[1px] h-[20px] mx-2 border-l border-white/50" class:hidden={recentZaps.length < 2}></div>
+    <div class="w-[1px] h-[20px] mx-2 border-l border-border" class:hidden={recentZaps.length < 2}></div>
     <RecentZaps {event} class="text-xs flex-none" avatarSize="tiny" skipEventIds={skipRecentZaps} bind:zapEvents={recentZaps} />
 </div>

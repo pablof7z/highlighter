@@ -1,0 +1,58 @@
+<script lang="ts">
+	import CopyButton from "$components/buttons/CopyButton.svelte";
+	import { Button } from "$components/ui/button";
+	import { nicelyFormattedSatNumber } from "$utils";
+	import { Check } from "phosphor-svelte";
+	import { createEventDispatcher, onMount } from "svelte";
+    import QrCode from "svelte-qrcode";
+	import { requestProvider } from "webln";
+
+    export let pr: string;
+    export let satAmount: number;
+    export let paid = false;
+    export let size = 350;
+    let provider: any;
+
+    const dispatcher = createEventDispatcher();
+
+    onMount(() => {
+        try {
+            requestProvider().then(async (p) => {
+                provider = p;
+                pay();
+            });
+        } catch {}
+    });
+
+    async function pay() {
+        if (!provider) {
+            window.open("lightning:" + pr, "_blank");
+            return;
+        }
+        
+        try {
+            const res = await provider.sendPayment(pr);
+
+            if (res?.paid) {
+                dispatcher("paid", res);
+            }
+        } catch (e) {
+            console.error(e);
+            provider = null
+        }
+    }
+</script>
+
+{#if !paid}
+    <div class="flex flex-col gap-2">
+        <QrCode value={pr} color="#444444" size={size.toString()} />
+        <CopyButton label={pr} data={pr} class="truncate max-w-[350px] border border-border rounded-full p-3 font-mono" />
+
+        <Button on:click={pay}>
+            Pay
+            {nicelyFormattedSatNumber(satAmount)}
+        </Button>
+    </div>
+{:else}
+    <Check class="text-green-500 w-48 h-48" />
+{/if}

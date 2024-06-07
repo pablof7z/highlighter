@@ -10,12 +10,6 @@
 
     $pageHeader = {
         title: "Settings",
-        left: {
-            label: "Back",
-            url: "/",
-        },
-        right: {
-        }
     };
 </script>
 

@@ -20,7 +20,8 @@
     });
 </script>
 
-<ModalShell class="max-w-3xl"
+<ModalShell
+    class="max-w-3xl"
     title="Select a Highlight"
 >
     <div class="grid grid-cols-1 gap-4 mt-4 overflow-y-auto">
@@ -41,10 +42,4 @@
             {/each}
         {/if}
     </div>
-
-    <svelte:fragment slot="footer">
-        <button class="button" on:click={closeModal}>
-            Close
-        </button>
-    </svelte:fragment>
 </ModalShell>

@@ -7,7 +7,7 @@
 	import QuoteModal from '$modals/QuoteModal.svelte';
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
     import Highlight from '$components/DetailView/Highlight.svelte';
-	import { ChatCircle, Quotes, Repeat, Share } from "phosphor-svelte";
+	import { ChatCircle, Lightning, Quotes, Repeat, Share } from "phosphor-svelte";
 	import { onDestroy, onMount } from "svelte";
     import { ReferenceElement, autoUpdate, computePosition, offset } from '@floating-ui/dom';
 	import { openModal } from '$utils/modal';
@@ -16,6 +16,7 @@
 	import { getParagraph, getText } from '$utils/text';
 	import { pushState } from '$app/navigation';
 	import { detailView } from '$stores/layout';
+	import { Button } from '$components/ui/button';
 
     export let contentContainer: HTMLElement;
     export let tags: NDKTag[] = [];
@@ -224,33 +225,38 @@
     flex-nowrap
     divide-x divide-black
     overflow-clip
+    font-sans
     z-50
 
-    p-2 bg-foreground/20 rounded w-fit flex flex-row shadow-2xl gap-2
+    p-2 bg-secondary rounded w-fit flex flex-row shadow-2xl gap-2
 " style="
     top: {top}px;
     left: {left}px;
     opacity: {top === -100 ? 0: 1};
 " bind:this={container}>
     {#if !activeHighlightId}
-        <button on:click={highlight}>
+        <Button variant="outline" class="flex flex-col gap-2 w-24 h-24 items-center" on:click={highlight}>
             <HighlightIcon class="w-6 h-6" />
             <span>Highlight</span>
-        </button>
+        </Button>
     {:else}
-        <button on:click={share}>
+        <Button variant="outline" class="flex flex-col gap-2 w-24 h-24 items-center" on:click={share}>
             <Repeat class="w-6 h-6" weight="fill" />
             <span>Repost</span>
-        </button>
+        </Button>
     {/if}
-    <button on:click={quote}>
+    <Button variant="outline" class="flex flex-col gap-2 w-24 h-24 items-center" on:click={quote}>
         <Quotes class="w-6 h-6" weight="fill" />
         <span>Quote</span>
-    </button>
-    <button on:click={comment}>
+    </Button>
+    <Button variant="outline" class="flex flex-col gap-2 w-24 h-24 items-center" on:click={comment}>
         <ChatCircle class="w-6 h-6" weight="fill" />
         <span>Comment</span>
-    </button>
+    </Button>
+    <Button variant="outline" class="flex flex-col gap-2 w-24 h-24 items-center" on:click={comment}>
+        <Lightning class="w-6 h-6" weight="fill" />
+        <span>Zap</span>
+    </Button>
 </div>
 
 <style lang="postcss">

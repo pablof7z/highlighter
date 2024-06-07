@@ -106,23 +106,14 @@
         }
         if (boostedEvent.kind !== NDKKind.Text) boostEvent.tags.push(["k", boostedEvent.kind!.toString()]);
         boostEvent.tag(boostedEvent.author);
-        await boostEvent.sign();
-        console.log(boostEvent.rawEvent());
-        const relaySet = NDKRelaySet.fromRelayUrls(["ws://localhost:5577"], $ndk);
         try {
-            await boostEvent.publish(relaySet);
+            await boostEvent.sign();
+            boostEvent.publish();
             closeModal();
         } finally {
             publishing = false;
         }
     }
-
-    let options: NavigationOption[] = [
-        { name: "Publish on Nostr", },
-        { name: "Share manually", },
-    ];
-
-    let selectedOption = 'Publish on Nostr';
 
     let shareImageEl: HTMLElement;
     let repost = true;
@@ -141,7 +132,7 @@
 
     $: if (selectedView === "nostr") {
         actionButtons = [
-            { name: publishing ? "Publishing" : "Publish", fn: publish }
+            { name: publishing ? "Publishing" : "Publish", fn: publish, buttonProps: { variant: 'accent', size: 'lg' } }
         ];
     } else {
         actionButtons = [];
@@ -161,9 +152,11 @@
             <Tabs.Trigger value="nostr">Publish on Nostr</Tabs.Trigger>
             <Tabs.Trigger value="advanced">Advanced</Tabs.Trigger>
             {#await Share.canShare() then canShare}
-                <Tabs.Trigger value="extra" on:click={share}>
-                    <Export class="w-5 h-5" />
-                </Tabs.Trigger>
+                {#if canShare.value}
+                    <Tabs.Trigger value="extra" on:click={share}>
+                        <Export class="w-5 h-5" />
+                    </Tabs.Trigger>
+                {/if}
             {/await}
         </Tabs.List>
     </Tabs.Root>
@@ -181,7 +174,7 @@
                     {$$props.class??""}
                 "
             />
-            <div class="w-full px-4 flex flex-col gap-4">
+            <div class="w-full flex flex-col gap-4">
                 <div class="w-full border border-border rounded overflow-clip">
                     {#if article}
                         <ShareImage {article} bind:node={shareImageEl} />
@@ -228,8 +221,8 @@
 
     <svelte:fragment slot="footerExtra">
         {#if selectedView === "nostr"}
-            <Checkbox class="text-sm" bind:checked={repost}>
-                Repost 8 hours later
+            <Checkbox class="text-sm ml-8" bind:checked={repost}>
+                Repost in 8 hours
                 <span class="text-xs font-light" slot="description">
                     Reach followers in other timezones
                 </span>

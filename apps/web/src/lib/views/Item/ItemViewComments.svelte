@@ -50,6 +50,7 @@
             title: "New Comment",
             tags: e.tags,
             placeholder: "Write a comment...",
+            replyTo: event
         });
     }
 </script>

@@ -62,7 +62,7 @@
 			z-[50]
 			flex items-center
 		">
-			<div class="{mainWrapper} p-4">
+			<div class="sm:-translate-x-[calc(var(--navbar-collapsed)/2)] {mainWrapper}">
 				<svelte:component this={$pageHeader.footer.component} {...$pageHeader.footer.props} />
 			</div>
 		</div>

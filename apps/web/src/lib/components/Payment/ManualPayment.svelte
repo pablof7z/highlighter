@@ -4,12 +4,14 @@
 	import { NDKEvent, NDKUser, NDKZap } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher, onMount } from "svelte";
     import {requestProvider} from 'webln';
-    // import QrCode from "svelte-qrcode";
+    import QrCode from "svelte-qrcode";
 	import { creatorRelayPubkey } from "$utils/const";
 	import { Check } from "phosphor-svelte";
 	import Box from "$components/PageElements/Box.svelte";
 	import { nicelyFormattedSatNumber } from "$utils";
 	import { ndk } from "$stores/ndk";
+	import CopyButton from "$components/buttons/CopyButton.svelte";
+	import LnQrCode from "./LnQrCode.svelte";
 
     export let event: NDKEvent;
     export let recipient: NDKUser;
@@ -39,13 +41,7 @@
         }, 1000);
     }
 
-    onMount(() => {
-        try {
-            requestProvider().then(async (p) => {
-                provider = p;
-            });
-        } catch {}
-    });
+    
 
     const amountTag = event.getMatchingTags('amount')[0];
 	if (!amountTag) throw new Error('Amount not found');
@@ -78,10 +74,7 @@
             satAmount * 1000,
             "Highlighter subscriber"
         );
-        if (provider) {
-            const res = await provider.sendPayment(pr);
-            console.log(res);
-        }
+        
     });
 </script>
 
@@ -107,15 +100,7 @@
                 <div class="opacity-60 font-normal">({nicelyFormattedSatNumber(satAmount)} sats)</div>
             {/if}
 
-            <!-- <QrCode value={pr} color="#444444" size="350" /> -->
-            <CopyButton label={pr} data={pr} class="truncate max-w-[350px] border border-border rounded-full p-3 font-mono" />
-
-            {#if provider}
-                <button class="button px-6" on:click={() => provider.sendPayment(pr)}>
-                    Pay
-                    {nicelyFormattedSatNumber(satAmount)}
-                </button>
-            {/if}
+            <LnQrCode {pr} {satAmount} />
 
             <div class="flex flex-col w-full">
                 <div class="flex flex-row gap-2">

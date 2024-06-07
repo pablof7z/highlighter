@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import TierList from "$components/Creator/TierList.svelte";
-	import MainWrapper from "$components/Page/MainWrapper.svelte";
 	import { pageHeader } from "$stores/layout";
 
     let saving = false;
@@ -25,15 +24,10 @@
 		forceSave = false;
 	}
 </script>
-
-<MainWrapper
-    marginClass="max-w-3xl"
->
-    <TierList
-        redirectOnSave={false}
-        usePresetButton={true}
-        bind:saving
-        bind:forceSave
-        on:saved={() => goto("/welcome")}
-	/>
-</MainWrapper>
+<TierList
+	redirectOnSave={false}
+	usePresetButton={true}
+	bind:saving
+	bind:forceSave
+	on:saved={() => goto("/welcome")}
+/>
