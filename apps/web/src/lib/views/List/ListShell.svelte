@@ -12,6 +12,7 @@
     import { NDKArticle, NDKEvent, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { Block } from "konsta/svelte";
 	import { onDestroy } from "svelte";
+	import ArticleRender from "$components/ArticleRender.svelte";
 
     export let list: NDKList;
     export let activeItemId: string | undefined = undefined;
@@ -54,7 +55,7 @@
 </script>
 
 {#if $appMobileView}
-    {#if activeItemId}
+    <!-- {#if activeItemId}
         <LoadingScreen ready={!!activeEvent}>
             {#if activeEvent instanceof NDKArticle}
                 <ArticleView
@@ -68,22 +69,21 @@
         <Block>
             <ListViewContent {list} {urlPrefix} />
         </Block>
-    {/if}
+    {/if} -->
 {:else}
     <div class="lg:flex flex-row flex-nowrap">
         <div class="lg:w-[var(--sidebar-width)]">
             <div class="discussion-wrapper border">
                 <ListViewContent {list} {urlPrefix} />
-
             </div>
         </div>
 
-        {#if activeEvent}
+        {#if activeEvent && false}
             <div class="flex flex-col lg:w-[var(--content-focused-width)]">
-                <ArticleView
+                <!-- <ArticleRender
                     article={NDKArticle.from(activeEvent)}
                     isFullVersion={isEventFullVersion(activeEvent)}
-                />
+                /> -->
             </div>
         {/if}
     </div>

@@ -11,6 +11,7 @@
 	import { slide } from "svelte/transition";
 	import MakePublicAfter from "$components/Editor/Audience/MakePublicAfter.svelte";
 	import currentUser from "$stores/currentUser";
+	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 
     export let video: NDKVideo;
     export let teaser: NDKVideo;
@@ -119,12 +120,12 @@
 
                     {#if Number($makePublicAfter) > 0}
                         <div class="flex flex-col justify-stretch w-full" transition:slide>
-                            <Textarea
+                            <ContentEditor
                                 bind:value={$previewExtraContent.before}
                                 class="
                                     !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg
                                     focus:ring-0
-                                    resize-none min-h-[5rem] text-neutral-400
+                                    resize-none min-h-[5rem] text-muted-foreground
                                     {$$props.textareaClass??""}
                                 "
                             />
@@ -132,7 +133,7 @@
                         </div>
                     {/if}
 
-                    <Textarea
+                    <ContentEditor
                         bind:value={teaser.content}
                         class="
                             !bg-transparent border-none !px-4 -mx-4 rounded-lg text-foreground
@@ -144,12 +145,13 @@
                 </div>
 
                 <div class="border-t border-neutral-700 pt-4"></div>
-                <Textarea
+                <ContentEditor
+                    toolbar={false}
                     bind:value={$previewExtraContent.after}
                     class="
                         !bg-transparent text-lg border-none !px-4 -mx-4 rounded-lg
                         focus:ring-0
-                        resize-none min-h-[5rem]  text-neutral-400
+                        resize-none min-h-[5rem]  text-muted-foreground
                         {$$props.textareaClass??""}
                     "
                     placeholder="Add a call to action or a link to your Highlighter page"
@@ -158,9 +160,3 @@
         </div>
     </div>
 {/if}
-
-<style lang="postcss">
-    .side-button {
-        @apply py-6 rounded flex justify-center items-center gap-4 bg-foreground/5 hover:bg-foreground/10 text-foreground whitespace-nowrap px-8;
-    }
-</style>

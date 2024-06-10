@@ -15,7 +15,7 @@
     }
 
     let actionButtons: NavigationOption[] = [
-        { name: "Save", fn: save }
+        { name: "Save", fn: save, buttonProps: { variant: 'accent', size: 'lg' } }
     ]
 </script>
 

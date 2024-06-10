@@ -1,17 +1,34 @@
 <script lang="ts">
 	import TierAmountLine from './TierAmountLine.svelte';
     import type { NDKSubscriptionAmount, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import { Check, Trash, Plus } from 'phosphor-svelte';
 	import { slide } from 'svelte/transition';
     import { Textarea } from "$lib/components/ui/textarea";
 	import Input from '$components/ui/input/input.svelte';
 	import { Button } from '$components/ui/button';
+	import { pageHeader } from '$stores/layout';
 
     export let tier: NDKSubscriptionTier;
     export let autofocus = false;
 
     const dispatch = createEventDispatcher();
+
+    let prevPageHeaderRight: any;
+
+    onMount(() => {
+        prevPageHeaderRight = $pageHeader?.right;
+
+        $pageHeader.right = {
+            label: "Continue",
+            fn: () => dispatch("close"),
+        };
+    })
+
+    onDestroy(() => {
+        if ($pageHeader)
+            $pageHeader.right = prevPageHeaderRight;
+    });
 
     let name: string = "";
     let description: string;
@@ -121,23 +138,21 @@
             </div>
 
             <div class="field">
-                <div class="text-foreground uppercase text-sm my-2">
-                    Name & Description
-                </div>
                 <Input
                     placeholder="Tier Name"
                     bind:value={name}
-                    class="text-xl py-4 h-fit font-semibold"
+                    class="text-lg py-4 h-fit font-semibold rounded-b-none focus-visible:ring-0 border-b-0 text-foreground"
+                    maxlength="48"
                     {autofocus}
                 />
-                <Textarea bind:value={description} />
+                <Textarea
+                    bind:value={description}
+                    placeholder="Tier Description"
+                    class="rounded-t-none border-t-0 focus-visible:ring-0"
+                />
             </div>
+            {#if perks.length > 0}
             <div class="field">
-                <div class="title">Perks</div>
-                <div class="description">
-                    Want to show an itemized list of perks subscribers of this tier get?
-                </div>
-
                 <div class="
                     flex flex-col gap-2 rounded p-2
                 ">
@@ -146,7 +161,6 @@
                             <div class="relative w-full flex-grow flex flex-row items-center">
                                 <Input
                                     tabindex={i+1}
-                                    autofocus={i === perks.length - 1 && name.length > 0}
                                     bind:value={perk}
                                     on:focus={() => perkWithFocus = i}
                                     on:blur={() => perkWithFocus = undefined}
@@ -169,11 +183,18 @@
                     {/each}
                 </div>
             </div>
+            {/if}
 
-            <Button variant="secondary" class="self-start" on:click={addPerk}
-            >
-                <Plus class="inline mr-2" /> Add Perk
-            </Button>
+            <div class="flex flex-row items-center gap-4">
+                <Button variant="outline" class="self-start" on:click={addPerk}
+                >
+                    <Plus class="inline mr-2" /> Add Perk
+                </Button>
+
+                <p class="text-sm">
+                    Want to show an itemized list of perks subscribers of this tier get?
+                </p>
+            </div>
         </section>
 
         <section class="settings w-full">

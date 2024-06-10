@@ -280,7 +280,7 @@
                 {/if}
 
                 <!-- Content -->
-                <div class="flex flex-col overflow-x-clip pl-2 grow">
+                <div class="flex flex-col overflow-x-clip pl-2 grow w-full">
                     <!-- Title and time -->
                     <div class="
                         flex flex-row w-full gap-2 relative group

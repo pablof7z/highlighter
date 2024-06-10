@@ -2,16 +2,30 @@
 	import { VITE_NSECBUNKER_RETURN_URL } from './../../../.svelte-kit/ambient.d.ts';
     import { NDKPrivateKeySigner, NDKUser, NDKNip46Signer, NDKEvent } from "@nostr-dev-kit/ndk";
 	import NsecBunkerProviderSelect from "$components/Forms/NsecBunkerProviderSelect.svelte";
-	import type { NsecBunkerProvider } from "../../app";
+	import type { NavigationOption, NsecBunkerProvider } from "../../app";
 	import { slide } from "svelte/transition";
 	import { loginState } from '$stores/session';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import CaretDown from "phosphor-svelte/lib/CaretDown";
 	import currentUser, { loginMethod, userPubkey } from "$stores/currentUser";
 	import { getUserFromPubkey } from "$lib/server/user";
 	import { newGuestLogin } from '../../routes/browser-session-setup.js';
 	import { bunkerNDK, ndk } from '$stores/ndk.js';
+
+    export let actionButtons: NavigationOption[] = [];
+    export let mode: string;
+
+    onMount(() => {
+        actionButtons = [
+            { name: "Login", fn: login, buttonProps: { variant: 'secondary', size: 'lg' } },
+            { name: "Continue", fn: signup, buttonProps: { variant: 'accent', size: 'lg' } },
+        ]
+    })
+
+    function login() {
+        mode = "login";
+    }
 
     const dispatch = createEventDispatcher();
 
@@ -134,6 +148,8 @@
     let providerOpen = false;
 
     $: username = username.toLowerCase().replace(/[^a-z0-9_]/g, "");
+
+    
 </script>
 
 <div class="relative">
@@ -196,17 +212,6 @@
         </div>
 
         {#if !popupNotOpened}
-            <button class="
-                button transition duration-300 flex flex-col
-                py-4 font-medium rounded leading-none
-            " on:click={signup} disabled={username?.length === 0 || !nsecBunker?.pubkey || creating} transition:slide>
-                {#if !creating}
-                    Let's go!
-                {:else}
-                    <div class="loading loading-sm"></div>
-                {/if}
-            </button>
-
             <button class="text-foreground font-normal" on:click={continueAsGuest}>
                 or continue as guest
             </button>

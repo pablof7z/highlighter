@@ -18,13 +18,11 @@ import ModalShell from "$components/ModalShell.svelte";
     }
 </script>
 
-<ModalShell color="glassy" class="max-w-xl w-full">
+<ModalShell
+    title={`${pluralize($failedPublishEvents.size, "Event")} Failed to Publish`}
+    class="max-w-xl w-full"
+>
     <div class="flex flex-col items-center justify-center space-y-4 w-full">
-        <h1 class="">
-            {pluralize($failedPublishEvents.size, "Event")}
-            Failed to Publish
-        </h1>
-
         <div class="flex flex-col gap-2 w-full">
             {#each Array.from($failedPublishEvents.values()) as {event, error}}
                 <div class="alert alert-error py-0">

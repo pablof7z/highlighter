@@ -74,6 +74,7 @@
         </a>
     {:else}
         <Button
+            forceNonMobile
             href={option.href}
             variant={active ? "default" : "secondary"}
             {...option.buttonProps??{}}

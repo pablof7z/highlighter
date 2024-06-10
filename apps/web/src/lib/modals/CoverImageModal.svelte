@@ -20,7 +20,7 @@
     }
 </script>
 
-<ModalShell class="max-w-3xl w-full" color="glassy" title="Cover Image">
+<ModalShell class="max-w-3xl w-full" title="Cover Image">
     <ArticleCover bind:article={article} />
 
     <svelte:fragment slot="footer">

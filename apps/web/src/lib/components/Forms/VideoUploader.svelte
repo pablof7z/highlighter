@@ -1,6 +1,7 @@
 <script lang="ts">
 	import VideoPlayer from "$components/Events/VideoPlayer.svelte";
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
+	import { Button } from "$components/ui/button";
 	import Input from "$components/ui/input/input.svelte";
 	import type { NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { Upload, Link } from "phosphor-svelte";
@@ -77,7 +78,7 @@
     }
 </script>
 
-<div class="bg-foreground/20 rounded-md w-full flex flex-col items-center justify-center relative {$$props.wrapperClass}">
+<div class="bg-secondary rounded-md w-full flex flex-col items-center justify-center relative {$$props.wrapperClass}">
     {#if videoUrl}
         <VideoPlayer url={videoUrl} />
     {:else}
@@ -94,7 +95,7 @@
         <div class="z-10 absolute top-0 w-full h-full bg-black/80"></div>
         <div class="max-w-lg w-full z-10 flex flex-col items-center">
             <BlossomUpload
-                class="button px-8 py-3 w-fit"
+                class="px-8 py-3 w-fit"
                 progressClass="h-10 w-10"
                 bind:progress={uploadProgress}
                 type="video"
@@ -103,11 +104,13 @@
                 on:paymentRequired={onPaymentRequired}
                 {startUpload}
             >
-                <Upload class="w-6 h-6" />
-                Upload
+                <Button variant="default" class="px-8 py-3  w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit">
+                    <Upload class="w-8 h-8" />
+                    Upload
+                </Button>
             </BlossomUpload>
-            <div class="flex flex-col w-full border-opacity-50 mt-2">
-                <div class="divider">OR</div>
+            <div class="flex flex-col w-full border-opacity-50 my-2 text-center text-muted-foreground">
+                OR
             </div>
             {#if !showExistingUrlInput}
                 <button class="text-foreground flex px-8 w-fit whitespace-nowrap" on:click={() => showExistingUrlInput = true}>

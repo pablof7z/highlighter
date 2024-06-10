@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
-    import { CaretLeft, Headphones, TextAlignLeft } from 'phosphor-svelte';
+    import { Headphones, TextAlignLeft } from 'phosphor-svelte';
 	import SubscribeButton from './buttons/SubscribeButton.svelte';
 	import ClientName from './ClientName.svelte';
 	import currentUser from '$stores/currentUser';
@@ -12,12 +12,15 @@
     export let editUrl: string | undefined = undefined;
     export let title: string | undefined = undefined;
 
-    const author = item.author;
+    $: console.log('itemheader', item?.id)
+
+    const author = item?.author;
 
     const isVideo = item instanceof NDKVideo;
     const isArticle = item instanceof NDKArticle;
 </script>
 
+{#if item}
 <div class="py-2 flex flex-col sm:flex-row gap-6 justify-between items-center w-full {$$props.containerClass??""} {$$props.class??""}">
     <div class="flex flex-row gap-6 items-center max-sm:justify-between w-full">
         <AvatarWithName user={author} spacing="gap-4" avatarType="square" class="text-foreground grow">
@@ -54,3 +57,4 @@
         {/if}
     {/if}
 </div>
+{/if}

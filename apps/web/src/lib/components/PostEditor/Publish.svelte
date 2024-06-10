@@ -24,6 +24,7 @@
     }
 
     let publishing = false;
+    let published = false;
 
     const tiers = getSelectedTiers($selectedTiers);
     if (Object.values($selectedTiers).length === tiers.length) {
@@ -32,6 +33,7 @@
 
     // this will generate and sign all the events that will be published
     async function prepareEvents() {
+        console.log("calling prepareEvent");
         let eventsToPublish: NDKEvent[] = [];
         
         if (!$event) throw new Error("No event available");
@@ -39,6 +41,8 @@
         if ($event instanceof Thread) {
             eventsToPublish = await prepareThreadForPublish($event, $publishAt);
         } else {
+            $event.content ??= "";
+            
             // prepend and append extra content to the preview
             preparePreview();
             
@@ -147,11 +151,12 @@
 
     async function publish(events: NDKEvent[]) {
         try {
-            for (let event of events) {
+            for (let ev of events) {
                 // slow down to prevent getting rate-limited
+                publishOrSchedule(ev);
                 await sleep(1);
-                publishOrSchedule(event);
             }
+            published = true;
         } catch (e: any) {
             console.trace(e);
             newToasterMessage(e.message, "error");
@@ -179,7 +184,7 @@
     let url: string | undefined;
 
     // when canPublish is true, pu
-    $: if (canPublish && warnings.length === 0 && publishing == false) {
+    $: if (canPublish && warnings.length === 0 && publishing == false && !published) {
         publishing = true;
 
         prepareEvents().then(publish).finally(() => {

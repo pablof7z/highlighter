@@ -4,7 +4,7 @@
 	import { type NDKEvent, NDKKind, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher, onDestroy } from "svelte";
 	import { openModal } from '$utils/modal';
-	import { Quotes, Repeat, ShareNetwork, Timer } from 'phosphor-svelte';
+	import { Export, Quotes, Repeat, ShareNetwork, Timer } from 'phosphor-svelte';
 	import ButtonWithCount from './ButtonWithCount.svelte';
 	import currentUser from '$stores/currentUser';
 	import Scheduler from '$modals/Scheduler.svelte';
@@ -53,8 +53,6 @@
     function scheduleBoost() {
         openModal(Scheduler, { event })
     }
-
-    let container: HTMLDivElement;
 </script>
 
 {#if event.kind === NDKKind.Text || event.kind === NDKKind.Highlight}
@@ -95,15 +93,19 @@
     </HoverCard.Content>
 </HoverCard.Root>
 {:else}
-    <button on:click|stopPropagation|preventDefault={share}
-        class="flex flex-row items-center gap-2 {repostedByUser ? 'text-foreground' : ''}"
+    <ButtonWithCount
+        class="rounded-full p-2 flex hover:bg-green-400/20"
+        count={$reposts.length}
+        active={repostedByUser}
+        on:click={share}
     >
         {#if repostedByUser}
-            <ShareNetwork class="sm:w-5 w-6 sm:h-5 h-6 text-accent" />
+            <Export class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-[var(--boost-button)]/30 group-hover:text-[var(--boost-button)]" weight="fill" />
         {:else}
-            <ShareNetwork class="sm:w-5 w-6 sm:h-5 h-6" weight="regular" />
+            <Export class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-[var(--boost-button)]/30 group-hover:text-[var(--boost-button)]" weight="regular" />
         {/if}
-    </button>
+
+    </ButtonWithCount>
 {/if}
 
 <style lang="postcss">

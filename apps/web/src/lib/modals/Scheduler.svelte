@@ -70,6 +70,6 @@ import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 
 <ScheduleModal
     title="Schedule Boost"
-    onSchedule=(schedule}
+    onSchedule={schedule}
     action="Repost will be published&nbsp;"
 />

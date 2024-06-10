@@ -4,7 +4,6 @@
     import { debugMode, processUserProfile, userProfile } from '$stores/session';
     import { createEventDispatcher, onMount } from 'svelte';
 	import { NDKEvent, serializeProfile, type NostrEvent, NDKRelaySet, NDKSubscriptionCacheUsage, NDKRelayList, NDKRelay } from '@nostr-dev-kit/ndk';
-	import ImageUploader from "$components/Forms/ImageUploader.svelte";
     import { Image, Warning } from "phosphor-svelte";
 	import CategorySelector from '$components/Forms/CategorySelector.svelte';
 	import { ndk } from '$stores/ndk';

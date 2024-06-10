@@ -6,25 +6,19 @@
 	import Toaster from './Toaster.svelte';
 
 	let layoutWrapper: string;
-	let mainAndDetailWrapper: string;
 	let mainWrapper: string;
 
 	$: switch ($layoutMode) {
 		case 'full-width':
 			layoutWrapper = "w-full";
-			mainAndDetailWrapper = "max-w-none w-full";
-			mainWrapper = "w-full";
+			mainWrapper = "";
 			break;
 		case 'content-focused':
 			layoutWrapper = "w-full";
-			mainAndDetailWrapper = "max-w-[var(--content-focused-wrapper-width)] mx-auto w-full justify-center";
 			mainWrapper = "max-w-[var(--content-focused-width)] w-full grow";
 			break;
 		case "single-column-focused":
-			mainAndDetailWrapper = "";
-
-			mainAndDetailWrapper = "max-w-5xl mx-auto w-full";
-			mainWrapper = "max-w-3xl mx-auto w-screen";
+			mainWrapper = "max-w-3xl mx-auto w-full";
 			layoutWrapper = "max-w-7xl mx-auto";
 			break;
 	}
@@ -41,10 +35,10 @@
 	min-h-screen items-stretch justify-stretch
 	gap-0
 	flex flex-col
-	w-screen sm:w-[calc(100vw-var(--navbar-collapsed))] overflow-clip
-	ml-[var(--navbar-collapsed)]
+	overflow-clip
+	pl-[var(--navbar-width)]
 ">
-	<LayoutHeader containerClass="sm:-translate-x-[calc(var(--navbar-collapsed)/2)] {mainWrapper}" />
+	<LayoutHeader containerClass="sm:-translate-x-[calc(var(--navbar-width)/2)] {mainWrapper}" />
 
 	<div class="mb-[calc(var(--navbar-height))] w-full"></div>
 
@@ -62,7 +56,7 @@
 			z-[50]
 			flex items-center
 		">
-			<div class="sm:-translate-x-[calc(var(--navbar-collapsed)/2)] {mainWrapper}">
+			<div class="sm:-translate-x-[calc(var(--navbar-width)/2)] {mainWrapper}">
 				<svelte:component this={$pageHeader.footer.component} {...$pageHeader.footer.props} />
 			</div>
 		</div>

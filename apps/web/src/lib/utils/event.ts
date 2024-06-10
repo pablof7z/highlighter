@@ -2,6 +2,10 @@ import { Hexpubkey, NDKArticle, NDKKind, NDKList, NDKRelaySet, NDKTag, NDKVideo,
 import { getDefaultRelaySet } from './ndk';
 import { nip19 } from 'nostr-tools';
 import { AddressPointer, EventPointer } from 'nostr-tools/nip19';
+import { requiredTiersFor } from '$lib/events/tiers';
+import createDebugger from 'debug';
+
+const debug = createDebugger('HL:utils:event');
 
 export const mainContentKinds = [
 	NDKKind.Article,
@@ -64,12 +68,23 @@ export function eventToSpecificKind(event: NDKEvent) {
 }
 
 export function relaySetForEvent(event: NDKEvent): NDKRelaySet | undefined {
+	const d = debug.extend('relaySetForEvent');
+	
 	// if the event is kind 1, undefined
 	if (event.kind === NDKKind.Text) return undefined;
 
-	// if the event has an h tag then default relay
-	if (event.tagValue('h')) {
-		return getDefaultRelaySet();
+	const hasHTag = !!event.tagValue('h');
+	if (hasHTag) {
+		const requiredTiers = requiredTiersFor(event);
+		const doesNotHaveFree = !requiredTiers.includes('Free');
+
+		if (doesNotHaveFree) {
+			const relays = getDefaultRelaySet();
+			d('Event kind:%d with required tiers:%o has no free tier, returning default relays:%o', event.kind, requiredTiers, relays);
+			return relays;
+		} else {
+			d('Event kind:%d with required tiers:%o has free tier, returning undefined', event.kind, requiredTiers);
+		}
 	}
 
 	return undefined;

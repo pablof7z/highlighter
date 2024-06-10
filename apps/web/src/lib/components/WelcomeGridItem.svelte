@@ -13,7 +13,7 @@
 
     onMount(async () => {
         setTimeout(() => {
-            if (!$user) {
+            if (!$currentUser) {
                 display = $seenOnboardingPromptGridItem !== true;
             } else {
                 display = $userTiers.length === 0;
@@ -33,7 +33,7 @@
     }
 
     function getStarted() {
-        const mode = !$user ? 'signup' : 'welcome';
+        const mode = !$currentUser ? 'signup' : 'welcome';
         openModal(SignupModal, { mode })
     }
 </script>

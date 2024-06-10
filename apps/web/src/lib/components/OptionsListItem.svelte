@@ -51,9 +51,9 @@
             {#if option.badge}
                 <div class="indicator">
                     {#if option.badge === true}
-                        <Badge variant="default"></Badge>
+                        <Badge variant="accent"></Badge>
                     {:else}
-                        <Badge variant="default" class="rounded-full w-5 h-5 flex items-center justify-center">{option.badge}</Badge>
+                        <Badge variant="accent" class="rounded-full w-5 h-5 flex items-center justify-center">{option.badge}</Badge>
                     {/if}
                 </div>
             {/if}
@@ -64,6 +64,7 @@
                     inline
                     text-muted-foreground
                     group-hover:text-foreground
+                    {option.class??""}
                 "
                 weight={active ? "light" : "thin"}
             />

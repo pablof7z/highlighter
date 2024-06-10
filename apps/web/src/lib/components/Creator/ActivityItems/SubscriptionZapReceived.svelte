@@ -1,7 +1,10 @@
 <script lang="ts">
+	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
-    import { NDKArticle, zapInvoiceFromEvent, type NDKEvent } from "@nostr-dev-kit/ndk";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import { ndk } from "$stores/ndk";
+	import { nicelyFormattedMilliSatNumber } from "$utils";
+    import { zapInvoiceFromEvent, type NDKEvent } from "@nostr-dev-kit/ndk";
+	import { Avatar, EventContent, Name } from "@nostr-dev-kit/ndk-svelte-components";
 
     export let event: NDKEvent;
 

@@ -11,19 +11,12 @@
     export let user: NDKUser;
     export let collapsed = false;
 
-    function hover() {
-        if (true || $inboxItems.size === 0 && !$seenHighlightUserHelperModal) {
-            $seenHighlightUserHelperModal = true;
-            openModal(HighlightUserModal, { user });
-        }
-    }
-
     function click() {
-        if ($inboxItems.size === 0) {
+        // if ($inboxItems.size === 0) {
             openModal(HighlightUserModal, { user });
-        } else {
-            follow();
-        }
+        // } else {
+        //     follow();
+        // }
     }
 
     async function follow() {
@@ -50,7 +43,6 @@
         <button
             class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-2 hover:text-zinc-400"
             on:click={click}
-            on:mouseenter={hover}
         >
             <HighlightIcon class="transition-all duration-300 {collapsed ? "w-5 h-5" : "w-9 h-9 py-[6px]"}" />
             <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Highlight</span>

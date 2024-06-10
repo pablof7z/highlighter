@@ -87,11 +87,11 @@
 {/if}
 
 <div class="flex flex-row items-center gap-4">
-    <Button size="lg" on:click={save}>
+    <Button variant="secondary" size="lg" on:click={save}>
         Save
     </Button>
 
-    <Button variant="secondary" class="w-fit px-6" on:click={() => {
+    <Button variant="ghost" class="w-fit px-6" on:click={() => {
         items = [...items, ""];
     }}>
         Add New Server

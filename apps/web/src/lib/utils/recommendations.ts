@@ -48,7 +48,6 @@ export function computeArticleRecommendationFromHighlightStore(
         // compute articles score
         highlightsByArticle.forEach((highlights, articleId) => {
             const score = computeArticleScore(highlights);
-            console.log("Article", articleId, "score", score);
             articles.set(articleId, score);
         });
 

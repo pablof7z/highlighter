@@ -8,6 +8,7 @@ import { ndk } from "$stores/ndk.js";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { onDestroy, onMount } from "svelte";
 	import ItemViewZaps from "./ItemViewZaps.svelte";
+	import currentUser from "$stores/currentUser";
 
     export let video: NDKVideo;
     export let isFullVersion: boolean;
@@ -61,7 +62,7 @@ import { ndk } from "$stores/ndk.js";
         <div class="flex flex-row w-full justify-between items-center text-foreground text-2xl font-medium">
             <div>{video.title}</div>
         </div>
-        {#if $user?.pubkey === video.pubkey}
+        {#if $currentUser?.pubkey === video.pubkey}
             <a href={editUrl} class="button">Edit</a>
         {/if}
         <!-- <div class="flex-row items-start gap-4 flex w-full justify-between">

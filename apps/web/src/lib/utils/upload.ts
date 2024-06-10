@@ -1,4 +1,4 @@
-import { BlobDescriptor, BlossomClient } from "blossom-client-sdk/client";
+import { BlobDescriptor, BlossomClient, SignedEvent } from "blossom-client-sdk/client";
 import { generateMediaEventFromBlobDescriptor, sign } from "./blossom";
 
 export class Uploader {
@@ -34,9 +34,13 @@ export class Uploader {
         this._onUploaded = cb;
     }
 
+    private encodeAuthorizationHeader(uploadAuth: SignedEvent) {
+        return "Nostr " + btoa( unescape (encodeURIComponent( JSON.stringify(uploadAuth) ) ));
+    }
+
     async start() {
         const uploadAuth = await BlossomClient.getUploadAuth( this.blob as Blob, sign as any, "Upload file");
-        const encodedAuthHeader = BlossomClient.encodeAuthorizationHeader(uploadAuth);
+        const encodedAuthHeader = this.encodeAuthorizationHeader(uploadAuth);
 
         this.xhr.open('PUT', this.url.toString(), true);
         this.xhr.setRequestHeader("Authorization", encodedAuthHeader);

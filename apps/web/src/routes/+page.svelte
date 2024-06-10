@@ -2,13 +2,12 @@
 	import { NDKArticle, NDKVideo, NDKEvent, NDKKind, type NDKFilter, NDKList, NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import ArticleLink from "$components/Events/ArticleLink.svelte";
     import { ndk } from "$stores/ndk.js";
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { page } from '$app/stores';
     import createDebug from "debug";
 	import { derived, writable, type Readable } from 'svelte/store';
 	import { layoutMode, pageHeader, resetLayout } from '$stores/layout';
-	import ExploreFilters from './ExploreFilters.svelte';
 	import ListContentDvms from './ListContentDvms.svelte';
 	import { mainContentKinds } from '$utils/event';
 	import { browser } from '$app/environment';
@@ -198,7 +197,6 @@
         searchBar: true,
         title: "Discover",
         searchFn,
-        // component: ExploreFilters
     };
 </script>
 

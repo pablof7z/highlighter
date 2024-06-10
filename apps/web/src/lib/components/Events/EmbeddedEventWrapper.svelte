@@ -2,9 +2,11 @@
 	import StylishContainer from './../PageElements/StylishContainer.svelte';
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 	import { ndk } from "$stores/ndk";
-	import { NDKEvent, NDKRelaySet } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { eventToKind, mainContentKinds } from '$utils/event';
 	import ItemLink from './ItemLink.svelte';
+	import Article from '$components/Grid/Article.svelte';
+	import { Button } from '$components/ui/button';
 
     export let id: string;
     export let relays: string[] | undefined = undefined;
@@ -23,23 +25,34 @@
             event = e ? eventToKind(e) : null;
         })
 
+    let showMore = false;
 </script>
 
 <div class="w-full my-2">
     {#if event === undefined || event === null}
-        <StylishContainer
-            class="bg-foreground/20/50 transition-all duration-300 rounded max-md:p-4"
-            border={1}
-            on:click={clicked}
+        <div
+            class="bg-secondary text-secondary-foreground transition-all duration-300 rounded p-4 border"
         >
             {#if event === undefined}
                 <span class="p-4">Loading event</span>
-                {:else}
+            {:else}
                 <span class="p-4">Unable to load event</span>
+
+                <Button forceNonMobile variant="secondary" size="sm" on:click={() => showMore = true}>Details</Button> 
+
+                {#if showMore}
+                    <p>
+                        The event with ID {id} could not be loaded.
+                    </p>
+                {/if}
             {/if}
-        </StylishContainer>
+        </div>
+    {:else if event.kind === NDKKind.Article}
+        <Article article={NDKArticle.from(event)} wideView />
     {:else if mainContentKinds.includes(event.kind)}
-        <ItemLink {event} />
+        <div class="w-full border border-border">
+            <ItemLink {event} class="event-wrapper--content" />
+        </div>
     {:else}
         <EventWrapper
             {event}

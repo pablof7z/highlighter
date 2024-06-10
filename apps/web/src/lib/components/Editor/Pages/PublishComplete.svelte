@@ -9,7 +9,8 @@
 	import Thread from '$components/Drafts/Items/Thread.svelte';
 	import { isScheduledEvent } from '$utils/schedule';
 	import { goto } from '$app/navigation';
-	import { Check } from 'phosphor-svelte';
+	import { ArrowRight, Check } from 'phosphor-svelte';
+	import Button from '$components/ui/button/button.svelte';
 
     export let title: string | undefined = "undefined";
     export let shareUrl: string | undefined = "undefined";
@@ -66,15 +67,6 @@
         class="md:fixed md:top-1/2 md:-translate-y-1/2 md:left-1/2 md:-translate-x-1/2"
     >
         <img src="/images/published.png" class="mx-auto w-3/5 h-3/5 opacity-60 my-8" />
-        <blockquote slot="afterCta" class="app-quote relative my-8">
-            <p class="z-1 relative text-foreground/60 text-lg">
-                “And what can life be worth if the first rehearsal for life is life itself? That is why life is always like a sketch. No, "sketch" is not quite a word, because a sketch is an outline of something, the groundwork for a picture, whereas the sketch that is our life is a sketch for nothing, an outline with no picture.”
-            </p>
-
-            <div class="author">
-                Milan Kundera
-            </div>
-        </blockquote>
 
         <span class="text-2xl font-medium">
             Your thread
@@ -100,7 +92,16 @@
                 </p>
             {/if}
 
-            <blockquote class="app-quote relative my-8">
+            {#if !scheduled}
+                <div class="flex flex-row items-center gap-4">
+                    <Button variant="secondary" href={urlFromEvent($event)}>
+                        {$event.title}
+                        <ArrowRight class="w-5 h-5 ml-2" />
+                    </Button>
+                </div>
+            {/if}
+
+            <!-- <blockquote class="app-quote relative my-8">
                 <p class="z-1 relative text-foreground/60 text-lg">
                     “And what can life be worth if the first rehearsal for life is life itself? That is why life is always like a sketch. No, "sketch" is not quite a word, because a sketch is an outline of something, the groundwork for a picture, whereas the sketch that is our life is a sketch for nothing, an outline with no picture.”
                 </p>
@@ -108,7 +109,7 @@
                 <div class="author">
                     Milan Kundera
                 </div>
-            </blockquote>
+            </blockquote> -->
         </div>
         
         <span class="text-2xl font-medium">
@@ -126,7 +127,7 @@
 
         <br>
         <span class="font-light opacity-80">
-            Announce it to your audience to get the word out.
+            Announce it to get the word out.
         </span>
     </BlankState>
 {/if}

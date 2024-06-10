@@ -6,7 +6,7 @@
 </script>
 
 <Fab
-    class="fixed right-4-safe ios:bottom-15-safe material:bottom-18-safe z-20"
+    class="fixed right-4-safe ios:bottom-15-safe material:bottom-18-safe z-20 !bg-accent"
     onClick={() => openModal(NewItemModal)}
 >
     <Plus size={24} />

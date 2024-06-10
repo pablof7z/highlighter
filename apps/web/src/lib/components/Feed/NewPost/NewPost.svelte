@@ -58,7 +58,7 @@
 
         try {
             for (const url of uploadedFiles) {
-                content += `\n\n${url}`;
+                content += `\n${url}`;
             }
 
             event.tags = extraTags;

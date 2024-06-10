@@ -8,6 +8,7 @@
 	import { Block } from 'konsta/svelte';
 	import { DoorOpen, User } from 'phosphor-svelte';
 	import { closeModal } from '$utils/modal.js';
+	import Button from '$components/ui/button/button.svelte';
 
     export let mode: 'signup' | 'login' | 'welcome' = 'signup';
 
@@ -66,30 +67,24 @@
     <div class="flex flex-col gap-4 w-full">
         {#if mode === 'signup'}
             <div class="w-full flex flex-col gap-5">
-                <Signup on:signed-up={signedUp} />
+                <Signup on:signed-up={signedUp} bind:actionButtons bind:mode />
             </div>
         {:else if mode === 'login'}
             <div class="w-full flex flex-col gap-5">
-                <Login />
+                <Login bind:actionButtons bind:mode />
             </div>
         {:else if mode === 'welcome'}
             <div class="w-full flex flex-col gap-5">
                 <Welcome />
-        </div>
+            </div>
         {/if}
     </div>
 
-    <div class:hidden={mode === 'welcome'}>
-        {#if mode === 'signup'}
-            <p class="text-center text-neutral-500 text-base my-2">
-                Already have a Nostr account?
-                <button on:click={() => mode = 'login'} class="text-foreground font-semibold underline">Log in</button>
-            </p>
-        {:else}
-            <p class="text-center text-neutral-500 text-base my-2">
-                Don’t have an account?
-                <button on:click={() => mode = 'signup'} class="text-foreground/50 font-semibold underline">Sign Up</button>
-            </p>
+    <svelte:fragment slot="footerExtra">
+        {#if mode !== "welcome"}
+            <Button size="sm">
+                Continue as Guest
+            </Button>
         {/if}
-    </div>
+    </svelte:fragment>
 </ModalShell>

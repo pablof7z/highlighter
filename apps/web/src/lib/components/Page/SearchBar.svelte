@@ -99,7 +99,7 @@
     let noFocus = true;
 </script>
 
-<div class="flex flex-col gap-6 w-full mx-auto relative max-w-3xl {$$props.class??""}">
+<div class="flex flex-col gap-6 w-full mx-auto relative {$$props.class??""}">
     <MagnifyingGlass class="absolute top-1/2 max-sm:hidden sm:left-6 transform -translate-y-1/2 w-6 h-6 text-neutral-500" />
 
     <Input

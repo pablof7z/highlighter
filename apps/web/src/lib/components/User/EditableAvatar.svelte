@@ -22,9 +22,6 @@
     {/if}
 </BlossomUpload>
 
-<!-- <ImageUploader url={userProfile?.image} {user} {userProfile} {fetching} on:uploaded={uploaded} alwaysUseSlot={true}>
-    <Avatar {userProfile} {user} class="{$$props.class??""}" {fetching} />
-</ImageUploader> -->
 <!--
 <button class="group {$$props.class??""} relative border-none">
     <div class="absolute top-0 w-full transition-all duration-200 opacity-0 group-hover:opacity-100 flex items-center justify-center z-50 h-full bg-black/50 rounded-full">

@@ -40,30 +40,14 @@ export function getDefaultRelaySet() {
 
 export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	const $ndk = getStore(ndk);
-	$ndk.clientName = 'highlighter';
-	$ndk.clientNip89 =
-		'31990:73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63:1704502265408';
 	$ndk.httpFetch = nodeFetch as typeof fetch;
-	$ndk.pool.blacklistRelayUrls.add("wss://relayer.fiatjaf.com/")
-	$ndk.pool.blacklistRelayUrls.add("wss://relay.nostr.info/")
-	$ndk.pool.blacklistRelayUrls.add("wss://nostr-01.bolt.observer/")
 
-	// add default relays
+	// $ndk.devWriteRelaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
+
 	for (const relay of defaultRelays) {
 		const r = $ndk.addExplicitRelay(relay, NDKRelayAuthPolicies.signIn({ ndk: $ndk }), false);
 		r.trusted = true;
 	}
-
-	$ndk.addExplicitRelay('ws://localhost:5577', undefined, false);
-	// $ndk.addExplicitRelay('wss://purplepag.es/', undefined, false);
-	// $ndk.addExplicitRelay('wss://nos.lol/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.noswhere.com/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.primal.net/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.damus.io/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.nostr.band/', undefined, false);
-	// $ndk.addExplicitRelay('wss://relay.highlighter.com/', undefined, false);
-
-	// $ndk.connect(2000);
 
 	$ndk.pool.on('relay:auth', (relay) => {
 		debug('relay auth', relay.url);
@@ -76,8 +60,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL12' });
-	$ndk.clientName = 'highlighter';
+	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL13' });
 
 	const sigWorker = import.meta.env.DEV ?
 		new Worker(new URL('@nostr-dev-kit/ndk/workers/sig-verification?worker', import.meta.url), { type: 'module' }) : new NDKSigVerificationWorker();
