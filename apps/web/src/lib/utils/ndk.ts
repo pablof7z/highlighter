@@ -41,15 +41,17 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 
 	// $ndk.devWriteRelaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
 
-	debug("Default relays: %o", defaultRelays);
+	$ndk.explicitRelayUrls = [...explicitRelayUrls];
 	
 	for (const relay of defaultRelays) {
+		debug('Adding default relay', relay);
 		const r = $ndk.addExplicitRelay(relay, NDKRelayAuthPolicies.signIn({ ndk: $ndk }), false);
 		r.trusted = true;
 	}
 
 	for (const relay of explicitRelayUrls) {
-		const r = $ndk.addExplicitRelay(relay, undefined, false);
+		debug('Adding explicit relay', relay);
+		$ndk.addExplicitRelay(relay, undefined, false);
 	}
 
 	$ndk.pool.on('relay:auth', (relay) => {

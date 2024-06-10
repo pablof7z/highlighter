@@ -34,6 +34,7 @@ const _ndk: NDKSvelte = new NDKSvelte({
 _ndk.pool.blacklistRelayUrls.add("wss://relayer.fiatjaf.com/")
 _ndk.pool.blacklistRelayUrls.add("wss://relay.nostr.info/")
 _ndk.pool.blacklistRelayUrls.add("wss://nostr-01.bolt.observer/")
+_ndk.pool.blacklistRelayUrls.add("wss://profile.nos.social/")
 
 _ndk.clientName = 'highlighter';
 _ndk.clientNip89 = '31990:73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63:1704502265408';

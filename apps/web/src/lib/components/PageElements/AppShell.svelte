@@ -7,19 +7,23 @@
 
 	let layoutWrapper: string;
 	let mainWrapper: string;
+	let headerAndFooterWrapper: string;
 
 	$: switch ($layoutMode) {
 		case 'full-width':
+			headerAndFooterWrapper = "";
 			layoutWrapper = "w-full";
 			mainWrapper = "";
 			break;
 		case 'content-focused':
 			layoutWrapper = "w-full";
 			mainWrapper = "max-w-[var(--content-focused-width)] w-full grow";
+			headerAndFooterWrapper = "sm:-translate-x-[calc(var(--navbar-width)/2)] " + mainWrapper;
 			break;
 		case "single-column-focused":
 			mainWrapper = "max-w-3xl mx-auto w-full";
 			layoutWrapper = "max-w-7xl mx-auto";
+			headerAndFooterWrapper = "sm:-translate-x-[calc(var(--navbar-width)/2)] " + mainWrapper;
 			break;
 	}
 </script>
@@ -38,7 +42,7 @@
 	overflow-clip
 	pl-[var(--navbar-width)]
 ">
-	<LayoutHeader containerClass="sm:-translate-x-[calc(var(--navbar-width)/2)] {mainWrapper}" />
+	<LayoutHeader containerClass="{headerAndFooterWrapper}" />
 
 	<div class="mb-[calc(var(--navbar-height))] w-full"></div>
 
@@ -56,7 +60,7 @@
 			z-[50]
 			flex items-center
 		">
-			<div class="sm:-translate-x-[calc(var(--navbar-width)/2)] {mainWrapper}">
+			<div class="{headerAndFooterWrapper}">
 				<svelte:component this={$pageHeader.footer.component} {...$pageHeader.footer.props} />
 			</div>
 		</div>

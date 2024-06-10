@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
+	import { nicelyFormattedMilliSatNumber } from "$utils";
 	import throttleStore from "$utils/stores/throttle";
 	import { UnsubscribableStore, ZapScore, getTopZapsByAggregatedAmount } from "$utils/zaps";
 	import { NDKUser } from "@nostr-dev-kit/ndk";

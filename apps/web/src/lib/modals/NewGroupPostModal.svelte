@@ -17,19 +17,30 @@
     let title = "";
 
     $: {
-        extraTags = [ [ "h", groupId ] ];
-        if (title?.length > 0) {
+        const tagsHasHTag = tags.some(([kind]) => kind === "h");
+        const tagsHasTitle = tags.some(([kind]) => kind === "title");
+
+        extraTags = tags;
+        
+        if (!tagsHasHTag) {
+            extraTags = [ [ "h", groupId ] ];
+        }
+
+        if (!tagsHasTitle && title?.length > 0) {
             extraTags.push([ "title", title ]);
         }
+        
         extraTags = extraTags;
     }
 </script>
 
-<ModalShell color="glassy" class="w-full sm:max-w-2xl !p-2 {publishing ? "!bg-transparent" : ""}">
+<ModalShell
+    title="New Group Post"
+    class="w-full sm:max-w-2xl !p-2 {publishing ? "!bg-transparent" : ""}"
+>
     {#if publishing}
         <div class="loading loading-lg loading-dots"></div>
     {/if}
-
     <div class="w-full flex flex-col">
         <Input
             color="black"
@@ -44,11 +55,11 @@
             skipAvatar={true}
             collapsed={false}
             autofocus={false}
-            extraTags={tags}
+            {extraTags}
             bind:publishing
-            on:publish={() => {
+            on:publish={(e) => {
                 closeModal();
-                onPublish?.(event);
+                onPublish?.(e.detail);
             }}
             on:cancel={closeModal}
         >

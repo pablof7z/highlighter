@@ -11,6 +11,7 @@ import { ndk } from "$stores/ndk.js";
 	import { onDestroy } from "svelte";
 	import { openModal } from '$utils/modal';
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
+	import Button from "$components/ui/button/button.svelte";
 
     let { user } = $page.data;
 
@@ -74,14 +75,14 @@ import { ndk } from "$stores/ndk.js";
                 This is a private forum to share thoughts, ideas and updates in a calm place. Only supporters of this creator can see and interact here.
             </p>
     
-            <button class="button w-fit px-4" on:click={newPost}>
+            <Button on:click={newPost}>
                 New post
-            </button>
+            </Button>
         </div>
     </div>
     
     <ul class="max-w-3xl mx-auto w-full border-x border-border gap-2 flex flex-col">
-        {#each $events as event, i}
+        {#each $events as event, i (event.id)}
             <li style="border: solid {color(i)} 4px; background: {color(i)}44;">
                 <EventWrapper
                     {event}

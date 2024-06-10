@@ -53,18 +53,21 @@
                 error = "Invalid nsec";
                 return;
             }
-            const key = pk.data as string;
+            const key = pk.data as Uint8Array;
             const signer = new NDKPrivateKeySigner(key);
             console.log(signer);
             const user = await signer.user();
             $ndk.signer = signer;
             loginMethod.set('pk');
-            privateKey.set(key);
+            privateKey.set(signer.privateKey);
+            $currentUser = user;
 
             _login('pk', user.pubkey);
             console.log(user.pubkey);
             closeModal();
-        } catch {}
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     async function loginNip46(token: string) {

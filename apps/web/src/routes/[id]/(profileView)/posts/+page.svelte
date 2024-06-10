@@ -3,7 +3,7 @@
 	import StoreGrid from "$components/Grid/StoreGrid.svelte";
 	import { layoutMode } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
-	import { NDKEvent, NDKKind, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKKind, NDKSubscriptionCacheUsage, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { onDestroy } from "svelte";
 
@@ -28,7 +28,7 @@
 
         content = $ndk.storeSubscribe(
             { kinds: [NDKKind.Article, NDKKind.HorizontalVideo], "authors": [user.pubkey] },
-            { subId: 'user-content' },
+            { subId: 'user-content', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
         );
     }
 </script>

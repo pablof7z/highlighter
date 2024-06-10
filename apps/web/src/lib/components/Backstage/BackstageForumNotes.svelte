@@ -1,6 +1,10 @@
 <script lang="ts">
+	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
+	import Avatar from "$components/User/Avatar.svelte";
+	import { Button } from "$components/ui/button";
 	import NewGroupPostModal from "$modals/NewGroupPostModal.svelte";
 	import currentUser from "$stores/currentUser";
+	import { ndk } from "$stores/ndk";
 	import { openModal } from "$utils/modal";
 	import { NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 	import { ArrowRight } from "phosphor-svelte";
@@ -68,9 +72,9 @@
 
     {#if user.pubkey === $currentUser?.pubkey}
         <div class="text-foreground">
-            <button class="button" on:click={newPost}>
+            <Button on:click={newPost}>
                 Create New Post
-            </button>
+            </Button>
         </div>
     {/if}
 </div>
