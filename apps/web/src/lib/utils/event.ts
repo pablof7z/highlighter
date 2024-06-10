@@ -4,6 +4,8 @@ import { nip19 } from 'nostr-tools';
 import { AddressPointer, EventPointer } from 'nostr-tools/nip19';
 import { requiredTiersFor } from '$lib/events/tiers';
 import createDebugger from 'debug';
+import { get } from 'svelte/store';
+import { ndk } from '$stores/ndk';
 
 const debug = createDebugger('HL:utils:event');
 
@@ -69,7 +71,7 @@ export function eventToSpecificKind(event: NDKEvent) {
 
 export function relaySetForEvent(event: NDKEvent): NDKRelaySet | undefined {
 	const d = debug.extend('relaySetForEvent');
-	
+
 	// if the event is kind 1, undefined
 	if (event.kind === NDKKind.Text) return undefined;
 

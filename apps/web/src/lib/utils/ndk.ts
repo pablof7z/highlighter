@@ -1,6 +1,6 @@
 import { get as getStore } from 'svelte/store';
 import 'websocket-polyfill';
-import { ndk } from "$stores/ndk";
+import { explicitRelayUrls, ndk } from "$stores/ndk";
 import { newToasterMessage } from '$stores/toaster';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
 import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
@@ -26,10 +26,7 @@ export function getNip50RelaySet() {
 export function getDefaultRelaySet() {
 	const $ndk = getStore(ndk);
 
-	debug(`Getting default relay set`, {
-		explicitRelayUrls: $ndk.explicitRelayUrls,
-		stats: $ndk.pool.stats()
-	});
+	debug(`Getting default relay set %o`, defaultRelays);
 
 	const relaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
 	for (const relay of relaySet.relays) {
@@ -44,9 +41,15 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 
 	// $ndk.devWriteRelaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
 
+	debug("Default relays: %o", defaultRelays);
+	
 	for (const relay of defaultRelays) {
 		const r = $ndk.addExplicitRelay(relay, NDKRelayAuthPolicies.signIn({ ndk: $ndk }), false);
 		r.trusted = true;
+	}
+
+	for (const relay of explicitRelayUrls) {
+		const r = $ndk.addExplicitRelay(relay, undefined, false);
 	}
 
 	$ndk.pool.on('relay:auth', (relay) => {
