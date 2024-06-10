@@ -8,7 +8,7 @@
 	import { pageHeader, pageHeaderComponent, resetLayout } from '$stores/layout';
 	import type { NavigationOption, UserProfileType } from '../../../app';
 	import CreatorHeader from "./CreatorHeader.svelte";
-	import { Article, BookmarkSimple, CardsThree, House, Notepad, User } from "phosphor-svelte";
+	import { Article, BookmarkSimple, CardsThree, House, Notepad, Star, Ticket, User } from "phosphor-svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
 
     export let user: NDKUser;
@@ -52,6 +52,7 @@
     let hasCurations = false;
     let hasHighlights = false;
     let hasPublications = false;
+    let hasAccessToBackstage = false;
 
     let options: NavigationOption[] = [];
 
@@ -61,6 +62,9 @@
         if (!hasPublications && ($gaContent.length > 0 || $userContent.length > 0)) { hasPublications = true; }
         if (!hasCurations && $curations.length > 0) { hasCurations = true; }
         if (!hasHighlights && $highlights.length > 0) { hasHighlights = true; }
+
+        if (hasAccessToBackstage)
+            options.push({ name: "Backstage", href: `${authorUrl}/backstage`, icon: Ticket, buttonProps: {variant: 'accent'} },)
 
         options.push({ value: "Home", href: `${authorUrl}`, icon: House });
 
@@ -72,7 +76,7 @@
             options.push({ name: "Publications", href: `${authorUrl}/posts`, icon: Article },)
 
         if (hasHighlights)
-        options.push({ name: "Highlights", href: `${authorUrl}/highlights`, icon: HighlightIcon },)
+            options.push({ name: "Highlights", href: `${authorUrl}/highlights`, icon: HighlightIcon },)
     }
 
     $: $pageHeader = {
@@ -90,5 +94,3 @@
 <UserProfile {user} bind:userProfile bind:fetching bind:authorUrl />
 
 <slot />
-
-<div class="hidden bg-black/90 w-14 h-14 w-28 h-28"></div>

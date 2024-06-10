@@ -188,7 +188,6 @@
         publishing = true;
 
         prepareEvents().then(publish).finally(() => {
-            publishing = false;
         })
     }
 </script>

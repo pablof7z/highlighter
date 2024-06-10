@@ -17,7 +17,7 @@ import Name from '$components/User/Name.svelte';
     </div>
 
     <div class="lg:w-5/12 flex flex-col gap-2 items-center justify-center">
-        <Avatar {userProfile} size="large" />
+        <Avatar {user} {userProfile} size="large" />
         <span class="text-foreground font-medium text-lg">
             <Name {userProfile} class="inline" />'s
         </span>
