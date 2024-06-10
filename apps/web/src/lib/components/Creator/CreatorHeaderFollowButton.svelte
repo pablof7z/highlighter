@@ -20,6 +20,7 @@
         for (const pubkey of $userFollows) { currentFollows.add($ndk.getUser({pubkey}))}
 
         if (!$userFollows.has(user.pubkey)) {
+            console.log("Following", currentFollows.size);
             $currentUser?.follow(user, currentFollows);
         } else {
             $currentUser?.unfollow(user, currentFollows);
@@ -29,13 +30,17 @@
     let following: boolean;
 
     $: following = $userFollows.has(user.pubkey);
+
+    let open = false;
 </script>
 
 {#if $currentUser?.pubkey !== user.pubkey}
-    <DropdownMenu.Root>
+    <DropdownMenu.Root bind:open>
         <DropdownMenu.Trigger>
             {#if !following}
-                <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-1" on:click={toggleFollow}>
+                <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-1" on:click={toggleFollow} on:mouseenter={() => {
+                    open = true;
+                }}>
                     <Plus class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
                     <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Follow</span>
                 </button>

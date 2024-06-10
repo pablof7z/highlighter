@@ -2,7 +2,7 @@
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
-	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, filterFromId, NIP33_A_REGEX } from "@nostr-dev-kit/ndk";
+	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, filterFromId, NIP33_A_REGEX, NDKRelay, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
@@ -51,9 +51,26 @@
         authed = true;
     });
 
+    const fetchEventFromRecentlyConnectedRelay = async (relay: NDKRelay) => {
+        console.log('fetching event from recently connected relay', relay.url, getFilter());
+        
+        const relaySet = new NDKRelaySet(new Set([relay]), $ndk);
+        const es = await $ndk.fetchEvents(getFilter(), { subId: 'with-item-fetcher-per-relay' }, relaySet);
+
+        for (const e of es) {
+            if (e.created_at! > (event?.created_at || 0)) {
+                console.log('found newer event on relay ' + relay.url, e.created_at);
+                event = e;
+            }
+        }
+    }
+
+    $ndk.pool.on("relay:ready", fetchEventFromRecentlyConnectedRelay);
+
     onDestroy(() => {
         userSubscription?.unref();
         events?.unsubscribe();
+        $ndk.pool.off("relay:ready", fetchEventFromRecentlyConnectedRelay);
     })
 
     function getFilter(): NDKFilter[] {

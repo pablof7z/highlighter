@@ -85,20 +85,20 @@
 
 	let finalizingLogin = false;
 
-	let shouldOpenWelcomeModal: boolean | undefined = undefined;
-	$: if (mounted && $userProfile && !$welcomeScreenSeen) {
-		const date = Math.floor(Date.now() / 1000) - 600;
-		if ($userProfile.created_at >= date) {
-			shouldOpenWelcomeModal = true;
-		} else {
-			// Not a new nostr user; no need to welcome them since they didn't create their account just now
-			$welcomeScreenSeen = true;
-		}
-	}
+	// let shouldOpenWelcomeModal: boolean | undefined = undefined;
+	// $: if (mounted && $userProfile && !$welcomeScreenSeen) {
+	// 	const date = Math.floor(Date.now() / 1000) - 600;
+	// 	if ($userProfile.created_at >= date) {
+	// 		shouldOpenWelcomeModal = true;
+	// 	} else {
+	// 		// Not a new nostr user; no need to welcome them since they didn't create their account just now
+	// 		$welcomeScreenSeen = true;
+	// 	}
+	// }
 
-	$: if (shouldOpenWelcomeModal) {
-		openModal(SignupModal, { mode: 'welcome' });
-	}
+	// $: if (shouldOpenWelcomeModal) {
+	// 	openModal(SignupModal, { mode: 'welcome' });
+	// }
 
 	$: if (mounted && !hasJwt) {
 		hasJwt = !!$jwt && document.cookie.includes('jwt=');

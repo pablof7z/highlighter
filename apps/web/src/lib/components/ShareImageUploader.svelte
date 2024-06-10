@@ -44,6 +44,8 @@
             url = u;
             const mediaEvent = uploader.mediaEvent();
 
+            mediaEvent.tag(article);
+
             // Add tags from the article to the media event
             if (addEventTagsToMedia) {
                 for (const tag of article.getMatchingTags("t")) {

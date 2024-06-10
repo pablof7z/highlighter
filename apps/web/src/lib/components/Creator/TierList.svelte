@@ -12,6 +12,10 @@
     import nip29 from '$lib/nip29';
 	import { defaultVerifierPubkey } from '$utils/const';
 	import currentUser from '$stores/currentUser';
+	import BlankState from "$components/PageElements/BlankState.svelte";
+	import Schedule from "$lib/illustrations/schedule.svelte";
+	import RadioButton from "$components/Forms/RadioButton.svelte";
+	import { Button } from "$components/ui/button";
 
     export let redirectOnSave: string | false = "/dashboard";
     export let usePresetButton = false;
@@ -187,15 +191,56 @@
         if (tier.dTag) deletedDtags.add(tier.dTag);
         tiers = tiers.filter((t) => t !== tier);
     }
+
+    let mode = "tiers";
+
+    function cont() {
+        tiers.push(new NDKSubscriptionTier($ndk));
+        tiers = tiers;
+        expandedTierIndex = 0;
+        
+        // openModal(TiersModal);
+    }
 </script>
 
 <div class="flex flex-col gap-4 items-stretch w-full">
     {#if tiers.length === 0}
-        <div class="alert alert-neutral">
-            <h1 class="text-lg py-12">
-                Create support tiers to allow your fans to support you!
+        <BlankState
+            cta="Continue"
+            on:click={cont}
+        >
+            <Schedule class="w-full h-[10rem] opacity-50" slot="illustration" />
+
+            <h1>
+                Let your fans support you
             </h1>
-        </div>
+
+            <p class="text-muted-foreground">
+                Via Highlighter, you can leverage special perks for your fans, such as exclusive content, or even better,
+                early-access to your content.
+            </p>
+
+            <div class="border border-border my-4 p-4 rounded">
+                <h3 class="text-left font-medium">
+                    Choose a way to get started
+                </h3>
+
+                <div class="flex flex-col gap-1 my-4">
+                    <RadioButton
+                        bind:currentValue={mode}
+                        value="tiers"
+                    >
+                        Setup subscription tiers
+                    </RadioButton>
+                    <RadioButton
+                        bind:currentValue={mode}
+                        value="donation"
+                    >
+                        Let people choose how much they want to pay
+                    </RadioButton>
+                </div>
+            </div>
+        </BlankState>
     {/if}
 
     <ul class="flex flex-col w-full gap-4">
@@ -243,34 +288,20 @@
             skipButtons
         }
     >
-        <button
-            class="button-black max-sm:w-full"
-            disabled={!canAddTier}
-            on:click={addTier}
-        >
+        <Button variant="secondary" disabled={!canAddTier} on:click={addTier}>
             <Plus class="w-5 h-5 mr-2" />
             Add Tier
-        </button>
+        </Button>
 
         <div class="flex flex-col sm:flex-row gap-4 max-sm:items-stretch justify-end items-stretch max-sm:w-full">
             {#if usePresetButton}
-                <button
+                <Button variant="secondary"> 
                     class="button-black flex flex-col font-medium items-center gap-0 px-4 max-sm:w-full py-3"
                     on:click={skip}
                 >
                     Skip using sample tiers for now
-                </button>
+                </Button>
             {/if}
-
-            <button class="button px-6" disabled={saving} on:click={() => save()}>
-                {#if saving}
-                    <div class="loading loading-sm"></div>
-                {:else if $$slots.saveButton}
-                    <slot name="saveButton" />
-                {:else}
-                    Save
-                {/if}
-            </button>
         </div>
     </div>
 

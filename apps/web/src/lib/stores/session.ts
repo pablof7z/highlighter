@@ -179,10 +179,10 @@ export const userSupport = writable<NDKEvent[]>([]);
 /**
  * The user's extended network
  */
-export const networkFollowsUpdatedAt = persist(
+export const sessionUpdatedAt = persist(
 	writable<number>(0),
 	createLocalStorage(),
-	'network-follows-updated-at'
+	'session-updated-at'
 )
 
 /**
@@ -203,6 +203,7 @@ export async function prepareSession(): Promise<void> {
 
 	return new Promise<void>((resolve) => {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
+		const $sessionUpdatedAt = alreadyKnowFollows ? get(sessionUpdatedAt) : undefined;
 
 		fetchData('user', $ndk, [$currentUser.pubkey], {
 			profileStore: userProfile,
@@ -226,7 +227,9 @@ export async function prepareSession(): Promise<void> {
 				NDKKind.CategorizedHighlightList,
 				NDKKind.BookmarkList,
 				NDKKind.CategorizedPeopleList,
-			]
+			],
+
+			since: $sessionUpdatedAt,
 		}).then(() => {
 			const $currentUserFollows = getStore(userFollows);
 
@@ -234,18 +237,22 @@ export async function prepareSession(): Promise<void> {
 
 			notificationsSubscribe($ndk, $currentUser);
 
+			const $userFollows = get(userFollows);
 			const $networkFollows = get(networkFollows);
-			const $networkFollowsUpdatedAt = get(networkFollowsUpdatedAt);
-			const twoWeeksAgo = Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 14;
+			const oneHourAgo = Math.floor(Date.now() / 1000) + 60 * 60;
 
-			if ($networkFollows.size < 1000 || $networkFollowsUpdatedAt < twoWeeksAgo) {
+			d(`tracking user follows %d`, $userFollows.size);
+			$ndk.outboxTracker!.trackUsers(Array.from($userFollows));
+
+			if ($networkFollows.size < 1000 || !$sessionUpdatedAt || $sessionUpdatedAt < oneHourAgo) {
 				const kind3RelaySet = NDKRelaySet.fromRelayUrls(["wss://purplepag.es"], $ndk);
 
 				fetchData('wot', $ndk, Array.from($currentUserFollows), {
 					followsStore: networkFollows,
-					closeOnEose: true
+					closeOnEose: true,
+					since: $sessionUpdatedAt,
 				}, kind3RelaySet).then(() => {
-					networkFollowsUpdatedAt.set(Math.floor(Date.now() / 1000));
+					sessionUpdatedAt.set(Math.floor(Date.now() / 1000));
 				})
 
 				fetchData('network-support', $ndk, Array.from($currentUserFollows), {
@@ -296,6 +303,11 @@ interface IFetchDataOptions {
 	extraKinds?: number[];
 	closeOnEose?: boolean;
 	waitUntilEoseToResolve?: boolean;
+
+	/**
+	 * Used to fetch events since a specific timestamp.
+	 */
+	since?: number;
 }
 
 /**
@@ -515,8 +527,6 @@ async function fetchData(
 			if (authorPubkeyLength < 5) authorPubkeyLength = 6;
 		}
 
-		const authorPrefixes = authors.map((f) => f.slice(0, authorPubkeyLength));
-
 		if (opts.profileStore) { kinds.push(NDKKind.Metadata); }
 
 		if (opts.userArticleCurationsStore) {
@@ -526,7 +536,7 @@ async function fetchData(
 		const filters: NDKFilter[] = [];
 
 		if (kinds.length > 0) {
-			filters.push({ kinds, authors: authorPrefixes, limit: 50 });
+			filters.push({ kinds, authors, limit: 50 });
 		}
 
 		if (opts.blossomStore) kinds.push(10063 as number);
@@ -539,21 +549,26 @@ async function fetchData(
 		}
 
 		if (opts.followsStore) {
-			filters.push({ kinds: [3], authors: authorPrefixes });
+			filters.push({ kinds: [3], authors });
 		}
 
 		if (opts.activeSubscriptionsStore) {
 			filters.push({
 				kinds: [NDKKind.GroupMembers],
 				authors: [creatorRelayPubkey],
-				'#p': authorPrefixes
+				'#p': authors
 			});
 		}
 
 		if (opts.supportStore) {
-			filters.push({ authors: authorPrefixes, kinds: [7001 as number] });
+			filters.push({ authors, kinds: [7001 as number] });
 		}
 
+		// if we have a since timestamp, we want to fetch events since that timestamp
+		if (opts.since) {
+			filters.forEach((filter) => { filter.since = opts.since; });
+		}
+		
 		const userDataSubscription = $ndk.subscribe(filters, {
 			closeOnEose: opts.closeOnEose!,
 			groupable: false,

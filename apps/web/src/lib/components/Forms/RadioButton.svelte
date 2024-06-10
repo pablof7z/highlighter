@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from "$components/ui/button";
 	import { Check } from "phosphor-svelte";
     import { createEventDispatcher } from "svelte";
 
@@ -17,32 +18,31 @@
     }
 </script>
 
-<div class="container"
-    class:selected
->
-    <button class="text-foreground text-base font-medium flex flex-row gap-2 items-center justify-between w-full {$$props.class??""}" on:click={onClick}>
-        <div class="flex flex-row items-start w-full">
-            <div class="flex flex-row gap-2 justify-stretch items-start w-full">
-                <div class="flex flex-col items-start grow w-full">
-                    <span><slot /></span>
-                    <div>
-                        <slot name="description" />
-                    </div>
+<Button variant="outline" class="
+    flex flex-row gap-2 items-center justify-between w-full {$$props.class??""}
+    hover:bg-accent/10 hover:text-accent-foreground
+    { selected ? "border-accent" : ""}
+" on:click={onClick}>
+    <div class="flex flex-row items-start w-full">
+        <div class="flex flex-row gap-2 justify-stretch items-start w-full">
+            <div class="flex flex-col items-start grow w-full">
+                <span><slot /></span>
+                <div>
+                    <slot name="description" />
                 </div>
-
-                {#if !$$props.skipCheck}
-                    <Check class="text-foreground {!selected ? 'hidden' : ''}" />
-                {/if}
             </div>
+
+            {#if !$$props.skipCheck}
+                <Check class="text-accent {!selected ? 'hidden' : ''}" />
+            {/if}
         </div>
-    </button>
-</div>
+    </div>
+</Button>
 
 <style lang="postcss">
     button {
-        @apply px-4 py-3;
         @apply self-stretch justify-between items-start flex-col inline-flex h-full;
-        @apply flex flex-col text-neutral-300
+        @apply flex flex-col rounded;
     }
 
     .container {
@@ -50,10 +50,6 @@
     }
 
     .container.selected {
-        @apply bg-white;
-    }
-
-    .container.selected span {
-        @apply text-black;
+        @apply border border-accent;
     }
 </style>

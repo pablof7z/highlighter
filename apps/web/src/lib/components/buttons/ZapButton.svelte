@@ -15,7 +15,7 @@
     }
 </script>
 
-<Button variant="outline" class="gap-2 {$$props.class??""}" on:click={open}>
+<Button forceNonMobile  variant="outline" class="gap-2 {$$props.class??""}" on:click={open}>
     <Lightning size={20} />
     Zap
     <span class="

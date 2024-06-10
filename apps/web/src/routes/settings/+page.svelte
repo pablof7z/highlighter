@@ -2,8 +2,6 @@
 	import SettingsMenu from '$components/Settings/Menu.svelte';
     import { page } from "$app/stores";
     import { pageHeader } from "$stores/layout";
-	import { NDKEvent } from '@nostr-dev-kit/ndk';
-	import { ndk } from '$stores/ndk';
     let id: string;
 
     $: id = $page.url.search?.substring(1);

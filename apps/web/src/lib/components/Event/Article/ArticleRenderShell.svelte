@@ -10,7 +10,7 @@
 
 <div dir="auto" class="w-full flex flex-col">
     <div class="
-        max-sm:-mx-4 flex relative {($$slots.image && !skipImage) ? 'max-sm:h-[90vh] min-h-[20vh] sm:h-[30vh]' : ""}
+        max-sm:-mx-4 flex relative {($$slots.image && !skipImage) ? 'max-sm:h-[90vh] min-h-[20vh] sm:h-[20rem] lg:h-[50vh]' : ""}
         {$$props.class??""}
     ">
         {#if !skipImage}
@@ -24,7 +24,7 @@
                     <slot name="title" />
                 </div>
             {/if}
-            <div class="text-xl text-foreground/70 font-normal lg:max-h-[6rem] overflow-y-auto scrollbar-hide" class:hidden={!$$slots.summary}>
+            <div class="text-xl text-foreground/70 font-normal lg:max-h-[10rem] overflow-y-auto scrollbar-hide" class:hidden={!$$slots.summary}>
                 <slot name="summary" />
             </div>
 

@@ -3,14 +3,11 @@
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { NDKEvent, NDKUser, NDKZap } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher, onMount } from "svelte";
-    import {requestProvider} from 'webln';
-    import QrCode from "svelte-qrcode";
 	import { creatorRelayPubkey } from "$utils/const";
 	import { Check } from "phosphor-svelte";
 	import Box from "$components/PageElements/Box.svelte";
 	import { nicelyFormattedSatNumber } from "$utils";
 	import { ndk } from "$stores/ndk";
-	import CopyButton from "$components/buttons/CopyButton.svelte";
 	import LnQrCode from "./LnQrCode.svelte";
 
     export let event: NDKEvent;

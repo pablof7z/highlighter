@@ -1,7 +1,5 @@
 <script lang="ts">
-    import UserProfile from '$components/User/UserProfile.svelte';
 	import { ndk } from "$stores/ndk.js";
-import currentUser from "$stores/currentUser.js";
 	import { NDKVideo, type NostrEvent } from "@nostr-dev-kit/ndk";
     import Page1 from "./VideoEditorPage/Page1.svelte";
 	import { type TierSelection, getTierSelectionFromAllTiers } from '$lib/events/tiers';

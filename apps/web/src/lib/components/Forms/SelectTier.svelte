@@ -104,6 +104,7 @@
 
                     {#if tier === "Free"}
                         <Button
+                            forceNonMobile
                             variant="outline" size="sm"
                             class="text-nowrap"
                             on:click={toggleOnlyFree}
@@ -117,7 +118,7 @@
             </li>
         {/each}
         <li class="mt-2">
-            <Button variant="secondary" on:click={addNewTier}>
+            <Button forceNonMobile variant="secondary" on:click={addNewTier}>
                 <Plus size={24} />
                 Add a new tier
             </Button>

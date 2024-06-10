@@ -50,7 +50,7 @@
 " {href} class:!cursor-default={skipLink}>
     {#if !grid && $currentUser && event.sig}
         <!-- Create a div so that clicks on the save button don't trigger the link -->
-        <SaveForLaterButton {event} class="absolute top-0 right-2" />
+        <!-- <SaveForLaterButton {event} class="absolute top-0 right-2" /> -->
     {/if}
     <a {href} class="
         flex-none overflow-hidden relative

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
+	import Name from "$components/User/Name.svelte";
 	import { ndk } from "$stores/ndk";
 	import { relaySetForEvent } from "$utils/event";
 	import { NDKEvent, NDKKind, NDKRelay, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
-	import { Name } from "drizzle-orm";
 	import { PaperPlaneTilt } from "phosphor-svelte";
 
     export let event: NDKEvent;

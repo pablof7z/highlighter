@@ -5,6 +5,7 @@
 	import { Warning } from "phosphor-svelte";
 	import { closeModal } from '$utils/modal';
 	import { slide } from "svelte/transition";
+	import { Button } from '$components/ui/button/index.js';
 
     export let canPublish: boolean | undefined = undefined;
 
@@ -116,17 +117,14 @@
             </div>
 
             {#if warning.link}
-            <div>
-                <button
-                    class="
-                        button-black min-w-[6rem]
-                        {!warning.showStopper ? 'button-black py-2 px-4' : ''}
-                    "
-                    on:click={warning.link.fn}
-                >
-                    {warning.link.text}
-                </button>
-            </div>
+                <div>
+                    <Button
+                        variant={warning.showStopper ? 'accent' : 'outline'}
+                        on:click={warning.link.fn}
+                    >
+                        {warning.link.text}
+                    </Button>
+                </div>
             {/if}
         </div>
     {/each}

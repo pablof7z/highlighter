@@ -12,16 +12,18 @@
 	import VideoView from "./VideoView.svelte";
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 	import { ndk } from "$stores/ndk";
+	import { page } from "$app/stores";
 
     export let event: NDKEvent;
     export let ignoreHeader: boolean = false;
 
     if (!ignoreHeader) {
-        $pageHeader ??= {};
-        $: $pageHeader.component = ItemHeader;
-        $: $pageHeader.props = {
-            item: event,
-            class: "max-w-[var(--content-focused-width)] mx-auto w-full"
+        $: if (event) $pageHeader = {
+            component: ItemHeader,
+            props: {
+                item: event,
+                class: "max-w-[var(--content-focused-width)] mx-auto w-full"
+            }
         }
     }
 
@@ -45,7 +47,7 @@
 {:else if !event}
     <Whoops message="Event has not been provided" devMessage="<ItemView /> component requires an event prop" />
 {:else if event.kind === NDKKind.ArticleCurationSet}
-    <ListShell list={NDKList.from(event)} />
+    <ListShell list={NDKList.from(event)} activeItemId={$page.params.subId} />
 {:else if event.kind === NDKKind.Text}
     <div class="discussion-wrapper">
         <EventWrapper

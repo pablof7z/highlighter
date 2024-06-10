@@ -1,6 +1,6 @@
 <script lang="ts">
-	import NewItemModal from './../../modals/NewItemModal.svelte';
-	import { event, event } from "$components/Feed/NoteOld.svelte";
+	import NewItemModal from '$modals/NewItemModal.svelte';
+	import { event } from "$components/Feed/NoteOld.svelte";
     import currentUser from "$stores/currentUser";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, NDKEventId, NDKKind } from "@nostr-dev-kit/ndk";

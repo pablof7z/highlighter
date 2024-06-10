@@ -11,7 +11,7 @@
 	import { ndk } from "$stores/ndk.js";
 	import Highlights from "$views/Home/Sections/Highlights.svelte";
 	import Articles from "$views/Home/Sections/Articles.svelte";
-	import StoreFeed from "$components/Feed/StoreFeed.svelte";
+	import Article from "$components/Grid/Article.svelte";
 
     $pageNavigationOptionsValue = "Home";
 
@@ -119,12 +119,13 @@
     {#if $featuredArticleTag}
         <WithItem tagId={$featuredArticleTag.articleTag} let:article>
             {#if article}
-                <FeaturedReads
+                <Article {article} wideView />
+                <!-- <FeaturedReads
                     {article}
                     highlights={$featuredArticleTag.highlights}
                     loadExtraHighlights={true}
                     skipZaps={true}
-                />
+                /> -->
             {/if}
         </WithItem>
     {/if}

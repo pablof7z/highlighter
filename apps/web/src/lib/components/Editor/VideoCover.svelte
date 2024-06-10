@@ -3,6 +3,11 @@
     import { status } from '$stores/post-editor';
 	import ChooseVideoThumbnail from '$components/Forms/ChooseVideoThumbnail.svelte';
     import createDebug from "debug";
+	import { ndk } from '$stores/ndk';
+	import { newToasterMessage } from '$stores/toaster';
+	import { Uploader } from '$utils/upload';
+	import { activeBlossomServer } from '$stores/session';
+	import { blob } from 'drizzle-orm/sqlite-core';
 
     export let videoFile: File | undefined = undefined;
     export let video: NDKVideo;
@@ -10,56 +15,27 @@
     const st = "Uploading thumbnail";
 
     const debug = createDebug("HL:video-uploader");
-
-    function thumbnailUploaded(e: CustomEvent<string>) {
-        const url = e.detail;
-        video.thumbnail = url;
-        video = video;
-    }
+    let progress: number | undefined;
 
     async function upload() {
         if (!selectedBlob) return;
 
-        const xhr = new XMLHttpRequest();
-
-        xhr.upload.addEventListener('progress', (event) => {
-            // if st is not in status, add it
-            if (!$status.some((s) => s === st)) $status.push(st);
-        });
-
-        xhr.addEventListener('load', async () => {
-            if (xhr.status >= 200 && xhr.status <= 202) {
-                const json = JSON.parse(xhr.responseText);
-                const {url} = json;
-
-                // remove from status
-                status.update((s) => s.filter((st) => st !== st));
-
-                video.thumbnail = url;
-            } else if (xhr.status === 402) {
-                newToasterMessage("Payment required to upload to your Satellite CDN", "error");
-                return;
-            } else {
-                console.error(`Failed to upload image: ${xhr.statusText}`);
-                newToasterMessage("Failed to upload image: " +xhr.status, "error")
-            }
-        });
-
-        xhr.addEventListener('error', (e) => {
-            console.log(e);
-            console.log(xhr)
-            console.error(`Failed to upload image: ${xhr.statusText}`);
-            newToasterMessage(`Failed to upload image: ${xhr.statusText}`, "error");
-        });
-
-        try {
-            const res = await nip96Upload(xhr, $ndk, selectedBlob, "nostr.build");
-            video.thumbnail = res.nip94_event?.tags.find(t => t[0] === "url")?.[1];
-            debug(video.thumbnail);
-        } catch (e) {
+        const uploader = new Uploader(selectedBlob, $activeBlossomServer);
+        if (!$status.some((s) => s === st)) $status.push(st);
+        uploader.onProgress = (p) => progress = p;
+        uploader.onUploaded = (url: string) => {
+            const mediaEvent = uploader.mediaEvent();
+            progress = undefined;
+            selectedBlob = undefined;
+            video.thumbnail = url;
+            status.update((s) => s.filter((st) => st !== st));
+        };
+        uploader.onError = (e) => {
             console.error(e);
-            newToasterMessage(`Failed to upload image: ${e}`, "error");
-        }
+            newToasterMessage("Failed to upload image: " +e, "error")
+            status.update((s) => s.filter((st) => st !== st));
+        };
+        uploader.start();
     }
 
     let uploadedBlob: Blob | undefined = undefined;
@@ -78,7 +54,6 @@
         <ChooseVideoThumbnail
             {videoFile}
             currentThumbnail={video.thumbnail}
-            on:uploaded={thumbnailUploaded}
             title={video.title??"Untitled"}
             content={video.content??""}
             duration={video.duration}

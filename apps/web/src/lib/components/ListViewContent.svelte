@@ -5,6 +5,8 @@
 	import { page } from '$app/stores';
 	import { onDestroy } from 'svelte';
 	import { ndk } from "$stores/ndk";
+	import currentUser from "$stores/currentUser";
+	import RelativeTime from "./PageElements/RelativeTime.svelte";
 
     export let list: NDKList;
     export let urlPrefix: string;
@@ -67,7 +69,7 @@
     </div>
 
     <div class="text-left font-light">
-        {#if list.pubkey === $user?.pubkey}
+        {#if list.pubkey === $currentUser?.pubkey}
             {#if editDescription === null}
                 <button
                     class="cursor-pointer w-full hover:bg-foreground/20"

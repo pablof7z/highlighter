@@ -23,8 +23,9 @@
 
     const rootTag = getRootTag(event);
     let rootEncode = rootTag ? encodeTag(rootTag) : "";
-
+    
     const replyTag = getReplyTag(event);
+    if (!rootEncode) rootEncode = replyTag ? encodeTag(replyTag) : "";
 
     if (rootTag ?? replyTag) {
         $ndk.fetchEventFromTag((replyTag ?? rootTag)!, subOpts).then((e: NDKEvent | null) => {

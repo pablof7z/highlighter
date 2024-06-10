@@ -31,7 +31,6 @@
     export let zapping = false;
 
     let showCustomAmountInput = false;
-    //let valueCustomAmount = ``
     let errorCustomAmount = ``
 
     $: isCustomAmountSelected = ![1000, 10000, 50000, 100000].includes(amount)
@@ -71,8 +70,12 @@
         }
 
         try {
+            console.log('zapSplits', zapSplits);
             for (const zapSplit of zapSplits) {
                 const satAmount = Math.round(amount * zapSplit[1] / totalSplitValue);
+
+                if (satAmount === 0) continue;
+                
                 event
                     .zap(satAmount * 1000, comment, [], $ndk.getUser({ pubkey: zapSplit[0] }))
                     .then((pr: string | null) => {
@@ -80,14 +83,21 @@
                             prs.push([pr, satAmount]);
                             prs = prs;
                         }
+                    })
+                    .catch((e: Error) => {
+                        console.error(e);
+                        newToasterMessage(e.message, "error");
+                    })
+                    .finally(() => {
+                        zapping = false;
                     });
             }
 
             event.ndk = $ndk;
         } catch (e) {
+            console.error(e);
             newToasterMessage(e.message, "error");
         } finally {
-            zapping = false;
             zapButtonEnabled = true;
         }
     }
@@ -169,11 +179,14 @@
                     </div>
 
                     <div class="flex flex-col w-full justify-center items-center pt-4 gap-4">
-                        {#if ![1000, 10000, 50000, 100000].includes(amount)}
+                        {#if isCustomAmountSelected}
                             <div class="flex flex-col w-full justify-center items-center">
                                 <Input
                                     placeholder="Zap custom amount..."
                                     bind:value={customAmount}
+                                    on:change={() => {
+                                        amount = parseInt(customAmount);
+                                    }}
                                 />
                             </div>
                             {#if errorCustomAmount}

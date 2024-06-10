@@ -8,11 +8,25 @@
 	import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
 	import { loginState } from '$stores/session';
 	import { bunkerNDK, ndk } from '$stores/ndk';
-	import { Input } from '$components/ui/select';
+	import { Input } from '$components/ui/input';
+	import { NavigationOption } from '../../app';
 
     export let value: string = "";
     export let nsec: string = "";
     export let npub = "";
+    export let actionButtons: NavigationOption[] = [];
+    export let mode: string;
+
+    onMount(() => {
+        actionButtons = [
+            { name: "Signup", fn: signup, buttonProps: { variant: 'secondary', size: 'lg' } },
+            { name: "Continue", fn: login, buttonProps: { variant: 'accent', size: 'lg' } },
+        ]
+    })
+
+    function signup() {
+        mode = "signup";
+    }
 
     let blocking = false;
     let advanced = false;
@@ -33,21 +47,24 @@
     }
 
     async function loginWithNsec() {
-        const pk = nip19.decode(nsec);
-        if (!pk.data) {
-            error = "Invalid nsec";
-            return;
-        }
-        const key = pk.data as string;
-        const signer = new NDKPrivateKeySigner(key);
-        const user = await signer.user();
-        $ndk.signer = signer;
-        loginMethod.set('pk');
-        privateKey.set(key);
+        try {
+            const pk = nip19.decode(nsec);
+            if (!pk.data) {
+                error = "Invalid nsec";
+                return;
+            }
+            const key = pk.data as string;
+            const signer = new NDKPrivateKeySigner(key);
+            console.log(signer);
+            const user = await signer.user();
+            $ndk.signer = signer;
+            loginMethod.set('pk');
+            privateKey.set(key);
 
-        _login('pk', user.pubkey);
-        console.log(user.pubkey);
-        closeModal();
+            _login('pk', user.pubkey);
+            console.log(user.pubkey);
+            closeModal();
+        } catch {}
     }
 
     async function loginNip46(token: string) {
@@ -137,6 +154,8 @@
 
         identifyLoginType();
 
+        console.log({loginType})
+
         switch (loginType) {
             case 'npub': {
                 loginWithNpub();
@@ -172,66 +191,30 @@
             loginType = 'nip46';
         } else if (value.startsWith("nsec")) {
             loginType = 'pk';
+            nsec = value;
         }
     }
 </script>
 
-<div class="flex flex-col gap-4">
-    {#if !advanced}
-        <div class="w-full" transition:slide>
-            <div class="w-full flex flex-col gap-4">
-                <div class="flex-col justify-start items-start gap-3 inline-flex">
-                    <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                        <div class="text-foreground text-base font-medium leading-normal">Username / Nostr address</div>
-                        <Input bind:value type="text" placeholder="eg. bob@nostr.me" on:keyup={identifyLoginType} />
-                    </div>
-                </div>
-
-                {#if error}
-                    <span class="text-danger">{error}</span>
-                {:else if loginStatus}
-                    <div class="text-sm">{loginStatus}</div>
-                {:else}
-                    <div class="text-sm">
-                        Enter a nostr username, your nsec (private key) or your npub to login in read-only mode.
-                    </div>
-                {/if}
-
-                <button class="button button-primary py-2 group" on:click={login}>
-                    {#if !blocking}
-                        Continue
-                    {:else}
-                        Cancel
-                        <div class="loading loading-sm ml-4"></div>
-                    {/if}
-                </button>
-
-                <button class="text-foreground text-sm text-opacity-50" on:click={() => advanced = !advanced}>
-                    Advanced
-                </button>
-            </div>
-        </div>
-    {:else}
-    <div class="w-full" transition:slide>
+<div class="flex flex-col gap-4 p-4">
+    <div class="w-full">
         <div class="w-full flex flex-col gap-4">
-            <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                <div class="text-foreground text-base font-medium leading-normal">Browser Extension Login</div>
-                <button class="button py-3 group w-full" disabled={!window.nostr}>
-                    Continue
-                </button>
-                {#if !window.nostr}
-                    <span class="text-xs text-opacity-50">
-                        You need to install a Nostr browser extension to use this method.
-                    </span>
-                {/if}
+            <div class="flex-col justify-start items-start gap-3 inline-flex">
+                <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
+                    <div class="text-foreground text-base font-medium leading-normal">Username / Nostr address</div>
+                    <Input bind:value type="text" placeholder="eg. bob@nostr.me" on:keyup={identifyLoginType} />
+                </div>
             </div>
 
-            <div class="divider my-0"></div>
-
-            <button class="text-foreground text-sm text-opacity-50" on:click={() => advanced = !advanced}>
-                Back
-            </button>
+            {#if error}
+                <span class="text-danger">{error}</span>
+            {:else if loginStatus}
+                <div class="text-sm">{loginStatus}</div>
+            {:else}
+                <div class="text-sm text-muted-foreground">
+                    Enter a nostr username, your nsec (private key) or your npub to login in read-only mode.
+                </div>
+            {/if}
         </div>
     </div>
-    {/if}
 </div>

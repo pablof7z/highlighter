@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
-	import ImageUploader from "$components/Forms/ImageUploader.svelte";
 	import { Image, Shuffle } from 'phosphor-svelte';
 	import Button from '$components/ui/button/button.svelte';
+	import BlossomUpload from '$components/buttons/BlossomUpload.svelte';
 
     export let article: NDKArticle | undefined = undefined;
     export let video: NDKVideo | undefined = undefined;
@@ -47,18 +47,15 @@
             </div>
 
             <div class="relative">
-                <ImageUploader
-                    wrapperClass="w-full"
-                    bind:url={image}
-                    alwaysUseSlot={true}
-                    let:onOpen
+                <BlossomUpload
+                    class="w-full"
                     on:uploaded={uploaded}
                 >
-                    <Button variant="secondary" class="py-4 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit" on:click={onOpen}>
+                    <Button variant="secondary" class="py-4 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit">
                         <Image class="w-12 h-12" />
                         Upload a cover image
                     </Button>
-                </ImageUploader>
+                </BlossomUpload>
             </div>
 
             <Button variant="secondary" class="py-4 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit" on:click={randomImage}>

@@ -65,7 +65,7 @@ import ModalShell from "$components/ModalShell.svelte";
                         <img use:blossom src={ userProfile.banner || `https://picsum.photos/800/600?random=${userProfile.name}` } class="w-full h-full object-cover absolute opacity-50" />
                     {/if}
 
-                    <Avatar user={user} class="w-24 h-24" />
+                    <Avatar user={user} class="w-24 h-24 z-10" />
                 </div>
             </div>
         {:else}

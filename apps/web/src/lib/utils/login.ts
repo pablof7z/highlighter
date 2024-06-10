@@ -303,9 +303,9 @@ export async function fillInSkeletonProfile(profile: NDKUserProfile) {
 
 	followList.publish().catch(e => console.error('Failed to publish follow list', e));
 	
-	const $user = get(currentUser);
-	$user.profile = profile;
-    const r = $user.publish().catch(e => console.error('Failed to publish user profile', e));
+	const $currentUser = get(currentUser);
+	$currentUser.profile = profile;
+    const r = $currentUser.publish().catch(e => console.error('Failed to publish user profile', e));
 	console.log('publish user profile', r);
 
 	const relayList = new NDKRelayList($ndk);

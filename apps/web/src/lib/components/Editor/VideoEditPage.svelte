@@ -42,7 +42,7 @@
     }
 </script>
 
-<UserProfile user={$user} let:authorUrl>
+<UserProfile user={$currentUser} let:authorUrl>
     <Shell type="video" {video}>
         <VideoEditor bind:video bind:videoFile />
         <div slot="meta">

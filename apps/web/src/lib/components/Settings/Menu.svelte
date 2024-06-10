@@ -21,12 +21,6 @@
     />
 
     <div class="flex max-sm :flex-col flex-row gap-4 items-stretch w-full mb-10">
-        <Button on:click={toggleMode} variant="outline" size="icon">
-            <Sun class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span class="sr-only">Toggle theme</span>
-        </Button>
-        
         <Button href={authorUrl} variant="outline">
             View Profile
         </Button>
@@ -75,6 +69,20 @@
                     <CaretRight class="w-5 h-5" />
                 </a>
             </li>
+        </ul>
+    </section>
+
+    <section class="w-full text-muted-foreground">
+        <div class="uppercase tracking-wider">
+            Appearence
+        </div>
+
+        <ul class="w-full">
+            <Button on:click={toggleMode} variant="outline" size="icon">
+                <Sun class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span class="sr-only">Toggle theme</span>
+            </Button>
         </ul>
     </section>
 

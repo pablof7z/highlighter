@@ -63,6 +63,6 @@
     }
 
     section {
-        @apply bg-foreground/10 rounded p-4 flex flex-col gap-6;
+        @apply border border-border rounded p-4 flex flex-col gap-6;
     }
 </style>

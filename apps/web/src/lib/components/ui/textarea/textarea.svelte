@@ -2,6 +2,7 @@
 	import type { HTMLTextareaAttributes } from "svelte/elements";
 	import type { TextareaEvents } from "./index.js";
 	import { cn } from "$lib/utils.js";
+	import { createEventDispatcher } from "svelte";
 
 	type $$Props = HTMLTextareaAttributes;
 	type $$Events = TextareaEvents;
@@ -13,6 +14,16 @@
 	// Workaround for https://github.com/sveltejs/svelte/issues/9305
 	// Fixed in Svelte 5, but not backported to 4.x.
 	export let readonly: $$Props["readonly"] = undefined;
+
+	const dispatch = createEventDispatcher();
+	
+	function keydown(event: KeyboardEvent) {
+		if (event.key === "Enter" && event.metaKey) {
+			dispatch("submit");
+		} else {
+			dispatch("keydown", event);
+		}
+	}
 </script>
 
 <textarea
@@ -26,7 +37,7 @@
 	on:change
 	on:click
 	on:focus
-	on:keydown
+	on:keydown={keydown}
 	on:keypress
 	on:keyup
 	on:mouseover

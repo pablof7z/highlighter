@@ -75,9 +75,9 @@
 <div class="w-full flex flex-col max-sm:min-h-[100dvh]">
     {#if replyTo}
         <UserProfile user={replyTo.author} bind:userProfile={replyToUserProfile}>
-            <div class="text-xs translate-y-2 my-2">
+            <div class="text-xs translate-y-2 mt-2 mb-4 text-muted-foreground">
                 Replying to
-                <Name user={replyTo.author} userProfile={replyToUserProfile} class="text-accent" />
+                <Name user={replyTo.author} userProfile={replyToUserProfile} />
             </div>
         </UserProfile>
     {/if}

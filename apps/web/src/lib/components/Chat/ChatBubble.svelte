@@ -65,20 +65,17 @@
     <a href={authorUrl} class="chat-image">
         <Avatar user={author} {userProfile} {fetching} size="small" />
     </a>
-    <div
-        class="
-            bubble-container rounded flex items-stretch justify-stretch w-fit max-w-[90%] chat-bubble !p-0
-            {isGradient ? "sm:min-w-[28rem]" : ""}
-        "
-        class:bg-gradient={isGradient}
-        class:!bg-foreground={!isGradient}
-    >
+    <div class="
+        bubble-container rounded flex items-stretch justify-stretch w-fit max-w-[90%]
+        bg-secondary border border-border p-4
+        {isGradient ? "sm:min-w-[28rem]" : ""}
+    ">
         <div class="
-            chat-bubble w-full flex-1 grow !max-w-none
-            {isGradient ? "!bg-foreground/10/50 m-[1px]" : ""}]
+            w-full flex-1 grow !max-w-none
+            {isGradient ? "bg-secondary m-[1px]" : "bg-secondary"}]
         ">
             <div class="chat-header">
-            <Name {userProfile} {fetching} />
+                <Name {userProfile} {fetching} />
                 <time class="text-xs opacity-50">
                     <RelativeTime timestamp={event.created_at*1000} />
                 </time>
@@ -125,9 +122,5 @@
 <style lang="postcss">
     .chat-header {
         @apply flex items-center justify-between mb-2 text-xs gap-6;
-    }
-
-    .chat-bubble {
-        @apply bg-white/10;
     }
 </style>

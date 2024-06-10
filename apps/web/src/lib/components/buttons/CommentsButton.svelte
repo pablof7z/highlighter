@@ -9,7 +9,6 @@
 	import ButtonWithCount from "./ButtonWithCount.svelte";
 
     export let event: NDKEvent;
-    export let urlPrefix: string | undefined = undefined;
     export let prefetchedReplies: Readable<NDKEvent[]> | undefined = undefined;
     export let label: string | undefined = undefined;
 

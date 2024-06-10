@@ -80,7 +80,7 @@
     <div class="flex" slot="footerExtra">
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-                <Button variant="outline" size="sm" class="flex flex-row items-center gap-1 text-xs">
+                <Button variant="ghost" size="sm" class="flex flex-row items-center gap-1 text-xs">
                     <Avatar user={dvmUser} type="circle" size="tiny" />
                     via <Name user={dvmUser} />
                 </Button>
@@ -115,10 +115,10 @@
             <Input type="datetime-local" class="justify-center text-lg font-light" bind:value={publishAtVal} />
 
             {#if action}
-                <span class="text-sm text-muted-foreground">
+                <div class="text-base text-center text-muted-foreground border my-4 py-3">
                     {action}
                     <RelativeTime timestamp={publishAt} class="text-foreground" />
-                </span>
+                </div>
             {/if}
         </div>
     {/if}

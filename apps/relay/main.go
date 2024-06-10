@@ -94,7 +94,7 @@ func main() {
 			fmt.Println("EVENT", event)
 			return false, ""
 		},
-		policies.PreventTooManyIndexableTags(10, []int{39002}, nil),
+		policies.PreventTooManyIndexableTags(10, []int{30023, 39002}, nil),
 		// func(ctx context.Context, event *nostr.Event) (reject bool, msg string) {
 		// 	if event.Kind != 0 {
 		// 		policies.PreventTimestampsInThePast(60)

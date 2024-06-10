@@ -4,7 +4,7 @@
 	import { nicelyFormattedSatNumber } from "$utils";
 	import { Check } from "phosphor-svelte";
 	import { createEventDispatcher, onMount } from "svelte";
-    import QrCode from "svelte-qrcode";
+    import QRCode from "@bonosoft/sveltekit-qrcode"
 	import { requestProvider } from "webln";
 
     export let pr: string;
@@ -45,7 +45,7 @@
 
 {#if !paid}
     <div class="flex flex-col gap-2">
-        <QrCode value={pr} color="#444444" size={size.toString()} />
+        <QRCode content={`lightning:${pr}`} color="#444444" size={size.toString()} />
         <CopyButton label={pr} data={pr} class="truncate max-w-[350px] border border-border rounded-full p-3 font-mono" />
 
         <Button on:click={pay}>
