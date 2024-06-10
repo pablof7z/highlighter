@@ -18,7 +18,7 @@ if (relays) {
     relayList = JSON.parse(relays);
 }
 
-export const defaultRelays = [
+export const explicitRelayUrls = [
     'wss://nos.lol/',
     'wss://relay.noswhere.com/',
     'wss://relay.primal.net/',
@@ -27,13 +27,7 @@ export const defaultRelays = [
     'wss://purplepag.es/',
 ];
 
-// if (!relayList || !Array.isArray(relayList) || relayList.length === 0) {
-    relayList = defaultRelays;
-// }
-    //
-
 const _ndk: NDKSvelte = new NDKSvelte({
-    explicitRelayUrls: relayList,
     enableOutboxModel: true,
 }) as NDKSvelte;
 

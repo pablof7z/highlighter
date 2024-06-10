@@ -63,6 +63,13 @@
 
     export let hTag = op.tagValue("h");
 
+    let eventEncoded: string;
+    try {
+        eventEncoded = event.encode();
+    } catch {
+        eventEncoded = "";
+    }
+
     if (!urlPrefix) {
         if (isMobileBuild()) urlPrefix = "/mobile/view?eventId=";
         else urlPrefix = "/e/";
@@ -352,7 +359,7 @@
                         {/if}
                         <!-- Content -->
 
-                        <a href="{urlPrefix}{event.encode()}" class="mt-2 event-wrapper--content" on:click={noteClicked}>
+                        <a href="{urlPrefix}{eventEncoded}" class="mt-2 event-wrapper--content" on:click={noteClicked}>
                             {#if $$slots.default}
                                 <slot />
                             {:else if event.kind === NDKKind.Highlight}
@@ -494,7 +501,7 @@
             {/each}
         </div>
     {:else}
-        <a href="{urlPrefix}{event.encode()}" class="p-4">
+        <a href="{urlPrefix}{eventEncoded}" class="p-4">
             <div class="text-xs text-foreground/50">
                 View discussion
                 <CaretRight class="w-4 h-4 inline-block" />

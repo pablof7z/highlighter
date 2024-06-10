@@ -79,7 +79,6 @@
             hasFocus = false;
             await event.sign();
             event.publish(relaySet);
-            console.log('dispatch', event.rawEvent(), event.encode());
             dispatch("publish", event);
 
             // reset

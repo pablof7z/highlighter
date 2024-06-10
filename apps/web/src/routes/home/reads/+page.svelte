@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKKind } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { layoutMode } from "$stores/layout";
 	import { onDestroy } from "svelte";
 	import StoreGrid from "$components/Grid/StoreGrid.svelte";
@@ -12,7 +12,7 @@
 
     const articles = $ndk.storeSubscribe(
         { kinds: [NDKKind.Article], limit: 200 },
-        { subId: 'home-articles' },
+        { subId: 'home-articles', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
         NDKArticle
     );
 
