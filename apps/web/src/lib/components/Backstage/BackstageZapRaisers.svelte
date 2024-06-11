@@ -12,7 +12,7 @@
         Zap Goals
     </div>
 
-    <div class="text-sm backstage-box-container !p-4">
+    <div class="text-sm">
         {#if user.pubkey === $currentUser?.pubkey}
             Not enabled in your profile yet.
         {:else}

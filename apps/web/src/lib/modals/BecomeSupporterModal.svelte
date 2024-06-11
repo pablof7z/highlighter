@@ -20,7 +20,6 @@
     import createDebug from 'debug';
     import {requestProvider} from 'webln';
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
-	import RadioButton from '$components/Forms/RadioButton.svelte';
 	import { createSubscriptionEvent } from '$components/Payment/subscription-event';
 	import ManualPayment from '$components/Payment/ManualPayment.svelte';
 	import currentUser from '$stores/currentUser';

@@ -8,13 +8,13 @@
 	import { CardsThree, ChatCircle, BookOpen, BookmarkSimple, Recycle, Repeat, Export, Lightning, Watch, YoutubeLogo } from "phosphor-svelte";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
-	import { pageNavigationOptions } from "$stores/layout";
 	import { appMobileView } from "$stores/app";
 	import { openModal } from "$utils/modal";
 	import BookmarkButton from '$components/buttons/BookmarkButton.svelte';
 	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
 	import { userGenericCuration } from '$stores/session';
 	import ZapModal from '$modals/ZapModal.svelte';
+	import ToggleDark from '$components/buttons/ToggleDark.svelte';
 
     export let event: NDKEvent;
     export let urlPrefix: string;
@@ -23,13 +23,13 @@
         { kinds: [1, 12, 9735, 6, 16], ...event.filter() },
     )
 
-    $pageNavigationOptions = [];
-
     let options: NavigationOption[] = [];
 
     $: {
         options = [];
 
+        options.push({ component: { component: ToggleDark }});
+        
         if (event.kind === NDKKind.Article)
             options.push({ name: $appMobileView ? "Read" : undefined, value: 'article', href: urlPrefix, icon: BookOpen })
         else if (event.kind === NDKKind.HorizontalVideo)
@@ -81,7 +81,7 @@
         flex justify-between items-stretch
         {$appMobileView ? "flex-col-reverse" : "flex-row"}
     ">
-        <HorizontalOptionsList {options} class="flex gap-1 !text-sm py-2" />
+        <HorizontalOptionsList {options} class="mobile-nav responsive-padding flex gap-1 !text-sm py-2" />
 
         <div class="flex flex-row gap-0 items-stretch max-sm:justify-between max-sm:grayscale-20">
             <BookmarkButton

@@ -1,13 +1,10 @@
 <script lang="ts">
-	import Carousel from "$components/Page/Carousel.svelte";
-	import { NDKArticle, NDKHighlight, NDKSubscriptionCacheUsage, NDKKind, NDKTag, NDKUserProfile, NDKList } from "@nostr-dev-kit/ndk";
-    import Highlight from "$components/Highlight.svelte";
+	import { NDKArticle, NDKUserProfile, NDKList } from "@nostr-dev-kit/ndk";
 	import { urlFromEvent } from "$utils/url";
-	import { appMobileView } from "$stores/app";
-	import { Chip } from "konsta/svelte";
-	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import { onDestroy } from "svelte";
     import Article from '$components/List/Article.svelte';
+	import { ndk } from "$stores/ndk";
+	import { Name } from "drizzle-orm";
 
     export let articleList: NDKList;
     export let authorUrl: string | undefined = undefined;

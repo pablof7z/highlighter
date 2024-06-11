@@ -18,7 +18,7 @@
         { authors: [$currentUser.pubkey], limit: 10 },
         { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
         NDKRelaySet.fromRelayUrls([
-            "wss://purplepag.es/", "wss://profiles.nos.lol", "wss://relay.damus.io", "wss://relay.primal.net"
+            "wss://purplepag.es/", "wss://relay.damus.io", "wss://relay.primal.net"
         ], $ndk)
     ).then((events) => {
         const cutOff = Math.floor(Date.now() / 1000) - 3600;

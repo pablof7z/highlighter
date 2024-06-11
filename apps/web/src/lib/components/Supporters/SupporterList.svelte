@@ -11,6 +11,7 @@
 	import { derived, type Readable } from "svelte/store";
 	import SupporterListItem from './SupporterListItem.svelte';
 	import { getDefaultRelaySet } from '$utils/ndk';
+	import { ndk } from "$stores/ndk";
 
     export let user: NDKUser;
 

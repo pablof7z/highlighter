@@ -13,3 +13,9 @@
 [submodule "apps/relay/go-nostr"]
 	path = apps/relay/go-nostr
 	url = https://github.com/pablof7z/go-nostr
+[submodule "packages/ndk"]
+	path = packages/ndk
+	url = git@github.com:nostr-dev-kit/ndk.git
+[submodule "packages/konsta"]
+	path = packages/konsta
+	url = https://github.com/konstaui/konsta

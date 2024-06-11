@@ -138,7 +138,7 @@
                     {autofocus}
                     allowMarkdown={false}
                     on:submit={publish}
-                    class="{
+                    class="p-4 {
                         $$props.editorClass ? $$props.editorClass : (
                             `text-foreground ${(
                                 isCollapsed ? "sm:min-h-[7rem]" : "sm:min-h-[10rem] flex-grow"

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { pageHeader, pageHeaderComponent, pageNavigationOptions } from '$stores/layout';
+    import { pageHeader } from '$stores/layout.js';
 	import Avatar from '$components/User/Avatar.svelte';
     import { Block, Icon, Link, Navbar, NavbarBackLink, Segmented, SegmentedButton, Toolbar } from 'konsta/svelte';
     import currentUser, { isGuest } from "$stores/currentUser";
@@ -110,29 +110,32 @@
     let _title = title;
     let subnavbarEl: HTMLElement;
 
-    $: if ($pageHeader?.subNavbarOptions?.length) {
-        if (scrollingDown) {
-            _title = $pageHeader.subNavbarOptions.find(option => option.value === $pageHeader.subNavbarValue)?.name ?? title!
-            if (subnavbarEl) {
-                subnavbarEl.classList.add('-translate-y-full', 'opacity-0')
-                subnavbarEl.style.height = '0px';
+    $: {
+            if ($pageHeader?.subNavbarOptions?.length) {
+            if (scrollingDown) {
+                _title = $pageHeader.subNavbarOptions.find(option => option.value === $pageHeader.subNavbarValue)?.name ?? title!
+                if (subnavbarEl) {
+                    subnavbarEl.classList.add('-translate-y-full', 'opacity-0')
+                    subnavbarEl.style.height = '0px';
+                }
+            } else {
+                _title = title!;
+                if (subnavbarEl) {
+                    subnavbarEl.classList.remove('-translate-y-full', 'opacity-0')
+                    subnavbarEl.style.height = 'auto';
+                }
             }
-        } else {
-            _title = title!;
-            if (subnavbarEl) {
-                subnavbarEl.classList.remove('-translate-y-full', 'opacity-0')
-                subnavbarEl.style.height = 'auto';
-            }
+            _title ??= "";
         }
-        _title ??= "";
+
+        if ($pageHeader?.title) _title = $pageHeader?.title;
     }
 
     let withSubnavbar = false;
 
     $: withSubnavbar = !!(
         $pageHeader?.component ||
-        ($pageHeader?.subNavbarOptions && $pageHeader?.subNavbarOptions.length > 0) ||
-        $pageNavigationOptions?.length > 0
+        ($pageHeader?.subNavbarOptions && $pageHeader?.subNavbarOptions.length > 0)
     );
 
     afterUpdate(() => {
@@ -146,120 +149,113 @@
 </script>
 
 {#if mounted}
-{#if $pageHeader?.component}
-    <div class="fixed top-0 w-full z-50 safe pl-2-safe pr-2-safe bg-ios-light-surface-2 dark:bg-ios-dark-surface-2 hairline-b" bind:this={navbar}>
+    {#if $pageHeader?.component}
         <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
-    </div>
-{:else if withSubnavbar}
-    <Navbar title={_title} {subtitle} bind:this={navbar}>
-        <svelte:fragment slot="left">
-            {#if $pageHeader?.left}
-                {#if $pageHeader.left.component}
-                    <svelte:component this={$pageHeader.left.component.component} {...$pageHeader.left.component.props} />
-                {:else if $pageHeader?.left?.url}
-                    <NavbarBackLink
-                        onClick={() => {
-                            if ($pageHeader?.left?.url) {
-                                goto($pageHeader.left.url)
-                            } else {
-                                window.history.back()
-                            }
-                        }}
-                    />
-                {/if}
-            {:else}
-                {#if $currentUser}
-                    <Link onClick={() => userPanelOpened = true}>
-                        <Avatar user={$currentUser} size="small" class="flex-none" />
-                    </Link>
-                {:else}
-                    <Link onClick={() => openModal(SignupModal)}>
-                        <UserCircle class="w-6 h-6 mr-2" />
-                        Login
-                    </Link>
-                {/if}
-            {/if}
-        </svelte:fragment>
-
-        <svelte:fragment slot="right">
-            {#if $pageHeader?.right}
-                <Link onClick={$pageHeader?.right?.fn}>
-                    {#if $pageHeader?.right?.label}
-                        {$pageHeader?.right?.label}
+    {:else if withSubnavbar}
+        <Navbar title={_title} {subtitle} bind:this={navbar} subnavbarClass="!px-0 responsive-scrollarea-padding">
+            <svelte:fragment slot="left">
+                {#if $pageHeader?.left}
+                    {#if $pageHeader.left.component}
+                        <svelte:component this={$pageHeader.left.component.component} {...$pageHeader.left.component.props} />
+                    {:else if $pageHeader?.left?.url}
+                        <NavbarBackLink
+                            onClick={() => {
+                                if ($pageHeader?.left?.url) {
+                                    goto($pageHeader.left.url)
+                                } else {
+                                    window.history.back()
+                                }
+                            }}
+                        />
                     {/if}
-                    <svelte:component this={$pageHeader.right.icon} class="w-6 h-6 mr-2 inline" />
-                </Link>
-            {:else if $pageHeader?.searchBar}
-                <Link href="/search">
-                    <MagnifyingGlass class="w-6 h-6" />
-                </Link>
-            {/if}
-        </svelte:fragment>
+                {:else}
+                    {#if $currentUser}
+                        <Link onClick={() => userPanelOpened = true}>
+                            <Avatar user={$currentUser} size="small" class="flex-none" />
+                        </Link>
+                    {:else}
+                        <Link onClick={() => openModal(SignupModal)}>
+                            <UserCircle class="w-6 h-6 mr-2" />
+                            Login
+                        </Link>
+                    {/if}
+                {/if}
+            </svelte:fragment>
 
-        <svelte:fragment slot="subnavbar">
-            <div bind:this={subNavbar} class="flex flex-row items-end gap-0 overflow-y-hidden subnavbar">
+            <svelte:fragment slot="right">
+                {#if $pageHeader?.right}
+                    <Link onClick={$pageHeader?.right?.fn}>
+                        {#if $pageHeader?.right?.label}
+                            {$pageHeader?.right?.label}
+                        {/if}
+                        <svelte:component this={$pageHeader.right.icon} class="w-6 h-6 mr-2 inline" />
+                    </Link>
+                {:else if $pageHeader?.searchBar}
+                    <Link href="/search">
+                        <MagnifyingGlass class="w-6 h-6" />
+                    </Link>
+                {/if}
+            </svelte:fragment>
+
+            <div slot="subnavbar" bind:this={subNavbar} class="flex flex-row items-end gap-0 overflow-y-hidden subnavbar scrollbar-hide">
                 {#if $pageHeader?.component}
                     <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
                 {:else if $pageHeader?.subNavbarOptions}
                     <HorizontalOptionsList
                         options={$pageHeader.subNavbarOptions}
                         bind:value={$pageHeader.subNavbarValue}
-                        class="py-2 {scrollingDown ? '' : ''}"
+                        class="py-2 responsive-padding {scrollingDown ? '' : ''}"
                     />
-                {:else if $pageNavigationOptions && $pageNavigationOptions.length > 0}
-                    <HorizontalOptionsList options={$pageNavigationOptions} class="{scrollingDown ? 'text-sm' : 'text-sm'}" />
                 {/if}
             </div>
-        </svelte:fragment>
-    </Navbar>
-{:else}
-    <Navbar title={_title} {subtitle}>
-        <svelte:fragment slot="left">
-            {#if $pageHeader?.left}
-                {#if $pageHeader.left.component}
-                    <svelte:component this={$pageHeader.left.component.component} {...$pageHeader.left.component.props} />
-                {:else}
-                    <NavbarBackLink
-                        onClick={() => {
-                            console.log('back', $pageHeader?.left?.url)
-                            if ($pageHeader?.left?.url) {
-                                goto($pageHeader.left.url)
-                            } else {
-                                window.history.back()
-                            }
-                        }}
-                    />
-                {/if}
-            {:else}
-                {#if $currentUser}
-                    <Link onClick={() => userPanelOpened = true}>
-                        <Avatar user={$currentUser} size="small" class="flex-none" />
-                    </Link>
-                {:else}
-                    <Link onClick={() => openModal(SignupModal)}>
-                        <UserCircle class="w-6 h-6 mr-2" />
-                        Login
-                    </Link>
-                {/if}
-            {/if}
-        </svelte:fragment>
-
-        <svelte:fragment slot="right">
-            {#if $pageHeader?.right}
-                <Link onClick={$pageHeader.right.fn}>
-                    {#if $pageHeader.right.label}
-                        {$pageHeader.right.label}
+        </Navbar>
+    {:else}
+        <Navbar title={_title} {subtitle}>
+            <svelte:fragment slot="left">
+                {#if $pageHeader?.left}
+                    {#if $pageHeader.left.component}
+                        <svelte:component this={$pageHeader.left.component.component} {...$pageHeader.left.component.props} />
+                    {:else}
+                        <NavbarBackLink
+                            onClick={() => {
+                                if ($pageHeader?.left?.url) {
+                                    goto($pageHeader.left.url)
+                                } else {
+                                    window.history.back()
+                                }
+                            }}
+                        />
                     {/if}
-                    <svelte:component this={$pageHeader.right.icon} class="w-6 h-6 mr-2 inline" />
-                </Link>
-            {:else if $pageHeader?.searchBar}
-                <Link href="/search">
-                    <MagnifyingGlass class="w-6 h-6" />
-                </Link>
-            {/if}
-        </svelte:fragment>
-</Navbar>
-{/if}
+                {:else}
+                    {#if $currentUser}
+                        <Link onClick={() => userPanelOpened = true}>
+                            <Avatar user={$currentUser} size="small" class="flex-none" />
+                        </Link>
+                    {:else}
+                        <Link onClick={() => openModal(SignupModal)}>
+                            <UserCircle class="w-6 h-6 mr-2" />
+                            Login
+                        </Link>
+                    {/if}
+                {/if}
+            </svelte:fragment>
+
+            <svelte:fragment slot="right">
+                {#if $pageHeader?.right}
+                    <Link onClick={$pageHeader.right.fn}>
+                        {#if $pageHeader.right.label}
+                            {$pageHeader.right.label}
+                        {/if}
+                        <svelte:component this={$pageHeader.right.icon} class="w-6 h-6 mr-2 inline" />
+                    </Link>
+                {:else if $pageHeader?.searchBar}
+                    <Link href="/search">
+                        <MagnifyingGlass class="w-6 h-6" />
+                    </Link>
+                {/if}
+            </svelte:fragment>
+    </Navbar>
+    {/if}
 {/if}
 
 <UserDrawer bind:opened={userPanelOpened} />

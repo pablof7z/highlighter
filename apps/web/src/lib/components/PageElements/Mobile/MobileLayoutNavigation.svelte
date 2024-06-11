@@ -12,7 +12,7 @@
 </script>
 
 {#if $pageHeader?.footer}
-    <div class="left-0 bottom-0 fixed transition-all duration-300 z-50 w-full pl-2-safe pr-2-safe hairline-t">
+    <div class="left-0 bottom-0 fixed transition-all duration-300 z-50 w-full hairline-t">
         <svelte:component this={$pageHeader.footer.component} {...$pageHeader.footer.props} />
     </div>
 {:else}

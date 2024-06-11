@@ -46,7 +46,7 @@
             {#each options as option (option.id ?? option.name ?? option.href)}
                 {#if option.component}
                     {#if !option.component.unstyled}
-                        <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 p-1.5 items-center">
+                        <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 items-center">
                             <div class="rounded-full p-[2px]" class:text-foreground={value === (option.value || option.name)}>
                                 <svelte:component
                                     this={option.component.component}

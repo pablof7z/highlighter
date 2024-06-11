@@ -68,7 +68,7 @@
         <BlankState
             cta="Start Creating"
             on:click={() => openModal(NewItemModal)}
-            class="lg:fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2"
+            class="md:fixed md:top-1/2 md:-translate-y-1/2 md:left-1/2 md:-translate-x-1/2"
         >
             <Schedule class="w-full h-full opacity-50" />
             You don't yet have any posts scheduled.

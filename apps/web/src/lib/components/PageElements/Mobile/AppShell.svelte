@@ -11,6 +11,7 @@
 	import { browser } from '$app/environment';
     import { Badge } from '@capawesome/capacitor-badge';
 	import { goto } from '$app/navigation';
+	import { unreadNotifications } from '$stores/notifications';
 
     if (isMobileBuild() && browser) {
         CapacitorApp.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
@@ -19,9 +20,15 @@
             goto(url.pathname + url.search);
 
             Badge.requestPermissions();
-            Badge.set({ count: 5 });
-
         });
+    }
+
+    $: if (isMobileBuild() && browser) {
+        if ($unreadNotifications > 0) {
+            Badge.set({ count: $unreadNotifications });
+        } else {
+            Badge.clear()
+        }
     }
 </script>
 

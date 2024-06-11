@@ -12,4 +12,6 @@
     }
 </script>
 
-<slot />
+<div class="responsive-padding">
+    <slot />
+</div>

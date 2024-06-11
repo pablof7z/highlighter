@@ -13,6 +13,9 @@
 	import BoostButton from "$components/buttons/BoostButton.svelte";
 	import Bookmark from "$components/Bookmark.svelte";
 	import SmallZapButton from "$components/buttons/SmallZapButton.svelte";
+	import Article from "$components/Grid/Article.svelte";
+	import { appMobileView } from "$stores/app";
+	import { isMobileBuild } from "$utils/view/mobile";
 
     export let feed: Readable<NDKEvent[]>;
     export let renderLimit = 10;
@@ -85,13 +88,15 @@
     });
 
     function openNote(e: CustomEvent<{event: NDKEvent, originalEvent: Event }>) {
-        const isMobile = window.innerWidth < 640;
-        if (isMobile) return;
         const { event, originalEvent } = e.detail;
         originalEvent.preventDefault();
         // navigateToEvent(event);
 
-        goto(`/e/${event.encode()}`);
+        if (isMobileBuild()) {
+            goto(`/mobile/view?eventId=${event.encode()}`)
+        } else {
+            goto(`/e/${event.encode()}`);
+        }
     }
 </script>
 
@@ -124,17 +129,10 @@
                 <GroupNote {event} {urlPrefix} />
             {:else if event.kind === NDKKind.Article}
                 <div class="flex flex-col">
-                    <ArticleLink
+                    <Article
                         article={NDKArticle.from(event)}
+                        wideView
                     />
-
-                    <div class="flex flex-row w-full justify-evenly items-center">
-                        <BoostButton {event} on:publish />
-
-                        <Bookmark {event} />
-
-                        <SmallZapButton {event} />
-                    </div>
                 </div>
             {:else if event.kind === NDKKind.HorizontalVideo}
                 <VideoLink

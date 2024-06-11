@@ -40,6 +40,7 @@ export const vanityUrls: Record<string, Hexpubkey> = {
     "laeserin": "dd664d5e4016433a8cd69f005ae1480804351789b59de5af06276de65633d319",
     "hzrd149": "266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5",
     "yael": "a367f9eb1cb3a241a7f3646f31cd6d597bbbbf8eaeb5cd2e707d09b00633efea",
+    "daniel": "a09fb9cb21861a5bda2475b0ce703d0f96b783f9d552fe3184407f1d83231556",
 }
 
 export const vanityUrlsByPubkey: Record<Hexpubkey, string> = Object.fromEntries(

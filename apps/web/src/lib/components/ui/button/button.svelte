@@ -16,23 +16,21 @@
 	export let size: $$Props["size"] = "default";
 	export let builders: $$Props["builders"] = [];
 	export { className as class };
-	export let forceNonMobile: boolean = false;
+	export let forceNonMobile: boolean = true;
 
 	let localClass = "";
 
 	$: if ($appMobileView) {
-		localClass = buttonVariants.variants[(variant as $$Props["variant"])]??[]
+		localClass = buttonVariants.variants.variant[(variant as $$Props["variant"])]??[]
 	}
 </script>
 
 {#if $appMobileView && !forceNonMobile}
-	<MobileButton
-		onClick={(e) => dispatcher("click", e)}
-		{...$$props}
-		class={cn(localClass, $$props.class)}
-	>
-		<slot />
-	</MobileButton>
+	{#if variant === "outline"}
+		<MobileButton outline onClick={(e) => dispatcher("click", e)} {...$$props} class={cn(localClass, $$props.class)}><slot /></MobileButton>
+	{:else}
+		<MobileButton onClick={(e) => dispatcher("click", e)} {...$$props} class={cn(localClass, $$props.class)}><slot /></MobileButton>
+	{/if}
 {:else}
 	<ButtonPrimitive.Root
 		{builders}

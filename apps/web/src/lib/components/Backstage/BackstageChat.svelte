@@ -4,6 +4,7 @@ import Avatar from '$components/User/Avatar.svelte';
 import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
 	import { ArrowRight } from "phosphor-svelte";
+	import Button from "$components/ui/button/button.svelte";
 
     export let user: NDKUser;
     export let authorUrl: string;
@@ -42,10 +43,8 @@ import { ndk } from "$stores/ndk.js";
     {/if}
 
     {#if user.pubkey === $currentUser?.pubkey}
-        <div class="text-foreground">
-            <button class="button">
-                Add new members
-            </button>
-        </div>
+        <Button variant="outline" size="sm" class="w-full">
+            Add new members
+        </Button>
     {/if}
 </div>

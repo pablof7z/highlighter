@@ -7,6 +7,7 @@
 	import { ndk } from "$stores/ndk";
 	import currentUser from "$stores/currentUser";
 	import RelativeTime from "./PageElements/RelativeTime.svelte";
+	import Textarea from "./ui/textarea/textarea.svelte";
 
     export let list: NDKList;
     export let urlPrefix: string;

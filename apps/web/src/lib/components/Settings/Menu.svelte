@@ -4,11 +4,10 @@
 	import { logout } from "$utils/login";
 	import currentUser from "$stores/currentUser";
 	import { Block } from "konsta/svelte";
-	import { Moon, Sun } from 'phosphor-svelte';
-    import { toggleMode } from "mode-watcher";
 	import { Button } from "$components/ui/button";
 	import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
+	import ToggleDark from "$components/buttons/ToggleDark.svelte";
 
     let authorUrl: string;
 </script>
@@ -78,11 +77,7 @@
         </div>
 
         <ul class="w-full">
-            <Button on:click={toggleMode} variant="outline" size="icon">
-                <Sun class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span class="sr-only">Toggle theme</span>
-            </Button>
+            <ToggleDark />
         </ul>
     </section>
 

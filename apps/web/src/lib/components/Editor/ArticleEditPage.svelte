@@ -89,7 +89,7 @@
     <div slot="viewPreview">
         {#if $view === "view-preview"}
             {#key signedAt}
-                <ArticleView bind:article isFullVersion={true} isPreview={true} fillInSummary={false} />
+                <ArticleView bind:article isFullVersion={true} isPreview={true} />
             {/key}
         {/if}
     </div>

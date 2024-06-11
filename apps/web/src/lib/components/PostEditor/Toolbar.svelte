@@ -203,9 +203,9 @@
 
         {#if showNext}
             <div class="flex flex-row flex-nowrap gap-2">
-                <button class="button" on:click={onNext} disabled={publishing}>
+                <Button on:click={onNext} disabled={publishing}>
                     Next
-                </button>
+                </Button>
             </div>
         {/if}
     </div>

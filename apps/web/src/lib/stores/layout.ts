@@ -11,13 +11,6 @@ export const layoutMode = writable<LayoutMode>("single-column-focused");
 
 export const pageHeaderComponent = writable<Component | null>(null);
 
-/**
- * These are the options that are rendered within the main container as the options
- * to navigate within this page
- */
-export const pageNavigationOptions = writable<NavigationOption[]>([]);
-export const pageNavigationOptionsValue = writable<string | undefined>();
-
 interface Component {
 	component: ConstructorOfATypedSvelteComponent;
 	props: { [key: string]: any };
@@ -33,11 +26,9 @@ export const modal = writable<Component | null>(null);
 export function resetLayout() {
 	layoutMode.set("single-column-focused");
 	pageHeaderComponent.set(null);
-	pageNavigationOptions.set([]);
 	pageHeader.set(null);
 	appMobileHideNewPostButton.set(false);
 	detailView.set(null);
-	pageNavigationOptionsValue.set(undefined);
 }
 
 resetLayout();

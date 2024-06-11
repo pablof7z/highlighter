@@ -22,8 +22,6 @@
     const author = article.author;
     export let isFullVersion: boolean;
     export let isPreview = false;
-    export let fillInSummary = true;
-    export let url = $page.url.pathname;
 
     const highlights = $ndk.storeSubscribe(
         { kinds: [NDKKind.Highlight], ...article.filter() },
@@ -102,7 +100,7 @@
             <ItemViewZaps event={article} />
         </div>
 
-        <div slot="content">
+        <div slot="content" class="break-inside max-sm:w-[calc(100vw-1rem)]">
             {#if !isPreview}
                 <HighlightingArea tags={highlightTags}>
                     <HighlightedContent event={article} {highlights} />

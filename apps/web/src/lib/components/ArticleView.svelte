@@ -22,7 +22,6 @@
      * Whether to render as just a preview instead of rendering a full article (i.e. this is viewed from the editor's preview)
      */
     export let isPreview = false;
-    export let fillInSummary = true;
 
     const highlights = $ndk.storeSubscribe(
         { kinds: [NDKKind.Highlight], ...article.filter() },
@@ -60,6 +59,11 @@
     $: if (!isPreview) {
         if ($pageHeader?.props)
             $pageHeader.props.editUrl = editUrl;
+        $pageHeader.subNavbarOptions = [
+            { name: "Comments", href: `${urlPrefix}/comments`, icon: ChatCircle, badge: "1" },
+            { name: "Highlights", href: `${urlPrefix}/highlights`, icon: HighlightIcon },
+            { name: "Curations", href: `${urlPrefix}/curations`, icon: CardsThree },
+        ];
         $pageHeader.footer = {
             component: ItemFooter,
             props: {
@@ -74,11 +78,10 @@
     {article}
     {isFullVersion}
     {isPreview}
-    {fillInSummary}
 />
 
 {#if !isPreview}
-    <div class="flex flex-col">
+    <div class="flex flex-col responsive-padding">
         <HorizontalOptionsList options={[
             { name: "Comments", href: `${urlPrefix}/comments`, icon: ChatCircle, badge: "1" },
             { name: "Highlights", href: `${urlPrefix}/highlights`, icon: HighlightIcon },

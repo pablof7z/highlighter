@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from "$components/ui/button";
 	import currentUser from "$stores/currentUser";
 	import { NDKUser } from "@nostr-dev-kit/ndk";
 	import { ArrowRight } from "phosphor-svelte";
@@ -7,22 +8,17 @@
 </script>
 
 <div class="backstage-box-container {$$props.class??""}">
-    <div class="flex flex-row justify-between items-center">
-        <span class="text-sm">
+    <div class="title">
+        <span>
             Merch
         </span>
-
-        <a href="#" class="text-sm">
-            More
-            <ArrowRight class="w-5 h-5 inline" />
-        </a>
     </div>
 
-    <div class="text-sm backstage-box-container !p-4">
+    <div class="text-sm">
         {#if user.pubkey === $currentUser?.pubkey}
             Not enabled in your profile yet.
         {:else}
-            No zap goals yet.
+            No merch yet.
         {/if}
     </div>
 </div>

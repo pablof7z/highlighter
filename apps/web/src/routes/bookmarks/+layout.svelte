@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { pageHeader, pageNavigationOptions, resetLayout } from "$stores/layout";
+	import { pageHeader, resetLayout } from "$stores/layout";
     import { onDestroy } from "svelte";
 	import { NavigationOption } from "../../app";
     import { User, GlobeSimple, UsersThree } from "phosphor-svelte";

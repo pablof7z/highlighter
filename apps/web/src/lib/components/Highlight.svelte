@@ -9,7 +9,7 @@
     export let expandReplies = false;
     export let showReply = false;
     export let scrollIntoView = false;
-    export let compact = false;
+    export let compact: boolean | undefined = undefined;
     export let skipFooter = false;
     export let disableSwipe = false;
 </script>

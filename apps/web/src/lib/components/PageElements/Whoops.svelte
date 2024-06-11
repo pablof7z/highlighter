@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Button } from "$components/ui/button";
+
     export let message: string;
     export let devMessage: string | undefined = undefined;
 
@@ -9,12 +11,16 @@
 
 <div class="fixed max-w-lg top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
     <h1>
-        Whoops! We've encountered an error.
+        Whoops!
     </h1>
 
     <h2>
-        {message}
+        We've encountered an error.
     </h2>
+
+    <h4 class="text-muted-foreground">
+        {message}
+    </h4>
 
     {#if process.env.NODE_ENV === "development"}
         {#if devMessage}
@@ -22,7 +28,7 @@
         {/if}
     {/if}
 
-    <button class="button button-primary" on:click={clicked}>
+    <Button variant="accent" on:click={clicked}>
         Continue
-    </button>
+    </Button>
 </div>
