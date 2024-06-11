@@ -4,12 +4,14 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import { Avatar, EventContent, Name } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
 	import NewPost from "./NewPost/NewPost.svelte";
 	import { getRepliesStore, getConversationRepliesStore, getThreadStore } from "./replies";
 	import CommentsButton from "$components/buttons/CommentsButton.svelte";
 	import ReplyAvatars from "./ReplyAvatars.svelte";
+	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
+	import { ndk } from '$stores/ndk';
 
     export let event: NDKEvent;
     export let op: NDKEvent = event;

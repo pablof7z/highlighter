@@ -36,6 +36,7 @@
 	import Name from '$components/User/Name.svelte';
 	import Avatar from '$components/User/Avatar.svelte';
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
+	import { appMobileView } from '$stores/app';
 
     const dispatch = createEventDispatcher();
 
@@ -57,7 +58,7 @@
     export let newPostCompact = false;
     export let placeholder: string | undefined = undefined;
     export let skipFooter = false;
-    export let compact = false;
+    export let compact = $appMobileView;
 
     export let disableSwipe = false;
 
@@ -261,6 +262,7 @@
         w-full text-left md:p-4 pb-0 max-sm:py-4 max-sm:max-w-[100vw] flex flex-col items-start {$$props.class??""}
         hover:bg-foreground/5
         group
+        responsive-padding
     " class:hidden={deleted}>
         <UserProfile
             user={author}
@@ -287,7 +289,7 @@
                 {/if}
 
                 <!-- Content -->
-                <div class="flex flex-col overflow-x-clip pl-2 grow w-full">
+                <div class="flex flex-col overflow-x-clip sm:pl-2 grow w-full">
                     <!-- Title and time -->
                     <div class="
                         flex flex-row w-full gap-2 relative group

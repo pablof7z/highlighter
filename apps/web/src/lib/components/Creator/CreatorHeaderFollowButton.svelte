@@ -4,31 +4,12 @@
     import { NDKUser } from "@nostr-dev-kit/ndk";
     import { Check, Cross, Plus, SpeakerNone, SpeakerX, User, UserPlus, X } from "phosphor-svelte";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-	import { ndk } from "$stores/ndk";
+	import { toggleFollow } from "$utils/user/follow";
 
     export let user: NDKUser;
     export let collapsed = false;
 
-    async function toggleFollow() {
-        if ($userFollows.size === 0) {
-            if (!confirm("We have not found any follows, if you continue and you currently following people your follows list will be emptied. Do you want to continue?")) {
-                return;
-            }
-        }
-        
-        const currentFollows = new Set<NDKUser>();
-        for (const pubkey of $userFollows) { currentFollows.add($ndk.getUser({pubkey}))}
-
-        if (!$userFollows.has(user.pubkey)) {
-            console.log("Following", currentFollows.size);
-            $currentUser?.follow(user, currentFollows);
-        } else {
-            $currentUser?.unfollow(user, currentFollows);
-        }
-    }
-
     let following: boolean;
-
     $: following = $userFollows.has(user.pubkey);
 
     let open = false;
@@ -38,14 +19,14 @@
     <DropdownMenu.Root bind:open>
         <DropdownMenu.Trigger>
             {#if !following}
-                <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-1" on:click={toggleFollow} on:mouseenter={() => {
+                <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-1" on:click={() => toggleFollow(user)} on:mouseenter={() => {
                     open = true;
                 }}>
                     <Plus class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
                     <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Follow</span>
                 </button>
             {:else}
-                <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-1 text-accent hover:grayscale" on:click={toggleFollow}>
+                <button class="flex transition-all duration-300 {collapsed ? "flex-row" : "flex-col justify-between"} items-center gap-1 text-accent hover:grayscale" on:click={() => toggleFollow(user)}>
                     <Check class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
                     <span class="{collapsed ? "max-sm:hidden text-sm" : "text-base"}">Following</span>
                 </button>
@@ -54,7 +35,7 @@
         <DropdownMenu.Content class="w-56">
             <DropdownMenu.Group>
                 <DropdownMenu.Item>
-                    <button class="flex flex-row items-center gap-2 w-full" on:click={toggleFollow}>
+                    <button class="flex flex-row items-center gap-2 w-full" on:click={() => toggleFollow(user)}>
                         {#if following}
                             <X class="w-6 h-6 sm:w-5 sm:h-5 text-red-500" />
                             <span class="whitespace-nowrap text-red-500">Unfollow</span>

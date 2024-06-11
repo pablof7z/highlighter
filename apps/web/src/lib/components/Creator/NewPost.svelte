@@ -24,7 +24,7 @@
         sm:gap-6
         w-full
         grid md:grid-flow-row
-        grid-cols-3 md:grid-cols-3
+        grid-cols-2 md:grid-cols-2
         justify-center
     ">
         <NewPostItem icon={Note} title="Short Note" on:click={shortNote} />

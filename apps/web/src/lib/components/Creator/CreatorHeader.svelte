@@ -3,7 +3,7 @@
 	import ShareModal from '$modals/ShareModal.svelte';
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { Export } from "phosphor-svelte";
+	import { DotsThree, Export } from "phosphor-svelte";
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import { Readable } from "svelte/store";
 	import { NavigationOption } from "../../../app";
@@ -12,17 +12,24 @@
 	import CreatorHeaderInboxButton from "./CreatorHeaderInboxButton.svelte";
 	import CreatorHeaderSupportButton from './CreatorHeaderSupportButton.svelte';
 	import { appMobileView } from '$stores/app';
-	import { NavbarBackLink } from 'konsta/svelte';
+	import { Actions, ActionsButton, ActionsGroup, Button, Navbar, NavbarBackLink, Toolbar } from 'konsta/svelte';
 	import Avatar from '$components/User/Avatar.svelte';
 	import Name from '$components/User/Name.svelte';
+	import { pageHeader } from '$stores/layout';
+	import HeaderMobileActionSheet from './HeaderMobileActionSheet.svelte';
+	import { userFollows } from '$stores/session';
+	import currentUser from '$stores/currentUser';
 
     export let user: NDKUser;
     let userProfile: NDKUserProfile;
     export let authorUrl: string;
     export let fetching: boolean;
-    export let collapsed: boolean = false;
+    export let collapsed: boolean = true;
     export let tiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
     export let options: NavigationOption[] = [];
+
+    let following: boolean;
+    $: following = $userFollows.has(user.pubkey);
 
     const dispatch = createEventDispatcher();
 
@@ -76,16 +83,47 @@
             dispatch("resize");
         }
     }
-    
+
+    let actionsOneOpened = false;
 </script>
 
 {#key user.pubkey}
 <UserProfile {user} bind:userProfile />
 
+{#if collapsed && $appMobileView}
+    <Navbar top title={userProfile?.displayName}>
+        <NavbarBackLink slot="left" onClick={() => { window.history.back() }} />
+
+        <div slot="subnavbar" class="flex flex-row items-end gap-0 overflow-y-hidden subnavbar">
+            {#if $pageHeader?.subNavbarOptions && $pageHeader?.subNavbarValue}
+                <HorizontalOptionsList
+                    options={$pageHeader.subNavbarOptions}
+                    bind:value={$pageHeader.subNavbarValue}
+                    class="py-2"
+                />
+            {/if}
+        </div>
+
+        <div slot="right" class="flex flex-row items-center gap-2">
+            {#if $currentUser?.pubkey !== user.pubkey}
+                {#if !following}
+                    <Button outline class="!text-foreground !border-accent">
+                        Follow
+                    </Button>
+                {/if}
+                <Button outline rounded raised inline color="" class="flex-none !border-accent" onClick={() => actionsOneOpened = true}>
+                    <DotsThree />
+                </Button>
+            {/if}
+        </div>
+    </Navbar>
+
+    <HeaderMobileActionSheet bind:opened={actionsOneOpened} bind:following {user} />
+{:else}
 <div class="z-20 w-full {collapsed ? "" : "min-h-[15rem]"}" on:touchstart={() => {if (collapsed) collapsed = false}}>
     <div class="relative h-full w-full">
         {#if userProfile?.banner}
-            <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-1 transition-all duration-300 {collapsed ? "opacity-20" : ""}" alt={userProfile?.name}>
+            <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-1 transition-all duration-300  {collapsed ? "opacity-20" : "opacity-40"}" alt={userProfile?.name}>
             <div class="absolute w-full h-full bg-gradient-to-b from-transparent to-base-100 z-2"></div>
         {/if}
 
@@ -153,6 +191,7 @@
         </div>
     </div>
 </div>
+{/if}
 {/key}
 
 <slot />

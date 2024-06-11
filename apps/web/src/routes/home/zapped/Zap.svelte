@@ -3,6 +3,8 @@
 	import { NDKEvent, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
 	import { Lightning } from 'phosphor-svelte';
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
+	import { ndk } from '$stores/ndk';
+	import { nicelyFormattedMilliSatNumber } from '$utils';
 
     export let zapEvent: NDKEvent;
     const zapReceipt = zapInvoiceFromEvent(zapEvent);

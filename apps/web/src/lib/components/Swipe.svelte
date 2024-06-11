@@ -211,7 +211,7 @@
         {#each leftOptions as opt, i}
             <button
                 on:click={() => { if (opt.cb() !== true) setTimeout(() => updatePosition(0), 500); }}
-                class="focus:brightness-50 {opt.class??""}"
+                class="focus:brightness-50 option {opt.class??""}"
                 style={`width: ${triggerActionRequirement}px;`}
             >
                 <svelte:component this={opt.icon} class="w-12 h-12 !text-foreground" />

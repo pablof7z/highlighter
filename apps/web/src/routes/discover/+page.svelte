@@ -14,10 +14,8 @@
 	import { BookmarkSimple, GlobeStand, Link } from "phosphor-svelte";
 	import { derived, writable } from "svelte/store";
 	import WithItem from "$components/Event/ItemView/WithItem.svelte";
-	import { layoutMode, pageHeader, pageNavigationOptions, resetLayout } from "$stores/layout";
+	import { layoutMode, pageHeader, resetLayout } from "$stores/layout";
 	import { Card, Button, Page } from "konsta/svelte";
-	import ArticleCard from "$components/ArticleCard.svelte";
-    import { PageTransition } from 'sveltekit-page-transitions';
 	import FeaturedItem from "$components/Card/FeaturedItem.svelte";
 	import LoadEvent from "$components/Event/LoadEvent.svelte";
 	import { appMobileHideNewPostButton, appMobileView } from "$stores/app";

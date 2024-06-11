@@ -1,32 +1,46 @@
 <script lang="ts">
-    import { pageHeader } from "$stores/layout";
+	import PageTitle from "$components/PageElements/PageTitle.svelte";
+	import FetchGroupFromTag from "$components/utils/FetchGroupFromTag.svelte";
+    import { layoutMode, pageHeader } from "$stores/layout";
+	import { ndk } from "$stores/ndk";
+	import { groupsList, userFollows } from "$stores/session";
+	import { getDefaultRelaySet } from "$utils/ndk";
+	import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
+	import { Readable } from "stream";
 	import { onDestroy } from "svelte";
+	import { derived } from "svelte/store";
 
+    $layoutMode = "single-column-focused";
+    
     $pageHeader = { title: "Community" };
 
     onDestroy(() => {
         $pageHeader = null;
     });
 
-    // const relaySet = getDefaultRelaySet();
-    // const chatGroups = $ndk.storeSubscribe(
-    //     { kinds: [NDKKind.GroupChat], limit: 300 },
-    //     { relaySet, groupable: false, closeOnEose: true }
-    // )
+    const relaySet = getDefaultRelaySet();
+    const chatGroups = $ndk.storeSubscribe(
+        { kinds: [NDKKind.GroupMetadata], limit: 300, "#d": Array.from($userFollows) },
+        { groupable: false, closeOnEose: true }
+    )
 </script>
 
-    <div class="flex flex-col max-w-prose w-full">
-        <h1 class="text-[80px] font-semibold ">
-            Community.
-        </h1>
-        <h2 class="text-3xl">
-            Like never before
-        </h2>
+<PageTitle title="Communities" />
 
-        <div class="text-xl mt-4 opacity-60 font-light">
-            Highlighter, built on Nostr, allows for direct communication between creators and their audience. It's a place where you can share your thoughts, ideas, and opinions with the world.
-        </div>
+{#if groupsList && $groupsList}
+    {#each $groupsList.items as group}
+        <FetchGroupFromTag tag={group}>
+            <pre>{JSON.stringify(group.rawEvent())}</pre>
+        </FetchGroupFromTag>
+    {/each}
+{/if}
+
+{#each $chatGroups as group}
+    <div>
+        {group.tagValue("name")}
     </div>
+{/each}
 
 <style>
     h1 {

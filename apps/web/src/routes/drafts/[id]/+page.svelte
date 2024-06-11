@@ -82,7 +82,7 @@
 
 {#key draftId + checkpointTime??""}
     {#if article}
-        <ArticleRender {article} isFullVersion={true} isPreview={true} fillInSummary={false} />
+        <ArticleRender {article} isFullVersion={true} isPreview={true} />
     {:else if thread}
         <ThreadEditor bind:thread bind:draftItem />
     {/if}

@@ -94,9 +94,4 @@
     ul {
         @apply flex flex-col;
     }
-
-    a {
-        @apply bg-white/5 hover:bg-white/10;
-        @apply transition-all duration-300;
-    }
 </style>

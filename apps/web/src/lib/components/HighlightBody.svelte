@@ -71,10 +71,10 @@ import { ndk } from "$stores/ndk.js";
                             {/if}
 
                             <div class="flex flex-col items-start justify-between overflow-hidden whitespace-nowrap truncate flex-grow">
-                                <div class="w-full truncate text-neutral-200 font-medium">
+                                <div class="w-full truncate text-foreground font-medium">
                                     {highlightedArticle.title}
                                 </div>
-                                <Name npubMaxLength={12} user={highlightedArticle.author} class="text-neutral-500 text-sm" />
+                                <Name npubMaxLength={12} user={highlightedArticle.author} class="text-muted-foreground text-sm" />
                             </div>
 
                             <CaretRight class="w-8 h-8 self-center" />

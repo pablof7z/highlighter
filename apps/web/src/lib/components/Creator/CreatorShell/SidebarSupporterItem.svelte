@@ -3,9 +3,12 @@
 	import { Hexpubkey } from '@nostr-dev-kit/ndk';
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { onDestroy } from 'svelte';
-	import { EventContent } from '@nostr-dev-kit/ndk-svelte-components';
+	import { Avatar, EventContent, Name } from '@nostr-dev-kit/ndk-svelte-components';
 	import { getDefaultRelaySet } from '$utils/ndk';
-	import AvatarWithName from '$components/User/AvatarWithName.svelte';
+	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
+	import { Textarea } from '$components/ui/textarea';
+	import currentUser from '$stores/currentUser';
+	import { ndk } from '$stores/ndk';
 
     export let creatorPubkey: Hexpubkey;
     export let pubkey: Hexpubkey;

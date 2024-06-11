@@ -8,6 +8,7 @@
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { ndk } from "$stores/ndk";
 	import currentUser from "$stores/currentUser";
+	import { nicelyFormattedMilliSatNumber } from "$utils";
 
     let disseminationEosed = false;
     const disseminations = $ndk.storeSubscribe(

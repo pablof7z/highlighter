@@ -10,7 +10,7 @@
 </script>
 
 {#if mounted}
-    {#if !$user}
+    {#if !$currentUser}
         Must be logged in
     {:else}
         <slot />

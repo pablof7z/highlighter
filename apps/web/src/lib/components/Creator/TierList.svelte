@@ -38,12 +38,12 @@
 
     onMount(async () => {
         if ($currentUser && $currentTiers && $currentTiers.length === 0) {
-            // const userTiers = await $ndk.fetchEvent({ kinds: [NDKKind.SubscriptionTier], authors: [$currentUser.pubkey], limit: 1})
+            const userTiers = await $ndk.fetchEvent({ kinds: [NDKKind.SubscriptionTier], authors: [$currentUser.pubkey], limit: 1})
 
-            // if (!userTiers && $currentTiers.length === 0) {
-            // } else {
-            //     usePresetButton = false;
-            // }
+            if (!userTiers && $currentTiers.length === 0) {
+            } else {
+                usePresetButton = false;
+            }
         }
     })
 

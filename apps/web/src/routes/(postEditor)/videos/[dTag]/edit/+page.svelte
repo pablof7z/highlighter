@@ -2,13 +2,13 @@
 	import { NDKVideo, NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
 	import { page } from '$app/stores';
 	import VideoEditPage from "$components/Editor/VideoEditPage.svelte";
-	import { Coins } from "phosphor-svelte";
 	import { getTierSelectionFromAllTiers, requiredTiersFor } from "$lib/events/tiers";
 	import { debugMode } from "$stores/session";
 	import { nonSubscribersPreview, selectedTiers } from "$stores/post-editor";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
 	import { ndk } from "$stores/ndk";
 	import { newToasterMessage } from "$stores/toaster";
+	import currentUser from "$stores/currentUser";
 
 	let dTag: string;
 

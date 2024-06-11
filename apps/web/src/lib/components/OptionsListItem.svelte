@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { CrownSimple } from "phosphor-svelte";
 	import { page } from "$app/stores";
 	import { NavigationOption } from "../../app";
     import Badge from "$components/ui/badge/badge.svelte";

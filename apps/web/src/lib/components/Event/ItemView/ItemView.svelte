@@ -13,16 +13,28 @@
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 	import { ndk } from "$stores/ndk";
 	import { page } from "$app/stores";
+	import PageTitle from "$components/PageElements/PageTitle.svelte";
 
     export let event: NDKEvent;
     export let ignoreHeader: boolean = false;
 
-    if (!ignoreHeader) {
-        $: if (event) $pageHeader = {
-            component: ItemHeader,
-            props: {
-                item: event,
-                class: "max-w-[var(--content-focused-width)] mx-auto w-full"
+    $: if (!ignoreHeader || true) {
+        if (event) {
+            if (event.kind === NDKKind.Text) {
+                $pageHeader = {
+                    title: "Thread",
+                    left: {
+                        label: 'back'
+                    }
+                }
+            } else {
+                $pageHeader = {
+                    component: ItemHeader,
+                    props: {
+                        item: event,
+                        class: "max-w-[var(--content-focused-width)] mx-auto w-full"
+                    }
+                }
             }
         }
     }
@@ -54,7 +66,7 @@
             {event}
             expandThread={true}
             expandReplies={true}
-            class="text-lg p-6 rounded"
+            class="text-lg rounded"
         >
             <EventContent
                 ndk={$ndk}

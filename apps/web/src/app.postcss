@@ -56,8 +56,6 @@
 
 	.light {
 		--background: 240 10% 3.9%;
-		--background-200: 240 10% 3.9%;
-		--background-300: 240 10% 3.9%;
 		--foreground: 0 0% 98%;
 		--card: 240 10% 3.9%;
 		--card-foreground: 0 0% 98%;
@@ -78,8 +76,6 @@
 	
 	.dark {
 		--background: 240 10% 3.9%;
-		--background-200: 240 10% 6.9%;
-		--background-300: 240 10% 9.9%;
 		--foreground: 0 0% 98%;
 		--card: 240 10% 3.9%;
 		--card-foreground: 0 0% 98%;
@@ -90,7 +86,7 @@
 		--secondary: 240 3.7% 15.9%;
 		--secondary-foreground: 0 0% 98%;
 		--muted: 240 3.7% 15.9%;
-		--muted-foreground: 240 5% 64.9%;
+		--muted-foreground: 240 5% 80%;
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 0 0% 98%;
 		--border: 240 3.7% 15.9%;
@@ -229,7 +225,7 @@
 	}
 
 	.discussion-wrapper > button, .discussion-wrapper > a, .discussion-wrapper > .discussion-item, .discussion-wrapper > * {
-		@apply !border-b-2 border-border;
+		@apply !border-b border-border;
 	}
 
 	.discussion-wrapper > button, .discussion-wrapper > a {
@@ -398,11 +394,11 @@ strong {
 }
 
 .backstage-box-container {
-	@apply bg-secondary text-secondary-foreground flex flex-col gap-6 p-6 grow rounded;
+	@apply border text-muted-foreground flex flex-col gap-6 p-6 grow rounded;
 }
 
 .backstage-box-container > .title {
-	@apply flex flex-row justify-between items-center border-b border bg-secondary -mx-6 -mt-2 px-6 pb-2;
+	@apply flex flex-row justify-between items-center border-b -mx-6 -mt-2 px-6 pb-4 text-foreground font-medium;
 	@apply text-sm;
 }
 
@@ -420,4 +416,8 @@ blockquote.app-quote p {
 
 blockquote.app-quote .author {
 	@apply text-right text-foreground;
+}
+
+.responsive-padding {
+	@apply pl-2-safe pr-2-safe;
 }

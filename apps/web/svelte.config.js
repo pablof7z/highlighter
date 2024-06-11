@@ -34,8 +34,7 @@ const config = {
 			register: false,
 		},
 		prerender: {
-			handleHttpError: "warn"
-
+			handleHttpError: "warn",
 		},
 		alias: {
 			$actions: 'src/lib/actions',

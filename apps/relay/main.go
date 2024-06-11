@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/fiatjaf/eventstore/lmdb"
 	"github.com/fiatjaf/khatru"
@@ -119,7 +118,7 @@ func main() {
 		func(ctx context.Context) {
 			fmt.Println("connected, requesting auth")
 			// sleep for 2 seconds to test something
-			time.Sleep(2 * time.Second)
+			// time.Sleep(2 * time.Second)
 			fmt.Println("requesting auth now")
 			khatru.RequestAuth(ctx)
 		},

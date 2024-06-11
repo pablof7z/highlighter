@@ -46,7 +46,7 @@
     {#if !currentUserSubscriberTier}
         {#if hasLNPayments !== false}
             <Button variant="accent" on:click={openSupportModal}>
-                <span class="hidden lg:inline">
+                <span>
                     {#if $tiers && $tiers.length > 0}
                         Subscribe
                     {:else}

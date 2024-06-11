@@ -1,19 +1,15 @@
 <script lang="ts">
-	import { pageNavigationOptionsValue } from "$stores/layout";
 	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter, NDKEvent, NDKTag, NDKHighlight, NDKArticle, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { Readable, derived } from "svelte/store";
 	import { computeArticleRecommendationFromHighlightStore } from "$utils/recommendations";
 	import MostHighlightedArticleGrid from "$components/MostHighlightedArticleGrid.svelte";
-	import FeaturedReads from "$components/PageElements/FeaturedReads.svelte";
 	import WithItem from "$components/Event/ItemView/WithItem.svelte";
 	import { ndk } from "$stores/ndk.js";
 	import Highlights from "$views/Home/Sections/Highlights.svelte";
 	import Articles from "$views/Home/Sections/Articles.svelte";
 	import Article from "$components/Grid/Article.svelte";
-
-    $pageNavigationOptionsValue = "Home";
 
     let feed: NDKEventStore<NDKEvent>;
     let highlights: Readable<NDKHighlight[]>;

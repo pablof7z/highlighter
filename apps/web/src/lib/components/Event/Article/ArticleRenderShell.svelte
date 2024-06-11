@@ -8,7 +8,7 @@
     export let skipImage = false;
 </script>
 
-<div dir="auto" class="w-full flex flex-col">
+<div dir="auto" class="w-full flex flex-col max-sm:max-w-screen overflow-x-clip">
     <div class="
         max-sm:-mx-4 flex relative {($$slots.image && !skipImage) ? 'max-sm:h-[90vh] min-h-[20vh] sm:h-[20rem] lg:h-[50vh]' : ""}
         {$$props.class??""}
@@ -18,7 +18,9 @@
                 <slot name="image" />
             </div>
         {/if}
-        <div class="w-full flex flex-col sm:gap-2 {!skipImage ? "absolute" : ""} left-0 right-0 bottom-0 z-5 p-4 bg-gradient-to-b from-transparent via-background to-background pt-10">
+        <div class="
+            ml-2-safe mr-2-safe
+            flex flex-col gap-4 sm:gap-2 {!skipImage ? "absolute" : ""} left-0 right-0 bottom-0 z-5 p-4 bg-gradient-to-b from-transparent via-background to-background pt-10">
             {#if $$slots.title}
                 <div class="self-stretch text-foreground text-4xl font-semibold">
                     <slot name="title" />

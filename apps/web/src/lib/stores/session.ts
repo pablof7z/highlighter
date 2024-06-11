@@ -497,6 +497,11 @@ async function fetchData(
 		}
 	};
 
+	function withSinceFilter(filter: NDKFilter) {
+		if (opts.since) filter.since = opts.since;
+		return filter;
+	}
+
 	const updateFollows = (
 		event: NDKEvent,
 		store: Writable<Set<Hexpubkey> | PubkeysFollowCount>,
@@ -549,7 +554,7 @@ async function fetchData(
 		}
 
 		if (opts.followsStore) {
-			filters.push({ kinds: [3], authors });
+			filters.push(withSinceFilter({ kinds: [3], authors, limit: 50 }));
 		}
 
 		if (opts.activeSubscriptionsStore) {
@@ -562,11 +567,6 @@ async function fetchData(
 
 		if (opts.supportStore) {
 			filters.push({ authors, kinds: [7001 as number] });
-		}
-
-		// if we have a since timestamp, we want to fetch events since that timestamp
-		if (opts.since) {
-			filters.forEach((filter) => { filter.since = opts.since; });
 		}
 		
 		const userDataSubscription = $ndk.subscribe(filters, {

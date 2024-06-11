@@ -1,5 +1,6 @@
 <script lang="ts">
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";
+	import PageTitle from "$components/PageElements/PageTitle.svelte";
 	import StylishContainer from "$components/PageElements/StylishContainer.svelte";
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import currentUser from "$stores/currentUser";
@@ -20,6 +21,8 @@
     });
 </script>
 
+<PageTitle title="Backstage" />
+
 {#if $allContent.length === 0 && user.pubkey === $currentUser?.pubkey}
     <StylishContainer class="p-6" border={1}>
         You don't currently have any backstage content.
@@ -27,14 +30,6 @@
     <div class="divider my-0"></div>
 {/if}
 
-<div class="bg-white/10 flex flex-col gap-6 p-6 grow rounded">
-    <div class="flex flex-row justify-between items-center">
-        <span class="text-sm">
-            Backstage Content
-        </span>
-    </div>
-
-    <div class="flex flex-col grow overflow-y-auto overflow-x-clip">
-        <StoreFeed feed={allContent} />
-    </div>
+<div class="discussion-wrapper">
+    <StoreFeed feed={allContent} />
 </div>

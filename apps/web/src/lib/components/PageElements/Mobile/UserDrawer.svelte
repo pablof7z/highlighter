@@ -2,13 +2,14 @@
 	import { Block, MenuList, MenuListItem, Navbar, Page, Panel, Link } from "konsta/svelte";
     import { page } from "$app/stores";
     import currentUser, { isGuest } from "$stores/currentUser";
-	import { ChalkboardSimple, Door, Gear, House, PaperPlaneTilt, CardsThree, Timer } from "phosphor-svelte";
+	import { ChalkboardSimple, Door, Gear, House, PaperPlaneTilt, CardsThree, Timer, Moon, Sun } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
 	import { logout } from "$utils/login";
 	import Avatar from '$components/User/Avatar.svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { openModal } from "$utils/modal";
 	import NewItemModal from "$modals/NewItemModal.svelte";
+	import { toggleMode } from "mode-watcher";
 
     export let opened = false;
 
@@ -37,6 +38,7 @@
                 title="Home"
                 active={$page.url.pathname.startsWith('/home')}
                 href="/home"
+                onClick={() => opened = false}
             >
                 <House size={24} slot="media" />
             </MenuListItem>
@@ -54,6 +56,7 @@
                 title="Schedule"
                 active={$page.url.pathname.startsWith('/schedule')}
                 href="/schedule"
+                onClick={() => opened = false}
             >
                 <Timer size={24} slot="media" />
             </MenuListItem>
@@ -62,16 +65,9 @@
                 title="Drafts"
                 active={$page.url.pathname.startsWith('/drafts')}
                 href="/drafts"
+                onClick={() => opened = false}
             >
                 <ChalkboardSimple size={24} slot="media" />
-            </MenuListItem>
-
-            <MenuListItem
-                title="Settings"
-                active={$page.url.pathname.startsWith('/settings')}
-                href="/settings"
-            >
-                <Gear size={24} slot="media" />
             </MenuListItem>
 
             <MenuListItem
@@ -88,8 +84,27 @@
 
     <div class="grow"></div>
 
-        {#if $currentUser}
-            <MenuList>
+        <MenuList>
+            <MenuListItem
+                title="Toggle theme"
+                onClick={toggleMode}
+            >
+                <div class="relative" slot="media">
+                    <Sun size={24} class="dark:hidden" />
+                    <Moon size={24} class="hidden dark:inline" />
+                </div>
+            </MenuListItem>
+            
+            <MenuListItem
+                title="Settings"
+                active={$page.url.pathname.startsWith('/settings')}
+                href="/settings"
+                onClick={() => opened = false}
+            >
+                <Gear size={24} slot="media" />
+            </MenuListItem>
+        
+            {#if $currentUser}
                 <UserProfile user={$currentUser} let:userProfile let:authorUrl>
                     <MenuListItem title={userProfile?.name??""} onClick={() => go(authorUrl)}>
                         <Avatar user={$currentUser} {userProfile} size="tiny" slot="media" />
@@ -104,8 +119,8 @@
                 >
                     <Door size={24} slot="media" />
                 </MenuListItem>
-            </MenuList>
-        {/if}
+            {/if}
+        </MenuList>
     </Block>
     </Page>
 </Panel>

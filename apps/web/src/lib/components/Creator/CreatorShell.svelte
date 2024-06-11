@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { userSubscription, getUserSubscriptionTiersStore, getUserCurations, getUserHighlights, getGAUserContent, getUserContent } from "$stores/user-view";
+	import { userSubscription, getUserSubscriptionTiersStore, getUserCurations, getUserHighlights, getGAUserContent, getUserContent, getUserSupporters } from "$stores/user-view";
 	import { NDKArticle, NDKKind, type NDKEventId, NDKUser } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
 	import UserProfile from "$components/User/UserProfile.svelte";
@@ -10,6 +10,7 @@
 	import CreatorHeader from "./CreatorHeader.svelte";
 	import { Article, BookmarkSimple, CardsThree, House, Notepad, Star, Ticket, User } from "phosphor-svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
+	import currentUser from "$stores/currentUser";
 
     export let user: NDKUser;
 
@@ -52,9 +53,19 @@
     let hasCurations = false;
     let hasHighlights = false;
     let hasPublications = false;
-    let hasAccessToBackstage = false;
+    let hasAccessToBackstage: boolean | undefined = undefined;
 
     let options: NavigationOption[] = [];
+
+    const supporters = getUserSupporters();
+
+    $: if (hasAccessToBackstage === undefined && user && $currentUser) {
+        if (user.pubkey === $currentUser.pubkey) {
+            hasAccessToBackstage = true;
+        } else if ($supporters) {
+            if ($supporters[user.pubkey]) hasAccessToBackstage = true;
+        }
+    }
 
     $: {
         options = [];
