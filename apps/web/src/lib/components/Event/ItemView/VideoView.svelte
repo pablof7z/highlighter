@@ -9,6 +9,9 @@ import { ndk } from "$stores/ndk.js";
 	import { onDestroy, onMount } from "svelte";
 	import ItemViewZaps from "./ItemViewZaps.svelte";
 	import currentUser from "$stores/currentUser";
+	import { pageHeader } from "$stores/layout";
+	import ItemFooter from "./ItemFooter.svelte";
+	import { getAuthorUrl, urlFromEvent } from "$utils/url";
 
     export let video: NDKVideo;
     export let isFullVersion: boolean;
@@ -27,6 +30,31 @@ import { ndk } from "$stores/ndk.js";
 
     const videoUrl = video.url;
     let editUrl = `/videos/${video.tagValue("d")}/edit`;
+
+    let authorUrl: string | undefined;
+    let urlPrefix: string;
+    
+    getAuthorUrl(author).then(url => authorUrl = url);
+    
+    $: urlPrefix = urlFromEvent(video, authorUrl);
+
+    $pageHeader ??= {};
+    $: {
+        if ($pageHeader?.props)
+            $pageHeader.props.editUrl = editUrl;
+        $pageHeader.footer = {
+            component: ItemFooter,
+            props: {
+                event: video,
+                urlPrefix
+            }
+        }
+    }
+
+    onDestroy(() => {
+        if ($pageHeader?.footer)
+            $pageHeader.footer = undefined;
+    });
 </script>
 
 <svelte:head>

@@ -3,19 +3,20 @@
 	import { newToasterMessage } from "$stores/toaster.js";
 	import DraftItem from "./DraftItem.svelte";
 	import { countWords } from "$utils/article";
+	import { Badge } from "$components/ui/badge";
 
     export let draft: DraftItem;
     export let checkpoint: DraftCheckpoint;
 
-    let wordCount: number;
+    let wordCount: number = checkpoint.data?.event?.content ? countWords(checkpoint.data.event.content) : 0;
     let url: string;
 
     url = `/drafts/${draft.id}?checkpoint=` + checkpoint.time;
 
 </script>
 
-<li>
-    <a href={url} class="whitespace-nowrap">
+<a href={url} class="whitespace-nowrap flex flex-col gap-2">
+    <div class="flex flex-row gap-4">
         {(new Date(checkpoint.time)).toLocaleString()}
         {#if wordCount > 0}
             <div class="badge badge-ghost badge-xs justify-self-start">
@@ -23,7 +24,12 @@
             </div>
         {/if}
         {#if checkpoint.manuallySaved}
-            <span class="badge badge-success">Manually saved</span>
+            <Badge variant="accent">Manually saved</Badge>
         {/if}
-    </a>
-</li>
+    </div>
+    {#if checkpoint.relay}
+        <div class="text-muted-foreground text-xs">
+            Saved on {checkpoint.relay}
+        </div>
+    {/if}
+</a>

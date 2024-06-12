@@ -83,7 +83,8 @@
                 manuallySaved,
                 $currentDraftItem,
                 data,
-                $_type!
+                $_type!,
+                $event
             );
 
             if (item) {

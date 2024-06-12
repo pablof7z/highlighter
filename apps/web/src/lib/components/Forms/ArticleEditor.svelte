@@ -5,16 +5,12 @@
     import { createEventDispatcher } from "svelte";
 	import ContentEditor from './ContentEditor.svelte';
 	import ArticleRenderShell from "$components/Event/Article/ArticleRenderShell.svelte";
-	import ArticleCover from "$components/Editor/ArticleCover.svelte";
 	import { openModal } from "$utils/modal";
 	import CoverImageModal from "$modals/CoverImageModal.svelte";
-	import TagInput from "$components/Editor/TagInput.svelte";
-	import EventTags from "$components/Events/EventTags.svelte";
 	import TagInputModal from "$modals/TagInputModal.svelte";
 	import Tags from "$components/Events/Tags.svelte";
 	import { Shuffle } from "phosphor-svelte";
 	import { Button } from '$components/ui/button';
-	import { image } from '@sveu/browser';
 	import { appMobileView } from '$stores/app';
 	import { slide } from 'svelte/transition';
 

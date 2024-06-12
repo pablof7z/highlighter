@@ -209,11 +209,11 @@
 	}
 
 	.article hr {
-		@apply my-6 border-neutral-900;
+		@apply my-6 border;
 	}
 
 	.article a {
-		@apply text-primary;
+		@apply text-primary underline-offset-4 underline;
 	}
 
 	.highlight .highlight--blockquote {
@@ -419,5 +419,5 @@ blockquote.app-quote .author {
 }
 
 .responsive-padding {
-	@apply pl-2-safe pr-2-safe;
+	@apply max-sm:pl-2-safe max-sm:pr-2-safe;
 }

@@ -28,7 +28,9 @@
 			const payload = checkpoint?.data as ArticleCheckpoint;
 
 			article = new NDKArticle($ndk, JSON.parse(payload.event));
-			preview = new NDKArticle($ndk, JSON.parse(payload.preview));
+			try {
+				preview = new NDKArticle($ndk, JSON.parse(payload.preview));
+			} catch {}
 		}
 	}
 </script>

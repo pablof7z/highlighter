@@ -19,6 +19,12 @@ import ModalShell from "$components/ModalShell.svelte";
         retryingId.add(event.id);
         try {
             await event.publish(relaySet);
+            if ($ndk.cacheAdapter?.discardUnpublishedEvent)
+                $ndk.cacheAdapter.discardUnpublishedEvent(event.id);
+            failedPublishEvents.update($failed => {
+                $failed.delete(event.id);
+                return new Map($failed);
+            });
         } finally {
             retryingId.delete(event.id);
             retryingId = retryingId
