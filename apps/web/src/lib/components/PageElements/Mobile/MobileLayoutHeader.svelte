@@ -2,15 +2,14 @@
     import { goto } from '$app/navigation';
     import { pageHeader } from '$stores/layout.js';
 	import Avatar from '$components/User/Avatar.svelte';
-    import { Block, Icon, Link, Navbar, NavbarBackLink, Segmented, SegmentedButton, Toolbar } from 'konsta/svelte';
-    import currentUser, { isGuest } from "$stores/currentUser";
+    import { Link, Navbar, NavbarBackLink } from 'konsta/svelte';
+    import currentUser from "$stores/currentUser";
 	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
-	import { MagnifyingGlass, User, UserCircle } from 'phosphor-svelte';
+	import { MagnifyingGlass, UserCircle } from 'phosphor-svelte';
 	import { openModal } from '$utils/modal';
 	import SignupModal from '$modals/SignupModal.svelte';
 	import UserDrawer from './UserDrawer.svelte';
 	import { afterUpdate, onDestroy, onMount } from 'svelte';
-    import TouchSweep from 'touchsweep';
 	import { browser } from '$app/environment';
 
     let userPanelOpened = false;
@@ -70,20 +69,6 @@
     let subNavbar: HTMLElement;
     let body: HTMLElement;
 
-    function scrollUp() {
-        // scale down the subnavbar
-        body?.classList.remove('scrolldown')
-        scrollingDown = false;
-
-    }
-
-    function scrollDown() {
-        body?.classList.add('scrolldown')
-        scrollingDown = true;
-    }
-
-    let instance: TouchSweep;
-
     onMount(() => {
         mounted = true
         body = document.getElementsByTagName('body')[0];
@@ -92,18 +77,6 @@
 
         // Update on window resize
         if (browser) window.addEventListener('resize', updateNavbarHeight);
-        // instance = new TouchSweep(body,
-        // { value: 1 }, 20 );
-        // body.addEventListener('swipedown', (e) => {
-        //     console.log(e.detail);
-        //     scrollUp();
-        // });
-
-        // body.addEventListener('swipeup', (e) => {
-        //     console.log(e.detail);
-        //     scrollDown();
-        // });
-
     });
 
     title ??= "";

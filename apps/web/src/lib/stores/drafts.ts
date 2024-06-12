@@ -21,6 +21,16 @@ export type ThreadCheckpoint = {
 export type CheckpointData = ArticleCheckpoint | ThreadCheckpoint;
 
 export type DraftCheckpoint = {
+	/**
+	 * If the event has been fetched from a NIP-37 event.
+	 */
+	eventId?: string;
+
+	/**
+	 * If the event has been fetched from a NIP-37 event.
+	 */
+	relay?: string;
+
 	time: number;
 	data: CheckpointData;
 	manuallySaved: boolean;
@@ -35,3 +45,7 @@ export type DraftItem = {
 };
 
 export const drafts = persist(writable<DraftItem[]>([]), createLocalStorage(true), 'drafts');
+
+export function initializeDrafts() {
+
+}

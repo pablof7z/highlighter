@@ -19,7 +19,7 @@
             </div>
         {/if}
         <div class="
-            ml-2-safe mr-2-safe
+            responsive-padding
             flex flex-col gap-4 sm:gap-2 {!skipImage ? "absolute" : ""} left-0 right-0 bottom-0 z-5 p-4 bg-gradient-to-b from-transparent via-background to-background pt-10">
             {#if $$slots.title}
                 <div class="self-stretch text-foreground text-4xl font-semibold">

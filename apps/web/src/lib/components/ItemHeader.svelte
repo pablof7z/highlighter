@@ -12,17 +12,21 @@
 	import ShareModal from '$modals/ShareModal.svelte';
 	import { Button } from './ui/button';
 	import ToggleDark from './buttons/ToggleDark.svelte';
+	import { userGenericCuration } from '$stores/session';
 
     export let item: NDKArticle | NDKVideo;
     export let isFullVersion: boolean | undefined = undefined;
     export let urlPrefix: string;
     export let editUrl: string | undefined = undefined;
     export let title: string | undefined = undefined;
-    export let compact = true;
+    export let compact = false;
 
     let userProfile: NDKUserProfile;
 
     let showTextTools = false;
+
+    let bookmarked: boolean;
+    $: bookmarked = $userGenericCuration.has(item.tagId());
 </script>
 
 {#if item}
@@ -36,7 +40,7 @@
             " subnavbarClass={!showTextTools ? "hidden" : ""}
             >
             <div class="flex flex-row items-center gap-2" slot="left">
-                <NavbarBackLink showText={false} />
+                <NavbarBackLink showText={false} onClick={() => { window.history.back() }} />
                 {#if compact}
                     <Button variant="link" on:click={(e) => { showTextTools = !showTextTools; } }>
                         <TextAa class="w-6 h-6" />
@@ -61,6 +65,7 @@
 
                     <BookmarkButton
                         on:click={() => toggleBookmarkedEvent(item)}
+                        active={bookmarked}
                     />
                 {/if}
             </div>

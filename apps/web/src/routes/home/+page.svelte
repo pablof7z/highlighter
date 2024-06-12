@@ -10,6 +10,7 @@
 	import Highlights from "$views/Home/Sections/Highlights.svelte";
 	import Articles from "$views/Home/Sections/Articles.svelte";
 	import Article from "$components/Grid/Article.svelte";
+	import { onDestroy } from "svelte";
 
     let feed: NDKEventStore<NDKEvent>;
     let highlights: Readable<NDKHighlight[]>;
@@ -19,6 +20,11 @@
         'wss://relay.highlighter.com',
         'wss://relay.primal.net'
     ], $ndk);
+
+    onDestroy(() => {
+        feed?.unsubscribe();
+        // articleTaggingEvents?.unsubscribe();
+    })
 
     $: if (!feed) {
         const userHasEnoughFollows = $userFollows?.size >= 100;

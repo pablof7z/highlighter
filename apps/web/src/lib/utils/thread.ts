@@ -1,9 +1,8 @@
-import { prepareEventsForTierPublish, publishToTiers } from "$actions/publishToTiers";
+import { prepareEventsForTierPublish } from "$actions/publishToTiers";
 import { TierSelection } from "$lib/events/tiers";
-import { DraftCheckpoint, DraftItem, ThreadCheckpoint, ThreadCheckpointItem } from "$stores/drafts";
+import { ThreadCheckpoint, ThreadCheckpointItem } from "$stores/drafts";
 import NDK, { NDKEvent, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
-import { Writable, get } from "svelte/store";
-import { addDraftCheckpoint } from "./drafts";
+import { get } from "svelte/store";
 
 export type ThreadItem = {
     event: NDKEvent,

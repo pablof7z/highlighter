@@ -2,7 +2,10 @@
 	import { page } from "$app/stores";
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 	import currentUser from "$stores/currentUser";
+	import { layoutMode } from "$stores/layout";
 	import { NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
+
+    $layoutMode = "single-column-focused";
 
     let user: NDKUser;
 

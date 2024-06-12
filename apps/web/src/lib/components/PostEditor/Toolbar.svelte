@@ -1,11 +1,11 @@
     <script lang="ts">
-	import { CaretLeft, Eye, Eye, Timer, UsersThree } from "phosphor-svelte";
-    import { event, view, type, status, View, selectedTiers, preview, publishAt, selectedTiers } from "$stores/post-editor";
+	import { CaretLeft, Eye, Timer, UsersThree } from "phosphor-svelte";
+    import { event, view, type, status, View, selectedTiers, publishAt } from "$stores/post-editor";
 	import { closeModal, openModal } from '$utils/modal';
 	import ScheduleModal from '$modals/ScheduleModal.svelte';
 	import { appMobileView } from '$stores/app';
     import Button from "$components/ui/button/button.svelte";
-	import { Actions, ActionsButton, ActionsGroup, ActionsLabel, Link, Button as MobileButton, Toolbar } from 'konsta/svelte';
+	import { Actions, ActionsButton, ActionsGroup, Link, Button as MobileButton, Toolbar } from 'konsta/svelte';
     import { NavbarBackLink } from 'konsta/svelte';
 	import TiersLabel from "$components/Forms/TiersLabel.svelte";
 
@@ -182,6 +182,12 @@
     </div>
 
     <div class="flex flex-row gap-4 self-end">
+        {#if showSaveDraft}
+            <Button variant="ghost" on:click={onSaveDraft}>
+                Save Draft
+            </Button>
+        {/if}
+        
         {#if showPublish}
             <div class="flex flex-row flex-nowrap gap-2">
                 <Button size="icon" variant="secondary" on:click={schedule}>

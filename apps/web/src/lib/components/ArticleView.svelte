@@ -12,6 +12,7 @@
 	import { CardsThree, ChatCircle } from "phosphor-svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import ItemViewComments from "$views/Item/ItemViewComments.svelte";
+	import { appMobileView } from "$stores/app";
 
     export let article: NDKArticle;
     const author = article.author;
@@ -67,6 +68,11 @@
             }
         }
     }
+
+    onDestroy(() => {
+        if ($pageHeader?.footer)
+            $pageHeader.footer = undefined;
+    });
 </script>
 
 <ArticleRender

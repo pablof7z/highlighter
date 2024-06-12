@@ -3,8 +3,7 @@
 	import Modal from './Modal.svelte';
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';
-	import Toaster from './Toaster.svelte';
-	import { onMount } from 'svelte';
+	import { Toaster } from "$lib/components/ui/sonner";
 
 	let layoutWrapper: string;
 	let mainWrapper: string;

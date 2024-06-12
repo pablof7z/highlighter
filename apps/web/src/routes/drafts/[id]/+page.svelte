@@ -35,6 +35,8 @@
             if (!draftItem) {
                 goto("/drafts");
             } else {
+                console.log({draftItem})
+                
                 const checkpoints = JSON.parse(draftItem.checkpoints) as DraftCheckpoint[];
                 let checkpoint = checkpoints.find(c => c.manuallySaved);
 
@@ -47,6 +49,8 @@
                     case "article": {
                         const payload = checkpoint?.data as ArticleCheckpoint;
 
+                        console.log({payload})
+                        
                         article = new NDKArticle($ndk, JSON.parse(payload.event));
                         article.pubkey ??= $currentUser.pubkey;
                         article.author = $currentUser;

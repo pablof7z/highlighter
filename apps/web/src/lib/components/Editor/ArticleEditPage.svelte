@@ -9,7 +9,6 @@
 	import { view, preview, previewTitleChanged, previewContentChanged, currentDraftItem } from "$stores/post-editor";
 	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
 	import ArticleView from "$components/ArticleView.svelte";
-	import { debugMode } from "$stores/session";
 	import currentUser from "$stores/currentUser";
 	import { pageHeader } from "$stores/layout";
 
