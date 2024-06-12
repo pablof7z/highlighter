@@ -3,10 +3,9 @@
     providing tools for the user to interact with the content (quote, comment, zap, etc)
 -->
 <script lang="ts">
-	import ShareModal from './../../modals/ShareModal.svelte';
+	import ShareModal from '$modals/ShareModal.svelte';
 	import QuoteModal from '$modals/QuoteModal.svelte';
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
-    import Highlight from '$components/DetailView/Highlight.svelte';
 	import { ChatCircle, Lightning, Quotes, Repeat, Share } from "phosphor-svelte";
 	import { onDestroy, onMount } from "svelte";
     import { ReferenceElement, autoUpdate, computePosition, offset } from '@floating-ui/dom';
@@ -15,7 +14,6 @@
 	import { ndk } from "$stores/ndk";
 	import { getParagraph, getText } from '$utils/text';
 	import { pushState } from '$app/navigation';
-	import { detailView } from '$stores/layout';
 	import { Button } from '$components/ui/button';
 
     export let contentContainer: HTMLElement;
@@ -71,7 +69,6 @@
         openModal(QuoteModal, { event: highlight, tags, onPublish: () => {
             highlight.publish();
             pushState(`/e/${highlight.encode()}`, {
-                detailView: 'highlight'
             });
         } });
     }
@@ -85,19 +82,10 @@
 
     function openHighlightInDetailedView(highlight: NDKHighlight, props: any) {
         pushState(`/e/${highlight.encode()}`, {
-            detailView: 'highlight'
         });
-        $detailView = {
-            component: Highlight,
-            props: {
-                showReply: true,
-                highlight,
-                ...(props || {})
-            }
-        }
     }
 
-    let top = 10000;
+    let top = -10000;
     let left = 0;
 
     let cleanup: (() => void) | null = null;

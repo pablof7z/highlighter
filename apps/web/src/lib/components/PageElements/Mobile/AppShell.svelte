@@ -10,8 +10,12 @@
     import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 	import { browser } from '$app/environment';
     import { Badge } from '@capawesome/capacitor-badge';
+    import { PushNotifications } from "@capacitor/push-notifications";
 	import { goto } from '$app/navigation';
-	import { unreadNotifications } from '$stores/notifications';
+	import { mobileNotifications, unreadNotifications } from '$stores/notifications';
+	import PromptForNotifications from '$views/Mobile/Pages/PromptForNotifications.svelte';
+
+    let showPromptForNotificiations = false;
 
     if (isMobileBuild() && browser) {
         CapacitorApp.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
@@ -19,7 +23,19 @@
             // get the path and query string from the URL
             goto(url.pathname + url.search);
 
-            Badge.requestPermissions();
+            PushNotifications.checkPermissions().then((perm) => {
+                console.log({perm});
+            });
+
+            if ($mobileNotifications === null) {
+                Badge.isSupported().then(({isSupported}) => {
+                    if (isSupported) {
+                        showPromptForNotificiations = true;
+                    } else {
+                        console.log('badge is not supported')
+                    }
+                })
+            }
         });
     }
 
@@ -34,6 +50,9 @@
 
 <App theme="ios" safeAreas={true} class="k-ios">
     <PageTransitionController transition={cover}>
+        {#if showPromptForNotificiations}
+            <PromptForNotifications on:done={() => showPromptForNotificiations = false} />
+        {:else}
         <Page>
             <MobileLayoutHeader />
         
@@ -44,6 +63,7 @@
 
         {#if !$appMobileHideNewPostButton}
             <MobileFloatNewPostButton />
+        {/if}
         {/if}
     </PageTransitionController>
 </App>

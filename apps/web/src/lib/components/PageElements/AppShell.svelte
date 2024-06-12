@@ -4,6 +4,7 @@
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';
 	import Toaster from './Toaster.svelte';
+	import { onMount } from 'svelte';
 
 	let layoutWrapper: string;
 	let mainWrapper: string;

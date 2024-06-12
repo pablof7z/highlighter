@@ -5,7 +5,7 @@
 	import { ndk } from "$stores/ndk.js";
 	import { onDestroy, onMount } from "svelte";
 	import { NavigationOption } from "../../../app";
-	import { CardsThree, ChatCircle, BookOpen, BookmarkSimple, Recycle, Repeat, Export, Lightning, Watch, YoutubeLogo } from "phosphor-svelte";
+	import { CardsThree, ChatCircle, BookOpen, Repeat, Export, Lightning, Watch, YoutubeLogo } from "phosphor-svelte";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import { appMobileView } from "$stores/app";
@@ -14,7 +14,7 @@
 	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
 	import { userGenericCuration } from '$stores/session';
 	import ZapModal from '$modals/ZapModal.svelte';
-	import ToggleDark from '$components/buttons/ToggleDark.svelte';
+	import AnimatedToggleButton from '$components/PageElements/AnimatedToggleButton.svelte';
 
     export let event: NDKEvent;
     export let urlPrefix: string;
@@ -28,20 +28,18 @@
     $: {
         options = [];
 
-        options.push({ component: { component: ToggleDark }});
-        
         if (event.kind === NDKKind.Article)
-            options.push({ name: $appMobileView ? "Read" : undefined, value: 'article', href: urlPrefix, icon: BookOpen })
+            options.push({ name: undefined, value: 'article', href: urlPrefix, icon: BookOpen })
         else if (event.kind === NDKKind.HorizontalVideo)
-            options.push({ name: $appMobileView ? "Watch" : undefined, value: 'video', href: urlPrefix, icon: YoutubeLogo })
+            options.push({ name: undefined, value: 'video', href: urlPrefix, icon: YoutubeLogo })
 
-        options.push({ name: $appMobileView ? "Comments" : undefined, value: 'comments', href: `${urlPrefix}/comments`, icon: ChatCircle })
+        options.push({ name: undefined, value: 'comments', href: `${urlPrefix}/comments`, icon: ChatCircle })
 
         if (event.kind === NDKKind.Article)
-            options.push({ name: $appMobileView ? "Highlights" : undefined, value: 'highlights', href: `${urlPrefix}/highlights`, icon: HighlightIcon })
+            options.push({ name: undefined, value: 'highlights', href: `${urlPrefix}/highlights`, icon: HighlightIcon })
 
         if (mainContentKinds.includes(event.kind!))
-            options.push({ name: $appMobileView ? "Curations" : undefined, value: 'curations', href: `${urlPrefix}/curations`, icon: CardsThree })
+            options.push({ name: undefined, value: 'curations', href: `${urlPrefix}/curations`, icon: CardsThree })
     }
 
     let container: HTMLDivElement;
@@ -78,34 +76,49 @@
 
 <div bind:this={container} class="mobile-nav {$$props.containerClass??""} {$$props.class??""}">
     <div class="
-        flex justify-between items-stretch
-        {$appMobileView ? "flex-col-reverse" : "flex-row"}
+        flex justify-between items-stretch flex-row
     ">
         <HorizontalOptionsList {options} class="mobile-nav responsive-padding flex gap-1 !text-sm py-2" />
 
-        <div class="flex flex-row gap-0 items-stretch max-sm:justify-between max-sm:grayscale-20">
-            <BookmarkButton
-                active={bookmarked}
-                on:click={() => toggleBookmarkedEvent(event)}
-            />
-
-            <button class="btn btn-circle btn-ghost hover:bg-green-400/20 group">
-                <Repeat class="w-6 h-6 text-green-400/30 group-hover:text-green-500 max-sm:text-green-500" />
-            </button>
-
-            <button
-                class="btn btn-circle btn-ghost hover:bg-yellow-400/20 group"
-                on:click={() => openModal(ShareModal, { event })}
-            >
-                <Export class="w-6 h-6 text-yellow-400/30 group-hover:text-yellow-500 max-sm:text-yellow-500" />
-            </button>
-
-            <button
-                class="btn btn-circle btn-ghost hover:bg-orange-400/20 group"
+        {#if $appMobileView}
+            <AnimatedToggleButton
+                icon={Lightning}
+                buttonClass="flex-none hover:bg-orange-400/20"
+                bgClass="bg-orange-500"
+                iconClass={"text-orange-400/30 group-hover:text-orange-500 max-sm:text-orange-500"}
                 on:click={() => openModal(ZapModal, { event })}
-            >
-                <Lightning class="w-6 h-6 text-orange-400/30 group-hover:text-orange-500 max-sm:text-orange-500" />
-            </button>
-        </div>
+            />
+        {:else}
+            <div class="flex flex-row gap-0 items-stretch max-sm:justify-between max-sm:grayscale-20">
+                <BookmarkButton
+                    active={bookmarked}
+                    on:click={() => toggleBookmarkedEvent(event)}
+                />
+
+                <AnimatedToggleButton
+                    icon={Repeat}
+                    buttonClass="flex-none hover:bg-green-400/20"
+                    bgClass="bg-green-500"
+                    iconClass={"text-green-400/30 group-hover:text-green-500 max-sm:text-green-500"}
+                    on:click
+                />
+
+                <AnimatedToggleButton
+                    icon={Export}
+                    buttonClass="flex-none hover:bg-yellow-400/20"
+                    bgClass="bg-yellow-500"
+                    iconClass={"text-yellow-400/30 group-hover:text-yellow-500 max-sm:text-yellow-500"}
+                    on:click={() => openModal(ShareModal, { event })}
+                />
+
+                <AnimatedToggleButton
+                    icon={Lightning}
+                    buttonClass="flex-none hover:bg-orange-400/20"
+                    bgClass="bg-orange-500"
+                    iconClass={"text-orange-400/30 group-hover:text-orange-500 max-sm:text-orange-500"}
+                    on:click={() => openModal(ZapModal, { event })}
+                />
+            </div>
+        {/if}
     </div>
 </div>

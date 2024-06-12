@@ -59,11 +59,6 @@
     $: if (!isPreview) {
         if ($pageHeader?.props)
             $pageHeader.props.editUrl = editUrl;
-        $pageHeader.subNavbarOptions = [
-            { name: "Comments", href: `${urlPrefix}/comments`, icon: ChatCircle, badge: "1" },
-            { name: "Highlights", href: `${urlPrefix}/highlights`, icon: HighlightIcon },
-            { name: "Curations", href: `${urlPrefix}/curations`, icon: CardsThree },
-        ];
         $pageHeader.footer = {
             component: ItemFooter,
             props: {
@@ -78,6 +73,7 @@
     {article}
     {isFullVersion}
     {isPreview}
+    on:title:inview_change
 />
 
 {#if !isPreview}

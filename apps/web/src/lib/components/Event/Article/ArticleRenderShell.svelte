@@ -47,7 +47,7 @@
                 <slot name="content" />
 
                 {#if !isFullVersion && event}
-                    <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
+                    <div class="absolute bottom-0 right-0 bg-gradient-to-t from-background to-transparent via-background/70 w-full h-2/3 flex flex-col items-center justify-center">
                         <UpgradeButton {event} />
                     </div>
                 {/if}

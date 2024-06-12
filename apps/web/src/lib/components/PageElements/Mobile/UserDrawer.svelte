@@ -2,7 +2,7 @@
 	import { Block, MenuList, MenuListItem, Navbar, Page, Panel, Link } from "konsta/svelte";
     import { page } from "$app/stores";
     import currentUser, { isGuest } from "$stores/currentUser";
-	import { ChalkboardSimple, Door, Gear, House, PaperPlaneTilt, CardsThree, Timer, Moon, Sun } from "phosphor-svelte";
+	import { ChalkboardSimple, Door, Gear, House, PaperPlaneTilt, CardsThree, Timer, Moon, Sun, TextAlignLeft, YoutubeLogo } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
 	import { logout } from "$utils/login";
 	import Avatar from '$components/User/Avatar.svelte';
@@ -10,6 +10,8 @@
 	import { openModal } from "$utils/modal";
 	import NewItemModal from "$modals/NewItemModal.svelte";
 	import { toggleMode } from "mode-watcher";
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
+	import ToggleDark from "$components/buttons/ToggleDark.svelte";
 
     export let opened = false;
 
@@ -36,7 +38,6 @@
         <MenuList class="!my-0">
             <MenuListItem
                 title="Home"
-                active={$page.url.pathname.startsWith('/home')}
                 href="/home"
                 onClick={() => opened = false}
             >
@@ -44,8 +45,23 @@
             </MenuListItem>
 
             <MenuListItem
+                title="Reads"
+                href="/home/reads"
+                onClick={() => opened = false}
+            >
+                <TextAlignLeft size={24} slot="media" />
+            </MenuListItem>
+
+            <MenuListItem
+                title="Watch"
+                href="/home/videos"
+                onClick={() => opened = false}
+            >
+                <YoutubeLogo size={24} slot="media" />
+            </MenuListItem>
+
+            <MenuListItem
                 title="Collections"
-                active={$page.url.pathname.startsWith('/collections')}
                 href="/collections"
                 onClick={() => opened = false}
             >
@@ -54,7 +70,6 @@
 
             <MenuListItem
                 title="Schedule"
-                active={$page.url.pathname.startsWith('/schedule')}
                 href="/schedule"
                 onClick={() => opened = false}
             >
@@ -63,7 +78,6 @@
 
             <MenuListItem
                 title="Drafts"
-                active={$page.url.pathname.startsWith('/drafts')}
                 href="/drafts"
                 onClick={() => opened = false}
             >
@@ -85,19 +99,15 @@
     <div class="grow"></div>
 
         <MenuList>
-            <MenuListItem
-                title="Toggle theme"
-                onClick={toggleMode}
-            >
-                <div class="relative" slot="media">
-                    <Sun size={24} class="dark:hidden" />
-                    <Moon size={24} class="hidden dark:inline" />
-                </div>
+            <MenuListItem>
+                <HorizontalOptionsList options={[
+                    { component: { component: ToggleDark }, id: 'toggle' },
+                    { icon: Door, fn: () => { logout(); opened = false; }, id: 'logout' }
+                ]} />
             </MenuListItem>
             
             <MenuListItem
                 title="Settings"
-                active={$page.url.pathname.startsWith('/settings')}
                 href="/settings"
                 onClick={() => opened = false}
             >
@@ -110,15 +120,6 @@
                         <Avatar user={$currentUser} {userProfile} size="tiny" slot="media" />
                     </MenuListItem>
                 </UserProfile>
-                <MenuListItem
-                    title="Logout"
-                    onClick={() => {
-                        logout()
-                        opened = false
-                    }}
-                >
-                    <Door size={24} slot="media" />
-                </MenuListItem>
             {/if}
         </MenuList>
     </Block>

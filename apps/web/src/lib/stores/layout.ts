@@ -17,8 +17,6 @@ interface Component {
 	containerClass?: string;
 }
 
-export const detailView: Writable<Component | null> = writable(null);
-
 export const pageHeader = writable<PageHeader | null>(null);
 
 export const modal = writable<Component | null>(null);
@@ -28,7 +26,6 @@ export function resetLayout() {
 	pageHeaderComponent.set(null);
 	pageHeader.set(null);
 	appMobileHideNewPostButton.set(false);
-	detailView.set(null);
 }
 
 resetLayout();

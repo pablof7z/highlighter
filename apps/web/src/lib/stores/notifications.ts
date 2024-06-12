@@ -4,6 +4,7 @@ import type { NDKEvent, NDKFilter, NDKUser } from '@nostr-dev-kit/ndk';
 import NDKSvelte, { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 import NDK, { NDKKind } from '@nostr-dev-kit/ndk';
 import currentUser, { isGuest } from './currentUser';
+import { variableStore } from 'svelte-capacitor-store';
 
 export const seenIds = persist(writable<Set<string>>(new Set()), createLocalStorage(), 'seen-ids');
 
@@ -100,4 +101,11 @@ export let showNotificationOption = derived([
 	currentUser, isGuest, hasUnreadNotifications
 ], ([$currentUser, $isGuest, $hasUnreadNotifications]) => {
 	return ($currentUser && (!$isGuest || $hasUnreadNotifications));
+});
+
+export const mobileNotifications = variableStore<boolean | null>({
+    storeName: 'mobile-notifications',
+    initialValue: null,
+    persist: true,
+    browserStorage: 'localStorage',
 });

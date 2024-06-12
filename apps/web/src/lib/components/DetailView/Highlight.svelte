@@ -3,7 +3,6 @@
     import Highlight from "$components/Highlight.svelte";
 	import HighlightBody from "$components/HighlightBody.svelte";
 	import currentUser from "$stores/currentUser";
-	import { detailView } from "$stores/layout";
     import { NDKEvent, NDKHighlight, NDKKind } from "@nostr-dev-kit/ndk";
 
     export let highlight: NDKEvent;
@@ -32,7 +31,6 @@
                 highlight.publish();
             }}
             on:cancel={() => {
-                $detailView = null;
                 window.history.back();
             }}
         />
