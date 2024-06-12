@@ -4,24 +4,26 @@
 	import { userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { ndk } from "$stores/ndk.js";
-	import { type NDKArticle, NDKTag, NDKKind, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { onDestroy, onMount } from "svelte";
+	import { type NDKArticle, NDKTag, NDKKind } from "@nostr-dev-kit/ndk";
+	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import HighlightingArea from './HighlightingArea.svelte';
 	import HighlightedContent from './HighlightedContent.svelte';
 	import EventTags from './Events/EventTags.svelte';
 	import currentUser from '$stores/currentUser';
-	import { page } from '$app/stores';
 	import ItemViewZaps from './Event/ItemView/ItemViewZaps.svelte';
 	import { createBlossom } from '$utils/blossom.js';
 	import UserProfile from './User/UserProfile.svelte';
 	import { UserProfileType } from '../../app';
 	import ArticleRenderShell from './Event/Article/ArticleRenderShell.svelte';
 	import { EventContent } from '@nostr-dev-kit/ndk-svelte-components';
+    import { inview } from 'svelte-inview';
 
     export let article: NDKArticle;
     const author = article.author;
     export let isFullVersion: boolean;
     export let isPreview = false;
+
+    const dispatcher = createEventDispatcher();
 
     const highlights = $ndk.storeSubscribe(
         { kinds: [NDKKind.Highlight], ...article.filter() },
@@ -72,11 +74,16 @@
     let skipImage = true;
 
     $: skipImage = !article.image;
+
+    function titleViewChange(e) {
+        const { inView } = e.detail;
+        dispatcher("title:inview_change", inView);
+    }
 </script>
 
 <UserProfile user={author} bind:userProfile>
     <ArticleRenderShell {skipImage} {isFullVersion} {isPreview}>
-        <div slot="title">
+        <div slot="title" use:inview  on:inview_change={titleViewChange}>
             {article.title??"Untitled"}
         </div>
 
@@ -106,7 +113,7 @@
                     <HighlightedContent event={article} {highlights} />
 
                     {#if !isFullVersion}
-                        <div class="absolute bottom-0 right-0 bg-gradient-to-t from-black to-transparent via-black/70 w-full h-2/3 flex flex-col items-center justify-center">
+                        <div class="absolute bottom-0 right-0 bg-gradient-to-t from-background to-transparent via-background/70 w-full h-2/3 flex flex-col items-center justify-center">
                             <UpgradeButton event={article} />
                         </div>
                     {/if}

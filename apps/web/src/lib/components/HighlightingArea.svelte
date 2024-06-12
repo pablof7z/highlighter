@@ -1,11 +1,9 @@
 <script lang="ts">
-	import Highlight from './Highlight.svelte';
-	import { NDKEvent, NDKKind, NDKRelay, NDKRelaySet, NDKTag, NostrEvent, NDKHighlight } from '@nostr-dev-kit/ndk';
+	import { NDKEvent, NDKKind, NDKTag, NostrEvent } from '@nostr-dev-kit/ndk';
 	import LogoGradient from "$icons/LogoGradient.svelte";
-	import { getParagraph, getText } from '$utils/text';
+	import { getParagraph } from '$utils/text';
 	import { onMount } from 'svelte';
 	import { ndk } from "$stores/ndk";
-	import { detailView } from '$stores/layout';
 	import { pushState } from '$app/navigation';
 	import HighlightTool from './HighlightArea/HighlightTool.svelte';
 
@@ -142,29 +140,7 @@
 
         await event.publish()
         pushState(`/e/${event.encode()}`, {
-            detailView: 'highlight'
         });
-        $detailView = {
-            component: Highlight,
-            props: { highlight: NDKHighlight.from(event) }
-        }
-    }
-
-    async function createHighlight() {
-        const content = getText();
-
-        if (!content) return;
-
-        const event = new NDKEvent($ndk, {
-            kind: NDKKind.Highlight,
-            content,
-            tags: [
-                [ "context", getParagraph() ],
-                ...tags
-            ]
-        } as NostrEvent);
-
-        await event.publish();
     }
 </script>
 

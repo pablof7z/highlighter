@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
-	import { detailView, resetLayout } from "$stores/layout";
+	import { resetLayout } from "$stores/layout";
 	import ItemShell from "$views/ItemShell.svelte";
-	import { NDKArticle, NDKEvent, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { appMobileHideNewPostButton } from "$stores/app";
@@ -14,7 +14,6 @@
     let event;
     $: event = $loadedEvent;
 
-    $detailView = null;
     $appMobileHideNewPostButton = true;
     
     onDestroy(resetLayout);

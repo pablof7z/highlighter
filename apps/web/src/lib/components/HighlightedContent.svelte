@@ -34,7 +34,6 @@
             const highlight = $highlights.find(h => h.id === highlightId);
             if (highlight) {
                 pushState(`/e/${highlight.encode()}`, {
-                    detailView: 'highlight'
                 });
                 openModal(HighlightModal, { highlight });
             }

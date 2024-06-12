@@ -13,7 +13,6 @@
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 	import { ndk } from "$stores/ndk";
 	import { page } from "$app/stores";
-	import PageTitle from "$components/PageElements/PageTitle.svelte";
 
     export let event: NDKEvent;
     export let ignoreHeader: boolean = false;
@@ -50,6 +49,15 @@
     <ArticleView
         article={event}
         isFullVersion={isEventFullVersion(event)}
+        on:title:inview_change={(e) => {
+            if (!$pageHeader?.props) return;
+
+            const inView = e.detail;
+            if (inView === false || inView === true) {
+                $pageHeader.props.title = event.title;
+                $pageHeader.props.compact = !inView;
+            }
+        }}
     />
 {:else if event instanceof NDKVideo}
     <VideoView

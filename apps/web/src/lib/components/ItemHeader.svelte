@@ -1,61 +1,83 @@
 <script lang="ts">
-	import { NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
-    import AvatarWithName from '$components/User/AvatarWithName.svelte';
-    import { Headphones, TextAlignLeft } from 'phosphor-svelte';
-	import SubscribeButton from './buttons/SubscribeButton.svelte';
-	import ClientName from './ClientName.svelte';
-	import currentUser from '$stores/currentUser';
+	import { NDKArticle, NDKUserProfile, NDKVideo } from '@nostr-dev-kit/ndk';
+	import { Navbar, NavbarBackLink } from 'konsta/svelte';
+	import { appMobileView } from '$stores/app';
+	import ItemHeaderInner from './ItemHeaderInner.svelte';
+	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
+	import { Repeat, Export, Lightning, TextAa } from 'phosphor-svelte';
+	import { openModal } from 'svelte-modals';
+	import AnimatedToggleButton from './PageElements/AnimatedToggleButton.svelte';
+	import BookmarkButton from './buttons/BookmarkButton.svelte';
+	import UserProfile from './User/UserProfile.svelte';
+	import ShareModal from '$modals/ShareModal.svelte';
+	import { Button } from './ui/button';
+	import ToggleDark from './buttons/ToggleDark.svelte';
 
     export let item: NDKArticle | NDKVideo;
     export let isFullVersion: boolean | undefined = undefined;
     export let urlPrefix: string;
     export let editUrl: string | undefined = undefined;
     export let title: string | undefined = undefined;
+    export let compact = true;
 
-    const author = item?.author;
+    let userProfile: NDKUserProfile;
 
-    const isVideo = item instanceof NDKVideo;
-    const isArticle = item instanceof NDKArticle;
+    let showTextTools = false;
 </script>
 
 {#if item}
-    <div class="
-        responsive-padding
-        py-2 flex flex-col sm:flex-row gap-6 justify-between items-center w-full {$$props.containerClass??""} {$$props.class??""}
-    ">
-        <div class="flex flex-row gap-6 items-center max-sm:justify-between w-full">
-            <AvatarWithName user={author} spacing="gap-4" avatarType="square" class="text-foreground grow">
-                <ClientName event={item} />
-            </AvatarWithName>
-            <div class="flex flex-row items-center">
-                {#if item.pubkey === $currentUser?.pubkey && editUrl}
-                    <div class="flex flex-row gap-4">
-                        <a href={editUrl} class="button-black px-6 mr-4">Edit</a>
-                    </div>
+    {#if $appMobileView}
+        <UserProfile bind:userProfile user={item.author} />
+        <Navbar
+            title={compact ? title : undefined}
+            subtitle={compact ? userProfile?.displayName : undefined}
+            class="
+                py-2 flex flex-col sm:flex-row justify-between items-center w-full {$$props.containerClass??""} {$$props.class??""}
+            " subnavbarClass={!showTextTools ? "hidden" : ""}
+            >
+            <div class="flex flex-row items-center gap-2" slot="left">
+                <NavbarBackLink showText={false} />
+                {#if compact}
+                    <Button variant="link" on:click={(e) => { showTextTools = !showTextTools; } }>
+                        <TextAa class="w-6 h-6" />
+                    </Button>
                 {/if}
-
-                <SubscribeButton user={item.author} />
             </div>
-        </div>
-
-        {#if isFullVersion === false}
-            <SubscribeButton user={author} />
-        {:else if false}
-            {#if isVideo}
-                <div class="tooltip tooltip-left max-sm:hidden" data-tip="Coming soon">
-                    <button class="btn btn-neutral !rounded-full">
-                        <TextAlignLeft size={24} />
-                        Transcript
-                    </button>
-                </div>
-            {:else if isArticle}
-                <div class="tooltip tooltip-left max-sm:hidden" data-tip="Coming soon">
-                    <button class="btn btn-neutral !rounded-full">
-                        <Headphones size={24} />
-                        Listen
-                    </button>
+            {#if !compact}
+                <div class="w-full">
+                    <ItemHeaderInner {item} {isFullVersion} {urlPrefix} {editUrl} {title} />
                 </div>
             {/if}
-        {/if}
-    </div>
+
+            <div class="flex flex-row items-center" slot="right" class:hidden={!compact}>
+                {#if compact}
+                    <AnimatedToggleButton
+                        icon={Export}
+                        buttonClass="hover:bg-yellow-400/20"
+                        bgClass="bg-yellow-500"
+                        iconClass={"text-yellow-400/30 group-hover:text-yellow-500 max-sm:text-yellow-500"}
+                        on:click={() => openModal(ShareModal, { event: item })}
+                    />
+
+                    <BookmarkButton
+                        on:click={() => toggleBookmarkedEvent(item)}
+                    />
+                {/if}
+            </div>
+            
+            <div class="w-full" slot="subnavbar">
+                {#if showTextTools}
+                    <div class="flex flex-row items-center gap-0">
+                        <ToggleDark />
+                    </div>
+                {/if}
+            </div>
+        </Navbar>
+    {:else}
+        <div class="
+            py-2 flex flex-col sm:flex-row gap-6 justify-between items-center w-full {$$props.containerClass??""} {$$props.class??""}
+        ">
+            <ItemHeaderInner {item} {isFullVersion} {urlPrefix} {editUrl} {title} />
+        </div>
+    {/if}
 {/if}

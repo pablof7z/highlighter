@@ -37,6 +37,7 @@
 	import Avatar from '$components/User/Avatar.svelte';
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
 	import { appMobileView } from '$stores/app';
+	import { newToasterMessage } from '$stores/toaster';
 
     const dispatch = createEventDispatcher();
 
@@ -167,11 +168,7 @@
         }
 }
 
-    const isCurrentUser = $currentUser?.pubkey === event.pubkey;
-
-    const isNotMobile = window.innerWidth > 640;
-
-    $: willShowReply = showReply === true || (showReply == undefined && isLastInThread && topLevel && isCurrentUser && isNotMobile);
+    $: willShowReply = showReply === true;// || (showReply == undefined && isLastInThread && topLevel && isCurrentUser && isNotMobile);
 
     let autofocusNewPost = false;
     let userProfile: UserProfileType | undefined | null;

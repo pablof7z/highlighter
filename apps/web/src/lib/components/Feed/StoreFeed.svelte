@@ -2,7 +2,6 @@
 	import { Readable, derived } from "svelte/store";
 	import { NDKArticle, NDKEvent, NDKEventId, NDKHighlight, NDKKind, NDKList, NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 	import Highlight from "$components/Highlight.svelte";
-	import ArticleLink from "$components/Events/ArticleLink.svelte";
     import { inview } from 'svelte-inview';
 	import EventWrapper from "./EventWrapper.svelte";
 	import { pluralize } from "$utils";
@@ -10,11 +9,7 @@
 	import CurationItem from "$components/CurationItem.svelte";
 	import { goto } from "$app/navigation";
 	import VideoLink from "$components/Events/VideoLink.svelte";
-	import BoostButton from "$components/buttons/BoostButton.svelte";
-	import Bookmark from "$components/Bookmark.svelte";
-	import SmallZapButton from "$components/buttons/SmallZapButton.svelte";
 	import Article from "$components/Grid/Article.svelte";
-	import { appMobileView } from "$stores/app";
 	import { isMobileBuild } from "$utils/view/mobile";
 
     export let feed: Readable<NDKEvent[]>;
