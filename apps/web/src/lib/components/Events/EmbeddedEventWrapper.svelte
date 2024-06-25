@@ -26,6 +26,8 @@
         })
 
     let showMore = false;
+
+    const articleKinds = [ 30023, 30040, 30041 ];
 </script>
 
 <div class="w-full my-2">
@@ -47,7 +49,7 @@
                 {/if}
             {/if}
         </div>
-    {:else if event.kind === NDKKind.Article}
+    {:else if articleKinds.includes(event.kind)}
         <Article article={NDKArticle.from(event)} wideView />
     {:else if mainContentKinds.includes(event.kind)}
         <div class="w-full border border-border">

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { VITE_NSECBUNKER_RETURN_URL } from './../../../.svelte-kit/ambient.d.ts';
     import { NDKPrivateKeySigner, NDKUser, NDKNip46Signer, NDKEvent } from "@nostr-dev-kit/ndk";
 	import NsecBunkerProviderSelect from "$components/Forms/NsecBunkerProviderSelect.svelte";
 	import type { NavigationOption, NsecBunkerProvider } from "../../app";
@@ -9,9 +8,8 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import CaretDown from "phosphor-svelte/lib/CaretDown";
 	import currentUser, { loginMethod, userPubkey } from "$stores/currentUser";
-	import { getUserFromPubkey } from "$lib/server/user";
-	import { newGuestLogin } from '../../routes/browser-session-setup.js';
 	import { bunkerNDK, ndk } from '$stores/ndk.js';
+	import { createGuestAccount } from "$utils/user/guest";
 
     export let actionButtons: NavigationOption[] = [];
     export let mode: string;
@@ -126,7 +124,7 @@
     }
 
     function continueAsGuest() {
-        newGuestLogin().then(() => {
+        createGuestAccount().then(() => {
             dispatch("signed-up");
         });
     }

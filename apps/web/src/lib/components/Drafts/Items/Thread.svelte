@@ -41,14 +41,3 @@
 {:else}
     <p>Failed to load thread</p>
 {/if}
-
-<style lang="postcss">
-    .bg {
-        background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD9488aa 0%, #7092A0aa 100%);
-    }
-
-    a {
-        @apply bg-white/5 hover:bg-white/10;
-        @apply transition-all duration-300;
-    }
-</style>

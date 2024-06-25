@@ -1,15 +1,15 @@
 <script lang="ts">
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
+	import { Button } from "$components/ui/button";
 	import { isImage, isVideo } from "$utils/media";
 	import { NDKTag } from "@nostr-dev-kit/ndk";
-	import { Image, X } from "phosphor-svelte";
+	import { Image, Timer, X } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
 
     export let uploadedFiles: string[] = [];
 
     function uploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {
         const {url, tags} = e.detail;
-        console.log(e.detail);
         if (url) {
             uploadedFiles.push(url);
             uploadedFiles = uploadedFiles;
@@ -44,7 +44,9 @@
 {/if}
 
 <div class="flex flex-row items-center text-foreground gap-4">
-    <BlossomUpload class="flex-none p-1 {$$props.buttonClass??""}" on:uploaded={uploaded}>
+    <BlossomUpload class="flex-none p-1" on:uploaded={uploaded}>
         <Image class="w-6 h-6" />
     </BlossomUpload>
+
+    <slot name="extraButtons" />
 </div>

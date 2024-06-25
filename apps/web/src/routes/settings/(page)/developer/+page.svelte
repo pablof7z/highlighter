@@ -21,10 +21,11 @@
     let cachedEventKinds: Record<number, number>;
     let cachedProfileCount: number | undefined;
 
-    function updateCacheCounts() {
-        db.events.each((row) => {
-            cachedEventKinds[row.kind] = (cachedEventKinds[row.kind] || 0) + 1
-        })
+    async function updateCacheCounts() {
+        const allEvents = await db.events.toArray();
+        for (const event of allEvents) {
+            cachedEventKinds[event.kind] = (cachedEventKinds[event.kind] || 0) + 1
+        }
         db.users.count().then(c => cachedProfileCount = c);
 
         cachedEventKinds = cachedEventKinds;
@@ -34,7 +35,7 @@
         cachedEventKinds = {};
         lruProfileCount = ($ndk.cacheAdapter as NDKCacheAdapterDexie).profiles?.size()
 
-        setInterval(updateCacheCounts, 1000);
+        // setInterval(updateCacheCounts, 1000);
     }
 
     updateCacheCounts();

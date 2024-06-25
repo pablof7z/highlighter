@@ -51,7 +51,6 @@
 </script>
 
 <!-- <Search value={query} on:change={(e) => query = e.detail} /> -->
-
 {#if query}
     <PageTitle title={`Search: ${query}`} />
 

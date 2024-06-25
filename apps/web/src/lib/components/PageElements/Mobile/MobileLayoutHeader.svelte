@@ -130,6 +130,13 @@
                 {#if $pageHeader?.left}
                     {#if $pageHeader.left.component}
                         <svelte:component this={$pageHeader.left.component.component} {...$pageHeader.left.component.props} />
+                    {:else if $pageHeader?.left?.fn}
+                        <Link onClick={$pageHeader?.left?.fn}>
+                            {#if $pageHeader?.left?.label}
+                                {$pageHeader?.left?.label}
+                            {/if}
+                            <svelte:component this={$pageHeader.left.icon} class="w-6 h-6 mr-2 inline" />
+                        </Link>
                     {:else if $pageHeader?.left?.url}
                         <NavbarBackLink
                             onClick={() => {
@@ -188,6 +195,13 @@
                 {#if $pageHeader?.left}
                     {#if $pageHeader.left.component}
                         <svelte:component this={$pageHeader.left.component.component} {...$pageHeader.left.component.props} />
+                    {:else if $pageHeader?.left?.fn}
+                        <Link onClick={$pageHeader?.left?.fn}>
+                            {#if $pageHeader?.left?.label}
+                                {$pageHeader?.left?.label}
+                            {/if}
+                            <svelte:component this={$pageHeader.left.icon} class="w-6 h-6 mr-2 inline" />
+                        </Link>
                     {:else}
                         <NavbarBackLink
                             onClick={() => {

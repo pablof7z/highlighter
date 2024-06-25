@@ -1,7 +1,7 @@
-    <script lang="ts">
+<script lang="ts">
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
-	import { NDKEvent, NDKKind, NDKTag, NDKUserProfile } from "@nostr-dev-kit/ndk";
-    import { closeModal } from "$utils/modal";
+	import { NDKEvent, NDKKind, NDKTag, dvmSchedule } from "@nostr-dev-kit/ndk";
+    import { closeModal, openModal } from "$utils/modal";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { appMobileView } from "$stores/app";
 	import UserProfile from "$components/User/UserProfile.svelte";
@@ -10,12 +10,15 @@
 	import { goto } from "$app/navigation";
 	import { ndk } from "$stores/ndk";
 	import Name from "$components/User/Name.svelte";
+	import { Timer } from "phosphor-svelte";
+	import ScheduleModal from "./ScheduleModal.svelte";
+	import { dvmScheduleEvent } from "$lib/dvm";
 
     export let replyTo: NDKEvent | undefined = undefined;
     export let tags: NDKTag[] = [];
     export let placeholder = "What is happening?!";
     export let title = "New Post";
-    export let wrapperClass;
+    export let wrapperClass: string = "";
     
     if (replyTo) {
         const e = new NDKEvent($ndk);
@@ -28,6 +31,7 @@
     let publishing = false;
 
     let forcePublish = false;
+    let forceGenerateEvent = false;
     let content: string;
 
     let replyToUserProfile: UserProfileType | null;
@@ -38,8 +42,27 @@
 
     export let actionButtons: NavigationOption[] = [];
 
+    let event: NDKEvent;
+    
+    function schedule() {
+        forceGenerateEvent = true;
+        openModal(ScheduleModal, {
+            title: 'Schedule Post',
+            onSchedule: async (timestamp: number) => {
+                event.created_at = Math.floor(timestamp/1000);
+                await event.sign();
+                dvmScheduleEvent(event);
+                setTimeout(() => {
+                    closeModal(ScheduleModal);
+                    closeModal();
+                }, 1500);
+            }
+        })
+    }
+
     $: {
         actionButtons = [
+            { icon: Timer, fn: schedule },
             { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, buttonProps: {variant: "accent"} }
         ];
 
@@ -89,7 +112,9 @@
         skipAvatar={true}
         collapsed={false}
         {forcePublish}
+        {forceGenerateEvent}
         bind:content
+        bind:event
         autofocus={true}
         extraTags={tags}
         bind:publishing
@@ -100,5 +125,6 @@
             goto(`/e/${event.encode()}`);
             closeModal();
         }}
-    />
+    >
+    </NewPost>
 </div>

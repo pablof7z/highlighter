@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { NDKEventStore, NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { Hexpubkey, NDKArticle, NDKKind, NDKUser, NDKUserProfile } from '@nostr-dev-kit/ndk';
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import { ndk } from '$stores/ndk';
@@ -17,7 +16,6 @@
 	import { BookmarkSimple, Heart } from 'phosphor-svelte';
 	import { toggleSaveForLater } from '$lib/events/save-for-later';
 	import { createBlossom } from '$utils/blossom';
-
 
     export let article: NDKArticle;
 

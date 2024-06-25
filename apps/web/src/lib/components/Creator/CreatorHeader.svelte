@@ -19,6 +19,8 @@
 	import HeaderMobileActionSheet from './HeaderMobileActionSheet.svelte';
 	import { userFollows } from '$stores/session';
 	import currentUser from '$stores/currentUser';
+	import { devMode } from '$stores/settings';
+	import UserInfoModal from '$modals/UserInfoModal.svelte';
 
     export let user: NDKUser;
     let userProfile: NDKUserProfile;
@@ -161,10 +163,15 @@
                             <CreatorHeaderFollowButton {user} {collapsed} />
                             <CreatorHeaderInboxButton {user} {collapsed} />
                             <CreatorHeaderSupportButton {user} {collapsed} />
-                            <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
+                            <!-- <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
                                 <Export class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
                                 <span class="max-sm:hidden {collapsed ? "max-sm:hidden text-sm" : "text-base"}">Share</span>
-                            </button>
+                            </button> -->
+                            {#if $devMode}
+                                <button class="rounded-full" on:click={() => openModal(UserInfoModal, { user })}>
+                                    <DotsThree />
+                                </button>
+                            {/if}
                         </div>
                     </div>
                 {/if}

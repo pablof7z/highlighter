@@ -47,7 +47,11 @@ export function urlFromEvent(
 
 	// mobile builds use fixed URLs with arguments as parameters
 	if (!fullUrl && isMobileBuild()) {
-		return `/mobile/view?eventId=${event.encode()}`;
+		if (event.isParamReplaceable()) {
+			return `/a?eventId=${event.encode()}`;
+		} else {
+			return `/e?eventId=${event.encode()}`;
+		}
 	}
 
 	authorUrl ??= getAuthorUrlSync(event.author);

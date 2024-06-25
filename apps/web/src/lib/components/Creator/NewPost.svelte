@@ -4,7 +4,7 @@
 	import StreamIcon from "$icons/StreamIcon.svelte";
 	import Box from "$components/PageElements/Box.svelte";
 	import { drafts } from "$stores/drafts";
-	import { openModal, replaceModal } from "$utils/modal";
+	import { closeModal, openModal, replaceModal } from "$utils/modal";
 	import NewPostModal from "$modals/NewPostModal.svelte";
 
     export let onNewShortPost: (() => void) | undefined = undefined;
@@ -13,7 +13,7 @@
         if (!!onNewShortPost) {
             onNewShortPost();
         } else {
-            openModal(NewPostModal);
+            // openModal(NewPostModal);
         }
     }
 </script>
@@ -28,9 +28,9 @@
         justify-center
     ">
         <NewPostItem icon={Note} title="Short Note" on:click={shortNote} />
-        <NewPostItem icon={TextAlignLeft} title="Article" href="/articles/new" />
-        <NewPostItem icon={Play} title="Video" href="/videos/new" />
-        <NewPostItem icon={RowsPlusBottom} title="Thread" href="/threads/new" />
+        <NewPostItem icon={TextAlignLeft} title="Article" href="/articles/new" on:click={closeModal} />
+        <NewPostItem icon={Play} title="Video" href="/videos/new" on:click={closeModal} />
+        <NewPostItem icon={RowsPlusBottom} title="Thread" href="/threads/new" on:click={closeModal} />
     </div>
     {#if $drafts?.length > 0}
         <div class="self-start">

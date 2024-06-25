@@ -12,7 +12,7 @@
 	import { CardsThree, ChatCircle } from "phosphor-svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import ItemViewComments from "$views/Item/ItemViewComments.svelte";
-	import { appMobileView } from "$stores/app";
+	import { appMobileHideNewPostButton, appMobileView } from "$stores/app";
 
     export let article: NDKArticle;
     const author = article.author;
@@ -53,6 +53,8 @@
     let urlPrefix: string;
     
     $: urlPrefix = urlFromEvent(article, authorUrl);
+
+    $appMobileHideNewPostButton = true;
 
     getAuthorUrl(author).then(url => authorUrl = url);
 

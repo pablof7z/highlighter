@@ -3,7 +3,6 @@
 
     export let icon: any;
     export let title: string;
-    export let comingSoon = false;
     export let href: string | undefined = "#";
 </script>
 
@@ -25,9 +24,3 @@
         {title}
     </div>
 </Button>
-
-<style lang="postcss">
-    a {
-        @apply transition-all duration-300;
-    }
-</style>

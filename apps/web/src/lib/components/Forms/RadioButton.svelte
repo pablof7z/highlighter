@@ -38,18 +38,3 @@
         </div>
     </div>
 </Button>
-
-<style lang="postcss">
-    button {
-        @apply self-stretch justify-between items-start flex-col inline-flex h-full;
-        @apply flex flex-col rounded;
-    }
-
-    .container {
-        @apply w-full overflow-clip;
-    }
-
-    .container.selected {
-        @apply border border-accent;
-    }
-</style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKFilter, NDKKind, NDKRelaySet, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { layoutMode } from "$stores/layout";
 	import { onDestroy } from "svelte";
 	import StoreGrid from "$components/Grid/StoreGrid.svelte";
@@ -7,12 +7,22 @@
 	import { ndk } from "$stores/ndk.js";
 	import { Readable, derived } from "svelte/store";
 	import { filterArticle } from "$utils/article-filter";
+	import { page } from "$app/stores";
 
     $layoutMode = "full-width";
 
+    const relays = $page.url.searchParams.get('relays')?.split(',');
+    let relaySet: NDKRelaySet | undefined;
+    let filters: NDKFilter[] = [{ kinds: [NDKKind.Article], limit: 200 }];
+
+    if (relays && relays.length > 0) {
+        relaySet = NDKRelaySet.fromRelayUrls(relays, $ndk);
+        filters.push({ limit: 500 })
+    }
+
     const articles = $ndk.storeSubscribe(
-        { kinds: [NDKKind.Article], limit: 200 },
-        { subId: 'home-articles', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY },
+        filters,
+        { subId: 'home-articles', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY, relaySet },
         NDKArticle
     );
 

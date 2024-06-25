@@ -9,7 +9,6 @@
 	import { requiredTiersFor } from "$lib/events/tiers";
 	import { urlSuffixFromEvent } from "$utils/url";
 	import { getSummary } from "$utils/article";
-	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { addReadReceipt } from "$utils/read-receipts";
 	import { isEventFullVersion, mainContentKinds } from "$utils/event";
 	import { getDefaultRelaySet } from "$utils/ndk";
@@ -28,6 +27,12 @@
     export let urlPrefix: string | undefined = undefined;
     export let event: NDKEvent | undefined = undefined;
 
+    export let title: string | undefined = undefined;
+    export let image: string | undefined = undefined;
+
+    let loading = false;
+    let eosed = false;
+
     const tagIdExplicit = !!tagId;
 
     event = rawEvent ? new NDKEvent($ndk, rawEvent) : undefined;
@@ -39,23 +44,27 @@
 
     if (user) startUserView(user);
 
+    // if we are still loading after 1 second, show the loading screen
+    setTimeout(() => { loading = true; }, 1000);
+
     const relaySet = getDefaultRelaySet();
     const relay = Array.from(relaySet.relays)[0];
     relay.on("authed", () => {
         if (events && !authed) {
             events.unsubscribe();
         }
-        events = $ndk.storeSubscribe(getFilter(), { groupable: false, subId: 'with-item-fetcher' });
+        events = $ndk.storeSubscribe(getFilter(), { groupable: false, subId: 'with-item-fetcher', closeOnEose: true });
         events.onEose(() => { eosed = true; });
 
         authed = true;
     });
 
     const fetchEventFromRecentlyConnectedRelay = async (relay: NDKRelay) => {
+        console.log('fetchEventFromRecentlyConnectedRelay', relay)
         console.log('fetching event from recently connected relay', relay.url, getFilter());
         
         const relaySet = new NDKRelaySet(new Set([relay]), $ndk);
-        const es = await $ndk.fetchEvents(getFilter(), { subId: 'with-item-fetcher-per-relay' }, relaySet);
+        const es = await $ndk.fetchEvents(getFilter(), { subId: 'with-item-fetcher-per-relay', groupable: false }, relaySet);
 
         for (const e of es) {
             if (e.created_at! > (event?.created_at || 0)) {
@@ -65,7 +74,7 @@
         }
     }
 
-    $ndk.pool.on("relay:ready", fetchEventFromRecentlyConnectedRelay);
+    $ndk.pool.on("relay:connect", fetchEventFromRecentlyConnectedRelay);
 
     onDestroy(() => {
         userSubscription?.unref();
@@ -96,9 +105,7 @@
     }
 
     let events: NDKEventStore<NDKEvent> | undefined;
-    let eosed = false;
 
-    let title: string | undefined;
     let summary: string | undefined;
 
     // if (!event) {
@@ -111,7 +118,7 @@
     // }
 
     // Search for an event, if we haven't EOSEd yet, only look for explicitly supported kinds
-    $: if (events && !event) {
+    $: if ($events && !event) {
         const e = Array.from($events) as NDKEvent[];
 
         const matchingEvent = e.find(e => mainContentKinds.includes(e.kind!)) as NDKEvent | undefined;
@@ -127,11 +134,26 @@
         events.onEose(() => { eosed = true; });
     }
 
-    $: if (event?.kind === NDKKind.Article) article = NDKArticle.from(event);
-    $: if (event?.kind === NDKKind.HorizontalVideo) video = NDKVideo.from(event);
-    $: if (article || video) title = article?.title || video?.title;
-    $: if (article && !summary) summary = getSummary(article);
-    $: if (video && !summary) summary = video.content;
+    $: if (event && event.kind) {
+        switch (event.kind) {
+            case NDKKind.Article: 
+                article = NDKArticle.from(event);
+                title = article.title;
+                image = article.image;
+                summary = getSummary(article);
+                break;
+            case NDKKind.HorizontalVideo:
+                video = NDKVideo.from(event);
+                title = video.title;
+                image = video.thumbnail;
+                summary = video.content;
+                break;
+            default:
+                title = undefined;
+                image = undefined;
+                break;
+        }
+    }
 
     export let eventType: EventType | undefined = undefined;
     let tiersWithFullAccess: string[] | undefined;
@@ -178,19 +200,19 @@
 </svelte:head>
 
 {#if needsToLoad || (!!event || eosed)}
-    <LoadingScreen ready={!!event || eosed}>
-            {#if event}
-                <UserProfile user={event.author} bind:authorUrl let:userProfile>
-                    <slot {event} {urlPrefix} {eventType} {article} {video} {isFullVersion} {authorUrl} {userProfile} />
-                </UserProfile>
+    {#if event}
+        <UserProfile user={event.author} bind:authorUrl let:userProfile>
+            <slot {event} {urlPrefix} {eventType} {article} {video} {isFullVersion} {authorUrl} {userProfile} />
+        </UserProfile>
 
-                {#if $debugMode}
-                    <pre class="max-w-5xl overflow-auto">{JSON.stringify(event.rawEvent(), null, 4)}</pre>
-                {/if}
-            {:else}
-                Event not found
-            {/if}
-    </LoadingScreen>
+        {#if $debugMode}
+            <pre class="max-w-5xl overflow-auto">{JSON.stringify(event.rawEvent(), null, 4)}</pre>
+        {/if}
+    {:else if eosed}
+        <p>Unable to find the event.</p>
+    {:else if loading}
+        <p>Still looking for the event...</p>
+    {/if}
 {/if}
 
 <!-- <div class="py-24"></div> -->

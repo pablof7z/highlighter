@@ -12,20 +12,23 @@
     export let event: NDKEvent;
 
     let active: boolean;
-    let zappedByUser: NDKEventStore<NDKEvent> | undefined;
+    let allZaps: NDKEventStore<NDKEvent> | undefined;
     
-    $: if (!zappedByUser && $currentUser) {
-        zappedByUser = $ndk.storeSubscribe(
-            { kinds: [9735], ...event.filter(), "#P": [$currentUser.pubkey]}
+    $: if (!allZaps && $currentUser) {
+        allZaps = $ndk.storeSubscribe(
+            { kinds: [9735], ...event.filter()},
+            { subId: 'small-zap', groupableDelayType: 'at-least', groupableDelay: 400 },
         );
     }
 
-    $: if ($zappedByUser) {
-        active = $zappedByUser.length > 0;
+    $: if ($allZaps) {
+        active = $allZaps
+            .filter((zap) => zap.tagValue("P") === $currentUser!.pubkey)
+            .length > 0;
     }
 
     onDestroy(() => {
-        zappedByUser?.unsubscribe();
+        allZaps?.unsubscribe();
     })
 </script>
 

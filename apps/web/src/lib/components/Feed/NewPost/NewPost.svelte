@@ -26,8 +26,14 @@
     export let skipButtons = false;
     export let skipFadeMode = false;
 
+    export let forceGenerateEvent = false;
     export let forcePublish = false;
 
+    $: if (forceGenerateEvent) {
+        forceGenerateEvent = false;
+        generateEvent();
+    }
+    
     $: if (forcePublish) {
         forcePublish = false;
         publish();
@@ -53,9 +59,7 @@
         dispatch("cancel");
     }
 
-    async function publish() {
-        publishing = true;
-
+    function generateEvent() {
         try {
             for (const url of uploadedFiles) {
                 content += `\n${url}`;
@@ -74,9 +78,21 @@
             }
 
             event.content = content;
-            const relaySet = relaySetForEvent(event);
             event.id = "";
             hasFocus = false;
+            dispatch("event-generated");
+        } catch (e) {
+            console.error(e);
+            newToasterMessage(e.relayErrors ?? e.message, "error");
+        }
+    }
+
+    async function publish() {
+        publishing = true;
+
+        try {
+            const relaySet = relaySetForEvent(event);
+            await generateEvent();
             await event.sign();
             event.publish(relaySet);
             dispatch("publish", event);
@@ -110,7 +126,7 @@
         }
     }
 
-    let uploadedFiles: string[] = [];
+    export let uploadedFiles: string[] = [];
 </script>
 
 {#if !$appMobileView && hasFocus && content.length > 0 && !skipFadeMode}
@@ -149,7 +165,9 @@
 
                 <div class="flex flex-row w-full justify-between items-end">
                     <div class="px-4 mb-4 shrink" class:hidden={isCollapsed}>
-                        <Attachments buttonClass="btn btn-circle btn-ghost" bind:uploadedFiles />
+                        <Attachments bind:uploadedFiles>
+                            <slot name="extraButtons" />
+                        </Attachments>
                     </div>
 
                     {#if !$appMobileView && !skipButtons}

@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import mkcert from 'vite-plugin-mkcert';
+import crossOriginIsolation from 'vite-plugin-cross-origin-isolation';
 
 const mobileBuild = !!process.env.MOBILE;
 
@@ -46,16 +47,25 @@ let pwa: any[] = mobileBuild ? [] : [SvelteKitPWA({
 })]
 
 export default defineConfig({
-	server: {
-		https: false
-	},
+    server: {
+        // headers: {
+        //     'Cross-Origin-Opener-Policy': 'same-origin',
+        //     'Cross-Origin-Embedder-Policy': 'require-corp',
+        // },
+        https: false
+    },
 	plugins: [
         sveltekit(),
         ...pwa,
-        nodePolyfills(), mkcert()],
+        nodePolyfills(),
+        mkcert(),
+        // crossOriginIsolation()
+    ],
     optimizeDeps: {
 		exclude: [
             "phosphor-svelte",
+            // '@sqlite.org/sqlite-wasm',
+            // '@nostr-dev-kit/ndk-cache-sqlite-wasm',
         ],
 	},
 });

@@ -20,6 +20,8 @@
 	import { initStoreEvent } from '$stores/events';
 	import { ModeWatcher } from "mode-watcher";
 	import { ndk } from '$stores/ndk';
+	import OnboardingScreen from '$views/Mobile/Pages/OnboardingScreen.svelte';
+	import { page } from '$app/stores';
 	
 
 	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
@@ -59,12 +61,12 @@
 	let mounted = browser ? false : true;
 
 	$: if (!$currentUser && browser) {
-		const browserSetupPromise = browserSetup();
+		const browserSetupPromise = browserSetup(false);
 		configureFeNDK().then(async () => {
 			await browserSetupPromise;
 		});
 
-		hasJwt = !!$jwt && document.cookie.includes('jwt=');
+		// hasJwt = !!$jwt && document.cookie.includes('jwt=');
 	}
 
 	onMount(async () => {
@@ -97,10 +99,10 @@
 	// 	openModal(SignupModal, { mode: 'welcome' });
 	// }
 
-	$: if (mounted && !hasJwt) {
-		hasJwt = !!$jwt && document.cookie.includes('jwt=');
-		d(`hasJwt`, hasJwt);
-	}
+	// $: if (mounted && !hasJwt) {
+	// 	hasJwt = !!$jwt && document.cookie.includes('jwt=');
+	// 	d(`hasJwt`, hasJwt);
+	// }
 
 	$: if (mounted && $currentUser && $ndk.signer && !hasJwt && !finalizingLogin) {
 		finalizingLogin = true;
@@ -117,7 +119,6 @@
 	}
 
 	function setResponsiveView() {
-		console.log('setResponsiveView', $appMobileView);
 		if (isMobileBuild()) {
 			$appMobileView = true;
 			return;
@@ -140,7 +141,11 @@
 
 {#if $appMobileView}
 	<MobileAppShell>
-		<slot />
+		{#if !$currentUser && !$page.url.pathname.startsWith("/mobile")}
+			<OnboardingScreen />
+		{:else}
+			<slot />
+		{/if}
 	</MobileAppShell>
 {:else}
 	<LoadingScreen ready={mounted}>

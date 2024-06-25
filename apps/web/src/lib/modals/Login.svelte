@@ -46,30 +46,6 @@
         closeModal();
     }
 
-    async function loginWithNsec() {
-        try {
-            const pk = nip19.decode(nsec);
-            if (!pk.data) {
-                error = "Invalid nsec";
-                return;
-            }
-            const key = pk.data as Uint8Array;
-            const signer = new NDKPrivateKeySigner(key);
-            console.log(signer);
-            const user = await signer.user();
-            $ndk.signer = signer;
-            loginMethod.set('pk');
-            privateKey.set(signer.privateKey);
-            $currentUser = user;
-
-            _login('pk', user.pubkey);
-            console.log(user.pubkey);
-            closeModal();
-        } catch (e) {
-            console.log(e)
-        }
-    }
-
     async function loginNip46(token: string) {
         const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
         let localSigner: NDKPrivateKeySigner;``

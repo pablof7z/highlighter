@@ -9,7 +9,6 @@
 	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
 	import { closeModal } from '$utils/modal';
 	import { NavigationOption } from "../../app";
-	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
     import { Export } from "phosphor-svelte";
     import { Share } from '@capacitor/share';
 	import ShareImage from "$components/Event/ShareImage.svelte";
@@ -17,6 +16,7 @@
 	import { activeBlossomServer } from '$stores/session';
     import * as Tabs from "$lib/components/ui/tabs";
 	import Checkbox from '$components/Forms/Checkbox.svelte';
+	import ShareImageUploader from '$components/ShareImageUploader.svelte';
 
     export let event: NDKEvent;
     export let content: string = "";
@@ -80,24 +80,37 @@
     let coverImageUrl: string | undefined;
     getCoverImageUrl().then((url) => coverImageUrl = url);
 
-    async function publish() {
+    function onCoverImageUploaded(e: CustomEvent) {
+        const url = e.detail.url;
+        console.log("Cover image uploaded", url);
+        coverImageUrl = url;
+        publish(true);
+    }
+
+    function onCoverImageError(e: any) {
+        publish(true);
+    }
+
+    async function publish(skipImageUpload = false) {
         publishing = true;
+
+        if (!coverImageUrl && !uploadShareImage && !skipImageUpload) {
+            // If we don't have a cover image, and we haven't tried to upload one yet,
+            // force <ShareImageUploader /> to upload an image and continue the flow there
+            // from the onCoverImageUploaded or onCoverImageError callbacks
+            uploadShareImage = true;
+            return;
+        }
+        
         const boostEvent = new NDKEvent($ndk);
         const boostedEvent = previewEvent ?? event;
         boostEvent.kind = NDKKind.Text;
-        boostEvent.content = `${content}\n\nnostr:${event.encode()}`;
 
-        try {
-            coverImageUrl ??= await uploadImage();
-            if (coverImageUrl) {
-                boostEvent.content += `\n\n${coverImageUrl}`;
-            }
-        } catch (e) {
-            console.error(e);
-        }
-        
-        if (articleUrl)
-            boostEvent.content += `\n\n${articleUrl}`;
+        const contentParts: string[] = [content];
+        contentParts.push(`nostr:${event.encode()}`);
+
+        if (coverImageUrl) contentParts.push(coverImageUrl);
+        if (articleUrl) contentParts.push(articleUrl);
 
         boostEvent.tag(boostedEvent, "mention", false, "q");
         
@@ -106,6 +119,11 @@
         }
         if (boostedEvent.kind !== NDKKind.Text) boostEvent.tags.push(["k", boostedEvent.kind!.toString()]);
         boostEvent.tag(boostedEvent.author);
+
+        boostEvent.content = contentParts
+            .filter(part => part.length > 0)
+            .join("\n\n");
+        
         try {
             await boostEvent.sign();
             boostEvent.publish();
@@ -115,11 +133,11 @@
         }
     }
 
-    let shareImageEl: HTMLElement;
     let repost = true;
     let selectedView = "nostr";
 
     let actionButtons: NavigationOption[];
+    let uploadShareImage = false;
 
     function share() {
         Share.share({
@@ -177,7 +195,13 @@
             <div class="w-full flex flex-col gap-4">
                 <div class="w-full border border-border rounded overflow-clip">
                     {#if article}
-                        <ShareImage {article} bind:node={shareImageEl} />
+                        <ShareImageUploader
+                            {article}
+                            forceGenerate={uploadShareImage}
+                            bind:forceUpload={uploadShareImage}
+                            on:uploaded={onCoverImageUploaded}
+                            on:error={onCoverImageError}
+                        />
                     {:else}
                         <EventWrapper
                             {event}

@@ -32,6 +32,8 @@ export async function load({ params, fetch, data }) {
 	nip05.useFetchImplementation(async (url: string, options: any) => {
 		options ??= {};
 		options.cache = 'no-store';
+		// set no-cors
+		options.mode = 'no-cors';
 
 		debug('fetching nip05', { url, options });
 		const res = await fetch(url, options);

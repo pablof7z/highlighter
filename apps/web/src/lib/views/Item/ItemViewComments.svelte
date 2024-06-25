@@ -17,16 +17,25 @@
 
     export let event: NDKEvent;
 
-    const replies = $ndk.storeSubscribe(
+    const replies = $ndk.storeSubscribe([
         { kinds: [NDKKind.Text, NDKKind.GroupReply], ...event.filter() },
-        { subId: 'item-view-replies' }
-    );
+        { kinds: [NDKKind.Text, NDKKind.GroupReply], "#e": [ event.id ] },
+    ], { subId: 'item-view-replies' });
 
     onDestroy(() => {
         replies.unsubscribe();
     });
     
-    const onlyRootEvents = derived(replies, $replies => $replies.filter(isDirectReply(event)));
+    /**
+     * Only gets the root events of conversations, except on 30041 because those are not root events themselves
+     */
+    const onlyRootEvents = derived(replies, $replies => {
+        if (event.kind === 30041) {
+            return $replies;
+        } else {
+            return $replies.filter(isDirectReply(event))
+        }
+    });
 
     let zapEvent: NDKEvent | undefined;
     let zapInvoice: NDKZapInvoice | undefined;

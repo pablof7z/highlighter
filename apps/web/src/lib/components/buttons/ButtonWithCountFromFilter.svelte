@@ -49,8 +49,8 @@
     on:click
 >
     {#if isActive}
-        <svelte:component this={icon} class="sm:w-5 w-3.5 sm:h-5 h-3.5 {color}" weight="fill" />
+        <svelte:component this={icon} class="sm:w-5 w-7 sm:h-5 h-7 {color}" weight="fill" />
     {:else}
-        <svelte:component this={icon} class="sm:w-5 w-3.5 sm:h-5 h-3.5 {color}" weight="regular" />
+        <svelte:component this={icon} class="sm:w-5 w-7 sm:h-5 h-7 {color}" weight="regular" />
     {/if}
 </ButtonWithCount>

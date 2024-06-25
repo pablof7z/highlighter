@@ -2,7 +2,7 @@
 	import { NDKArticle, NDKEvent, NDKKind, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { isEventFullVersion } from "$utils/event";
 	import ArticleView from "$components/ArticleView.svelte";
-	import { onDestroy, onMount } from "svelte";
+	import { onDestroy } from "svelte";
 	import { pageHeader } from "$stores/layout";
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
@@ -13,26 +13,19 @@
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 	import { ndk } from "$stores/ndk";
 	import { page } from "$app/stores";
+	import ModularArticleView from "./ModularArticleView.svelte";
+	import ModularArticleItemView from "./ModularArticleItemView.svelte";
 
-    export let event: NDKEvent;
+    export let event: NDKEvent | NDKArticle | NDKVideo;
     export let ignoreHeader: boolean = false;
 
-    $: if (!ignoreHeader || true) {
+    $: if (!ignoreHeader) {
         if (event) {
-            if (event.kind === NDKKind.Text) {
-                $pageHeader = {
-                    title: "Thread",
-                    left: {
-                        label: 'back'
-                    }
-                }
-            } else {
-                $pageHeader = {
-                    component: ItemHeader,
-                    props: {
-                        item: event,
-                        class: "max-w-[var(--content-focused-width)] mx-auto w-full"
-                    }
+            $pageHeader = {
+                component: ItemHeader,
+                props: {
+                    item: event,
+                    class: "max-w-[var(--content-focused-width)] mx-auto w-full"
                 }
             }
         }
@@ -54,7 +47,7 @@
 
             const inView = e.detail;
             if (inView === false || inView === true) {
-                $pageHeader.props.title = event.title;
+                $pageHeader.props.title = event.title?.slice(0, 20);
                 $pageHeader.props.compact = !inView;
             }
         }}
@@ -62,6 +55,15 @@
 {:else if event instanceof NDKVideo}
     <VideoView
         video={event}
+        isFullVersion={isEventFullVersion(event)}
+    />
+{:else if event.kind === 30040}
+    <ModularArticleView
+        {event}
+    />
+{:else if event.kind === 30041}
+    <ModularArticleItemView
+        article={NDKArticle.from(event)}
         isFullVersion={isEventFullVersion(event)}
     />
 {:else if !event}

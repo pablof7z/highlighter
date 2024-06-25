@@ -1,6 +1,6 @@
 <script lang="ts">
     import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import { Bell, CaretRight, Code, Key, Keyhole, Package, ShareNetwork } from "phosphor-svelte";
+	import { Bell, CaretRight, Code, Key, Keyhole, Lightning, Package, ShareNetwork, Wallet } from "phosphor-svelte";
 	import { logout } from "$utils/login";
 	import currentUser from "$stores/currentUser";
 	import { Block } from "konsta/svelte";
@@ -68,6 +68,16 @@
                     <CaretRight class="w-5 h-5" />
                 </a>
             </li>
+
+            <li>
+                <a href="/settings/wallet">
+                    <span>
+                        <Lightning class="w-5 h-5" />
+                        Wallet
+                    </span>
+                    <CaretRight class="w-5 h-5" />
+                </a>
+            </li>
         </ul>
     </section>
 
@@ -77,7 +87,18 @@
         </div>
 
         <ul class="w-full">
-            <ToggleDark />
+            <li>
+                <ToggleDark />
+            </li>
+            <li>
+                <a href="/settings/drafts">
+                    <span>
+                        <Bell class="w-5 h-5" />
+                        Drafts
+                    </span>
+                    <CaretRight class="w-5 h-5" />
+                </a>
+            </li>
         </ul>
     </section>
 

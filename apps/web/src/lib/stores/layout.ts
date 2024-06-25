@@ -5,7 +5,7 @@ import { appMobileHideNewPostButton } from './app';
 /**
  * `list-column` - The sidebar takes about 1/3 of the screen and the main content takes about 2/3 of the screen
  */
-type LayoutMode = "content-focused" | "full-width" | "single-column-focused";
+type LayoutMode = "content-focused" | "full-width" | "single-column-focused" | "mobile-full-screen";
 
 export const layoutMode = writable<LayoutMode>("single-column-focused");
 
@@ -19,7 +19,7 @@ interface Component {
 
 export const pageHeader = writable<PageHeader | null>(null);
 
-export const modal = writable<Component | null>(null);
+export const modals = writable<Component[]>([]);
 
 export function resetLayout() {
 	layoutMode.set("single-column-focused");

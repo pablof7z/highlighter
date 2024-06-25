@@ -5,7 +5,6 @@
 
     export let option: NavigationOption;
     export let value: string;
-    export let collapsed;
 
     let active = false;
     let el: HTMLElement;

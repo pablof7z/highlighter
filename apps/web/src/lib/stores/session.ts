@@ -12,6 +12,7 @@ import {
 	NostrEvent,
 	NDKSubscriptionCacheUsage,
 	NDKFilter,
+	getRelayListForUser,
 } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
@@ -23,6 +24,7 @@ import currentUser from './currentUser';
 import { writable } from 'svelte/store';
 import { creatorRelayPubkey } from '$utils/const';
 import { notificationsSubscribe } from './notifications';
+import { cashuInit } from './cashu';
 
 const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
@@ -201,9 +203,12 @@ export async function prepareSession(): Promise<void> {
 		return;
 	}
 
-	return new Promise<void>((resolve) => {
+	return new Promise<void>(async (resolve) => {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
 		const $sessionUpdatedAt = alreadyKnowFollows ? get(sessionUpdatedAt) : undefined;
+
+		const userRelays = await getRelayListForUser($currentUser.pubkey, $ndk);
+		console.log('userRelays', userRelays)
 
 		fetchData('user', $ndk, [$currentUser.pubkey], {
 			profileStore: userProfile,
@@ -236,6 +241,7 @@ export async function prepareSession(): Promise<void> {
 			resolve();
 
 			notificationsSubscribe($ndk, $currentUser);
+			// cashuInit($ndk, $currentUser);
 
 			const $userFollows = get(userFollows);
 			const $networkFollows = get(networkFollows);
@@ -568,13 +574,14 @@ async function fetchData(
 		if (opts.supportStore) {
 			filters.push({ authors, kinds: [7001 as number] });
 		}
-		
+
 		const userDataSubscription = $ndk.subscribe(filters, {
 			closeOnEose: opts.closeOnEose!,
 			groupable: false,
 			cacheUsage: NDKSubscriptionCacheUsage.PARALLEL,
 			subId: `session:${name}`
 		}, relaySet);
+		console.log('session', {name, relaySet})
 
 		userDataSubscription.on('event', processEvent);
 

@@ -1,6 +1,6 @@
-import { get as getStore } from 'svelte/store';
+import { get, get as getStore } from 'svelte/store';
 import 'websocket-polyfill';
-import { explicitRelayUrls, ndk } from "$stores/ndk";
+import { explicitRelayUrls, ndk, ndkRelaysWithAuth } from "$stores/ndk";
 import { newToasterMessage } from '$stores/toaster';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
 import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
@@ -8,6 +8,7 @@ import createDebug from 'debug';
 import { debugMode } from '$stores/session';
 import { defaultRelays } from './const';
 import NDKSigVerificationWorker from "@nostr-dev-kit/ndk/workers/sig-verification?worker";
+// import NDKSqliteWorker from "@nostr-dev-kit/ndk-cache-sqlite-wasm/worker?worker";
 
 const debug = createDebug('HL:ndk');
 
@@ -66,6 +67,12 @@ export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
 	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL13' });
+	// const NDKCacheAdapterSqlite = await import('@nostr-dev-kit/ndk-cache-sqlite-wasm');
+	// $ndk.cacheAdapter = new NDKCacheAdapterSqlite(
+		// import.meta.env.DEV ?
+			// new Worker(new URL("@nostr-dev-kit/ndk-cache-sqlite-wasm/worker?worker", import.meta.url), { type: 'module' })
+			// new NDKSqliteWorker()
+	// );
 
 	const sigWorker = import.meta.env.DEV ?
 		new Worker(new URL('@nostr-dev-kit/ndk/workers/sig-verification?worker', import.meta.url), { type: 'module' }) : new NDKSigVerificationWorker();
@@ -79,6 +86,21 @@ export async function configureFeNDK() {
 		}
 	});
 
+	$ndk.relayAuthDefaultPolicy = async (relay: NDKRelay, challenge: string) => {
+		const $ndkRelaysWithAuth = get(ndkRelaysWithAuth);
+		if (!($ndkRelaysWithAuth instanceof Map)) {
+			ndkRelaysWithAuth.set(new Map());
+		}
+
+		if ($ndkRelaysWithAuth.get(relay.url) === undefined) {
+			return new Promise<boolean>((resolve) => {
+				$ndkRelaysWithAuth.set(relay.url, resolve);
+			});
+		} else {
+			return $ndkRelaysWithAuth.get(relay.url) as boolean;
+		}
+	}
+	
 	debug("ndk connect on frontend")
 
 	await $ndk.connect(1000);
