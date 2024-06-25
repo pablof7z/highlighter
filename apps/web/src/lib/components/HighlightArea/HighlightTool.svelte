@@ -202,6 +202,7 @@
     })
 
     onDestroy(() => {
+        if (cleanup) cleanup();
         document.removeEventListener("selectionchange", positionToolFromSelection);
         document.removeEventListener("touchend", positionToolFromSelection);
         document.removeEventListener("click", maybeHide);
@@ -241,18 +242,4 @@
         <ChatCircle class="w-6 h-6" weight="fill" />
         <span>Comment</span>
     </Button>
-    <Button variant="outline" class="flex flex-col gap-2 w-24 h-24 items-center" on:click={comment}>
-        <Lightning class="w-6 h-6" weight="fill" />
-        <span>Zap</span>
-    </Button>
 </div>
-
-<style lang="postcss">
-    button {
-        @apply bg-background border border-border hover:border-white/50 hover:bg-foreground/10 rounded p-4 flex flex-col items-center gap-2 w-24 h-24;
-    }
-
-    button span {
-        @apply text-opacity-80 group-hover:text-opacity-100 font-medium text-sm;
-    }
-</style>

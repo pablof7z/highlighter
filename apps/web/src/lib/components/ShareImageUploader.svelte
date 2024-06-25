@@ -28,8 +28,13 @@
     async function generate() {
         if (!shareImageEl) return;
 
-        blob = await toBlob(shareImageEl);
-        if (!blob) throw new Error("Failed to convert image to blob");
+        try {
+            blob = await toBlob(shareImageEl);
+            if (!blob) throw new Error("Failed to convert image to blob");
+        } catch (e) {
+            dispatcher('error', e);
+            status = "error";
+        }
     }
 
     async function upload() {
@@ -85,6 +90,6 @@
     }
 </script>
 
-<ShareImage {article}  bind:node={shareImageEl}>
+<ShareImage {article} bind:node={shareImageEl}>
     <slot />
 </ShareImage>

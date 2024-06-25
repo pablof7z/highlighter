@@ -4,6 +4,9 @@
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';
 	import { Toaster } from "$lib/components/ui/sonner";
+	import { ndkRelaysWithAuth } from '$stores/ndk';
+	import { toast } from 'svelte-sonner';
+	import { onMount } from 'svelte';
 
 	let layoutWrapper: string;
 	let mainWrapper: string;
@@ -26,6 +29,33 @@
 			headerAndFooterWrapper = "sm:-translate-x-[calc(var(--navbar-width)/2)] " + mainWrapper;
 			break;
 	}
+
+	let mounted: boolean;
+	
+	onMount(() => {
+		mounted = true;
+	})
+	
+
+	// $: if (mounted && $ndkRelaysWithAuth) {
+	// 	for (const [relayUrl, value] of $ndkRelaysWithAuth.entries()) {
+	// 		if (typeof value === "function") {
+	// 			toast.info(`${relayUrl} wants to authenticate you`, {
+	// 				duration: 10000,
+	// 				action: {
+	// 					label: "Accept",
+	// 					onClick: () => {
+	// 						ndkRelaysWithAuth.update((map) => {
+	// 							map.set(relayUrl, true);
+	// 							return map;
+	// 						});
+	// 						value(true);
+	// 					}
+	// 				}
+	// 			});
+	// 		}
+	// 	}
+	// }
 </script>
 
 <Modal />

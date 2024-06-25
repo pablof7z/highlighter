@@ -36,7 +36,6 @@
                 <OptionsListItem
                     {option}
                     {value}
-                    {collapsed}
                     on:click={() => { dispatch("changed", { value: option.name }); value = option.name; }}
                 />
             {/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BookmarkSimple, CaretRight, ChatCircle, HourglassHigh, Lightning, Quotes, Repeat, Timer, Warning } from 'phosphor-svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import { Hexpubkey, NDKEvent, NDKFilter, NDKHighlight, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
+	import { Hexpubkey, NDKEvent, NDKFilter, NDKHighlight, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getReplyTag,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { EventCardDropdownMenu, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
 	import { getRepliesStore, getConversationRepliesStore, getThreadStore, computeScore } from "./replies";
@@ -38,6 +38,10 @@
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
 	import { appMobileView } from '$stores/app';
 	import { newToasterMessage } from '$stores/toaster';
+	import Scheduler from '$modals/Scheduler.svelte';
+	import ZapModal from '$modals/ZapModal.svelte';
+	import { toast } from 'svelte-sonner';
+	import Button from '$components/ui/button/button.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -73,7 +77,7 @@
     }
 
     if (!urlPrefix) {
-        if (isMobileBuild()) urlPrefix = "/mobile/view?eventId=";
+        if (isMobileBuild()) urlPrefix = "/e?eventId=";
         else urlPrefix = "/e/";
     }
 
@@ -204,8 +208,15 @@
         event.delete();
     }
 
+    async function repost() {
+        const e = await event.repost(false);
+        toast.success("Reposted");
+        e.publish();
+    }
+
     async function bookmark() {
         try {
+            toast.success("Bookmark saved");
             $userGenericCuration = await toggleBookmarkedEvent(event, $userGenericCuration);
         } catch (e: any) {
             newToasterMessage(e.relayErrors ?? e.message, "error")
@@ -219,13 +230,13 @@
         rightOptions = [
             { label: "Quote", icon: Quotes, class: "bg-white/10 !text-green-500", cb: () => { showQuoteOptions = true; return true; } },
             { label: 'Bookmark', icon: BookmarkSimple, class: "bg-white/20 !text-red-500", cb: bookmark },
-            { label: 'Zap!', icon: Lightning, class: "bg-white/30 !text-yellow-500", cb: () => {} }
+            { label: 'Zap!', icon: Lightning, class: "bg-white/30 !text-yellow-500", cb: () => openModal(ZapModal, { event })}
         ]
     } else {
         rightOptions = [
-            { label: "Repost", icon: Repeat, class: "bg-success/10", cb: () => {} },
+            { label: "Repost", icon: Repeat, class: "bg-success/10", cb: repost },
             { label: "Quote", icon: Quotes, class: "bg-success/20", cb: () => openModal(QuoteModal, { event }) },
-            { label: "Schedule", icon: Timer, class: "bg-success/30", cb: () => {} }
+            { label: "Schedule", icon: Timer, class: "bg-success/30", cb: () => {openModal(Scheduler, {event})} }
         ];
     }
 
@@ -341,7 +352,7 @@
                                         {event}
                                         enableDelete={$currentUser && $currentUser.pubkey === event.pubkey}
                                         on:delete={deleteEvent}
-                                        class="dropdown-end absolute !bg-background"
+                                        class="dropdown-end absolute !bg-background z-[9999]"
                                     />
                                 </div>
                             </div>
@@ -392,15 +403,13 @@
 
             {#if !skipFooter}
                 <div class="flex flex-row items-end gap-4 w-full footer">
-                    <div class="flex max-sm:flex-row flex-col items-center justify-end flex-none sm:w-16">
-                        {#if (!expandReplies || nestedMaxLevel === 0) && !(expandThread && $eventsInThread.length > 0)}
-                            {#if $replies.length > 0}
-                                <ReplyAvatars users={$commentAuthors} />
-                            {:else if $eventsInThread.length > 0}
-                                <ReplyAvatars users={[event.pubkey]} />
-                            {/if}
+                    {#if (!expandReplies || nestedMaxLevel === 0) && !(expandThread && $eventsInThread.length > 0)}
+                        {#if $replies.length > 0}
+                            <ReplyAvatars users={$commentAuthors} />
+                        {:else if $eventsInThread.length > 0}
+                            <ReplyAvatars users={[event.pubkey]} />
                         {/if}
-                    </div>
+                    {/if}
 
                     <div class="max-sm:hidden grow text-sm">
                         {#if $eventsInThread.length > 0 && !expandThread}
@@ -408,9 +417,9 @@
                                     View thread
                                 </button>
                         {:else if $replies.length > 0 && !expandReplies}
-                            <button class="text-left w-full whitespace-nowrap" on:click|stopPropagation={() => { expandReplies = true }}>
+                            <Button variant="outline" size="sm" class="text-left w-full whitespace-nowrap" href="{urlPrefix}{eventEncoded}">
                                 View discussion
-                            </button>
+                            </Button>
                         {/if}
                     </div>
 

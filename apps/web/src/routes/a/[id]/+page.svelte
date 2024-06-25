@@ -5,7 +5,6 @@
 	import ItemShell from "$views/ItemShell.svelte";
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
-	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { appMobileHideNewPostButton } from "$stores/app";
 	import { loadedEvent, title } from "$stores/item-view";
 
@@ -39,10 +38,8 @@
     {/if}
 </svelte:head>
 
-<LoadingScreen ready={event !== undefined}>
-    {#if event}
-        <ItemShell {event} title={$title}>
-            <ItemView {event}  />
-        </ItemShell>
-    {/if}
-</LoadingScreen>
+{#if event}
+    <ItemShell {event} title={$title}>
+        <ItemView {event}  />
+    </ItemShell>
+{/if}

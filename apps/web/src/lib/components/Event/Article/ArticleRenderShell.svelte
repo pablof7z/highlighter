@@ -10,7 +10,7 @@
 
 <div dir="auto" class="w-full flex flex-col max-sm:max-w-screen overflow-x-clip">
     <div class="
-        max-sm:-mx-4 flex relative {($$slots.image && !skipImage) ? 'max-sm:h-[90vh] min-h-[20vh] sm:h-[20rem] lg:h-[50vh]' : ""}
+        flex relative {($$slots.image && !skipImage) ? 'max-sm:h-[90vh] min-h-[20vh] sm:h-[20rem] lg:h-[50vh]' : ""}
         {$$props.class??""}
     ">
         {#if !skipImage}

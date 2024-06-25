@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ZapSent from './ZapSent.svelte';
-    import type { Hexpubkey, NDKEvent, NDKTag } from '@nostr-dev-kit/ndk';
+    import type { Hexpubkey, NDKEvent, NDKFilter, NDKTag } from '@nostr-dev-kit/ndk';
     import { requestProvider } from 'webln';
 
     import { Heart, Fire, Rocket, Lightning, HeartStraight } from 'phosphor-svelte';
@@ -13,6 +13,7 @@
 	import Input from '$components/ui/input/input.svelte';
 	import { newToasterMessage } from '$stores/toaster';
 	import LnQrCode from '$components/Payment/LnQrCode.svelte';
+	import currentUser from '$stores/currentUser';
 
     export let event: NDKEvent;
     export let forceZap: boolean = false;
@@ -52,7 +53,7 @@
         zap();
     }
 
-    let prs: [string, number][] = [];
+    let prs: [string, number, NDKFilter ][] = [];
 
     type Split = [Hexpubkey, number, number]
     const zapSplits: Split[] = event.getMatchingTags("zap")
@@ -76,11 +77,12 @@
 
                 if (satAmount === 0) continue;
                 
-                event
-                    .zap(satAmount * 1000, comment, [], $ndk.getUser({ pubkey: zapSplit[0] }))
+                $ndk
+                    .zap(event, satAmount * 1000, comment, [], $ndk.getUser({ pubkey: zapSplit[0] }))
                     .then((pr: string | null) => {
+                        console.log('pr', pr);
                         if (pr) {
-                            prs.push([pr, satAmount]);
+                            prs.push([pr, satAmount, { "#p": [zapSplit[0]], "#e": [event.id], since: Math.floor(Date.now()/1000), kinds: [9735] }]);
                             prs = prs;
                         }
                     })
@@ -151,7 +153,7 @@
             {#if prs.length > 0}
                 <div class="flex flex-row gap-2 flex-nowrap overflow-x-auto no-scrollbar">
                     {#each prs as pr}
-                        <LnQrCode pr={pr[0]} satAmount={pr[1]} />
+                        <LnQrCode pr={pr[0]} satAmount={pr[1]} zapWatcherFilter={pr[2]} />
                     {/each}
                 </div>
             {:else}

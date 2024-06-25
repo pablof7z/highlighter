@@ -28,7 +28,7 @@
     if (!rootEncode) rootEncode = replyTag ? encodeTag(replyTag) : "";
 
     if (rootTag ?? replyTag) {
-        $ndk.fetchEventFromTag((replyTag ?? rootTag)!, subOpts).then((e: NDKEvent | null) => {
+        $ndk.fetchEventFromTag((replyTag ?? rootTag)!, event, subOpts).then((e: NDKEvent | null) => {
             replyToEvent = e;
         });
     }

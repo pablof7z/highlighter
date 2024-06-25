@@ -15,6 +15,7 @@
 	import { userGenericCuration } from '$stores/session';
 	import ZapModal from '$modals/ZapModal.svelte';
 	import AnimatedToggleButton from '$components/PageElements/AnimatedToggleButton.svelte';
+	import ReaderButton from '../Article/ReaderButton.svelte';
 
     export let event: NDKEvent;
     export let urlPrefix: string;
@@ -28,8 +29,10 @@
     $: {
         options = [];
 
-        if (event.kind === NDKKind.Article)
+        if (event.kind === NDKKind.Article) {
             options.push({ name: undefined, value: 'article', href: urlPrefix, icon: BookOpen })
+            options.push({ component: { component: ReaderButton, props: { article: event } } })
+        }
         else if (event.kind === NDKKind.HorizontalVideo)
             options.push({ name: undefined, value: 'video', href: urlPrefix, icon: YoutubeLogo })
 

@@ -44,7 +44,7 @@
     }
 
     async function repost() {
-        await event.repost();
+        event.repost();
         repostedByUser = !repostedByUser;
         const focusedElement = document.activeElement as HTMLElement;
         focusedElement?.blur();
@@ -100,20 +100,10 @@
         on:click={share}
     >
         {#if repostedByUser}
-            <Export class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-[var(--boost-button)]/30 group-hover:text-[var(--boost-button)]" weight="fill" />
+            <Export class="sm:w-5 w-7 sm:h-5 h-7 text-[var(--boost-button)]/30 group-hover:text-[var(--boost-button)]" weight="fill" />
         {:else}
-            <Export class="sm:w-5 w-3.5 sm:h-5 h-3.5 text-[var(--boost-button)]/30 group-hover:text-[var(--boost-button)]" weight="regular" />
+            <Export class="sm:w-5 w-7 sm:h-5 h-7 text-[var(--boost-button)]/30 group-hover:text-[var(--boost-button)]" weight="regular" />
         {/if}
 
     </ButtonWithCount>
 {/if}
-
-<style lang="postcss">
-    ul button {
-        @apply bg-background border border-border hover:border-white/50 hover:bg-foreground/10 rounded p-4 flex flex-col items-center gap-2 w-24 h-24;
-    }
-
-    ul button span {
-        @apply text-opacity-80 group-hover:text-opacity-100 font-medium text-sm;
-    }
-</style>

@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher, onMount } from "svelte";
-    import QuillMarkdown from 'quilljs-markdown'
+    import QuillMarkdown from 'quilljs-markdown';
     import quillEditorMention from "./quill-editor-mention.js";
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
 	import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
 	import { wysiwygEditor } from '$stores/settings.js';
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
+	import { newToasterMessage } from "$stores/toaster.js";
 
     export let content: string = "";
     export let placeholder = "Write your heart out...";
@@ -190,7 +191,7 @@
     }
 </script>
 
-<div class="flex flex-col border-none border-neutral-800 sm:rounded-xl border grow">
+<div class="flex flex-col border-none sm:rounded-xl border grow">
     {#if toolbar}
         <div bind:this={toolbarEl} class="-mt-4 toolbar sticky z-40 top-[var(--navbar-height)] bg-background/80  !backdrop-blur-[50px] !border-b !border-border toolbar-container w-full">
             {#if $wysiwygEditor}
@@ -206,6 +207,9 @@
                             <Image class="w-full" />
                         </BlossomUpload>
                     </button>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-formula"></button>
                 </span>
             {/if}
             <div class="self-end grow flex flex-row justify-end">
@@ -295,8 +299,8 @@
     }
 
     :global(.ql-picker-options) {
-        @apply !bg-foreground/20 !border-0 rounded !p-4 !z-50;
-        @apply text-foreground/50
+        @apply !bg-background !border !border-border rounded !p-4 !z-50;
+        @apply text-muted-foreground;
     }
 
     :global(.ql-picker-item:hover, .ql-picker-item.ql-selected) {

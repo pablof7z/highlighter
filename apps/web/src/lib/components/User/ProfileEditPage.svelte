@@ -3,7 +3,7 @@
     import currentUser from '$stores/currentUser';
     import { debugMode, processUserProfile, userProfile } from '$stores/session';
     import { createEventDispatcher, onMount } from 'svelte';
-	import { NDKEvent, serializeProfile, type NostrEvent, NDKRelaySet, NDKSubscriptionCacheUsage, NDKRelayList, NDKRelay } from '@nostr-dev-kit/ndk';
+	import { NDKEvent, serializeProfile, type NostrEvent, NDKRelaySet, getRelayListForUser, NDKRelay } from '@nostr-dev-kit/ndk';
     import { Image, Warning } from "phosphor-svelte";
 	import CategorySelector from '$components/Forms/CategorySelector.svelte';
 	import { ndk } from '$stores/ndk';
@@ -33,7 +33,7 @@
         relaySet.addRelay(relay);
     }
 
-    NDKRelayList.forUser($currentUser?.pubkey!, $ndk).then((relayList) => {
+    getRelayListForUser($currentUser?.pubkey!, $ndk).then((relayList) => {
         if (!relayList) return;
         for (const writeRelay of relayList.writeRelayUrls) {
             const r = new NDKRelay(writeRelay, undefined);

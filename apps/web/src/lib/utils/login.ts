@@ -20,6 +20,7 @@ import { goto } from '$app/navigation';
 import { vanityUrls } from './const';
 import { ndk, bunkerNDK } from '$stores/ndk';
 import { newToasterMessage } from '$stores/toaster';
+import { nip19 } from 'nostr-tools';
 
 export type LoginMethod = 'none' | 'pk' | 'npub' | 'nip07' | 'nip46' | 'guest';
 
@@ -31,13 +32,13 @@ export async function finalizeLogin() {
 	const url = import.meta.env.VITE_BASE_URL;
 	const hostname = new URL(url).hostname;
 	// fetch jwt
-	const loginEvent = await generateLoginEvent(hostname);
-	if (!loginEvent) return null;
-	const jwt = await fetchJWT(loginEvent);
-	if (jwt) {
-		jwtStore.set(jwt);
-		document.cookie = `jwt=${jwt}; path=/; domain=${hostname};`;
-	}
+	// const loginEvent = await generateLoginEvent(hostname);
+	// if (!loginEvent) return null;
+	// const jwt = await fetchJWT(loginEvent);
+	// if (jwt) {
+	// 	jwtStore.set(jwt);
+	// 	document.cookie = `jwt=${jwt}; path=/; domain=${hostname};`;
+	// }
 }
 
 async function pkLogin(key: string, method: LoginMethod = 'pk') {
@@ -80,14 +81,29 @@ async function nip46Login(remotePubkey?: Hexpubkey) {
 	$bunkerNDK.pool.off('relay:ready', connected);
 }
 
+function determineMethodFromPayload(payload: string) {
+	if (payload.startsWith("nsec")) {
+		try {
+			const key = new NDKPrivateKeySigner(payload);
+			privateKey.set(key.privateKey);
+			return "pk";
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	return "none";
+}
+
 /**
  * This function attempts to sign in using whatever method was previously
  * used, or a NIP-07 extension.
  */
-export async function login(
-	method?: LoginMethod | undefined,
-	userPubkey?: string,
-) {
+export async function login(payload: string | undefined) {
+	let method: LoginMethod | undefined;
+	
+	if (payload) method = determineMethodFromPayload(payload);
+	
 	d(`running with method ${method}`);
 
 	// Check if there is a localStorage item with the key "nostr-key-method"
@@ -299,7 +315,7 @@ export async function fillInSkeletonProfile(profile: NDKUserProfile) {
 
 	const followList = new NDKEvent($ndk);
 	followList.kind = NDKKind.Contacts;
-	followList.tags = Object.values(vanityUrls).map((pubkey) => [ "p", pubkey ]);
+	// followList.tags = Object.values(vanityUrls).map((pubkey) => [ "p", pubkey ]);
 
 	followList.publish().catch(e => console.error('Failed to publish follow list', e));
 	

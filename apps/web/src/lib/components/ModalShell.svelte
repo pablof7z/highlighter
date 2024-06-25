@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { modal, modalState } from '$stores/layout';
+	import { modals, modalState } from '$stores/layout';
 	import { onDestroy, onMount } from 'svelte';
 	import { onBeforeClose } from "svelte-modals";
     import { closeModal } from '$utils/modal';
 	import { beforeNavigate } from '$app/navigation';
 	import { appMobileView } from '$stores/app';
 	import { X } from 'phosphor-svelte';
-	import { Block, Button, Link, Toolbar } from 'konsta/svelte';
+	import { Block, Link, Toolbar } from 'konsta/svelte';
 	import { NavigationOption } from '../../app';
 	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
+	import Button from './ui/button/button.svelte';
+	import HorizontalOptionsListItem from './HorizontalOptionsListItem.svelte';
 
     export let title: string | undefined = undefined;
 
@@ -33,7 +35,7 @@
 
     beforeNavigate(() => {
         $modalState = "closing";
-        $modal = null;
+        // $modal = null;
     })
 
     if (!$appMobileView) {
@@ -82,12 +84,13 @@
                 </Link>
             </div>
 
-            <div class="right">
-                {#each actionButtons as item, i}
-                    <Button onClick={item.fn} class="!bg-accent !text-accent-foreground">
+            <div class="right flex flex-row">
+                <HorizontalOptionsList options={actionButtons} />
+                <!-- {#each actionButtons as item, i}
+                    <Button on:click={item.fn} variant={item.variant} size="sm">
                         {item.name}
                     </Button>
-                {/each}
+                {/each} -->
             </div>
         </Toolbar>
         {#if $$slots.titleRight}
@@ -100,7 +103,7 @@
             <slot name="titleRight" />
         </Toolbar>
     {/if}
-    <Block class="max-h-[80vh] overflow-y-auto {$$props.class??""}">
+    <Block class="max-h-[80vh] overflow-y-auto {$$props.class??""} max-sm:text-base">
         <slot />
     </Block>
 {:else}

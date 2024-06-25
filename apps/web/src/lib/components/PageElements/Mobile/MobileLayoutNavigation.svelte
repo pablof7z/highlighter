@@ -2,8 +2,8 @@
     import { page } from "$app/stores";
 	import { goto } from "$app/navigation";
     import { Icon, Tabbar, TabbarLink, Toolbar } from "konsta/svelte";
-	import { Bell, BookmarkSimple, Fire, House, Plus } from "phosphor-svelte";
-	import { showNotificationOption } from "$stores/notifications";
+	import { Bell, BookmarkSimple, Fire, House, Plus, TextAlignLeft, YoutubeLogo } from "phosphor-svelte";
+	import { hasUnreadNotifications, showNotificationOption, unreadNotifications } from "$stores/notifications";
 	import { pageHeader } from "$stores/layout";
 
     const isLabels = true;
@@ -28,7 +28,25 @@
             <svelte:fragment slot="icon">
                 <House class="w-8 h-8" />
             </svelte:fragment>
-            <svelte:fragment slot="label">Home</svelte:fragment>
+            <!-- <svelte:fragment slot="label">Home</svelte:fragment> -->
+        </TabbarLink>
+        <TabbarLink
+            active={$page.url.pathname.startsWith('/home/reads')}
+            onClick={() => goto("/home/reads")}
+        >
+            <svelte:fragment slot="icon">
+                <TextAlignLeft class="w-8 h-8" />
+            </svelte:fragment>
+            <!-- <svelte:fragment slot="label">Bookmarks</svelte:fragment> -->
+        </TabbarLink>
+        <TabbarLink
+            active={$page.url.pathname.startsWith('/home/videos')}
+            onClick={() => goto("/home/videos")}
+        >
+            <svelte:fragment slot="icon">
+                <YoutubeLogo class="w-8 h-8" />
+            </svelte:fragment>
+            <!-- <svelte:fragment slot="label">Bookmarks</svelte:fragment> -->
         </TabbarLink>
         <TabbarLink
             active={$page.url.pathname.startsWith('/bookmarks')}
@@ -37,26 +55,22 @@
             <svelte:fragment slot="icon">
                 <BookmarkSimple class="w-8 h-8" />
             </svelte:fragment>
-            <svelte:fragment slot="label">Bookmarks</svelte:fragment>
-        </TabbarLink>
-        <TabbarLink
-            active={$page.url.pathname.startsWith('/discover')}
-            onClick={() => goto("/discover")}
-        >
-            <svelte:fragment slot="icon">
-                <Fire class="w-8 h-8" />
-            </svelte:fragment>
-            <svelte:fragment slot="label">Discover</svelte:fragment>
+            <!-- <svelte:fragment slot="label">Bookmarks</svelte:fragment> -->
         </TabbarLink>
         {#if $showNotificationOption}
             <TabbarLink
                 active={$page.url.pathname.startsWith('/notifications')}
                 onClick={() => goto("/notifications")}
             >
-                <svelte:fragment slot="icon">
+                <div slot="icon" class="relative">
                     <Bell class="w-8 h-8" />
-                </svelte:fragment>
-                <svelte:fragment slot="label">Notifications</svelte:fragment>
+                    {#if $hasUnreadNotifications}
+                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-accent rounded-full text-xs flex items-center justify-center">
+                            {$unreadNotifications}
+                        </div>
+                    {/if}
+                </div>
+                <!-- <svelte:fragment slot="label">Notifications</svelte:fragment> -->
             </TabbarLink>
         {/if}
     </Tabbar>

@@ -88,7 +88,7 @@
         // navigateToEvent(event);
 
         if (isMobileBuild()) {
-            goto(`/mobile/view?eventId=${event.encode()}`)
+            goto(`/e?eventId=${event.encode()}`)
         } else {
             goto(`/e/${event.encode()}`);
         }

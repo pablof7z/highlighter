@@ -1,4 +1,5 @@
 import type { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli';
 
 let config: CapacitorConfig = {
   appId: 'com.highlighter.app',
@@ -6,7 +7,7 @@ let config: CapacitorConfig = {
   webDir: 'build',
   plugins: {
     SplashScreen: {
-			launchShowDuration: 1
+			launchShowDuration: 0
 		},
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"]
@@ -23,7 +24,9 @@ if (process.env.NODE_ENV === 'development') {
     bundledWebRuntime: false,
     server: {
       // url: "http://192.168.1.115:3000",
-      url: "http://10.10.241.7:3000",
+      url: "http://10.10.240.213:3000",
+      // url: "http://10.8.4.16:3000",
+      url: "http://10.8.4.108:3000",
       cleartext: true
     },
     ...config

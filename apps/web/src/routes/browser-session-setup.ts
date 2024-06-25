@@ -1,8 +1,9 @@
-import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
+import currentUser, { loginMethod, userPubkey } from '$stores/currentUser';
 import { ndk } from '$stores/ndk';
 import { loginState } from '$stores/session';
-import { fillInSkeletonProfile, loggedIn, login } from '$utils/login';
-import { NDKNip07Signer, NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk';
+import { loggedIn, login } from '$utils/login';
+import { createGuestAccount } from '$utils/user/guest';
+import { NDKNip07Signer, NDKUser } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 import { get } from 'svelte/store';
 
@@ -17,7 +18,7 @@ const $ndk = get(ndk);
  * setting up a global user as soon as possible and connecting with the
  * signer in the background when possible.
  */
-export async function browserSetup() {
+export async function browserSetup(useGuest = true) {
     const pubkey = get(userPubkey);
     d({pubkey});
 
@@ -35,36 +36,16 @@ export async function browserSetup() {
         const $ndk = get(ndk);
 
         if (!$ndk.signer) {
-            return await newGuestLogin();
+            if (useGuest)
+                return await createGuestAccount();
         }
 
         return;
     }
 
     if (method) {
-        return login(method, pubkey);
+        return login();
     }
-}
-
-export async function newGuestLogin() {
-    const pk = NDKPrivateKeySigner.generate();
-    const u = await pk.user();
-    const $ndk = get(ndk);
-
-    loginMethod.set('guest');
-    userPubkey.set(u.pubkey);
-    privateKey.set(pk.privateKey!);
-
-    login('guest', u.pubkey);
-
-    $ndk.signer = pk;
-    const us = await $ndk.signer?.blockUntilReady();
-    us.ndk = $ndk;
-    currentUser.set(us);
-
-    fillInSkeletonProfile({
-        image: `https://api.dicebear.com/8.x/rings/svg?seed=${u.pubkey}&ringColor=FB6038`
-    });
 }
 
 export async function newSessionTryNip07() {

@@ -2,6 +2,12 @@ import { writable } from 'svelte/store';
 import NDK, { NDKRelayAuthPolicies } from '@nostr-dev-kit/ndk';
 import NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { BROWSER, DEV } from 'esm-env';
+import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
+
+export const ndkRelaysWithAuth = persist(
+    writable<Map<string, boolean | ((value: boolean) => void)>>(new Map()),
+    createLocalStorage(), 'ndk.relays-with-auth'
+);
 
 // get relays from localstorage
 let relays;

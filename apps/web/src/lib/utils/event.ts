@@ -13,7 +13,9 @@ export const mainContentKinds = [
 	NDKKind.Article,
 	NDKKind.HorizontalVideo,
 	NDKKind.ArticleCurationSet,
-	NDKKind.VideoCurationSet
+	NDKKind.VideoCurationSet,
+	30040,
+	30041
 ];
 
 export function encodeTag(tag: NDKTag) {
@@ -39,8 +41,6 @@ export function encodeTag(tag: NDKTag) {
 				id: tag[1],
 			}
 			if (relay) opts.relays = [relay];
-			console.log(opts);
-			console.log('bech32', nip19.neventEncode(opts));
 			return nip19.neventEncode(opts);
 		} catch (e) {
 			console.error(e);
@@ -51,7 +51,7 @@ export function encodeTag(tag: NDKTag) {
 export function eventToKind(event: NDKEvent) {
 	switch (event.kind) {
 		case 30818: return NDKArticle.from(event);
-		case NDKKind.Article: return NDKArticle.from(event);
+		case NDKKind.Article, 30040, 30041: return NDKArticle.from(event);
 		case NDKKind.HorizontalVideo: return NDKVideo.from(event); 
 		case NDKKind.ArticleCurationSet: return NDKList.from(event);
 		case NDKKind.VideoCurationSet: return NDKList.from(event);

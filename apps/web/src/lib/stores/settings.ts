@@ -1,3 +1,4 @@
+import { getDefaultRelaySet } from '$utils/ndk';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import { writable } from 'svelte/store';
 
@@ -41,4 +42,10 @@ export const seenHighlightUserHelperModal = persist(
 	writable<boolean | undefined>(undefined),
 	createLocalStorage(),
 	'seen-highlight-user-helper-modal'
+);
+
+export const publishDraftsToRelays = persist(
+	writable<false | string[]>(getDefaultRelaySet().relayUrls),
+	createLocalStorage(),
+	'publish-drafts-to-relays'
 );

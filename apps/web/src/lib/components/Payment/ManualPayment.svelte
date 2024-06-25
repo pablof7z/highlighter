@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { calculateSatAmountFromAmountTag, currencyFormat } from "$utils/currency";
     import UserProfile from "$components/User/UserProfile.svelte";
-	import { NDKEvent, NDKUser, NDKZap } from "@nostr-dev-kit/ndk";
-	import { createEventDispatcher, onMount } from "svelte";
+	import { NDKEvent, NDKSubscription, NDKUser, NDKZap } from "@nostr-dev-kit/ndk";
+	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import { creatorRelayPubkey } from "$utils/const";
 	import { Check } from "phosphor-svelte";
 	import Box from "$components/PageElements/Box.svelte";
 	import { nicelyFormattedSatNumber } from "$utils";
 	import { ndk } from "$stores/ndk";
 	import LnQrCode from "./LnQrCode.svelte";
+	import currentUser from "$stores/currentUser";
 
     export let event: NDKEvent;
     export let recipient: NDKUser;
@@ -37,8 +38,6 @@
             dispatch('paid');
         }, 1000);
     }
-
-    
 
     const amountTag = event.getMatchingTags('amount')[0];
 	if (!amountTag) throw new Error('Amount not found');
@@ -71,7 +70,22 @@
             satAmount * 1000,
             "Highlighter subscriber"
         );
-        
+
+        zapWatcher = $ndk.subscribe({
+            "kinds": [9735],
+            "#p": [ recipient.pubkey ],
+            "#P": [ $currentUser.pubkey ],
+            limit: 0
+        }, { subId: 'zap-watcher', groupable: false })
+        zapWatcher.on("event", (e: NDKEvent) => {
+            receivedZap = true;
+        });
+    });
+
+    let zapWatcher: NDKSubscription;
+
+    onDestroy(() => {
+        zapWatcher?.stop();
     });
 </script>
 

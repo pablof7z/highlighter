@@ -1,19 +1,19 @@
 <script lang="ts">
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { ndk } from "$stores/ndk.js";
-	import { NDKArticle, NDKEvent, NDKKind, NDKUser, NDKVideo, isEventOriginalPost } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKKind, NDKUser, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
 	import type { UserProfileType } from '../../app';
-	import Carousel from "$components/Page/Carousel.svelte";
 	import ArticleCard from "$components/ArticleCard.svelte";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";
 	import { urlFromEvent } from "$utils/url";
-	import { wot } from "$stores/wot";
 
     export let user: NDKUser;
+    console.log("tracking user", user.pubkey)
+    $ndk.outboxTracker!.track(user);
 
     onMount(() => {
         addReadReceipt(user);

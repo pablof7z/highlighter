@@ -80,7 +80,6 @@
             {...option.buttonProps??{}}
             on:click={() => {
                 dispatch("click");
-                if (option.fn) option.fn();
                 value = option.value ?? option.name;
             }}
             class="gap-2"

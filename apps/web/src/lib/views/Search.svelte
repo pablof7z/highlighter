@@ -170,7 +170,7 @@
     {#if searching}
         <span class="loading loading-sm text-accent"></span>
     {:else}
-        <MagnifyingGlass class="w-8 h-8 text-neutral-500" />
+        <MagnifyingGlass class="w-8 h-8 text-muted-foreground" />
     {/if}
     
     <Input
