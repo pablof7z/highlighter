@@ -144,7 +144,7 @@
             <Avatar user={$currentUser} size="small" class="ml-4 mt-4" />
         {/if}
         {#key resetEditorAt}
-            <div class="relative flex-grow flex flex-col">
+            <div class="relative flex-grow flex flex-col w-full">
                 <ContentEditor
                     bind:content
                     toolbar={false}

@@ -17,6 +17,7 @@
     export let urlPrefix: string = "/e/";
     export let showEventsOlderThan: Date | undefined = undefined;
     export let tooNewEvents = new Set<NDKEventId>();
+    export let wideView: false | undefined = undefined;
 
     const perNoteLatestActivity = new Map<NDKEventId, number>();
 
@@ -120,7 +121,7 @@
             {:else if event.kind === NDKKind.GroupNote}
                 <GroupNote {event} {urlPrefix} />
             {:else if event.kind === NDKKind.Article}
-                <Article article={NDKArticle.from(event)} />
+                <Article article={NDKArticle.from(event)} {wideView} />
             {:else if event.kind === NDKKind.HorizontalVideo}
                 <Video video={NDKVideo.from(event)}
                 />

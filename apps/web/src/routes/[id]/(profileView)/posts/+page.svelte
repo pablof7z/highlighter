@@ -34,5 +34,5 @@
 </script>
 
 <div class="mx-auto w-full">
-    <StoreGrid feed={content} renderLimit={1} />
+    <StoreGrid feed={content} renderLimit={1} wideView={false} />
 </div>

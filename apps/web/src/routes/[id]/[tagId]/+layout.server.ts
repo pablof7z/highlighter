@@ -10,6 +10,8 @@ export async function load({ params }) {
 
 	tagId = decodeURIComponent(tagId);
 
+	console.log('loading', { id, tagId });
+
 	const $ndk = get(ndk);
 	$ndk.debug.enabled = true;
 	const user = await $ndk.getUserFromNip05(id);

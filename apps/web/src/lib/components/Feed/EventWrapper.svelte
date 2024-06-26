@@ -281,8 +281,8 @@
             <div class="flex flex-row items-start w-full">
                 <!-- Avatars -->
                 {#if !compact}
-                    <div class="flex flex-col items-center flex-none w-10 sm:w-14 self-stretch">
-                        <a href={authorUrl}>
+                    <div class="flex flex-col items-center flex-none px-1 self-stretch">
+                        <a href={authorUrl} class="w-8 sm:w-12">
                             <Avatar user={author} {userProfile} class="w-8 sm:w-12 h-8 sm:h-12 object-cover" type="circle" {fetching} />
                         </a>
                         <div class="
@@ -297,7 +297,10 @@
                 {/if}
 
                 <!-- Content -->
-                <div class="flex flex-col overflow-x-clip sm:pl-2 grow w-full">
+                <div class="
+                    flex flex-col overflow-x-clip sm:pl-2 grow
+                    {compact ? "w-full" : "w-[calc(100%-3.5rem)]"}
+                ">
                     <!-- Title and time -->
                     <div class="
                         flex flex-row w-full gap-2 relative group

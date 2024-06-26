@@ -4,18 +4,21 @@ import { nip19 } from 'nostr-tools';
 import { AddressPointer, EventPointer } from 'nostr-tools/nip19';
 import { requiredTiersFor } from '$lib/events/tiers';
 import createDebugger from 'debug';
-import { get } from 'svelte/store';
-import { ndk } from '$stores/ndk';
 
 const debug = createDebugger('HL:utils:event');
+
+export const articleKinds = [
+	NDKKind.Article,
+	NDKKind.Wiki,
+	NDKKind.ModularArticle,
+	NDKKind.ModularArticleItem,
+];
 
 export const mainContentKinds = [
 	NDKKind.Article,
 	NDKKind.HorizontalVideo,
 	NDKKind.ArticleCurationSet,
 	NDKKind.VideoCurationSet,
-	30040,
-	30041
 ];
 
 export function encodeTag(tag: NDKTag) {

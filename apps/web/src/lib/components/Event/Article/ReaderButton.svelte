@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { NDKRelaySet, NDKSubscription, NostrEvent } from "@nostr-dev-kit/ndk";
 	import { toast } from "svelte-sonner";
 	import { NDKArticle, NDKEvent } from "@nostr-dev-kit/ndk";
@@ -15,6 +16,16 @@
     export let article: NDKArticle;
     export let supported: boolean;
 
+    let recordingEvents: NDKEventStore<NDKEvent> | undefined;
+
+    $ndk.fetchEvents({ kinds: [5250 as number], ...article.filter()})
+        .then((events) => {
+            console.log({events})
+            if (events.size === 0) return;
+            const eventIds = Array.from(events).map(e => e.id);
+            console.log({eventIds})
+            recordingEvents = $ndk.storeSubscribe({ "#e": eventIds }, { closeOnEose: true })
+        });
 
     const speak = async () => {
         await TextToSpeech.speak({
@@ -132,10 +143,12 @@
         const e = new NDKEvent($ndk, {
             kind: 5250,
         } as NostrEvent)
-        e.tags.push(["p", "7c3be2769c76eecd6c6e27276722dfae0d8ad201825253452153b90093c41654"]);
-        e.tags.push(["i", "ff305d4a9f3b77188802f92af2148849a49349405007a56aa3c4fa7e08d6ac34", "event"]);
+        e.tags.push(["i", article.id, "event"]);
         e.tags.push(["param", "language", "en"]);
         e.tags.push(["relays", "wss://relay.primal.net", "wss://relay.f7z.io", "wss://nos.lol"])
+        if (article.title) e.tags.push(["title", article.title])
+        if (article.summary) e.tags.push(["summary", article.summary])
+        e.tags.push(["author", article.pubkey])
         await e.sign();
 
         dvmSub = $ndk.subscribe(e.filter(), {}, relaySet);
@@ -166,6 +179,9 @@
 </script>
 
 <Button variant="secondary" on:click={togglePlay}>
+    {#if $recordingEvents}
+        {$recordingEvents.length}
+    {/if}
     {#if playing}
         <Stop />
     {:else}
