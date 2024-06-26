@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { articleKinds } from './../../../utils/event.ts';
 	import { mainContentKinds } from '$utils/event';
 	import ShareModal from '$modals/ShareModal.svelte';
 	import { NDKKind, type NDKEvent } from "@nostr-dev-kit/ndk";
@@ -29,7 +30,7 @@
     $: {
         options = [];
 
-        if (event.kind === NDKKind.Article) {
+        if (articleKinds.includes(event.kind)) {
             options.push({ name: undefined, value: 'article', href: urlPrefix, icon: BookOpen })
             options.push({ component: { component: ReaderButton, props: { article: event } } })
         }

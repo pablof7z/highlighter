@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { NDKArticle, NDKEvent, NDKKind, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
-	import { isEventFullVersion } from "$utils/event";
+	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { articleKinds, isEventFullVersion } from "$utils/event";
 	import ArticleView from "$components/ArticleView.svelte";
 	import { onDestroy } from "svelte";
 	import { pageHeader } from "$stores/layout";
@@ -15,6 +15,7 @@
 	import { page } from "$app/stores";
 	import ModularArticleView from "./ModularArticleView.svelte";
 	import ModularArticleItemView from "./ModularArticleItemView.svelte";
+	import Highlight from "$components/Highlight.svelte";
 
     export let event: NDKEvent | NDKArticle | NDKVideo;
     export let ignoreHeader: boolean = false;
@@ -35,12 +36,11 @@
         if (!ignoreHeader && $pageHeader?.component)
             $pageHeader.component = undefined;
     })
-
 </script>
 
-{#if event instanceof NDKArticle}
+{#if articleKinds.includes(event.kind)}
     <ArticleView
-        article={event}
+        article={NDKArticle.from(event)}
         isFullVersion={isEventFullVersion(event)}
         on:title:inview_change={(e) => {
             if (!$pageHeader?.props) return;
@@ -86,6 +86,8 @@
             />
         </EventWrapper>
     </div>
+{:else if event.kind === NDKKind.Highlight}
+    <Highlight highlight={NDKHighlight.from(event)} expandReplies compact />
 {:else}
     <EventWrapper {event} class="bg-foreground/10 p-6 rounded">
         <EventContent ndk={$ndk} {event} class="highlight" eventCardComponent={EmbeddedEventWrapper} />

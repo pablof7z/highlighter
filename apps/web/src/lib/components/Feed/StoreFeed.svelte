@@ -17,6 +17,7 @@
     export let urlPrefix: string = "/e/";
     export let showEventsOlderThan: Date | undefined = undefined;
     export let tooNewEvents = new Set<NDKEventId>();
+    export let renderAsIs = false;
 
     const perNoteLatestActivity = new Map<NDKEventId, number>();
 
@@ -24,6 +25,8 @@
     const allEventIds = new Set<NDKEventId>();
 
     const renderFeed = derived(feed, $feed => {
+        if (renderAsIs) return $feed;
+        
         const topLevelNotes = new Map<NDKEventId, NDKEvent>();
         tooNewEvents = new Set<NDKEventId>();
 

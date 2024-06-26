@@ -1,8 +1,10 @@
 import { get, get as getStore } from 'svelte/store';
 import 'websocket-polyfill';
 import { explicitRelayUrls, ndk, ndkRelaysWithAuth } from "$stores/ndk";
+// import NDKRedisAdapter from '@nostr-dev-kit/ndk-cache-redis';
 import { newToasterMessage } from '$stores/toaster';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
+import NDKCacheAdapterNostr from "@nostr-dev-kit/ndk-cache-nostr";
 import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 import { debugMode } from '$stores/session';
@@ -66,7 +68,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL13' });
+	// $ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL13' });
 	// const NDKCacheAdapterSqlite = await import('@nostr-dev-kit/ndk-cache-sqlite-wasm');
 	// $ndk.cacheAdapter = new NDKCacheAdapterSqlite(
 		// import.meta.env.DEV ?
@@ -133,6 +135,9 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 	// $ndk.httpFetch = nodeFetch as typeof fetch;
 	$ndk.debug.enabled = true;
 	$ndk.signer = new NDKPrivateKeySigner(privateKey);
+	$ndk.cacheAdapter = new NDKCacheAdapterNostr({
+		relayUrl: "ws://localhost:5577",
+	})
 	// const redisAdapter = new NDKRedisAdapter({path: "redis://localhost:6379"});
 	// const redisConnected = new Promise<void>((resolve) => {
 	//     redisAdapter.redis.on("connect", () => {

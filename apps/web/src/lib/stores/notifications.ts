@@ -64,13 +64,19 @@ export let notifications: NDKEventStore<NDKEvent>;
 export let hasUnreadNotifications: Readable<boolean> = writable(false);
 export let unreadNotifications: Readable<number>;
 
+const notificationKinds = [
+	1, // Tweet
+	9, 10, 12, 9735, 30023, 9802,
+	6250, 7000
+]
+
 export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {
 	const since = get(lastSeenTimestamp);
 
 	const filters: NDKFilter[] = [{
-		kinds: [NDKKind.Highlight, NDKKind.Text, NDKKind.Article, NDKKind.HorizontalVideo],
+		kinds: notificationKinds,
 		"#p": [currentUser.pubkey],
-		limit: 1,
+		limit: 100,
 	}]
 
 	if (since) filters[0].since = since;

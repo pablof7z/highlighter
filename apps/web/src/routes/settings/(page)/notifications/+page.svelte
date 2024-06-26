@@ -33,19 +33,3 @@
         </span>
     </Checkbox>
 </div>
-
-<style lang="postcss">
-    h1 {
-        @apply text-2xl font-semibold text-foreground;
-        @apply mb-4;
-    }
-
-    h2 {
-        @apply text-lg font-semibold;
-        @apply mb-2;
-    }
-
-    section {
-        @apply mb-6;
-    }
-</style>
