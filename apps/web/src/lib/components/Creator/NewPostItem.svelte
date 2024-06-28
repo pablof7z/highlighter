@@ -6,7 +6,7 @@
     export let href: string | undefined = "#";
 </script>
 
-<Button forceNonMobile variant="outline" {href} on:click class="
+<Button forceNonMobile variant="secondary" {href} on:click class="
     rounded-2xl justify-center items-center inline-flex
     flex-col
     flex-none
@@ -17,10 +17,10 @@
     relative
     focus:outline-none
 ">
-    <div class="bg w-10 h-10 rounded-lg backdrop-blur-lg justify-center items-center gap-2.5 inline-flex p-2">
+    <div class="bg w-16 h-16 rounded-lg backdrop-blur-lg justify-center items-center gap-2.5 inline-flex p-2">
         <svelte:component this={icon} class="w-full h-full" weight="fill" />
     </div>
-    <div class="text-sm font-medium">
+    <div class="text-base font-medium">
         {title}
     </div>
 </Button>

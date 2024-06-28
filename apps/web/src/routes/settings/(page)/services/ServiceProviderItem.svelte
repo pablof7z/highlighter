@@ -6,6 +6,7 @@
 import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, type Hexpubkey, type NDKUserProfile, NDKKind, type NostrEvent } from '@nostr-dev-kit/ndk';
     import { createEventDispatcher } from 'svelte';
+	import { Button } from '$components/ui/button';
 
     export let kind: number;
     export let event: NDKEvent;
@@ -111,16 +112,16 @@ import { ndk } from "$stores/ndk.js";
 
         {#if requests && requests.size > 0 || results.size > 0}
             <div class="flex flex-row justify-between w-full items-end pl-16">
-                <button class="button-black px-6 py-2" on:click={select}>
+                <Button variant="secondary" on:click={select}>
                     Select
-                </button>
+                </Button>
 
                 <div class="flex flex-col w-fit gap-1 self-end items-end">
                     <span class="text-neutral-500 text-sm tracking-loose font-semibold">
                         USED BY
                     </span>
 
-                    <div class="avatar-group -space-x-4 rtl:space-x-reverse self-end items-center">
+                    <div class="flex flex-row -space-x-4 rtl:space-x-reverse self-end items-center">
 
                         {#each Array.from(requests) as userPubkey}
                             <Avatar

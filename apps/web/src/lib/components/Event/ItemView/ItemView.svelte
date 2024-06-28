@@ -20,6 +20,14 @@
     export let event: NDKEvent | NDKArticle | NDKVideo;
     export let ignoreHeader: boolean = false;
 
+    let image = $page.data.image;
+    let article: NDKArticle;
+
+    $: if (articleKinds.includes(event.kind)) {
+        article = NDKArticle.from(event);
+        image ??= article?.image;
+    }
+
     $: if (!ignoreHeader) {
         if (event) {
             $pageHeader = {
@@ -37,6 +45,28 @@
             $pageHeader.component = undefined;
     })
 </script>
+
+<svelte:head>
+    {#if article instanceof NDKArticle}
+        <meta property="og:title" content={article.title} />
+        <meta property="og:type" content="article" />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content={article.title} />
+
+        {#if article?.summary}
+            <meta name="description" content={article.summary} />
+            <meta property="og:description" content={article.summary} />
+            <meta property="twitter:description" content={article.summary} />
+        {/if}
+    {:else}
+        event is not article
+    {/if}
+
+    {#if image}
+        <meta property="og:image" content={image} />
+        <meta property="twitter:image" content={image} />
+    {/if}
+</svelte:head>
 
 {#if articleKinds.includes(event.kind)}
     <ArticleView
@@ -89,9 +119,7 @@
 {:else if event.kind === NDKKind.Highlight}
     <Highlight highlight={NDKHighlight.from(event)} expandReplies compact />
 {:else}
-    <EventWrapper {event} class="bg-foreground/10 p-6 rounded">
-        <EventContent ndk={$ndk} {event} class="highlight" eventCardComponent={EmbeddedEventWrapper} />
-    </EventWrapper>
+    <EventWrapper {event} class="bg-foreground/10 p-6 rounded" />
 {/if}
 
     <!-- {#if event && eventType}

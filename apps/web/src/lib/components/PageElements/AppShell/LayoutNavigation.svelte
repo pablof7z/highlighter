@@ -27,8 +27,7 @@
             // { name: "Inbox",  href: "/inbox", icon: Tray },
             { name: "Reads",  href: "/home/reads", icon: TextAlignLeft },
             { name: "Watch",  href: "/home/videos", icon: YoutubeLogo },
-            { name: "Collections",  href: "/collections", icon: CardsThree },
-            { name: "Search", fn: () => openModal(SearchModal), icon: MagnifyingGlass },
+            // { name: "Collections",  href: "/collections", icon: CardsThree },
             { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined },
             { name: "Publish", icon: PlusCircle, class: "!text-accent", fn: () => openModal(NewItemModal) },
         ]
@@ -58,13 +57,8 @@
         }
 
         userOptions = [
+            { name: "Search", fn: () => openModal(SearchModal), icon: MagnifyingGlass },
             { name: "Settings", icon: Gear, href: "/settings" },
-            ...userOptions
-        ]
-
-        userOptions = [
-            { name: "Drafts", icon: PaperPlaneTilt, href: "/drafts", badge: $drafts.length > 0 ? $drafts.length.toString() : undefined },
-            { name: "Schedule", icon: Timer, href: "/schedule", },
             ...userOptions
         ]
     }

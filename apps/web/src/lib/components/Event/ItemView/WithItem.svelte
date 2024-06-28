@@ -3,7 +3,7 @@
 	import { page } from "$app/stores";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, filterFromId, NIP33_A_REGEX, NDKRelay, NDKRelaySet } from "@nostr-dev-kit/ndk";
-	import { onDestroy } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { requiredTiersFor } from "$lib/events/tiers";
@@ -129,9 +129,31 @@
         }
     }
 
+    let ignoreRelayHint = false;
+
     $: if (!events && tagId) {
-        events = $ndk.storeSubscribe(getFilter(), {  groupable: false });
-        events.onEose(() => { eosed = true; });
+        console.log({tagId})
+        if (tagId.match(NIP33_A_REGEX) && !ignoreRelayHint) {
+            console.log('nip33_a detected', tagId);
+            try {
+                const {type, data} = nip19.decode(tagId);
+                console.log('nip19 decoded', type, data);
+                
+                if (Array.isArray(data?.relays) && data.relays.length > 0) {
+                    const relaySet = NDKRelaySet.fromRelayUrls((data.relays as string[]), $ndk);
+                    events = $ndk.storeSubscribe([filterFromId(tagId)], { groupable: false });
+                    events.onEose(() => { eosed = true; });
+                }
+                events = $ndk.storeSubscribe([filterFromId(tagId)], { groupable: false });
+                events.onEose(() => { eosed = true; });
+            } catch {
+            }
+            events = $ndk.storeSubscribe(getFilter(), {  groupable: false });
+            events.onEose(() => { eosed = true; });
+        } else {
+            events = $ndk.storeSubscribe(getFilter(), {  groupable: false });
+            events.onEose(() => { eosed = true; });
+        }
     }
 
     $: if (event && event.kind) {

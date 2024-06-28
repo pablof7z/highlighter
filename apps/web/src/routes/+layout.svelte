@@ -133,6 +133,10 @@
 			$appMobileView = false;
 		}
 	}
+
+	export let data;
+
+	console.log('layout.svelte', data);
 </script>
 
 <!-- <NetworkHandler /> -->

@@ -7,6 +7,7 @@
 	import { userAppHandlers } from '$stores/session';
 	import { ndk } from '$stores/ndk';
 
+    export let dvmPubkey: string | undefined;
     export let eventId: string;
     export let title: string;
     export let kind: number;
@@ -24,11 +25,14 @@
 
         $ndk.fetchEvent(eventId).then((e) => {
             if (e) {
-                // event = e;
-                profile = JSON.parse(e.content);
-                if (profile) {
-                    profile.image ??= profile.picture;
-                }
+                dvmPubkey = e.pubkey;
+                try {
+                    // event = e;
+                    profile = JSON.parse(e.content);
+                    if (profile) {
+                        profile.image ??= profile.picture;
+                    }
+                } catch {}
             }
         });
     }
@@ -125,6 +129,6 @@
 
 <style lang="postcss">
     button.main {
-        @apply flex flex-row justify-between gap-4 p-4 items-center bg-foreground/20 rounded;
+        @apply flex flex-row justify-between gap-4 p-4 items-center rounded;
     }
 </style>

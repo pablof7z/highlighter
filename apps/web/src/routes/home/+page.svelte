@@ -1,4 +1,4 @@
-<script lang="ts">
+eads<script lang="ts">
 	import { userFollows } from "$stores/session";
 	import { NDKKind, type NDKFilter, NDKEvent, NDKTag, NDKHighlight, NDKArticle, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";

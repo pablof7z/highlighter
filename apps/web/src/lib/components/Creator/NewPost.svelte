@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Microphone, Note, Play, RowsPlusBottom, TextAlignLeft } from "phosphor-svelte";
+	import { Microphone, Note, PencilLine, Play, RowsPlusBottom, TextAlignLeft, Timer } from "phosphor-svelte";
     import NewPostItem from "./NewPostItem.svelte";
 	import StreamIcon from "$icons/StreamIcon.svelte";
 	import Box from "$components/PageElements/Box.svelte";
@@ -31,6 +31,8 @@
         <NewPostItem icon={TextAlignLeft} title="Article" href="/articles/new" on:click={closeModal} />
         <NewPostItem icon={Play} title="Video" href="/videos/new" on:click={closeModal} />
         <NewPostItem icon={RowsPlusBottom} title="Thread" href="/threads/new" on:click={closeModal} />
+        <NewPostItem icon={Timer} title="Scheduled Posts" href="/schedule" on:click={closeModal} />
+        <NewPostItem icon={PencilLine} title="Drafts" href="/drafts" on:click={closeModal} />
     </div>
     {#if $drafts?.length > 0}
         <div class="self-start">

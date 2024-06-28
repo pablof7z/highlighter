@@ -1,15 +1,17 @@
 import "websocket-polyfill";
 import { ndk } from "$stores/ndk";
 import { get } from 'svelte/store';
-import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKRelaySet } from "@nostr-dev-kit/ndk";
+import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKSubscriptionCacheUsage, filterForEventsTaggingId } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
-import { defaultRelays } from "./const";
+import createDebug from 'debug';
+import { DecodeResult } from "nostr-tools/nip19";
+
+const d = createDebug('HL:ssr');
 
 export const ssr = false;
 
 const timeout = (time: number) => new Promise((_, reject) => {
     setTimeout(() => {
-        console.log('rejecting')
         reject(new Error("Timeout"));
     }, time);
 });
@@ -30,62 +32,87 @@ function chooseImageFromMediaEvents(mediaEvents: NDKEvent[], author: Hexpubkey) 
     return image;
 }
 
-export async function fetchEvent(id: string) {
+export async function ssrFetchEventFromCache(idOrFilter: string | NDKFilter[]) {
     const $ndk = get(ndk);
     let event: NDKEvent | null | undefined;
     let image: string | undefined;
+    const promises: Promise<any>[] = [];
+    let decode: DecodeResult | undefined;
 
-    try {
-        await $ndk.connect(1000);
-    } catch (e) {
-        console.log("error", e)
-        return {};
+    d(`ssrFetchEventFromCache: %o`, idOrFilter);
+
+    if (typeof idOrFilter === "string") {
+        try {
+            decode = nip19.decode(idOrFilter);
+        } catch {}
     }
 
-    const relaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
-
-    try {
-        const decode = nip19.decode(id);
-        const promises: Promise<any>[] = [];
-
+    if (typeof idOrFilter === "string") {
+        try {
+            promises.push(new Promise<void>(async (resolve, reject) => {
+                event = await $ndk.fetchEvent(idOrFilter, {
+                    cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE
+                });
+                d("Resolving cache event fetch")
+                resolve();
+            }));
+        } catch {
+            d("Failed to decode event id");
+            return {};
+        }
+    } else {
         promises.push(new Promise<void>(async (resolve, reject) => {
-            event = await $ndk.fetchEvent(id, undefined, relaySet);
-            console.log(id);
-            console.log(event?.kind);
+            d("Fetching event from cache %o", idOrFilter)
+            event = await $ndk.fetchEvent(idOrFilter, {
+                cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE
+            });
+            d("Resolving cache event fetch %d", !!event)
             resolve();
         }));
+    }
 
-        if (decode.type === "naddr") {
-            const {kind, pubkey, identifier} = decode.data;
-            const aTag = [kind,pubkey,identifier].join(":");
-
+    try {
+        if (decode?.type === "naddr") {
+            const authorPubkey = decode.data.pubkey;
             promises.push(new Promise<void>(async (resolve, reject) => {
+                const tagFilter: NDKFilter = filterForEventsTaggingId(idOrFilter);
+                tagFilter.kinds = [NDKKind.Media];
                 const mediaEvent = await $ndk.fetchEvents([
                     // one 1063 query by the author of the event
-                    {kinds: [NDKKind.Media], "#a": [aTag], authors: [pubkey], limit: 1},
+                    {...tagFilter, authors: [authorPubkey], limit: 1},
 
                     // a few extra just in case the author didn't publish one
-                    {kinds: [NDKKind.Media], "#a": [aTag], limit: 5},
-                ], undefined, relaySet);
+                    {...tagFilter, limit: 5},
+                ], {
+                    cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE
+                });
 
-                image = chooseImageFromMediaEvents(Array.from(mediaEvent), pubkey);
+                image = chooseImageFromMediaEvents(Array.from(mediaEvent), authorPubkey);
                 resolve();
             }));
         }
 
-        promises.push(timeout(1500));
-
-        console.log("waiting for promises");
-        await Promise.race(promises).catch(() => console.log('caught'));
-        console.log("promises done");
-    } catch { return {}; }
+        d("waiting for promises %o", idOrFilter);
+        await Promise.race([
+            new Promise((resolve) => {
+                Promise.all(promises).then(resolve);
+            }),
+            timeout(5000),
+        ]).catch(() => d('caught'));
+        d("promises done %o", idOrFilter);
+    } catch (e) {
+        console.trace(e)
+        d("Failed to fetch event from cache");
+        return {};
+    }
 
     const ret: Record<any, any> = {};
 
-    if (event) ret.event = event.rawEvent();
+    if (event) ret.event = event;
     if (image) ret.image = image;
 
-    console.log(ret)
+    d("returning %o", { keys: Object.keys(ret)})
 
     return ret;
 }
+

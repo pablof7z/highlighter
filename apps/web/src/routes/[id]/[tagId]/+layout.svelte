@@ -7,6 +7,8 @@
 	import { loadedEvent, title } from "$stores/item-view.js"
 	import { onDestroy } from 'svelte';
 
+    console.log('+layout.svelte')
+
     let user: NDKUser;
     let tagId: string;
     let event: NDKEvent;
@@ -17,13 +19,11 @@
     $: tagId = $page.params.tagId;
 
     $: {
-        console.log('setting loaded event', article, video, event);
         $loadedEvent = article ?? video ?? event;
     }
     $: $title = (article || video)?.title;
 
     onDestroy(() => {
-        console.log('removing loaded event');
         loadedEvent.set(null);
     });
 </script>

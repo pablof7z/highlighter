@@ -68,7 +68,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	// $ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL13' });
+	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL13' });
 	// const NDKCacheAdapterSqlite = await import('@nostr-dev-kit/ndk-cache-sqlite-wasm');
 	// $ndk.cacheAdapter = new NDKCacheAdapterSqlite(
 		// import.meta.env.DEV ?
@@ -136,7 +136,7 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 	$ndk.debug.enabled = true;
 	$ndk.signer = new NDKPrivateKeySigner(privateKey);
 	$ndk.cacheAdapter = new NDKCacheAdapterNostr({
-		relayUrl: "ws://localhost:5577",
+		relayUrl: "ws://localhost:3002",
 	})
 	// const redisAdapter = new NDKRedisAdapter({path: "redis://localhost:6379"});
 	// const redisConnected = new Promise<void>((resolve) => {

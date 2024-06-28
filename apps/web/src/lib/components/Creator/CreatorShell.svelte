@@ -80,8 +80,8 @@
         options.push({ value: "Home", href: `${authorUrl}`, icon: House });
 
         options.push({ name: "Notes", href: `${authorUrl}/notes`, icon: Notepad },)
-        if (hasCurations)
-            options.push({ name: "Curations", href: `${authorUrl}/curations`, icon: CardsThree },)
+        // if (hasCurations)
+        //     options.push({ name: "Curations", href: `${authorUrl}/curations`, icon: CardsThree },)
 
         if (hasPublications)
             options.push({ name: "Publications", href: `${authorUrl}/posts`, icon: Article },)

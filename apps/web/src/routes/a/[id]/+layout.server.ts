@@ -1,9 +1,13 @@
-import { fetchEvent } from '$utils/ssr.js';
+import { ssrFetchEventFromCache } from '$utils/ssr.js';
+import createDebug from 'debug';
 
-export async function load({ params }) {
-    const { id } = params;
+const d = createDebug('HL:/a/[id]/+layout.server.ts');
 
-    console.log('trying to fetch '+id);
-
-    return fetchEvent(id);
-}
+// export async function load({ params }) {
+//     const { id } = params;
+//     d(`Loading event ${id}`);
+//     const { event } = await ssrFetchEventFromCache(id);
+//     d("returning", !!event)
+//     if (event) return { event: event.rawEvent() };
+//     return {};
+// }

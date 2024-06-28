@@ -14,6 +14,8 @@
 		--primary-foreground: 0 0% 98%;
 		--secondary: 240 4.8% 95.9%;
 		--secondary-foreground: 240 5.9% 10%;
+		--highlight: 120 33% 92%;
+		--highlight-foreground: 240 10% 3.9%;
 		--muted: 240 4.8% 95.9%;
 		--muted-foreground: 240 3.8% 46.1%;
 		--accent: 20 100% 50%;
@@ -63,8 +65,10 @@
 		--popover-foreground: 0 0% 98%;
 		--primary: 0 0% 98%;
 		--primary-foreground: 240 5.9% 10%;
-		--secondary: 240 3.7% 15.9%;
+		--secondary: 240 5.7% 25.9%;
 		--secondary-foreground: 0 0% 98%;
+		--highlight: 120 33% 92%;
+		--highlight-foreground: 0 0% 98%;
 		--muted: 240 3.7% 15.9%;
 		--muted-foreground: 240 5% 64.9%;
 		--destructive: 0 62.8% 30.6%;
@@ -85,6 +89,8 @@
 		--primary-foreground: 240 5.9% 10%;
 		--secondary: 240 3.7% 15.9%;
 		--secondary-foreground: 0 0% 98%;
+		--highlight: 240 3.7% 25.9%;
+		--highlight-foreground: 0 0% 98%;
 		--muted: 240 3.7% 15.9%;
 		--muted-foreground: 240 5% 80%;
 		--destructive: 0 62.8% 30.6%;
@@ -177,7 +183,12 @@
 	}
 
 	mark {
-		@apply cursor-pointer bg-accent text-accent-foreground font-bold text-lg;
+		@apply cursor-pointer bg-highlight text-highlight-foreground font-bold text-lg p-1;
+		@apply transition-all duration-200;
+	}
+
+	mark[data-highlight-id] {
+		@apply hover:bg-foreground/20;
 	}
 
 	.article h1 {

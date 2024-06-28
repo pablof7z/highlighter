@@ -5,6 +5,7 @@ import NDKSvelte, { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 import NDK, { NDKKind } from '@nostr-dev-kit/ndk';
 import currentUser, { isGuest } from './currentUser';
 import { variableStore } from 'svelte-capacitor-store';
+import { toast } from 'svelte-sonner';
 
 export const seenIds = persist(writable<Set<string>>(new Set()), createLocalStorage(), 'seen-ids');
 
@@ -73,15 +74,22 @@ const notificationKinds = [
 export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {
 	const since = get(lastSeenTimestamp);
 
-	const filters: NDKFilter[] = [{
-		kinds: notificationKinds,
-		"#p": [currentUser.pubkey],
-		limit: 100,
-	}]
+	const filters: NDKFilter[] = [
+		{ kinds: notificationKinds, "#p": [currentUser.pubkey] }
+	]
 
-	if (since) filters[0].since = since;
+	if (since) {
+		filters[0].since = since;
+		filters.push({ kinds: notificationKinds, "#p": [currentUser.pubkey], until: since, limit: 100 });
+	} else {
+		filters[0].limit = 100;
+	}
 	
-	notifications = ndk.storeSubscribe(filters, {subId: 'notifications'});
+	notifications = ndk.storeSubscribe(filters, {
+		subId: 'notifications',
+		onEvent: processEvent,
+		onEose: () => { eosed = true }
+	});
 
 	const filteredNotifications = derived(notifications, $notifications => {
 		return $notifications.filter(event => event.pubkey !== currentUser.pubkey);
@@ -97,6 +105,18 @@ export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {
 	hasUnreadNotifications = derived(unreadNotifications, $unreadNotifications => {
 		return $unreadNotifications > 0;
 	});
+}
+
+let eosed = false;
+
+function processEvent(event: NDKEvent) {
+	const recent = event.created_at! * 1000 > Date.now() - 5000 && event.created_at! * 1000 < Date.now() + 5000;
+
+	console.log({ kind: event.kind, recent, eosed });
+
+	if (event.kind === 7000 && eosed && recent) {
+		toast.success(event.content);
+	}
 }
 
 /**

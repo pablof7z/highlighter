@@ -23,13 +23,15 @@
     });
 </script>
 
-<div class="w-full hidden sm:block discussion-wrapper">
-    <NewPost
-        kind={NDKKind.Text}
-        placeholder="What's happening?!"
-        autofocus={false}
-    />
-</div>
+{#if $currentUser}
+    <div class="w-full hidden sm:block discussion-wrapper">
+        <NewPost
+            kind={NDKKind.Text}
+            placeholder="What's happening?!"
+            autofocus={false}
+        />
+    </div>
+{/if}
 
 {#if filters}
     <FilterFeed

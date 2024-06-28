@@ -4,6 +4,8 @@ import { ndk } from "$stores/ndk";
 import { get } from 'svelte/store';
 import { RELAY_PRIVATE_KEY } from '$env/static/private';
 
+export const ssr = false;
+
 if (!RELAY_PRIVATE_KEY) {
 	throw new Error('No private key provided');
 }
