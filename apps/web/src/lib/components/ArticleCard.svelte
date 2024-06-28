@@ -12,7 +12,7 @@
     export let href: string | undefined = undefined;
     export let highlights: NDKHighlight[] | undefined = undefined;
 
-    let hover = false;
+    let hover = true;
 
     const highlighters = new Set<Hexpubkey>();
 
@@ -21,8 +21,6 @@
 
 <div class="flex flex-col gap-2">
     <a {href} class="w-[260px] h-[360px] overflow-clip flex-none rounded group"
-        on:mouseenter={() => hover = true}
-        on:mouseleave={() => hover = false}
     >
         <div class="relative w-full h-full items-stretch flex flex-col">
             <img
@@ -33,7 +31,7 @@
                     z-[1]
                 "
             />
-            <div class="absolute top-0 left-0 right-0 bottom-0 z-[2] bg-black bg-opacity-50 w-full h-full backdrop-blur-3xl group-hover:backdrop-blur-[0px] transition-all duration-300 rounded"></div>
+            <div class="absolute top-0 left-0 right-0 bottom-0 z-[2] bg-background bg-opacity-80 w-full h-full group-hover:backdrop-blur-[0px] transition-all duration-300 rounded"></div>
 
             <div class="grow relative w-full rounded overflow-clip z-[3] p-4">
                 <h3 class="font-medium grow max-h-[64px] overflow-clip text-foreground text-xl truncate">
@@ -47,7 +45,7 @@
                     {/if}
                 </div>
                 {#if description}
-                    <div class="text-sm text-zinc-300 pt-4 overflow-clip grow" transition:slide={{axis: 'y', duration: 500}}>
+                    <div class="text-sm text-muted-foreground pt-4 overflow-clip grow" transition:slide={{axis: 'y', duration: 500}}>
                         {description}
                     </div>
                 {/if}

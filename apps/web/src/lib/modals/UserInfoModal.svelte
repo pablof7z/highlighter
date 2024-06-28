@@ -3,15 +3,18 @@
     import { NDKUser } from "@nostr-dev-kit/ndk";
     import * as Tabs from "$lib/components/ui/tabs";
 	import { ndk } from "$stores/ndk";
-	import UserProfile from "$components/User/UserProfile.svelte";
-	import { fetchEvent } from "$utils/ssr";
-	import { pluralize } from "$utils";
+	import currentUser from "$stores/currentUser";
+	import StoreFeed from "$components/Feed/StoreFeed.svelte";
 
     export let user: NDKUser;
 
     const item = $ndk.outboxTracker.data.get(user.pubkey);
     const writeRelays = Array.from(item?.writeRelays)
     const readRelays = Array.from(item?.readRelays)
+
+    const interactions = $ndk.storeSubscribe([
+        { authors: [user.pubkey], "#p": [$currentUser!.pubkey]}
+    ], { closeOnEose: true})
 </script>
 
 <ModalShell title="User Info">
@@ -20,6 +23,7 @@
             <Tabs.Trigger value="relays">Relays</Tabs.Trigger>
             <Tabs.Trigger value="kind:0">Kind 0</Tabs.Trigger>
             <Tabs.Trigger value="kind:3">Kind 3</Tabs.Trigger>
+            <Tabs.Trigger value="interactions">Interactios ({$interactions.length})</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="relays">
             <h1>Write relays</h1>
@@ -56,6 +60,10 @@
             {:catch error}
                 <div>Error: {error.message}</div>
             {/await}
+        </Tabs.Content>
+
+        <Tabs.Content value="interactions">
+            <StoreFeed feed={interactions} renderAsIs />
         </Tabs.Content>
         
     </Tabs.Root>

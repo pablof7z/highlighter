@@ -11,6 +11,9 @@
 	import VideoLink from "$components/Events/VideoLink.svelte";
 	import Article from "$components/Grid/Article.svelte";
 	import { isMobileBuild } from "$utils/view/mobile";
+	import { ndk } from "$stores/ndk";
+	import { group } from "console";
+	import { Recycle } from "phosphor-svelte";
 
     export let feed: Readable<NDKEvent[]>;
     export let renderLimit = 10;
@@ -97,7 +100,6 @@
         }
     }
 </script>
-
 <div class="flex flex-col w-full justify-stretch">
     <div class="discussion-wrapper w-full flex flex-col">
         {#if tooNewEvents.size > 0}
@@ -143,6 +145,27 @@
                 />
             {:else if event.kind === NDKKind.ArticleCurationSet}
                 <CurationItem list={NDKList.from(event)} grid={false} />
+            {:else if event.kind === NDKKind.Reaction}
+                {#if event.getMatchingTags("e")[0]}
+                    {#await $ndk.fetchEventFromTag(event.getMatchingTags("e")[0], event, {groupable: true, groupableDelayType: 'at-least'})}
+                        {event.content} in one of your events
+                        <pre>{event.tagValue("e")}</pre>
+                    {:then reactedEvent}
+                        {#if reactedEvent}
+                            {event.content} on
+                            <EventWrapper event={reactedEvent} />
+                        {/if}
+                    {/await}
+                {/if}
+            {:else if event.kind === NDKKind.Repost}
+                {#if event.getMatchingTags("e")[0]}
+                    {#await $ndk.fetchEventFromTag(event.getMatchingTags("e")[0], event, {groupable: true, groupableDelayType: 'at-least'}) then repostedEvent}
+                        {#if repostedEvent}
+                            <Recycle size="24" />
+                            <EventWrapper event={repostedEvent} />
+                        {/if}
+                    {/await}
+                {/if}
             {:else}
                 <EventWrapper
                     {event}

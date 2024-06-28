@@ -6,6 +6,9 @@
 	import { eventToKind } from "$utils/event";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, NDKEvent, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { browser } from '$app/environment';
+
+    console.log("running +layout.svelte")
 
     let id: string;
     let event: NDKEvent | NDKArticle | NDKList | NDKVideo | undefined | null;
@@ -19,7 +22,7 @@
     
     $: $loadedEvent = event;
 
-    $: if (id !== $page.params.id) {
+    $: if (id !== $page.params.id && browser) {
         id = $page.params.id;
 
         console.log('loading event '+id);

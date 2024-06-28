@@ -4,9 +4,9 @@
 	import LayoutNavigation from "./AppShell/LayoutNavigation.svelte";
 	import LayoutHeader from './AppShell/LayoutHeader.svelte';
 	import { Toaster } from "$lib/components/ui/sonner";
-	import { ndkRelaysWithAuth } from '$stores/ndk';
-	import { toast } from 'svelte-sonner';
 	import { onMount } from 'svelte';
+	import { loadedMedia } from '$stores/media';
+	import Player from './Player.svelte';
 
 	let layoutWrapper: string;
 	let mainWrapper: string;
@@ -81,6 +81,7 @@
 		{mainWrapper}
 	">
 		<slot />
+		<Player />
 	</main>
 
 	{#if $pageHeader && $pageHeader.footer}

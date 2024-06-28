@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { page } from "$app/stores";
 	import { ndk } from "$stores/ndk.js";
 	import UserProfileHomePage from "$views/UserProfileHomePage.svelte";
@@ -14,4 +14,4 @@
 
 {#if user}
     <UserProfileHomePage {user} />
-{/if}
+{/if} -->

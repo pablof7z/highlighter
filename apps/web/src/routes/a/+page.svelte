@@ -2,7 +2,6 @@
 	import { page } from "$app/stores";
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 	import WithItem from "$components/Event/ItemView/WithItem.svelte";
-    import EventViewerContent from "$views/EventViewerPage/Content.svelte";
 
     let eventId: string;
 

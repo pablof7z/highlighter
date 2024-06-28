@@ -89,7 +89,7 @@
         <HorizontalOptionsList options={[
             { name: "Comments", href: `${urlPrefix}/comments`, icon: ChatCircle, badge: "1" },
             { name: "Highlights", href: `${urlPrefix}/highlights`, icon: HighlightIcon },
-            { name: "Curations", href: `${urlPrefix}/curations`, icon: CardsThree },
+            // { name: "Curations", href: `${urlPrefix}/curations`, icon: CardsThree },
         ]} value="Comments" class="my-4" />
 
         <ItemViewComments event={article} />

@@ -40,7 +40,7 @@
             class="flex flex-row items-center gap-2 {highlightedByUser ? 'text-foreground' : ''}"
         >
             <HighlightIcon
-                class="w-6 h-6"
+                class="sm:w-5 w-3.5 sm:h-5 h-3.5"
                 weight="{highlightedByUser ? 'fill' : 'regular'}"
             />
 

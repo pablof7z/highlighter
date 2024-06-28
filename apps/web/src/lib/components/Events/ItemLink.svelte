@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import { NDKArticle, type NDKEvent } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKKind, type NDKEvent } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
 	import { urlFromEvent } from "$utils/url";
 	import UserProfile from "$components/User/UserProfile.svelte";
@@ -10,8 +10,14 @@
 	import EventTags from "./EventTags.svelte";
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import currentUser from "$stores/currentUser";
+	import { articleKinds } from "$utils/event";
 
     export let event: NDKEvent;
+
+    if (articleKinds.includes(event.kind) && !(event instanceof NDKArticle)) {
+        event = NDKArticle.from(event);
+    }
+    
     export let description: string | undefined = (event instanceof NDKArticle) ? event.summary : undefined;
     export let title: string | undefined = (event instanceof NDKArticle) ? event.title : "Untitled";
     export let durationTag: string | undefined = undefined;

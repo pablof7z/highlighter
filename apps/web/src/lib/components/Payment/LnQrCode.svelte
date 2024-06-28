@@ -14,6 +14,7 @@
     export let zapWatcherFilter: NDKFilter | undefined = undefined;
     export let paid = false;
     export let size = 350;
+    export let tryToPay = true;
     let provider: any;
 
     const dispatcher = createEventDispatcher();
@@ -22,7 +23,7 @@
         try {
             requestProvider().then(async (p) => {
                 provider = p;
-                pay();
+                if (tryToPay) pay();
             });
         } catch {}
 

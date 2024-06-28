@@ -198,7 +198,7 @@
     onMount(() => {
         document.addEventListener("selectionchange", positionToolFromSelection);
         document.addEventListener("touchend", positionToolFromSelection);
-        document.addEventListener("mouseover", positionToolFromHighlightHover);
+        // document.addEventListener("mouseover", positionToolFromHighlightHover);
     })
 
     onDestroy(() => {

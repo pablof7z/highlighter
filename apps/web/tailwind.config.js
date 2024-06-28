@@ -33,6 +33,10 @@ const config = {
 					DEFAULT: "hsl(var(--secondary) / <alpha-value>)",
 					foreground: "hsl(var(--secondary-foreground) / <alpha-value>)"
 				},
+				highlight: {
+					DEFAULT: "hsl(var(--highlight) / <alpha-value>)",
+					foreground: "hsl(var(--highlight-foreground) / <alpha-value>)"
+				},
 				destructive: {
 					DEFAULT: "hsl(var(--destructive) / <alpha-value>)",
 					foreground: "hsl(var(--destructive-foreground) / <alpha-value>)"

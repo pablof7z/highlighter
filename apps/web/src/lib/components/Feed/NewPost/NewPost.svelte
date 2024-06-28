@@ -140,7 +140,7 @@
     <div class="
         flex flex-row
     ">
-        {#if !skipAvatar}
+        {#if !skipAvatar && $currentUser}
             <Avatar user={$currentUser} size="small" class="ml-4 mt-4" />
         {/if}
         {#key resetEditorAt}

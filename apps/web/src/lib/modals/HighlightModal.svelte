@@ -1,18 +1,11 @@
 <script lang="ts">
-	import NewPost from "$components/Creator/NewPost.svelte";
-	import Highlight from "$components/Highlight.svelte";
-    import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import HighlightBody from "$components/HighlightBody.svelte";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import ModalShell from "$components/ModalShell.svelte";
-	import currentUser from "$stores/currentUser";
-	import { closeModal } from "$utils/modal";
     import { NDKEvent, NDKHighlight, NDKKind } from "@nostr-dev-kit/ndk";
 	import { ChatCircle, CardsThree, Lightning, Recycle, Repeat } from "phosphor-svelte";
 
     export let highlight: NDKEvent;
-    export let showReply: boolean = false;
-    export let replyKind: number = NDKKind.Text;
     export let skipArticle = true;
 </script>
 

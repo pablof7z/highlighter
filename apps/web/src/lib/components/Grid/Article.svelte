@@ -16,6 +16,8 @@
 	import { BookmarkSimple, Heart } from 'phosphor-svelte';
 	import { toggleSaveForLater } from '$lib/events/save-for-later';
 	import { createBlossom } from '$utils/blossom';
+	import ZapButton from '$components/buttons/ZapButton.svelte';
+	import TopZap from '$components/Events/TopZap.svelte';
 
     export let article: NDKArticle;
 
@@ -79,7 +81,7 @@
             class="grow relative w-full overflow-clip z-[3] p-4 flex gap-4 flex-col { wideView ? "md:flex-row" : "" }"
         >
             {#if image}
-                <img use:blossom alt="" src={image} class="h-auto object-cover w-full rounded { wideView ? "md:w-1/2" : "" }" />
+                <img use:blossom alt="" src={image} class="h-auto object-cover w-full rounded { wideView ? "md:w-1/2" : "max-h-[24rem]" }" />
             {/if}
 
             <!-- Right column or lower part -->
@@ -111,29 +113,31 @@
                     {/if}
                 </div>
 
+                <div class="flex">
+                    <TopZap event={article} />
+                </div>
+
+                <EventTags event={article} />
+
                 <!-- Bottom part -->
-                <div class="place-self-end flex flex-col w-full gap-4">
-                    <EventTags event={article} />
-                    
-                    {#if $pubkeys.length > 0}
-                        <div class="flex flex-row -space-x-2 mt-4">
-                            {#each $pubkeys.slice(0, 10) as pubkey (pubkey)}
-                                <Avatar {pubkey} size="small" />
-                            {/each}
-                        </div>
-                    {/if}
+                <div class="place-self-end flex flex-row w-full gap-4 items-center">
+                    <div class="flex flex-row -space-x-2 flex-none grow">
+                        {#each $pubkeys.slice(0, 10) as pubkey (pubkey)}
+                            <Avatar {pubkey} size="small" />
+                        {/each}
+                    </div>
 
                     <div
-                        class="grid grid-flow-col w-full items-end justify-evenly bg-background/40 backdrop-blur-lg p-2 rounded"
+                        class="grid grid-flow-col w-full items-end justify-evenly bg-background/40 backdrop-blur-lg p-2 rounded shrink basis-0"
                         on:click|stopPropagation|preventDefault={e => e.stopPropagation()}
                     >
-                        <CommentsButton event={article} />
+                        <!-- <CommentsButton event={article} /> -->
 
                         <HighlightsWithCountButton event={article} />
 
                         <BoostButton event={article} />
 
-                        <ButtonWithCountFromFilter
+                        <!-- <ButtonWithCountFromFilter
                             filters={[
                                 { kinds: [NDKKind.Reaction], ...article.filter() }
                             ]}
@@ -143,7 +147,7 @@
                             on:click={() => {
                                 article.react("+1", true);
                             }}
-                        />
+                        /> -->
 
                         <ButtonWithCountFromFilter
                             filters={[
@@ -164,7 +168,7 @@
 <style lang="postcss">
     /* Text that fades to transparent at the bottom */
     .faded-text {
-        background: linear-gradient(to top, transparent, var(--muted-foreground) 50%);
+        background: linear-gradient(to top, transparent, #ffffff99 50%);
         color: transparent;
         background-clip: text;
         -webkit-background-clip: text;

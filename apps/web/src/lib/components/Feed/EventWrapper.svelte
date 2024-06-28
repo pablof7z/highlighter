@@ -42,6 +42,9 @@
 	import ZapModal from '$modals/ZapModal.svelte';
 	import { toast } from 'svelte-sonner';
 	import Button from '$components/ui/button/button.svelte';
+	import DvmJobFeedback from '$components/Event/Dvm/DvmJobFeedback.svelte';
+	import DvmJobResult from '$components/Event/Dvm/DvmJobResult.svelte';
+	import ZapReceipt from '$components/Event/ZapReceipt.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -255,6 +258,12 @@
             });
         }
     }
+
+    const skipViewConversationKinds = [
+        NDKKind.Highlight,
+        NDKKind.Zap,
+        NDKKind.DVMReqTextToSpeech + 1000
+    ];
 </script>
 
 <Swipe
@@ -283,7 +292,9 @@
                 {#if !compact}
                     <div class="flex flex-col items-center flex-none px-1 self-stretch">
                         <a href={authorUrl} class="w-8 sm:w-12">
-                            <Avatar user={author} {userProfile} class="w-8 sm:w-12 h-8 sm:h-12 object-cover" type="circle" {fetching} />
+                            {#key userProfile}
+                                <Avatar user={author} {userProfile} class="w-8 sm:w-12 h-8 sm:h-12 object-cover" type="circle" {fetching} />
+                            {/key}
                         </a>
                         <div class="
                             w-[1px] bg-white/20 grow transition-all duration-500
@@ -365,7 +376,7 @@
 
                     <!-- Content / reactions / comment count -->
                     <div class="flex flex-col items-stretch justify-stretch basis-0 shrink overflow-x-clip w-full">
-                        {#if topLevel && ![NDKKind.Highlight, NDKKind.Zap].includes(event.kind)}
+                        {#if topLevel && !skipViewConversationKinds.includes(event.kind)}
                             <div class="flex flex-row" class:hidden={noRepliesToShow}>
                                 <ViewConversation {event} {urlPrefix} bind:isNoop={noRepliesToShow} on:click={viewConversationClicked} />
                             </div>
@@ -380,6 +391,12 @@
                                     class="bg-white/10 p-4 rounded-t-box ${$$props.contentClass??""}"
                                     highlight={NDKHighlight.from(event)}
                                 />
+                            {:else if event.kind === NDKKind.DVMJobFeedback}
+                                <DvmJobFeedback {event} />
+                            {:else if event.kind >= 6000 && event.kind < 7000}
+                                <DvmJobResult {event} {...$$props} />
+                            {:else if event.kind === NDKKind.Zap}
+                                <ZapReceipt {event} />
                             {:else}
                                 <EventContent
                                     ndk={$ndk}

@@ -5,7 +5,6 @@
 	import ScheduleModal from "./ScheduleModal.svelte";
 
     export let event: NDKEvent;
-    export let onSchedule: ((timestamp: number) => void) | undefined;
 
     // make this configurable
     const dvmUser = $ndk.getUser({npub: 'npub1shpq6dmqaa8pjas8rftflvmr7nlssm9fqanflw23vlxu2vzexngslu90nm'});

@@ -8,6 +8,7 @@
 </script>
 
 <div class="card card-compact lg:card-side bg-background text-foreground flex-row">
+    Other article card
     {#if article?.image}
         <figure class="flex-none w-1/4 {$$props.imageClass??""}"><img class="h-full" src={article?.image} alt="Album"/></figure>
     {/if}

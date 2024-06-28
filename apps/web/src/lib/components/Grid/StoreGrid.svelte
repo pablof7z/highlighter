@@ -94,7 +94,7 @@
     }
 </script>
 
-<div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
         {#if tooNewEvents.size > 0}
             <div class="w-full flex flex-row items-center justify-center discussion-item transition-all duration-300 sticky top-0 z-50 ">
                 <button class="w-fit whitespace-nowrap rounded-full bg-accent p-4"
