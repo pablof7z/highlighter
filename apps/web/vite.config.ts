@@ -3,7 +3,6 @@ import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import mkcert from 'vite-plugin-mkcert';
-import crossOriginIsolation from 'vite-plugin-cross-origin-isolation';
 
 const mobileBuild = !!process.env.MOBILE;
 

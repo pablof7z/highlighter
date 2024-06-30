@@ -29,6 +29,7 @@
     })
 </script>
 
+
 {#if npub}
     {#key user.pubkey}
         <slot />

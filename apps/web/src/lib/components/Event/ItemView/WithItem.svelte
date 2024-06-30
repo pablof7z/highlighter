@@ -60,15 +60,15 @@
     });
 
     const fetchEventFromRecentlyConnectedRelay = async (relay: NDKRelay) => {
-        console.log('fetchEventFromRecentlyConnectedRelay', relay)
-        console.log('fetching event from recently connected relay', relay.url, getFilter());
+        // console.log('fetchEventFromRecentlyConnectedRelay', relay)
+        // console.log('fetching event from recently connected relay', relay.url, getFilter());
         
         const relaySet = new NDKRelaySet(new Set([relay]), $ndk);
         const es = await $ndk.fetchEvents(getFilter(), { subId: 'with-item-fetcher-per-relay', groupable: false }, relaySet);
 
         for (const e of es) {
             if (e.created_at! > (event?.created_at || 0)) {
-                console.log('found newer event on relay ' + relay.url, e.created_at);
+                // console.log('found newer event on relay ' + relay.url, e.created_at);
                 event = e;
             }
         }
@@ -132,12 +132,12 @@
     let ignoreRelayHint = false;
 
     $: if (!events && tagId) {
-        console.log({tagId})
+        // console.log({tagId})
         if (tagId.match(NIP33_A_REGEX) && !ignoreRelayHint) {
-            console.log('nip33_a detected', tagId);
+            // console.log('nip33_a detected', tagId);
             try {
                 const {type, data} = nip19.decode(tagId);
-                console.log('nip19 decoded', type, data);
+                // console.log('nip19 decoded', type, data);
                 
                 if (Array.isArray(data?.relays) && data.relays.length > 0) {
                     const relaySet = NDKRelaySet.fromRelayUrls((data.relays as string[]), $ndk);

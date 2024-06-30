@@ -56,45 +56,6 @@
         }
         
         openModal(TtsModal, { event: article })
-        return;
-        
-        const relay = $ndk.pool.getRelay("wss://relay.damus.io")
-        const relaySet = new NDKRelaySet(new Set([relay]), $ndk);
-        const e = new NDKEvent($ndk, {
-            kind: 5250,
-        } as NostrEvent)
-        e.tags.push(["i", article.id, "event"]);
-        e.tags.push(["param", "language", "en"]);
-        e.tags.push(["relays", "wss://relay.primal.net", "wss://relay.f7z.io", "wss://nos.lol"])
-        if (article.title) e.tags.push(["title", article.title])
-        if (article.summary) e.tags.push(["summary", article.summary])
-        e.tags.push(["author", article.pubkey])
-        await e.sign();
-
-        dvmSub = $ndk.subscribe(e.filter(), {}, relaySet);
-
-        dvmSub.on("event", (e) => {
-            console.log(e);
-
-            if (e.kind === 7000) {
-                toast.success(e.content);
-            }
-
-            const amount = e.getMatchingTags("amount")[0];
-            console.log(amount);
-            openModal(LnQrModal, { title: "Pay DVM", satAmount: parseInt(amount[1])/1000, pr: amount[2] })
-        });
-        
-        await e.publish();
-        
-        // if (playing) {
-        //     stop();
-        // } else if (voice) {
-        //     play();
-        // } else {
-        //     chooseVoice();
-        // }
-        // playing = !playing;
     }
 </script>
 
@@ -102,7 +63,7 @@
     {#if isLoaded}
         <Stop />
     {:else}
-        <Play />
+        <Play class="sm:w-5 w-3.5 sm:h-5 h-3.5" weight="fill" />
     {/if}
 </Button>
 

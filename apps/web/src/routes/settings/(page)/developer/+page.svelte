@@ -22,11 +22,12 @@
     let cachedProfileCount: number | undefined;
 
     async function updateCacheCounts() {
+        if (!db) return;
         const allEvents = await db.events.toArray();
         for (const event of allEvents) {
             cachedEventKinds[event.kind] = (cachedEventKinds[event.kind] || 0) + 1
         }
-        db.users.count().then(c => cachedProfileCount = c);
+        db.profiles.count().then(c => cachedProfileCount = c);
 
         cachedEventKinds = cachedEventKinds;
     }
@@ -38,7 +39,7 @@
         // setInterval(updateCacheCounts, 1000);
     }
 
-    updateCacheCounts();
+    if (browser) updateCacheCounts();
 </script>
 
 <section class="settings">

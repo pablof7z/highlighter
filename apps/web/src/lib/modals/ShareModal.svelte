@@ -126,7 +126,7 @@
         
         try {
             await boostEvent.sign();
-            // boostEvent.publish();
+            boostEvent.publish();
             closeModal();
         } finally {
             publishing = false;

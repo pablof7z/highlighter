@@ -9,16 +9,10 @@ export const ssr = true; // !mobileBuild;
 export const prerender = 'auto';
 // export const trailingSlash = mobileBuild ? 'always' : 'ignore';
 
-// export async function load({ fetch }) {
-// 	const $ndk = get(ndk);
+export async function load({ fetch }) {
+	const $ndk = get(ndk);
 
-// 	if ($ndk.explicitRelayUrls!.length === 0) {
-// 		await configureDefaultNDK(fetch);
-// 	}
-// }
-
-export function load({ fetch }) {
-	console.log('load +layout');
-
-	return {};
+	if ($ndk.explicitRelayUrls!.length === 0) {
+		await configureDefaultNDK(fetch);
+	}
 }
