@@ -58,7 +58,7 @@ export function urlFromEvent(
 
 	if (authorUrl.startsWith("/npub1")) authorUrl = undefined;
 
-	if (fullUrl) url.push(BASE_URL);
+	if (fullUrl) url.push("https://highlighter.com");//BASE_URL);
 
 	// strip prefix / from authorUrl
 	if (authorUrl && authorUrl[0] === '/') authorUrl = authorUrl.slice(1);

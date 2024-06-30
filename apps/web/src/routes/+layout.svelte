@@ -152,9 +152,7 @@
 		{/if}
 	</MobileAppShell>
 {:else}
-	<LoadingScreen ready={mounted}>
 		<AppShell>
 			<slot />
 		</AppShell>
-	</LoadingScreen>
 {/if}

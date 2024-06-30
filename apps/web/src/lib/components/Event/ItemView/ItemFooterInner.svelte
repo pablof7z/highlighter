@@ -42,8 +42,8 @@
         if (event.kind === NDKKind.Article)
             options.push({ name: undefined, value: 'highlights', href: `${urlPrefix}/highlights`, icon: HighlightIcon })
 
-        if (mainContentKinds.includes(event.kind!))
-            options.push({ name: undefined, value: 'curations', href: `${urlPrefix}/curations`, icon: CardsThree })
+        // if (mainContentKinds.includes(event.kind!))
+        //     options.push({ name: undefined, value: 'curations', href: `${urlPrefix}/curations`, icon: CardsThree })
     }
 
     let container: HTMLDivElement;

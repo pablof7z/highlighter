@@ -21,4 +21,6 @@
 
 {#if $loadedEvent}
     <ItemView event={$loadedEvent} ignoreHeader={true} />
+{:else}
+    Loading
 {/if}

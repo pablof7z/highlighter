@@ -7,9 +7,6 @@
 	import ButtonWithCount from "./ButtonWithCount.svelte";
 
     export let icon: typeof SvelteComponent;
-    export let href: string | undefined = undefined;
-    export let label: string | undefined = undefined;
-    export let badge = false;
 
     /**
      * e.g. hover:bg-green-400/20

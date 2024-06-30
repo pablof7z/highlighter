@@ -1,5 +1,4 @@
-hello
-<!-- <script lang="ts">
+<script lang="ts">
 	import CreatorShell from '$components/Creator/CreatorShell.svelte';
 	import { page } from "$app/stores";
 	import { ndk } from "$stores/ndk.js";
@@ -30,4 +29,4 @@ hello
             <slot />
         </CreatorShell>
     {/if}
-{/key} -->
+{/key}

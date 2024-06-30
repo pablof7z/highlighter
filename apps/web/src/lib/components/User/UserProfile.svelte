@@ -69,7 +69,11 @@
                 profileCreatedAt = p.created_at;
 
                 // not sure why this hack is needed
-                setTimeout(() => {userProfile ??= p;}, 100);
+                setTimeout(() => {
+                    if (user?.pubkey === "dd664d5e4016433a8cd69f005ae1480804351789b59de5af06276de65633d319")
+                        d(`Setting userProfile from cacheAdapter userProfile`, userProfile?.image, userProfile);
+                    userProfile ??= p;
+                }, 100);
             }
 
             // push a profile refresh to be grouped
@@ -79,6 +83,8 @@
             .then((ev: Set<NDKEvent> | null) => {
                 const e = ev?.values().next().value;
                 if (e && e.created_at! > profileCreatedAt) {
+                    if (user?.pubkey === "dd664d5e4016433a8cd69f005ae1480804351789b59de5af06276de65633d319")
+                        d(`Setting userProfile from profile-refresh userProfile`, userProfile?.image, userProfile);
                     // console.log('new profile event', user?.pubkey, e.rawEvent())
                     userProfile = profileFromEvent(e) as UserProfileType;
                     event = e;
@@ -121,6 +127,8 @@
 
                 if ((noKind0Event || kind0EventIsOlder)) {
                     kind0Event = e;
+                    if (user?.pubkey === "dd664d5e4016433a8cd69f005ae1480804351789b59de5af06276de65633d319")
+                        d(`Setting userProfile from fetchProfileRemotely`, userProfile?.image, userProfile);
                     userProfile = profileFromEvent(e) as UserProfileType;
                     event = e;
 

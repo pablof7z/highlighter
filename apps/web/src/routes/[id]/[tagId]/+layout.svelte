@@ -29,8 +29,8 @@
 </script>
 
 <WithItem {user} {tagId} bind:event bind:article bind:video>
-    {#if event}
-        <ItemShell {event} title={$title}>
+    {#if $loadedEvent}
+        <ItemShell event={$loadedEvent} title={$title}>
             <slot />
         </ItemShell>
     {/if}

@@ -15,9 +15,8 @@
 
 {#if $loadedMedia[0]?.mediaUrl}
     {#if $appMobileView}
-        <Toolbar bottom class="hairline-t pt-1 w-full {$$props.containerClass??""} {$$props.class??""}">
-            here
-        </Toolbar>
+        <!-- <Toolbar bottom class="hairline-t pt-1 w-full {$$props.containerClass??""} {$$props.class??""}">
+        </Toolbar> -->
     {:else}
         <div class="mobile-nav fixed right-0 bottom-0 h-18 items-center flex p-2 bg-background z-[99999999] {$$props.containerClass??""} {$$props.class??""}">
             <Button variant="secondary" on:click={togglePause}>

@@ -112,8 +112,6 @@ let eosed = false;
 function processEvent(event: NDKEvent) {
 	const recent = event.created_at! * 1000 > Date.now() - 5000 && event.created_at! * 1000 < Date.now() + 5000;
 
-	console.log({ kind: event.kind, recent, eosed });
-
 	if (event.kind === 7000 && eosed && recent) {
 		toast.success(event.content);
 	}
