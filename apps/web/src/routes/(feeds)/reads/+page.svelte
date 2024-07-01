@@ -22,7 +22,7 @@
 
     const articles = $ndk.storeSubscribe(
         filters,
-        { subId: 'home-articles', cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY, relaySet },
+        { subId: 'home-articles', cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE, relaySet, closeOnEose: true },
         NDKArticle
     );
 
@@ -38,5 +38,7 @@
 </script>
 
 <div class="mx-auto w-full">
+    {$articles.length}
+    {$filteredArticles.length}
     <StoreGrid feed={filteredArticles} renderLimit={1} />
 </div>

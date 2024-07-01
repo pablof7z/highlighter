@@ -98,7 +98,7 @@
 {#if $sortedContent && $sortedContent.length > 0}
     <div class="mb-4">
         <div
-            class="overflow-x-auto w-full gap-6 rounded-none scrollbar-hide flex-nowrap flex flex-row gap-4"
+            class="overflow-x-auto w-full rounded-none scrollbar-hide flex-nowrap flex flex-row gap-4"
             itemCount={$sortedContent.length}
         >
             {#each $sortedContent as content}

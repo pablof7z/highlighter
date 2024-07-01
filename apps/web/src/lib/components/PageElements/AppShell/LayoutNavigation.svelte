@@ -23,10 +23,10 @@
 
     $: {
         options = [
-            { name: "Home", icon: House, href: "/home" },
+            { name: "Home", icon: House, href: "/" },
             // { name: "Inbox",  href: "/inbox", icon: Tray },
-            { name: "Reads",  href: "/home/reads", icon: TextAlignLeft },
-            { name: "Watch",  href: "/home/videos", icon: YoutubeLogo },
+            { name: "Reads",  href: "/reads", icon: TextAlignLeft },
+            { name: "Watch",  href: "/videos", icon: YoutubeLogo },
             // { name: "Collections",  href: "/collections", icon: CardsThree },
             { name: "Notifications", icon: Bell, href: "/notifications", badge: $hasUnreadNotifications ? $unreadNotifications?.toString() : undefined },
             { name: "Publish", icon: PlusCircle, class: "!text-accent", fn: () => openModal(NewItemModal) },

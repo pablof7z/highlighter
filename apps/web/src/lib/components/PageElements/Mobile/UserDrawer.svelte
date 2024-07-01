@@ -38,7 +38,7 @@
         <MenuList class="!my-0">
             <MenuListItem
                 title="Home"
-                href="/home"
+                href="/"
                 onClick={() => opened = false}
             >
                 <House size={24} slot="media" />
@@ -46,7 +46,7 @@
 
             <MenuListItem
                 title="Reads"
-                href="/home/reads"
+                href="/reads"
                 onClick={() => opened = false}
             >
                 <TextAlignLeft size={24} slot="media" />
@@ -54,7 +54,7 @@
 
             <MenuListItem
                 title="Watch"
-                href="/home/videos"
+                href="/videos"
                 onClick={() => opened = false}
             >
                 <YoutubeLogo size={24} slot="media" />
