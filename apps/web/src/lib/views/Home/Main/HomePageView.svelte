@@ -138,7 +138,7 @@
     <section class="lg:px-10">
         <div class="sm:px-6">
             <h1 class="pt-6">
-                What your friends are readings
+                Reads from your network
             </h1>
             <MostHighlightedArticleGrid articleTagsWithHighlights={$recommendedArticles} />
         </div>

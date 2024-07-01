@@ -22,8 +22,8 @@
         class="left-0 bottom-0 fixed mobile-navbar transition-all duration-300"
     >
         <TabbarLink
-            active={$page.url.pathname.startsWith('/home')}
-            onClick={() => goto("/home")}
+            active={$page.url.pathname === "/"}
+            onClick={() => goto("/")}
         >
             <svelte:fragment slot="icon">
                 <House class="w-8 h-8" />
@@ -31,8 +31,8 @@
             <!-- <svelte:fragment slot="label">Home</svelte:fragment> -->
         </TabbarLink>
         <TabbarLink
-            active={$page.url.pathname.startsWith('/home/reads')}
-            onClick={() => goto("/home/reads")}
+            active={$page.url.pathname.startsWith('/reads')}
+            onClick={() => goto("/reads")}
         >
             <svelte:fragment slot="icon">
                 <TextAlignLeft class="w-8 h-8" />
@@ -40,8 +40,8 @@
             <!-- <svelte:fragment slot="label">Bookmarks</svelte:fragment> -->
         </TabbarLink>
         <TabbarLink
-            active={$page.url.pathname.startsWith('/home/videos')}
-            onClick={() => goto("/home/videos")}
+            active={$page.url.pathname.startsWith('/videos')}
+            onClick={() => goto("/videos")}
         >
             <svelte:fragment slot="icon">
                 <YoutubeLogo class="w-8 h-8" />

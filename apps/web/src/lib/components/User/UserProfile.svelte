@@ -7,6 +7,7 @@
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
     import { createEventDispatcher, onDestroy } from "svelte";
     import createDebug from "debug";
+    import { refresh } from "$utils/profile-refresh.js";
     import { inview } from 'svelte-inview';
 	import { vanityUrls } from "$utils/const";
 	import { isMobileBuild } from "$utils/view/mobile";
@@ -70,26 +71,16 @@
 
                 // not sure why this hack is needed
                 setTimeout(() => {
-                    if (user?.pubkey === "dd664d5e4016433a8cd69f005ae1480804351789b59de5af06276de65633d319")
-                        d(`Setting userProfile from cacheAdapter userProfile`, userProfile?.image, userProfile);
                     userProfile ??= p;
                 }, 100);
             }
 
             // push a profile refresh to be grouped
-            $ndk.fetchEvents({
-                kinds: [0], authors: [user.pubkey]
-            }, { subId: 'profile-refresh', groupable: true, groupableDelay: 5000, groupableDelayType: 'at-least', closeOnEose: true, cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
-            .then((ev: Set<NDKEvent> | null) => {
-                const e = ev?.values().next().value;
-                if (e && e.created_at! > profileCreatedAt) {
-                    if (user?.pubkey === "dd664d5e4016433a8cd69f005ae1480804351789b59de5af06276de65633d319")
-                        d(`Setting userProfile from profile-refresh userProfile`, userProfile?.image, userProfile);
-                    // console.log('new profile event', user?.pubkey, e.rawEvent())
-                    userProfile = profileFromEvent(e) as UserProfileType;
-                    event = e;
-                    dispatch("newProfileAfterEose", userProfile);
-                }
+            refresh(user.pubkey, p, (newProfile: NDKUserProfile, newEvent: NDKEvent) => {
+                d(`refreshed profile`, newProfile);
+                userProfile = newProfile;
+                event = newEvent;
+                dispatch("newProfileAfterEose", userProfile);
             });
         }).catch((e: any) => {
             console.error(e);
@@ -127,8 +118,6 @@
 
                 if ((noKind0Event || kind0EventIsOlder)) {
                     kind0Event = e;
-                    if (user?.pubkey === "dd664d5e4016433a8cd69f005ae1480804351789b59de5af06276de65633d319")
-                        d(`Setting userProfile from fetchProfileRemotely`, userProfile?.image, userProfile);
                     userProfile = profileFromEvent(e) as UserProfileType;
                     event = e;
 
