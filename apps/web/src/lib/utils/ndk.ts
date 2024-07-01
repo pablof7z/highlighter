@@ -147,7 +147,11 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 	Promise.all([
 		$ndk.connect(2000)
 		// redisConnected
-	]);
+	]).then(() => {
+		debug('connected');
+	}).catch((error) => {
+		console.trace('error connecting', error);
+	});
 
 	// $ndk.cacheAdapter = redisAdapter;
 	// console.log(`redis status: ${redisAdapter.redis.status}`);

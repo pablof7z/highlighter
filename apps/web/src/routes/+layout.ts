@@ -1,11 +1,9 @@
 import { configureDefaultNDK } from '../lib/utils/ndk';
 import { ndk } from "$stores/ndk";
 import { get } from 'svelte/store';
-// import process from 'process';
+import { isMobileBuild } from '$utils/view/mobile';
 
-// const mobileBuild = !!process.env.MOBILE;
-
-export const ssr = true; // !mobileBuild;
+export const ssr = !isMobileBuild();
 export const prerender = 'auto';
 // export const trailingSlash = mobileBuild ? 'always' : 'ignore';
 

@@ -45,4 +45,20 @@ export const privateKey = variableStore<string | undefined>({
     }
 });
 
+export const nip46LocalKey = variableStore<string | undefined>({
+    storeName: 'nip46-local-key',
+    initialValue: undefined,
+    persist: true,
+    browserStorage: 'localStorage',
+    validationStatement: (value) => {
+        if (!value) return true;
+        try {
+            const pk = new NDKPrivateKeySigner(value);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+});
+
 export default currentUser;

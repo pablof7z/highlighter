@@ -2,7 +2,7 @@
     import { userProfile as currentUserProfile } from "$stores/session";
     import { profileFromEvent, type Hexpubkey, type NDKEvent, type NDKSubscriptionOptions, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
     import currentUser from "$stores/currentUser";
-    import type { NDKRelay, NDKSubscription, NDKUser } from "@nostr-dev-kit/ndk";
+    import type { NDKRelay, NDKSubscription, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import type { UserProfileType } from "../../../app";
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
     import { createEventDispatcher, onDestroy } from "svelte";
@@ -63,25 +63,23 @@
 
     if ($ndk.cacheAdapter?.fetchProfile && user?.pubkey && !checkedCache) {
         checkedCache = true
-        let profileCreatedAt: number;
         $ndk.cacheAdapter?.fetchProfile(user.pubkey).then((p) => {
             if (p) {
                 userProfile ??= p;
-                profileCreatedAt = p.created_at;
 
                 // not sure why this hack is needed
-                setTimeout(() => {
-                    userProfile ??= p;
-                }, 100);
-            }
+                // setTimeout(() => {
+                //     userProfile ??= p;
+                // }, 100);
 
-            // push a profile refresh to be grouped
-            refresh(user.pubkey, p, (newProfile: NDKUserProfile, newEvent: NDKEvent) => {
-                d(`refreshed profile`, newProfile);
-                userProfile = newProfile;
-                event = newEvent;
-                dispatch("newProfileAfterEose", userProfile);
-            });
+                // push a profile refresh to be grouped
+                refresh(user.pubkey, p, (newProfile: NDKUserProfile, newEvent: NDKEvent) => {
+                    d(`refreshed profile`, newProfile);
+                    userProfile = newProfile;
+                    event = newEvent;
+                    dispatch("newProfileAfterEose", userProfile);
+                });
+            }
         }).catch((e: any) => {
             console.error(e);
         });

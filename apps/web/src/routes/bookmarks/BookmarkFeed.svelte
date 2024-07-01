@@ -18,7 +18,6 @@
         filters[0].since = twoDaysAgo;
     }
 
-    const eventIds = new Map<NDKEventId, number>();
     const listsSub = $ndk.subscribe(filters, { subId: 'lists', closeOnEose: true });
     listsSub.on("event", (event) => {
         const list = NDKList.from(event);
