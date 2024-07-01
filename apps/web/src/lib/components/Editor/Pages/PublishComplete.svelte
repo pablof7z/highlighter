@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { openModal } from '$utils/modal';
 	import ShareModal from '$modals/ShareModal.svelte';
-	import { event, makePublicAfter, preview, publishAt, type } from '$stores/post-editor';
+	import { event, makePublicAfter, preview, type } from '$stores/post-editor';
 	import BlankState from '$components/PageElements/BlankState.svelte';
 	import { NDKArticle, NDKEvent, NDKVideo } from '@nostr-dev-kit/ndk';
 	import currentUser from '$stores/currentUser';
@@ -13,7 +13,6 @@
 	import Button from '$components/ui/button/button.svelte';
 
     export let title: string | undefined = "undefined";
-    export let shareUrl: string | undefined = "undefined";
 
     let content: string;
     const tags = $event instanceof NDKEvent ? $event!.getMatchingTags("t") : [];

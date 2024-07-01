@@ -22,28 +22,12 @@
     }
 </script>
 
-    <Checkbox
-        bind:value={announceClient}
+<Checkbox
+    bind:value={announceClient}
 
-    >
-        Enable client identity
-        <span class="text-sm" slot="description">
-            If this is turned on, public notes you create will have a "client" tag added. This helps with troubleshooting, and allows others to know about different nostr clients.
-        </span>
-    </Checkbox>
-
-<style lang="postcss">
-    h1 {
-        @apply text-2xl font-semibold text-foreground;
-        @apply mb-4;
-    }
-
-    h2 {
-        @apply text-lg font-semibold;
-        @apply mb-2;
-    }
-
-    section {
-        @apply mb-6;
-    }
-</style>
+>
+    Enable client identity
+    <span class="text-sm" slot="description">
+        If this is turned on, public notes you create will have a "client" tag added. This helps with troubleshooting, and allows others to know about different nostr clients.
+    </span>
+</Checkbox>

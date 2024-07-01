@@ -1,7 +1,6 @@
 <script lang="ts">
 	import AiIcon from './../../icons/AiIcon.svelte';
     import { onMount } from "svelte";
-	import ImageIcon from "$icons/ImageIcon.svelte";
 	import Carousel from '$components/Page/Carousel.svelte';
 	import { slide } from 'svelte/transition';
 	import { Image } from 'phosphor-svelte';
@@ -222,11 +221,7 @@
 {/if}
 
 <style lang="postcss">
-    img, .image-placeholder {
-        @apply w-[321px] h-[180px] object-cover;
-    }
-
     .side-button {
-        @apply py-6 rounded flex flex-col justify-center items-center gap-2 bg-white/5 text-foreground whitespace-nowrap;
+        @apply py-6 rounded flex flex-col justify-center items-center gap-2 bg-secondary text-secondary-foreground whitespace-nowrap;
     }
 </style>

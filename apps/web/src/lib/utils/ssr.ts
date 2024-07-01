@@ -8,8 +8,6 @@ import { DecodeResult } from "nostr-tools/nip19";
 
 const d = createDebug('HL:ssr');
 
-export const ssr = false;
-
 const timeout = (time: number) => new Promise((_, reject) => {
     setTimeout(() => {
         reject(new Error("Timeout"));

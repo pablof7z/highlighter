@@ -13,18 +13,20 @@
 
     $: if ($appMobileView) {
         $pageHeader = {
-            subNavbarOptions: [
-                { value: "Home",  href: "/home", icon: House },
-                { name: "Notes",  href: "/home/notes", icon: Note },
-                { name: "Reads",  href: "/home/reads", icon: Article },
-                { name: "Highlights",  href: "/home/highlights", icon: Notepad },
-            ],
+            // subNavbarOptions: [
+            //     { value: "Home",  href: "/home", icon: House },
+            //     { name: "Notes",  href: "/notes", icon: Note },
+            //     { name: "Reads",  href: "/reads", icon: Article },
+            //     { name: "Highlights",  href: "/highlights", icon: Notepad },
+            // ],
             searchBar: true,
             title: "Home",
         }
     } else {
         $pageHeader = {
-            component: PageHeader,
+            title: "Home",
+            searchBar: true,
+            // component: PageHeader,
         };
     }
 </script>

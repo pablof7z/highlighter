@@ -8,9 +8,7 @@
 
     export let item: NDKArticle | NDKVideo;
     export let isFullVersion: boolean | undefined = undefined;
-    export let urlPrefix: string;
     export let editUrl: string | undefined = undefined;
-    export let title: string | undefined = undefined;
 
     const author = item?.author;
 

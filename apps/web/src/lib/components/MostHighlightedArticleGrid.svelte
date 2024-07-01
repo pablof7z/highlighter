@@ -1,12 +1,10 @@
 <script lang="ts">
 	import ArticleGridUrlItem from './ArticleGridUrlItem.svelte';
-    import Carousel from './Page/Carousel.svelte';
 
 	import { NDKHighlight, NDKTag } from "@nostr-dev-kit/ndk";
 	import ArticleGridArticle from './ArticleGridArticle.svelte';
 
     export let articleTagsWithHighlights: {tag: NDKTag, highlights: NDKHighlight[]}[];
-    export let limit = 10;
 </script>
 
 {#if articleTagsWithHighlights && articleTagsWithHighlights.length > 0}

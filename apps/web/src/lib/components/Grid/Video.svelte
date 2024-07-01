@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { NDKEventStore, NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
-	import { Hexpubkey, NDKVideo, NDKKind, NDKUser, NDKUserProfile, NDKVideo } from '@nostr-dev-kit/ndk';
+	import from '@nostr-dev-kit/ndk-svelte';
+	import { Hexpubkey, NDKKind, NDKUser, NDKUserProfile, NDKVideo } from '@nostr-dev-kit/ndk';
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import { ndk } from '$stores/ndk';
-	import { Readable, derived } from 'svelte/store';
+	import { derived } from 'svelte/store';
 	import { userFollows } from '$stores/session';
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import { urlFromEvent } from '$utils/url';
@@ -24,7 +24,6 @@
     export let title: string | undefined = video.title;
     export let image: string | undefined = video.thumbnail;
     export let author: string | NDKUser = video.author;
-    export let description: string | undefined = video.content;
     export let href: string | undefined = undefined;
 
     let allTags = $ndk.storeSubscribe({

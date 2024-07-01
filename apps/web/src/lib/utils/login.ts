@@ -15,7 +15,7 @@ import { generateLoginEvent } from '$actions/signLoginEvent';
 import { get } from 'svelte/store';
 import { jwt as jwtStore, loginState, userFollows, userProfile } from '$stores/session';
 import createDebug from 'debug';
-import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
+import currentUser, { loginMethod, nip46LocalKey, privateKey, userPubkey } from '$stores/currentUser';
 import { goto } from '$app/navigation';
 import { vanityUrls } from './const';
 import { ndk, bunkerNDK } from '$stores/ndk';
@@ -55,7 +55,7 @@ async function pkLogin(key: string, method: LoginMethod = 'pk') {
 }
 
 async function nip46Login(remotePubkey?: Hexpubkey) {
-	const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
+	const existingPrivateKey = nip46LocalKey.get();
 	let remoteUser: NDKUser | undefined;
 
 	d({ existingPrivateKey, remotePubkey });
@@ -254,20 +254,11 @@ export function logout(): void {
 	$ndk.signer = undefined;
 	currentUser.set(undefined);
 	currentUser.set(undefined);
-	console.log("DEBUG setting user (logout)");
 	loginState.set('logged-out');
 	userFollows.set(new Set());
-	localStorage.removeItem('currentUserFollowPubkeysStore');
-	localStorage.removeItem('currentUserStore');
-	localStorage.removeItem('user-follows');
-	localStorage.removeItem('user-super-follows');
-	localStorage.removeItem('network-follows');
-	localStorage.removeItem('network-follows-updated-t');
+	userFollows.delete();
 	userPubkey.set("");
-	localStorage.removeItem('jwt');
 	userProfile.set(undefined);
-
-	document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
 	// explicitly prevent auto-login with NIP-07
 	loginMethod.set('none');
