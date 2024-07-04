@@ -1,9 +1,10 @@
 <script lang="ts">
+	import HorizontalList from '$components/PageElements/HorizontalList';
 	import Article from './../../../components/Grid/Article.svelte';
 	import { wotFilteredStore } from '$stores/wot';
 	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind } from '@nostr-dev-kit/ndk';
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
-	import HorizontalList from "$components/PageElements/HorizontalList";
+	
     import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 	import Avatar from "$components/User/Avatar.svelte";
 	import { ndk } from "$stores/ndk";
@@ -13,11 +14,16 @@
 	import HighlightBody from '$components/HighlightBody.svelte';
 	import { openModal } from '$utils/modal';
 	import StoryModal from '$modals/StoryModal.svelte';
-	import ArticleGridArticle from '$components/ArticleGridArticle.svelte';
+    import * as Card from '$components/Card';
     import Footer from "$components/PageElements/Mobile/Footer.svelte";
 	import ArticleGridUrlItem from '$components/ArticleGridUrlItem.svelte';
 	import HorizontalListOfTaggedItems from '$components/PageElements/Sections/HorizontalListOfTaggedItems.svelte';
-	import { pageHeader } from '$stores/layout';
+	import { layoutMode, pageHeader } from '$stores/layout';
+	import { appMobileView } from '$stores/app';
+	import StoriesFeed from '$components/PageElements/StoriesFeed.svelte';
+	import { NavigationOption } from '../../../../app';
+
+    $layoutMode = "full-width";
 
     const articles = $ndk.storeSubscribe({
         kinds: [NDKKind.Article], authors: Array.from($userFollows), limit: 50
@@ -47,46 +53,46 @@
         return $highlights.filter(highlight => $userFollows.has(highlight.pubkey));
     });
 
-    const twentyfourhoursago = Math.floor(Date.now() / 1000) - 864000;
-
-    const videos = $ndk.storeSubscribe([
-        { kinds: [1063], authors: Array.from($userFollows), limit: 100, "#m": ["video/mp4"], since: twentyfourhoursago },
-        { kinds: [1063], limit: 100, "#m": ["video/mp4"], since: twentyfourhoursago },
-        { kinds: [NDKKind.HorizontalVideo+1], limit: 100, since: twentyfourhoursago },
-    ])
-    const filteredVideos = derived(wotFilteredStore(videos), ($videos) => {
-        return $videos.filter(video => video.tagValue("url"));
-    });
-
     const photos = $ndk.storeSubscribe([
         { kinds: [1063], authors: Array.from($userFollows), limit: 10, "#m": ["image/jpeg"] }
     ])
 
-    const pubkeysWithVideos = derived(filteredVideos, ($filteredVideos) => {
-        return Array.from(new Set($filteredVideos.map(video => video.pubkey)))
-            .map(pubkey => { return {id: pubkey, pubkey}; })
-    });
-</script>
-
-<HorizontalList items={$pubkeysWithVideos} let:item>
-    <button on:click={() => openModal(StoryModal, { pubkey: item.pubkey })} class="py-1">
-        <Avatar pubkey={item.pubkey} class="w-14 h-14" ring />
-    </button>
-</HorizontalList>
-
-<ScrollArea class="whitespace-nowrap border-y border-border py-4" orientation="horizontal">
-    <HorizontalOptionsList options={[
+    let options: NavigationOption[] = [
         { name: "Home", href: "/" },
         { name: "Reads", href: "/reads" },
-        { name: "Communities", href: '/chat' },
+        { name: "Communities", href: '/communities' },
         { name: "Posts", href: '/notes' },
         { name: "Wiki", href: '/wiki' },
-    ]} class="px-4" />
-</ScrollArea>
+    ];
+</script>
 
-<!--
+{#if $appMobileView}
+    <StoriesFeed />
+
+    <ScrollArea class="whitespace-nowrap border-y border-border py-4" orientation="horizontal">
+        <HorizontalOptionsList {options} class="px-4" />
+    </ScrollArea>
+{:else}
+    <div class="flex flex-row w-full border h-full">
+        <aside class="w-[360px] border-r border-border flex flex-col items-stretch fixed h-screen">
+            <StoriesFeed />
+
+            {#if $pageHeader?.footer?.component}
+                <svelte:component this={$pageHeader.footer.component} {...$pageHeader.footer.props} />
+            {/if}
+        </aside>
+
+        <main class="grow ml-[360px]">
+            <ScrollArea class="whitespace-nowrap border-y border-border py-4" orientation="horizontal">
+                <HorizontalOptionsList {options} class="px-4" />
+            </ScrollArea>
+        </main>
+    </div>
+{/if}
+
+
 <HorizontalList title="Articles" items={$filteredArticles} let:item>
-    <ArticleGridArticle article={item} />
+    <Card.Article article={item} />
 </HorizontalList>
 
 {#if highlightsEosed}
@@ -102,4 +108,4 @@
         <HighlightBody highlight={item} />
     </div>
 </HorizontalList>
- -->
+

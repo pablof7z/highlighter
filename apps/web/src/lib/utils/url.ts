@@ -18,14 +18,15 @@ export function getAuthorUrlSync(user: NDKUser) {
 }
 
 export function getGroupUrl(group: NDKSimpleGroup, extraPath?: string) {
-	const url = new URL("/communities", window.location.href);
+	const url = new URL("", window.location.href);
 
-	if (!isMobileBuild())
-		url.pathname = `/communities/${group.groupId}`;
-	else
+	if (!isMobileBuild() && false)
+		url.pathname = `/communities/${group.groupId}/${extraPath ?? ""}`;
+	else {
+		url.pathname = "/mobile/community";
 		url.searchParams.set("groupId", group.groupId);
-
-	url.pathname += extraPath ?? "";
+		if (extraPath) url.searchParams.set("view", extraPath);
+	}
 
 	if (group.relaySet.size > 0) {
 		url.searchParams.set("relays", Array.from(group.relaySet.relayUrls).join(","));

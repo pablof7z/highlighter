@@ -45,10 +45,13 @@
         (dragging) ? "transform: translateY(" + dragged/50 + "px);" : ""
     }
     class="
-        left-0 bottom-0 right-0 fixed
+        left-0 bottom-0 fixed
+        max-sm:right-0 sm:right-[360px]
+        sm:left-[var(--navbar-width)]
+        sm:w-[360px]
         rounded-t-3xl bg-secondary p-3 px-4 h-auto 
         flex flex-col justify-between items-center
-        w-full
+        max-sm:w-full
     ">
     <div class="flex flex-row justify-between {align} w-full gap-2">
         <div class="flex flex-row justify-between {align} w-full gap-2">
@@ -60,7 +63,7 @@
             class="
                 rounded-full flex-none w-9 h-9 p-0
                 transform-gpu transition-transform duration-300
-                {collapsed ? 'rotate-180' : ''}
+                {!collapsed ? 'rotate-180' : ''}
             "
             on:click={() => (collapsed = !collapsed)}
         >

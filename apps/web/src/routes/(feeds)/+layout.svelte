@@ -22,8 +22,6 @@
         }
     } else {
         $pageHeader = {
-            title: "Home",
-            searchBar: true,
             // component: PageHeader,
         };
     }

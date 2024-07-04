@@ -5,11 +5,14 @@ import createDebug from 'debug';
 
 const d = createDebug('HL:profile-refresh');
 
+const alreadyRefreshed: Set<Hexpubkey> = new Set();
+
 /**
  * A map of profiles where the value is the 
  */
 type ProfileRefreshEntry = {
     currentCreatedAt?: number;
+    lastCheckedAt?: number;
     cb?: (profile: NDKUserProfile) => void;
 }
 export const profilesToRefresh: Map<Hexpubkey, ProfileRefreshEntry> = new Map();
@@ -23,6 +26,11 @@ export function refresh(
     onNewProfile?: (profile: NDKUserProfile, event: NDKEvent) => void
 ) {
     if (profilesToRefresh.has(pubkey)) return;
+
+    if (alreadyRefreshed.has(pubkey)) {
+        d("Already refreshed %s", pubkey);
+        return;
+    }
 
     d("Refresh profile scheduled %s", pubkey);
     
@@ -46,13 +54,19 @@ export function execute() {
 
     d("Executing profile refresh", profilesToRefresh.size);
 
+    const now = Math.floor(Date.now() / 1000);
+
     profilesToRefresh.forEach((entry, pubkey) => {
+        d("entry %o %o", entry, {pubkey});
         const filter: NDKFilter = { authors: [pubkey], kinds: [0] };
         if (entry.currentCreatedAt) {
             filter.since = entry.currentCreatedAt + 1;
+
+            d("Time ago %d", now - entry.currentCreatedAt);
         }
 
         filters.push(filter);
+        alreadyRefreshed.add(pubkey);
     });
     profilesToRefresh.clear();
 

@@ -8,12 +8,15 @@
 	import type { UserProfileType } from '../../app';
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import * as Chat from "$components/Chat";
-	import Article from '$components/Grid/Article.svelte';
-	import ArticleGridArticle from '$components/ArticleGridArticle.svelte';
-	import ArticleCard from '$components/ArticleCard.svelte';
-	import { userArticles, userGroupList, userHighlights, userVideos } from '$stores/user-view';
+    import * as Card from '$components/Card';
+	import { userArticles, userGroupList, userHighlights, userPinList, userVideos } from '$stores/user-view';
+	import HighlightBody from '$components/HighlightBody.svelte';
+	import currentUser from '$stores/currentUser';
 
     export let user: NDKUser;
+
+    let isCurrentUser: boolean | undefined;
+    $: isCurrentUser = $currentUser?.pubkey === user.pubkey;
 
     $ndk.outboxTracker!.track(user);
 
@@ -67,30 +70,26 @@
         "wss://relay.primal.net"
     ], $ndk)
 
-    const articles = $ndk.storeSubscribe({
-        kinds: [NDKKind.Article], authors: [user.pubkey], limit: 50
-    }, undefined, NDKArticle);
-
-    const highlights = $ndk.storeSubscribe({
-        kinds: [NDKKind.Highlight], authors: [user.pubkey], limit: 50
-    }, {
-        relaySet: highlighterRelaySet,
-        onEose: () => {
-            console.log('fetch', $highlights.length)
-            for (const highlight of $highlights) {
-                highlight.getArticle().then(article => {
-                    console.log('fetch', article)
-                    if (article instanceof NDKEvent) {
-                        reads.update(reads => {
-                            if (reads.find(a => a.pubkey === article.pubkey)) return reads;
-                            return [...reads, NDKArticle.from(article)];
-                        });
-                    }
-                });
-            }
-        }
-    }, NDKHighlight);
-    const reads = writable<NDKArticle[]>([]);
+    // const highlights = $ndk.storeSubscribe({
+    //     kinds: [NDKKind.Highlight], authors: [user.pubkey], limit: 50
+    // }, {
+    //     relaySet: highlighterRelaySet,
+    //     onEose: () => {
+    //         console.log('fetch', $highlights.length)
+    //         for (const highlight of $highlights) {
+    //             highlight.getArticle().then(article => {
+    //                 console.log('fetch', article)
+    //                 if (article instanceof NDKEvent) {
+    //                     reads.update(reads => {
+    //                         if (reads.find(a => a.pubkey === article.pubkey)) return reads;
+    //                         return [...reads, NDKArticle.from(article)];
+    //                     });
+    //                 }
+    //             });
+    //         }
+    //     }
+    // }, NDKHighlight);
+    // const reads = writable<NDKArticle[]>([]);
 
     let groupsList: NDKList | undefined;
     $ndk.fetchEvent({kinds: [NDKKind.SimpleGroupList], authors: [user.pubkey]}).then(list => {
@@ -110,12 +109,12 @@
     $: {
         if ($userArticles && $userArticles.length > 0 && !blockSet.has("articles")) {
             priorityBlocksSet.add("articles");
-            priorityBlocks = [...blocks, "articles"]
+            priorityBlocks = [...priorityBlocks, "articles"]
         }
 
         if ($userVideos && $userVideos.length > 0 && !blockSet.has("videos")) {
             priorityBlocksSet.add("videos");
-            priorityBlocks = [...blocks, "videos"]
+            priorityBlocks = [...priorityBlocks, "videos"]
         }
 
         if ($userHighlights && $userHighlights.length > 0 && !blockSet.has("highlights")) {
@@ -127,6 +126,36 @@
             blockSet.add("groups");
             blocks = [...blocks, "groups"]
         }
+    }
+
+    let featuredItems: Readable<(NDKArticle | NDKVideo)[]> | undefined;
+
+    $: if (!featuredItems && userArticles && userVideos && userPinList) {
+        featuredItems = derived([ userArticles, userVideos, userPinList ], ([ $userArticles, $userVideos, $userPinList ]) => {
+            const items: (NDKArticle | NDKVideo)[] = [];
+            if (!$userPinList) return items;
+
+            for (const pin of $userPinList.items) {
+                const tag = pin[1];
+                const kind = tag.split(/:/)[0];
+                let lookIn: NDKEvent[] | undefined;
+
+                if (kind === NDKKind.Article.toString()) {
+                    lookIn = $userArticles;
+                    console.log('lookin in articles', $userArticles?.length)
+                } else if (kind === NDKKind.HorizontalVideo.toString()) {
+                    lookIn = $userVideos;
+                }
+
+                console.log('looking for pin', tag)
+                if (lookIn) {
+                    const item = lookIn.find(e => e.tagId() === tag);
+                    if (item) items.push(item as NDKArticle | NDKVideo);
+                }
+            }
+
+            return items;
+        })
     }
 </script>
 
@@ -141,37 +170,32 @@
 </svelte:head>
 
 <!-- <UserProfile {user} bind:userProfile bind:authorUrl /> -->
+{#if featuredItems && $featuredItems}
+    {#if $featuredItems.length === 1}
+        <Card.Item item={$featuredItems[0]} />
+    {:else if $featuredItems.length > 1}
+        <HorizontalList title="Featured" items={$featuredItems} let:item>
+            <Card.Item item={item} />
+        </HorizontalList>
+    {/if}
+{/if}
 
 {#each priorityBlocks as block}
     {#if block === "videos"}
         <HorizontalList title="Videos" items={$userVideos} let:item>
-            <ArticleGridArticle article={item} skipAuthor />
+            <Card.Video video={item} />
         </HorizontalList>
     {:else if block === "articles"}
         <HorizontalList title="Articles" items={$userArticles} let:item>
-            <ArticleGridArticle article={item} skipAuthor />
+            <Card.Article article={item} skipAuthor />
         </HorizontalList>
-    {:else if block === "highlights"}
-        <HorizontalList title="Highlights" items={$userHighlights} let:item>
-            <ArticleGridArticle article={item} skipAuthor />
-        </HorizontalList>
-    {:else if block === "groups" && $userGroupList}
-        <Chat.List>
-            {#each $userGroupList.items as item (item)}
-                <Chat.Item tag={item} />
-            {/each}
-        </Chat.List>
     {/if}
 {/each}
 
 {#each blocks as block}
-    {#if block === "videos"}
-        <HorizontalList title="Videos" items={$userVideos} let:item>
-            <ArticleGridArticle article={item} skipAuthor />
-        </HorizontalList>
-    {:else if block === "highlights"}
+    {#if block === "highlights"}
         <HorizontalList title="Highlights" items={$userHighlights} let:item>
-            <ArticleGridArticle article={item} skipAuthor />
+            <HighlightBody highlight={item} />
         </HorizontalList>
     {:else if block === "groups" && $userGroupList}
         <Chat.List>
@@ -184,7 +208,7 @@
 
 {#if $pinboards.length > 0}
     <HorizontalList title="Pinboards" items={$pinboards} let:item>
-        <ArticleCard
+        <Card.Content
             title={item.tagValue("d")}
             image={item.tagValue("image")}
             description={item.tagValue("description")}

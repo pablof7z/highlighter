@@ -9,7 +9,6 @@
 	import ChatFooter from "./ChatFooter.svelte";
 
     export let group: NDKSimpleGroup;
-    export let href: string;
 
     $: if ($pageHeader) {
         $pageHeader.footer = {

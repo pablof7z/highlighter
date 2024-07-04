@@ -14,8 +14,8 @@
 	import { urlFromEvent } from '$utils/url';
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import HighlightBody from '$components/HighlightBody.svelte';
-	import ArticleGridArticle from '$components/ArticleGridArticle.svelte';
 	import { appMobileView } from '$stores/app';
+	import ArticleCard from '$components/Card/ArticleCard.svelte';
 
     register();
 
@@ -63,7 +63,7 @@
                     <div class="flex flex-row w-full">
                         {#if !$appMobileView}
                             <div class="w-1/4">
-                                <ArticleGridArticle {article} highlights={highlightsPerArticle[articleId]} />
+                                <ArticleCard {article} highlights={highlightsPerArticle[articleId]} />
                             </div>
                         {/if}
                         <!-- <h1>{article.title}</h1>

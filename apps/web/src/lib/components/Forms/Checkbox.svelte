@@ -8,10 +8,10 @@
 <label class="items-top space-x-2 text-foreground text-base font-medium flex flex-row gap-2 items-center justify-between {$$props.class??""}">
     <div class="flex flex-row items-center w-full space-x-2">
         {#if type === 'check'}
-            <Checkbox id="terms1" bind:checked={value} on:change />
+            <Checkbox bind:checked={value} on:click />
         {/if}
 
-        <div class="flex flex-col sm:flex-row gap-2 justify-stretch items-center w-full">
+        <button class="text-left flex flex-col sm:flex-row gap-2 justify-stretch items-center w-full" on:click={() => value = !value}>
             <div class="flex flex-col items-start grow w-full">
                 <slot />
                 <div class="text-neutral-500">
@@ -31,6 +31,6 @@
                 <slot name="button" />
             </div>
             {/if}
-        </div>
+        </button>
     </div>
 </label>
