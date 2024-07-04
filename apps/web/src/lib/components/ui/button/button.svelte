@@ -8,7 +8,10 @@
 
 	const dispatcher = createEventDispatcher();
 
-	type $$Props = Props;
+	type $$Props = Props & {
+		class?: string;
+		forceNonMobile?: boolean;
+	};
 	type $$Events = Events;
 
 	let className: $$Props["class"] = undefined;

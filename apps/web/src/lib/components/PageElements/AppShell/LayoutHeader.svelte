@@ -16,8 +16,10 @@
             document.documentElement.style.setProperty('--navbar-height', `0px`);
             return;
         }
-        const navbarHeight = navbar.offsetHeight;
-        document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
+        setTimeout(() => {
+            const navbarHeight = navbar.offsetHeight;
+            document.documentElement.style.setProperty('--navbar-height', `${navbarHeight}px`);
+        }, 10)
     };
 
     onMount(() => {
@@ -64,6 +66,7 @@
                     <div class="py-2 {$$props.containerClass??""}">
                         <HorizontalOptionsList
                             options={$pageHeader.subNavbarOptions}
+                            containerClass={$$props.containerClass}
                             bind:value={$pageHeader.subNavbarValue}
                         />
                     </div>

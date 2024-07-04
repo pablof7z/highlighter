@@ -25,6 +25,7 @@
     export let mentionEvent: NDKEvent | undefined = undefined;
     export let skipButtons = false;
     export let skipFadeMode = false;
+    export let relaySet: NDKRelaySet | undefined = undefined;
 
     export let forceGenerateEvent = false;
     export let forcePublish = false;
@@ -91,10 +92,10 @@
         publishing = true;
 
         try {
-            const relaySet = relaySetForEvent(event);
+            const _relaySet = relaySet ?? relaySetForEvent(event);
             await generateEvent();
             await event.sign();
-            event.publish(relaySet);
+            event.publish(_relaySet);
             dispatch("publish", event);
 
             // reset

@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { get } from 'svelte/store';
     import { NDKEvent } from "@nostr-dev-kit/ndk";
     import Time from "svelte-time";
+	import { onDestroy } from 'svelte';
 
     export let event: NDKEvent | undefined = undefined;
     export let relative = true;
@@ -11,7 +13,7 @@
     /**
      * Timestamp to display
      */
-    export let timestamp: number| undefined = published_at ? parseInt(published_at) * 1000 : undefined;
+    export let timestamp: number | undefined = published_at ? parseInt(published_at) : event?.created_at * 1000;
 
 
     /**
@@ -30,16 +32,64 @@
         const now = Date.now();
         const diff = now - timestamp;
 
+        if (!format) {
+            // if less than a minute, show "just now"
+            if (diff < 60000) format = "just now";
+            // if less than an hour, show minutes
+            else if (diff < 3600000) format = "mm'm' ago";
+            // if less than a day, show hours
+            else if (diff < 86400000) format = "h[h]";
+            // if less than a week, show days
+            else if (diff < 604800000) format = "dd'd' ago";
+        }
+
         return diff < 1000 * timeAgoCutoff;
     }
+
+    const updateDiff = () => { distanceOfTime = timestamp ? Math.floor((Date.now() - timestamp) / 1000) : 99999999; }
+
+    let distanceOfTime: number = 99999999;
+    updateDiff();
+    const interval = setInterval(updateDiff, 5000);
+
+    onDestroy(() => {
+        clearInterval(interval);
+    });
+
+
 </script>
 
 {#if !Number.isNaN(timestamp)}
-    <Time
-        relative={useRelativeTime()}
-        live={true}
-        {timestamp}
-        class={$$props.class || ``}
-        {format}
-    />
+    {#if distanceOfTime < 60}
+        just now
+    {:else if distanceOfTime < 60 * 60}
+        <Time
+            relative={useRelativeTime()}
+            live={true}
+            {timestamp}
+            class={$$props.class || ``}
+            format="m[m]"
+        />
+    {:else if distanceOfTime < 60 * 60 * 24}
+        <Time
+            live={true}
+            {timestamp}
+            class={$$props.class || ``}
+            format="h[h]"
+        />
+    {:else if distanceOfTime < 60 * 60 * 24 * 30}
+        <Time
+            live={true}
+            {timestamp}
+            class={$$props.class || ``}
+            format="d[d]"
+        />
+    {:else}
+        <Time
+            live={true}
+            {timestamp}
+            class={$$props.class || ``}
+            format="M/d/YY"
+        />
+    {/if}
 {/if}

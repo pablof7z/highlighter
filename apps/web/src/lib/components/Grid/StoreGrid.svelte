@@ -17,7 +17,13 @@
     export let urlPrefix: string = "/e/";
     export let showEventsOlderThan: Date | undefined = undefined;
     export let tooNewEvents = new Set<NDKEventId>();
-    export let wideView: false | undefined = undefined;
+    export let wideView: false | undefined | "first" = undefined;
+
+    /**
+     * Whether the feed should be sorted by latest events tagging the event
+     * or by publication time
+     */
+    export let sortByActivity = true;
 
     const perNoteLatestActivity = new Map<NDKEventId, number>();
 
@@ -76,10 +82,17 @@
         }
 
         return Array.from(topLevelNotes.values()).sort((a, b) => {
-            const aLatest = perNoteLatestActivity.get(a.id) ?? 0;
-            const bLatest = perNoteLatestActivity.get(b.id) ?? 0;
+            if (sortByActivity) {
+                const aLatest = perNoteLatestActivity.get(a.id) ?? 0;
+                const bLatest = perNoteLatestActivity.get(b.id) ?? 0;
 
-            return bLatest - aLatest;
+                return bLatest - aLatest;
+            } else {
+                const aPublication = a.tagValue("published_at") ?? a.created_at!;
+                const bPublication = b.tagValue("published_at") ?? b.created_at!;
+
+                return bPublication - aPublication;
+            }
         })
     });
 
@@ -92,9 +105,11 @@
 
         goto(`/e/${event.encode()}`);
     }
+
+    export let gridSetup = "grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
 </script>
 
-<div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+<div class="grid {gridSetup} gap-6">
         {#if tooNewEvents.size > 0}
             <div class="w-full flex flex-row items-center justify-center discussion-item transition-all duration-300 sticky top-0 z-50 ">
                 <button class="w-fit whitespace-nowrap rounded-full bg-accent p-4"
@@ -121,9 +136,20 @@
             {:else if event.kind === NDKKind.GroupNote}
                 <GroupNote {event} {urlPrefix} />
             {:else if event.kind === NDKKind.Article}
-                <Article article={NDKArticle.from(event)} {wideView} />
+                <Article article={NDKArticle.from(event)}
+                    wideView={
+                        wideView === "first" ? (
+                            i === 0 ? true : false
+                        ) : wideView
+                    }
+                />
             {:else if event.kind === NDKKind.HorizontalVideo}
                 <Video video={NDKVideo.from(event)}
+                    wideView={
+                        wideView === "first" ? (
+                            i === 0 ? true : false
+                        ) : wideView
+                    }
                 />
             {:else if event.kind === NDKKind.Highlight}
                 <Highlight

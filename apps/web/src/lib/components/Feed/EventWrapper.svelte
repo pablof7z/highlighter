@@ -36,7 +36,6 @@
 	import Name from '$components/User/Name.svelte';
 	import Avatar from '$components/User/Avatar.svelte';
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
-	import { appMobileView } from '$stores/app';
 	import { newToasterMessage } from '$stores/toaster';
 	import Scheduler from '$modals/Scheduler.svelte';
 	import ZapModal from '$modals/ZapModal.svelte';
@@ -45,6 +44,7 @@
 	import DvmJobFeedback from '$components/Event/Dvm/DvmJobFeedback.svelte';
 	import DvmJobResult from '$components/Event/Dvm/DvmJobResult.svelte';
 	import ZapReceipt from '$components/Event/ZapReceipt.svelte';
+	import { appMobileView } from '$stores/app';
 
     const dispatch = createEventDispatcher();
 
@@ -62,11 +62,11 @@
     export let nestedMaxLevel = 2;
     export let showReply: boolean | undefined = undefined;
     export let urlPrefix: string | undefined = undefined;
-    export let willShowReply: boolean | undefined = undefined;
+    export let willShowReply: boolean | undefined = false;
     export let newPostCompact = false;
     export let placeholder: string | undefined = undefined;
     export let skipFooter = false;
-    export let compact = $appMobileView;
+    export let compact = false;
 
     export let disableSwipe = false;
 
@@ -309,7 +309,7 @@
 
                 <!-- Content -->
                 <div class="
-                    flex flex-col overflow-x-clip sm:pl-2 grow
+                    flex flex-col overflow-x-clip pl-2 grow
                     {compact ? "w-full" : "w-[calc(100%-3.5rem)]"}
                 ">
                     <!-- Title and time -->
@@ -362,12 +362,14 @@
                                             {/if}
                                         {/if}
                                     {/key}
-                                    <EventCardDropdownMenu
-                                        {event}
-                                        enableDelete={$currentUser && $currentUser.pubkey === event.pubkey}
-                                        on:delete={deleteEvent}
-                                        class="dropdown-end absolute !bg-background z-[9999]"
-                                    />
+                                    {#if !$appMobileView}
+                                        <EventCardDropdownMenu
+                                            {event}
+                                            enableDelete={$currentUser && $currentUser.pubkey === event.pubkey}
+                                            on:delete={deleteEvent}
+                                            class="dropdown-end absolute !bg-background z-[9999]"
+                                        />
+                                    {/if}
                                 </div>
                             </div>
 

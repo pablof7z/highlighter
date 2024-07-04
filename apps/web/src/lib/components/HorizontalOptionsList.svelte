@@ -35,13 +35,14 @@
     </Tabs.Root>
 {:else}
     <div class="
-        justify-start items-start inline-flex whitespace-nowrap
+        justify-start items-start inline-flex whitespace-nowrap w-full
     ">
         <div class="
             lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}
             overflow-x-auto max-w-[100vw]
             scrollbar-hide gap-2
             transition-all duration-300
+        
         ">
             {#each options as option (option.id ?? option.name ?? option.href)}
                 {#if option.component}

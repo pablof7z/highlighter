@@ -14,7 +14,6 @@
     import { loadedMedia, togglePause } from '$stores/media';
 
     export let article: NDKArticle;
-    export let supported: boolean;
 
     let recordingEvents: NDKEventStore<NDKEvent> | undefined;
 

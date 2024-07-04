@@ -6,7 +6,7 @@
     export let href: string | undefined = "#";
 </script>
 
-<Button forceNonMobile variant="secondary" {href} on:click class="
+<Button forceNonMobile variant="outline" {href} on:click class="
     rounded-2xl justify-center items-center inline-flex
     flex-col
     flex-none

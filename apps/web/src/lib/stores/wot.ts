@@ -15,14 +15,14 @@ export const wot = derived([networkFollows, minimumScore], ([$networkFollows, $m
     return pubkeys;
 });
 
-export function wotFilteredStore(event: Readable<NDKEvent[]>) {
+export function wotFilteredStore<T>(event: Readable<T[]>) {
     return derived([event, wot], ([$event, $wot]) => {
         if ($wot.size < 1000) {
             
             return $event;
         }
 
-        const filteredEvents: NDKEvent[] = [];
+        const filteredEvents: T[] = [];
 
         for (const e of $event) {
             if ($wot.has(e.pubkey)) filteredEvents.push(e);

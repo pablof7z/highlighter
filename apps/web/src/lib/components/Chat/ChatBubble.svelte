@@ -1,14 +1,13 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
     import currentUser from "$stores/currentUser";
-	import { NDKKind, type NDKEvent, NDKArticle, Hexpubkey } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKEvent, NDKArticle, Hexpubkey, NDKFilter } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import Article from "$components/List/Article.svelte";
 	import { derived } from "svelte/store";
 	import { isKind, prettifyReaction, uniquePubkeys } from "$utils/event";
 	import { pluralize } from "$utils";
-	import { CursorClick, ShareFat } from "phosphor-svelte";
 	import Name from "$components/User/Name.svelte";
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import { ndk } from "$stores/ndk";
@@ -16,14 +15,24 @@
 
     export let event: NDKEvent;
     export let detailed = false;
+    export let skipAuthor = false;
     
     const author = event.author;
 
+    const filter: NDKFilter = { kinds: [9, 11, 12, 7, 5, 9735 ], ...event.filter(), limit: 100 }
+    const hTag = event.tagValue("h");
+
+    if (hTag) {
+        filter["#h"] = [hTag];
+    } else {
+        console.log("no h tag", event.rawEvent())
+    }
+
     const taggingEvents = $ndk.storeSubscribe(
-        { ...event.filter(), limit: 100 }
+        filter
     )
 
-    const replies = derived(taggingEvents, $e => $e.filter(isKind(1)));
+    const replies = derived(taggingEvents, $e => $e.filter(isKind(1, 9)));
     const reactions = derived(taggingEvents, $e => $e.filter(isKind(NDKKind.Reaction)));
     const replyingPubkeys = derived(replies, $replies => uniquePubkeys($replies));
 
@@ -57,24 +66,30 @@
 <div 
     class="
     text-left
-    chat hover:brightness-150 transition-all duration-100 ease-in-out
+    flex items-end gap-1
+    hover:brightness-150 transition-all duration-100 ease-in-out
     {$$props.class??""}
-    {isMine ? 'chat-end' : 'chat-start'}
-" on:click>
+    {isMine ? 'justify-start flex-row-reverse' : 'justify-start flex-row'}
+" class:mb-4={!skipAuthor}
+    on:click>
     <UserProfile user={author} bind:userProfile bind:fetching bind:authorUrl />
-    <a href={authorUrl} class="chat-image">
+    <a
+        href={authorUrl}
+        class:opacity-0={skipAuthor}
+    >
         <Avatar user={author} {userProfile} {fetching} size="small" />
     </a>
     <div class="
         bubble-container rounded flex items-stretch justify-stretch w-fit max-w-[90%]
-        bg-secondary border border-border p-4
+        {isMine ? "bg-accent text-accent-foreground" : "bg-secondary"}
+        border border-border p-4
         {isGradient ? "sm:min-w-[28rem]" : ""}
     ">
         <div class="
             w-full flex-1 grow !max-w-none
-            {isGradient ? "bg-secondary m-[1px]" : "bg-secondary"}]
+            {isGradient ? "bg-secondary m-[1px]" : ""}]
         ">
-            <div class="chat-header">
+            <div class="text-muted-foreground text-xs">
                 <Name {userProfile} {fetching} />
                 <time class="text-xs opacity-50">
                     <RelativeTime timestamp={event.created_at*1000} />

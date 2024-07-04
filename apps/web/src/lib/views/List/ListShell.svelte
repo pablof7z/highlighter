@@ -1,8 +1,5 @@
 <script lang="ts">
-	import ArticleView from "$components/ArticleView.svelte";
-	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 	import ListViewContent from "$components/ListViewContent.svelte";
-	import LoadingScreen from "$components/LoadingScreen.svelte";
 	import { appMobileView } from "$stores/app";
 	import { loadedEvent, title } from "$stores/item-view";
 	import { layoutMode, resetLayout } from "$stores/layout";

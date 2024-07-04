@@ -3,7 +3,7 @@ import { ndk } from "$stores/ndk";
 import { get } from 'svelte/store';
 import { isMobileBuild } from '$utils/view/mobile';
 
-export const ssr = !isMobileBuild();
+export const ssr = false;// !isMobileBuild();
 export const prerender = 'auto';
 // export const trailingSlash = mobileBuild ? 'always' : 'ignore';
 

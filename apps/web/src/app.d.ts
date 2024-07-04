@@ -53,7 +53,6 @@ export type NavigationOption = {
         props?: Record<string, any>;
     }
     fn?: () => void;
-    premiumOnly?: boolean;
 	buttonProps?: Record<string, any>;
 };
 

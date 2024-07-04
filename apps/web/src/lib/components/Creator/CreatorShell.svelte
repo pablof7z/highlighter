@@ -1,29 +1,25 @@
 <script lang="ts">
-	import { userSubscription, getUserSubscriptionTiersStore, getUserCurations, getUserHighlights, getGAUserContent, getUserContent, getUserSupporters } from "$stores/user-view";
+	import { userSubscription, getUserSubscriptionTiersStore, getUserCurations, getUserHighlights, getGAUserContent, getUserContent, getUserSupporters, startUserView, userGroupList, userHighlights, userArticles, userWiki, userVideos } from "$stores/user-view";
 	import { NDKArticle, NDKKind, type NDKEventId, NDKUser } from "@nostr-dev-kit/ndk";
 	import { derived, type Readable } from "svelte/store";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
-	import { pageHeader, pageHeaderComponent, resetLayout } from '$stores/layout';
+	import { pageHeader, resetLayout } from '$stores/layout';
 	import type { NavigationOption, UserProfileType } from '../../../app';
 	import CreatorHeader from "./CreatorHeader.svelte";
-	import { Article, BookmarkSimple, CardsThree, House, Notepad, Star, Ticket, User } from "phosphor-svelte";
-	import HighlightIcon from "$icons/HighlightIcon.svelte";
+	import { House } from "phosphor-svelte";
 	import currentUser from "$stores/currentUser";
+	import CreatorFooter from "./CreatorShell/CreatorFooter.svelte";
+	import { getUserUrl } from "$utils/url";
 
     export let user: NDKUser;
-
-    const userTiers = getUserSubscriptionTiersStore();
-
-    const highlights = getUserHighlights();
-    const gaContent = getGAUserContent();
-    const userContent = getUserContent();
-    const curations = getUserCurations();
     
     onMount(() => {
         addReadReceipt(user);
     })
+
+    startUserView(user);
 
     let articles: Readable<Map<NDKEventId, NDKArticle>>;
 
@@ -50,12 +46,59 @@
     let authorUrl: string;
     let fetching: boolean;
 
+    let hasCommunities = false;
     let hasCurations = false;
     let hasHighlights = false;
-    let hasPublications = false;
+    let hasArticles = false;
+    let hasVideos = false;
+    let hasWiki = false;
     let hasAccessToBackstage: boolean | undefined = undefined;
 
     let options: NavigationOption[] = [];
+
+    function roundedItemCount(items: any[], limit = 99): string {
+        return items.length > limit ? `${limit}+` : items.length.toString();
+    }
+
+    $: if (!hasArticles) {
+        hasArticles = !!($userArticles && $userArticles.length > 0)
+        if (hasArticles) {
+            options.push({ name: "Articles", badge: roundedItemCount($userArticles!), href: getUserUrl(authorUrl, user, "posts") })
+            options = options;
+        }
+    }
+
+    $: if (!hasVideos) {
+        hasVideos = !!($userVideos && $userVideos.length > 0);
+        if (hasVideos) {
+            options.push({ name: "Videos", badge: roundedItemCount($userVideos!), href: getUserUrl(authorUrl, user, "videos") })
+            options = options;
+        }
+    }
+
+    $: if (!hasHighlights) {
+        hasHighlights = !!($userHighlights && $userHighlights.length > 0);
+        if (hasHighlights) {
+            options.push({ name: "Highlights", badge: roundedItemCount($userHighlights!), href: getUserUrl(authorUrl, user, "highlights") })
+            options = options;
+        }
+    }
+
+    $: if (!hasCommunities) {
+        hasCommunities = !!($userGroupList && $userGroupList.items.length > 0);
+        if (hasCommunities) {
+            options.push({ name: "Communities", badge: roundedItemCount($userGroupList!.items), buttonProps: {variant: 'accent'}, href: getUserUrl(authorUrl, user, "communities") })
+            options = options;
+        }
+    }
+
+    $: if (!hasWiki) {
+        hasWiki = !!($userWiki && $userWiki.length > 0);
+        if (hasWiki) {
+            options.push({ name: "Wiki", badge: roundedItemCount($userWiki!), href: getUserUrl(authorUrl, user, "wiki") })
+            options = options;
+        }
+    }
 
     const supporters = getUserSupporters();
 
@@ -67,36 +110,18 @@
         }
     }
 
-    $: {
-        options = [];
-
-        if (!hasPublications && ($gaContent.length > 0 || $userContent.length > 0)) { hasPublications = true; }
-        if (!hasCurations && $curations.length > 0) { hasCurations = true; }
-        if (!hasHighlights && $highlights.length > 0) { hasHighlights = true; }
-
-        if (hasAccessToBackstage)
-            options.push({ name: "Backstage", href: `${authorUrl}/backstage`, icon: Ticket, buttonProps: {variant: 'accent'} },)
-
-        options.push({ value: "Home", href: `${authorUrl}`, icon: House });
-
-        options.push({ name: "Notes", href: `${authorUrl}/notes`, icon: Notepad },)
-        // if (hasCurations)
-        //     options.push({ name: "Curations", href: `${authorUrl}/curations`, icon: CardsThree },)
-
-        if (hasPublications)
-            options.push({ name: "Publications", href: `${authorUrl}/posts`, icon: Article },)
-
-        if (hasHighlights)
-            options.push({ name: "Highlights", href: `${authorUrl}/highlights`, icon: HighlightIcon },)
-    }
-
     $: $pageHeader = {
         component: CreatorHeader,
         props: {
             user,
-            tiers: userTiers
         },
-        subNavbarOptions: options
+        subNavbarOptions: options,
+        footer: {
+            component: CreatorFooter,
+            props: {
+                user
+            }
+        }
     };
 
     onDestroy(resetLayout);

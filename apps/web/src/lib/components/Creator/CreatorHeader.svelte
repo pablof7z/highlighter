@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { openModal } from '$utils/modal';
-	import ShareModal from '$modals/ShareModal.svelte';
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { DotsThree, Export } from "phosphor-svelte";
@@ -8,25 +7,22 @@
 	import { Readable } from "svelte/store";
 	import { NavigationOption } from "../../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
-	import CreatorHeaderFollowButton from "./CreatorHeaderFollowButton.svelte";
-	import CreatorHeaderInboxButton from "./CreatorHeaderInboxButton.svelte";
-	import CreatorHeaderSupportButton from './CreatorHeaderSupportButton.svelte';
 	import { appMobileView } from '$stores/app';
-	import { Actions, ActionsButton, ActionsGroup, Button, Navbar, NavbarBackLink, Toolbar } from 'konsta/svelte';
+	import { Button, Navbar, NavbarBackLink } from 'konsta/svelte';
 	import Avatar from '$components/User/Avatar.svelte';
 	import Name from '$components/User/Name.svelte';
 	import { pageHeader } from '$stores/layout';
 	import HeaderMobileActionSheet from './HeaderMobileActionSheet.svelte';
 	import { userFollows } from '$stores/session';
 	import currentUser from '$stores/currentUser';
-	import { devMode } from '$stores/settings';
-	import UserInfoModal from '$modals/UserInfoModal.svelte';
+	import Npub from '$components/User/Npub.svelte';
+	import { inview } from 'svelte-inview';
+	import BackButton from '$components/PageElements/Navigation/BackButton.svelte';
 
     export let user: NDKUser;
     let userProfile: NDKUserProfile;
-    export let authorUrl: string;
     export let fetching: boolean;
-    export let collapsed: boolean = true;
+    export let collapsed: boolean = false;
     export let tiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
     export let options: NavigationOption[] = [];
 
@@ -47,7 +43,7 @@
 
     onDestroy(() => {
         document.removeEventListener("scroll", updateCollapsed);
-        document.addEventListener("touchmove", updateCollapsed);
+        // document.addEventListener("touchmove", updateCollapsed);
         document.removeEventListener("resize", updateCollapsed);
     })
 
@@ -61,10 +57,10 @@
         if (touchStartY) {
             let touchEndY = e.touches[0].clientY;
             if (touchStartY - touchEndY > 0) {
-                collapsed = true;
+                // collapsed = true;
                 dispatch("resize");
             } else if (touchStartY - touchEndY < -300) {
-                collapsed = false;
+                // collapsed = false;
                 dispatch("resize");
             }
         }
@@ -76,6 +72,12 @@
     
     function updateCollapsed() {
         y = window.scrollY;
+
+        if (collapsed) {
+            window.removeEventListener("scroll", updateCollapsed);
+            window.removeEventListener("resize", updateCollapsed);
+            return;
+        }
 
         if (y > 100 && !collapsed) {
             collapsed = true;
@@ -93,11 +95,12 @@
 <UserProfile {user} bind:userProfile />
 
 {#if collapsed && $appMobileView}
+    <div class="" use:inview on:inview_enter={() => collapsed = false} on:inview_leave={() => collapsed = true}></div>
     <Navbar top title={userProfile?.displayName}>
-        <NavbarBackLink slot="left" onClick={() => { window.history.back() }} />
+        <BackButton slot="left" />
 
-        <div slot="subnavbar" class="flex flex-row items-end gap-0 overflow-y-hidden subnavbar">
-            {#if $pageHeader?.subNavbarOptions && $pageHeader?.subNavbarValue}
+        <div slot="subnavbar">
+            {#if $pageHeader?.subNavbarOptions}
                 <HorizontalOptionsList
                     options={$pageHeader.subNavbarOptions}
                     bind:value={$pageHeader.subNavbarValue}
@@ -122,81 +125,48 @@
 
     <HeaderMobileActionSheet bind:opened={actionsOneOpened} bind:following {user} />
 {:else}
-<div class="z-20 w-full {collapsed ? "" : "min-h-[15rem]"}" on:touchstart={() => {if (collapsed) collapsed = false}}>
-    <div class="relative h-full w-full">
-        {#if userProfile?.banner}
-            <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-1 transition-all duration-300  {collapsed ? "opacity-20" : "opacity-40"}" alt={userProfile?.name}>
-            <div class="absolute w-full h-full bg-gradient-to-b from-transparent to-base-100 z-2"></div>
-        {/if}
-
-        <!-- Container -->
-        <div class="flex flex-col pt-4 items-center relative z-50  max-sm:pt-0-safe text-foreground {$$props.containerClass??""} {collapsed ? "max-sm:px-2" : ""}">
-            <div class="flex {collapsed ? "flex-row" : "flex-col"} items-center justify-start gap-2 w-full transition-all duration-300">
-                {#if $appMobileView}
-                    <div class="left-2 top-0-safe {collapsed ? "" : "absolute"}">
-                        <NavbarBackLink onClick={() => { window.history.back() }} />
-                    </div>
-                {/if}
-                
-                <!-- Avatar -->
-                <div class="{collapsed ? "w-8 h-8" : "w-32 h-32"} transition-all duration-300">
-                    <Avatar user={user} {userProfile} {fetching} class="
-                        transition-all duration-300 flex-none object-cover w-full h-full"
-                    />
-                </div>
-                <h1 class="text-foreground font-semibold whitespace-nowrap mb-0 transition-all duration-300 {collapsed ? "text-sm grow" : ""}">
-                    <Name {user} {userProfile} {fetching} />
-                </h1>
-                <div class="text-sm transition-all duration-300 max-sm:text-xs max-sm:px-4 max-sm:text-center" class:hidden={collapsed}>
-                    {#if fetching && !userProfile?.about}
-                        <div class="skeleton h-15 w-48">&nbsp;</div>
-                    {:else if userProfile?.about}
-                        {userProfile.about}
-                    {:else}
-                        &nbsp;
-                    {/if}
-                </div>
-
-                {#if collapsed}
-                    <div>
-                        <div class="flex flex-row items-end justify-end gap-4">
-                            <CreatorHeaderFollowButton {user} {collapsed} />
-                            <CreatorHeaderInboxButton {user} {collapsed} />
-                            <CreatorHeaderSupportButton {user} {collapsed} />
-                            <!-- <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
-                                <Export class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
-                                <span class="max-sm:hidden {collapsed ? "max-sm:hidden text-sm" : "text-base"}">Share</span>
-                            </button> -->
-                            {#if $devMode}
-                                <button class="rounded-full" on:click={() => openModal(UserInfoModal, { user })}>
-                                    <DotsThree />
-                                </button>
-                            {/if}
-                        </div>
-                    </div>
-                {/if}
+<div class="z-20 w-full {collapsed ? "" : "sm:min-h-[15rem]"}" use:inview on:inview_enter={() => collapsed = false} on:inview_leave={() => collapsed = true}>
+    <div class="relative max-sm:h-[7rem] h-full w-full border">
+        {#if $appMobileView}
+            <div class="z-50 left-2 top-2-safe {collapsed ? "" : "absolute"}">
+                <BackButton />
             </div>
+        {/if}
+        {#if userProfile?.banner}
+            <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-1 transition-all duration-300  {collapsed ? "opacity-20" : ""}" alt={userProfile?.name}>
+        {/if}
+    </div>
 
-            <div class="
-                w-full flex pb-2  gap-4 {collapsed ? "mt-2" : "flex-col-reverse mt-4 sm:my-8"}
-                {$appMobileView ? "flex-col-reverse justify-center items-center" : "items-center"}
-            ">
-                <HorizontalOptionsList class="w-fit" {options} on:changed={() => collapsed = true} />
-                
-                {#if !collapsed}
-                    <div class="flex flex-row items-stretch justify-end sm:gap-6 backdrop-blur-xl rounded px-4 py-2 max-sm:w-full max-sm:justify-evenly">
-                        <CreatorHeaderFollowButton {user} {collapsed} />
-                        <CreatorHeaderInboxButton {user} {collapsed} />
-                        <CreatorHeaderSupportButton {user} {collapsed} />
-                        <!-- <button class="flex items-center justify-center gap-1 transition-all duration-300 {collapsed ? "flex-row" : "flex-col"}" on:click={() => openModal(ShareModal, { })}>
-                            <Export class="{collapsed ? ("w-6 h-6") : ("w-9 h-9")}" weight="bold" />
-                            <span class="max-sm:hidden {collapsed ? "max-sm:hidden text-sm" : "text-base"}">Share</span>
-                        </button> -->
-                    </div>
-                {/if}
+    <div class="flex flex-row items-end w-full -mt-12 z-10 relative px-4">
+        <div class="flex flex-row items-end grow gap-4">
+            <Avatar ring user={user} {userProfile} {fetching} class="
+                transition-all duration-300 flex-none object-cover w-24 h-24
+                "
+            />
+
+            <div class="flex flex-col gap-0">
+                <Name {user} {userProfile} {fetching} class="text-foreground font-bold whitespace-nowrap mb-0 transition-all duration-300 {collapsed ? "text-sm grow" : "text-xl"}" />
+                <Npub {user} />
             </div>
         </div>
+
+        <div class="flex-none">
+
+        </div>
     </div>
+
+    <div class="border-y border-border py-4 mt-4">
+        <div class="responsive-padding">
+            {#if fetching && !userProfile?.about}
+                <div class="skeleton h-15 w-48">&nbsp;</div>
+            {:else if userProfile?.about}
+                {userProfile.about}
+            {:else}
+                &nbsp;
+            {/if}
+        </div>
+    </div>
+
 </div>
 {/if}
 {/key}

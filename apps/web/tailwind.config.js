@@ -19,6 +19,9 @@ const config = {
 			serif: ["Lora"]
 		},
 		extend: {
+			backgroundImage: {
+				'accent': 'linear-gradient(90deg, #636AFF 0%, #5445FF 100%)', // Example gradient
+			},
 			colors: {
 				border: "hsl(var(--border) / <alpha-value>)",
 				input: "hsl(var(--input) / <alpha-value>)",

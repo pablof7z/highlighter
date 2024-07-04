@@ -1,53 +1,81 @@
 <script lang="ts">
+	import NewGroupModal from '$modals/NewGroupModal.svelte';
 	import PageTitle from "$components/PageElements/PageTitle.svelte";
-	import FetchGroupFromTag from "$components/utils/FetchGroupFromTag.svelte";
     import { layoutMode, pageHeader } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
 	import { groupsList, userFollows } from "$stores/session";
-	import { getDefaultRelaySet } from "$utils/ndk";
-	import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
-	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-	import { Readable } from "stream";
+	import { openModal } from "$utils/modal";
+	import { NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
-	import { derived } from "svelte/store";
+	import { Button } from '$components/ui/button';
+	import { derived } from 'svelte/store';
+    import * as Chat from "$components/Chat";
+	import { Plus } from 'phosphor-svelte';
+	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 
     $layoutMode = "single-column-focused";
     
-    $pageHeader = { title: "Community" };
+    $pageHeader = null;
 
     onDestroy(() => {
         $pageHeader = null;
     });
 
-    const relaySet = getDefaultRelaySet();
-    const chatGroups = $ndk.storeSubscribe(
-        { kinds: [NDKKind.GroupMetadata], limit: 300, "#d": Array.from($userFollows) },
-        { groupable: false, closeOnEose: true }
+    const groupListsFromFollows = $ndk.storeSubscribe(
+        { kinds: [NDKKind.SimpleGroupList], limit: 300, authors: Array.from($userFollows) },
+        { groupable: false, closeOnEose: true }, NDKList
     )
+
+    const unifiedGroupLists = derived(groupListsFromFollows, $groupListsFromFollows => {
+        const unified: Record<string, number> = {};
+        for (const list of $groupListsFromFollows) {
+            for (const k of list.items) {
+                const key = JSON.stringify(k);
+                const current = unified[key] ?? 0;
+                unified[key] = current + 1;
+            }
+        }
+
+        // sort and return an array of NDKTag
+        return Object.entries(unified)
+            .sort((a, b) => b[1] - a[1])
+            .map(([k, v]) => k)
+            .slice(0, 10)
+            .map(k => JSON.parse(k));
+    })
 </script>
 
-<PageTitle title="Communities" />
+<div class="py-2 border-y border-border responsive-padding">
+    <HorizontalOptionsList options={[
+        { name: "Communities", href: "/chat", buttonProps: { variant: 'accent' } },
+        { name: "Articles", href: "/reads" },
+        { name: "Videos", href: "/videos" },
+    ]} />
+</div>
 
 {#if groupsList && $groupsList}
-    {#each $groupsList.items as group}
-        <FetchGroupFromTag tag={group}>
-            <pre>{JSON.stringify(group.rawEvent())}</pre>
-        </FetchGroupFromTag>
-    {/each}
+    <Chat.List>
+        {#each $groupsList.items as item (item)}
+            <Chat.Item tag={item} />
+        {/each}
+    </Chat.List>
 {/if}
 
-{#each $chatGroups as group}
-    <div>
-        {group.tagValue("name")}
-    </div>
-{/each}
+<h2>Communities to check out</h2>
 
-<style>
-    h1 {
-        @apply text-foreground leading-tight text-[80px];
-    }
+{#if $unifiedGroupLists}
+    <Chat.List>
+        {#each $unifiedGroupLists as item (item)}
+            <Chat.Item tag={item} />
+        {/each}
+    </Chat.List>
+{/if}
 
-    h2 {
-        @apply text-neutral-500 leading-tight;
-    }
-</style>
+<div class="responsive-padding">
+    <Button variant="outline" class="w-full mt-12 h-auto rounded-lg p-6 flex flex-col items-center" on:click={() => openModal(NewGroupModal)}>
+        <div class="bg-secondary rounded-full p-3 flex items-center justify-center mb-4">
+            <Plus size={32} />
+        </div>
+        <p class="text-center text-lg font-medium">Create New Community</p>
+    </Button>
+</div>

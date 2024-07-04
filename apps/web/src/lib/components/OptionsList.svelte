@@ -6,9 +6,7 @@
     const dispatch = createEventDispatcher();
 
     export let options: NavigationOption[] = [];
-
     export let value: string = "";
-    export let collapsed = false;
 </script>
 
 <div class="

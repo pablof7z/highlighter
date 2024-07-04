@@ -1,18 +1,19 @@
 <script lang="ts">
-	import { debugMode, userActiveSubscriptions } from "$stores/session";
+	import { userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { ndk } from "$stores/ndk.js";
-	import { type NDKArticle, NDKKind, type NDKEventId, NDKEvent, NDKZapInvoice } from "@nostr-dev-kit/ndk";
+	import { type NDKArticle, NDKKind, NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
-	import ArticleRender from './ArticleRender.svelte';
 	import { pageHeader } from "$stores/layout";
-	import ItemFooter from "./Event/ItemView/ItemFooter.svelte";
 	import { getAuthorUrl, urlFromEvent } from "$utils/url";
-	import HorizontalOptionsList from "./HorizontalOptionsList.svelte";
-	import { CardsThree, ChatCircle } from "phosphor-svelte";
+	import { ChatCircle } from "phosphor-svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
 	import ItemViewComments from "$views/Item/ItemViewComments.svelte";
 	import { appMobileHideNewPostButton, appMobileView } from "$stores/app";
+	import { derived } from "svelte/store";
+	import { NavigationOption } from "../../../app";
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
+	import ArticleRender from "$components/ArticleRender.svelte";
 
     export let article: NDKArticle;
     const author = article.author;
@@ -24,10 +25,13 @@
      */
     export let isPreview = false;
 
-    const highlights = $ndk.storeSubscribe(
+    const relatedEvents = $ndk.storeSubscribe([
         { kinds: [NDKKind.Highlight], ...article.filter() },
-        { subId: 'article-highlights' }
-    )
+        { kinds: [NDKKind.Text, NDKKind.GroupReply ], ...article.filter() },
+        { kinds: [NDKKind.Zap], ...article.filter() },
+        { kinds: [NDKKind.Repost, NDKKind.GenericRepost], ...article.filter() },
+        { kinds: [NDKKind.Text], "#q": [article.tagId(), article.id] },
+    ], { subId: 'article-view-events' });
 
     onMount(() => {
         startUserView(author);
@@ -35,7 +39,7 @@
 
     onDestroy(() => {
         userSubscription?.unref();
-        highlights?.unsubscribe();
+        relatedEvents.unsubscribe();
     });
 
     // Check if this user has access to the full article and if they do, redirect them to the full article
@@ -62,18 +66,49 @@
     $: if (!isPreview) {
         if ($pageHeader?.props)
             $pageHeader.props.editUrl = editUrl;
-        $pageHeader.footer = {
-            component: ItemFooter,
-            props: {
-                event: article,
-                urlPrefix
-            }
-        }
     }
 
     onDestroy(() => {
         if ($pageHeader?.footer)
             $pageHeader.footer = undefined;
+    });
+
+    let navigationOptions: NavigationOption[] = [];
+
+    function isShareEvent(e: NDKEvent) {
+        if (e.kind === NDKKind.Repost || e.kind === NDKKind.GenericRepost) return true;
+        const qTag = e.tagValue("q");
+        if (qTag === article.tagId() || qTag === article.id) return true;
+        return false;
+    }
+
+    $: if (relatedEvents) {
+        const comments = $relatedEvents.filter(e => e.kind === NDKKind.Text || e.kind === NDKKind.GroupReply);
+        const highlights = $relatedEvents.filter(e => e.kind === NDKKind.Highlight);
+        const shares = $relatedEvents.filter(e => isShareEvent(e));
+        
+        navigationOptions = [
+            { name: "Article", href: urlPrefix, buttonProps: {variant: 'accent'} },
+            
+            // { name: "Curations", href: `${urlPrefix}/curations`, icon: CardsThree },
+        ];
+
+        if (comments.length) {
+            navigationOptions.push({ name: "Comments", href: `${urlPrefix}/comments`, badge: comments.length.toString() });
+        }
+
+        if (highlights.length) {
+            navigationOptions.push({ name: "Highlights", href: `${urlPrefix}/highlights`, badge: highlights.length.toString() });
+        }
+
+        if (shares.length) {
+            navigationOptions.push({ name: "Shares", href: `${urlPrefix}/shares`, badge: shares.length.toString() });
+        }
+    }
+
+    const highlights = derived(relatedEvents, ($relatedEvents) => {
+        return $relatedEvents.filter(e => e.kind === NDKKind.Highlight)
+            .map(e => NDKHighlight.from(e));
     });
 </script>
 
@@ -81,7 +116,10 @@
     {article}
     {isFullVersion}
     {isPreview}
+    {navigationOptions}
+    {highlights}
     on:title:inview_change
+    on:toolbar:inview_change
 />
 
 {#if !isPreview}

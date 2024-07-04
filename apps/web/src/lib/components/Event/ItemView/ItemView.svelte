@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { articleKinds, isEventFullVersion } from "$utils/event";
-	import ArticleView from "$components/ArticleView.svelte";
+	import ArticleView from "$views/Article/ArticleView.svelte";
 	import { onDestroy } from "svelte";
 	import { pageHeader } from "$stores/layout";
 	import ItemHeader from "$components/ItemHeader.svelte";
@@ -16,6 +16,7 @@
 	import ModularArticleView from "./ModularArticleView.svelte";
 	import ModularArticleItemView from "./ModularArticleItemView.svelte";
 	import Highlight from "$components/Highlight.svelte";
+	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 
     export let event: NDKEvent | NDKArticle | NDKVideo;
     export let ignoreHeader: boolean = false;
@@ -116,6 +117,14 @@
             />
         </EventWrapper>
     </div>
+{:else if event.kind === 33889}
+    <ScrollArea class="whitespace-nowrap border-y border-border p-4" orientation="horizontal">
+        <div class="w-max flex flex-nowrap">
+            {#each event.getMatchingTags("pin") as pin}
+                <img src={pin[1]} class="object-fit w-auto h-full max-h-screen" />
+            {/each}
+        </div>
+    </ScrollArea>
 {:else if event.kind === NDKKind.Highlight}
     <Highlight highlight={NDKHighlight.from(event)} expandReplies compact />
 {:else}
