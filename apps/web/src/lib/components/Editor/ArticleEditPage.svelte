@@ -8,7 +8,7 @@
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import { view, preview, previewTitleChanged, previewContentChanged, currentDraftItem } from "$stores/post-editor";
 	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
-	import ArticleView from "$components/ArticleView.svelte";
+	import ArticleView from "$views/Article/ArticleView.svelte";
 	import currentUser from "$stores/currentUser";
 	import { pageHeader } from "$stores/layout";
 

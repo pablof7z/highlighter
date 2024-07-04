@@ -1,14 +1,14 @@
 <script lang="ts">
+	import { NavigationOption } from './../../app.d.js';
 	import { getSummary } from '$utils/article';
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
 	import { userActiveSubscriptions } from "$stores/session";
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { ndk } from "$stores/ndk.js";
-	import { type NDKArticle, NDKTag, NDKKind } from "@nostr-dev-kit/ndk";
+	import { type NDKArticle, NDKTag, NDKKind, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import HighlightingArea from './HighlightingArea.svelte';
 	import HighlightedContent from './HighlightedContent.svelte';
-	import EventTags from './Events/EventTags.svelte';
 	import currentUser from '$stores/currentUser';
 	import ItemViewZaps from './Event/ItemView/ItemViewZaps.svelte';
 	import { createBlossom } from '$utils/blossom.js';
@@ -17,18 +17,18 @@
 	import ArticleRenderShell from './Event/Article/ArticleRenderShell.svelte';
 	import { EventContent } from '@nostr-dev-kit/ndk-svelte-components';
     import { inview } from 'svelte-inview';
+	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
+	import { pageHeader } from '$stores/layout.js';
+	import { Readable } from 'svelte/store';
 
     export let article: NDKArticle;
     const author = article.author;
     export let isFullVersion: boolean;
     export let isPreview = false;
+    export let navigationOptions: NavigationOption[] | undefined = undefined;
+    export let highlights: Readable<NDKHighlight[]>;
 
     const dispatcher = createEventDispatcher();
-
-    const highlights = $ndk.storeSubscribe(
-        { kinds: [NDKKind.Highlight], ...article.filter() },
-        { subId: 'article-highlights' }
-    )
 
     onMount(() => {
         startUserView(author);
@@ -36,7 +36,6 @@
 
     onDestroy(() => {
         userSubscription?.unref();
-        highlights?.unsubscribe();
     });
 
     // Check if this user has access to the full article and if they do, redirect them to the full article
@@ -79,11 +78,25 @@
         const { inView } = e.detail;
         dispatcher("title:inview_change", inView);
     }
+
+    function toolbarInViewChange(e) {
+        const { inView } = e.detail;
+        if ($pageHeader?.props) {
+            if (inView === false) $pageHeader.props.options = navigationOptions;
+            else $pageHeader.props.options = [];
+        }
+    }
+
+    let hasZaps: boolean;
 </script>
 
 <UserProfile user={author} bind:userProfile>
-    <ArticleRenderShell {skipImage} {isFullVersion} {isPreview}>
-        <div slot="title" use:inview  on:inview_change={titleViewChange}>
+    <ArticleRenderShell
+        {skipImage}
+        {isFullVersion}
+        {isPreview}
+    >
+        <div slot="title" use:inview on:inview_change={titleViewChange}>
             {article.title??"Untitled"}
         </div>
 
@@ -91,20 +104,24 @@
             {summary}
         </div>
 
-        <div slot="tags">
+        <!-- <div slot="tags">
             <EventTags event={article} />
-        </div>
+        </div> -->
 
         <svelte:element
             this={image ? 'img' : 'div'}
             slot="image"
             use:blossom
-            class="w-full h-full object-cover opacity-50 bg-secondary"
+            class="w-full object-cover bg-secondary max-sm:h-[203px]"
             {...(image ? { src: image } : {})}
         />
 
-        <div slot="zaps">
-            <ItemViewZaps event={article} />
+        <div slot="zaps" class:hidden={!hasZaps}>
+            <ItemViewZaps event={article} bind:hasZaps class="border-t border-border py-4 responsive-padding" />
+        </div>
+
+        <div slot="toolbar" use:inview on:inview_change={toolbarInViewChange}>
+            <HorizontalOptionsList options={navigationOptions} class="border-t border-border py-4 responsive-padding " />
         </div>
 
         <div slot="content" class="break-inside max-sm:w-[calc(100vw-1rem)]">

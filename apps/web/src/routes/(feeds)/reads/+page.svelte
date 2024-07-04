@@ -8,6 +8,7 @@
 	import { Readable, derived } from "svelte/store";
 	import { filterArticle } from "$utils/article-filter";
 	import { page } from "$app/stores";
+	import PageTitle from "$components/PageElements/PageTitle.svelte";
 
     $layoutMode = "full-width";
 
@@ -36,6 +37,8 @@
         articles.unsubscribe();
     });
 </script>
+
+<PageTitle title="Reads" />
 
 <div class="mx-auto w-full">
     <StoreGrid feed={filteredArticles} renderLimit={1} />

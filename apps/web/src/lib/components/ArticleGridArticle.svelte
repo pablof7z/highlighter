@@ -37,6 +37,7 @@
             author={article.author}
             href={urlFromEvent(article)}
             {highlights}
+            {...$$props}
         />
     </UserProfile>
 {/if}

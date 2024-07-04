@@ -1,4 +1,4 @@
-import { NDKKind, NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionTier, NDKSubscriptionReceipt } from '@nostr-dev-kit/ndk';
+import { NDKKind, NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionTier, NDKSubscriptionReceipt, NDKList, NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
 import { type NDKUser, type NDKFilter, type Hexpubkey, NDKHighlight } from '@nostr-dev-kit/ndk';
 import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 import { writable, get as getStore, derived, type Readable } from 'svelte/store';
@@ -17,6 +17,12 @@ export let userSubscription: NDKEventStore<NDKEvent> | undefined = undefined;
 export const userSupporters = writable<
 	Readable<never[] | Record<Hexpubkey, string | boolean>> | undefined
 >(undefined);
+
+export let userGroupList: Readable<NDKList | undefined>;
+export let userHighlights: Readable<NDKHighlight[] | undefined>;
+export let userArticles: Readable<NDKArticle[] | undefined>;
+export let userVideos: Readable<NDKVideo[] | undefined>;
+export let userWiki: Readable<NDKArticle[] | undefined>;
 
 export function startUserView(user: NDKUser) {
 	const $activeUserViewPubkey = getStore(activeUserViewPubkey);
@@ -42,7 +48,7 @@ export function startUserView(user: NDKUser) {
 	const filters: NDKFilter[] = [
 		// supporting options
 		{
-			kinds: [NDKKind.SubscriptionTier as number, NDKKind.TierList],
+			kinds: [NDKKind.SimpleGroupList, NDKKind.SubscriptionTier as number, NDKKind.TierList],
 			authors: [user.pubkey]
 		},
 		{
@@ -57,9 +63,19 @@ export function startUserView(user: NDKUser) {
 		},
 		// Non group-exclusive content
 		{
-			kinds: [...mainContentKinds, NDKKind.Highlight],
+			kinds: [NDKKind.Highlight],
+			authors: [user.pubkey],
+			limit: 100
+		},
+		{
+			kinds: [NDKKind.Article, NDKKind.HorizontalVideo],
 			authors: [user.pubkey],
 			limit: 200
+		},
+		{
+			kinds: [NDKKind.Wiki],
+			authors: [user.pubkey],
+			limit: 100
 		}
 	];
 
@@ -78,6 +94,29 @@ export function startUserView(user: NDKUser) {
 		subId: 'user-view',
 		autoStart: true,
 		groupable: false,
+	});
+
+	userGroupList = derived(userSubscription, ($userSubscription) => {
+		const groupList = $userSubscription.find((e) => e.kind === NDKKind.SimpleGroupList);
+		if (!groupList) return undefined;
+
+		return NDKList.from(groupList);
+	});
+
+	userHighlights = derived(userSubscription, ($userSubscription) => {
+		return $userSubscription.filter((e) => e.kind === NDKKind.Highlight).map((e) => NDKHighlight.from(e));
+	});
+
+	userArticles = derived(userSubscription, ($userSubscription) => {
+		return $userSubscription.filter((e) => e.kind === NDKKind.Article).map((e) => NDKArticle.from(e));
+	});
+
+	userVideos = derived(userSubscription, ($userSubscription) => {
+		return $userSubscription.filter((e) => e.kind === NDKKind.Video).map((e) => NDKVideo.from(e));
+	});
+
+	userWiki = derived(userSubscription, ($userSubscription) => {
+		return $userSubscription.filter((e) => e.kind === NDKKind.Wiki).map((e) => NDKArticle.from(e));
 	});
 
 	userSupporters.set(getUserSupporters());

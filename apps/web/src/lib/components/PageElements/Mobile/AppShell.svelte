@@ -15,7 +15,7 @@
 	import { mobileNotifications, unreadNotifications } from '$stores/notifications';
 	import PromptForNotifications from '$views/Mobile/Pages/PromptForNotifications.svelte';
     import { Toaster } from "$lib/components/ui/sonner";
-	import { layoutMode } from '$stores/layout';
+	import { layoutMode, pageHeader } from '$stores/layout';
 
     let showPromptForNotificiations = false;
 
@@ -57,17 +57,20 @@
         {:else}
         <Page>
             <MobileLayoutHeader />
-            {#if $layoutMode !== "mobile-full-screen"}
-                <MobileLayoutNavigation />
+
+            {#if $pageHeader?.footer}
+                <div class="left-0 bottom-0 fixed transition-all duration-300 z-50 w-full hairline-t">
+                    <svelte:component this={$pageHeader.footer.component} {...$pageHeader.footer.props} />
+                </div>
             {/if}
         
             <slot />
             <Modal />
         </Page>
 
-        {#if !$appMobileHideNewPostButton && $layoutMode !== "mobile-full-screen"}
+        <!-- {#if !$appMobileHideNewPostButton && $layoutMode !== "mobile-full-screen"}
             <MobileFloatNewPostButton />
-        {/if}
+        {/if} -->
         {/if}
         <Toaster />
     </PageTransitionController>

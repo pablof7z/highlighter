@@ -1,18 +1,20 @@
 <script lang="ts">
-    import UserProfile from "$components/User/UserProfile.svelte";
+	import HorizontalList from '$components/PageElements/HorizontalList';
 	import { ndk } from "$stores/ndk.js";
-	import { NDKArticle, NDKEvent, NDKKind, NDKUser, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
-	import { derived, type Readable } from "svelte/store";
+	import NDK, { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKUser, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
+	import { derived, writable, type Readable } from "svelte/store";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
 	import type { UserProfileType } from '../../app';
-	import ArticleCard from "$components/ArticleCard.svelte";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-	import StoreFeed from "$components/Feed/StoreFeed.svelte";
-	import { urlFromEvent } from "$utils/url";
+    import * as Chat from "$components/Chat";
+	import Article from '$components/Grid/Article.svelte';
+	import ArticleGridArticle from '$components/ArticleGridArticle.svelte';
+	import ArticleCard from '$components/ArticleCard.svelte';
+	import { userArticles, userGroupList, userHighlights, userVideos } from '$stores/user-view';
 
     export let user: NDKUser;
-    console.log("tracking user", user.pubkey)
+
     $ndk.outboxTracker!.track(user);
 
     onMount(() => {
@@ -20,33 +22,11 @@
     })
 
     let content: NDKEventStore<NDKEvent>;
-    let sortedContent: Readable<(NDKArticle | NDKVideo)[]>;
 
     onDestroy(() => {
         if (content) content.unsubscribe();
         if (events) events.unsubscribe();
     })
-
-    $: {
-        if (content) content.unsubscribe();
-        
-        content = $ndk.storeSubscribe([
-            { kinds: [NDKKind.Article, NDKKind.HorizontalVideo], authors: [user.pubkey] },
-        ]);
-
-        sortedContent = derived(content, $content => {
-            let ret = [];
-
-            for (const event of $content) {
-                switch (event.kind) {
-                    case NDKKind.Article: ret.push(NDKArticle.from(event)); break;
-                    case NDKKind.HorizontalVideo: ret.push(NDKVideo.from(event)); break;
-                }
-            }
-
-            return ret.sort((a, b) => b.published_at! - a.published_at!);
-        });
-    }
 
     let events: NDKEventStore<NDKEvent>;
     let feed: Readable<NDKEvent[]>;
@@ -81,6 +61,73 @@
 
     let userProfile: UserProfileType;
     let authorUrl: string;
+
+    const highlighterRelaySet = NDKRelaySet.fromRelayUrls([
+        "wss://relay.highlighter.com",
+        "wss://relay.primal.net"
+    ], $ndk)
+
+    const articles = $ndk.storeSubscribe({
+        kinds: [NDKKind.Article], authors: [user.pubkey], limit: 50
+    }, undefined, NDKArticle);
+
+    const highlights = $ndk.storeSubscribe({
+        kinds: [NDKKind.Highlight], authors: [user.pubkey], limit: 50
+    }, {
+        relaySet: highlighterRelaySet,
+        onEose: () => {
+            console.log('fetch', $highlights.length)
+            for (const highlight of $highlights) {
+                highlight.getArticle().then(article => {
+                    console.log('fetch', article)
+                    if (article instanceof NDKEvent) {
+                        reads.update(reads => {
+                            if (reads.find(a => a.pubkey === article.pubkey)) return reads;
+                            return [...reads, NDKArticle.from(article)];
+                        });
+                    }
+                });
+            }
+        }
+    }, NDKHighlight);
+    const reads = writable<NDKArticle[]>([]);
+
+    let groupsList: NDKList | undefined;
+    $ndk.fetchEvent({kinds: [NDKKind.SimpleGroupList], authors: [user.pubkey]}).then(list => {
+        if (list) groupsList = NDKList.from(list);
+    });
+
+    const pinboards = $ndk.storeSubscribe({
+        kinds: [33889], authors: [user.pubkey], limit: 50
+    });
+
+    let priorityBlocks: string[] = [];
+    let priorityBlocksSet = new Set<string>();
+
+    let blocks: string[] = [];
+    let blockSet = new Set<string>();
+
+    $: {
+        if ($userArticles && $userArticles.length > 0 && !blockSet.has("articles")) {
+            priorityBlocksSet.add("articles");
+            priorityBlocks = [...blocks, "articles"]
+        }
+
+        if ($userVideos && $userVideos.length > 0 && !blockSet.has("videos")) {
+            priorityBlocksSet.add("videos");
+            priorityBlocks = [...blocks, "videos"]
+        }
+
+        if ($userHighlights && $userHighlights.length > 0 && !blockSet.has("highlights")) {
+            blockSet.add("highlights");
+            blocks = [...blocks, "highlights"]
+        }
+
+        if ($userGroupList && $userGroupList.items.length > 0 && !blockSet.has("groups")) {
+            blockSet.add("groups");
+            blocks = [...blocks, "groups"]
+        }
+    }
 </script>
 
 <svelte:head>
@@ -93,35 +140,57 @@
     {/if}
 </svelte:head>
 
-<UserProfile {user} bind:userProfile bind:authorUrl />
+<!-- <UserProfile {user} bind:userProfile bind:authorUrl /> -->
 
-{#if $sortedContent && $sortedContent.length > 0}
-    <div class="mb-4">
-        <div
-            class="overflow-x-auto w-full rounded-none scrollbar-hide flex-nowrap flex flex-row gap-4"
-            itemCount={$sortedContent.length}
-        >
-            {#each $sortedContent as content}
-                {#if content instanceof NDKArticle}
-                    <ArticleCard
-                        title={content.title || "Untitled"}
-                        image={content.image ?? userProfile?.image}
-                        description={content.summary}
-                        author={content.author}
-                        href={urlFromEvent(content, authorUrl)}
-                    />
-                {:else if content instanceof NDKVideo}
-                    <ArticleCard
-                        title={content.title || "Untitled"}
-                        image={content.thumbnail ?? userProfile?.image}
-                        description={content.content}
-                        author={content.author}
-                        href={urlFromEvent(content, authorUrl)}
-                    />
-                {/if}
+{#each priorityBlocks as block}
+    {#if block === "videos"}
+        <HorizontalList title="Videos" items={$userVideos} let:item>
+            <ArticleGridArticle article={item} skipAuthor />
+        </HorizontalList>
+    {:else if block === "articles"}
+        <HorizontalList title="Articles" items={$userArticles} let:item>
+            <ArticleGridArticle article={item} skipAuthor />
+        </HorizontalList>
+    {:else if block === "highlights"}
+        <HorizontalList title="Highlights" items={$userHighlights} let:item>
+            <ArticleGridArticle article={item} skipAuthor />
+        </HorizontalList>
+    {:else if block === "groups" && $userGroupList}
+        <Chat.List>
+            {#each $userGroupList.items as item (item)}
+                <Chat.Item tag={item} />
             {/each}
-        </div>
-    </div>
-{/if}
+        </Chat.List>
+    {/if}
+{/each}
 
-<StoreFeed {feed} />
+{#each blocks as block}
+    {#if block === "videos"}
+        <HorizontalList title="Videos" items={$userVideos} let:item>
+            <ArticleGridArticle article={item} skipAuthor />
+        </HorizontalList>
+    {:else if block === "highlights"}
+        <HorizontalList title="Highlights" items={$userHighlights} let:item>
+            <ArticleGridArticle article={item} skipAuthor />
+        </HorizontalList>
+    {:else if block === "groups" && $userGroupList}
+        <Chat.List>
+            {#each $userGroupList.items as item (item)}
+                <Chat.Item tag={item} />
+            {/each}
+        </Chat.List>
+    {/if}
+{/each}
+
+{#if $pinboards.length > 0}
+    <HorizontalList title="Pinboards" items={$pinboards} let:item>
+        <ArticleCard
+            title={item.tagValue("d")}
+            image={item.tagValue("image")}
+            description={item.tagValue("description")}
+            author={item.author}
+            href="/a?eventId={item.encode()}"
+            skipAuthor
+        />
+    </HorizontalList>
+{/if}

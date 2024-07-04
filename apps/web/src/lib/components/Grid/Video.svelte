@@ -1,5 +1,4 @@
 <script lang="ts">
-	import from '@nostr-dev-kit/ndk-svelte';
 	import { Hexpubkey, NDKKind, NDKUser, NDKUserProfile, NDKVideo } from '@nostr-dev-kit/ndk';
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import { ndk } from '$stores/ndk';

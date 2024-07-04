@@ -3,7 +3,6 @@
     
     export let value: boolean | undefined = undefined;
     export let type: "check" | "switch" = "check";
-    export let compact = false;
 </script>
 
 <label class="items-top space-x-2 text-foreground text-base font-medium flex flex-row gap-2 items-center justify-between {$$props.class??""}">

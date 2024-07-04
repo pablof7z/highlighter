@@ -159,6 +159,16 @@
         }
     }
 
+    async function loginWithNsec() {
+        const signer = new NDKPrivateKeySigner(nsec);
+        $currentUser = await signer.user();
+        $ndk.signer = signer;
+        $currentUser.ndk = $ndk;
+        userPubkey.set($currentUser.pubkey);
+        loginState.set('logged-in');
+        closeModal();
+    }
+
     let loginType: LoginMethod | undefined;
 
     function identifyLoginType() {

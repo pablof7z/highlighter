@@ -9,8 +9,6 @@ type LayoutMode = "content-focused" | "full-width" | "single-column-focused" | "
 
 export const layoutMode = writable<LayoutMode>("single-column-focused");
 
-export const pageHeaderComponent = writable<Component | null>(null);
-
 interface Component {
 	component: ConstructorOfATypedSvelteComponent;
 	props: { [key: string]: any };
@@ -23,7 +21,6 @@ export const modals = writable<Component[]>([]);
 
 export function resetLayout() {
 	layoutMode.set("single-column-focused");
-	pageHeaderComponent.set(null);
 	pageHeader.set(null);
 	appMobileHideNewPostButton.set(false);
 }

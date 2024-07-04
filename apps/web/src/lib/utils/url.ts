@@ -1,5 +1,5 @@
 import { ndk } from "$stores/ndk";
-import type { NDKEvent, NDKUser } from '@nostr-dev-kit/ndk';
+import type { NDKEvent, NDKSimpleGroup, NDKUser } from '@nostr-dev-kit/ndk';
 import { get } from 'svelte/store';
 import { vanityUrlsByPubkey } from './const';
 import { isMobileBuild } from './view/mobile';
@@ -15,6 +15,35 @@ export function getAuthorUrlSync(user: NDKUser) {
 	// todo add a sync function for getting nip05s from the cache
 
 	return `/${user.npub}`;
+}
+
+export function getGroupUrl(group: NDKSimpleGroup, extraPath?: string) {
+	const url = new URL("/communities", window.location.href);
+
+	if (!isMobileBuild())
+		url.pathname = `/communities/${group.groupId}`;
+	else
+		url.searchParams.set("groupId", group.groupId);
+
+	url.pathname += extraPath ?? "";
+
+	if (group.relaySet.size > 0) {
+		url.searchParams.set("relays", Array.from(group.relaySet.relayUrls).join(","));
+	}
+	
+	return url.toString();
+}
+
+export function getUserUrl(
+	authorUrl: string,
+	user: NDKUser,
+	path: string
+) {
+	if (isMobileBuild()) {
+		return `/mobile/profile?view=${encodeURI(path)}&userId=${user.npub}`;
+	} else {
+		return `/${authorUrl}/${path}`;
+	}
 }
 
 export async function getAuthorUrl(user: NDKUser) {

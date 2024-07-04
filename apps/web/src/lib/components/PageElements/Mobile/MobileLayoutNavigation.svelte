@@ -2,7 +2,7 @@
     import { page } from "$app/stores";
 	import { goto } from "$app/navigation";
     import { Icon, Tabbar, TabbarLink, Toolbar } from "konsta/svelte";
-	import { Bell, BookmarkSimple, Fire, House, Plus, TextAlignLeft, YoutubeLogo } from "phosphor-svelte";
+	import { Bell, BookmarkSimple, CirclesThree, Fire, House, Plus, TextAlignLeft, YoutubeLogo } from "phosphor-svelte";
 	import { hasUnreadNotifications, showNotificationOption, unreadNotifications } from "$stores/notifications";
 	import { pageHeader } from "$stores/layout";
 
@@ -39,21 +39,23 @@
             </svelte:fragment>
             <!-- <svelte:fragment slot="label">Bookmarks</svelte:fragment> -->
         </TabbarLink>
+
+        <TabbarLink
+            active={$page.url.pathname.startsWith('/chat')}
+            onClick={() => goto("/chat")}
+        >
+            <svelte:fragment slot="icon">
+                <CirclesThree class="w-8 h-8" />
+            </svelte:fragment>
+            <!-- <svelte:fragment slot="label">Bookmarks</svelte:fragment> -->
+        </TabbarLink>
+        
         <TabbarLink
             active={$page.url.pathname.startsWith('/videos')}
             onClick={() => goto("/videos")}
         >
             <svelte:fragment slot="icon">
                 <YoutubeLogo class="w-8 h-8" />
-            </svelte:fragment>
-            <!-- <svelte:fragment slot="label">Bookmarks</svelte:fragment> -->
-        </TabbarLink>
-        <TabbarLink
-            active={$page.url.pathname.startsWith('/bookmarks')}
-            onClick={() => goto("/bookmarks")}
-        >
-            <svelte:fragment slot="icon">
-                <BookmarkSimple class="w-8 h-8" />
             </svelte:fragment>
             <!-- <svelte:fragment slot="label">Bookmarks</svelte:fragment> -->
         </TabbarLink>

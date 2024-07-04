@@ -113,7 +113,7 @@
             </div>
         {/if}
         {#each $renderFeed.slice(0, renderLimit) as event, i (event.id)}
-            {#if event.kind === NDKKind.Text}
+            {#if [ NDKKind.Text, NDKKind.GroupNote, NDKKind.GroupReply ].includes(event.kind)}
                 <EventWrapper
                     {event}
                     mostRecentActivity={perNoteLatestActivity.get(event.id)}
@@ -125,8 +125,6 @@
                     on:open:conversation={openNote}
                     {...($$props.eventProps||{})}
                 />
-            {:else if event.kind === NDKKind.GroupNote}
-                <GroupNote {event} {urlPrefix} />
             {:else if event.kind === NDKKind.Article}
                 <div class="flex flex-col">
                     <Article

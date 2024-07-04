@@ -72,11 +72,22 @@ export function eventToSpecificKind(event: NDKEvent) {
 	return {};
 }
 
+const groupEvents = [
+	NDKKind.GroupChat,
+	NDKKind.GroupNote,
+	NDKKind.GroupReply
+];
+
 export function relaySetForEvent(event: NDKEvent): NDKRelaySet | undefined {
 	const d = debug.extend('relaySetForEvent');
 
 	// if the event is kind 1, undefined
 	if (event.kind === NDKKind.Text) return undefined;
+
+	// if the event is a group event
+	if (groupEvents.includes(event.kind!)) {
+		return getDefaultRelaySet();
+	}
 
 	const hasHTag = !!event.tagValue('h');
 	if (hasHTag) {

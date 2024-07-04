@@ -11,6 +11,7 @@
 	import UserDrawer from './UserDrawer.svelte';
 	import { afterUpdate, onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import BackButton from '../Navigation/BackButton.svelte';
 
     let userPanelOpened = false;
 
@@ -124,6 +125,16 @@
 {#if mounted}
     {#if $pageHeader?.component}
         <svelte:component this={$pageHeader.component} {...$pageHeader.props} />
+
+
+        {#if $pageHeader?.subNavbarOptions}
+            <HorizontalOptionsList
+                options={$pageHeader.subNavbarOptions}
+                bind:value={$pageHeader.subNavbarValue}
+                class="py-2 responsive-padding {scrollingDown ? '' : ''}"
+            />
+        {/if}
+        
     {:else if withSubnavbar}
         <Navbar title={_title} {subtitle} bind:this={navbar} subnavbarClass="!px-0 responsive-scrollarea-padding">
             <svelte:fragment slot="left">
@@ -138,15 +149,7 @@
                             <svelte:component this={$pageHeader.left.icon} class="w-6 h-6 mr-2 inline" />
                         </Link>
                     {:else if $pageHeader?.left?.url}
-                        <NavbarBackLink
-                            onClick={() => {
-                                if ($pageHeader?.left?.url) {
-                                    goto($pageHeader.left.url)
-                                } else {
-                                    window.history.back()
-                                }
-                            }}
-                        />
+                        <BackButton href={$pageHeader.left.url} />
                     {/if}
                 {:else}
                     {#if $currentUser}
@@ -203,15 +206,7 @@
                             <svelte:component this={$pageHeader.left.icon} class="w-6 h-6 mr-2 inline" />
                         </Link>
                     {:else}
-                        <NavbarBackLink
-                            onClick={() => {
-                                if ($pageHeader?.left?.url) {
-                                    goto($pageHeader.left.url)
-                                } else {
-                                    window.history.back()
-                                }
-                            }}
-                        />
+                        <BackButton href={$pageHeader.left.url} />
                     {/if}
                 {:else}
                     {#if $currentUser}

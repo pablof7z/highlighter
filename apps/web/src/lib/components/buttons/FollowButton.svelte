@@ -4,51 +4,47 @@ import currentUser from "$stores/currentUser";
 	import { ndk } from "$stores/ndk.js";
     import { NDKUser } from "@nostr-dev-kit/ndk";
 	import { Checkbox } from "konsta/svelte";
-	import { Plus, User, UserPlus } from "phosphor-svelte";
+	import { Plus, User, UserMinus, UserPlus } from "phosphor-svelte";
+	import { Button } from "$components/ui/button";
 
     export let user: NDKUser;
+    export let isFollowed: boolean | undefined = undefined;
+
+    isFollowed = $userFollows.has(user.pubkey);
 
     async function follow() {
         const currentFollows = new Set<NDKUser>();
         $userFollows.forEach((pubkey) => currentFollows.add($ndk.getUser({ pubkey })));
-        $currentUser?.follow(user, currentFollows);
+        // $currentUser?.follow(user, currentFollows);
+        isFollowed = true;
     }
 
     async function unfollow() {
         const currentFollows = new Set<NDKUser>();
         $userFollows.forEach((pubkey) => currentFollows.add($ndk.getUser({ pubkey })));
-        $currentUser?.unfollow(user, currentFollows);
+        // $currentUser?.unfollow(user, currentFollows);
+        isFollowed = false;
+    }
+
+    function clicked() {
+        if (isFollowed) {
+            unfollow();
+        } else {
+            follow();
+        }
     }
 </script>
 
-{#if $currentUser?.pubkey !== user.pubkey}
-    <div class="dropdown dropdown-hover z-50 dropdown-end">
-        {#if !$userFollows.has(user.pubkey)}
-            <span class="tooltip" data-tip="Follow">
-                <button class="btn btn-circle transition-all duration-300 {$$props.class??""}" on:click={follow}>
-                    <User size={24} />
-                </button>
-            </span>
-        {:else}
-            <span class="tooltip" data-tip="Unfollow">
-                <button class="btn btn-circle transition-all duration-300 {$$props.class??""}" on:click={unfollow}>
-                    <UserPlus size={24} />
-                </button>
-            </span>
-        {/if}
-        <ul class="dropdown-content bg-foreground/20 menu flex flex-col items-start whitespace-nowrap">
-            {#each $sortedUserLists as list}
-                <li>
-                    <button class="flex flex-row items-center gap-2 w-full">
-                        {#if list.items.map(t => t[1]).includes(user.pubkey)}
-                            <Checkbox class="w-5 h-5 text-green-500" />
-                        {:else}
-                            <Plus class="w-5 h-5 text-zinc-500" />
-                        {/if}
-                        <span class="whitespace-nowrap">{list.name}</span>
-                    </button>
-                </li>
-            {/each}
-        </ul>
-    </div>
-{/if}
+<Button
+    variant="accent"
+    class="flex-none{$$props.class??""}"
+    on:click={clicked}
+>
+    {#if isFollowed}
+        <UserMinus class="w-4 h-4 mr-2" weight="bold" />
+        Unfollow
+    {:else}
+        <Plus class="w-4 h-4 mr-2" weight="bold" />
+        Follow
+    {/if}
+</Button>

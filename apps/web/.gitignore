@@ -27,3 +27,5 @@ resources/ios/**/*
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+*storybook.log

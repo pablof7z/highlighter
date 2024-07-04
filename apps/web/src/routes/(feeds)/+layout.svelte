@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
-	import { Article, House, Note, Notepad } from "phosphor-svelte";
 	import { layoutMode, pageHeader, resetLayout } from "$stores/layout";
-	import PageHeader from "$views/HomeLayout/PageHeader.svelte";
 	import { appMobileView } from "$stores/app";
 
     $layoutMode = "full-width";

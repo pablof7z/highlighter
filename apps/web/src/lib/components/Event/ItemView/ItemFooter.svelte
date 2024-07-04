@@ -9,9 +9,9 @@
 </script>
 
 {#if $appMobileView}
-    <Toolbar bottom class="hairline-t pt-1 w-full {$$props.containerClass??""} {$$props.class??""}">
+    <div bottom class="bg-opacity-80 mobile-nav bg-secondary px-4 rounded-t-[3rem] w-full {$$props.containerClass??""} {$$props.class??""}">
         <ItemFooterInner {event} {urlPrefix} />
-    </Toolbar>
+    </div>
 {:else}
     <div class="mobile-nav w-full {$$props.containerClass??""} {$$props.class??""}">
         <ItemFooterInner {event} {urlPrefix} />

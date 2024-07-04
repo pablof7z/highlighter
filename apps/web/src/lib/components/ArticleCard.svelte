@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
 	import { Hexpubkey, NDKEvent, NDKHighlight, NDKUser } from '@nostr-dev-kit/ndk';
 	import Avatar from '$components/User/Avatar.svelte';
     import AvatarWithName from './User/AvatarWithName.svelte';
@@ -11,8 +10,7 @@
     export let description: string | undefined;
     export let href: string | undefined = undefined;
     export let highlights: NDKHighlight[] | undefined = undefined;
-
-    let hover = true;
+    export let skipAuthor = false;
 
     const highlighters = new Set<Hexpubkey>();
 
@@ -20,9 +18,9 @@
 </script>
 
 <div class="flex flex-col gap-2">
-    <a {href} class="w-[260px] h-[360px] overflow-clip flex-none rounded group"
+    <a {href} class="w-[326px] h-[277px] overflow-clip flex-none rounded group"
     >
-        <div class="relative w-full h-full items-stretch flex flex-col">
+        <div class="relative w-full h-full justify-end flex flex-col">
             <img
                 alt=""
                 src={image}
@@ -31,27 +29,27 @@
                     z-[1]
                 "
             />
-            <div class="absolute top-0 left-0 right-0 bottom-0 z-[2] bg-background bg-opacity-80 w-full h-full group-hover:backdrop-blur-[0px] transition-all duration-300 rounded"></div>
 
-            <div class="grow relative w-full rounded overflow-clip z-[3] p-4">
-                <h3 class="font-medium grow max-h-[64px] overflow-clip text-foreground text-xl truncate">
+            <div class="relative w-full overflow-clip z-[3] px-4 py-2 palce-self-end bg-background/80 backdrop-blur-xl">
+                <h3 class="font-semibold grow max-h-[64px] overflow-clip text-foreground text-lg truncate">
                     {title}
                 </h3>
-                <div class="text-sm text-zinc-500 font-normal truncate pt-2 place-self-end">
-                    {#if author instanceof NDKUser}
-                        <AvatarWithName user={author} avatarSize="tiny" avatarType="square" />
-                    {:else}
-                        {author}
-                    {/if}
-                </div>
-                {#if description}
-                    <div class="text-sm text-muted-foreground pt-4 overflow-clip grow" transition:slide={{axis: 'y', duration: 500}}>
+                {#if !skipAuthor}
+                    <div class="text-sm text-muted-foreground font-normal truncate pt-2 place-self-end">
+                        {#if author instanceof NDKUser}
+                            <AvatarWithName user={author} avatarSize="tiny" avatarType="square" />
+                        {:else}
+                            {author}
+                        {/if}
+                    </div>
+                {:else if description}
+                    <div class="text-sm text-muted-foreground font-normal truncate place-self-end">
                         {description}
                     </div>
                 {/if}
             </div>
 
-            <div class="flex flex-row w-full justify-between items-center">
+            <div class="flex flex-row w-full justify-between items-center hidden">
                 {#if highlights}
                     <div class="z-[5] m-4 flex flex-row flex-nowrap items-center gap-2 bg-foreground/20/80 px-3 py-1 rounded-full text-foreground !w-fit text-xs group">
                         <HighlightIcon class="w-5 h-5 text-foreground opacity-60" />

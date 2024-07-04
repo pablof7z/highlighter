@@ -13,6 +13,8 @@
 	import { Button } from './ui/button';
 	import ToggleDark from './buttons/ToggleDark.svelte';
 	import { userGenericCuration } from '$stores/session';
+	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
+	import { NavigationOption } from '../../app';
 
     export let item: NDKArticle | NDKVideo;
     export let isFullVersion: boolean | undefined = undefined;
@@ -20,6 +22,7 @@
     export let editUrl: string | undefined = undefined;
     export let title: string | undefined = undefined;
     export let compact = false;
+    export let options: NavigationOption[] | undefined = undefined;
 
     let userProfile: NDKUserProfile;
 
@@ -37,7 +40,7 @@
             subtitle={compact ? userProfile?.displayName : undefined}
             class="
                 py-2 flex flex-col sm:flex-row justify-between items-center w-full {$$props.containerClass??""} {$$props.class??""}
-            " subnavbarClass={!showTextTools ? "hidden" : ""}
+            " subnavbarClass={!showTextTools && !options ? "hidden" : ""}
             >
             <div class="flex flex-row items-center gap-2" slot="left">
                 <NavbarBackLink showText={false} onClick={() => { window.history.back() }} />
@@ -70,7 +73,8 @@
                 {/if}
             </div>
             
-            <div class="w-full" slot="subnavbar">
+            <div class="w-full max-sm:w-screen responsive-padding" slot="subnavbar">
+                <HorizontalOptionsList options={options} />
                 {#if showTextTools}
                     <div class="flex flex-row items-center gap-0">
                         <ToggleDark />

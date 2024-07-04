@@ -10,7 +10,6 @@
 	import { MagnifyingGlass, PaperPlaneRight } from 'phosphor-svelte';
     import { createEventDispatcher, onMount } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
-	import { Drawer } from 'vaul-svelte';
 
     export let value: string = "";
 

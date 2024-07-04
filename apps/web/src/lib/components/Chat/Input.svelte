@@ -3,16 +3,18 @@
 	import Name from "$components/User/Name.svelte";
 	import { ndk } from "$stores/ndk";
 	import { relaySetForEvent } from "$utils/event";
-	import { NDKEvent, NDKKind, NDKRelay, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKKind, NDKPublishError, NDKRelay, NDKSimpleGroup, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { PaperPlaneTilt } from "phosphor-svelte";
+	import { toast } from "svelte-sonner";
 
+    export let group: NDKSimpleGroup | undefined = undefined;
     export let event: NDKEvent;
     export let tags: NDKTag[] = [];
     export let kind: NDKKind = NDKKind.GroupChat;
     export let placeholder: string = "Type a message";
     export let showReplyingTo: boolean = false;
 
-    const relaySet = event ? relaySetForEvent(event) : undefined;
+    let relaySet = event ? relaySetForEvent(event) : undefined;
 
     let content = '';
     let publishing = false;
@@ -21,15 +23,22 @@
 
     async function submit() {
         publishing = true;
-        const e = new NDKEvent($ndk, {
+        event ??= new NDKEvent($ndk, {
             content,
             kind,
-            tags: [
-                ...tags
-            ]
+            tags,
         } as NostrEvent)
 
-        e.publish(relaySet);
+        relaySet = group?.relaySet ?? relaySetForEvent(event);
+
+        console.log('relay sets', event.rawEvent(), relaySet);
+        
+        event.publish(relaySet).catch((e: NDKPublishError) => {
+            console.log(e);
+            content = event.content;
+            toast.error(e.relayErrors?.join(', '));
+            console.error(e);
+        });
         content = '';
         resetAt = new Date();
 
@@ -39,7 +48,6 @@
     async function onkeydown({detail: event}: CustomEvent<KeyboardEvent>) {
         if (event.key === 'Enter' && !event.shiftKey && !publishing && content.trim().length > 0) {
             event.preventDefault();
-            
         }
     }
 </script>
@@ -53,14 +61,13 @@
                 {/key}
             {/if}
             <ContentEditor
-                color="black"
                 markdown={false}
                 toolbar={false}
                 autofocus={true}
                 bind:content
                 rows={1}
                 enterSubmits={true}
-                class="!min-h-none w-full grow rounded p-4 overflow-hidden !bg-transparent !border-0"
+                class="!min-h-none w-full grow rounded overflow-hidden {$$props.class??""}"
                 on:keydown={onkeydown}
                 on:submit={submit}
                 {placeholder}

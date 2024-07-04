@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import Avatar from '$components/User/Avatar.svelte';
-import { ndk } from "$stores/ndk.js";
+    import { ndk } from "$stores/ndk.js";
     import { userFollows } from "$stores/session";
     import { type NDKEvent, type NDKFilter, NDKKind, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";

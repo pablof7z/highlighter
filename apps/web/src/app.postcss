@@ -18,7 +18,7 @@
 		--highlight-foreground: 240 10% 3.9%;
 		--muted: 240 4.8% 95.9%;
 		--muted-foreground: 240 3.8% 46.1%;
-		--accent: 20 100% 50%;
+		--accent: 228 78.4% 61.6%;
 		--accent-foreground: 0 0 100;
 		--destructive: 0 72.22% 50.59%;
 		--destructive-foreground: 0 0% 98%;
@@ -87,7 +87,7 @@
 		--popover-foreground: 0 0% 98%;
 		--primary: 0 0% 98%;
 		--primary-foreground: 240 5.9% 10%;
-		--secondary: 240 3.7% 15.9%;
+		--secondary: 240 10% 12.9%;
 		--secondary-foreground: 0 0% 98%;
 		--highlight: 240 3.7% 25.9%;
 		--highlight-foreground: 0 0% 98%;
@@ -171,6 +171,7 @@
 
 	h1, h2, h3 {
 		font-family: InterDisplay;
+		@apply text-foreground;
 	}
 
 	h1 {
@@ -179,7 +180,7 @@
 	}
 
 	.article {
-		@apply text-muted-foreground font-serif text-xl leading-10;
+		@apply text-foreground font-serif text-xl leading-10;
 	}
 
 	mark {
@@ -196,11 +197,11 @@
 	}
 
 	.article h2 {
-		@apply mb-1 mt-8 text-xl text-foreground/80;
+		@apply mb-1 mt-8 text-xl;
 	}
 
 	.article h3 {
-		@apply mb-1 mt-8 text-lg text-foreground/80;
+		@apply mb-1 mt-8 text-lg;
 	}
 
 	.article p {

@@ -10,6 +10,7 @@
     export let subOpts: NDKSubscriptionOptions | undefined = undefined;
     export let size: 'tiny' | 'small' | 'medium' | 'large' | undefined = undefined;
     export let type: 'square' | 'circle' = 'circle';
+    export let ring = false;
     /**
      * Flag when the fetching is being done in a higher component
      **/
@@ -69,12 +70,17 @@
         style={$$props.loadingStyle??""}
     />
 {:else if userProfile || user || pubkey || npub}
-    <Avatar
-        ndk={$ndk}
-        {pubkey}
-        {npub}
-        {user}
-        {userProfile}
-        class="flex-none object-cover {shapeClass} {sizeClass} {$$props.class??""}"
-    />
+    <div class="
+        flex-none {sizeClass} {shapeClass}
+        { ring ? "ring-4 ring-accent p-0.5" : "" }
+    ">
+        <Avatar
+            ndk={$ndk}
+            {pubkey}
+            {npub}
+            {user}
+            {userProfile}
+            class="flex-none object-cover {shapeClass} {sizeClass} {$$props.class??""}"
+        />
+    </div>
 {/if}
