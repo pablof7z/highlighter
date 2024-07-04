@@ -10,7 +10,6 @@
 	import NewPost from '$components/Feed/NewPost/NewPost.svelte';
 
     export let group: NDKSimpleGroup;
-    export let href: string;
 
     $: if ($pageHeader) {
         $pageHeader.title = group.name;

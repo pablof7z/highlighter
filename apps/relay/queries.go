@@ -134,83 +134,96 @@ func contentQueryHandler(ctx context.Context, filter nostr.Filter) (chan *nostr.
 
 func metadataQueryHandler(ctx context.Context, filter nostr.Filter) (chan *nostr.Event, error) {
 	ch := make(chan *nostr.Event, 1)
+
 	if slices.Contains(filter.Kinds, 39000) {
-		for _, groupId := range filter.Tags["d"] {
-			fmt.Println("loading group", groupId)
-			group := loadGroup(ctx, groupId, false)
+		go func() {
+			defer close(ch)
 
-			if group == nil {
-				continue
-			}
+			for _, groupId := range filter.Tags["d"] {
+				fmt.Println("loading group", groupId)
+				group := loadGroup(ctx, groupId, false)
 
-			evt := &nostr.Event{
-				Kind:      39000,
-				CreatedAt: nostr.Now(),
-				Content:   group.About,
-				Tags: nostr.Tags{
-					nostr.Tag{"d", group.ID},
-				},
-			}
-			if group.Name != "" {
-				evt.Tags = append(evt.Tags, nostr.Tag{"name", group.Name})
-			}
-			if group.Picture != "" {
-				evt.Tags = append(evt.Tags, nostr.Tag{"picture", group.Picture})
-			}
+				if group == nil {
+					continue
+				}
 
-			// status
-			if group.Private {
-				evt.Tags = append(evt.Tags, nostr.Tag{"private"})
-			} else {
-				evt.Tags = append(evt.Tags, nostr.Tag{"public"})
-			}
-			if group.Closed {
-				evt.Tags = append(evt.Tags, nostr.Tag{"closed"})
-			} else {
-				evt.Tags = append(evt.Tags, nostr.Tag{"open"})
-			}
+				evt := &nostr.Event{
+					Kind:      39000,
+					CreatedAt: nostr.Now(),
+					Content:   group.About,
+					Tags: nostr.Tags{
+						nostr.Tag{"d", group.ID},
+					},
+				}
+				if group.Name != "" {
+					evt.Tags = append(evt.Tags, nostr.Tag{"name", group.Name})
+				}
+				if group.Picture != "" {
+					evt.Tags = append(evt.Tags, nostr.Tag{"picture", group.Picture})
+				}
 
-			// sign
-			evt.Sign(s.RelayPrivkey)
-			ch <- evt
-		}
+				// status
+				if group.Private {
+					evt.Tags = append(evt.Tags, nostr.Tag{"private"})
+				} else {
+					evt.Tags = append(evt.Tags, nostr.Tag{"public"})
+				}
+				if group.Closed {
+					evt.Tags = append(evt.Tags, nostr.Tag{"closed"})
+				} else {
+					evt.Tags = append(evt.Tags, nostr.Tag{"open"})
+				}
+
+				// sign
+				evt.Sign(s.RelayPrivkey)
+				fmt.Println("sending metadata event", evt)
+				ch <- evt
+				fmt.Println("sent metadata event", evt)
+			}
+		}()
+	} else {
+		close(ch)
 	}
-	close(ch)
+	fmt.Println("closing metadata channel")
 	return ch, nil
 }
 
 func adminsQueryHandler(ctx context.Context, filter nostr.Filter) (chan *nostr.Event, error) {
 	ch := make(chan *nostr.Event, 1)
 	if slices.Contains(filter.Kinds, 39001) {
-		for _, groupId := range filter.Tags["d"] {
-			group := loadGroup(ctx, groupId, false)
+		go func() {
+			defer close(ch)
+			for _, groupId := range filter.Tags["d"] {
+				group := loadGroup(ctx, groupId, false)
 
-			if group == nil {
-				continue
-			}
-
-			evt := &nostr.Event{
-				Kind:      39001,
-				CreatedAt: nostr.Now(),
-				Content:   "list of admins for group " + groupId,
-				Tags: nostr.Tags{
-					nostr.Tag{"d", group.ID},
-				},
-			}
-			for pubkey, role := range group.Members {
-				if role != emptyRole && role != masterRole {
-					tag := nostr.Tag{pubkey, "admin"}
-					for permName := range role.Permissions {
-						tag = append(tag, permName)
-					}
-					evt.Tags = append(evt.Tags, tag)
+				if group == nil {
+					continue
 				}
+
+				evt := &nostr.Event{
+					Kind:      39001,
+					CreatedAt: nostr.Now(),
+					Content:   "list of admins for group " + groupId,
+					Tags: nostr.Tags{
+						nostr.Tag{"d", group.ID},
+					},
+				}
+				for pubkey, role := range group.Members {
+					if role != emptyRole && role != masterRole {
+						tag := nostr.Tag{pubkey, "admin"}
+						for permName := range role.Permissions {
+							tag = append(tag, permName)
+						}
+						evt.Tags = append(evt.Tags, tag)
+					}
+				}
+				evt.Sign(s.RelayPrivkey)
+				ch <- evt
 			}
-			evt.Sign(s.RelayPrivkey)
-			ch <- evt
-		}
+		}()
+	} else {
+		close(ch)
 	}
-	close(ch)
 	return ch, nil
 }
 

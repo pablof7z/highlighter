@@ -4,7 +4,6 @@
 	import UserProfileHomePage from "$views/UserProfileHomePage.svelte";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKUser } from "@nostr-dev-kit/ndk";
-	import ProfileView from "$views/Profile/ProfileView.svelte";
 
     let userId: string | null;
     let view: string;

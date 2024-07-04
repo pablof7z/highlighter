@@ -1,4 +1,4 @@
-import { NDKKind, NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionTier, NDKSubscriptionReceipt, NDKList, NDKArticle, NDKVideo } from '@nostr-dev-kit/ndk';
+import { NDKKind, NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionTier, NDKSubscriptionReceipt, NDKList, NDKArticle, NDKVideo, NDKRelaySet } from '@nostr-dev-kit/ndk';
 import { type NDKUser, type NDKFilter, type Hexpubkey, NDKHighlight } from '@nostr-dev-kit/ndk';
 import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 import { writable, get as getStore, derived, type Readable } from 'svelte/store';
@@ -23,6 +23,7 @@ export let userHighlights: Readable<NDKHighlight[] | undefined>;
 export let userArticles: Readable<NDKArticle[] | undefined>;
 export let userVideos: Readable<NDKVideo[] | undefined>;
 export let userWiki: Readable<NDKArticle[] | undefined>;
+export let userPinList: Readable<NDKList | undefined>;
 
 export function startUserView(user: NDKUser) {
 	const $activeUserViewPubkey = getStore(activeUserViewPubkey);
@@ -46,9 +47,14 @@ export function startUserView(user: NDKUser) {
 	activeUserViewPubkey.set(user.pubkey);
 
 	const filters: NDKFilter[] = [
-		// supporting options
+		// Lists
 		{
-			kinds: [NDKKind.SimpleGroupList, NDKKind.SubscriptionTier as number, NDKKind.TierList],
+			kinds: [NDKKind.PinList, NDKKind.SimpleGroupList, NDKKind.TierList],
+			authors: [user.pubkey]
+		},
+		// Sets
+		{
+			kinds: [NDKKind.SubscriptionTier],
 			authors: [user.pubkey]
 		},
 		{
@@ -76,7 +82,7 @@ export function startUserView(user: NDKUser) {
 			kinds: [NDKKind.Wiki],
 			authors: [user.pubkey],
 			limit: 100
-		}
+		},
 	];
 
 	const groupFilter: NDKFilter = {
@@ -112,11 +118,18 @@ export function startUserView(user: NDKUser) {
 	});
 
 	userVideos = derived(userSubscription, ($userSubscription) => {
-		return $userSubscription.filter((e) => e.kind === NDKKind.Video).map((e) => NDKVideo.from(e));
+		return $userSubscription.filter((e) => e.kind === NDKKind.HorizontalVideo).map((e) => NDKVideo.from(e));
 	});
 
 	userWiki = derived(userSubscription, ($userSubscription) => {
 		return $userSubscription.filter((e) => e.kind === NDKKind.Wiki).map((e) => NDKArticle.from(e));
+	});
+
+	userPinList = derived(userSubscription, ($userSubscription) => {
+		const pinList = $userSubscription.find((e) => e.kind === NDKKind.PinList);
+		if (!pinList) return undefined;
+
+		return NDKList.from(pinList);
 	});
 
 	userSupporters.set(getUserSupporters());

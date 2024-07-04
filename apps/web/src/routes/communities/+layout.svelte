@@ -44,18 +44,20 @@
     }
 </script>
 
-
-
-<WithGroup
-    {groupId}
-    {relays}
-    bind:group={$loadedGroup}
-    bind:isMember={$groupView.isMember}
-    bind:isAdmin={$groupView.isAdmin}
->
-    {#if $loadedGroup}
-        <slot />
-    {:else}
-        nope
-    {/if}
-</WithGroup>
+{#if groupId}
+    <WithGroup
+        {groupId}
+        {relays}
+        bind:group={$loadedGroup}
+        bind:isMember={$groupView.isMember}
+        bind:isAdmin={$groupView.isAdmin}
+    >
+        {#if $loadedGroup}
+            <slot />
+        {:else}
+            nope
+        {/if}
+    </WithGroup>
+{:else}
+    <slot />
+{/if}

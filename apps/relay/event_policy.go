@@ -217,11 +217,12 @@ func restrictInvalidModerationActions(ctx context.Context, event *nostr.Event) (
 		return false, ""
 	}
 
-	fmt.Println("groupId != event.PubKey: ", groupId, event.PubKey)
-	if groupId != event.PubKey {
+	groupIdDoesntLookLikePubkey := len(groupId) != 64
+
+	if (group == nil && groupIdDoesntLookLikePubkey) && groupId != event.PubKey {
 		role, ok := group.Members[event.PubKey]
 		if !ok || role == emptyRole {
-			return true, "unknown admin2"
+			return true, "unknown admin"
 		}
 
 		if _, ok := role.Permissions[action.PermissionName()]; !ok {
@@ -251,6 +252,8 @@ func rateLimit(ctx context.Context, event *nostr.Event) (reject bool, msg string
 }
 
 func applyModerationAction(ctx context.Context, event *nostr.Event) {
+	fmt.Println("applyModerationAction %d", event.Kind)
+
 	if event.Kind < 9000 || event.Kind > 9020 {
 		return
 	}
@@ -265,6 +268,12 @@ func applyModerationAction(ctx context.Context, event *nostr.Event) {
 	gtag := event.Tags.GetFirst([]string{"h", ""})
 	groupId := (*gtag)[1]
 	group := loadGroup(ctx, groupId, true)
+
+	if group == nil {
+		fmt.Println("group is nil")
+		return
+	}
+
 	action.Apply(group)
 }
 

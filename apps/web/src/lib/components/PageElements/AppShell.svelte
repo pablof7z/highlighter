@@ -85,7 +85,7 @@
 	</main>
 
 	{#if $pageHeader && $pageHeader.footer}
-		<div class="h-[8rem]"></div>
+		<!-- <div class="h-[8rem]"></div> -->
 		<div class="
 			fixed bottom-0 w-full border-t border-border bg-background
 			z-[50]

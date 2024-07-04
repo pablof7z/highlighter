@@ -17,9 +17,9 @@
     
     onMount(() => {
         addReadReceipt(user);
+        startUserView(user);
     })
 
-    startUserView(user);
 
     let articles: Readable<Map<NDKEventId, NDKArticle>>;
 
@@ -52,9 +52,15 @@
     let hasArticles = false;
     let hasVideos = false;
     let hasWiki = false;
+    let hasPosts = false;
     let hasAccessToBackstage: boolean | undefined = undefined;
 
     let options: NavigationOption[] = [];
+
+    $: if (!hasPosts && authorUrl) {
+        hasPosts = true;
+        options.push({ name: "Posts", href: getUserUrl(authorUrl, user, "posts") })
+    }
 
     function roundedItemCount(items: any[], limit = 99): string {
         return items.length > limit ? `${limit}+` : items.length.toString();

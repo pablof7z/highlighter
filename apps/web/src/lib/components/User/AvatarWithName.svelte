@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { NDKUser } from "@nostr-dev-kit/ndk";
-	import type { UserProfileType } from "../../../app";
+	import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import UserProfile from "./UserProfile.svelte";
 	import Avatar from '$components/User/Avatar.svelte';
     import Name from '$components/User/Name.svelte';
@@ -8,14 +7,14 @@
 
     export let pubkey: string | undefined = undefined;
     export let user: NDKUser | undefined = !pubkey ? undefined : $ndk.getUser({ pubkey });
-    export let userProfile: UserProfileType | undefined = undefined;
+    export let userProfile: NDKUserProfile | undefined = undefined;
     export let authorUrl: string | undefined = undefined;
     export let spacing = "gap-2";
     export let leadingText = "";
     export let avatarType: 'circle' | 'square' | undefined = "circle";
     export let avatarSize: 'tiny' | 'small' | 'medium' | 'large' | undefined = "medium";
 
-    function newProfileAfterEose(e: CustomEvent<UserProfileType>) {
+    function newProfileAfterEose(e: CustomEvent<NDKUserProfile>) {
         userProfile = e.detail;
     }
 </script>

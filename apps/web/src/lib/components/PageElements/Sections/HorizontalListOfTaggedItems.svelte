@@ -1,9 +1,8 @@
 <script lang="ts">
-	import ArticleGridArticle from '$components/ArticleGridArticle.svelte';
-	import ArticleGridUrlItem from '$components/ArticleGridUrlItem.svelte';
+    import * as Card from '$components/Card';
 	import HorizontalList from '$components/PageElements/HorizontalList';
 	import { articleKinds } from '$utils/event';
-	import { NDKArticle, NDKEvent, NDKHighlight } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKEvent, NDKHighlight, NDKVideo } from '@nostr-dev-kit/ndk';
 	import { onMount } from 'svelte';
 	import { Readable, writable } from 'svelte/store';
 
@@ -38,11 +37,12 @@
     export let title: string;
 </script>
 
-{$taggedItems.length}
 <HorizontalList {title} items={$taggedItems} let:item>
     {#if item instanceof NDKArticle}
-        <ArticleGridArticle article={item} />
+        <Card.Article article={item} />
+    {:else if item instanceof NDKVideo}
+        <Card.Video video={item} />
     {:else}
-        <ArticleGridUrlItem url={item.id} />
+        <Card.Url url={item.id} />
     {/if}
 </HorizontalList>

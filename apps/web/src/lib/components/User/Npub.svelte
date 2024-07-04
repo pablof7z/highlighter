@@ -4,7 +4,7 @@
     export let user: NDKUser;
 
     // last 6 digits of the pubkey
-    const color = user.pubkey.slice(-6);
+    const color = user.pubkey.slice(0, 6);
 </script>
 
 <div class="flex flex-row gap-2 items-center test-xs {$$props.class??""}">
