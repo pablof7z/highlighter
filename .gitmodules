@@ -19,3 +19,6 @@
 [submodule "packages/konsta"]
 	path = packages/konsta
 	url = https://github.com/konstaui/konsta
+[submodule "apps/communities-relay"]
+	path = apps/communities-relay
+	url = git@github.com:pablof7z/communities-relay.git
