@@ -7,6 +7,7 @@
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
 	import { derived } from "svelte/store";
 	import ChatFooter from "./ChatFooter.svelte";
+	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 
     export let group: NDKSimpleGroup;
 
@@ -21,9 +22,9 @@
         kinds: [NDKKind.GroupChat], "#h": [group.groupId]
     }, { groupable: true, subId: 'group-content', relaySet: group.relaySet });
 
-    const onlyOp = derived(chat, ($chat) => {
-        return $chat.filter((e: NDKEvent) => !e.tagValue("e"));
-    })
+    const sortedChat = derived(chat, ($chat) => {
+        return $chat.sort((a, b) => a.created_at! - b.created_at!);
+    });
 
     onDestroy(() => {
         chat.unsubscribe();
@@ -41,14 +42,16 @@
     }
 </script>
 
-{group.relaySet.relayUrls}
-
-<div class="flex flex-col grow justify-end gap-2 overflow-y-auto scrollable-content relative mb-20">
-    {#each $onlyOp as event,i  (event.id)}
+<ScrollArea class=" mb-20">
+<div class="flex flex-col">
+    {#each $sortedChat as event, i (event.id)}
         <ChatBubble
             {event}
-            skipAuthor={$onlyOp[i + 1]?.pubkey === event.pubkey}
+            skipName={$chat[i - 1]?.pubkey === event.pubkey}
+            skipAvatar={$chat[i + 1]?.pubkey === event.pubkey}
+            skipTime={$chat[i - 1] && $chat[i - 1].created_at > event.created_at - 60}
             on:click={() => goto(`/chate/${event.encode()}`)}
         />
     {/each}
 </div>
+</ScrollArea>

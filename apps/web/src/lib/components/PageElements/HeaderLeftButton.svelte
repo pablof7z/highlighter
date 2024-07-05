@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { pageHeader } from "$stores/layout";
 	import { X, CaretLeft } from "phosphor-svelte";
+	import BackButton from "./Navigation/BackButton.svelte";
 
     function leftClicked() {
         if ($pageHeader?.left?.fn) {
@@ -22,9 +23,7 @@
         {:else if $pageHeader.left.label === "Close"}
             <X class="w-5 h-5 inline" />
         {:else if $pageHeader.left.label === "Back"}
-            <CaretLeft class="w-5 h-5 inline" />
+            <BackButton />
         {/if}
-
-        <span class="truncate">{$pageHeader.left.label}</span>
     </a>
 {/if}

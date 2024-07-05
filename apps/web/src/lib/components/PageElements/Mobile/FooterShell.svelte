@@ -45,11 +45,10 @@
         (dragging) ? "transform: translateY(" + dragged/50 + "px);" : ""
     }
     class="
-        left-0 bottom-0 fixed
         max-sm:right-0 sm:right-[360px]
         sm:left-[var(--navbar-width)]
         sm:w-[360px]
-        rounded-t-3xl bg-secondary p-3 px-4 h-auto 
+        max-sm:rounded-t-3xl bg-secondary p-3 px-4 h-auto 
         flex flex-col justify-between items-center
         max-sm:w-full
     ">

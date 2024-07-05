@@ -143,6 +143,7 @@
     "sanitize-html": "^2.11.0",
     "satori": "^0.10.13",
     "scrolltrigger": "^1.0.1",
+    "sound-visualizer": "^1.3.0",
     "sql.js": "^1.10.3",
     "stripe": "^14.22.0",
     "svelte-capacitor-store": "^0.3.5",

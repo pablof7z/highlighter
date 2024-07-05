@@ -81,6 +81,8 @@
     export let isAdmin: boolean | undefined = undefined;
 </script>
 
-{#if group && group.name}
+{#if group}
     <slot {group} />
+{:else}
+    Trying to load {groupId} from {relays}
 {/if}

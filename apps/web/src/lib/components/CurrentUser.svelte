@@ -21,7 +21,7 @@
     }
 </script>
 
-<div class="w-full {$$props.class??""}" transition:fade>
+<div class="{$$props.class??""}" transition:fade>
     {#if $currentUser}
         <UserProfile user={$currentUser} let:userProfile let:authorUrl let:fetching>
             {#if !withName}

@@ -15,7 +15,9 @@
 
     export let event: NDKEvent;
     export let detailed = false;
-    export let skipAuthor = false;
+    export let skipAvatar = false;
+    export let skipName = false;
+    export let skipTime = false;
     
     const author = event.author;
 
@@ -68,17 +70,22 @@
     text-left
     flex items-end gap-1
     hover:brightness-150 transition-all duration-100 ease-in-out
+    responsive-padding
     {$$props.class??""}
     {isMine ? 'justify-start flex-row-reverse' : 'justify-start flex-row'}
-" class:mb-4={!skipAuthor}
+" class:mb-4={!skipAvatar}
     on:click>
     <UserProfile user={author} bind:userProfile bind:fetching bind:authorUrl />
-    <a
-        href={authorUrl}
-        class:opacity-0={skipAuthor}
-    >
-        <Avatar user={author} {userProfile} {fetching} size="small" />
-    </a>
+    {#if !skipAvatar}
+        <a
+            href={authorUrl}
+            class:opacity-0={skipAvatar}
+        >
+            <Avatar user={author} {userProfile} {fetching} size="small" />
+        </a>
+    {:else}
+        <div class="w-8"></div>
+    {/if}
     <div class="
         bubble-container rounded flex items-stretch justify-stretch w-fit max-w-[90%]
         {isMine ? "bg-accent text-accent-foreground" : "bg-secondary"}
@@ -86,15 +93,20 @@
         {isGradient ? "sm:min-w-[28rem]" : ""}
     ">
         <div class="
-            w-full flex-1 grow !max-w-none
+            w-full flex-1 grow
+            break-words max-w-[70vw] overflow-clip
             {isGradient ? "bg-secondary m-[1px]" : ""}]
         ">
-            <div class="text-muted-foreground text-xs">
-                <Name {userProfile} {fetching} />
-                <time class="text-xs opacity-50">
-                    <RelativeTime timestamp={event.created_at*1000} />
-                </time>
-            </div>
+            {#if !skipName || !skipTime}
+                <div class="text-muted-foreground text-xs flex flex-row items-center gap-6 w-full justify-between">
+                    {#if !skipName}
+                        <Name {userProfile} {fetching} class="truncate" />
+                    {/if}
+                    <time class="whitespace-nowrap">
+                        <RelativeTime timestamp={event.created_at*1000} />
+                    </time>
+                </div>
+            {/if}
 
             {#if event.kind === NDKKind.Article}
                 <Article article={NDKArticle.from(event)} />

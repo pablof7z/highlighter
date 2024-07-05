@@ -4,6 +4,7 @@
 	import { Uploader } from "$utils/upload";
 	import { Microphone, PaperPlaneTilt, Play, Stop, Trash } from "phosphor-svelte";
 	import { createEventDispatcher } from "svelte";
+    import { currentVisualizer, continuousVisualizer } from 'sound-visualizer';
 
     
     const dispatch = createEventDispatcher();
@@ -25,6 +26,8 @@
         active = false;
     }
 
+    let canvas: HTMLCanvasElement;
+
     let mediaRecorder: MediaRecorder | undefined;
     let blob: Blob | undefined;
     let contentType: string | undefined;
@@ -32,6 +35,7 @@
     function buttonPressed() {
         if (recording) {
             stop()
+            stopAudioVisualizer();
         } else if (recorded) {
             upload()
             uploading = true;
@@ -41,6 +45,7 @@
     }
 
     let base64data: string | ArrayBuffer | null = null;
+    let stopAudioVisualizer: () => void;
 
     async function record() {
         recording = true
@@ -58,6 +63,10 @@
         const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true })
         mediaRecorder = new MediaRecorder(stream)
         const chunks: Blob[] = []
+
+        const { start, stop, reset } = continuousVisualizer(stream, canvas, { strokeColor: "#5445FF", lineWidth: "thick", canvasWidth: 100 });
+        start();
+        stopAudioVisualizer = stop;
 
         mediaRecorder.ondataavailable = (e) => {
             console.log("recording data")
@@ -190,5 +199,7 @@
                 {/if}
             </div>
         {/key}
+
+        <canvas bind:this={canvas} class="w-full border border-border bg-secondary h-[3rem]" />
     {/if}
 </div>
