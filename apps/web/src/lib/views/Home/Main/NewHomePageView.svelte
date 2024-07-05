@@ -18,10 +18,12 @@
     import Footer from "$components/PageElements/Mobile/Footer.svelte";
 	import ArticleGridUrlItem from '$components/ArticleGridUrlItem.svelte';
 	import HorizontalListOfTaggedItems from '$components/PageElements/Sections/HorizontalListOfTaggedItems.svelte';
-	import { layoutMode, pageHeader } from '$stores/layout';
+	import { layout, layoutMode, pageHeader } from '$stores/layout';
 	import { appMobileView } from '$stores/app';
 	import StoriesFeed from '$components/PageElements/StoriesFeed.svelte';
 	import { NavigationOption } from '../../../../app';
+	import LayoutHeaderNavigation from '$components/Layout/Headers/LayoutHeaderNavigation.svelte';
+	import HomePageSidebar from './HomePageSidebar.svelte';
 
     $layoutMode = "full-width";
 
@@ -33,7 +35,6 @@
         return filterArticle(wotF);
     });
 
-    $pageHeader ??= {};
     $pageHeader.footer = {
         component: Footer,
         props: {}
@@ -57,39 +58,19 @@
         { kinds: [1063], authors: Array.from($userFollows), limit: 10, "#m": ["image/jpeg"] }
     ])
 
-    let options: NavigationOption[] = [
-        { name: "Home", href: "/" },
-        { name: "Reads", href: "/reads" },
-        { name: "Communities", href: '/communities' },
-        { name: "Posts", href: '/notes' },
-        { name: "Wiki", href: '/wiki' },
-    ];
+    $layout = {
+        header: {
+            component: LayoutHeaderNavigation,
+        },
+        sidebar: {
+            component: HomePageSidebar
+        },
+        footer: {
+            component: Footer,
+            props: {}
+        }
+    }
 </script>
-
-{#if $appMobileView}
-    <StoriesFeed />
-
-    <ScrollArea class="whitespace-nowrap border-y border-border py-4" orientation="horizontal">
-        <HorizontalOptionsList {options} class="px-4" />
-    </ScrollArea>
-{:else}
-    <div class="flex flex-row w-full border h-full">
-        <aside class="w-[360px] border-r border-border flex flex-col items-stretch fixed h-screen">
-            <StoriesFeed />
-
-            {#if $pageHeader?.footer?.component}
-                <svelte:component this={$pageHeader.footer.component} {...$pageHeader.footer.props} />
-            {/if}
-        </aside>
-
-        <main class="grow ml-[360px]">
-            <ScrollArea class="whitespace-nowrap border-y border-border py-4" orientation="horizontal">
-                <HorizontalOptionsList {options} class="px-4" />
-            </ScrollArea>
-        </main>
-    </div>
-{/if}
-
 
 <HorizontalList title="Articles" items={$filteredArticles} let:item>
     <Card.Article article={item} />

@@ -9,6 +9,7 @@
 	import Textarea from "$components/ui/textarea/textarea.svelte";
 	import { closeModal } from "$utils/modal";
 	import { groupsList } from "$stores/session";
+	import { toast } from "svelte-sonner";
 
     let name: string;
     let picture: string;
@@ -25,7 +26,11 @@
         const relaySet = NDKRelaySet.fromRelayUrls(relays, $ndk);
 
         const group = new NDKSimpleGroup($ndk, relaySet);
-        await group.createGroup();
+        const published = await group.createGroup();
+        if (!published) {
+            toast.error("Failed to create group");
+            return;
+        }
         await group.setMetadata({ name, picture });
 
         $groupsList?.addItem([ "group", group.groupId, ...relaySet.relayUrls ])

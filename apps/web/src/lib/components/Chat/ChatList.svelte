@@ -1,23 +1,10 @@
 <script lang="ts">
-	import LayoutHeaderNavigation from '$components/Layout/Headers/LayoutHeaderNavigation.svelte';
-	import NewGroupModal from '$modals/NewGroupModal.svelte';
-    import { layout, layoutMode, pageHeader } from "$stores/layout";
-	import { ndk } from "$stores/ndk";
-	import { groupsList, userFollows } from "$stores/session";
-	import { openModal } from "$utils/modal";
-	import { NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
-	import { onDestroy } from "svelte";
-	import { Button } from '$components/ui/button';
-	import { derived } from 'svelte/store';
+    import { groupsList, userFollows } from "$stores/session";
     import * as Chat from "$components/Chat";
-	import { Plus } from 'phosphor-svelte';
+	import { ndk } from "$stores/ndk";
+	import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+	import { derived } from "svelte/store";
 
-    $layout = {
-        header: {
-            component: LayoutHeaderNavigation,
-        }
-    }
-    
     const groupListsFromFollows = $ndk.storeSubscribe(
         { kinds: [NDKKind.SimpleGroupList], limit: 300, authors: Array.from($userFollows) },
         { groupable: false, closeOnEose: true }, NDKList
@@ -59,12 +46,3 @@
         {/each}
     </Chat.List>
 {/if}
-
-<div class="responsive-padding">
-    <Button variant="outline" class="w-full mt-12 h-auto rounded-lg p-6 flex flex-col items-center" on:click={() => openModal(NewGroupModal)}>
-        <div class="bg-secondary rounded-full p-3 flex items-center justify-center mb-4">
-            <Plus size={32} />
-        </div>
-        <p class="text-center text-lg font-medium">Create New Community</p>
-    </Button>
-</div>

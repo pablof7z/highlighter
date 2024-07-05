@@ -8,7 +8,7 @@
 	import { toast } from "svelte-sonner";
 
     export let group: NDKSimpleGroup | undefined = undefined;
-    export let event: NDKEvent;
+    export let event: NDKEvent | undefined = undefined;
     export let tags: NDKTag[] = [];
     export let kind: NDKKind = NDKKind.GroupChat;
     export let placeholder: string = "Type a message";
@@ -33,7 +33,11 @@
 
         console.log('relay sets', event.rawEvent(), relaySet);
         
-        event.publish(relaySet).catch((e: NDKPublishError) => {
+        event.publish(relaySet)
+        .then(() => {
+            event = undefined;
+        })
+        .catch((e: NDKPublishError) => {
             console.log(e);
             content = event.content;
             toast.error(e.relayErrors?.join(', '));

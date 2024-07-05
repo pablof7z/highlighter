@@ -22,6 +22,7 @@
 	import { ndk } from '$stores/ndk';
 	import OnboardingScreen from '$views/Mobile/Pages/OnboardingScreen.svelte';
 	import { page } from '$app/stores';
+	import NewAppShell from '$components/PageElements/NewAppShell.svelte';
 	
 
 	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
@@ -139,6 +140,10 @@
 
 <ModeWatcher />
 
+<NewAppShell>
+	<slot />
+</NewAppShell>
+<!-- 
 {#if $appMobileView}
 	<MobileAppShell>
 		{#if !$currentUser && !$page.url.pathname.startsWith("/mobile")}
@@ -151,4 +156,4 @@
 		<AppShell>
 			<slot />
 		</AppShell>
-{/if}
+{/if} -->

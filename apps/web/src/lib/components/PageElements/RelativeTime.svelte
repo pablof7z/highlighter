@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { get } from 'svelte/store';
     import { NDKEvent } from "@nostr-dev-kit/ndk";
     import Time from "svelte-time";
 	import { onDestroy } from 'svelte';
@@ -64,7 +63,6 @@
         just now
     {:else if distanceOfTime < 60 * 60}
         <Time
-            relative={useRelativeTime()}
             live={true}
             {timestamp}
             class={$$props.class || ``}

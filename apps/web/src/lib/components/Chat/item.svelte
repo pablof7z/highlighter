@@ -71,12 +71,17 @@
         })
     }
 
+    function unpin(groupId) {
+        $groupsList?.removeItemByValue(groupId);
+        $groupsList = $groupsList;
+    }
+
     let rightOptions: [] = [];
 
     $: if (group) {
         rightOptions = [];
         if ($groupsList?.has(group.groupId))
-            rightOptions.push({ label: 'Unpin', class: 'bg-secondary/50', action: () => group?.unfollow() })
+            rightOptions.push({ label: 'Unpin', class: 'bg-secondary/50', cb: () => unpin(group.groupId) })
         else
             rightOptions.push({ label: 'Pin', class: 'bg-secondary/50', action: () => group?.follow() })
         if (isMember)

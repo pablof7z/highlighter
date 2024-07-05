@@ -11,7 +11,7 @@ export const layoutMode = writable<LayoutMode>("single-column-focused");
 
 interface Component {
 	component: ConstructorOfATypedSvelteComponent;
-	props: { [key: string]: any };
+	props?: { [key: string]: any };
 	containerClass?: string;
 }
 
@@ -32,6 +32,15 @@ export const searching: Writable<boolean> = writable(false);
 export const modalState: Writable<"open" | "closing" | "closed"> = writable("closed");
 
 export const activeNewPostId: Writable<string | null> = writable(null);
+
+export type Layout = {
+	header?: Component;
+	sidebar?: Component;
+	footer?: Component;
+	title?: string
+};
+
+export const layout = writable<Layout>({});
 
 export type PageHeader = {
 	/**

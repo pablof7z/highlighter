@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { pageHeader } from "$stores/layout";
+	import { layout, pageHeader } from "$stores/layout";
 	import { afterUpdate, onDestroy, onMount } from "svelte";
 	import HeaderLeftButton from "../HeaderLeftButton.svelte";
 	import HeaderRightButton from "../HeaderRightButton.svelte";
@@ -8,8 +8,6 @@
 
     let render = false;
     let navbar: HTMLElement;
-
-    $: render =  !!($pageHeader?.component || $pageHeader?.searchBar || $pageHeader?.title || $pageHeader?.left || $pageHeader?.right);
 
     const updateNavbarHeight = () => {
         if (!navbar) {
@@ -44,20 +42,15 @@
     }
 </script>
 
-{#if render}
 <div class="
-    !fixed top-0
-    left-[var(--navbar-width)]
-    z-40
     mobile-nav
-    w-full
 " bind:this={navbar}>
     <div class="flex flex-row justify-between items-center h-full w-full gap-2">
-        {#if $pageHeader?.component}
+        {#if $layout.header.component}
             <div class="w-full h-full flex flex-col">
                 <svelte:component
-                    this={$pageHeader.component}
-                    {...$pageHeader.props}
+                    this={$layout.header.component}
+                    {...$layout.header.props}
                     containerClass={$$props.containerClass}
                     on:resize={updateNavbarHeight}
                 />
@@ -75,27 +68,28 @@
         {:else}
             <div class="flex flex-col items-stretch w-full {$$props.containerClass??""}">
                 <div class="flex items-center justify-between px-4">
-                    {#if $pageHeader?.left}
-                        <HeaderLeftButton />
-                    {/if}
+                    <div class="flex flex-row gap-2 items-center">
+                        {#if $pageHeader?.left}
+                            <HeaderLeftButton />
+                        {/if}
 
-                    {#if $pageHeader?.title}
-                        <div class="
-                            flex flex-row
-                            items-center
-                            justify-center
-                            text-foreground
-                            font-medium
-                            gap-2
-                            col-span-5
-                            text-center
-                            p-3
-                            grow truncate
-                            w-8/12
-                        ">
-                            <span class="truncate">{$pageHeader?.title}</span>
-                        </div>
-                    {/if}
+                        {#if $pageHeader?.title}
+                            <div class="
+                                flex flex-row
+                                items-center
+                                justify-center
+                                text-foreground
+                                font-bold text-xl
+                                gap-2
+                                col-span-5
+                                text-center
+                                p-3
+                                grow truncate
+                            ">
+                                <span class="truncate">{$pageHeader?.title}</span>
+                            </div>
+                        {/if}
+                    </div>
 
                     {#if $pageHeader?.right}
                         <HeaderRightButton />
@@ -114,4 +108,3 @@
         {/if}
     </div>
 </div>
-{/if}
