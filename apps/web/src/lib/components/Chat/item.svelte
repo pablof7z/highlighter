@@ -94,30 +94,34 @@
 <WithGroup tag={tag} bind:group>
     {#if group}
         <Swipe {rightOptions}>
-        <a href={getGroupUrl(group)} class="py-2 w-full">
-            <div class="responsive-padding flex flex-row items-center p-2 gap-4 w-full">
-            <img src={group.picture??`https://picsum.photos/24/24?random=${group.name}`} />
-            
-            <div class="flex flex-col gap-1 grow">
-                <span class="text-foreground font-semibold text-lg truncate">
-                    {group.name}
-                </span>
-                {#if !isMember && pubkeysToFeature}
-                    <ReplyAvatars users={pubkeysToFeature} />
-                {:else if $mostRecentEvent}
-                    <span class="text-sm text-muted-foreground truncate">
-                        {$mostRecentEvent.content}
-                    </span>
-                {/if}
-            </div>
+            <a href={getGroupUrl(group)} class="py-2 w-full">
+                <div class="responsive-padding flex flex-row items-center p-2 gap-4 w-full">
+                    <img src={group.picture??`https://picsum.photos/24/24?random=${group.name}`} />
+                    
+                    <div class="flex flex-col gap-1 grow">
+                        <span class="text-foreground font-semibold text-lg truncate">
+                            {group.name??"Unnamed Group"}
+                        </span>
+                        {#if !isMember && pubkeysToFeature}
+                            <ReplyAvatars users={pubkeysToFeature} />
+                        {:else if $mostRecentEvent}
+                            <span class="text-sm text-muted-foreground truncate">
+                                {$mostRecentEvent.content}
+                            </span>
+                        {:else if tag[2]}
+                            <span class="text-xs text-muted-foreground truncate">
+                                {tag[2]}
+                            </span>
+                        {/if}
+                    </div>
 
-            {#if $mostRecentEvent}
-                <span>
-                    <RelativeTime event={$mostRecentEvent} relative={true} />
-                </span>
-            {/if}
-            </div>
-        </a>
+                    {#if $mostRecentEvent}
+                        <span>
+                            <RelativeTime event={$mostRecentEvent} relative={true} />
+                        </span>
+                    {/if}
+                </div>
+            </a>
         </Swipe>
     {/if}
 </WithGroup>

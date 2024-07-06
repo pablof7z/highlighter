@@ -15,6 +15,7 @@
 	import { userGenericCuration } from '$stores/session';
 	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
 	import { NavigationOption } from '../../app';
+	import { layout } from '$stores/layout';
 
     export let item: NDKArticle | NDKVideo;
     export let isFullVersion: boolean | undefined = undefined;
@@ -22,11 +23,8 @@
     export let editUrl: string | undefined = undefined;
     export let title: string | undefined = undefined;
     export let compact = false;
-    export let options: NavigationOption[] | undefined = undefined;
 
     let userProfile: NDKUserProfile;
-
-    let showTextTools = false;
 
     let bookmarked: boolean;
     $: bookmarked = $userGenericCuration.has(item.tagId());
@@ -35,53 +33,7 @@
 {#if item}
     {#if $appMobileView}
         <UserProfile bind:userProfile user={item.author} />
-        <Navbar
-            title={compact ? title : undefined}
-            subtitle={compact ? userProfile?.displayName : undefined}
-            class="
-                py-2 flex flex-col sm:flex-row justify-between items-center w-full {$$props.containerClass??""} {$$props.class??""}
-            " subnavbarClass={!showTextTools && !options ? "hidden" : ""}
-            >
-            <div class="flex flex-row items-center gap-2" slot="left">
-                <NavbarBackLink showText={false} onClick={() => { window.history.back() }} />
-                {#if compact}
-                    <Button variant="link" on:click={(e) => { showTextTools = !showTextTools; } }>
-                        <TextAa class="w-6 h-6" />
-                    </Button>
-                {/if}
-            </div>
-            {#if !compact}
-                <div class="w-full">
-                    <ItemHeaderInner {item} {isFullVersion} {urlPrefix} {editUrl} {title} />
-                </div>
-            {/if}
-
-            <div class="flex flex-row items-center" slot="right" class:hidden={!compact}>
-                {#if compact}
-                    <AnimatedToggleButton
-                        icon={Export}
-                        buttonClass="hover:bg-yellow-400/20"
-                        bgClass="bg-yellow-500"
-                        iconClass={"text-yellow-400/30 group-hover:text-yellow-500 max-sm:text-yellow-500"}
-                        on:click={() => openModal(ShareModal, { event: item })}
-                    />
-
-                    <BookmarkButton
-                        on:click={() => toggleBookmarkedEvent(item)}
-                        active={bookmarked}
-                    />
-                {/if}
-            </div>
-            
-            <div class="w-full max-sm:w-screen responsive-padding" slot="subnavbar">
-                <HorizontalOptionsList options={options} />
-                {#if showTextTools}
-                    <div class="flex flex-row items-center gap-0">
-                        <ToggleDark />
-                    </div>
-                {/if}
-            </div>
-        </Navbar>
+        <ItemHeaderInner {item} {isFullVersion} {urlPrefix} {editUrl} {title} />
     {:else}
         <div class="
             py-2 flex flex-col sm:flex-row gap-6 justify-between items-center w-full {$$props.containerClass??""} {$$props.class??""}

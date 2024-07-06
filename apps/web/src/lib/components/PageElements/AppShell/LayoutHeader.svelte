@@ -46,7 +46,7 @@
     mobile-nav
 " bind:this={navbar}>
     <div class="flex flex-row justify-between items-center h-full w-full gap-2">
-        {#if $layout.header.component}
+        {#if $layout.header?.component}
             <div class="w-full h-full flex flex-col">
                 <svelte:component
                     this={$layout.header.component}
@@ -67,26 +67,25 @@
             </div>
         {:else}
             <div class="flex flex-col items-stretch w-full {$$props.containerClass??""}">
-                <div class="flex items-center justify-between px-4">
-                    <div class="flex flex-row gap-2 items-center">
-                        {#if $pageHeader?.left}
-                            <HeaderLeftButton />
-                        {/if}
+                <div class="flex items-center justify-between w-full">
+                    <div class="flex flex-row gap-3 items-center w-full">
+                        <HeaderLeftButton />
 
-                        {#if $pageHeader?.title}
+                        {#if $layout?.iconUrl}
+                            <img src={$layout.iconUrl} class="w-8 h-8 rounded-full" />
+                        {/if}
+                        
+                        {#if $layout?.title}
                             <div class="
                                 flex flex-row
-                                items-center
-                                justify-center
                                 text-foreground
                                 font-bold text-xl
                                 gap-2
                                 col-span-5
                                 text-center
-                                p-3
                                 grow truncate
                             ">
-                                <span class="truncate">{$pageHeader?.title}</span>
+                                <span class="truncate">{$layout?.title}</span>
                             </div>
                         {/if}
                     </div>

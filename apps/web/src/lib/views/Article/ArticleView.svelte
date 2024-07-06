@@ -4,7 +4,7 @@
 	import { ndk } from "$stores/ndk.js";
 	import { type NDKArticle, NDKKind, NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
-	import { pageHeader } from "$stores/layout";
+	import { layout, pageHeader } from "$stores/layout";
 	import { getAuthorUrl, urlFromEvent } from "$utils/url";
 	import { ChatCircle } from "phosphor-svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
@@ -14,6 +14,7 @@
 	import { NavigationOption } from "../../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import ArticleRender from "$components/ArticleRender.svelte";
+	import Footer from "./Footer.svelte";
 
     export let article: NDKArticle;
     const author = article.author;
@@ -24,6 +25,9 @@
      * Whether to render as just a preview instead of rendering a full article (i.e. this is viewed from the editor's preview)
      */
     export let isPreview = false;
+
+    $layout ??= {};
+    $layout.sidebar = false;
 
     const relatedEvents = $ndk.storeSubscribe([
         { kinds: [NDKKind.Highlight], ...article.filter() },
@@ -62,6 +66,11 @@
 
     getAuthorUrl(author).then(url => authorUrl = url);
 
+    $layout.footer = {
+        component: Footer,
+        props: { article }
+    }
+
     $pageHeader ??= {};
     $: if (!isPreview) {
         if ($pageHeader?.props)
@@ -69,8 +78,8 @@
     }
 
     onDestroy(() => {
-        if ($pageHeader?.footer)
-            $pageHeader.footer = undefined;
+        if ($layout?.footer)
+            $layout.footer = undefined;
     });
 
     let navigationOptions: NavigationOption[] = [];
@@ -119,7 +128,7 @@
     {navigationOptions}
     {highlights}
     on:title:inview_change
-    on:toolbar:inview_change
+    on:toolbar:inview_change={(e) => toolbarInView = e.detail.inView}
 />
 
 {#if !isPreview}

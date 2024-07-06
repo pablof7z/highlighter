@@ -1,11 +1,9 @@
 <script lang="ts">
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import { ScrollArea } from "$components/ui/scroll-area";
-	import { NavigationOption } from "../../../../app";
+	import { layout } from "$stores/layout";
 
-    export let options: NavigationOption[] | undefined = undefined;
-
-	options ??= [
+	$: options = $layout.navigation ?? [
         { name: "Home", href: "/" },
         { name: "Reads", href: "/reads" },
         { name: "Communities", href: '/communities' },
@@ -14,6 +12,6 @@
     ];
 </script>
 
-<ScrollArea class="whitespace-nowrap border-y border-border py-4" orientation="horizontal">
+<ScrollArea class="whitespace-nowrap" orientation="horizontal">
     <HorizontalOptionsList {options} class="px-4" />
 </ScrollArea>

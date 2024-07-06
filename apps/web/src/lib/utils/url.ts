@@ -20,7 +20,7 @@ export function getAuthorUrlSync(user: NDKUser) {
 export function getGroupUrl(group: NDKSimpleGroup, extraPath?: string) {
 	const url = new URL("", window.location.href);
 
-	if (!isMobileBuild() && false)
+	if (!isMobileBuild())
 		url.pathname = `/communities/${group.groupId}/${extraPath ?? ""}`;
 	else {
 		url.pathname = "/mobile/community";

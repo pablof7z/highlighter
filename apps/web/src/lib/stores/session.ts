@@ -241,7 +241,7 @@ export async function prepareSession(): Promise<void> {
 			resolve();
 
 			notificationsSubscribe($ndk, $currentUser);
-			// cashuInit($ndk, $currentUser);
+			cashuInit($ndk, $currentUser);
 
 			const $userFollows = get(userFollows);
 			const $networkFollows = get(networkFollows);

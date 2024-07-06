@@ -12,7 +12,6 @@
 	import Article from "$components/Grid/Article.svelte";
 	import { isMobileBuild } from "$utils/view/mobile";
 	import { ndk } from "$stores/ndk";
-	import { group } from "console";
 	import { Recycle } from "phosphor-svelte";
 
     export let feed: Readable<NDKEvent[]>;

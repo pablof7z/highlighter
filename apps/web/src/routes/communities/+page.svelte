@@ -1,6 +1,5 @@
 <script lang="ts">
 	import NewGroupModal from '$modals/NewGroupModal.svelte';
-	import PageTitle from "$components/PageElements/PageTitle.svelte";
     import { layoutMode, pageHeader } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
 	import { groupsList, userFollows } from "$stores/session";
@@ -11,7 +10,6 @@
 	import { derived } from 'svelte/store';
     import * as Chat from "$components/Chat";
 	import { Plus } from 'phosphor-svelte';
-	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 
     $layoutMode = "single-column-focused";
     
@@ -44,14 +42,6 @@
             .map(k => JSON.parse(k));
     })
 </script>
-
-<div class="py-2 border-y border-border responsive-padding">
-    <HorizontalOptionsList options={[
-        { name: "Communities", href: "/communities", buttonProps: { variant: 'accent' } },
-        { name: "Articles", href: "/reads" },
-        { name: "Videos", href: "/videos" },
-    ]} />
-</div>
 
 {#if groupsList && $groupsList}
     <Chat.List>

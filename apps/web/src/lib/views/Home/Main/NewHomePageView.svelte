@@ -1,12 +1,8 @@
 <script lang="ts">
 	import HorizontalList from '$components/PageElements/HorizontalList';
-	import Article from './../../../components/Grid/Article.svelte';
 	import { wotFilteredStore } from '$stores/wot';
 	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind } from '@nostr-dev-kit/ndk';
-	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	
-    import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
-	import Avatar from "$components/User/Avatar.svelte";
 	import { ndk } from "$stores/ndk";
 	import { userFollows } from "$stores/session";
 	import { derived, Readable, writable } from "svelte/store";
@@ -18,7 +14,7 @@
     import Footer from "$components/PageElements/Mobile/Footer.svelte";
 	import ArticleGridUrlItem from '$components/ArticleGridUrlItem.svelte';
 	import HorizontalListOfTaggedItems from '$components/PageElements/Sections/HorizontalListOfTaggedItems.svelte';
-	import { layout, layoutMode, pageHeader } from '$stores/layout';
+	import { layout, layoutMode } from '$stores/layout';
 	import { appMobileView } from '$stores/app';
 	import StoriesFeed from '$components/PageElements/StoriesFeed.svelte';
 	import { NavigationOption } from '../../../../app';
@@ -34,11 +30,6 @@
     const filteredArticles = derived(wotF, ($wotF) => {
         return filterArticle(wotF);
     });
-
-    $pageHeader.footer = {
-        component: Footer,
-        props: {}
-    }
 
     let highlightsEosed = false;
     const highlights = $ndk.storeSubscribe([
@@ -59,9 +50,6 @@
     ])
 
     $layout = {
-        header: {
-            component: LayoutHeaderNavigation,
-        },
         sidebar: {
             component: HomePageSidebar
         },

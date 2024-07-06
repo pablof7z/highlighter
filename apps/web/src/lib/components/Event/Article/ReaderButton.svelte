@@ -14,6 +14,11 @@
     import { loadedMedia, togglePause } from '$stores/media';
 
     export let article: NDKArticle;
+    /**
+     * When this function is set, it will be called back instead
+     * of showing the TTS modal.
+     */
+    export let onShow: (() => void) | undefined = undefined;
 
     let recordingEvents: NDKEventStore<NDKEvent> | undefined;
 
@@ -54,11 +59,15 @@
             return;
         }
         
-        openModal(TtsModal, { event: article })
+        if (onShow) {
+            onShow();
+        } else {
+            openModal(TtsModal, { event: article })
+        }
     }
 </script>
 
-<Button variant="secondary" on:click={togglePlay}>
+<Button {...{variant: "secondary", ...$$props}} on:click={togglePlay}>
     {#if isLoaded}
         <Stop />
     {:else}

@@ -1,9 +1,10 @@
 <script lang="ts">
+	import LayoutHeaderNavigation from '$components/Layout/Headers/LayoutHeaderNavigation.svelte';
 	import { page } from "$app/stores";
 	import WithGroup from "$components/Event/WithGroup.svelte";
 	import JoinGroupFooter from "$components/JoinGroupFooter.svelte";
 	import { groupView, loadedGroup } from "$stores/item-view";
-	import { pageHeader } from "$stores/layout";
+	import { layout, pageHeader } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
 	import GroupChat from "$views/Groups/GroupChat.svelte";
 	import GroupHomePage from "$views/Groups/GroupHomePage.svelte";
@@ -28,22 +29,29 @@
     $: if ($loadedGroup) {
         const opts: NavigationOption[] = [];
 
-        opts.push({ name: "Chat", href: getGroupUrl($loadedGroup, "chat") });
+        opts.push({ name: "Chat2", href: getGroupUrl($loadedGroup, "chat") });
         opts.push({ name: "Posts", href: getGroupUrl($loadedGroup, "posts") });
 
         if ($groupView.isAdmin) {
             opts.push({ name: "Settings", href: getGroupUrl($loadedGroup, "settings") });
         }
 
-        $pageHeader = {
-            left: { label: "Back", url: "/communities" },
-            title: $loadedGroup.name ?? "Community",
-            subNavbarOptions: opts,
-        };
+        // $pageHeader = {
+        //     left: { label: "Back", url: "/communities" },
+        //     title: $loadedGroup.name ?? "Community",
+        //     subNavbarOptions: opts,
+        // };
+    }
+
+    $layout = {
+        header: {
+            component: LayoutHeaderNavigation,
+            props: { options: opts },
+        },
     }
 
     $: if ($loadedGroup && $groupView.isMember === false) {
-        $pageHeader.footer = {
+        $layout.footer = {
             component: JoinGroupFooter,
             props: { group: $loadedGroup },
         }

@@ -3,7 +3,7 @@
 	import { articleKinds, isEventFullVersion } from "$utils/event";
 	import ArticleView from "$views/Article/ArticleView.svelte";
 	import { onDestroy } from "svelte";
-	import { pageHeader } from "$stores/layout";
+	import { layout, pageHeader } from "$stores/layout";
 	import ItemHeader from "$components/ItemHeader.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
@@ -31,7 +31,7 @@
 
     $: if (!ignoreHeader) {
         if (event) {
-            $pageHeader = {
+            $layout.header = {
                 component: ItemHeader,
                 props: {
                     item: event,

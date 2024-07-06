@@ -13,6 +13,8 @@
     }
 
     $: groupId = $page.params.groupId;
+
+    
 </script>
 
 <GroupShell {groupId} {relays}>
