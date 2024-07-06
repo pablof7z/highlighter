@@ -267,7 +267,6 @@
     }
 
     :global(.ql-container) {
-        @apply !text-xl;
     }
 
     .toolbar button {

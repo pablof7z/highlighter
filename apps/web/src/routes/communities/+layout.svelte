@@ -18,30 +18,6 @@
     }
 
     $: groupId = $page.params.groupId ?? $page.url.searchParams.get('groupId');
-
-    $: if ($loadedGroup) {
-        const opts: NavigationOption[] = [];
-
-        opts.push({ name: "Chat", href: getGroupUrl($loadedGroup, "/chat") });
-        opts.push({ name: "Posts", href: getGroupUrl($loadedGroup, "/posts") });
-
-        if ($groupView.isAdmin) {
-            opts.push({ name: "Settings", href: getGroupUrl($loadedGroup, "/settings") });
-        }
-
-        $pageHeader = {
-            left: { label: "Back", url: "/communities" },
-            title: $loadedGroup.name ?? "Community",
-            subNavbarOptions: opts,
-        };
-    }
-
-    $: if ($loadedGroup && $groupView.isMember === false) {
-        $pageHeader.footer = {
-            component: JoinGroupFooter,
-            props: { group: $loadedGroup },
-        }
-    }
 </script>
 
 {#if groupId}

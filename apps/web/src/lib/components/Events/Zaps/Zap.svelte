@@ -11,9 +11,10 @@
 	import ZapAmountButton from './ZapAmountButton.svelte';
 	import { Button } from '$components/ui/button';
 	import Input from '$components/ui/input/input.svelte';
-	import { newToasterMessage } from '$stores/toaster';
+	import { newToasterMessage, toasterItems } from '$stores/toaster';
 	import LnQrCode from '$components/Payment/LnQrCode.svelte';
-	import currentUser from '$stores/currentUser';
+	import { chooseProofs, payWithProofs, userProofs, walletBalance } from '$stores/cashu';
+	import { CashuMint, CashuWallet } from '@cashu/cashu-ts';
 
     export let event: NDKEvent;
     export let forceZap: boolean = false;
@@ -71,7 +72,6 @@
         }
 
         try {
-            console.log('zapSplits', zapSplits);
             for (const zapSplit of zapSplits) {
                 const satAmount = Math.round(amount * zapSplit[1] / totalSplitValue);
 
@@ -79,11 +79,30 @@
                 
                 $ndk
                     .zap(event, satAmount * 1000, comment, [], $ndk.getUser({ pubkey: zapSplit[0] }))
-                    .then((pr: string | null) => {
-                        console.log('pr', pr);
+                    .then(async (pr: string | null) => {
+                        console.log('pr', pr, $walletBalance);
                         if (pr) {
-                            prs.push([pr, satAmount, { "#p": [zapSplit[0]], "#e": [event.id], since: Math.floor(Date.now()/1000), kinds: [9735] }]);
-                            prs = prs;
+                            if ($walletBalance && $walletBalance >= satAmount) {
+                                console.log("we can pay with wallet balance");
+
+                                // try {
+                                    const wallet = new CashuWallet(new CashuMint("https://stablenut.umint.cash"));
+                                    const ret = await payWithProofs(pr, satAmount, wallet, event);
+                                    // console.log('trying to pay with wallet balance', proofs);
+                                    // const ret = await wallet.payLnInvoice(pr, proofs);
+                                    console.log({ret});
+                                    if (ret.isPaid) {
+                                        zapSent = true;
+                                        dispatch('zap', { pr, satAmount, zapSplit });
+                                    }
+                                // } catch (e) {
+                                //     console.error(e);
+                                //     toast.error(e.message);
+                                // }
+                            } else {
+                                // prs.push([pr, satAmount, { "#p": [zapSplit[0]], "#e": [event.id], since: Math.floor(Date.now()/1000), kinds: [9735] }]);
+                                // prs = prs;
+                            }
                         }
                     })
                     .catch((e: Error) => {

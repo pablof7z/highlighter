@@ -37,3 +37,8 @@ deploy:
 deploy-old:
 #	rsync -avP -l -t --exclude nsecbunker.json --exclude dist --exclude db --exclude nostdress/nostdress --exclude relay/relay29 --exclude .env --exclude .svelte-kit --exclude node_modules --exclude build /Users/pablofernandez/work/projects/highlighter/ kind0:/home/pablo/projects/highlighter
 
+dev-deploy:
+	rsync -avP -l -t --exclude .env --exclude ios --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./apps/web/ kind0:/home/pablo/projects/dev-highlighter/apps/web
+	rsync -avP -l -t --exclude .env --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./packages/ kind0:/home/pablo/projects/dev-highlighter/packages
+
+

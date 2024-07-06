@@ -7,6 +7,7 @@
 
     export let newPost = false;
     export let collapsed = true;
+    export let placeholder: string | undefined = undefined;
 </script>
 
 <FooterShell bind:collapsed>
@@ -26,6 +27,7 @@
             grow h-11 border border-border bg-background rounded-full px-4 p-2 !text-xs
             placeholder:text-muted-foreground placeholder:!text-xs
         "
+        {placeholder}
         allowMarkdown={false}
         toolbar={false}
     />

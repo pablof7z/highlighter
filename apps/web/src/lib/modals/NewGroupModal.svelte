@@ -2,11 +2,10 @@
 	import ModalShell from "$components/ModalShell.svelte";
 	import Input from "$components/ui/input/input.svelte";
 	import { NavigationOption } from "../../app";
-    import InputArray from "$components/ui/input/array.svelte";
+    import InputArray from "$components/ui/input/InputArray.svelte";
 	import { defaultRelays } from "$utils/const";
 	import { NDKEvent, NDKRelaySet, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
-	import Textarea from "$components/ui/textarea/textarea.svelte";
 	import { closeModal } from "$utils/modal";
 	import { groupsList } from "$stores/session";
 	import { toast } from "svelte-sonner";
@@ -42,10 +41,13 @@
 
 <ModalShell
     title="Create New Community"
+    class="max-w-xl w-full"
     {actionButtons}
 >
+    <b class="text-foreground">Name</b>
     <Input bind:value={name} placeholder="Community Name" />
 
+    <b class="text-foreground">Image</b>
     <Input bind:value={picture} placeholder="Image" />
 
     <div class="font-bold">Relays</div>

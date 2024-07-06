@@ -35,9 +35,19 @@ export const activeNewPostId: Writable<string | null> = writable(null);
 
 export type Layout = {
 	header?: Component;
-	sidebar?: Component;
+	navigation?: NavigationOption[] | false;
+	sidebar?: Component | false;
 	footer?: Component;
-	title?: string
+
+	title?: string;
+	iconUrl?: string;
+
+	back?: {
+		url?: string;
+		fn?: () => void;
+		icon?: any;
+		label?: string;
+	}
 };
 
 export const layout = writable<Layout>({});

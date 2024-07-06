@@ -25,7 +25,7 @@
     {#if $currentUser}
         <UserProfile user={$currentUser} let:userProfile let:authorUrl let:fetching>
             {#if !withName}
-                <a href={authorUrl} class="max-sm:hidden">
+                <a href={authorUrl}>
                     <Avatar user={$currentUser} {userProfile} {fetching} size="medium" class="flex-none {$$props.avatarClass??""}" />
                 </a>
             {:else}

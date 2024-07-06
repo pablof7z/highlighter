@@ -92,7 +92,7 @@
     "@capacitor/push-notifications": "^6.0.0",
     "@capacitor/share": "^6.0.0",
     "@capawesome/capacitor-badge": "^6.0.0",
-    "@cashu/cashu-ts": "1.0.0-rc.7",
+    "@cashu/cashu-ts": "1.0.0-rc.9",
     "@egjs/svelte-grid": "^1.15.0",
     "@egstad/detect-scroll": "^1.0.11",
     "@floating-ui/dom": "^1.6.3",

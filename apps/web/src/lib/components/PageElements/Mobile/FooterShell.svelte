@@ -6,6 +6,7 @@
     export let collapsed = true;
     export let dragging = false;
     export let align = "items-center";
+    export let mainView: string | undefined = undefined;
 
     let position = 0;
     let dragged = 0;
@@ -20,6 +21,11 @@
         position = 0;
     }
 
+    function collapse() {
+        collapsed = true;
+        mainView = undefined;
+    }
+
     const touchmove = (e: TouchEvent) => {
         if (dragging) {
             e.preventDefault();
@@ -31,7 +37,7 @@
             if (collapsed && dragged < -100) {
                 collapsed = false;
             } else if (!collapsed && dragged > 100) {
-                collapsed = true;
+                collapse()
             }
         }
     }
@@ -52,7 +58,7 @@
         flex flex-col justify-between items-center
         max-sm:w-full
     ">
-    <div class="flex flex-row justify-between {align} w-full gap-2">
+    <div class="flex flex-row justify-between {align} w-full">
         <div class="flex flex-row justify-between {align} w-full gap-2">
             <slot />
         </div>
@@ -60,18 +66,18 @@
         <Button
             variant="outline"
             class="
-                rounded-full flex-none w-9 h-9 p-0
+                rounded flex-none w-[38px] h-[38px] p-0
                 transform-gpu transition-transform duration-300
                 {!collapsed ? 'rotate-180' : ''}
             "
-            on:click={() => (collapsed = !collapsed)}
+            on:click={collapse}
         >
             <CaretUp class="w-4 h-4" weight="bold" />
         </Button>
     </div>
 
     {#if !collapsed}
-        <div class="flex flex-col gap-2 w-full pt-4" transition:slide>
+        <div class="flex flex-col gap-2 w-full pt-4 max-h-[50vh] overflow-y-auto scrollbar-hide" transition:slide>
             <slot name="main" />
         </div>
     {/if}

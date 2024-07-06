@@ -18,7 +18,7 @@
 	import { EventContent } from '@nostr-dev-kit/ndk-svelte-components';
     import { inview } from 'svelte-inview';
 	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
-	import { pageHeader } from '$stores/layout.js';
+	import { layout, pageHeader } from '$stores/layout.js';
 	import { Readable } from 'svelte/store';
 
     export let article: NDKArticle;
@@ -81,9 +81,10 @@
 
     function toolbarInViewChange(e) {
         const { inView } = e.detail;
-        if ($pageHeader?.props) {
-            if (inView === false) $pageHeader.props.options = navigationOptions;
-            else $pageHeader.props.options = [];
+        if (inView) {
+            $layout.navigation = false;
+        } else {
+            $layout.navigation = navigationOptions;
         }
     }
 
