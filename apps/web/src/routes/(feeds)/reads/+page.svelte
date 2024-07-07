@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { NDKArticle, NDKFilter, NDKKind, NDKRelaySet, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
-	import { layoutMode } from "$stores/layout";
+	import { layout, layoutMode } from "$stores/layout";
 	import { onDestroy } from "svelte";
 	import StoreGrid from "$components/Grid/StoreGrid.svelte";
 	import { wot, wotFiltered, wotFilteredStore } from "$stores/wot";
@@ -9,8 +9,18 @@
 	import { filterArticle } from "$utils/article-filter";
 	import { page } from "$app/stores";
 	import PageTitle from "$components/PageElements/PageTitle.svelte";
+	import Section from "$components/Layout/Headers/Section.svelte";
 
-    $layoutMode = "full-width";
+    $layout.header = {
+        component: Section,
+        props: {
+            title: "Reads",
+            backUrl: "/",
+            // options: [
+            //     { name: "Recent", value: "recent" },
+            // ]
+        }
+    }
 
     const relays = $page.url.searchParams.get('relays')?.split(',');
     let relaySet: NDKRelaySet | undefined;

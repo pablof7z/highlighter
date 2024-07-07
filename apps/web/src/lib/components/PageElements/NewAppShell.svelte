@@ -79,7 +79,7 @@
         </main>
         {#if $appMobileView}
             {#if $layout.footer}
-                <footer class="mobile-nav fixed bottom-0 w-full">
+                <footer class="mobile-nav fixed bottom-0 w-full z-20">
                     <svelte:component this={$layout.footer.component} {...$layout.footer.props} />
                 </footer>
             {/if}
