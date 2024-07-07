@@ -1,23 +1,26 @@
 <script lang="ts">
 	import NewGroupModal from '$modals/NewGroupModal.svelte';
-    import { layoutMode, pageHeader } from "$stores/layout";
+    import { layout, layoutMode, pageHeader } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
 	import { groupsList, userFollows } from "$stores/session";
 	import { openModal } from "$utils/modal";
 	import { NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
-	import { onDestroy } from "svelte";
 	import { Button } from '$components/ui/button';
 	import { derived } from 'svelte/store';
     import * as Chat from "$components/Chat";
 	import { Plus } from 'phosphor-svelte';
+	import Section from '$components/Layout/Headers/Section.svelte';
 
-    $layoutMode = "single-column-focused";
-    
-    $pageHeader = null;
-
-    onDestroy(() => {
-        $pageHeader = null;
-    });
+    $layout.header = {
+        component: Section,
+        props: {
+            title: "Communities",
+            backUrl: "/",
+            // options: [
+            //     { name: "Recent", value: "recent" },
+            // ]
+        }
+    }
 
     const groupListsFromFollows = $ndk.storeSubscribe(
         { kinds: [NDKKind.SimpleGroupList], limit: 300, authors: Array.from($userFollows) },

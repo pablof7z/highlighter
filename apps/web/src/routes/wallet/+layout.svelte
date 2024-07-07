@@ -1,6 +1,14 @@
 <script lang="ts">
-	import { walletEvents } from "$stores/cashu";
-import { layout } from "$stores/layout";
+	import Section from "$components/Layout/Headers/Section.svelte";
+    import { layout } from "$stores/layout";
+
+    $layout.header = {
+        component: Section,
+        props: {
+            title: "Wallet",
+            backUrl: "/",
+        }
+    }
 
     $layout = {
         title: "Wallet",
