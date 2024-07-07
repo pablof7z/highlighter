@@ -37,7 +37,7 @@ const zapsStore = (
 ) => {
     return get(ndk).storeSubscribe(
         filter(eventOrUser, zapperPubkey, extraFilter),
-        { subId: 'zaps', cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE, closeOnEose: true, ...subOpts}
+        { subId: 'zaps', closeOnEose: true, ...subOpts}
     );
 }
 

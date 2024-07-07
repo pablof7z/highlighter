@@ -125,24 +125,6 @@
             <HorizontalOptionsList options={navigationOptions} class="border-t border-border py-4 responsive-padding " />
         </div>
 
-        <div slot="content" class="break-inside max-sm:w-[calc(100vw-1rem)]">
-            {#if !isPreview}
-                <HighlightingArea tags={highlightTags}>
-                    <HighlightedContent event={article} {highlights} />
-
-                    {#if !isFullVersion}
-                        <div class="absolute bottom-0 right-0 bg-gradient-to-t from-background to-transparent via-background/70 w-full h-2/3 flex flex-col items-center justify-center">
-                            <UpgradeButton event={article} />
-                        </div>
-                    {/if}
-                </HighlightingArea>
-            {:else}
-                <EventContent
-                    ndk={$ndk}
-                    event={article}
-                    class="prose-lg leading-8"
-                />
-            {/if}
-        </div>
+        
     </ArticleRenderShell>
 </UserProfile>
