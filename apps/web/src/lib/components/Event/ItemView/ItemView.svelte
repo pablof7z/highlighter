@@ -13,7 +13,6 @@
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 	import { ndk } from "$stores/ndk";
 	import { page } from "$app/stores";
-	import ModularArticleView from "./ModularArticleView.svelte";
 	import ModularArticleItemView from "./ModularArticleItemView.svelte";
 	import Highlight from "$components/Highlight.svelte";
 	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
@@ -86,15 +85,6 @@
 {:else if event instanceof NDKVideo}
     <VideoView
         video={event}
-        isFullVersion={isEventFullVersion(event)}
-    />
-{:else if event.kind === 30040}
-    <ModularArticleView
-        {event}
-    />
-{:else if event.kind === 30041}
-    <ModularArticleItemView
-        article={NDKArticle.from(event)}
         isFullVersion={isEventFullVersion(event)}
     />
 {:else if !event}

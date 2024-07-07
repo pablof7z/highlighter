@@ -2,14 +2,12 @@
 	import { ndk } from "$stores/ndk.js";
 	import { type NDKArticle, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
 	import { pageHeader } from '$stores/layout';
-	import HighlightingArea from './HighlightingArea.svelte';
+	// import HighlightingArea from './HighlightingArea.svelte';
 	import HighlightedContent from './HighlightedContent.svelte';
 	import { onDestroy } from "svelte";
 
     export let article: NDKArticle;
     export let editUrl: string | undefined = undefined;
-
-    console.log(article);
 
     let tags: NDKTag[] = [];
 
@@ -45,9 +43,9 @@
                             </div>
                         </div>
                     </div>
-                    <HighlightingArea {tags} class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative article">
+                    <!-- <HighlightingArea {tags} class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative article">
                         <HighlightedContent content={article.content} {highlights} />
-                    </HighlightingArea>
+                    </HighlightingArea> -->
                     <!-- <article class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-7 w-full relative prose"> -->
 
                     <!-- </article> -->

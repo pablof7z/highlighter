@@ -17,6 +17,43 @@ export function getAuthorUrlSync(user: NDKUser) {
 	return `/${user.npub}`;
 }
 
+export function getEventUrl(event: NDKEvent, authorUrl?: string, extraPath?: string) {
+	const url = new URL("", window.location.href);
+
+	authorUrl ??= getAuthorUrlSync(event.author);
+	
+	if (authorUrl.startsWith("/npub1")) authorUrl = undefined;
+
+	if (!isMobileBuild()) {
+		const path: string[] = [];
+
+		if (event.isParamReplaceable() && authorUrl) {
+			const dTag = event.tagValue("d");
+			if (dTag && dTag.length > 0 && authorUrl) {
+				path.push(authorUrl);
+				path.push(dTag)
+			} else {
+				path.push("a")
+				path.push(event.encode());
+			}
+		} else {
+			path.push("a");
+			path.push(event.encode());
+		}
+		
+		if (extraPath) path.push(extraPath);
+
+		url.pathname = path.join("/");
+	} else {
+		url.pathname = "/mobile/view";
+		url.searchParams.set("eventId", event.encode());
+		if (extraPath) url.searchParams.set("view", extraPath);
+		else url.searchParams.delete("view");
+	}
+
+	return url.toString();
+}
+
 export function getGroupUrl(group: NDKSimpleGroup, extraPath?: string) {
 	const url = new URL("", window.location.href);
 

@@ -14,6 +14,11 @@ export const articleKinds = [
 	NDKKind.ModularArticleItem,
 ];
 
+export const videoKinds = [
+	NDKKind.HorizontalVideo,
+	NDKKind.HorizontalVideo + 1,
+];
+
 export const mainContentKinds = [
 	NDKKind.Article,
 	NDKKind.HorizontalVideo,

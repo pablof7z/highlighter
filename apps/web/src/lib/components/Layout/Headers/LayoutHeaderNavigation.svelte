@@ -6,12 +6,15 @@
 	$: options = $layout.navigation ?? [
         { name: "Home", href: "/" },
         { name: "Reads", href: "/reads" },
+        { name: "Watch", href: "/videos" },
         { name: "Communities", href: '/communities' },
         { name: "Posts", href: '/notes' },
         { name: "Wiki", href: '/wiki' },
     ];
 </script>
 
-<ScrollArea class="whitespace-nowrap" orientation="horizontal">
-    <HorizontalOptionsList {options} class="px-4" />
-</ScrollArea>
+{#if options}
+    <ScrollArea class="whitespace-nowrap" orientation="horizontal">
+        <HorizontalOptionsList {options} class="px-4" />
+    </ScrollArea>
+{/if}

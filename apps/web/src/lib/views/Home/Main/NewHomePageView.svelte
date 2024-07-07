@@ -1,7 +1,7 @@
 <script lang="ts">
 	import HorizontalList from '$components/PageElements/HorizontalList';
 	import { wotFilteredStore } from '$stores/wot';
-	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKVideo } from '@nostr-dev-kit/ndk';
 	
 	import { ndk } from "$stores/ndk";
 	import { userFollows } from "$stores/session";
@@ -24,12 +24,18 @@
     $layoutMode = "full-width";
 
     const articles = $ndk.storeSubscribe({
-        kinds: [NDKKind.Article], authors: Array.from($userFollows), limit: 50
+        kinds: [NDKKind.Article], limit: 50
     }, undefined, NDKArticle);
     const wotF = wotFilteredStore(articles) as Readable<NDKArticle[]>;
     const filteredArticles = derived(wotF, ($wotF) => {
         return filterArticle(wotF);
     });
+
+    const videos = $ndk.storeSubscribe([
+        { kinds: [NDKKind.HorizontalVideo, NDKKind.HorizontalVideo+1], authors: Array.from($userFollows), limit: 50 },
+        { kinds: [NDKKind.HorizontalVideo], authors: Array.from($userFollows), limit: 50 },
+    ], undefined, NDKVideo);
+    const filteredVideos = wotFilteredStore(articles) as Readable<NDKArticle[]>;
 
     let highlightsEosed = false;
     const highlights = $ndk.storeSubscribe([
@@ -62,6 +68,10 @@
 
 <HorizontalList title="Articles" items={$filteredArticles} let:item>
     <Card.Article article={item} />
+</HorizontalList>
+
+<HorizontalList title="Videos" items={$filteredVideos} let:item>
+    <Card.Video video={item} />
 </HorizontalList>
 
 {#if highlightsEosed}

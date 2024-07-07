@@ -12,7 +12,7 @@
     /**
      * Timestamp to display
      */
-    export let timestamp: number | undefined = published_at ? parseInt(published_at) : event?.created_at * 1000;
+    export let timestamp: number | undefined = (published_at ? parseInt(published_at) : event?.created_at)! * 1000;
 
 
     /**

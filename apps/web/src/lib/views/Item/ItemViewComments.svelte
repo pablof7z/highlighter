@@ -14,6 +14,7 @@
 	import { onDestroy } from "svelte";
 	import { derived } from "svelte/store";
 	import { ndk } from "$stores/ndk";
+    import * as Content from "$components/Content";
 
     export let event: NDKEvent;
 
@@ -63,6 +64,8 @@
         });
     }
 </script>
+
+<Content.Header {event} />
 
 {#if zapEvent && zapInvoice}
     <StylishContainer

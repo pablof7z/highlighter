@@ -2,12 +2,9 @@
 	import { NDKVideo } from '@nostr-dev-kit/ndk';
 	import { page } from '$app/stores';
 	import WithItem from '$components/Event/ItemView/WithItem.svelte';
-	import ItemShell from '$views/ItemShell.svelte';
 	import { NDKArticle, NDKEvent, NDKUser } from '@nostr-dev-kit/ndk';
 	import { loadedEvent, title } from "$stores/item-view.js"
 	import { onDestroy } from 'svelte';
-
-    console.log('+layout.svelte')
 
     let user: NDKUser;
     let tagId: string;
@@ -30,8 +27,6 @@
 
 <WithItem {user} {tagId} bind:event bind:article bind:video>
     {#if $loadedEvent}
-        <ItemShell event={$loadedEvent} title={$title}>
-            <slot />
-        </ItemShell>
+        <slot />
     {/if}
 </WithItem>

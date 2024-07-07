@@ -7,6 +7,7 @@
 	import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, NDKEvent, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { browser } from '$app/environment';
+    import * as Content from "$components/Content";
 
     console.log("running +layout.svelte")
 
@@ -25,8 +26,6 @@
     $: if (id !== $page.params.id && browser) {
         id = $page.params.id;
 
-        console.log('loading event '+id);
-        
         $ndk.fetchEvent(id).then((e) => {
             console.log('back with ', e?.rawEvent())
             event = e ? eventToKind(e) : null;
@@ -43,4 +42,10 @@
     }
 </script>
 
-<slot />
+{#if $loadedEvent}
+    <Content.Shell
+        event={$loadedEvent}
+    >
+        <slot />
+    </Content.Shell>
+{/if}
