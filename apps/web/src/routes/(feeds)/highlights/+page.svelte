@@ -4,12 +4,18 @@
 	import { ndk } from "$stores/ndk.js";
 	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
-    import { layoutMode, searching } from "$stores/layout";
+    import { layout, layoutMode, searching } from "$stores/layout";
 	import { getNip50RelaySet } from "$utils/ndk";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";
 
-    $layoutMode = "single-column-focused";
+    $layout.title = "Highlights";
+    $layout.fullWidth = false;
+    $layout.back = { url: "/" }
+
+    onDestroy(() => {
+        $layout.fullWidth = undefined;
+    });
     
     let selectedCategory: string;
     let events: NDKEventStore<NDKEvent> | undefined = undefined;

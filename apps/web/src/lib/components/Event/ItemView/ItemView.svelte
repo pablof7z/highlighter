@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { articleKinds, isEventFullVersion } from "$utils/event";
-	import ArticleView from "$views/Article/ArticleView.svelte";
 	import { onDestroy } from "svelte";
 	import { layout, pageHeader } from "$stores/layout";
 	import ItemHeader from "$components/ItemHeader.svelte";
@@ -13,7 +12,6 @@
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 	import { ndk } from "$stores/ndk";
 	import { page } from "$app/stores";
-	import ModularArticleItemView from "./ModularArticleItemView.svelte";
 	import Highlight from "$components/Highlight.svelte";
 	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 
@@ -69,19 +67,6 @@
 </svelte:head>
 
 {#if articleKinds.includes(event.kind)}
-    <ArticleView
-        article={NDKArticle.from(event)}
-        isFullVersion={isEventFullVersion(event)}
-        on:title:inview_change={(e) => {
-            if (!$pageHeader?.props) return;
-
-            const inView = e.detail;
-            if (inView === false || inView === true) {
-                $pageHeader.props.title = event.title?.slice(0, 20);
-                $pageHeader.props.compact = !inView;
-            }
-        }}
-    />
 {:else if event instanceof NDKVideo}
     <VideoView
         video={event}

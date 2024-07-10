@@ -4,34 +4,30 @@
 	import FilterFeed from "$components/Feed/FilterFeed.svelte";
 	import currentUser from "$stores/currentUser";
 	import { onDestroy, onMount } from "svelte";
-	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
-	import { layoutMode } from "$stores/layout";
+	import { layout } from "$stores/layout";
 
-    $layoutMode = "single-column-focused";
+    $layout = {
+        title: "Notes",
+        fullWidth: false
+    };
+
+    onDestroy(() => {
+        $layout.fullWidth = undefined;
+    });
     
     const authors = Array.from($userFollows);
 
     if ($currentUser) authors.push($currentUser.pubkey);
 
-    let filters: NDKFilter[];
+    let filters: NDKFilter[] ;
     
     onMount(() => {
         filters = [{
-            kinds: [NDKKind.Highlight, NDKKind.Text, NDKKind.Article, NDKKind.HorizontalVideo],
+            kinds: [NDKKind.Text],
             authors, limit: 100
         }]
     });
 </script>
-
-{#if $currentUser}
-    <div class="w-full hidden sm:block discussion-wrapper">
-        <NewPost
-            kind={NDKKind.Text}
-            placeholder="What's happening?!"
-            autofocus={false}
-        />
-    </div>
-{/if}
 
 {#if filters}
     <FilterFeed

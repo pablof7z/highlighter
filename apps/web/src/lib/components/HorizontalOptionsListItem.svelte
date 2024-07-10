@@ -1,11 +1,7 @@
 <script lang="ts">
-    import { CrownSimple } from "phosphor-svelte";
 	import { page } from "$app/stores";
 	import { NavigationOption } from "../../app";
-    import { appMobileView } from "$stores/app";
-	import { goto } from "$app/navigation";
 	import { createEventDispatcher } from "svelte";
-	import { badgeVariants } from "./ui/badge";
 	import Button from "./ui/button/button.svelte";
     import * as Tooltip from "$lib/components/ui/tooltip";
 
@@ -20,6 +16,9 @@
 
     $: {
         active = (value === (option.value || option.name ) || $page.url.pathname === option.href);
+        if (option.href && option.href.length > 5) {
+            active = $page.url.pathname.endsWith(option.href);
+        }
         // scroll into view
         if (active) {
             const isInView = el?.offsetLeft < el?.scrollLeft;
@@ -47,7 +46,7 @@
                 <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline" {...option.iconProps??{}} />
             {/if}
             {#if option.name}
-                <span class="max-sm:text-base" class:hidden={!option.name}>
+                <span class="max-sm:text-base {$$props.class??""}" class:hidden={!option.name}>
                     {option.name}
                 </span>
             {/if}
@@ -59,7 +58,9 @@
             {/if}
         </Button>
     </Tooltip.Trigger>
-    <Tooltip.Content>
-        {option.tooltip??option.name}
-    </Tooltip.Content>
+    {#if option.tooltip??option.name??option.tooltip}
+        <Tooltip.Content>
+            {option.tooltip??option.name??option.tooltip}
+        </Tooltip.Content>
+    {/if}
 </Tooltip.Root>

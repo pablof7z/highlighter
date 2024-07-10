@@ -28,6 +28,7 @@
 
 {#if video}
     <ContentCard
+        event={video}
         title={video.title??"Untitled"}
         image={video.thumbnail}
         description={video.content}

@@ -8,6 +8,7 @@
 	import { Actions, ActionsButton, ActionsGroup, Link, Button as MobileButton, Toolbar } from 'konsta/svelte';
     import { NavbarBackLink } from 'konsta/svelte';
 	import TiersLabel from "$components/Forms/TiersLabel.svelte";
+	import BackButton from "$components/PageElements/Navigation/BackButton.svelte";
 
     export let onSaveDraft: () => void;
     export let onPublish: () => void;
@@ -108,7 +109,7 @@
     <Toolbar top>
         <div class="left flex flex-row items-center gap-4">
             {#if showEdit && $view !== "edit"}
-                <NavbarBackLink onClick={() => $view = 'edit'} />
+                <BackButton fn={() => $view = 'edit'} />
             {:else}
                 {#if showPreview}
                     <Link onClick={() => $view = "view-preview"}>
@@ -149,7 +150,7 @@
         </ActionsGroup>
     </Actions>
 {:else}
-<div class="flex flex-row justify-between h-full w-full items-center py-2 {$$props.containerClass??""}" class:hidden={$view === "published"}>
+<div class="flex flex-row justify-between h-full w-full items-center py-2 max-w-[var(--editor-width)] mx-auto {$$props.containerClass??""}" class:hidden={$view === "published"}>
     <div class="flex flex-row gap-4 self-end">
         {#if showEdit && $view !== "edit"}
             <Button variant="outline" on:click={() => $view = 'edit'}>

@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import { ndk } from "$stores/ndk.js";
-	import UserProfileHomePage from "$views/UserProfileHomePage.svelte";
+	import * as User from "$components/User";
+	import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+
+    export let userProfile: NDKUserProfile;
 
     let id: string;
     let { user } = $page.data;
@@ -13,5 +16,5 @@
 </script>
 
 {#if user}
-    <UserProfileHomePage {user} />
+    <User.HomePage {userProfile} />
 {/if}

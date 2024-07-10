@@ -8,9 +8,10 @@
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import { view, preview, previewTitleChanged, previewContentChanged, currentDraftItem } from "$stores/post-editor";
 	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
-	import ArticleView from "$views/Article/ArticleView.svelte";
 	import currentUser from "$stores/currentUser";
 	import { pageHeader } from "$stores/layout";
+    import * as Content from "$components/Content";
+    import * as Article from "$components/Content/Article";
 
     export let article: NDKArticle;
     export let draftItem: DraftItem | undefined = undefined;
@@ -88,12 +89,14 @@
     <div slot="viewPreview">
         {#if $view === "view-preview"}
             {#key signedAt}
-                <ArticleView bind:article isFullVersion={true} isPreview={true} />
+                <Content.Shell event={article}>
+                    <Article.Body {article} isPreview isFullVersion />
+                </Content.Shell>
             {/key}
         {/if}
     </div>
     <div slot="editPreview">
-        <ArticlePreviewEditor {article} {authorUrl} />
+        <!-- <ArticlePreviewEditor {article} {authorUrl} /> -->
     </div>
 </Shell>
 

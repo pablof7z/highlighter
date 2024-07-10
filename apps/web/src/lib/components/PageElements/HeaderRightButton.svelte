@@ -1,36 +1,38 @@
 <script lang="ts">
 	import { Button } from "$components/ui/button";
-	import { pageHeader } from "$stores/layout";
-	import { X, CaretLeft } from "phosphor-svelte";
-
-    function clicked() {
-        if ($pageHeader?.right?.fn) {
-            $pageHeader.right.fn();
-        }
-    }
+	import { layout, pageHeader } from "$stores/layout";
+	import { X, CaretLeft, DotsThreeVertical } from "phosphor-svelte";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+	import { options } from "marked";
 </script>
 
-{#if $pageHeader?.right}
-    <div class="w-2/12">
-        <Button
-            href={$pageHeader.right.url??"#"}
-            on:click={clicked}
-            variant="accent"
-            class="whitespace-nowrap flex flex-nowrap items-center"
-        >
-            {#if $pageHeader.right.icon}
-                <span class="inline">
-                    <svelte:component this={$pageHeader.right.icon} size={24} />
-                </span>
-            {:else if $pageHeader.right.label === "Close"}
-                <X class="w-5 h-5 inline" />
-            {:else if $pageHeader.right.label === "Back"}
-                <CaretLeft class="w-5 h-5 inline" />
-            {/if}
-
-            {#if $pageHeader.right.label}
-                <span class="truncate">{$pageHeader.right.label}</span>
-            {/if}
-        </Button>
+{#if $layout.options && $layout.options?.length > 0}
+    <div class="flex flex-row gap-2">
+        {#if $layout.options?.length === 1}
+            <Button
+                {...$layout.options[0].props??{}}
+                href={$layout.options[0].href}
+                on:click={$layout.options[0].fn}
+            >
+                {$layout.options[0].name}
+            </Button>
+        {:else}
+            <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                    <Button variant="secondary" class="rounded-full w-11 h-11 p-0">
+                        <DotsThreeVertical size={24} />
+                    </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                    <DropdownMenu.Group>
+                        {#each $layout.options as option (option.id??option.name??option.value)}
+                            <DropdownMenu.Item href={option.href}>
+                                {option.name}
+                            </DropdownMenu.Item>
+                        {/each}
+                    </DropdownMenu.Group>
+                </DropdownMenu.Content>
+            </DropdownMenu.Root>
+        {/if}
     </div>
 {/if}

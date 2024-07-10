@@ -1,12 +1,15 @@
 <script lang="ts">
-	import { pageHeader, resetLayout } from "$stores/layout";
+	import { layout, pageHeader, resetLayout } from "$stores/layout";
 	import { onDestroy } from "svelte";
 
-    $pageHeader = {
+    $layout = {
         title: "Notifications",
+        fullWidth: false,
     }
 
-    onDestroy(resetLayout);
+    onDestroy(() => {
+        $layout.fullWidth = undefined;
+    });
 </script>
 
 <slot />

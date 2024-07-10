@@ -9,8 +9,6 @@
 	import { browser } from '$app/environment';
     import * as Content from "$components/Content";
 
-    console.log("running +layout.svelte")
-
     let id: string;
     let event: NDKEvent | NDKArticle | NDKList | NDKVideo | undefined | null;
     

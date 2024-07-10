@@ -1,18 +1,30 @@
 <script lang="ts">
 	import { Button } from "$components/ui/button";
 	import LnQrModal from "$modals/LnQrModal.svelte";
-	import { walletRelaySet } from "$stores/cashu";
 	import { ndk } from "$stores/ndk";
 	import { NDKCashuToken } from "$utils/cashu/token";
 	import { NDKCashuWallet } from "$utils/cashu/wallet";
 	import { CashuMint, CashuWallet } from "@cashu/cashu-ts";
-	import { openModal, closeModal } from "svelte-modals";
+	import { openModal, closeModal } from "$utils/modal";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+	import { NDKRelaySet } from "@nostr-dev-kit/ndk";
 
     export let walletEvent: NDKCashuWallet;
     export let amount = 10;
-    export let mint = walletEvent?.tagValue("mint")! ?? "https://stablenut.umint.cash";
 
-    const wallet = new CashuWallet(new CashuMint(mint));
+    let relaySet: NDKRelaySet;
+    if (walletEvent?.relays?.length > 0) {
+        relaySet = NDKRelaySet.fromRelayUrls(walletEvent.relays, $ndk);
+        console.log({relaySet: relaySet.relayUrls})
+    } else {
+        console.error("No relays found for wallet event", walletEvent.rawEvent());
+    }
+
+    let open = false;
+
+    function longpress() {
+
+    }
 
     function amountToPreference(n) {
         const powers = [];
@@ -27,7 +39,9 @@
         return powers.map((p) => ({ amount: p, count: 1 }));
     }
 
-    async function topUp() {
+    async function topUp(mint?: string) {
+        mint ??= mints[0];
+        const wallet = new CashuWallet(new CashuMint(mint));
         const quote = await wallet.mintQuote(amount);
         console.log({quote})
 
@@ -42,17 +56,34 @@
                 clearInterval(checkPaidInterval);
                 const tokenEvent = new NDKCashuToken($ndk);
                 tokenEvent.proofs = ret.proofs;
+                tokenEvent.mint = mint;
                 if (walletEvent)
                     tokenEvent.wallet = walletEvent;
-                await tokenEvent.sign();
                 console.log('token', tokenEvent.rawEvent());
-                tokenEvent.publish(walletRelaySet);
+                const res = await tokenEvent.publish(relaySet);
+                console.log('published', res);
                 closeModal();
-
-                walletEvent.addToken(tokenEvent);
             }
         }, 1500);
     }
+
+    const mints = Array.from(
+        new Set(walletEvent.getMatchingTags("mint").map(t => t[1]))
+    );
 </script>
 
-<Button size="sm" class="w-full" {...$$props} on:click={topUp}>Top Up</Button>
+<DropdownMenu.Root bind:open>
+    <DropdownMenu.Trigger class="w-full flex">
+        <Button class="w-full" {...$$props} longpress={50} on:longpress={longpress}>Top Up</Button>
+    </DropdownMenu.Trigger>
+    <DropdownMenu.Content>
+        <DropdownMenu.Group>
+            {#each mints as mint}
+                <DropdownMenu.Item on:click={() => topUp(mint)}>
+                    {mint}
+                </DropdownMenu.Item>
+            {/each}
+        </DropdownMenu.Group>
+    </DropdownMenu.Content>
+</DropdownMenu.Root>
+<!-- <Button size="sm" class="w-full" {...$$props} on:click={topUp} longpress={true} on:longpress={longpress}>Top Up</Button> -->

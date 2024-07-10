@@ -6,7 +6,15 @@
 	import FilterFeed from '$components/Feed/FilterFeed.svelte';
 	import PageTitle from '$components/PageElements/PageTitle.svelte';
 	import { getNip50RelaySet } from '$utils/ndk';
-	import { pageHeader } from '$stores/layout';
+	import { layout, pageHeader } from '$stores/layout';
+	import { onDestroy } from 'svelte';
+
+    $layout.title = 'Search';
+    $layout.fullWidth = false;
+
+    onDestroy(() => {
+        $layout.fullWidth = undefined;
+    });
 
     export let query: string = $page.url.searchParams.get('q') ?? '';
     let displayResults = true;

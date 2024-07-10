@@ -43,7 +43,6 @@
 </script>
 
 <div class="
-    mobile-nav
 " bind:this={navbar}>
     <div class="flex flex-row justify-between items-center h-full w-full gap-2">
         {#if $layout.header?.component}
@@ -90,19 +89,10 @@
                         {/if}
                     </div>
 
-                    {#if $pageHeader?.right}
+                    {#if $layout?.options}
                         <HeaderRightButton />
                     {/if}
                 </div>
-
-                {#if $pageHeader?.subNavbarOptions}
-                    <div class="py-2 {$$props.containerClass??""}">
-                        <HorizontalOptionsList
-                            options={$pageHeader.subNavbarOptions}
-                            bind:value={$pageHeader.subNavbarValue}
-                        />
-                    </div>
-                {/if}
             </div>
         {/if}
     </div>

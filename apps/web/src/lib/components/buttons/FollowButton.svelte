@@ -1,5 +1,4 @@
 <script lang="ts">
-import currentUser from "$stores/currentUser";
     import { categorizedUserLists, sortedUserLists, userFollows } from "$stores/session";
 	import { ndk } from "$stores/ndk.js";
     import { NDKUser } from "@nostr-dev-kit/ndk";

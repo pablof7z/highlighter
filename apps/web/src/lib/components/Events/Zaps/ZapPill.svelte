@@ -10,17 +10,18 @@
     export let avatarSize: "tiny" | "small" | "medium" | "large" = "tiny";
     export let comment: "show" | "hover" | "hide" = "hover";
     export let icon: typeof SvelteComponent = Lightning;
-    export let iconProps = { weight: 'fill', class: "w-4 h-4 inline text-yellow-400 mr-1" };
+    export let iconProps = { weight: 'fill', class: "w-4 h-4 inline text-muted-foreground mr-1" };
 </script>
 
 <UserProfile pubkey={zap.zappee} let:userProfile let:fetching let:authorUrl>
     {#key fetching}
         <a href={authorUrl} class="
             relative overflow-hidden text-secondary-foreground
+            flex-none
             flex flex-row rounded-full group bg-secondary px-2 py-1 items-center {$$props.class??""}
             transition-all duration-300 w-auto group
         ">
-            <span class="font-light mr-3 whitespace-nowrap">
+            <span class="font-light mr-3 whitespace-nowrap {$$props.class??""}">
                 <svelte:component this={icon} {...iconProps} />
                 {nicelyFormattedMilliSatNumber(zap.amount)}
             </span>

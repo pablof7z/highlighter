@@ -13,6 +13,9 @@
 	import { Button } from '$components/ui/button';
 	import { appMobileView } from '$stores/app';
 	import { slide } from 'svelte/transition';
+    import * as Content from "$components/Content";
+	import { NavigationOption } from '../../../app';
+	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 
     export let article: NDKArticle = new NDKArticle($ndk, {
         content: "",
@@ -74,15 +77,33 @@
         tags = tags;
     }
 
+    let toolbar: NavigationOption[] = [];
+
+    $: {
+        toolbar = [];
+        if (!article.image || $appMobileView) {
+            let name = article.image ? "Change cover image" : "Add cover image";
+            toolbar.push({ name, fn: () => openModal(CoverImageModal, { article, onSave: onSaveCover }), class: "!text-xs" });
+        }
+
+        if (!showSummary) {
+            toolbar.push({ name: "Add summary", fn: () => showSummary = !showSummary });
+        }
+
+        if (!showTags) {
+            toolbar.push({ name: "Add #hashtags", fn: () => openModal(TagInputModal, { event: article, onSave: onSaveTags }), class: "!text-xs" });
+        }
+        
+        toolbar = toolbar;
+    }
+
 </script>
 
-<ArticleRenderShell
-    isFullVersion={true}
+<Content.HeaderShell
     isPreview={false}
     skipImage={!article.image}
-    class="max-sm:max-h-[50vh]"
 >
-    <div slot="image" class="w-full h-full">
+    <div slot="image" class="w-full h-full relative">
         {#if article.image}
             <div class="text-foreground text-sm font-normal w-full h-full group" transition:slide>
                 {#if !$appMobileView}
@@ -133,28 +154,9 @@
         {/if}
     </div>
 
-    <div slot="tags" class="max-sm:p-4">
+    <div slot="toolbar" class="max-sm:p-4">
         {#if !showSummary || !showTags || (!article.image || $appMobileView)}
-            <div class="flex flex-row items-center gap-4 my-2">
-                {#if !article.image || $appMobileView}
-                    <div class="flex flex-row items-center gap-[1px]">
-                        <Button forceNonMobile variant="default" class="rounded-r-none" size="xs" on:click={() => openModal(CoverImageModal, { article, onSave: onSaveCover })}>
-                            {article.image ? "Change" : "Add"} cover image
-                        </Button>
-                    
-                        <Button forceNonMobile variant="default" size="xs" class="rounded-l-none" on:click={fetchRandomImage}>
-                            <Shuffle class="w-3 h-3 inline" />
-                        </Button>
-                    </div>
-                {/if}
-                
-                {#if !showSummary}
-                    <Button forceNonMobile size="xs" variant="outline" on:click={() => showSummary = !showSummary}>Add summary</Button>
-                {/if}
-                {#if !showTags}
-                    <Button forceNonMobile size="xs" variant="outline" on:click={() => openModal(TagInputModal, { event: article, onSave: onSaveTags })}>Add #hashtags</Button>
-                {/if}
-            </div>
+            <HorizontalOptionsList options={toolbar} class="py-3" />
         {/if}
         {#if showTags}
             <div class="flex flex-row items-center gap-2">
@@ -165,6 +167,17 @@
 
         
     </div>
+</Content.HeaderShell>
+
+<ArticleRenderShell
+    isFullVersion={true}
+    isPreview={false}
+    skipImage={!article.image}
+    class="max-sm:max-h-[50vh]"
+>
+    
+
+    
 
     <div slot="content" class="w-full">
         <ContentEditor

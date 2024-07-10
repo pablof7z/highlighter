@@ -24,6 +24,7 @@ export const mainContentKinds = [
 	NDKKind.HorizontalVideo,
 	NDKKind.ArticleCurationSet,
 	NDKKind.VideoCurationSet,
+	NDKKind.Wiki,
 ];
 
 export function encodeTag(tag: NDKTag) {
@@ -162,4 +163,8 @@ export function isEventFullVersion(event: NDKEvent) {
 	if (!!event.tagValue("full")) return false;
 
 	return true;
+}
+
+export function chronologically(a: NDKEvent, b: NDKEvent) {
+	return a.created_at! - b.created_at!;
 }

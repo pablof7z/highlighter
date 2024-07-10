@@ -34,13 +34,17 @@ export const modalState: Writable<"open" | "closing" | "closed"> = writable("clo
 export const activeNewPostId: Writable<string | null> = writable(null);
 
 export type Layout = {
-	header?: Component;
+	header?: Component
 	navigation?: NavigationOption[] | false;
 	sidebar?: Component | false;
 	footer?: Component;
 
+	footerInMain?: boolean;
+
 	title?: string;
 	iconUrl?: string;
+
+	fullWidth?: boolean;
 
 	back?: {
 		url?: string;
@@ -48,6 +52,8 @@ export type Layout = {
 		icon?: any;
 		label?: string;
 	}
+
+	options?: NavigationOption[];
 };
 
 export const layout = writable<Layout>({});
@@ -90,6 +96,7 @@ export type PageHeader = {
 		component?: any;
 		icon?: any;
 		label?: string;
+		options?: NavigationOption[];
 		url?: string;
 		fn?: () => void;
 	};

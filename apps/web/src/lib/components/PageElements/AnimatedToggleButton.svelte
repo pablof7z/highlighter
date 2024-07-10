@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { longpress } from '$actions/long-press';
 	import { SvelteComponent } from "svelte";
 	import { scale } from "svelte/transition";
 
@@ -25,7 +26,7 @@
     flex items-center justify-center
     flex-none min-w-[3rem]
     {buttonClass}
-" on:click>
+" on:click use:longpress on:longpress>
     <div class="
         absolute -z-10 transition-all duration-300 rounded-full
         {bgClass}

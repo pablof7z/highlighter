@@ -51,12 +51,10 @@
         (dragging) ? "transform: translateY(" + dragged/50 + "px);" : ""
     }
     class="
+        max-sm:p-4 max-sm:px-6
         max-sm:right-0 sm:right-[360px]
-        sm:left-[var(--navbar-width)]
-        sm:w-[360px]
         max-sm:rounded-t-3xl bg-secondary p-3 px-4 h-auto 
         flex flex-col justify-between items-center
-        max-sm:w-full
     ">
     <div class="flex flex-row justify-between {align} w-full">
         <div class="flex flex-row justify-between {align} w-full gap-2">
@@ -66,13 +64,13 @@
         <Button
             variant="outline"
             class="
-                rounded flex-none w-[38px] h-[38px] p-0
+                rounded-full flex-none w-12 h-12 p-2
                 transform-gpu transition-transform duration-300
                 {!collapsed ? 'rotate-180' : ''}
             "
             on:click={collapse}
         >
-            <CaretUp class="w-4 h-4" weight="bold" />
+            <CaretUp class="w-full h-full" weight="bold" />
         </Button>
     </div>
 

@@ -1,11 +1,16 @@
 import type { CapacitorConfig } from '@capacitor/cli';
-import { CapacitorConfig } from '@capacitor/cli';
+import { KeyboardResize, KeyboardStyle } from '@capacitor/keyboard';
 
 let config: CapacitorConfig = {
   appId: 'com.highlighter.app',
   appName: 'highlighter',
   webDir: 'build',
   plugins: {
+    Keyboard: {
+      resize: KeyboardResize.Body,
+      style: KeyboardStyle.Dark,
+      resizeOnFullScreen: true,
+    },
     SplashScreen: {
 			launchShowDuration: 0
 		},
@@ -24,7 +29,7 @@ if (process.env.NODE_ENV === 'development') {
     bundledWebRuntime: false,
     server: {
       // url: "http://192.168.1.115:3000",
-      url: "http://10.10.241.153:3000",
+      url: "http://10.10.242.180:3000",
       // url: "http://10.8.4.16:3000",
       // url: "http://10.8.4.108:3000",
       cleartext: true

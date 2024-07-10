@@ -1,4 +1,6 @@
 <script lang="ts">
+    import * as Tooltip from "$lib/components/ui/tooltip";
+    
     export let relay: string;
 
     // deterministically generate a color based on the relay
@@ -20,4 +22,11 @@
     }
 </script>
 
-<div class="w-3 h-3 rounded-full {getRelayColor()} tooltip" data-tip={relay}></div>
+<Tooltip.Root>
+    <Tooltip.Trigger>
+        <div class="w-3 h-3 rounded-full {getRelayColor()} tooltip" data-tip={relay}></div>
+    </Tooltip.Trigger>
+    <Tooltip.Content>
+        {relay}
+    </Tooltip.Content>
+</Tooltip.Root>

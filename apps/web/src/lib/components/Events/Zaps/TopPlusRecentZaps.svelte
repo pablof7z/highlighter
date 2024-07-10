@@ -4,7 +4,6 @@
 	import { NDKEvent, NDKEventId } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import ZapPill from "./ZapPill.svelte";
-	import { Crown } from "phosphor-svelte";
 	import throttleStore from '$utils/stores/throttle';
 
     export let event: NDKEvent;
@@ -35,12 +34,13 @@
                 zap={$throttleZaps[0]}
                 avatarSize={avatarSize}
                 comment="show"
+                iconProps={{ class: "inline text-black", weight: 'fill' }}
                 class="
-                    border-2 border-yellow-400/50
-                    bg-yellow-400/20
+                    !bg-gold
+                    !text-black
+                    font-medium
                     {$$props.class}
                 "
-                icon={Crown}
             />
         </div>
         <div class="flex flex-row">

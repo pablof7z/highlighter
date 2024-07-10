@@ -10,17 +10,9 @@
     import * as Chat from "$components/Chat";
 	import { Plus } from 'phosphor-svelte';
 	import Section from '$components/Layout/Headers/Section.svelte';
+	import { addHistory } from '$stores/history';
 
-    $layout.header = {
-        component: Section,
-        props: {
-            title: "Communities",
-            backUrl: "/",
-            // options: [
-            //     { name: "Recent", value: "recent" },
-            // ]
-        }
-    }
+    addHistory({ title: "Communities", url: "/communities" });
 
     const groupListsFromFollows = $ndk.storeSubscribe(
         { kinds: [NDKKind.SimpleGroupList], limit: 300, authors: Array.from($userFollows) },

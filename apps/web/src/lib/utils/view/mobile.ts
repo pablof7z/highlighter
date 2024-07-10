@@ -9,7 +9,6 @@ import Device from 'svelte-device-info';
  * Returns true if the app is being built for a mobile exclusively.
  */
 export function isMobileBuild() {
-    return true;
     return !!import.meta.env.VITE_MOBILE;
 }
 
