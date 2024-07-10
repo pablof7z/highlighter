@@ -37,7 +37,7 @@ export function getEventUrl(event: NDKEvent, authorUrl?: string, extraPath?: str
 				path.push(event.encode());
 			}
 		} else {
-			path.push("a");
+			path.push("e");
 			path.push(event.encode());
 		}
 		
@@ -80,7 +80,7 @@ export function getUserUrl(
 	if (isMobileBuild()) {
 		return `/mobile/profile?view=${encodeURI(path)}&userId=${user.npub}`;
 	} else {
-		return `/${authorUrl}/${path}`;
+		return `${authorUrl}/${path}`;
 	}
 }
 

@@ -1,11 +1,12 @@
 <script lang="ts">
-	import CreatorShell from '$components/Creator/CreatorShell.svelte';
 	import { page } from "$app/stores";
 	import { ndk } from "$stores/ndk.js";
 	import { resetLayout } from '$stores/layout';
 	import { onDestroy } from 'svelte';
 	import { NDKUser } from '@nostr-dev-kit/ndk';
 	import { getUserFromUrlId } from '$utils/user/from-url-id';
+    import * as User from "$components/User";
+	import UserProfile from '$components/User/UserProfile.svelte';
 
     let id: string;
     let user: NDKUser | undefined = undefined;
@@ -20,13 +21,14 @@
     }
 
     onDestroy(resetLayout);
-
 </script>
 
 {#key user?.pubkey}
     {#if user}
-        <CreatorShell {user}>
-            <slot />
-        </CreatorShell>
+        <UserProfile {user} let:userProfile let:fetching let:authorUrl>
+            <User.Shell {user} {userProfile} {fetching} {authorUrl}>
+                <slot />
+            </User.Shell>
+        </UserProfile>
     {/if}
 {/key}

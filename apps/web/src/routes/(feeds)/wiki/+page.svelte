@@ -41,6 +41,26 @@
 
         return Array.from(topics);
     });
+
+    const featuredCategories = derived([categories, feed], ([$categories, $feed]) => {
+        const articlesPerCategory = new Map<string, number>();
+
+        for (const event of $feed) {
+            const category = event.tagValue("c");
+            if (category) {
+                articlesPerCategory.set(category, (articlesPerCategory.get(category) || 0) + 1);
+            }
+        }
+
+        return $categories
+            .filter(category => articlesPerCategory.get(category) >= 3)
+            .sort((a, b) => {
+                const aCount = articlesPerCategory.get(a) || 0;
+                const bCount = articlesPerCategory.get(b) || 0;
+                return bCount - aCount;
+            })
+            .slice(0, 10);
+    });
 </script>
 
 <HorizontalList title="Recently Edited" items={$feed} let:item>
@@ -54,6 +74,20 @@
         </div>
     </a>
 </HorizontalList>
+
+{#each $featuredCategories as category}
+    <HorizontalList title={category} items={$feed.filter(event => event.tagValue("c") === category)} let:item>
+        <a href="/a/{item.encode()}" class="rounded-xl bg-secondary p-4 flex flex-col gap-4 w-full">
+            <div class="text-lg font-bold truncate">{item.tagValue("title")}</div>
+
+            <div class="flex flex-row gap-4 items-center justify-between">
+                <AvatarWithName pubkey={item.pubkey} avatarSize="small" nameClass="text-muted-foreground text-sm" />
+
+                <RelativeTime timestamp={item.created_at*1000} class="text-muted-foreground text-sm" />
+            </div>
+        </a>
+    </HorizontalList>
+{/each}
 
 <!-- auto grid -->
 <div class="flex flex-row flex-wrap">

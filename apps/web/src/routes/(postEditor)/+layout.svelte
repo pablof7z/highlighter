@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { startUserView, userSubscription } from "$stores/user-view";
 	import { onDestroy, onMount } from "svelte";
-	import LoadingScreen from '$components/LoadingScreen.svelte';
-	import { layoutMode, resetLayout } from "$stores/layout";
+	import { layout, resetLayout } from "$stores/layout";
     import currentUser from "$stores/currentUser";
 
     let startedUserView = false;
     let mounted = false;
+
+    $layout.sidebar = false;
 
     onMount(() => {
         mounted = true;
@@ -23,6 +24,4 @@
     })
 </script>
 
-<LoadingScreen ready={!!startedUserView}>
-    <slot />
-</LoadingScreen>
+<slot />

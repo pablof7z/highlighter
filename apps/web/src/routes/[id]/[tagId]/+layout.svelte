@@ -5,6 +5,7 @@
 	import { NDKArticle, NDKEvent, NDKUser } from '@nostr-dev-kit/ndk';
 	import { loadedEvent, title } from "$stores/item-view.js"
 	import { onDestroy } from 'svelte';
+	import { layout } from '$stores/layout';
 
     let user: NDKUser;
     let tagId: string;
@@ -23,9 +24,13 @@
     onDestroy(() => {
         loadedEvent.set(null);
     });
+
+    let authorUrl: string;
+
+    $: $layout.back = { url: authorUrl }
 </script>
 
-<WithItem {user} {tagId} bind:event bind:article bind:video>
+<WithItem {user} {tagId} bind:authorUrl bind:event bind:article bind:video>
     {#if $loadedEvent}
         <slot />
     {/if}

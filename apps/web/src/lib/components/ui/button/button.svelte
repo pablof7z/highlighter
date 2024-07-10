@@ -4,12 +4,13 @@
 	import { cn } from "$lib/utils.js";
 	import { appMobileView } from "$stores/app.js";
 	import { Button as MobileButton } from "konsta/svelte";
-	import { createEventDispatcher } from "svelte";
+	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
 	const dispatcher = createEventDispatcher();
 
 	type $$Props = Props & {
 		class?: string;
+		longpress?: number;
 		forceNonMobile?: boolean;
 	};
 	type $$Events = Events;

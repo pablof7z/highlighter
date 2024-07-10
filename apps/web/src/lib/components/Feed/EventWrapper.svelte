@@ -21,7 +21,6 @@
 	import ClientName from '$components/ClientName.svelte';
 	import NewPost from './NewPost/NewPost.svelte';
 	import HighlightBody from '$components/HighlightBody.svelte';
-	import Swipe from '$components/Swipe.svelte';
 	import { openModal } from '$utils/modal';
     import QuoteModal from '$modals/QuoteModal.svelte';
 	import NewPostModal from '$modals/NewPostModal.svelte';
@@ -29,22 +28,17 @@
 	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
 	import { isMobileBuild } from '$utils/view/mobile';
 	import FailedEventModals from '$modals/FailedEventModals.svelte';
-	import { toggleBookmarkedEvent } from '$lib/events/bookmark';
-	import { userGenericCuration } from '$stores/session';
 	import SmallZapButton from '$components/buttons/SmallZapButton.svelte';
 	import { ndk } from '$stores/ndk';
 	import Name from '$components/User/Name.svelte';
 	import Avatar from '$components/User/Avatar.svelte';
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
-	import { newToasterMessage } from '$stores/toaster';
-	import Scheduler from '$modals/Scheduler.svelte';
-	import ZapModal from '$modals/ZapModal.svelte';
-	import { toast } from 'svelte-sonner';
 	import Button from '$components/ui/button/button.svelte';
 	import DvmJobFeedback from '$components/Event/Dvm/DvmJobFeedback.svelte';
 	import DvmJobResult from '$components/Event/Dvm/DvmJobResult.svelte';
 	import ZapReceipt from '$components/Event/ZapReceipt.svelte';
 	import { appMobileView } from '$stores/app';
+    import EventShell from "$components/Event/Shell.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -211,43 +205,7 @@
         event.delete();
     }
 
-    async function repost() {
-        const e = await event.repost(false);
-        toast.success("Reposted");
-        e.publish();
-    }
-
-    async function bookmark() {
-        try {
-            toast.success("Bookmark saved");
-            $userGenericCuration = await toggleBookmarkedEvent(event, $userGenericCuration);
-        } catch (e: any) {
-            newToasterMessage(e.relayErrors ?? e.message, "error")
-        }
-    }
-
-    let showQuoteOptions = false;
-    let rightOptions: any;
-
-    $: if (!showQuoteOptions) {
-        rightOptions = [
-            { label: "Quote", icon: Quotes, class: "bg-white/10 !text-green-500", cb: () => { showQuoteOptions = true; return true; } },
-            { label: 'Bookmark', icon: BookmarkSimple, class: "bg-white/20 !text-red-500", cb: bookmark },
-            { label: 'Zap!', icon: Lightning, class: "bg-white/30 !text-yellow-500", cb: () => openModal(ZapModal, { event })}
-        ]
-    } else {
-        rightOptions = [
-            { label: "Repost", icon: Repeat, class: "bg-success/10", cb: repost },
-            { label: "Quote", icon: Quotes, class: "bg-success/20", cb: () => openModal(QuoteModal, { event }) },
-            { label: "Schedule", icon: Timer, class: "bg-success/30", cb: () => {openModal(Scheduler, {event})} }
-        ];
-    }
-
-    function onSwipeToReply() {
-        openModal(NewPostModal, {
-            replyTo: event,
-        });
-    }
+    
 
     function reply() {
         if (event.pubkey === $currentUser?.pubkey) {
@@ -264,16 +222,13 @@
         NDKKind.Zap,
         NDKKind.DVMReqTextToSpeech + 1000
     ];
+
+    let swipeActive = false;
 </script>
 
-<Swipe
-    leftOptions={[
-        { label: 'Reply', icon: ChatCircle, class: "bg-accent", cb: onSwipeToReply },
-    ]}
-    on:close={() => showQuoteOptions = false}
-    {rightOptions}
-    {disableSwipe}
-    let:swapActive
+<EventShell
+    {event}
+    bind:swipeActive
 >
     <div class="
         w-full text-left md:p-4 pb-0 max-sm:py-4 max-sm:max-w-[100vw] flex flex-col items-start {$$props.class??""}
@@ -404,7 +359,7 @@
                                     ndk={$ndk}
                                     {event}
                                     content={contentToRender}
-                                    class={`${$$props.topLevelContentClass??""} ${$$props.contentClass??""}`}
+                                    class={`text-foreground font-normal ${$$props.topLevelContentClass??""} ${$$props.contentClass??""}`}
                                     mediaCollectionComponent={MediaCollection}
                                     on:click={contentClicked}
                                     eventCardComponent={EmbeddedEventWrapper}
@@ -445,7 +400,7 @@
                         {/if}
                     </div>
 
-                    <div class:hidden={swapActive} class="
+                    <div class:hidden={swipeActive} class="
                         flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4
                         grayscale group-hover:grayscale-0
                     ">
@@ -474,7 +429,7 @@
             {/if}
         </UserProfile>
     </div>
-</Swipe>
+</EventShell>
 {#if willShowReply}
     <div class="md:pl-4">
         <NewPost

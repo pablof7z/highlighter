@@ -4,19 +4,20 @@
 	import { ndk } from "$stores/ndk.js";
     import { NDKArticle, NDKEvent, NDKList, NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 
+    export let event: NDKEvent;
     export let tag: NDKTag | undefined = undefined;
     export let id: string | undefined = undefined;
 
-    let event: NDKEvent | null;
+    let e: NDKEvent | null;
     let article: NDKArticle | undefined;
     let video: NDKVideo | undefined;
     let articleList: NDKList | undefined;
 
-    if (tag) $ndk.fetchEventFromTag(tag).then(process);
+    if (tag) $ndk.fetchEventFromTag(tag, event).then(process);
     if (id) $ndk.fetchEvent(id, {subId:'Loadevent'}).then(process);
     
     function process(e: NDKEvent | null) {
-        event = e;
+        e = e;
         if (e) {
             const res = eventToSpecificKind(e);
             article = res.article;
@@ -27,18 +28,17 @@
 
 </script>
 
-{#if event}
-    <UserProfile user={event.author} let:authorUrl let:userProfile let:fetching>
+{#if e}
+    <UserProfile user={e.author} let:authorUrl let:userProfile let:fetching>
         <slot
             {article}
             {video}
             {articleList}
-            {event}
+            event={e}
             {authorUrl}
             {userProfile}
             {fetching}
         />
     </UserProfile>
-    {:else}
-    here
+{:else}
 {/if}

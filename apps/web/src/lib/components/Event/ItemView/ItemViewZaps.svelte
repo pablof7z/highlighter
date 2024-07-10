@@ -18,7 +18,7 @@
     $: hasZaps = recentZaps.length > 0;
 </script>
 
-<div class="flex flex-row gap-1 items-center {$$props.class??""} overflow-x-auto w-full flex-nowrap">
+<div class="flex flex-row gap-1 items-center {$$props.class??""} overflow-x-auto w-full flex-nowrap scrollbar-hide">
     <div class="flex-none">
         <TopZap {event} class="text-sm w-fit whitespace-nowrap" avatarSize="small" bind:zapEvent={topZapEvent} />
     </div>

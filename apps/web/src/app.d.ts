@@ -25,6 +25,7 @@ export type UserProfileType = NDKUserProfile & {
 
 export type EventType =
 	| 'article'
+	| 'book'
 	| 'group-note'
 	| 'group-reply'
 	| 'video'
@@ -41,6 +42,7 @@ export type NavigationOption = {
     value?: string;
     name?: string;
     tooltip?: string;
+	props?: Record<string, any>;
     icon?: any;
 	iconProps?: Record<string, any>;
     class?: string;

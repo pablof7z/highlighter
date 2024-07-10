@@ -1,5 +1,12 @@
 <script lang="ts">
     import * as Content from "$components/Content";
+	import { getContext } from "svelte";
+
+    const event = getContext('wrappedEvent');
 </script>
 
-<Content.Body />
+{#if [1].includes(event.kind)}
+    <Content.Comments />
+{:else}
+    <Content.Body />
+{/if}

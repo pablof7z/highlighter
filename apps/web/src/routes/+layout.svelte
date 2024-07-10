@@ -23,6 +23,7 @@
 	import OnboardingScreen from '$views/Mobile/Pages/OnboardingScreen.svelte';
 	import { page } from '$app/stores';
 	import NewAppShell from '$components/PageElements/NewAppShell.svelte';
+	import { App, Navbar, Page } from 'konsta/svelte';
 	
 
 	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
@@ -140,9 +141,11 @@
 
 <ModeWatcher />
 
-<NewAppShell>
-	<slot />
-</NewAppShell>
+<App theme="ios">
+	<NewAppShell>
+		<slot />
+	</NewAppShell>
+</App>
 <!-- 
 {#if $appMobileView}
 	<MobileAppShell>

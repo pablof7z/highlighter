@@ -10,11 +10,11 @@
     export let onNewShortPost: (() => void) | undefined = undefined;
 
     function shortNote() {
-        if (!!onNewShortPost) {
-            onNewShortPost();
-        } else {
-            // openModal(NewPostModal);
-        }
+        // if (!!onNewShortPost) {
+        //     onNewShortPost();
+        // } else {
+            openModal(NewPostModal);
+        // }
     }
 </script>
 

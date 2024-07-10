@@ -1,18 +1,25 @@
 import { Proof } from "@cashu/cashu-ts";
-import NDK, { NDKEvent, NDKEventId, NDKTag } from "@nostr-dev-kit/ndk";
+import NDK, { NDKEvent, NDKEventId, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
 import { NostrEvent } from "nostr-tools";
 import { NDKCashuToken, proofsTotalBalance } from "./token";
 
 export class NDKCashuWallet extends NDKEvent {
-    private _cachedProofs: Proof[] | undefined;
+    public tokens: NDKCashuToken[] = [];
 
     constructor(ndk?: NDK, event?: NostrEvent) {
         super(ndk, event);
         this.kind ??= 37375;
     }
 
-    static from(event: NDKEvent) {
+    static async from(event: NDKEvent) {
         const wallet = new NDKCashuWallet(event.ndk, event.rawEvent());
+
+        const prevContent = wallet.content;
+        try {
+            await wallet.decrypt();
+        } catch (e) {
+        }
+        wallet.content ??= prevContent;
 
         const contentTags = JSON.parse(wallet.content);
         wallet.tags = [...contentTags, ...wallet.tags];
@@ -36,26 +43,30 @@ export class NDKCashuWallet extends NDKEvent {
         return r;
     }
 
-    set mint(url: string) {
-        this.removeTag("mint");
-        this.tags.push(["mint", url]);  
+    set mints(urls: WebSocket['url'][]) {
+        this.tags = this.tags.filter(t => t[0] !== "mint");
+        for (const url of urls) {
+            this.tags.push(["mint", url]);
+        }
     }
 
-    get mint(): string | undefined {
-        return this.tagValue("mint");
+    get mints(): WebSocket['url'][] {
+        console.log('getting mints', this.tags)
+        const r = [];
+        for (const tag of this.tags) {
+            if (tag[0] === "mint") { r.push(tag[1]); }
+        }
+
+        return Array.from(new Set(r));
     }
 
-    public addToken(token: NDKCashuToken) {
-        this.tags.push(["token", token.id]);
+    set name(url: string) {
+        this.removeTag("name");
+        this.tags.push(["name", url]);  
     }
 
-    get tokenIds(): NDKEventId[] {
-        const tokens = this.tags
-            .filter(t => t[0] === "token")
-            .filter(t => t[1].length > 10)
-            .map(t => t[1]);
-        
-        return tokens;
+    get name(): string | undefined {
+        return this.tagValue("name");
     }
 
     async balance(forceFetch = false): Promise<number> {
@@ -63,32 +74,11 @@ export class NDKCashuWallet extends NDKEvent {
         return proofsTotalBalance(proofs);
     }
 
-    async proofs(forceFetch = false): Promise<Proof[]> {
-        if (!forceFetch && this._cachedProofs) { return this._cachedProofs; }
-        if (!this.ndk) { throw new Error("no ndk"); }
-
-        const tokenIds = this.tokenIds;
-        if (tokenIds.length === 0) { return []; }
-        
-        const tokenEvents = await this.ndk.fetchEvents({
-            kinds: [7375 as number],
-            ...this.filter(),
-        });
-
-        const proofs = Array.from(tokenEvents).map(event => {
-            const token = NDKCashuToken.from(event);
-            return token.proofs;
-        });
-
-        this._cachedProofs = proofs.flat();
-        return this._cachedProofs;
-    }
-
     async toNostrEvent(pubkey?: string): Promise<NostrEvent> {
         const encryptedTags: NDKTag[] = [];
         const unencryptedTags: NDKTag[] = [];
 
-        const unencryptedTagNames = [ "d", "client"]
+        const unencryptedTagNames = [ "d", "client" ]
 
         for (const tag of this.tags) {
             if (unencryptedTagNames.includes(tag[0])) { unencryptedTags.push(tag); }
@@ -97,6 +87,10 @@ export class NDKCashuWallet extends NDKEvent {
 
         this.tags = unencryptedTags.filter(t => t[0] !== "client");
         this.content = JSON.stringify(encryptedTags);
+
+        const user = await this.ndk!.signer!.user();
+
+        await this.encrypt(user);
         
         return super.toNostrEvent(pubkey);
     }

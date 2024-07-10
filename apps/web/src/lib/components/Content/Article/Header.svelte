@@ -1,0 +1,57 @@
+<script lang="ts">
+	import { getSummary } from "$utils/article";
+	import { NDKArticle, NDKUserProfile } from "@nostr-dev-kit/ndk";
+    import ContentHeader from "$components/Content/Header.svelte";
+	import { layout } from "$stores/layout";
+	import Footer from "./Footer.svelte";
+	import TopHeader from "../TopHeader.svelte";
+	import { getEventUrl } from "$utils/url";
+	import { page } from "$app/stores";
+	import { addHistory } from "$stores/history";
+	import { title } from "process";
+	import { onMount } from "svelte";
+
+    export let article: NDKArticle;
+    export let skipImage = false;
+    export let isPreview = false;
+    export let userProfile: NDKUserProfile | undefined = undefined;
+    export let authorUrl: string | undefined = undefined;
+    export let blossom: any | undefined = undefined;
+
+    onMount(() => {
+        addHistory({ category: "Read", title, url: $page.url.toString() })
+    })
+
+    let image: string | undefined;
+
+    $layout.sidebar = false;
+
+    $layout.footer = {
+        component: Footer,
+        props: { article }
+    }
+
+    $: {
+        image = article.image
+        if (!image && !isPreview) image ??= userProfile?.image;
+    }
+
+    $layout.header = {
+        component: TopHeader,
+        props: { event: article, userProfile, authorUrl }
+    }
+    if (article.title) $layout.title = article.title;
+</script>
+
+
+<ContentHeader
+    event={article}
+    image={article.image}
+    summary={getSummary(article)}
+    title={article.title}
+    {userProfile}
+    {authorUrl}
+    navOptions={
+        [{ name: "Article", href: getEventUrl(article, authorUrl) },]
+    }
+/>

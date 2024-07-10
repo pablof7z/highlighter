@@ -13,19 +13,19 @@
 <FooterShell bind:collapsed>
     <Button
         variant="accent"
-        class="rounded-full flex-none w-9 h-9 p-0"
+        class="rounded-full flex-none w-12 h-12 p-2"
         on:click={() => {
             newPost = !newPost;
             collapsed = false;
         }}
     >
-        <Plus class="w-4 h-4" weight="bold" />
+        <Plus class="w-full h-full" weight="bold" />
     </Button>
 
     <ContentEditor
         class="
-            grow h-11 border border-border bg-background rounded-full px-4 p-2 !text-xs
-            placeholder:text-muted-foreground placeholder:!text-xs
+            grow h-11 border border-border bg-background rounded-full px-4 p-2 !text-lg
+            placeholder:text-muted-foreground placeholder:!text-lg
         "
         {placeholder}
         allowMarkdown={false}

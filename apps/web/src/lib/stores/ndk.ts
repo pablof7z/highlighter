@@ -26,10 +26,10 @@ if (relays) {
 }
 
 export const explicitRelayUrls = [
-    // 'wss://nos.lol/',
+    'wss://nos.lol/',
     // 'wss://relay.noswhere.com/',
     // 'wss://relay.primal.net/',
-    // 'wss://relay.damus.io/',
+    'wss://relay.damus.io/',
     // "wss://relay.highlighter.com/",
     // 'wss://relay.nostr.band/',
     // 'wss://purplepag.es/',
@@ -38,8 +38,6 @@ export const explicitRelayUrls = [
 const _ndk: NDKSvelte = new NDKSvelte({
     enableOutboxModel: browser,
 }) as NDKSvelte;
-
-console.log('ndk', { outboxTracker: _ndk.outboxTracker, browser });
 
 _ndk.pool.blacklistRelayUrls.add("wss://relayer.fiatjaf.com/")
 _ndk.pool.blacklistRelayUrls.add("wss://relay.nostr.info/")

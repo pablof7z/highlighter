@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { selectedTiers, type as postType, view, nonSubscribersPreview, event, preview, currentDraftItem } from '$stores/post-editor.js';
-	import { pageHeader, resetLayout } from "$stores/layout";
+	import { layout, pageHeader, resetLayout } from "$stores/layout";
 	import { getUserSubscriptionTiersStore } from "$stores/user-view";
     import { type as _type } from "$stores/post-editor";
 	import { getTierSelectionFromAllTiers } from '$lib/events/tiers';
@@ -56,13 +56,14 @@
         $nonSubscribersPreview = !!$preview && !!$preview.id;
     }
 
-    $pageHeader = {
+    $layout.header = {
         component: Toolbar,
         props: {
             onSaveDraft: saveDraft,
             onPublish: publish,
         }
-    }
+    };
+    $layout.navigation = false;
 
     function publish() {
         $view = "publish";

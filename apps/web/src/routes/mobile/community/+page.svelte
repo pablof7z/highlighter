@@ -29,7 +29,7 @@
     $: if ($loadedGroup) {
         const opts: NavigationOption[] = [];
 
-        opts.push({ name: "Chat2", href: getGroupUrl($loadedGroup, "chat") });
+        opts.push({ name: "Chat", href: getGroupUrl($loadedGroup, "chat") });
         opts.push({ name: "Posts", href: getGroupUrl($loadedGroup, "posts") });
 
         if ($groupView.isAdmin) {
@@ -41,19 +41,18 @@
         //     title: $loadedGroup.name ?? "Community",
         //     subNavbarOptions: opts,
         // };
+
+        $layout.navigation = opts;
     }
 
-    $layout = {
-        header: {
-            component: LayoutHeaderNavigation,
-            props: { options: opts },
-        },
-    }
-
-    $: if ($loadedGroup && $groupView.isMember === false) {
-        $layout.footer = {
-            component: JoinGroupFooter,
-            props: { group: $loadedGroup },
+    $: if ($loadedGroup) {
+        $layout.title = $loadedGroup.name ?? "Community";
+        $layout.iconUrl = $loadedGroup.picture;
+        if ($groupView.isMember === false) {
+            $layout.footer = {
+                component: JoinGroupFooter,
+                props: { group: $loadedGroup },
+            }
         }
     }
 </script>

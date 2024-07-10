@@ -1,27 +1,22 @@
 <script lang="ts">
 	import HorizontalList from '$components/PageElements/HorizontalList';
 	import { wotFilteredStore } from '$stores/wot';
-	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKVideo } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKHighlight, NDKKind, NDKVideo } from '@nostr-dev-kit/ndk';
 	
 	import { ndk } from "$stores/ndk";
 	import { userFollows } from "$stores/session";
-	import { derived, Readable, writable } from "svelte/store";
+	import { derived, Readable } from "svelte/store";
 	import { filterArticle } from '$utils/article-filter';
 	import HighlightBody from '$components/HighlightBody.svelte';
-	import { openModal } from '$utils/modal';
-	import StoryModal from '$modals/StoryModal.svelte';
     import * as Card from '$components/Card';
-    import Footer from "$components/PageElements/Mobile/Footer.svelte";
-	import ArticleGridUrlItem from '$components/ArticleGridUrlItem.svelte';
+    import Footer from "./Footer.svelte";
 	import HorizontalListOfTaggedItems from '$components/PageElements/Sections/HorizontalListOfTaggedItems.svelte';
-	import { layout, layoutMode } from '$stores/layout';
-	import { appMobileView } from '$stores/app';
-	import StoriesFeed from '$components/PageElements/StoriesFeed.svelte';
-	import { NavigationOption } from '../../../../app';
-	import LayoutHeaderNavigation from '$components/Layout/Headers/LayoutHeaderNavigation.svelte';
+	import { layout } from '$stores/layout';
 	import HomePageSidebar from './HomePageSidebar.svelte';
+	import { vanityUrls } from '$utils/const';
+	import User from '$components/Card/User.svelte';
 
-    $layoutMode = "full-width";
+    $layout.fullWidth = true;
 
     const articles = $ndk.storeSubscribe({
         kinds: [NDKKind.Article], limit: 50
@@ -51,10 +46,6 @@
         return $highlights.filter(highlight => $userFollows.has(highlight.pubkey));
     });
 
-    const photos = $ndk.storeSubscribe([
-        { kinds: [1063], authors: Array.from($userFollows), limit: 10, "#m": ["image/jpeg"] }
-    ])
-
     $layout = {
         sidebar: {
             component: HomePageSidebar
@@ -64,7 +55,16 @@
             props: {}
         }
     }
+
+    const featuredUsers = Array.from(
+            new Set(Object.values(vanityUrls))
+        ).map(pubkey => $ndk.getUser({ pubkey }))
+        .map(user => { return { user, id: user.pubkey } });
 </script>
+
+<HorizontalList title="Featured Creators" items={featuredUsers} let:item>
+    <Card.User user={item.user} />
+</HorizontalList>
 
 <HorizontalList title="Articles" items={$filteredArticles} let:item>
     <Card.Article article={item} />
@@ -77,10 +77,6 @@
 {#if highlightsEosed}
     <HorizontalListOfTaggedItems title="Reads" highlights={followHighlights} />
 {/if}
-
-<HorizontalList title="Photos" items={$photos} let:item>
-    <img src={item.tagValue("url")} class="w-auto h-32 object-cover" />
-</HorizontalList>
 
 <HorizontalList title="Highlights" items={$highlights} let:item>
     <div class="w-64 whitespace-normal">

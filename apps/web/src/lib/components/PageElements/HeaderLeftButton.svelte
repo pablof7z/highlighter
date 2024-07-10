@@ -23,6 +23,8 @@
         </span>
     {:else if $layout.back?.label === "Close"}
         <X class="w-5 h-5 inline" />
+    {:else if $layout.back?.url}
+        <BackButton href={$layout.back.url} />
     {:else if !$layout.back}
         <BackButton />
     {/if}

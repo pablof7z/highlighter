@@ -4,6 +4,8 @@ import { EventType } from '../../../../app';
 export function getEventType(event: NDKEvent): EventType | undefined {
 	if (event.kind === NDKKind.Article) {
 		return 'article';
+	} else if (event.kind === 30040) {
+		return 'book';
 	} else if (event.kind === NDKKind.HorizontalVideo) {
 		return 'video';
 	} else if (event.kind === NDKKind.GroupNote) {

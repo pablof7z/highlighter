@@ -1,17 +1,17 @@
 <script lang="ts">
 	import HorizontalList from '$components/PageElements/HorizontalList';
 	import { ndk } from "$stores/ndk.js";
-	import NDK, { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKUser, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
+	import NDK, { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKUser, NDKUserProfile, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { derived, writable, type Readable } from "svelte/store";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
-	import type { UserProfileType } from '../../app';
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import * as Chat from "$components/Chat";
     import * as Card from '$components/Card';
 	import { userArticles, userGroupList, userHighlights, userPinList, userVideos } from '$stores/user-view';
 	import HighlightBody from '$components/HighlightBody.svelte';
 	import currentUser from '$stores/currentUser';
+    import * as User from "$components/User";
 
     export let user: NDKUser;
 
@@ -62,13 +62,8 @@
         });
     }
 
-    let userProfile: UserProfileType;
+    let userProfile: NDKUserProfile | undefined = undefined;
     let authorUrl: string;
-
-    const highlighterRelaySet = NDKRelaySet.fromRelayUrls([
-        "wss://relay.highlighter.com",
-        "wss://relay.primal.net"
-    ], $ndk)
 
     // const highlights = $ndk.storeSubscribe({
     //     kinds: [NDKKind.Highlight], authors: [user.pubkey], limit: 50
@@ -160,7 +155,7 @@
 </script>
 
 <svelte:head>
-    <title>{userProfile?.name} on Highlighter</title>
+    <title>{userProfile?.name}</title>
     <meta name="description" content="Creator profile" />
     <meta property="og:title" content={user.npub} />
     <meta property="og:description" content="Creator profile" />

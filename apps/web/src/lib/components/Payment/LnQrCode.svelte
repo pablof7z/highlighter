@@ -23,7 +23,7 @@
         try {
             requestProvider().then(async (p) => {
                 provider = p;
-                if (tryToPay) pay();
+                // if (tryToPay) pay();
             });
         } catch {}
 

@@ -1,97 +1,81 @@
 <script lang="ts">
+	import { page } from "$app/stores";
 	import { Button } from "$components/ui/button";
 	import * as Card from "$components/ui/card";
-	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 	import Topup from "$components/Wallet/Topup.svelte";
-	import LnQrModal from "$modals/LnQrModal.svelte";
-	import { activeWalletEvent, walletBalance, walletEvents, walletRelaySet } from "$stores/cashu";
+	import NewWalletModal from "$modals/Wallet/NewWalletModal.svelte";
+	import { activeWallet, walletBalance, wallets } from "$stores/cashu";
+	import { addHistory } from "$stores/history";
     import { layout } from "$stores/layout";
-	import { ndk } from "$stores/ndk";
-	import { nicelyFormattedSatNumber } from "$utils";
-	import { NDKCashuToken } from "$utils/cashu/token";
+	import { nicelyFormattedSatNumber, pluralize } from "$utils";
 	import { NDKCashuWallet } from "$utils/cashu/wallet";
-	import { closeModal, openModal } from "$utils/modal";
+	import { openModal } from "$utils/modal";
 	import { CashuWallet, CashuMint } from "@cashu/cashu-ts";
-	import { Block } from "konsta/svelte";
-	import { Lightning } from "phosphor-svelte";
+	import { DotsThree, Lightning, PlusCircle } from "phosphor-svelte";
+	import { onMount } from "svelte";
+    import HorizontalList from "$components/PageElements/HorizontalList/List.svelte";
+	import { derived, Readable } from "svelte/store";
+	import ConnectivityIndicator from "$components/Relay/ConnectivityIndicator.svelte";
 
-    let mint: string = "https://stablenut.umint.cash";
-    let wallet: CashuWallet;
+    $layout.title = "Wallet";
+    $layout.back = {url: "/"};
+    
+    onMount(() => {
+        addHistory({ title: "Wallet", url: $page.url.toString() });
+    })
 
-    $: if (!wallet && $activeWalletEvent?.mint) {
-        wallet = new CashuWallet(new CashuMint($activeWalletEvent.mint));
-    }
-
-    let walletEvent: NDKCashuWallet;
-
-    async function createWallet() {
-        const w = new CashuWallet(new CashuMint(mint));
-        
-        if ($activeWalletEvent) {
-            walletEvent = NDKCashuWallet.from($activeWalletEvent);
-        } else {
-            walletEvent = new NDKCashuWallet($ndk);
-            walletEvent.dTag = "dhckj6m5qny3iuwg";
-            walletEvent.mint = mint;
-        }
-        walletEvent.relays = walletRelaySet.relayUrls;
-
-        try {
-            const p = await walletEvent.publishReplaceable(walletRelaySet);
-        } catch (e) {
-            console.error('error publishing wallet', e?.relayErrors);
-            return;
-        }
-
-        wallet = w;
-
-        // const walletKeyEvent = new NDKCashuWalletKey($ndk);
-        // walletKeyEvent.keys = w.keys;
-        // walletKeyEvent.wallet = walletEvent;
-        // await walletKeyEvent.publish(relaySet);
-    }
+    let walletsWithAdd = derived(wallets, ($wallets) => {
+        if (!$wallets || !$wallets.length) return [ { id: "add" } ];
+        return [
+            ...$wallets,
+            { id: "add" }
+        ]
+    });
 </script>
 
-<Block class="flex flex-col gap-8">
-    <ScrollArea orientation="horizontal">
-        <div class="flex flex-row gap-8 flex-nowrap w-max pb-8">
-            {$walletEvents.length}
-            {#each $walletEvents as wallet}
-                <Card.Root class="w-64 bg-secondary text-secondary-foreground">
-                    <Card.Header class="p-4 flex flex-col gap-4">
-                        <Card.Title class="text-muted-foreground">{wallet.dTag}</Card.Title>
-                        {wallet.tagValue("mint")}
-                        <Card.Description>
-                            <div class="flex flex-row gap-1 text-3xl text-foreground items-center font-bold">
-                                <Lightning class="text-accent w-6 h-6" weight="fill" />
-                                {nicelyFormattedSatNumber($walletBalance)} sats
-                            </div>
-                        </Card.Description>
-                    </Card.Header>
-                    <Card.Content class="p-4 md:pt-0">
-                        <Topup {walletEvent} amount={20} />
-                    </Card.Content>
-                </Card.Root>
-            {/each}
+<HorizontalList title="Wallets" items={$walletsWithAdd} let:item={wallet}>
+    {#if wallet instanceof NDKCashuWallet}
+        <Card.Root class="w-64 bg-secondary/20 text-secondary-foreground">
+            <Card.Header class="p-4 flex flex-col gap-4">
+                <Card.Title class="text-muted-foreground">{wallet.name}</Card.Title>
+                <Card.Description>
+                    <div class="flex flex-row gap-1 text-3xl text-foreground items-center font-bold">
+                        <Lightning class="text-accent w-6 h-6" weight="fill" />
+                        {nicelyFormattedSatNumber($walletBalance.get(wallet.dTag))} sats
+                    </div>
+                </Card.Description>
 
-            <Card.Root class="w-64 bg-secondary">
-                <Card.Header class="p-4">
-                    <Card.Title>Create New</Card.Title>
-                    <Card.Description>
-                        Unlock all features and get unlimited access to our support team.
-                    </Card.Description>
-                </Card.Header>
-                <Card.Content class="p-4 md:pt-0">
-                </Card.Content>
-            </Card.Root>
-        </div>
-    </ScrollArea>
-</Block>
+                <div class="flex flex-row gap-2 items-center">
+                    <div class="text-base w-fit bg-secondary px-4 p-2 rounded-full">
+                        {wallet.mints.length} {pluralize(wallet.mints.length, "mint")}
+                    </div>
 
-{#if $walletBalance}
-    balance: {walletBalance}
-{:else}
-    <Button size="lg" on:click={createWallet}>
-        Create Wallet
-    </Button>
-{/if}
+                    <div class="flex flex-col text-base w-fit bg-secondary px-4 p-2 rounded-full">
+                        <div>{wallet.relays.length} {pluralize(wallet.relays.length, "relay")}:</div>
+                        <div class="flex flex-row items-center">
+                            {#each wallet.relays as relay}
+                                <ConnectivityIndicator url={relay} />
+                            {/each}
+                        </div>
+                    </div>
+                </div>
+                
+            </Card.Header>
+            <Card.Content class="p-4 md:pt-0 flex flex-row gap-4 items-stretch">
+                <Topup walletEvent={wallet} amount={1} class="grow" />
+
+                <Button variant="secondary" class="w-11 rounded-full p-0" href="/wallet/settings?id={wallet.encode()}">
+                    <DotsThree size={24} />
+                </Button>
+                
+            </Card.Content>
+        </Card.Root>
+    {:else}
+        <button
+            class="bg-secondary w-48 min-h-[12rem] h-full rounded flex flex-row items-center justify-center text-muted-foreground"
+            on:click={() => openModal(NewWalletModal)}
+        >
+            <PlusCircle size={64} weight="light" class="opacity-50" />
+        </button>
+    {/if}
+</HorizontalList>

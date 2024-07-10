@@ -71,7 +71,7 @@
                 bind:content
                 rows={1}
                 enterSubmits={true}
-                class="!min-h-none w-full grow rounded overflow-hidden {$$props.class??""}"
+                class="!min-h-none w-full grow flex items-center justify-center overflow-hidden text-base {$$props.class??""}"
                 on:keydown={onkeydown}
                 on:submit={submit}
                 {placeholder}

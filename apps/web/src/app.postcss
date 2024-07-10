@@ -38,16 +38,14 @@
 		/* Navbar */
 		--navbar-width: 80px;
 
-		--sidebar-width: 360px;
-
 		/* max-w-7xl */
 		--content-focused-wrapper-width: 80rem;
 		--content-focused-width: 48rem;
 
+		--editor-width: 48rem;
+
 		/* max-w-3xl */
 		--feed-width: 48rem;
-
-		--sidebar-width: 400px;
 
 		/* max-w-4xl */
 		--home-layout-feed-width: 56rem;
@@ -56,6 +54,18 @@
 		@media (min-width: 640px) {
 			--navbar-icon: 40px;
 		}
+
+		/**
+		 * The vertical padding between small containers
+		 * that have border-y
+		 */
+		--section-vertical-padding: 12px;
+
+		--user-card-width: 280px;
+		--user-card-height: 387px;
+		
+		--content-card-width: 326px;
+		--content-card-height: 277px;
 	}
 
 	.light {
@@ -78,11 +88,13 @@
 		--border: 240 3.7% 15.9%;
 		--input: 240 3.7% 15.9%;
 		--ring: 240 4.9% 83.9%;
+
+		--gold: 36 100% 60%;
 	}
 	
 	.dark {
 		--background: 240 10% 3.9%;
-		--foreground: 0 0% 98%;
+		--foreground: 0 0% 100%;
 		--card: 240 10% 3.9%;
 		--card-foreground: 0 0% 98%;
 		--popover: 240 10% 3.9%;
@@ -100,6 +112,8 @@
 		--border: 240 3.7% 15.9%;
 		--input: 240 3.7% 15.9%;
 		--ring: 240 4.9% 83.9%;
+
+		--gold: 36 100% 60%;
 	}
 
 	* {
@@ -178,6 +192,11 @@
 
 	h1 {
 		@apply text-3xl font-semibold;
+		@apply mb-3;
+	}
+
+	h2 {
+		@apply text-xl font-semibold;
 		@apply mb-3;
 	}
 
@@ -399,6 +418,10 @@ section.settings .field {
 	@apply text-primary font-medium underline truncate;
 }
 
+.event-content a.hashtag, .event-content a.mention {
+	@apply text-gold;
+}
+
 .event-content .event-card {
 	@apply text-sm;
 }
@@ -418,6 +441,7 @@ strong {
 
 .article pre {
 	@apply bg-foreground/20;
+	@apply whitespace-pre-wrap;
 }
 
 .event-content img {

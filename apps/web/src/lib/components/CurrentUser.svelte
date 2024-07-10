@@ -1,38 +1,34 @@
 <script lang="ts">
-	import AvatarWithName from './User/AvatarWithName.svelte';
-	import { fade } from 'svelte/transition';
 	import UserProfile from './User/UserProfile.svelte';
 	import currentUser from '$stores/currentUser';
 	import { UserCircle } from 'phosphor-svelte';
 	import Avatar from './User/Avatar.svelte';
+	import { openModal } from '$utils/modal';
+	import SignupModal from '$modals/SignupModal.svelte';
+	import { bunkerNDK, ndk } from '$stores/ndk';
+	import { login } from '$utils/login';
 
     export let withName = false;
 
     async function openSignupModal() {
-        // if (window.nostr) {
-        //     const u = await login($ndk, $bunkerNDK, 'nip07');
-        //     if (u) {
-        //         $currentUser = u;
-        //         return;
-        //     }
-        // }
+        if (window.nostr) {
+            const u = await login(undefined);
+            if (u) {
+                $currentUser = u;
+                return;
+            }
+        }
 
-        // openModal(SignupModal);
+        openModal(SignupModal);
     }
 </script>
 
-<div class="{$$props.class??""}" transition:fade>
+<div class="{$$props.class??""}">
     {#if $currentUser}
         <UserProfile user={$currentUser} let:userProfile let:authorUrl let:fetching>
-            {#if !withName}
-                <a href={authorUrl}>
-                    <Avatar user={$currentUser} {userProfile} {fetching} size="medium" class="flex-none {$$props.avatarClass??""}" />
-                </a>
-            {:else}
-                <a href={authorUrl} class="max-sm:hidden">
-                    <AvatarWithName user={$currentUser} {userProfile} {fetching} size="medium" class="flex-none" avatarClass={$$props.avatarClass??""} />
-                </a>
-            {/if}
+            <a href="/settings" class="flex-none">
+                <Avatar user={$currentUser} {userProfile} {fetching} class="w-[40px] h-[40px] object-cover flex-none {$$props.avatarClass??""}" />
+            </a>
         </UserProfile>
     {:else}
         <button on:click={openSignupModal} class="w-10 h-10">

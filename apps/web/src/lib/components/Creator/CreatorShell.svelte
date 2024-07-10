@@ -5,13 +5,14 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { onDestroy, onMount } from "svelte";
     import { addReadReceipt } from "$utils/read-receipts";
-	import { pageHeader, resetLayout } from '$stores/layout';
+	import { layout } from '$stores/layout';
 	import type { NavigationOption, UserProfileType } from '../../../app';
-	import CreatorHeader from "./CreatorHeader.svelte";
-	import { House } from "phosphor-svelte";
 	import currentUser from "$stores/currentUser";
 	import CreatorFooter from "./CreatorShell/CreatorFooter.svelte";
 	import { getUserUrl } from "$utils/url";
+	import { addHistory } from "$stores/history";
+	import { page } from "$app/stores";
+	import CreatorHeader from "./CreatorHeader.svelte";
 
     export let user: NDKUser;
     
@@ -20,6 +21,11 @@
         startUserView(user);
     })
 
+    let addedToHistory = false;
+    $: if (userProfile?.displayName && !addedToHistory) {
+        addedToHistory = true;
+        addHistory({ category: "User", title: userProfile.displayName, url: $page.url.toString() });
+    }
 
     let articles: Readable<Map<NDKEventId, NDKArticle>>;
 
@@ -59,7 +65,7 @@
 
     $: if (!hasPosts && authorUrl) {
         hasPosts = true;
-        options.push({ name: "Posts", href: getUserUrl(authorUrl, user, "posts") })
+        options.push({ name: "Posts", href: getUserUrl(authorUrl, user, "notes") })
     }
 
     function roundedItemCount(items: any[], limit = 99): string {
@@ -69,7 +75,7 @@
     $: if (!hasArticles) {
         hasArticles = !!($userArticles && $userArticles.length > 0)
         if (hasArticles) {
-            options.push({ name: "Articles", badge: roundedItemCount($userArticles!), href: getUserUrl(authorUrl, user, "posts") })
+            options.push({ name: "Articles", badge: roundedItemCount($userArticles!), href: getUserUrl(authorUrl, user, "posts2") })
             options = options;
         }
     }
@@ -93,7 +99,7 @@
     $: if (!hasCommunities) {
         hasCommunities = !!($userGroupList && $userGroupList.items.length > 0);
         if (hasCommunities) {
-            options.push({ name: "Communities", badge: roundedItemCount($userGroupList!.items), buttonProps: {variant: 'accent'}, href: getUserUrl(authorUrl, user, "communities") })
+            options.push({ name: "Communities", badge: roundedItemCount($userGroupList!.items), href: getUserUrl(authorUrl, user, "communities") })
             options = options;
         }
     }
@@ -116,21 +122,20 @@
         }
     }
 
-    $: $pageHeader = {
-        component: CreatorHeader,
-        props: {
-            user,
-        },
-        subNavbarOptions: options,
+    $layout = {
+        title: "Profile",
+        sidebar: false,
         footer: {
             component: CreatorFooter,
             props: {
                 user
             }
         }
-    };
+    }
 
-    onDestroy(resetLayout);
+    $: $layout.title = userProfile?.displayName ?? user.pubkey;
+    $: $layout.iconUrl = userProfile?.image;
+    $: $layout.navigation = options;
 </script>
 
 <UserProfile {user} bind:userProfile bind:fetching bind:authorUrl />

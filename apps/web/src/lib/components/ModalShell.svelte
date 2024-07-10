@@ -10,8 +10,6 @@
 	import { Block, Link, Toolbar } from 'konsta/svelte';
 	import { NavigationOption } from '../../app';
 	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
-	import Button from './ui/button/button.svelte';
-	import HorizontalOptionsListItem from './HorizontalOptionsListItem.svelte';
 
     export let title: string | undefined = undefined;
 
@@ -104,6 +102,8 @@
         </Toolbar>
     {/if}
     <Block class="max-h-[80vh] overflow-y-auto {$$props.class??""} max-sm:text-base">
+        <h1>{title}</h1>
+        
         <slot />
     </Block>
 {:else}

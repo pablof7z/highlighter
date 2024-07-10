@@ -8,8 +8,13 @@
 	import { derived } from "svelte/store";
 	import ChatFooter from "./ChatFooter.svelte";
 	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
+	import { addHistory } from "$stores/history";
 
     export let group: NDKSimpleGroup;
+
+    addHistory({ category: 'Chat', title: group.name ?? "Community" });
+    
+    $layout.footerInMain = true;
 
     const chat = $ndk.storeSubscribe({
         kinds: [NDKKind.GroupChat], "#h": [group.groupId]
