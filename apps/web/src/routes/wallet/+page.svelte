@@ -4,13 +4,12 @@
 	import * as Card from "$components/ui/card";
 	import Topup from "$components/Wallet/Topup.svelte";
 	import NewWalletModal from "$modals/Wallet/NewWalletModal.svelte";
-	import { activeWallet, walletBalance, wallets } from "$stores/cashu";
+	import { walletBalance, wallets } from "$stores/cashu";
 	import { addHistory } from "$stores/history";
     import { layout } from "$stores/layout";
 	import { nicelyFormattedSatNumber, pluralize } from "$utils";
 	import { NDKCashuWallet } from "$utils/cashu/wallet";
 	import { openModal } from "$utils/modal";
-	import { CashuWallet, CashuMint } from "@cashu/cashu-ts";
 	import { DotsThree, Lightning, PlusCircle } from "phosphor-svelte";
 	import { onMount } from "svelte";
     import HorizontalList from "$components/PageElements/HorizontalList/List.svelte";

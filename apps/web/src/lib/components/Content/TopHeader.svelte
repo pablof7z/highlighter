@@ -12,7 +12,7 @@
     const pubkey = event.pubkey;
 </script>
 
-<div class="flex flex-row w-full gap-2">
+<div class="flex flex-row w-full gap-2 {$$props.class??""}">
     <div class="flex flex-row items-center">
         <BackButton />
     </div>

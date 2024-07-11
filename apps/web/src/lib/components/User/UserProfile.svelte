@@ -167,6 +167,10 @@
         }
     }
 
+    $: if (userProfile && userProfile.displayName && userProfile.displayName.length === 0 && userProfile.name) {
+        userProfile.displayName = userProfile.name;
+    }
+
     // $: console.log('update', userProfile?.displayName)
 </script>
 

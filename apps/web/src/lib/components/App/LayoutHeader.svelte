@@ -5,6 +5,8 @@
 	import HeaderRightButton from "./HeaderRightButton.svelte";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import { browser } from "$app/environment";
+	import { page } from "$app/stores";
+	import HomeButton from "./HomeButton.svelte";
 
     let render = false;
     let navbar: HTMLElement;
@@ -50,7 +52,7 @@
                 <svelte:component
                     this={$layout.header.component}
                     {...$layout.header.props}
-                    containerClass={$$props.containerClass}
+                    class={$$props.containerClass}
                     on:resize={updateNavbarHeight}
                 />
 
@@ -65,12 +67,21 @@
                 {/if}
             </div>
         {:else}
-            <div class="flex flex-col items-stretch w-full {$$props.containerClass??""}">
-                <div class="flex items-center justify-between w-full">
+            <div class="flex flex-row items-stretch w-full">
+                {#if $layout.sidebar === false}
+                    {#if $page.url.pathname !== "/"}
+                        <div class="fixed">
+                            <HomeButton />
+                        </div>
+                    {/if}
+                {/if}
+                
+                <div class="flex items-center border justify-between w-full {$$props.containerClass??""}">
                     <div class="flex flex-row gap-3 items-center w-full">
                         <HeaderLeftButton />
 
                         {#if $layout?.iconUrl}
+                            <!-- svelte-ignore a11y-missing-attribute -->
                             <img src={$layout.iconUrl} class="w-8 h-8 rounded-full" />
                         {/if}
                         

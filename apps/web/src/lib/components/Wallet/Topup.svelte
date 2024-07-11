@@ -8,6 +8,7 @@
 	import { openModal, closeModal } from "$utils/modal";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 	import { NDKRelaySet } from "@nostr-dev-kit/ndk";
+	import { CaretDown } from "phosphor-svelte";
 
     export let walletEvent: NDKCashuWallet;
     export let amount = 10;
@@ -21,10 +22,6 @@
     }
 
     let open = false;
-
-    function longpress() {
-
-    }
 
     function amountToPreference(n) {
         const powers = [];
@@ -70,12 +67,22 @@
     const mints = Array.from(
         new Set(walletEvent.getMatchingTags("mint").map(t => t[1]))
     );
+
+    function topUpFromAnyMint() {
+        const randomMint = mints[Math.floor(Math.random() * mints.length)];
+        topUp(randomMint);
+    }
 </script>
 
 <DropdownMenu.Root bind:open>
-    <DropdownMenu.Trigger class="w-full flex">
-        <Button class="w-full" {...$$props} longpress={50} on:longpress={longpress}>Top Up</Button>
-    </DropdownMenu.Trigger>
+    <Button class="w-full !rounded-r-0 flex flex-row items-center !px-0" {...$$props} on:click={topUpFromAnyMint}>
+        <div class="flex-grow">Top Up</div>
+        <DropdownMenu.Trigger class="flex bg-black/10 p-4 translate-x-4">
+            <button class="w-fit" {...$$props}>
+                <CaretDown />
+            </button>
+        </DropdownMenu.Trigger>
+    </Button>
     <DropdownMenu.Content>
         <DropdownMenu.Group>
             {#each mints as mint}
