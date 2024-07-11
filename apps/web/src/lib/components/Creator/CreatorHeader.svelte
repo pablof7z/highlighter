@@ -17,7 +17,7 @@
 	import currentUser from '$stores/currentUser';
 	import Npub from '$components/User/Npub.svelte';
 	import { inview } from 'svelte-inview';
-	import BackButton from '$components/PageElements/Navigation/BackButton.svelte';
+	import BackButton from "$components/App/Navigation/BackButton.svelte";
 
     export let user: NDKUser;
     let userProfile: NDKUserProfile;

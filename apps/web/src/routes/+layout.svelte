@@ -17,7 +17,7 @@
 	import { initStoreEvent } from '$stores/events';
 	import { ModeWatcher } from "mode-watcher";
 	import { ndk } from '$stores/ndk';
-	import NewAppShell from '$components/PageElements/NewAppShell.svelte';
+	import AppShell from '$components/App/Shell.svelte';
 	import { App } from 'konsta/svelte';
 	
 
@@ -137,7 +137,7 @@
 <ModeWatcher />
 
 <App theme="ios">
-	<NewAppShell>
+	<AppShell>
 		<slot />
-	</NewAppShell>
+	</AppShell>
 </App>

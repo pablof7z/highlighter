@@ -1,6 +1,6 @@
 <script lang="ts">
 	import EventPublishedTarget from "$components/Event/EventPublishedTarget.svelte";
-	import BackButton from "$components/PageElements/Navigation/BackButton.svelte";
+	import BackButton from "$components/App/Navigation/BackButton.svelte";
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import Avatar from "$components/User/Avatar.svelte";
 	import Name from "$components/User/Name.svelte";
