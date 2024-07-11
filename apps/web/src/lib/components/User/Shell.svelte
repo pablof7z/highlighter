@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getUserSupporters } from "$stores/user-view";
-	import { NDKKind, NDKUser, NDKList, NDKHighlight, NDKEvent, NDKArticle, NDKVideo, NDKWiki, NDKUserProfile, NDKSubscriptionTier, NDKSimpleGroup, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKUser, NDKList, NDKHighlight, NDKEvent, NDKArticle, NDKVideo, NDKWiki, NDKUserProfile, NDKSubscriptionTier, NDKSimpleGroup, NDKRelaySet, NDKTag, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
 	import { derived, get, Readable, writable } from "svelte/store";
 	import { setContext } from "svelte";
 	import { layout } from '$stores/layout';
@@ -16,6 +16,8 @@
 	import { roundedItemCount } from "$utils/numbers";
 	import Footer from "./Footer.svelte";
     import { deriveStore, deriveListStore } from "$utils/events/derive.js";
+	import Tier from "$components/Tier.svelte";
+	import { filterArticle } from "$utils/article-filter";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | undefined | null;
@@ -40,7 +42,7 @@
 
     const userHighlights = deriveStore<NDKHighlight>(events, NDKHighlight)
     const userNotes = deriveStore<NDKEvent>(events, undefined, [NDKKind.Text, NDKKind.Repost, NDKKind.GenericRepost, NDKKind.GroupNote, NDKKind.GroupReply]);
-    const userArticles = deriveStore<NDKArticle>(events, NDKArticle);
+    const userArticlesAll = deriveStore<NDKArticle>(events, NDKArticle);
     const userVideos = deriveStore<NDKVideo>(events, NDKVideo);
     const userWiki = deriveStore<NDKWiki>(events, NDKWiki);
     const userGroupsList = deriveListStore<NDKList>(events, NDKList, [NDKKind.SimpleGroupList]);
@@ -48,7 +50,12 @@
     const userTierList = deriveListStore<NDKList>(events, NDKList, [NDKKind.TierList]);
     const userAllTiers = deriveStore<NDKSubscriptionTier>(events, NDKSubscriptionTier);
 
+    const userArticles = derived(userArticlesAll, $userArticlesAll => {
+        return $userArticlesAll.filter(filterArticle);
+    });
+
     const userGroups = writable<Record<string, NDKSimpleGroup>>({});
+    const userGroupsMetadata = writable<Record<string, NDKSimpleGroupMetadata>>({});
 
     // load groups
     let loadedGroups = new Set<string>();
@@ -67,7 +74,12 @@
         const relaySet = NDKRelaySet.fromRelayUrls([relay], $ndk);
         const group = new NDKSimpleGroup($ndk, relaySet, groupId);
         group.getMemberListEvent();
-        group.getMetadata();
+        group.getMetadata().then((metadata) => {
+            userGroupsMetadata.update(groups => {
+                groups[groupId] = metadata;
+                return groups;
+            });
+        });
 
         userGroups.update(groups => {
             groups[groupId] = group;
@@ -79,7 +91,9 @@
         if (!$userTierList) return [];
 
         const eTags = $userTierList.getMatchingTags("e").map(t => t[1]);
-        return $userAllTiers.filter(tier => eTags.includes(tier.id));
+        return $userAllTiers
+            .filter(tier => eTags.includes(tier.id))
+            // .filter(tier => tier.tagValue("h"))
     });
 
     setContext('user', user);
@@ -93,6 +107,7 @@
     setContext('userTierList', userTierList);
     setContext('userTiers', userTiers);
     setContext('userGroups', userGroups);
+    setContext('userGroupsMetadata', userGroupsMetadata);
 
     let addedToHistory = false;
     $: if (userProfile?.displayName && !addedToHistory) {

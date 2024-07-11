@@ -1,5 +1,6 @@
 import type { NDKArticle } from '@nostr-dev-kit/ndk';
 import truncateMarkdown from 'markdown-truncate';
+import { Readable } from 'svelte/store';
 
 export function getSummary(article: NDKArticle, force = false) {
 	let summary = article.summary;

@@ -23,7 +23,7 @@
     </div>
 {/if}
 
-<div class="lg:grid lg:grid-cols-2 flex flex-col flex-wrap max-lg:divide-y divide-border">
+<div class="lg:grid lg:grid-cols-2 gap-6 flex flex-col flex-wrap max-lg:divide-y divide-border">
     {#each $store as article}
         {#if !$featuredItemIds.includes(article.id)}
             <div class="py-[var(--section-vertical-padding)] w-full">

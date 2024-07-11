@@ -6,7 +6,6 @@
 	import { wot, wotFiltered, wotFilteredStore } from "$stores/wot";
 	import { ndk } from "$stores/ndk.js";
 	import { Readable, derived } from "svelte/store";
-	import { filterArticle } from "$utils/article-filter";
 
     $layoutMode = "full-width";
 

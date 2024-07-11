@@ -1,6 +1,6 @@
 <script lang="ts">
 	import HorizontalList from '$components/PageElements/HorizontalList';
-	import NDK, { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKSubscriptionTier, NDKUser, NDKUserProfile, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
+	import NDK, { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKUser, NDKUserProfile, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { derived, writable, type Readable } from "svelte/store";
 	import { getContext, onDestroy, onMount } from "svelte";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
@@ -9,7 +9,9 @@
 	import HighlightBody from '$components/HighlightBody.svelte';
 	import currentUser from '$stores/currentUser';
     import * as Group from "$components/Groups";
-	import WithGroup from '$components/Event/WithGroup.svelte';
+	import { layout } from '$stores/layout';
+	import { openModal } from '$utils/modal';
+	import JoinModal from '$components/Groups/Modals/JoinModal.svelte';
 
     export let user: NDKUser = getContext('user') as NDKUser;
     export let userProfile: NDKUserProfile | undefined | null;
@@ -22,6 +24,10 @@
     const userGroupsList = getContext('userGroupsList') as Readable<NDKList>;
     const userPinList = getContext('userPinList') as Readable<NDKList>;
     const userTiers = getContext('userTiers') as Readable<NDKSubscriptionTier[]>;
+    const userGroups = getContext('userGroups') as Readable<Record<string, NDKSimpleGroup>>;
+    const userGroupsMetadata = getContext('userGroupsMetadata') as Readable<Record<string, NDKSimpleGroupMetadata>>;
+
+    $layout.footerInMain = true;
 
     let isCurrentUser: boolean | undefined;
     $: isCurrentUser = $currentUser?.pubkey === user.pubkey;
@@ -71,29 +77,36 @@
         }
     }
 
-    let featuredItems: Readable<(NDKArticle | NDKVideo)[]> | undefined;
+    let featuredItems: Readable<(NDKArticle | NDKVideo | NDKSimpleGroup)[]> | undefined;
 
     $: if (!featuredItems && userArticles && userVideos && userPinList) {
-        featuredItems = derived([ userArticles, userVideos, userPinList ], ([ $userArticles, $userVideos, $userPinList ]) => {
-            const items: (NDKArticle | NDKVideo)[] = [];
+        featuredItems = derived([ userArticles, userVideos, userGroups, userGroupsMetadata, userPinList ], ([ $userArticles, $userVideos, $userGroups, $userGroupsMetadata, $userPinList ]) => {
+            const items: (NDKArticle | NDKVideo | NDKSimpleGroup)[] = [];
             if (!$userPinList) return items;
 
             for (const pin of $userPinList.items) {
                 const tag = pin[1];
-                const kind = tag.split(/:/)[0];
+                const [_kind, pubkey, id] = tag.split(/:/);
+                const kind = _kind ? parseInt(_kind) : undefined;
                 let lookIn: NDKEvent[] | undefined;
 
-                if (kind === NDKKind.Article.toString()) {
+                if (kind === NDKKind.Article && $userArticles) {
                     lookIn = $userArticles;
-                    console.log('lookin in articles', $userArticles?.length)
-                } else if (kind === NDKKind.HorizontalVideo.toString()) {
+                } else if (kind === NDKKind.HorizontalVideo && $userVideos) {
                     lookIn = $userVideos;
+                } else if (kind === NDKKind.GroupMetadata && $userGroupsMetadata[id]) {
+                    lookIn = undefined;
+                    if ($userGroups[id]?.metadata?.name || $userGroupsMetadata[id].name) {
+                        // $userGroups[id].metadata = $userGroupsMetadata[id];
+                        items.push($userGroups[id]);
+                    }
                 }
 
-                console.log('looking for pin', tag)
                 if (lookIn) {
                     const item = lookIn.find(e => e.tagId() === tag);
-                    if (item) items.push(item as NDKArticle | NDKVideo);
+                    if (item) {
+                        items.push(item as NDKArticle | NDKVideo);
+                    }
                 }
             }
 
@@ -112,49 +125,69 @@
     {/if}
 </svelte:head>
 
-<!-- <UserProfile {user} bind:userProfile bind:authorUrl /> -->
-{#if featuredItems && $featuredItems}
-    <div class="flex flex-col gap-4 responsive-padding max-w-[100vw]">
-        {#each $featuredItems as item}
-            <Card.FeaturedItem item={item} skipAuthor />
-        {/each}
-    </div>
-{/if}
+<div class="flex flex-col w-full divide-y divide-border">
 
-{#if $userGroupsList}
-    <HorizontalList title="Communities" items={$userGroupsList.items.map(tag => { return {tag, id: tag[1]} })} let:item>
-        <Group.Shell tag={item.tag} let:group let:metadata let:tiers>
-            <Card.Community group={group} {metadata} {tiers} />
-        </Group.Shell>
-    </HorizontalList>
-{/if}
-
-{#each priorityBlocks as block}
-    {#if block === "videos"}
-        <HorizontalList title="Videos" items={$userVideos} let:item>
-            <Card.Video video={item} />
-        </HorizontalList>
-    {:else if block === "articles"}
-        <HorizontalList title="Articles" items={$userArticles} let:item>
-            <Card.Article article={item} skipAuthor />
-        </HorizontalList>
-    {/if}
-{/each}
-
-{#each blocks as block}
-    {#if block === "highlights"}
-        <HorizontalList title="Highlights" items={$userHighlights} let:item>
-            <HighlightBody highlight={item} />
-        </HorizontalList>
-    {:else if block === "notes" && $highQualityNotes}
-        <HorizontalList title="Notes" items={$highQualityNotes} let:item>
-            <Card.Note event={item} />
-        </HorizontalList>
-    {:else if block === "groups" && $userGroupsList}
-        <Chat.List>
-            {#each $userGroupsList.items as item (item)}
-                <Chat.Item tag={item} />
+    <!-- <UserProfile {user} bind:userProfile bind:authorUrl /> -->
+    {#if featuredItems && $featuredItems}
+        <div class="flex flex-col gap-4 responsive-padding max-w-[100vw] py-[var(--section-vertical-padding)]">
+            {#each $featuredItems as item (item.id)}
+                <Card.FeaturedItem item={item} skipAuthor />
             {/each}
-        </Chat.List>
+        </div>
     {/if}
-{/each}
+
+    {#if $userGroupsList}
+        <HorizontalList class="py-[var(--section-vertical-padding)]" title="Communities" items={$userGroupsList.items.map(tag => { return {tag, id: tag[1]} })} let:item>
+            <Group.Root
+                tag={item.tag}
+                let:group
+                let:metadata
+                let:tiers
+                let:members
+                let:admins
+                let:isAdmin
+            >
+                <Card.Community
+                    {group}
+                    {metadata}
+                    {tiers}
+                    {isAdmin}
+                    on:click={() => {
+                        openModal(JoinModal, { group, metadata, tiers, members, admins })
+                    }}
+                />
+            </Group.Root>
+        </HorizontalList>
+    {/if}
+
+    {#each priorityBlocks as block}
+        {#if block === "videos"}
+            <HorizontalList class="py-[var(--section-vertical-padding)]" title="Videos" items={$userVideos} let:item>
+                <Card.Video video={item} />
+            </HorizontalList>
+        {:else if block === "articles"}
+            <HorizontalList class="py-[var(--section-vertical-padding)]" title="Articles" items={$userArticles} let:item>
+                <Card.Article article={item} skipAuthor />
+            </HorizontalList>
+        {/if}
+    {/each}
+
+    {#each blocks as block}
+        {#if block === "highlights"}
+            <HorizontalList class="py-[var(--section-vertical-padding)]" title="Highlights" items={$userHighlights} let:item>
+                <HighlightBody highlight={item} />
+            </HorizontalList>
+        {:else if block === "notes" && $highQualityNotes}
+            <HorizontalList class="py-[var(--section-vertical-padding)]" title="Notes" items={$highQualityNotes} let:item>
+                <Card.Note event={item} />
+            </HorizontalList>
+        {:else if block === "groups" && $userGroupsList}
+            <Chat.List>
+                {#each $userGroupsList.items as item (item)}
+                    <Chat.Item tag={item} />
+                {/each}
+            </Chat.List>
+        {/if}
+    {/each}
+
+</div>

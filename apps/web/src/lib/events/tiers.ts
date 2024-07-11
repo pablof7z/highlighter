@@ -1,4 +1,13 @@
-import NDK, { Hexpubkey, NDKSubscriptionTier, NDKEvent, NDKTag, NDKUser, NDKKind, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
+import { currencyFormat } from '$utils/currency';
+import { termToShort } from '$utils/term';
+import NDK, { Hexpubkey, NDKSubscriptionTier, NDKEvent, NDKTag, NDKUser, NDKKind, NDKSubscriptionCacheUsage, NDKSubscriptionAmount } from '@nostr-dev-kit/ndk';
+
+export function tierAmountToString(tierAmount: NDKSubscriptionAmount) {
+	const currency = currencyFormat(tierAmount.currency, tierAmount.amount);
+	const term = termToShort(tierAmount.term);
+
+	return `${currency}/${term}`;
+}
 
 export function requiredTierNamesFor(
 	event: NDKEvent,

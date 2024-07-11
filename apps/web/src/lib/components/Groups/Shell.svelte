@@ -1,83 +1,28 @@
 <script lang="ts">
-	import currentUser from '$stores/currentUser';
-	import JoinGroupFooter from "$components/JoinGroupFooter.svelte";
-	import { groupView, loadedGroup } from "$stores/item-view";
 	import { layout } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
-	import { NDKFilter, NDKKind, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../../app";
-	import { ndk } from "$stores/ndk";
-	import { deriveListStore, deriveStore } from "$utils/events/derive";
 	import { setContext } from "svelte";
 	import { Navigation } from "$utils/navigation";
-	import { derived } from "svelte/store";
+	import { Readable } from "svelte/store";
+    import GroupFooterJoin from "$components/Groups/Footer/Join.svelte";
 
-    export let tag: NDKTag | undefined = undefined;
-    export let groupId: string | undefined = undefined;
-    export let relays: string[] | undefined = undefined;
+    export let group: NDKSimpleGroup;
+    export let isAdmin: Readable<boolean>;
+    export let isMember: Readable<boolean>;
+    export let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
+    export let admins: Readable<NDKSimpleGroupMemberList | undefined>;
+    export let members: Readable<NDKSimpleGroupMemberList | undefined>;
+    export let tiers: Readable<NDKSubscriptionTier[]>;
 
-    if (tag) {
-        groupId = tag[1];
-        relays = tag.slice(2, tag.length);
-    }
-
-    groupId ??= "";
-
-    const hFilter: NDKFilter = { "#h": [groupId] };
-    const dFilter: NDKFilter = { "#d": [groupId] };
-
-    const relaySet = NDKRelaySet.fromRelayUrls(relays||[], $ndk);
-
-    const group = new NDKSimpleGroup($ndk, relaySet, groupId);
-
-    // Subscriptions
-    const events = $ndk.storeSubscribe([
-        // { kinds: [ NDKKind.GroupNote, NDKKind.GroupReply ], ...hFilter, limit: 50 },
-        // { kinds: [ NDKKind.Article ], ...hFilter, limit: 100 },
-        // { kinds: [ NDKKind.Wiki ], ...hFilter, limit: 100 },
-        // { kinds: [ NDKKind.HorizontalVideo, NDKKind.VerticalVideo ], ...hFilter, limit: 100 },
-        // { kinds: [ NDKKind.Media ], "#m": [ "video/mp4"], ...hFilter, limit: 10 },
-        // { kinds: [ NDKKind.Highlight ], ...hFilter, limit: 100 },
-        // { kinds: [ NDKKind.TierList, NDKKind.PinList ], ...hFilter },
-        { kinds: [ NDKKind.GroupMetadata, NDKKind.GroupAdmins, NDKKind.GroupMembers ], ...dFilter },
-    ], { subId: 'group-events', groupable: false, relaySet });
-
-    const events2 = $ndk.storeSubscribe([
-        { kinds: [ NDKKind.SubscriptionTier ], ...hFilter, limit: 100 },
-    ], { subId: 'group-events-2', groupable: false, relaySet });
-
-    // Derivations
-    const groupMetadata = deriveListStore(events, NDKSimpleGroupMetadata);
-    const groupAdmins = deriveListStore(events, NDKSimpleGroupMemberList, [NDKKind.GroupAdmins]);
-    const groupMembers = deriveListStore(events, NDKSimpleGroupMemberList);
-    const groupTiers = deriveStore(events2, NDKSubscriptionTier);
-    
-    const isAdmin = derived(
-        [ currentUser, groupAdmins ], ([ $currentUser, $groupAdmins ]) => {
-            if ($currentUser && $groupAdmins) {
-                console.log('comparing admin', $groupAdmins, $currentUser.pubkey)
-                return $groupAdmins.hasMember($currentUser.pubkey);
-            }
-            return false;
-        }
-    );
-    const isMember = derived(
-        [ currentUser, groupMembers ], ([ $currentUser, $groupMembers ]) => {
-            if ($currentUser && $groupMembers) {
-                return $groupMembers.hasMember($currentUser.pubkey);
-            }
-            return false;
-        }
-    );
-
-    // setContext('group', group);
-    // setContext("groupMetadata", groupMetadata);
-    // setContext("groupAdmins", groupAdmins);
-    // setContext("isAdmin", isAdmin);
-    // setContext("isMember", isMember);
-    setContext("groupTiers", groupTiers);
-
-    $: console.log('group tiers', $groupTiers)
+    setContext('group', group);
+    setContext("groupMetadata", metadata);
+    setContext("groupAdmins", admins);
+    setContext("groupMembers", members);
+    setContext("isAdmin", isAdmin);
+    setContext("isMember", isMember);
+    setContext("groupTiers", tiers);
 
     let options: NavigationOption[] = [];
     const optionManager = new Navigation();
@@ -89,23 +34,37 @@
         optionManager.setOption('settings', { name: "Settings", href: getGroupUrl(group, "settings") });
     }
 
-    $: if ($groupMetadata) {
-        $layout.title = $groupMetadata.name ?? "Untitled group";
-        $layout.iconUrl = $groupMetadata.picture;
+    $: if ($metadata) {
+        $layout.title = $metadata.name ?? "Untitled group";
+        $layout.iconUrl = $metadata.picture;
     }
-
 
     $: $layout.navigation = options;
 
     $: if ($isMember === false) {
-        $layout.footer = {
-            component: JoinGroupFooter,
-            props: { group },
+        if ($metadata && $layout.footer?.component !== GroupFooterJoin) {
+            $layout.footer = {
+                component: GroupFooterJoin,
+                props: {
+                    group,
+                    metadata,
+                    admins,
+                    members,
+                    tiers,
+                },
+            }
         }
+    } else if ($layout.footer?.component === GroupFooterJoin) {
+        $layout.footer = undefined;
     }
 </script>
 
-<slot {group}
-    metadata={$groupMetadata} {groupAdmins} {isAdmin} {isMember}
-    tiers={$groupTiers}
+<slot
+    {group}
+    {metadata}
+    {admins}
+    {members}
+    {isAdmin}
+    {isMember}
+    {tiers}
 />

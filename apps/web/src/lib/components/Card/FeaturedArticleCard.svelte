@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { NDKArticle, NDKHighlight, type NDKTag, type NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import ContentCard from "./ContentCard.svelte";
 	import { ndk } from "$stores/ndk.js";
 	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
 	import FeaturedContentCard from "./FeaturedContentCard.svelte";
@@ -31,6 +30,7 @@
 
 {#if article}
     <FeaturedContentCard
+        event={article}
         title={article.title??"Untitled"}
         image={article.image}
         description={getSummary(article, true)}

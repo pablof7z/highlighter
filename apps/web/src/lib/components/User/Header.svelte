@@ -14,8 +14,6 @@
 	import Npub from '$components/User/Npub.svelte';
 	import { inview } from 'svelte-inview';
 	import BackButton from '$components/PageElements/Navigation/BackButton.svelte';
-	import HeaderMobileActionSheet from "$components/Creator/HeaderMobileActionSheet.svelte";
-	import HorizontalOptionsListItem from "$components/HorizontalOptionsListItem.svelte";
 	import FollowButton from "$components/buttons/FollowButton.svelte";
 	import { Button } from "$components/ui/button";
 	import { openModal } from "$utils/modal";
@@ -31,11 +29,12 @@
     $: following = $userFollows.has(user.pubkey);
 
     function inviewchange(e) {
-        const { inview } = e.detail;
+        const { inView } = e.detail;
 
-        if (inview) {
+        if (inView) {
+            $layout.header = false;
             $layout.navigation = false;
-        } else if (inview === false) {
+        } else if (inView === false) {
             $layout.navigation = options;
         }
     }
@@ -63,8 +62,7 @@
         <div class="flex flex-row items-end grow gap-4">
             <Avatar user={user} {userProfile} {fetching} class="
                 transition-all duration-300 flex-none object-cover w-24 h-24
-                "
-            />
+            "/>
 
             <div class="flex flex-col gap-0">
                 <Name {user} {userProfile} {fetching} class="text-foreground font-bold whitespace-nowrap mb-0 transition-all duration-300 text-xl max-h" />
@@ -74,7 +72,10 @@
 
         <div class="flex-none">
             {#if user.pubkey !== $currentUser?.pubkey}
-                <FollowButton {user} />
+                {#if $tiers && $tiers.length > 0}
+                {:else}
+                    <FollowButton {user} />
+                {/if}
             {:else}
                 <Button variant="accent" on:click={() => openModal(NewGroupModal)}>
                     Setup creator profile

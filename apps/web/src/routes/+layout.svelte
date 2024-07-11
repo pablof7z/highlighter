@@ -2,28 +2,23 @@
 	import { onMount } from 'svelte';
 	import '../app.postcss';
 	import { finalizeLogin } from '$utils/login';
-	import { prepareSession, jwt, userProfile } from '$stores/session';
+	import { prepareSession } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
 	import { pwaInfo } from 'virtual:pwa-info';
-	import AppShell from '$components/PageElements/AppShell.svelte';
 	import "@fontsource/lora";
 	import "@fontsource/lora/600.css";
 	import "@fontsource/lora/600-italic.css";
 	import { browser } from '$app/environment';
 	import { browserSetup } from './browser-session-setup';
 	import createDebug from 'debug';
-	import LoadingScreen from '$components/LoadingScreen.svelte';
 	import currentUser from '$stores/currentUser';
-	import MobileAppShell from '$components/PageElements/Mobile/AppShell.svelte';
 	import { appMobileView } from '$stores/app';
 	import { isMobileBuild, isPhone } from '$utils/view/mobile';
 	import { initStoreEvent } from '$stores/events';
 	import { ModeWatcher } from "mode-watcher";
 	import { ndk } from '$stores/ndk';
-	import OnboardingScreen from '$views/Mobile/Pages/OnboardingScreen.svelte';
-	import { page } from '$app/stores';
 	import NewAppShell from '$components/PageElements/NewAppShell.svelte';
-	import { App, Navbar, Page } from 'konsta/svelte';
+	import { App } from 'konsta/svelte';
 	
 
 	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
@@ -146,17 +141,3 @@
 		<slot />
 	</NewAppShell>
 </App>
-<!-- 
-{#if $appMobileView}
-	<MobileAppShell>
-		{#if !$currentUser && !$page.url.pathname.startsWith("/mobile")}
-			<OnboardingScreen />
-		{:else}
-			<slot />
-		{/if}
-	</MobileAppShell>
-{:else}
-		<AppShell>
-			<slot />
-		</AppShell>
-{/if} -->

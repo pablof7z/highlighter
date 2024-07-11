@@ -34,7 +34,7 @@ export const modalState: Writable<"open" | "closing" | "closed"> = writable("clo
 export const activeNewPostId: Writable<string | null> = writable(null);
 
 export type Layout = {
-	header?: Component
+	header?: Component | false;
 	navigation?: NavigationOption[] | false;
 	sidebar?: Component | false;
 	footer?: Component;
