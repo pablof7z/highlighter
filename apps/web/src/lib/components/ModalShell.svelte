@@ -119,11 +119,11 @@
                     border border-border
                     w-fit mx-auto
                     overflow-clip
-                    bg-background
                     p-6
                     {$$props.class}
-                " style="pointer-events: auto;"
-                >
+                " style="
+                    pointer-events: auto;
+                ">
                     <div class="inner flex flex-col items-center transition-all duration-300
                     {$$props.class}">
                         {#if title}

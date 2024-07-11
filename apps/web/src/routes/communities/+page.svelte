@@ -4,7 +4,7 @@
 	import { ndk } from "$stores/ndk";
 	import { groupsList, userFollows } from "$stores/session";
 	import { openModal } from "$utils/modal";
-	import { NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKList, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
 	import { Button } from '$components/ui/button';
 	import { derived } from 'svelte/store';
     import * as Chat from "$components/Chat";
@@ -13,6 +13,14 @@
 	import { addHistory } from '$stores/history';
 
     addHistory({ title: "Communities", url: "/communities" });
+
+    const relaySet = NDKRelaySet.fromRelayUrls(["wss://groups.fiatjaf.com"], $ndk);
+
+    const groups = $ndk.storeSubscribe(
+        { kinds: [NDKKind.GroupMetadata]}, {
+            relaySet
+        }
+    );
 
     const groupListsFromFollows = $ndk.storeSubscribe(
         { kinds: [NDKKind.SimpleGroupList], limit: 300, authors: Array.from($userFollows) },
@@ -45,6 +53,10 @@
         {/each}
     </Chat.List>
 {/if}
+
+{#each $groups as group}
+    <Chat.Item tag={["group", group.dTag, group.relay.url]} />
+{/each}
 
 <h2>Communities to check out</h2>
 

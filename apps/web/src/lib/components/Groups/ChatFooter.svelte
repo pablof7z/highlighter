@@ -4,7 +4,6 @@
     import * as Footer from "$components/Footer";
 	import { ndk } from '$stores/ndk';
     import { NDKSimpleGroup, NDKEvent, NDKTag, NDKKind } from "@nostr-dev-kit/ndk";
-	import { Microphone } from 'phosphor-svelte';
 
     export let group: NDKSimpleGroup | undefined = undefined;
     export let event: NDKEvent;

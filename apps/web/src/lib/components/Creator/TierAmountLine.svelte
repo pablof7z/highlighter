@@ -45,16 +45,13 @@
     <section class="settings w-full relative" class:!p-0={!open}>
         <div class="flex flex-row gap-2 w-full">
             <div class="field">
-                <div class="title" class:hidden={!open}>
-                    Tier Price
-                </div>
                 <div
                     class="
                         flex flex-row bg-foreground/10 rounded-2xl
                         {(!amount || !value.currency) ? "shadow shadow-red-800/50" : ""}
                     "
                 >
-                    <Input on:blur={blurInput} bind:value={amount} placeholder="Price" class="grow basis-0 text-sm text-right !w-20" />
+                    <Input on:blur={blurInput} bind:value={amount} placeholder="Price" class="text-sm text-right !w-12" />
                     <div class="flex-grow">
                         <CurrencySelect bind:currency={value.currency} class="!bg-black/10 rounded-l-none border-0 pl-2 ml-0 !outline-none" />
                     </div>
@@ -62,9 +59,6 @@
             </div>
 
             <div class="field">
-                <div class="title" class:hidden={!open}>
-                    Cadence
-                </div>
                 <TermSelect bind:term={value.term} class={!value.term ? "shadow shadow-red-800/50 rounded" : ""} />
             </div>
         </div>

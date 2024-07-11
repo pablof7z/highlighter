@@ -18,6 +18,8 @@
 	import HorizontalOptionsListItem from "$components/HorizontalOptionsListItem.svelte";
 	import FollowButton from "$components/buttons/FollowButton.svelte";
 	import { Button } from "$components/ui/button";
+	import { openModal } from "$utils/modal";
+	import NewGroupModal from "$modals/NewGroupModal.svelte";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | undefined = undefined;
@@ -74,7 +76,7 @@
             {#if user.pubkey !== $currentUser?.pubkey}
                 <FollowButton {user} />
             {:else}
-                <Button variant="accent">
+                <Button variant="accent" on:click={() => openModal(NewGroupModal)}>
                     Setup creator profile
                 </Button>
             {/if}

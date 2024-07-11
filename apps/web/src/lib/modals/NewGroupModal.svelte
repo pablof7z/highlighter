@@ -10,12 +10,20 @@
 	import { groupsList } from "$stores/session";
 	import { toast } from "svelte-sonner";
 
+    import * as Collapsible from "$lib/components/ui/collapsible";
+	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
+	import { Camera, CaretDown, Image, Upload } from "phosphor-svelte";
+	import ContentEditor from "$components/Forms/ContentEditor.svelte";
+	import { Button } from "$components/ui/button";
+
+
     let name: string;
     let picture: string;
+    let about: string;
     let relays: string[] = defaultRelays;
     const actionButtons: NavigationOption[] = [
         {
-            name: "Create",
+            name: "Next",
             buttonProps: {variant: 'accent'},
             fn: create,
         },
@@ -25,31 +33,68 @@
         const relaySet = NDKRelaySet.fromRelayUrls(relays, $ndk);
 
         const group = new NDKSimpleGroup($ndk, relaySet);
+        const randomNumber = Math.floor(Math.random() * 1000000);
+        group.groupId = 'group' + randomNumber;
         const published = await group.createGroup();
         if (!published) {
             toast.error("Failed to create group");
             return;
         }
-        await group.setMetadata({ name, picture });
+        await group.setMetadata({ name, picture, about });
 
         $groupsList?.addItem([ "group", group.groupId, ...relaySet.relayUrls ])
         $groupsList?.publishReplaceable();
 
         closeModal();
     }
+
+    function uploaded(e) {
+        picture = e.detail.url;
+    }
 </script>
 
 <ModalShell
-    title="Create New Community"
+    title="New Community"
     class="max-w-xl w-full"
     {actionButtons}
 >
-    <b class="text-foreground">Name</b>
-    <Input bind:value={name} placeholder="Community Name" />
+    <div class="flex flex-col gap-6">
+        <div class="flex flex-row items-center gap-4">
+            <BlossomUpload type="image" on:uploaded={uploaded}>
+                <button class="h-16 w-16 relative rounded-full overflow-clip flex flex-row items-center justify-center bg-accent/50">
+                    {#if picture}
+                        <img src={picture} class="absolute w-full h-full object-cover z-0 opacity-50" />
+                    {/if}
+                    <Camera size={32} class="z-10" />
+                </button>
+            </BlossomUpload>
 
-    <b class="text-foreground">Image</b>
-    <Input bind:value={picture} placeholder="Image" />
+            <div class="flex flex-col w-full">
+                <Input bind:value={name} placeholder="Community Name" class="text-xl py-6" />
+            </div>
+        </div>
 
-    <div class="font-bold">Relays</div>
-    <InputArray bind:values={relays} />
+        <ContentEditor
+            bind:content={about}
+            allowMarkdown={false}
+            toolbar={false}
+            class="
+                text-lg border border-border p-4 rounded
+            "
+            placeholder="Community Description"
+        />
+    </div>
+
+    <Collapsible.Root class="mt-8">
+        <Collapsible.Trigger class="text-xs w-full">
+            <Button variant="outline" class="w-full justify-start">
+                Advanced
+                <CaretDown size={16} class="ml-auto" />
+            </Button>
+        </Collapsible.Trigger>
+        <Collapsible.Content>
+            <div class="font-bold">Relays</div>
+            <InputArray bind:values={relays} />
+        </Collapsible.Content>
+    </Collapsible.Root>
 </ModalShell>

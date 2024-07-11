@@ -1,7 +1,7 @@
 <script lang="ts">
 	import FollowButton from "$components/buttons/FollowButton.svelte";
 	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
-    import FooterShell from "$components/PageElements/Mobile/FooterShell.svelte";
+    import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
 	import PinModal from "$modals/PinModal.svelte";
 	import currentUser from "$stores/currentUser";
@@ -17,7 +17,7 @@
     $: isCurrentUser = $currentUser?.pubkey === user.pubkey;
 </script>
 
-<FooterShell bind:collapsed>
+<Footer.Shell bind:collapsed>
     {#if collapsed}
         {#if !isCurrentUser}
             {#if !isFollowed}
@@ -51,4 +51,4 @@
             </Button>
         {/if}
     </div>
-</FooterShell>
+</Footer.Shell>

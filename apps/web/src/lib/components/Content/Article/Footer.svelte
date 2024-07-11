@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Zap from "$components/Events/Zaps/Zap.svelte";
     import ContentEditor from "$components/Forms/ContentEditor.svelte";
-	import FooterShell from "$components/PageElements/Mobile/FooterShell.svelte";
+	import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { BookmarkSimple, Check, Lightning, Repeat } from "phosphor-svelte";
@@ -43,7 +43,7 @@
     }
 </script>
 
-<FooterShell
+<Footer.Shell
     bind:collapsed
     bind:mainView
 >
@@ -135,4 +135,4 @@
             </div>
         {/if}
     </div>
-</FooterShell>
+</Footer.Shell>

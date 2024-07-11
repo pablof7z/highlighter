@@ -19,17 +19,17 @@
 </script>
 
 <div class="
-    gap-4
-    sm:gap-6
+    gap-3
     w-full
     grid md:grid-flow-row
     grid-cols-2 md:grid-cols-2
     justify-center
 ">
-    <NewPostItem icon={Note} title="Short Note" on:click={shortNote} />
-    <NewPostItem icon={TextAlignLeft} title="Article" href="/articles/new" on:click={closeModal} />
-    <NewPostItem icon={Play} title="Video" href="/videos/new" on:click={closeModal} />
-    <NewPostItem icon={RowsPlusBottom} title="Thread" href="/threads/new" on:click={closeModal} />
-    <NewPostItem icon={Timer} title="Scheduled Posts" href="/schedule" on:click={closeModal} />
-    <NewPostItem icon={PencilLine} title="Drafts" href="/drafts" on:click={closeModal} />
+    <NewPostItem icon='🤙' title="Short Note" on:click={shortNote} />
+    <NewPostItem icon="🗒️" title="Article" href="/articles/new" on:click={closeModal} />
+    <NewPostItem icon='🎬 ' title="Video" href="/videos/new" on:click={closeModal} />
+    <NewPostItem icon='🧵' title="Thread" href="/threads/new" on:click={closeModal} />
+    <NewPostItem icon='⏱️' title="Scheduled Posts" href="/schedule" on:click={closeModal} />
+    <NewPostItem icon='🖋️' title="Drafts" href="/drafts" on:click={closeModal} />
+    <NewPostItem icon='🏰' title="Community" href="/communities" on:click={closeModal} class="col-span-2" />
 </div>
