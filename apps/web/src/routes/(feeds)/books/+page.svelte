@@ -3,11 +3,7 @@
 	import { NDKArticle, NDKFilter, NDKKind, NDKRelaySet, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { layout } from "$stores/layout";
 	import { onDestroy } from "svelte";
-	import StoreGrid from "$components/Grid/StoreGrid.svelte";
-	import { wotFilteredStore } from "$stores/wot";
 	import { ndk } from "$stores/ndk.js";
-	import { Readable, derived } from "svelte/store";
-	import { filterArticle } from "$utils/article-filter";
 	import { page } from "$app/stores";
     import * as Card from '$components/Card';
 	import Section from "$components/Layout/Headers/Section.svelte";

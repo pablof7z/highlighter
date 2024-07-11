@@ -15,11 +15,18 @@
     w-[var(--content-card-width)]
     min-h-[var(--content-card-height)]
     max-h-[calc(var(--content-card-height)*2)]
-    p-4
+    flex flex-col divide-y divide-background
 ">
-    <Event.Header {event} />
-    <EventContent ndk={$ndk} {event} />
-    <ScrollArea orientation="horizontal">
-        <TopPlusRecentZaps {event} />
-    </ScrollArea>
+    <div class="p-4 pb-1">
+        <Event.Header {event} />
+
+    </div>
+    <div class="p-4">
+        <EventContent ndk={$ndk} {event} />
+    </div>
+    <div class="p-4">
+        <ScrollArea orientation="horizontal">
+            <TopPlusRecentZaps {event} />
+        </ScrollArea>
+    </div>
 </div>

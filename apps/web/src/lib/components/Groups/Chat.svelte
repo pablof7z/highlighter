@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { layout, pageHeader } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
-	import { NDKEvent, NDKKind, NDKSimpleGroup, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKKind, NDKSimpleGroup, NDKSimpleGroupMetadata, NDKTag } from "@nostr-dev-kit/ndk";
 	import { getContext, onDestroy } from "svelte";
 	import { goto } from "$app/navigation";
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
-	import { derived } from "svelte/store";
+	import { derived, Readable } from "svelte/store";
 	import ChatFooter from "./ChatFooter.svelte";
 	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 	import { addHistory } from "$stores/history";
 
     const group = getContext('group') as NDKSimpleGroup;
+    const metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
 
-    addHistory({ category: 'Chat', title: group.name ?? "Community" });
+    addHistory({ category: 'Chat', title: $metadata.name ?? "Community" });
     
     $layout.footerInMain = true;
 

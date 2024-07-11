@@ -6,7 +6,7 @@
 	import { wot, wotFiltered, wotFilteredStore } from "$stores/wot";
 	import { ndk } from "$stores/ndk.js";
 	import { Readable, derived } from "svelte/store";
-	import { filterArticle } from "$utils/article-filter";
+	import { filterArticles } from "$utils/article-filter";
 	import { page } from "$app/stores";
     import { addHistory } from "$stores/history.js";
 
@@ -35,7 +35,7 @@
     const wotF = wotFilteredStore(articles) as Readable<NDKArticle[]>;
 
     const filteredArticles = derived(wotF, ($wotF) => {
-        return filterArticle(wotF);
+        return filterArticles(wotF);
     });
 
     onDestroy(() => {

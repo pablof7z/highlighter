@@ -1,5 +1,4 @@
 <script lang="ts">
-	import LayoutHeaderNavigation from '$components/Layout/Headers/LayoutHeaderNavigation.svelte';
 	import { page } from "$app/stores";
 	import WithGroup from "$components/Event/WithGroup.svelte";
 	import JoinGroupFooter from "$components/JoinGroupFooter.svelte";

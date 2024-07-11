@@ -17,7 +17,7 @@
     $: {
         active = (value === (option.value || option.name ) || $page.url.pathname === option.href);
         if (option.href && option.href.length > 5) {
-            active = $page.url.pathname.endsWith(option.href);
+            active = $page.url.pathname.endsWith(option.href) || $page.url.toString().includes(option.href);
         }
         // scroll into view
         if (active) {

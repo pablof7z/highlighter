@@ -8,7 +8,7 @@
 </script>
 
 <div class="flex flex-row justify-between items-center">
-    <AvatarWithName user={event.author} {userProfile} />
+    <AvatarWithName user={event.author} {userProfile} avatarSize="tiny" nameClass="text-muted-foreground text-xs" />
 
     <RelativeTime {event} class="opacity-50" />
 </div>

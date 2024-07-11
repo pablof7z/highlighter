@@ -9,6 +9,7 @@
 	import { history } from '$stores/history';
 	import { ArrowDown, House } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
+	import { fly, slide } from "svelte/transition";
 
     let withSidebar: boolean;
 
@@ -125,6 +126,8 @@
 
     $: if ($layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)) {
         headerBarCount = 2;
+    } else if ($layout.header === false) {
+        headerBarCount = 0;
     } else {
         headerBarCount = 1;
     }
@@ -223,48 +226,50 @@
             class="flex flex-col bg-background z-50 h-screen overflow-y-auto"
         >
             
-            <!-- Header 1 -->
-            <header class="
-                mobile-nav
-                flex items-center fixed top-0 w-full
-                z-50
-                flex-col
-            "
-                style={`height: '${60*headerBarCount}px'`}
-            >
-                <div class="w-full border-b">
-                    <div
-                        class="
-                            w-full py-3 h-[60px] px-4
-                            {(withSidebar && !$appMobileView) ? "" : "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen"}
-                        "
-                        on:touchstart={headerTouchstart}
-                        on:touchmove={headerTouchmove}
-                        on:touchend={headerTouchend}
-                    >
-                        {#if $layout.header || $layout.title}
-                            <LayoutHeader />
-                        {:else if $appMobileView}
-                            <DefaultHeader />
-                        {:else if $layout.navigation !== false}
-                            <!-- If we are not showing a header, show the navigation bar -->
-                            <LayoutHeaderNavigation />
-                        {/if}
-                    </div>
-                </div>
-                <!-- Optional Navigation Bar (when there is a header) -->
-                {#if $layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)}
+            {#if headerBarCount > 0}
+                <!-- Header 1 -->
+                <header transition:fly class="
+                    mobile-nav
+                    flex items-center fixed top-0 w-full
+                    z-50
+                    flex-col
+                "
+                    style={`height: '${60*headerBarCount}px'`}
+                >
                     <div class="w-full border-b">
-                        <div class="
-                            w-full py-3
-                            {(withSidebar && !$appMobileView) ? "" : "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen"}
-                        ">
-                            <LayoutHeaderNavigation />
+                        <div
+                            class="
+                                w-full py-3 h-[60px] px-4
+                                {(withSidebar && !$appMobileView) ? "" : "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen"}
+                            "
+                            on:touchstart={headerTouchstart}
+                            on:touchmove={headerTouchmove}
+                            on:touchend={headerTouchend}
+                        >
+                            {#if $layout.header || $layout.title}
+                                <LayoutHeader />
+                            {:else if $appMobileView}
+                                <DefaultHeader />
+                            {:else if $layout.navigation !== false}
+                                <!-- If we are not showing a header, show the navigation bar -->
+                                <LayoutHeaderNavigation />
+                            {/if}
                         </div>
                     </div>
-                {/if}
-            </header>
-            <div class="flex-none" style={`height: ${60*headerBarCount}px`} />
+                    <!-- Optional Navigation Bar (when there is a header) -->
+                    {#if $layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)}
+                        <div class="w-full border-b">
+                            <div class="
+                                w-full py-3
+                                {(withSidebar && !$appMobileView) ? "" : "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen"}
+                            ">
+                                <LayoutHeaderNavigation />
+                            </div>
+                        </div>
+                    {/if}
+                </header>
+                <div transition:slide class="flex-none" style={`height: ${60*headerBarCount}px`} />
+            {/if}
 
             <main class="
                 flex flex-1 flex-col gap-4 lg:gap-6
@@ -275,7 +280,7 @@
                 <div class="mt-8-safe" style={`height: ${footerHeight}px`} />
                 {#if $appMobileView || $layout.footerInMain}
                     {#if $layout.footer}
-                        <footer class="mobile-nav fixed bottom-0 max-sm:bottom-6-safe w-full z-20" bind:this={footerContainer}>
+                        <footer class="fixed bottom-0 max-sm:bottom-6-safe w-full z-20 {mainClass} " bind:this={footerContainer}>
                             <svelte:component this={$layout.footer.component} {...$layout.footer.props} />
                         </footer>
                     {/if}

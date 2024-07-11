@@ -1,11 +1,5 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import WithGroup from "$components/Event/WithGroup.svelte";
-	import JoinGroupFooter from "$components/JoinGroupFooter.svelte";
-	import { groupView, loadedGroup } from "$stores/item-view";
-	import { pageHeader } from "$stores/layout";
-	import { getGroupUrl } from "$utils/url";
-	import { NavigationOption } from "../../app";
     import * as Groups from "$components/Groups";
 
     let groupId: string;
@@ -22,9 +16,21 @@
 </script>
 
 {#if groupId}
-    <Groups.Shell {groupId} {relays}>
-        <slot />
-    </Groups.Shell>
+    <Groups.Root
+        {groupId}
+        {relays}
+        let:isMember
+        let:isAdmin
+        let:group
+        let:metadata
+        let:members
+        let:admins
+        let:tiers
+    >
+        <Groups.Shell {group} {isAdmin} {isMember} {metadata} {members} {admins} {tiers}>
+            <slot />
+        </Groups.Shell>
+    </Groups.Root>
 {:else}
     <slot />
 {/if}

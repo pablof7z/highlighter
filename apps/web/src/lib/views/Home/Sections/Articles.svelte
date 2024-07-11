@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Tags from "$components/Events/Tags.svelte";
 import StoreFeed from "$components/Feed/StoreFeed.svelte";
-	import { filterArticle } from "$utils/article-filter";
+	import { filterArticles } from "$utils/article-filter";
 	import { blacklistedTags } from "$utils/const";
 	import { NDKArticle, NDKEvent, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { Readable, derived } from "svelte/store";
@@ -11,7 +11,7 @@ import StoreFeed from "$components/Feed/StoreFeed.svelte";
     export let end: number = 7;
 
     const filteredArticles = derived(articles, ($articles) => {
-        return filterArticle(articles)
+        return filterArticles(articles)
             .slice(start, end);
     });
 

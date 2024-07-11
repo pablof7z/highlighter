@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { modals, modalState } from '$stores/layout';
+	import { modalState } from '$stores/layout';
 	import { onDestroy, onMount } from 'svelte';
 	import { onBeforeClose } from "svelte-modals";
     import { closeModal } from '$utils/modal';
@@ -102,23 +102,21 @@
         </Toolbar>
     {/if}
     <Block class="max-h-[80vh] overflow-y-auto {$$props.class??""} max-sm:text-base">
-        <h1>{title}</h1>
-        
         <slot />
     </Block>
 {:else}
     <div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none" bind:this={containerEl}>
         <div class="
             max-sm:fixed max-sm:top-0 max-sm:bottom-0 z-[99] max-sm:w-full  max-sm:!pb-0
-            {$$props.class??""}
+            rounded-3xl overflow-clip bg-background border border-border
+            {$$props.containerClass??""}
         ">
             {#if mounted}
                 <div class="
                     !rounded-3xl
                     max-sm:!rounded-b-none
-                    border border-border
-                    w-fit mx-auto
-                    overflow-clip
+                    mx-auto
+                    !overflow-hidden
                     p-6
                     {$$props.class}
                 " style="
@@ -158,7 +156,9 @@
                                     <div class="grow"></div>
                                 {/if}
                                 
-                                <HorizontalOptionsList options={actionButtons} />
+                                <div>
+                                    <HorizontalOptionsList options={actionButtons} />
+                                </div>
                             </div>
                         {/if}
                     </div>

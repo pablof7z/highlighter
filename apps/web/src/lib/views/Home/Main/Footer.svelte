@@ -3,8 +3,8 @@
 	import { MagnifyingGlass, Plus } from "phosphor-svelte";
     import NewPost from '$components/Creator/NewPost.svelte';
 	import Input from "$components/ui/input/input.svelte";
-	import FooterShell from "$components/PageElements/Mobile/FooterShell.svelte";
 	import { goto } from "$app/navigation";
+    import * as Footer from "$components/Footer";
 
     export let newPost = false;
     export let collapsed = true;
@@ -18,7 +18,7 @@
     }
 </script>
 
-<FooterShell bind:collapsed>
+<Footer.Shell bind:collapsed>
     <Button
         variant="accent"
         class="rounded-full flex-none max-sm:w-12 w-10 max-sm:h-12 h-10 p-2"
@@ -50,4 +50,4 @@
             <NewPost />
         {/if}
     </div>
-</FooterShell>
+</Footer.Shell>
