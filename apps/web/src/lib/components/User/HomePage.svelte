@@ -1,6 +1,6 @@
 <script lang="ts">
 	import HorizontalList from '$components/PageElements/HorizontalList';
-	import NDK, { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKUser, NDKUserProfile, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
+	import NDK, { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKSubscriptionTier, NDKUser, NDKUserProfile, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { derived, writable, type Readable } from "svelte/store";
 	import { getContext, onDestroy, onMount } from "svelte";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
@@ -8,6 +8,8 @@
     import * as Card from '$components/Card';
 	import HighlightBody from '$components/HighlightBody.svelte';
 	import currentUser from '$stores/currentUser';
+    import * as Group from "$components/Groups";
+	import WithGroup from '$components/Event/WithGroup.svelte';
 
     export let user: NDKUser = getContext('user') as NDKUser;
     export let userProfile: NDKUserProfile | undefined | null;
@@ -19,6 +21,7 @@
     const userVideos = getContext('userVideos') as Readable<NDKVideo[]>;
     const userGroupsList = getContext('userGroupsList') as Readable<NDKList>;
     const userPinList = getContext('userPinList') as Readable<NDKList>;
+    const userTiers = getContext('userTiers') as Readable<NDKSubscriptionTier[]>;
 
     let isCurrentUser: boolean | undefined;
     $: isCurrentUser = $currentUser?.pubkey === user.pubkey;
@@ -60,11 +63,6 @@
         if ($userHighlights.length > 0 && !blockSet.has("highlights")) {
             blockSet.add("highlights");
             blocks = [...blocks, "highlights"]
-        }
-
-        if ($userGroupsList && $userGroupsList.items.length > 0 && !blockSet.has("groups")) {
-            blockSet.add("groups");
-            blocks = [...blocks, "groups"]
         }
 
         if ($highQualityNotes.length > 0 && !blockSet.has("notes")) {
@@ -121,6 +119,14 @@
             <Card.FeaturedItem item={item} skipAuthor />
         {/each}
     </div>
+{/if}
+
+{#if $userGroupsList}
+    <HorizontalList title="Communities" items={$userGroupsList.items.map(tag => { return {tag, id: tag[1]} })} let:item>
+        <Group.Shell tag={item.tag} let:group let:metadata let:tiers>
+            <Card.Community group={group} {metadata} {tiers} />
+        </Group.Shell>
+    </HorizontalList>
 {/if}
 
 {#each priorityBlocks as block}

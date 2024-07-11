@@ -6,6 +6,7 @@
 	import { pageHeader } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
 	import { NavigationOption } from "../../app";
+    import * as Groups from "$components/Groups";
 
     let groupId: string;
     let relays: string[];
@@ -21,19 +22,9 @@
 </script>
 
 {#if groupId}
-    <WithGroup
-        {groupId}
-        {relays}
-        bind:group={$loadedGroup}
-        bind:isMember={$groupView.isMember}
-        bind:isAdmin={$groupView.isAdmin}
-    >
-        {#if $loadedGroup}
-            <slot />
-        {:else}
-            nope
-        {/if}
-    </WithGroup>
+    <Groups.Shell {groupId} {relays}>
+        <slot />
+    </Groups.Shell>
 {:else}
     <slot />
 {/if}

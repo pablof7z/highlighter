@@ -1,34 +1,17 @@
 <script lang="ts">
 	import TierAmountLine from './TierAmountLine.svelte';
     import type { NDKSubscriptionAmount, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
-    import { createEventDispatcher, onDestroy, onMount } from "svelte";
+    import { createEventDispatcher } from "svelte";
 	import { Check, Trash, Plus } from 'phosphor-svelte';
 	import { slide } from 'svelte/transition';
     import { Textarea } from "$lib/components/ui/textarea";
 	import Input from '$components/ui/input/input.svelte';
 	import { Button } from '$components/ui/button';
-	import { pageHeader } from '$stores/layout';
 
     export let tier: NDKSubscriptionTier;
     export let autofocus = false;
 
     const dispatch = createEventDispatcher();
-
-    let prevPageHeaderRight: any;
-
-    onMount(() => {
-        prevPageHeaderRight = $pageHeader?.right;
-
-        $pageHeader.right = {
-            label: "Continue",
-            fn: () => dispatch("close"),
-        };
-    })
-
-    onDestroy(() => {
-        if ($pageHeader)
-            $pageHeader.right = prevPageHeaderRight;
-    });
 
     let name: string = "";
     let description: string;
@@ -131,12 +114,7 @@
 
 <div class="w-full rounded-xl flex-col border border-border text-muted-foreground">
     <div class="self-stretch flex-col justify-start items-start gap-6 flex">
-        <section class="settings w-full">
-            <h3 class="text-foreground font-semibold uppercase">Basic details</h3>
-            <div class="description">
-                Your potential subscribers will see this before deciding to support your work.
-            </div>
-
+        <section class="w-full">
             <div class="field">
                 <Input
                     placeholder="Tier Name"
@@ -186,28 +164,14 @@
             {/if}
 
             <div class="flex flex-row items-center gap-4">
-                <Button variant="outline" class="self-start" on:click={addPerk}
+                <Button variant="secondary" class="self-start" on:click={addPerk}
                 >
                     <Plus class="inline mr-2" /> Add Perk
                 </Button>
-
-                <p class="text-sm">
-                    Want to show an itemized list of perks subscribers of this tier get?
-                </p>
             </div>
         </section>
 
-        <section class="settings w-full">
-            <h3 class="text-foreground font-semibold uppercase">Pricing Options</h3>
-            <div class="description flex flex-col gap-2">
-                <p>
-                    You can use different currencies and paying intervals.
-                </p>
-                <p class="max-sm:hidden text-xs">
-                    E.g. $5/mo, $50/year or 50k sats/month
-                </p>
-            </div>
-
+        <section class="w-full flex flex-col gap-4">
             <div class="field self-stretch flex-col justify-start items-stretch w-full gap-2 flex">
                 {#each amounts as amount, i}
                     <div class="w-full" in:slide>
@@ -221,7 +185,7 @@
                 {/each}
             </div>
 
-            <Button variant="secondary" class="self-start" on:click={addAmountLine}>
+            <Button variant="secondary" size="xs" class="self-start" on:click={addAmountLine}>
                 <Plus class="w-5 h-5 mr-2" />
                 Add pricing option
             </Button>

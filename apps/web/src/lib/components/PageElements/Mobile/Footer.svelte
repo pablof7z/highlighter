@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FooterShell from "./FooterShell.svelte";
+	import * as Footer from "$components/Footer";
     import { Button } from "$components/ui/button";
     import ContentEditor from '$components/Forms/ContentEditor.svelte';
 	import { Plus } from "phosphor-svelte";
@@ -10,7 +10,7 @@
     export let placeholder: string | undefined = undefined;
 </script>
 
-<FooterShell bind:collapsed>
+<Footer.Shell bind:collapsed>
     <Button
         variant="accent"
         class="rounded-full flex-none w-12 h-12 p-2"
@@ -37,4 +37,4 @@
             <NewPost />
         {/if}
     </div>
-</FooterShell>
+</Footer.Shell>

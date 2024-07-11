@@ -1,14 +1,17 @@
 <script lang="ts">
     import { currencySymbol, possibleCurrencies } from "$utils/currency";
+    import * as Select from "$lib/components/ui/select";
 
     export let currency: string;
 </script>
 
-<select class="select pr-10 pl-0 text-right bg-foreground/10 text-foreground border border-border {$$props.class??""}" bind:value={currency}>
-    {#if !currency}
-        <option value="" selected>select currency</option>
-    {/if}
-    {#each possibleCurrencies as currency}
-        <option value={currency}>{currencySymbol(currency)}</option>
-    {/each}
-</select>
+<Select.Root onSelectedChange={(e) => currency = e.value}>
+    <Select.Trigger class="w-full">
+        <Select.Value placeholder="Currency" />
+    </Select.Trigger>
+    <Select.Content>
+        {#each possibleCurrencies as currency}
+            <Select.Item value={currency}>{currencySymbol(currency)}</Select.Item>
+        {/each}
+    </Select.Content>
+</Select.Root>

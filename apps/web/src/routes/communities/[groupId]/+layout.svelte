@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import GroupShell from "$views/Groups/GroupShelll.svelte";
+    import * as Groups from "$components/Groups";
 
     let groupId: string;
     let relays: string[];
@@ -17,6 +17,6 @@
     
 </script>
 
-<GroupShell {groupId} {relays}>
+<Groups.Shell {groupId} {relays}>
     <slot />
-</GroupShell>
+</Groups.Shell>

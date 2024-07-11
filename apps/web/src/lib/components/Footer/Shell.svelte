@@ -41,24 +41,30 @@
             }
         }
     }
+
+    function open(view: string = "default") {
+        collapsed = false;
+        mainView = view;
+    }
 </script>
 
 <div
     on:touchstart={touchstart}
     on:touchend={touchend}
     on:touchmove={touchmove}
-    style={
+    style="background: rgba(51, 51, 51, 0.99); {
         (dragging) ? "transform: translateY(" + dragged/50 + "px);" : ""
-    }
+    }"
     class="
+        backdrop-blur-lg
         max-sm:p-4 max-sm:px-6
         max-sm:right-0 sm:right-[360px]
-        max-sm:rounded-t-3xl bg-secondary p-3 px-4 h-auto 
+        rounded-t-3xl p-3 px-4 h-auto 
         flex flex-col justify-between items-center
     ">
     <div class="flex flex-row justify-between {align} w-full">
         <div class="flex flex-row justify-between {align} w-full gap-2">
-            <slot />
+            <slot {open} />
         </div>
 
         <Button
