@@ -9,10 +9,13 @@
     });
 
     export let skipAuthor = false;
+    export let gridSetup = "lg:grid-cols-2";
 
     const featuredItemIds = derived(featuredItems, $featuredItems => {
         return $featuredItems.map(item => item.id);
     });
+
+
 </script>
 
 {#if $featuredItems.length > 0}
@@ -23,7 +26,7 @@
     </div>
 {/if}
 
-<div class="lg:grid lg:grid-cols-2 gap-6 flex flex-col flex-wrap max-lg:divide-y divide-border">
+<div class="lg:grid {gridSetup} gap-6 flex flex-col flex-wrap max-lg:divide-y divide-border">
     {#each $store as article}
         {#if !$featuredItemIds.includes(article.id)}
             <div class="py-[var(--section-vertical-padding)] w-full">

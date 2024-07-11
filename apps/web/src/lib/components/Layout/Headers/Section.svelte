@@ -1,5 +1,5 @@
 <script lang="ts">
-	import BackButton from "$components/PageElements/Navigation/BackButton.svelte";
+	import BackButton from "$components/App/Navigation/BackButton.svelte";
 	import { NavigationOption } from "../../../../app";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 	import { Button } from "$components/ui/button";

@@ -9,9 +9,12 @@
 	import { filterArticles } from "$utils/article-filter";
 	import { page } from "$app/stores";
     import { addHistory } from "$stores/history.js";
+    import * as Feed from "$components/Feed";
 
     $layout.title = "Reads";
     $layout.back = { url: "/" };
+    $layout.fullWidth = true;
+    $layout.sidebar = undefined;
 
     onMount(() => {
         addHistory({ title: "Articles", url: $page.url.toString() })
@@ -43,6 +46,9 @@
     });
 </script>
 
-<div class="mx-auto w-full">
-    <StoreGrid feed={filteredArticles} renderLimit={1} />
+<div class="responsive-padding">
+    <Feed.Articles
+        store={filteredArticles}
+        gridSetup="lg:grid-cols-5"
+    />
 </div>

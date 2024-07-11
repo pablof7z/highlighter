@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { NDKSubscriptionTier, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { DotsThree, Export } from "phosphor-svelte";
-	import { createEventDispatcher, onDestroy, onMount } from "svelte";
+	import { onMount } from "svelte";
 	import { Readable } from "svelte/store";
 	import { NavigationOption } from "../../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
@@ -13,7 +12,7 @@
 	import currentUser from '$stores/currentUser';
 	import Npub from '$components/User/Npub.svelte';
 	import { inview } from 'svelte-inview';
-	import BackButton from '$components/PageElements/Navigation/BackButton.svelte';
+	import BackButton from '$components/App/Navigation/BackButton.svelte';
 	import FollowButton from "$components/buttons/FollowButton.svelte";
 	import { Button } from "$components/ui/button";
 	import { openModal } from "$utils/modal";

@@ -8,7 +8,7 @@
 	import { Actions, ActionsButton, ActionsGroup, Link, Button as MobileButton, Toolbar } from 'konsta/svelte';
     import { NavbarBackLink } from 'konsta/svelte';
 	import TiersLabel from "$components/Forms/TiersLabel.svelte";
-	import BackButton from "$components/PageElements/Navigation/BackButton.svelte";
+	import BackButton from "$components/App/Navigation/BackButton.svelte";
 
     export let onSaveDraft: () => void;
     export let onPublish: () => void;
