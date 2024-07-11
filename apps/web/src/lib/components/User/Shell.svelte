@@ -129,13 +129,15 @@
     }
     $: if (authorUrl && $userWiki.length > 0) optionManager.setOption('wiki', { id: 'wiki', name: "Wiki", badge: roundedItemCount($userWiki!), href: getUserUrl(authorUrl, user, "wiki") }, eosed);
 
-
     $layout = {
         title: "Profile",
         sidebar: false,
     }
 
-    $: $layout.title = userProfile?.displayName ?? user.pubkey;
+    $: {
+        $layout.title = userProfile?.displayName ?? user.pubkey;
+        console.log('setting title', $layout.title)
+    }
     $: $layout.iconUrl = userProfile?.image;
     $: $layout.footer = {
         component: Footer,

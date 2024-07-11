@@ -24,7 +24,7 @@
 </script>
 
 {#if options}
-    <ScrollArea class="whitespace-nowrap" orientation="horizontal">
+    <ScrollArea class="border whitespace-nowrap {$$props.class??""}" orientation="horizontal">
         <HorizontalOptionsList {options} />
     </ScrollArea>
 {/if}

@@ -125,12 +125,16 @@
 
     let headerBarCount = 1;
 
-    $: if ($layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)) {
-        headerBarCount = 2;
-    } else if ($layout.header === false) {
-        headerBarCount = 0;
-    } else {
-        headerBarCount = 1;
+    $: {
+        if ($layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)) {
+            headerBarCount = 2;
+        } else if ($layout.header === false) {
+            headerBarCount = 0;
+        } else {
+            headerBarCount = 1;
+        }
+        console.log({headerBarCount, header: $layout.header, title: $layout.title })
+        
     }
 
     let mainClass = "";
@@ -154,6 +158,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="
     grid min-h-screen w-full
     max-lg:h-[90vw] z-50 overflow-clip
@@ -232,7 +237,6 @@
             bind:this={mainContainer}
             class="flex flex-col bg-background z-50 h-screen overflow-y-auto"
         >
-            
             {#if headerBarCount > 0}
                 <!-- Header 1 -->
                 <header transition:fly class="
@@ -247,19 +251,18 @@
                         <div
                             class="
                                 w-full py-3 h-[60px] px-4
-                                {(withSidebar && !$appMobileView) ? "" : "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen"}
                             "
                             on:touchstart={headerTouchstart}
                             on:touchmove={headerTouchmove}
                             on:touchend={headerTouchend}
                         >
                             {#if $layout.header || $layout.title}
-                                <LayoutHeader />
+                                <LayoutHeader containerClass={$layout.sidebar === false ? mainClass : ""} />
                             {:else if $appMobileView}
                                 <DefaultHeader />
                             {:else if $layout.navigation !== false}
                                 <!-- If we are not showing a header, show the navigation bar -->
-                                <LayoutHeaderNavigation />
+                                <LayoutHeaderNavigation class={mainClass} />
                             {/if}
                         </div>
                     </div>
@@ -268,9 +271,8 @@
                         <div class="w-full border-b">
                             <div class="
                                 w-full py-3
-                                {(withSidebar && !$appMobileView) ? "" : "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen"}
                             ">
-                                <LayoutHeaderNavigation />
+                                <LayoutHeaderNavigation class={mainClass} />
                             </div>
                         </div>
                     {/if}

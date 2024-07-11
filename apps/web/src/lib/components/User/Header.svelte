@@ -19,7 +19,7 @@
 	import NewGroupModal from "$modals/NewGroupModal.svelte";
 
     export let user: NDKUser;
-    export let userProfile: NDKUserProfile | undefined = undefined;
+    export let userProfile: NDKUserProfile | null | undefined = undefined;
     export let fetching: boolean;
     export let tiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
     export let options: NavigationOption[] = [];
@@ -27,18 +27,25 @@
     let following: boolean;
     $: following = $userFollows.has(user.pubkey);
 
+    let headerCache: any;
+
     function inviewchange(e) {
         const { inView } = e.detail;
 
+        console.log({inView});
+
         if (inView) {
+            // headerCache = $layout.header;
             $layout.header = false;
             $layout.navigation = false;
         } else if (inView === false) {
+            $layout.header = headerCache;
             $layout.navigation = options;
         }
     }
 
     onMount(() => {
+        headerCache = $layout.header;
         $layout.navigation = false;
     })
 

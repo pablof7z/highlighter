@@ -66,7 +66,7 @@
     <Card.User user={item.user} />
 </HorizontalList>
 
-<!-- <HorizontalList title="Articles" items={$filteredArticles} let:item>
+<HorizontalList title="Articles" items={$filteredArticles} let:item>
     <Card.Article article={item} />
 </HorizontalList>
 
@@ -83,4 +83,4 @@
         <HighlightBody highlight={item} />
     </div>
 </HorizontalList>
- -->
+

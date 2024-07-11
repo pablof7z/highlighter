@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import WithGroup from "$components/Event/WithGroup.svelte";
-	import JoinGroupFooter from "$components/JoinGroupFooter.svelte";
 	import { groupView, loadedGroup } from "$stores/item-view";
 	import { layout, pageHeader } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
@@ -10,6 +9,7 @@
 	import GroupPosts from "$views/Groups/GroupPosts.svelte";
 	import GroupSettings from "$views/Groups/GroupSettings.svelte";
 	import { NavigationOption } from "../../../app.d.js";
+    import * as Groups from "$components/Groups/";
 
     let groupId: string;
     let relays: string[];
@@ -49,7 +49,7 @@
         $layout.iconUrl = $loadedGroup.picture;
         if ($groupView.isMember === false) {
             $layout.footer = {
-                component: JoinGroupFooter,
+                component: Groups.Footers.Join,
                 props: { group: $loadedGroup },
             }
         }

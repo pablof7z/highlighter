@@ -3,6 +3,7 @@
 
     $layout = {
         title: "Wallet",
+        sidebar: false,
 
         navigation: [
             { name: "Overview", href: "/wallet" },
@@ -12,6 +13,6 @@
     }
 </script>
 
-<div class="max-w-xl mx-auto w-full">
+<div class="resposive-padding py-6">
     <slot />
 </div>

@@ -35,6 +35,7 @@
         actionButtons = [
             {
                 name: "Create",
+                buttonProps: { variant: 'accent' },
                 fn: create
             }
         ];
