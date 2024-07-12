@@ -6,6 +6,8 @@
 	import { ndk } from "$stores/ndk";
 	import TopPlusRecentZaps from "$components/Events/Zaps/TopPlusRecentZaps.svelte";
 	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
+	import { goto } from "$app/navigation";
+	import { getEventUrl } from "$utils/url";
 
     export let event: NDKEvent;
 </script>
@@ -21,9 +23,11 @@
         <Event.Header {event} />
 
     </div>
-    <div class="p-4 break-words whitespace-normal">
+    <a
+        href={getEventUrl(event)}
+        class="p-4 break-words whitespace-normal grow cursor-pointer">
         <EventContent ndk={$ndk} {event} />
-    </div>
+    </a>
     <div class="p-4">
         <ScrollArea orientation="horizontal">
             <TopPlusRecentZaps {event} />

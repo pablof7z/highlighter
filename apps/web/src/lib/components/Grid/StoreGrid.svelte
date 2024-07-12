@@ -7,14 +7,13 @@
 	import GroupNote from "$components/Events/GroupNote.svelte";
 	import CurationItem from "$components/CurationItem.svelte";
 	import { goto } from "$app/navigation";
-	import VideoLink from "$components/Events/VideoLink.svelte";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import Article from "./Article.svelte";
 	import Video from "./Video.svelte";
 
     export let feed: Readable<NDKEvent[]>;
     export let renderLimit = 10;
-    export let urlPrefix: string = "/e/";
+    export let urlPrefix: string = "/a/";
     export let showEventsOlderThan: Date | undefined = undefined;
     export let tooNewEvents = new Set<NDKEventId>();
     export let wideView: false | undefined | "first" = undefined;

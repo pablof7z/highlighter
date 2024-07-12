@@ -7,12 +7,22 @@
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { createEventDispatcher, onMount } from 'svelte';
     import CaretDown from "phosphor-svelte/lib/CaretDown";
-	import currentUser, { loginMethod, userPubkey } from "$stores/currentUser";
+	import currentUser, { loginMethod, nip46LocalKey, userPubkey } from "$stores/currentUser";
 	import { bunkerNDK, ndk } from '$stores/ndk.js';
 	import { createGuestAccount } from "$utils/user/guest";
+	import Input from "$components/ui/input/input.svelte";
+	import Button from "$components/ui/button/button.svelte";
+	import { Play } from "phosphor-svelte";
+	import { fillInSkeletonProfile, pkSignup, skeletonAvatars } from "$utils/login";
+	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
+	import AvatarSelection from "$components/Signup/AvatarSelection.svelte";
+    import { createNewWallet } from "$lib/actions/wallet/new.js";
+	import { closeModal } from "$utils/modal";
 
     export let actionButtons: NavigationOption[] = [];
     export let mode: string;
+
+    const signer = NDKPrivateKeySigner.generate();
 
     onMount(() => {
         actionButtons = [
@@ -78,7 +88,7 @@
 
         if (!localSigner) {
             localSigner = NDKPrivateKeySigner.generate();
-            localStorage.setItem("nostr-nsecbunker-key", localSigner.privateKey!);
+            $nip46LocalKey = localSigner.privateKey!;
         }
 
         // Generate event
@@ -129,6 +139,7 @@
         });
     }
 
+    let avatar: string;
     let usernameHasFocus = false;
 
     async function checkUsername() {
@@ -147,86 +158,72 @@
 
     $: username = username.toLowerCase().replace(/[^a-z0-9_]/g, "");
 
-    
+    let name: string;
+
+    async function startSignup() {
+        await pkSignup();
+
+        await fillInSkeletonProfile({
+            name,
+            picture: avatar,
+        })
+
+        closeModal();
+
+        // create wallet
+        setTimeout(() => {
+            createNewWallet()
+        }, 5000);
+
+    }
 </script>
 
-<div class="relative">
+<div class="sm:w-96">
     <div
         class="flex flex-col gap-4 transition-opacity duration-0"
     >
-        <div class="field">
-            <label>
-                Choose a username
-            </label>
-            <div class="
-                border flex flex-row flex-nowrap
-                !bg-black/30 !border-opacity-20 rounded-full text-lg text-foreground/80
-                w-full items-center placeholder:!text-zinc-400 !ring-none
-                border-white overflow-clip gap-2
-                justify-between
-            ">
-                <input
-                    tabindex={1}
-                    bind:value={username}
-                    type="text"
-                    autocomplete="off"
-                    placeholder="Username"
-                    class="lowercase !border-none !ring-0 !outline-none pl-6 w-1/2 border grow !bg-transparent"
-                    on:focus={() => usernameHasFocus = true}
-                    on:blur={() => {usernameHasFocus = false; checkUsername(); }}
-                />
-                <span class="text-lg text-neutral-500 font-medium">@</span>
-                <div class="border-0 inset-y-1 flex items-center text-sm text-gray-500
-                    bg-black/60 hover:bg-black/70 rounded-r-full py-4 pl-2">
-                    <button class="border-0 flex items-center text-sm text-neutral-200 focus:ring-0 focus:outline-none overflow-hidden" on:click={() => providerOpen = !providerOpen}>
-                        {#if nsecBunker?.domain}
-                            <span class="underline underline-offset-1 transition-all duration-300">{nsecBunker.domain}</span>
-                        {/if}
-                        <CaretDown class="w-5 h-5 ml-2 mr-3" />
-                    </button>
-                </div>
-            </div>
-            <div class="text-sm opacity-60 transition-all duration-300 -mt-1 hidden">
-                <span class="text-foreground">Don't worry you can change it later.</span>
-            </div>
-
-            {#if usernameTaken}
-                <div class="alert alert-error bg-error/20 text-foreground/80 py-3 my-3 text-sm font-medium" transition:slide>
-                    This username is already taken.
-                </div>
-            {/if}
+        <div class="flex flex-col">
+            <h1>Welcome!</h1>
+    
+            <p class="text-lg text-muted-foreground grow">
+                Highlighter is a
+                calm place for
+                <span class="text-foreground">content creators</span>
+                to build long-lasting relationships with their audience.
+            </p>
         </div>
 
-        <div class="w-full h-full" class:hidden={!providerOpen}>
-            <NsecBunkerProviderSelect
-                {username}
-                bind:allNsecBunkerProviders
-                bind:value={nsecBunker}
-                on:click={() => {
-                    providerOpen = false
-                    checkUsername()
-                }}
+        <div class="flex flex-col items-center gap-2 w-full">
+            <AvatarSelection bind:avatar />
+        </div>
+
+        <div class="field mx-2">
+            <label for="">What should we call you?</label>
+
+            <Input
+                bind:value={name}
+                class="text-lg p-6"
+                placeholder="Johnnie Appleseed"
             />
         </div>
 
-        {#if !popupNotOpened}
-            <button class="text-foreground font-normal" on:click={continueAsGuest}>
-                or continue as guest
-            </button>
-        {:else}
-            <a href={authUrl} target="_blank" class="button button-primary transition duration-300 flex flex-col gap-1" transition:slide>
-                Continue
-            </a>
-        {/if}
+        <Button
+            variant="accent"
+            size="lg"
+            class="font-bold text-lg"
+            on:click={startSignup}
+        >
+            Start
+            <Play size={22} class="ml-2" weight="fill" />
+        </Button>
+
+        <Button
+            variant="secondary"
+            size="lg"
+            class="text-lg"
+            on:click={() => mode = 'login'}
+        >
+            Already on Highlighter or Nostr?
+        </Button>
     </div>
 </div>
-
-<style lang="postcss">
-    .field {
-        @apply flex flex-col gap-2;
-    }
-
-    label {
-        @apply text-foreground text-lg;
-    }
-</style>

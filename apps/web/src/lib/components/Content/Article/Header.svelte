@@ -31,6 +31,7 @@
             component: Footer,
             props: { article }
         }
+        $layout.footerInMain = true;
     }
 
     $: image = article.image

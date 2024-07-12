@@ -5,11 +5,16 @@
 	import { closeModal } from '$utils/modal';
 	import { slide } from "svelte/transition";
 	import { nip19 } from "nostr-tools";
-	import currentUser, { loginMethod, privateKey, userPubkey } from '$stores/currentUser';
+	import currentUser, { loginMethod, nip46LocalKey, privateKey, userPubkey } from '$stores/currentUser';
 	import { loginState } from '$stores/session';
 	import { bunkerNDK, ndk } from '$stores/ndk';
 	import { Input } from '$components/ui/input';
 	import { NavigationOption } from '../../app';
+	import { Check, Key, MagnifyingGlass } from 'phosphor-svelte';
+	import { Button } from '$components/ui/button';
+	import UserProfile from '$components/User/UserProfile.svelte';
+	import Avatar from '$components/User/Avatar.svelte';
+	import Name from '$components/User/Name.svelte';
 
     export let value: string = "";
     export let nsec: string = "";
@@ -72,7 +77,7 @@
             blocking = false;
 
             if (!existingPrivateKey) {
-                localStorage.setItem('nostr-nsecbunker-key', localSigner.privateKey!);
+                $nip46LocalKey = localSigner.privateKey!;
             }
 
             // nip46ConnectionStatus = 'Authorized';
@@ -166,6 +171,8 @@
         $currentUser.ndk = $ndk;
         userPubkey.set($currentUser.pubkey);
         loginState.set('logged-in');
+        privateKey.set(signer.privateKey);
+        loginMethod.set('pk');
         closeModal();
     }
 
@@ -178,32 +185,162 @@
             loginType = 'nip46';
         } else if (value.includes("@")) {
             loginType = 'nip46';
-        } else if (value.startsWith("nsec")) {
+        } else if (value.startsWith("nsec1")) {
             loginType = 'pk';
             nsec = value;
+        } else {
+            loginType = undefined;
+        }
+    }
+
+    let nip05: string;
+    let searching = false;
+    let user: NDKUser | undefined;
+
+    async function findProfile() {
+        searching = true;
+        try {
+            user = await $ndk.getUserFromNip05(nip05);
+            console.log(user)
+        } finally {
+            searching = false;
+        }
+    }
+
+    function attemptToProcess() {
+        identifyLoginType();
+
+        try {
+            if (loginType === 'pk') {
+                const key = nip19.decode(value);
+                loginWithNsec();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function next() {
+        identifyLoginType();
+        if (loginType === 'nip46') {
+            loginWithBunker();
         }
     }
 </script>
 
 <div class="flex flex-col gap-4 p-4">
-    <div class="w-full">
-        <div class="w-full flex flex-col gap-4">
-            <div class="flex-col justify-start items-start gap-3 inline-flex">
-                <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                    <div class="text-foreground text-base font-medium leading-normal">Username / Nostr address</div>
-                    <Input bind:value type="text" placeholder="eg. bob@nostr.me" on:keyup={identifyLoginType} />
+    {loginType}
+    {#if !user}
+        <div class="w-full">
+            <div class="field mx-2 w-full">
+                <label for="">What profile do you want to use?</label>
+                <Input
+                    bind:value={value}
+                    class="text-lg p-6"
+                    placeholder="nsec1..., jack@cashapp.com"
+                    on:submit={findProfile}
+                    on:paste={attemptToProcess}
+                    on:change={attemptToProcess}
+                    on:keyup={attemptToProcess}
+                />
+                <div class="flex flex-col items-start text-sm text-muted-foreground">
+                    Enter something to get started:
+                    <div class="flex flex-row items-center gap-2">
+                        <span>🤙</span>
+                        Nostr address (NIP-05)
+                    </div>
+                    <div class="flex flex-row items-center gap-2">
+                        <span>🔑</span>
+                        An nsec private key
+                    </div>
                 </div>
             </div>
-
-            {#if error}
-                <span class="text-danger">{error}</span>
-            {:else if loginStatus}
-                <div class="text-sm">{loginStatus}</div>
-            {:else}
-                <div class="text-sm text-muted-foreground">
-                    Enter a nostr username, your nsec (private key) or your npub to login in read-only mode.
-                </div>
-            {/if}
         </div>
-    </div>
+
+        <Button
+            variant="accent"
+            size="lg"
+            class="font-medium text-lg w-full"
+            on:click={next}
+        >
+            {#if loginType === 'pk'}
+                Login with nsec
+                <Key size={22} class="ml-2" />
+            {:else if loginType === 'npub'}
+                Find Me
+                <MagnifyingGlass size={22} class="ml-2" />
+            {/if}
+        </Button>
+
+        <Button
+            variant="secondary"
+            on:click={() => mode = 'signup'}
+        >
+            Create New Profile
+        </Button>
+    {:else}
+        <div class="flex flex-col items-center gap-6">
+            <UserProfile {user} let:userProfile let:fetching>
+                
+                <div class="flex flex-col items-center">
+                    <Avatar ring {user} {fetching} {userProfile} size="large" />
+                    <h1 class="mb-0">
+                        Hi,
+                        <Name {user} {fetching} {userProfile} />!
+                    </h1>
+    
+                    <div class="text-muted-foreground text-lg">
+                        Welcome to Highlighter!
+                    </div>
+
+                </div>
+
+                <p class="text-lg text-muted-foreground grow">
+                    Highlighter is a calm place for
+                    <span class="text-foreground">content creators</span>
+                    to build long-lasting relationships with their audience.
+                </p>
+
+                <div class="field mx-2">
+                    <label for="">Enter your Nostr private key (starting with "nsec"):</label>
+                    <code>
+                        <Input
+                            bind:value={nsec}
+                            class="text-lg p-6"
+                            placeholder="nsec1"
+                        />
+                    </code>
+                </div>
+        
+                <Button
+                    variant="accent"
+                    size="lg"
+                    class="font-bold text-lg w-full"
+                >
+                    Login with nsec
+                    <Key size={22} class="ml-2" />
+                </Button>
+
+                <Button
+                    variant="outline"
+                    class="w-full"
+                    on:click={() => mode = 'login'}
+                >
+                    Continue in Read Only Mode
+                </Button>
+    
+            </UserProfile>
+        </div>
+            
+    {/if}
 </div>
+
+<style lang="postcss">
+    .field {
+        @apply flex flex-col gap-2;
+    }
+
+    label {
+        @apply text-foreground text-lg;
+    }
+</style>

@@ -1,5 +1,6 @@
 import { BlobDescriptor, BlossomClient, SignedEvent } from "blossom-client-sdk/client";
-import { generateMediaEventFromBlobDescriptor, sign } from "./blossom";
+import { generateMediaEventFromBlobDescriptor, sign, signWith } from "./blossom";
+import { NDKSigner } from "@nostr-dev-kit/ndk";
 
 export class Uploader {
     private blob: Blob;
@@ -11,6 +12,7 @@ export class Uploader {
     private url: URL;
     private xhr: XMLHttpRequest;
     private response?: BlobDescriptor;
+    public signer?: NDKSigner;
     
     constructor(blob: Blob, server: string) {
         this.blob = blob;
@@ -39,7 +41,8 @@ export class Uploader {
     }
 
     async start() {
-        const uploadAuth = await BlossomClient.getUploadAuth( this.blob as Blob, sign as any, "Upload file");
+        let _sign = this.signer ? signWith(this.signer) : sign;
+        const uploadAuth = await BlossomClient.getUploadAuth( this.blob as Blob, _sign as any, "Upload file");
         const encodedAuthHeader = this.encodeAuthorizationHeader(uploadAuth);
 
         this.xhr.open('PUT', this.url.toString(), true);
@@ -56,10 +59,7 @@ export class Uploader {
     }
 
     private xhrOnProgress(e: ProgressEvent) {
-        console.log(e);
-        console.log(!!this._onProgress);
         if (e.lengthComputable && this._onProgress) {
-            console.log(e.loaded / e.total * 100);
             this._onProgress(e.loaded / e.total * 100);
         }
     }

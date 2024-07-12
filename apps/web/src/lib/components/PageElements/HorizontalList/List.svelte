@@ -13,7 +13,7 @@
     export let items: any[] = [];
 </script>
 
-<div class="border-y border-border w-full flex flex-row max-sm:w-screen border py-[var(--section-vertical-padding)] {$$props.class??""}">
+<div class="w-full flex flex-row max-sm:w-screen py-[var(--section-vertical-padding)] {$$props.class??""}">
     <div class="w-full flex flex-col">
         {#if title}
             <a {href} class="flex flex-row items-center gap-2 px-4 mb-1">

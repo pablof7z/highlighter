@@ -28,6 +28,22 @@ const d = createDebug('HL:login');
 const $ndk = get(ndk);
 const $bunkerNDK = get(bunkerNDK);
 
+/**
+ * Generates a private-key-based user
+ * and sets up the local state to reflect that.
+ */
+export async function pkSignup() {
+	const $ndk = get(ndk);
+	const signer = NDKPrivateKeySigner.generate();
+	privateKey.set(signer.privateKey);
+	loginMethod.set('pk');
+	const user = await signer.user();
+	user.ndk = $ndk;
+	currentUser.set(user);
+	$ndk.signer = signer;
+	userPubkey.set(user.pubkey);
+}
+
 export async function finalizeLogin() {
 	const url = import.meta.env.VITE_BASE_URL;
 	const hostname = new URL(url).hostname;
@@ -54,11 +70,11 @@ async function pkLogin(key: string, method: LoginMethod = 'pk') {
 	}
 }
 
-async function nip46Login(remotePubkey?: Hexpubkey) {
-	const existingPrivateKey = nip46LocalKey.get();
+export async function nip46Login(remotePubkey?: Hexpubkey) {
+	const existingPrivateKey = get(nip46LocalKey);
 	let remoteUser: NDKUser | undefined;
 
-	d({ existingPrivateKey, remotePubkey });
+	d("nip46 login %s", existingPrivateKey);
 
 	if (!existingPrivateKey) return;
 
@@ -68,7 +84,6 @@ async function nip46Login(remotePubkey?: Hexpubkey) {
 	if (!remoteUser) return;
 
 	currentUser.set(remoteUser);
-	console.log("DEBUG setting user", remoteUser)
 	const connected = async () => {
 		d('bunker relay ready');
 		loginState.set('contacting-remote-signer');
@@ -153,33 +168,6 @@ export async function login(payload: string | undefined) {
 	}
 }
 
-export async function fetchJWT(event: NDKEvent) {
-	const formData = new FormData();
-	formData.append('event', JSON.stringify(event.rawEvent()));
-
-	const res = await fetch('/api/login', {
-		method: 'POST',
-		headers: { accept: 'application/json' },
-		body: JSON.stringify({ event: event.rawEvent() })
-	});
-
-	if (res.status !== 200) {
-		let error: string;
-		const data = await res.json();
-		console.log(data);
-
-		error = data.error;
-		error ??= res.statusText;
-
-		newToasterMessage(`Failed to login: ${error.message}`, 'error');
-		return false;
-	}
-
-	const jwt = await res.text();
-
-	return jwt;
-}
-
 /**
  * This function attempts to sign in using a NIP-07 extension.
  */
@@ -208,9 +196,9 @@ async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
 }
 
 /**
- * This function attempts to sign in using a NIP-46 extension.
+ * This function attempts to sign in using NIP-46.
  */
-async function nip46SignIn(
+export async function nip46SignIn(
 	existingPrivateKey: string,
 	remoteUser: NDKUser
 ) {
@@ -220,8 +208,14 @@ async function nip46SignIn(
 	let localSigner: NDKPrivateKeySigner | null = null;
 
 	if (existingPrivateKey) {
-		localSigner = new NDKPrivateKeySigner(existingPrivateKey);
+		try {
+			localSigner = new NDKPrivateKeySigner(existingPrivateKey);
+		} catch {
+			return;
+		}
 	}
+
+	d(`Local signer: ${localSigner} Remote user: ${remoteUser.pubkey}`);
 
 	if (!localSigner) {
 		alert('Local signer not available');
@@ -233,16 +227,21 @@ async function nip46SignIn(
 	d(`Contacting remote signer`);
 	remoteSigner.blockUntilReady();
 	d(`Remote signer came back`);
-
-	localStorage.setItem('nostr-nsecbunker-key', localSigner.privateKey!);
+	
 	loggedIn(remoteSigner, remoteUser, 'nip46');
 }
 
+/**
+ * This function updates the local state to keep track of how we logged in
+ * and inform the rest of the app that we are logged in.
+ * @param signer 
+ * @param u 
+ * @param method 
+ */
 export function loggedIn(signer: NDKSigner, u: NDKUser, method: LoginMethod) {
 	$ndk.signer = signer;
     u.ndk = $ndk;
     currentUser.set(u)
-	console.trace("DEBUG setting user (loggedIn)", u)
     loginState.set("logged-in");
 
 	loginMethod.set(method);
@@ -253,11 +252,11 @@ export function logout(): void {
 	const $ndk = get(ndk);
 	$ndk.signer = undefined;
 	currentUser.set(undefined);
-	currentUser.set(undefined);
 	loginState.set('logged-out');
 	userFollows.set(new Set());
 	userFollows.delete();
-	userPubkey.set("");
+	userPubkey.reset();
+	privateKey.reset();
 	userProfile.set(undefined);
 
 	// explicitly prevent auto-login with NIP-07
@@ -266,7 +265,7 @@ export function logout(): void {
 	goto('/');
 }
 
-const names = [
+export const names = [
 	"Curious Reader",
 	"The Eager Explorer",
 	"A Thoughtful Thinker",
@@ -290,18 +289,20 @@ const names = [
 	"A Mindful Maven"
 ];
 
+export const skeletonAvatars = [
+	"https://cdn.satellite.earth/aaf65dd621667c75162ce3ee845a8202bdf2aee8d70ec0f1d25fe92ecd881675.png",
+	"https://cdn.satellite.earth/c50267d41d5874cb4e949e7bd472c2d06e1b297ffffac19b2f53c291a3e052d2.png",
+	"https://cdn.satellite.earth/011dc8958f86dc12c5c3a477de3551c3077fb8e71a730b7cec4a678f5c021550.png",
+];
+
 export async function fillInSkeletonProfile(profile: NDKUserProfile) {
-	const images = [
-        "https://cdn.satellite.earth/aaf65dd621667c75162ce3ee845a8202bdf2aee8d70ec0f1d25fe92ecd881675.png",
-        "https://cdn.satellite.earth/c50267d41d5874cb4e949e7bd472c2d06e1b297ffffac19b2f53c291a3e052d2.png",
-        "https://cdn.satellite.earth/011dc8958f86dc12c5c3a477de3551c3077fb8e71a730b7cec4a678f5c021550.png",
-    ];
+	const images = skeletonAvatars;
 	const randName = names[Math.floor(Math.random() * names.length)];
 	const randImage = images[Math.floor(Math.random() * images.length)];
 
 	profile.name ??= randName;
 	profile.image ??= randImage;
-	profile.about ??= `Hi! I'm a brand new nostr user trying things out. Be nice!`;
+	profile.about ??= `Sup!`;
 	profile.website ??= "";
 
 	const followList = new NDKEvent($ndk);

@@ -13,7 +13,6 @@
     py-2
     sm:px-0
     gap-0
-    max-sm:mb-4
     relative
     focus:outline-none
     {$$props.class??""}

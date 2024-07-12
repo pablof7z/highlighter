@@ -3,6 +3,8 @@
 	import { newToasterMessage } from "$stores/toaster.js";
 	import { activeBlossomServer } from "$stores/session";
 	import { Uploader } from "$utils/upload";
+	import { NDKPrivateKeySigner, NDKSigner } from "@nostr-dev-kit/ndk";
+	import { get } from "svelte/store";
 
     type UploadType = "file" | "image" | "video" | "audio" | "*";
 
@@ -11,6 +13,7 @@
     export let startUpload = true;
     export let blob: Blob | undefined = undefined;
     export let videoDuration: number | void | undefined = undefined;
+    export let signer: NDKSigner | undefined = undefined;
 
     const dispatch = createEventDispatcher();
 
@@ -72,6 +75,7 @@
         if (!blob) return;
 
         const uploader = new Uploader(blob, $activeBlossomServer);
+        uploader.signer = signer;
         uploader.onProgress = (p) => progress = p;
         uploader.onUploaded = (url: string) => {
             const mediaEvent = uploader.mediaEvent();

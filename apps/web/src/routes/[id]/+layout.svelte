@@ -25,7 +25,7 @@
 
 
 {#if npub}
-    {#key user.pubkey}
+    {#key user?.pubkey}
         <slot />
     {/key}
 {:else}

@@ -32,7 +32,7 @@
 {#if filters}
     <FilterFeed
         {filters}
-        urlPrefix="/e/"
+        urlPrefix="/a/"
         renderLimit={1}
     />
 {/if}

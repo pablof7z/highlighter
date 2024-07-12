@@ -1,15 +1,16 @@
 <script lang="ts">
-	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
+	import AvatarsPill from "$components/Avatars/AvatarsPill.svelte";
+import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
     import { ndk } from "$stores/ndk";
 	import { userFollows } from "$stores/session";
-	import { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { Hexpubkey, NDKEvent } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher } from "svelte";
 	import { derived } from "svelte/store";
 
     const dispatch = createEventDispatcher();
 
     const mintRecommendations = $ndk.storeSubscribe({
-        kinds: [18173], authors: Array.from($userFollows)
+        kinds: [18173, 37375]//, authors: Array.from($userFollows)
     }, { closeOnEose: true})
 
     const mints = $ndk.storeSubscribe({
@@ -17,12 +18,16 @@
     })
 
     const recommendationsPerMint = derived(mintRecommendations, ($mintRecommendations) => {
-        const mintRecCount = new Map<string, number>();
+        const mintRecCount = new Map<string, Set<Hexpubkey>>();
 
         for (const rec of $mintRecommendations) {
-            const mint = rec.tagValue("u");
+            let mint = rec.tagValue("u");
+            mint ??= rec.tagValue("m");
             if (!mint) continue;
-            mintRecCount.set(mint, (mintRecCount.get(mint) || 0) + 1);
+
+            const mintSet = mintRecCount.get(mint) || new Set<Hexpubkey>();
+            mintSet.add(rec.pubkey);
+            mintRecCount.set(mint, mintSet);
         }
 
         return mintRecCount;
@@ -54,17 +59,18 @@
     }
 </script>
 
-{$mints.length}
+{Object.keys($recommendationsPerMint).length}
+
 <ScrollArea>
     <ul class="h-max divide-y divide-border max-h-[50vh]">
         {#each $sortedMints as mint (mint.id)}
             {#if mint.tagValue("u")}
                 <li class="py-2">
-                    <button on:click={() => click(mint)}>
+                    <button class="flex flex-row justify-between w-full" on:click={() => click(mint)}>
                         {mint.tagValue("u")}
 
                         {#if $recommendationsPerMint.get(mint.tagValue("u"))}
-                            <span class="text-accent">{$recommendationsPerMint.get(mint.tagValue("u"))}</span>
+                            <AvatarsPill pubkeys={Array.from($recommendationsPerMint.get(mint.tagValue("u")))}/>
                         {/if}
                     </button>
                 </li>

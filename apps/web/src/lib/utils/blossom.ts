@@ -1,16 +1,20 @@
 // a blossom URL should finish with a 64 characters hex string and an optional file extension
 
 import { ndk } from "$stores/ndk.js";
-import { NDKEvent, NDKKind, NDKList, NDKUser, normalize } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKKind, NDKList, NDKSigner, NDKUser, normalize } from "@nostr-dev-kit/ndk";
 import { BlobDescriptor, EventTemplate } from "blossom-client-sdk/client";
 import { get } from "svelte/store";
 
 const blossomUrlRegex = /\/[0-9a-f]{64}(\.\w+)?$/;
 
-export async function sign(draft: EventTemplate) {
+export function signWith(signer: NDKSigner) {
+    return (draft: EventTemplate) => sign(draft, signer);
+}
+
+export async function sign(draft: EventTemplate, signer?: NDKSigner) {
     const $ndk = get(ndk);
     const e = new NDKEvent($ndk, draft as any);
-    await e.sign();
+    await e.sign(signer);
     return e.toNostrEvent();
 }
 

@@ -70,7 +70,7 @@
             <div class="flex flex-row items-stretch w-full">
                 {#if $layout.sidebar === false}
                     {#if $page.url.pathname !== "/"}
-                        <div class="fixed">
+                        <div class="fixed max-sm:hidden">
                             <HomeButton />
                         </div>
                     {/if}

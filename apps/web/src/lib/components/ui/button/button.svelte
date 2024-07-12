@@ -10,7 +10,6 @@
 
 	type $$Props = Props & {
 		class?: string;
-		longpress?: number;
 		forceNonMobile?: boolean;
 	};
 	type $$Events = Events;

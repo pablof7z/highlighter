@@ -3,11 +3,11 @@
 	import { ndk } from "$stores/ndk";
     import { debugMode } from "$stores/session";
 	import { encodeTag } from "$utils/event";
-    import { NDKEvent, NDKKind, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, getReplyTag, getRootEventId, getRootTag } from "@nostr-dev-kit/ndk";
+    import { NDKEvent, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, getReplyTag, getRootEventId, getRootTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 
     export let event: NDKEvent;
-    export let urlPrefix: string = "/e/";
+    export let urlPrefix: string = "/a/";
     export let isNoop: boolean | undefined = false;
 
     let rootEvent: NDKEvent | undefined | null | "not-fetched" = "not-fetched";

@@ -96,7 +96,7 @@
     {#if !hideCollapsedView || collapsed}
         <div class="flex flex-row justify-between {align} w-full gap-2" transition:slide={{axis: 'y'}}>
             <div class="flex flex-row justify-between {align} w-full gap-2">
-                <slot {collapsed} {open} {collapse} />
+                <slot {collapsed} {open} {collapse} {mainView} />
             </div>
 
             <Button

@@ -74,8 +74,8 @@
     }
 
     if (!urlPrefix) {
-        if (isMobileBuild()) urlPrefix = "/e?eventId=";
-        else urlPrefix = "/e/";
+        if (isMobileBuild()) urlPrefix = "/a?eventId=";
+        else urlPrefix = "/a/";
     }
 
     let isLastInThread: boolean;
@@ -220,6 +220,7 @@
     const skipViewConversationKinds = [
         NDKKind.Highlight,
         NDKKind.Zap,
+        7377,
         NDKKind.DVMReqTextToSpeech + 1000
     ];
 

@@ -79,7 +79,7 @@
 {#if eventFilters && eventFilters.length > 0}
     <FilterFeed
         filters={eventFilters}
-        urlPrefix="/e/"
+        urlPrefix="/a/"
         renderLimit={100}
     />
 {:else}

@@ -37,7 +37,7 @@ export function getEventUrl(event: NDKEvent, authorUrl?: string, extraPath?: str
 				path.push(event.encode());
 			}
 		} else {
-			path.push("e");
+			path.push("a");
 			path.push(event.encode());
 		}
 		

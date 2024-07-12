@@ -1,10 +1,12 @@
-import { Proof } from "@cashu/cashu-ts";
 import NDK, { NDKEvent, NDKEventId, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
 import { NostrEvent } from "nostr-tools";
 import { NDKCashuToken, proofsTotalBalance } from "./token";
 
 export class NDKCashuWallet extends NDKEvent {
     public tokens: NDKCashuToken[] = [];
+
+    static kind = 37375;
+    static kinds = [37375];
 
     constructor(ndk?: NDK, event?: NostrEvent) {
         super(ndk, event);
@@ -18,8 +20,10 @@ export class NDKCashuWallet extends NDKEvent {
         try {
             await wallet.decrypt();
         } catch (e) {
+            console.error(e);
         }
         wallet.content ??= prevContent;
+        console.log(wallet.content);
 
         const contentTags = JSON.parse(wallet.content);
         wallet.tags = [...contentTags, ...wallet.tags];
@@ -51,7 +55,6 @@ export class NDKCashuWallet extends NDKEvent {
     }
 
     get mints(): WebSocket['url'][] {
-        console.log('getting mints', this.tags)
         const r = [];
         for (const tag of this.tags) {
             if (tag[0] === "mint") { r.push(tag[1]); }
@@ -78,7 +81,7 @@ export class NDKCashuWallet extends NDKEvent {
         const encryptedTags: NDKTag[] = [];
         const unencryptedTags: NDKTag[] = [];
 
-        const unencryptedTagNames = [ "d", "client" ]
+        const unencryptedTagNames = [ "d", "client", "mint" ]
 
         for (const tag of this.tags) {
             if (unencryptedTagNames.includes(tag[0])) { unencryptedTags.push(tag); }
