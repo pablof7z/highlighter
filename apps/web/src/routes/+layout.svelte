@@ -9,7 +9,7 @@
 	import "@fontsource/lora/600.css";
 	import "@fontsource/lora/600-italic.css";
 	import { browser } from '$app/environment';
-	import { browserSetup } from './browser-session-setup';
+	import { browserSetup } from './browser-session-setup.js';
 	import createDebug from 'debug';
 	import currentUser from '$stores/currentUser';
 	import { appMobileView } from '$stores/app';

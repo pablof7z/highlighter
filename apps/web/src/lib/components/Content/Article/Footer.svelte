@@ -10,26 +10,26 @@
 	import { openModal } from "$utils/modal";
 	import ShareModal from "$modals/ShareModal.svelte";
 	import BookmarkFooterButton from "$components/Layout/Footers/Buttons/BookmarkFooterButton.svelte";
+    import ZapButton from "$components/Layout/Footers/Buttons/Zap.svelte";
 
     export let article: NDKArticle;
     export let mainView: 'zap' | 'tts' | "content" | undefined = undefined;
     export let collapsed = true;
     export let placeholder = "Reply";
 
+    let collapse: () => void;
     let zapped = false;
+
+    function onZapping(){
+        collapse();
+    }
+    
     function onZapped() {
-        mainView = undefined;
-        collapsed = true;
+        collapse();
         zapped = true;
-        setTimeout(() => zapped = false, 2000);
     }
 
     let content = "";
-
-    function setMainView(view: 'zap' | 'tts' | "content") {
-        mainView = view;
-        collapsed = false;
-    }
 
     function cancelContentEditor() {
         mainView = undefined;
@@ -46,25 +46,11 @@
 <Footer.Shell
     bind:collapsed
     bind:mainView
+    bind:collapse
+    let:open
 >
     {#if collapsed}
-        <Button
-            variant={zapped ? undefined : "accent"}
-            class="
-                flex-none w-12 h-12 p-2
-                rounded
-                {zapped ? 'bg-green-500' : ''}
-            "
-            on:click={() => {
-                setMainView('zap')
-            }}
-        >
-            {#if !zapped}
-                <Lightning class="w-full h-full" weight="fill" />
-            {:else}
-                <Check class="w-full h-full" weight="bold" />
-            {/if}
-        </Button>
+        <ZapButton target={article} bind:zapped {open} />
 
         <ReaderButton
             {article}
@@ -114,6 +100,7 @@
             <Zap
                 event={article}
                 on:zap={onZapped}
+                on:zapping={onZapping}
             />
         {:else if mainView === 'tts'}
             <Tts event={article} />

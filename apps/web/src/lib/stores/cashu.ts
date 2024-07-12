@@ -1,4 +1,4 @@
-import { getRelayListForUser, NDKEvent, NDKUser } from '@nostr-dev-kit/ndk';
+import { getRelayListForUser, NDKEvent, NDKEventId, NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk';
 import NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
 import { NDKCashuToken } from '$utils/cashu/token';
@@ -7,11 +7,37 @@ import { derived, get, writable } from 'svelte/store';
 import { ndk } from './ndk';
 import { CashuMint, CashuWallet, MeltQuoteResponse, Proof } from '@cashu/cashu-ts';
 import currentUser from './currentUser';
+import { toast } from 'svelte-sonner';
+import { receiveCashuZap } from '$utils/zap';
 
 export let walletMap = writable<Map<string, NDKCashuWallet>>(new Map());
 export let wallets = derived(walletMap, $wallets => Array.from($wallets.values()));
 
-export let walletTokens = writable<Map<string, NDKCashuToken[]>>(new Map());
+/**
+ * This is the real store that holds the tokens for each wallet.
+ * We don't want to expose this store directly, since it will include recently used
+ * tokens.
+ */
+export let _walletTokens = writable<Map<string, NDKCashuToken[]>>(new Map());
+
+/**
+ * This is the store that keeps tracks of recently-used tokens that should not be
+ * used.
+ */
+export let deletedTokens = writable<Set<NDKEventId>>(new Set());
+
+/**
+ * This store keeps track of wallet tokens that can be used.
+ */
+export let walletTokens = derived([_walletTokens, deletedTokens], ([$walletTokens, $deletedTokens]) => {
+    const tokens = new Map<string, NDKCashuToken[]>();
+
+    for (const [walletId, walletTokens] of $walletTokens) {
+        tokens.set(walletId, walletTokens.filter(token => !$deletedTokens.has(token.id)));
+    }
+
+    return tokens;
+});
 
 export let userProofs = writable<Proof[]>([]);
 
@@ -21,6 +47,21 @@ export let walletBalance = derived(walletTokens, $walletTokens => {
     for (const [walletId, tokens] of $walletTokens) {
         const balance = tokens.reduce((acc, token) => acc + token.amount, 0);
         balances.set(walletId, balance);
+    }
+
+    return balances;
+});
+
+export let mintBalances = derived(walletTokens, $walletTokens => {
+    const balances = new Map<string, number>();
+
+    for (const [walletId, tokens] of $walletTokens) {
+        for (const token of tokens) {
+            const mint = token.mint;
+            if (!mint) continue;
+            const balance = balances.get(mint) ?? 0;
+            balances.set(mint, balance + token.amount);
+        }
     }
 
     return balances;
@@ -55,7 +96,7 @@ async function updateWalletTokens(wallet: NDKCashuWallet) {
     
     const tokenEvents = await $ndk.fetchEvents({ ids: tokenIds });
 
-    walletTokens.update(tokens => {
+    _walletTokens.update(tokens => {
         tokens.set(
             walletId,
             Array.from(tokenEvents)
@@ -81,7 +122,7 @@ async function storeWalletEvent(event: NDKEvent) {
         return wallets;
     });
 
-    walletTokens.update(tokens => {
+    _walletTokens.update(tokens => {
         if (!tokens.has(wallet.dTag!)) {
             tokens.set(wallet.dTag!, []);
         }
@@ -125,7 +166,7 @@ async function storeTokenEvent(event: NDKEvent) {
     // console.log('storing token event', event.rawEvent(), walletId);
 
     // add this token to the wallet
-    walletTokens.update(tokens => {
+    _walletTokens.update(tokens => {
         const walletTokens = tokens.get(walletId) ?? [];
 
         // check if the token already exists
@@ -139,7 +180,7 @@ async function storeTokenEvent(event: NDKEvent) {
 }
 
 export function cashuInit(ndk: NDKSvelte, currentUser: NDKUser) {
-    walletRelaySet = NDKRelaySet.fromRelayUrls([ "wss://nos.lol" ], ndk);
+    walletRelaySet = NDKRelaySet.fromRelayUrls([ "wss://relay.damus.io", "wss://relay.nostr.band" ], ndk);
 
     const walletSub = ndk.subscribe([
         { kinds: [37375 as number], authors: [currentUser.pubkey] },
@@ -153,6 +194,44 @@ export function cashuInit(ndk: NDKSvelte, currentUser: NDKUser) {
         if (event.kind === 37375) storeWalletEvent(event);
         else if (event.kind === 7375) await storeTokenEvent(event);
     });
+
+    const cashuZapSub = ndk.subscribe([
+        { kinds: [7377 as number], "#p": [currentUser.pubkey] },
+        { kinds: [7378 as number], authors: [currentUser.pubkey] }
+    ], {
+        cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY,
+        subId: 'cashu-zaps',
+    });
+
+    // Tracks the cashu-zaps we have already (n)acked
+    let reactedZapEvents = new Set<NDKEventId>();
+    cashuZapSub.on("event", async (event: NDKEvent) => {
+        // track all the zap events we have reacted to
+        if (event.kind === 7378) { event.getMatchingTags("e").forEach(([_, id]) => reactedZapEvents.add(id)); return }
+
+
+        console.log('signer' ,ndk.signer)
+
+        if (ndk.signer instanceof NDKPrivateKeySigner) {
+            try {
+                console.log('receiving zap', event.rawEvent());
+                const tokenEvent = await receiveCashuZap(event, ndk.signer, ndk);
+                console.log('received zap', tokenEvent.rawEvent());
+                const wallet = get(activeWallet);
+                const relaySet = NDKRelaySet.fromRelayUrls(wallet.relays, ndk);
+                console.log('publishing to relay set', relaySet);
+                tokenEvent.tag(wallet);
+                tokenEvent.publish(relaySet)
+                const amount = tokenEvent.amount;
+                toast.success("Zap claimed " + amount);
+            } catch (e) {
+                console.error('could not claim zap', e);
+                toast.error("We received a zap but we can't claim it: " + e.message);
+            }
+        } else {
+            toast.error("We received a zap but we can't claim it; you need to login with your nsec")
+        }
+    });
 }
 
 export async function chooseProofs(amount: number, walletId: string, mint: string) {
@@ -163,12 +242,14 @@ export async function chooseProofs(amount: number, walletId: string, mint: strin
     const proofsToMove = [];
     const usedTokens = [];
 
-    const wallet = new CashuWallet(new CashuMint(mint));
+    console.log('wallet keys', $walletTokens.keys());
 
-    
+    console.log('choosing proofs', { amount, walletId, mint, tokens });
+
     let remaining = amount;
     
     for (const token of tokens) {
+        console.log('checking token', { tokenMint: token.mint, requiredMint: mint }, token.id, token.amount, token.proofs.length);
         if (token.mint !== mint) continue;
         
         let tokenUsed = false;
@@ -176,12 +257,12 @@ export async function chooseProofs(amount: number, walletId: string, mint: strin
             if (remaining > 0) {
                 proofsToUse.push(proof);
                 remaining -= proof.amount;
-                console.log('pushing proof', proof.amount, { remaining});
+                // console.log('pushing proof', proof.amount, { remaining});
                 tokenUsed = true;
                 usedTokens.push(token);
             } else {
                 proofsToMove.push(proof);
-                console.log('marking proof as needing a new token event', proof.amount);
+                // console.log('marking proof as needing a new token event', proof.amount);
             }
         }
 
@@ -189,10 +270,10 @@ export async function chooseProofs(amount: number, walletId: string, mint: strin
     }
 
     if (remaining > 0) {
-        throw new Error('Not enough proofs');
+        throw new Error('Not enough proofs' + remaining + " " + amount);
     }
 
-    console.log('chose proofs', {proofsToUse, proofsToMove, usedTokens});
+    // console.log('chose proofs', {proofsToUse, proofsToMove, usedTokens});
     
     return {
         proofsToUse,
@@ -201,45 +282,71 @@ export async function chooseProofs(amount: number, walletId: string, mint: strin
     };
 }
 
+type ProofsCombinaion = {
+    proofsToUse: Proof[],
+    proofsToMove: Proof[],
+    usedTokens: NDKCashuToken[]
+}
+
+async function chooseProofsFromMintForPaymentRequest(
+    pr: string,
+    mint: string,
+    walletId: string
+) {
+    let proofs: ProofsCombinaion = { proofsToUse: [], proofsToMove: [], usedTokens: [] };
+    let quote: MeltQuoteResponse | undefined | null;
+    
+    try {
+        const wallet = new CashuWallet(new CashuMint(mint));
+        quote = await wallet.meltQuote(pr);
+        proofs = await chooseProofs(quote.amount, walletId, mint);
+    } catch (e) {
+        // console.log(`mint ${mint} could not be used for this payment request`, e.message);
+        return undefined;
+    }
+
+    return { mint, proofs, quote };
+}
+
 export async function payWithProofs(pr: string, amount: number, walletEvent?: NDKCashuWallet, zapRecipient?: NDKEvent | NDKUser) {
     const $activeWallet = get(activeWallet);
     walletEvent ??= $activeWallet;
+
+    console.log('paying with wallet', walletEvent.dTag);
 
     if (!walletEvent) {
         throw new Error('no wallet event');
     }
 
     const $ndk = get(ndk);
-    let proofs: { proofsToUse: Proof[], proofsToMove: Proof[], usedTokens: NDKCashuToken[] } = { proofsToUse: [], proofsToMove: [], usedTokens: [] };
+    let proofs: ProofsCombinaion = { proofsToUse: [], proofsToMove: [], usedTokens: [] };
     let quote: MeltQuoteResponse | undefined | null;
+    let mint: string | undefined;
 
-    for (const mint of walletEvent.mints) {
-        try {
-            const wallet = new CashuWallet(new CashuMint(mint));
-            quote = await wallet.meltQuote(pr);
-            console.log('quote', quote);
-            proofs = await chooseProofs(quote.amount, walletEvent.dTag!, mint);
-        } catch (e) {
-            console.error(e);
+    await new Promise<void>((resolve, reject) => {
+        for (const m of walletEvent.mints) {
+            console.log('trying mint', m, "out of mints", walletEvent.mints.length)
+            chooseProofsFromMintForPaymentRequest(pr, m, walletEvent.dTag!).then(result => {
+                if (result) {
+                    proofs = result.proofs;
+                    quote = result.quote;
+                    mint = result.mint;
+                    console.log('result', mint, proofs, quote);
+                    resolve();
+                } else {
+                    console.log('no result');
+                }
+            });
         }
-    }
+    });
 
-    if (!quote) {
-        throw new Error('no quote');
-    }
+    if (!quote) { throw new Error('no quote'); }
+    if (proofs.proofsToUse.length === 0) { throw new Error('no proofs'); }
+    if (!mint) { throw new Error('no mint'); }
 
-    if (proofs.proofsToUse.length === 0) {
-        throw new Error('no proofs');
-    }
-
-    const mint = proofs.usedTokens[0].mint;
-    if (!mint) {
-        throw new Error('no mint');
-    }
     const wallet = new CashuWallet(new CashuMint(mint));
 
     console.log('paying with proofs', proofs);
-
     
     const result = await wallet.payLnInvoice(pr, proofs.proofsToUse, quote);
     console.log('pay result', result);
@@ -248,13 +355,33 @@ export async function payWithProofs(pr: string, amount: number, walletEvent?: ND
         return result;
     }
 
+    await rollOverProofs(proofs, result.change, mint);
+    await recordPayment(pr, amount, result, proofs, zapRecipient);
+
+    return result;
+}
+
+/**
+ * Deletes and creates new events to reflect the new state of the proofs
+ */
+export async function rollOverProofs(
+    proofs: ProofsCombinaion,
+    changes: Proof[],
+    mint: string,
+) {
+    const $ndk = get(ndk);
+    
     proofs.usedTokens.forEach(token => {
         console.log('deleting token', token.id);
+        deletedTokens.update(set => {
+            set.add(token.id);
+            return set;
+        });
         token.delete();
     });
 
     const proofsToSave = proofs.proofsToMove;
-    for (const change of result.change) {
+    for (const change of changes) {
         proofsToSave.push(change);
     }
 
@@ -263,7 +390,16 @@ export async function payWithProofs(pr: string, amount: number, walletEvent?: ND
     tokenEvent.mint = mint;
     tokenEvent.publish(walletRelaySet);
     console.log('created new token event', tokenEvent.rawEvent);
+}
 
+export async function recordPayment(
+    pr: string,
+    amount: number,
+    result: any,
+    proofs: ProofsCombinaion,
+    zapRecipient?: NDKEvent | NDKUser
+) {
+    const $ndk = get(ndk);
     const payment = new NDKEvent($ndk);
     payment.kind = 7376;
     payment.tags.push(["pr", pr]);
@@ -274,8 +410,6 @@ export async function payWithProofs(pr: string, amount: number, walletEvent?: ND
         payment.tag(tokens);
     }
     payment.publish();
-
-    return result;
 }
 
 export async function checkTokenProofs(token: NDKCashuToken) {

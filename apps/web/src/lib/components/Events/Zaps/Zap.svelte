@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ZapSent from './ZapSent.svelte';
-    import type { Hexpubkey, NDKEvent, NDKFilter, NDKTag } from '@nostr-dev-kit/ndk';
+    import type { Hexpubkey, NDKEvent, NDKFilter, NDKTag, NDKUser } from '@nostr-dev-kit/ndk';
     import { requestProvider } from 'webln';
 
     import { Heart, Fire, Rocket, Lightning, HeartStraight } from 'phosphor-svelte';
@@ -13,10 +13,12 @@
 	import Input from '$components/ui/input/input.svelte';
 	import { newToasterMessage, toasterItems } from '$stores/toaster';
 	import LnQrCode from '$components/Payment/LnQrCode.svelte';
-	import { chooseProofs, payWithProofs, userProofs, walletBalance } from '$stores/cashu';
+	import { activeWalletTokens, chooseProofs, defaultWalletBalance, payWithProofs, userProofs, walletBalance } from '$stores/cashu';
 	import { CashuMint, CashuWallet } from '@cashu/cashu-ts';
+    import { zap as realZap } from '$utils/zap';
 
-    export let event: NDKEvent;
+    export let event: NDKEvent | undefined = undefined;
+    export let user: NDKUser | undefined = undefined;
     export let forceZap: boolean = false;
     export let skipButton: boolean = false;
 
@@ -57,70 +59,83 @@
     let prs: [string, number, NDKFilter ][] = [];
 
     type Split = [Hexpubkey, number, number]
-    const zapSplits: Split[] = event.getMatchingTags("zap")
-        .map((zapTag: NDKTag) => {
-            return [zapTag[1], parseInt(zapTag[3]??"1"), 0]
-        });
+    let zapSplits: Split[];
+    
+    if (event) {
+        zapSplits = event.getMatchingTags("zap")
+            .map((zapTag: NDKTag) => {
+                return [zapTag[1], parseInt(zapTag[3]??"1"), 0]
+            });
+    } else if (user) {
+        zapSplits = [
+            [user.pubkey, 1, 0]
+        ]
+    }
 
     async function zap() {
-        zapping = true;
-        zapButtonEnabled = false;
+        // zapping = true;
+        // zapButtonEnabled = false;
         
         if(Number.isNaN(amount) && errorCustomAmount) {
             alert('Specify a number to zap') ;
             return;
         }
 
-        try {
-            for (const zapSplit of zapSplits) {
-                const satAmount = Math.round(amount * zapSplit[1] / totalSplitValue);
+        await realZap(1, event || user!, "hello nut");
 
-                if (satAmount === 0) continue;
-                
-                $ndk
-                    .zap(event, satAmount * 1000, comment, [], $ndk.getUser({ pubkey: zapSplit[0] }))
-                    .then(async (pr: string | null) => {
-                        console.log('pr', pr, $walletBalance);
-                        if (pr) {
-                            if ($walletBalance && $walletBalance >= satAmount) {
-                                console.log("we can pay with wallet balance");
+        return;
 
-                                // try {
-                                    const wallet = new CashuWallet(new CashuMint("https://stablenut.umint.cash"));
-                                    const ret = await payWithProofs(pr, satAmount, wallet, event);
-                                    // console.log('trying to pay with wallet balance', proofs);
-                                    // const ret = await wallet.payLnInvoice(pr, proofs);
-                                    console.log({ret});
-                                    if (ret.isPaid) {
-                                        zapSent = true;
-                                        dispatch('zap', { pr, satAmount, zapSplit });
-                                    }
-                                // } catch (e) {
-                                //     console.error(e);
-                                //     toast.error(e.message);
-                                // }
-                            } else {
-                                // prs.push([pr, satAmount, { "#p": [zapSplit[0]], "#e": [event.id], since: Math.floor(Date.now()/1000), kinds: [9735] }]);
-                                // prs = prs;
-                            }
-                        }
-                    })
-                    .catch((e: Error) => {
-                        console.error(e);
-                        newToasterMessage(e.message, "error");
-                    })
-                    .finally(() => {
-                        zapping = false;
-                    });
-            }
+        // try {
+        //     for (const zapSplit of zapSplits) {
+        //         const satAmount = Math.round(amount * zapSplit[1] / totalSplitValue);
 
-            event.ndk = $ndk;
-        } catch (e) {
-            console.error(e);
-            newToasterMessage(e.message, "error");
-        } finally {
-            zapButtonEnabled = true;
-        }
+        //         if (satAmount === 0) continue;
+
+        //         dispatch('zapping', { satAmount, zapSplit });
+
+        //         $ndk
+        //             .zap(event, satAmount * 1000, comment, [], $ndk.getUser({ pubkey: zapSplit[0] }))
+        //             .then(async (pr: string | null) => {
+        //                 console.log('pr', pr, $walletBalance);
+        //                 if (pr) {
+        //                     if ($defaultWalletBalance && $defaultWalletBalance >= satAmount) {
+        //                         console.log("we can pay with wallet balance");
+
+        //                         // try {
+        //                             const ret = await payWithProofs(pr, satAmount, undefined, event);
+        //                             // console.log('trying to pay with wallet balance', proofs);
+        //                             // const ret = await wallet.payLnInvoice(pr, proofs);
+        //                             console.log({ret});
+        //                             if (ret.isPaid) {
+        //                                 zapSent = true;
+        //                                 dispatch('zap', { pr, satAmount, zapSplit });
+        //                             }
+        //                         // } catch (e) {
+        //                         //     console.error(e);
+        //                         //     toast.error(e.message);
+        //                         // }
+        //                     } else {
+        //                         // prs.push([pr, satAmount, { "#p": [zapSplit[0]], "#e": [event.id], since: Math.floor(Date.now()/1000), kinds: [9735] }]);
+        //                         // prs = prs;
+        //                     }
+        //                 }
+        //             })
+        //             .catch((e: Error) => {
+        //                 console.error(e);
+        //                 newToasterMessage(e.message, "error");
+        //             })
+        //             .finally(() => {
+        //                 zapping = false;
+        //             });
+        //     }
+
+        //     event.ndk = $ndk;
+        // } catch (e) {
+        //     console.error(e);
+        //     newToasterMessage(e.message, "error");
+        // } finally {
+        //     zapButtonEnabled = true;
+        // }
     }
 
     if (zapSplits.length === 0) {
@@ -206,6 +221,9 @@
                                     placeholder="Zap custom amount..."
                                     bind:value={customAmount}
                                     on:change={() => {
+                                        amount = parseInt(customAmount);
+                                    }}
+                                    on:keyup={() => {
                                         amount = parseInt(customAmount);
                                     }}
                                 />

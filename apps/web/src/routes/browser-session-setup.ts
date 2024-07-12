@@ -1,7 +1,7 @@
-import currentUser, { loginMethod, userPubkey } from '$stores/currentUser';
+import currentUser, { loginMethod, nip46LocalKey, userPubkey } from '$stores/currentUser';
 import { ndk } from '$stores/ndk';
 import { loginState } from '$stores/session';
-import { loggedIn, login } from '$utils/login';
+import { loggedIn, login, nip46Login, nip46SignIn } from '$utils/login';
 import { createGuestAccount } from '$utils/user/guest';
 import { NDKNip07Signer, NDKUser } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
@@ -20,31 +20,35 @@ const $ndk = get(ndk);
  */
 export async function browserSetup(useGuest = true) {
     const pubkey = get(userPubkey);
-    d({pubkey});
+    d('pubkey %s', pubkey);
 
     if (pubkey) {
         const u = $ndk.getUser({pubkey});
         loginState.set("logging-in");
-        currentUser.set(u);
     }
 
     const method = get(loginMethod);
+    d('login method %s', method);
 
-    // No stored pubkey found, attempt to sign in with NIP-07
-    if (!pubkey && method !== "none") {
-        const loggedIn = await newSessionTryNip07();
-        const $ndk = get(ndk);
+    if (method === 'nip46' && pubkey) {
+        await nip46Login(pubkey)
+    } else {
+        // No stored pubkey found, attempt to sign in with NIP-07
+        if (!pubkey && method !== "none") {
+            const loggedIn = await newSessionTryNip07();
+            const $ndk = get(ndk);
 
-        if (!$ndk.signer) {
-            if (useGuest)
-                return await createGuestAccount();
+            if (!$ndk.signer) {
+                if (useGuest)
+                    return await createGuestAccount();
+            }
+
+            return;
         }
 
-        return;
-    }
-
-    if (method) {
-        return login();
+        if (method) {
+            return login();
+        }
     }
 }
 

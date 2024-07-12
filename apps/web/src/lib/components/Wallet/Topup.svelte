@@ -23,18 +23,21 @@
 
     let open = false;
 
-    function amountToPreference(n) {
-        const powers = [];
-        let i = 0;
-        while (n > 0) {
-            if (n % 2 === 1) {
-                powers.push(2 ** i);
-            }
-            n = Math.floor(n / 2);
-            i++;
-        }
-        return powers.map((p) => ({ amount: p, count: 1 }));
+    // create a function that grabs the amount and creates combinations that sum to the amount,
+    // starting with 1, then 2, then 3, then 4, etc -- it should set the count to the number of
+    // times that amount is used in the combination instead of repeating the amount in the array
+    function amountToPreference(amount: number) {
+        const preferences: { amount: number, count: number }[] = [];
+        let remainder = amount;
+
+        preferences.push({ amount: 2, count: remainder / 2 });
+        remainder = remainder % 2;
+        if (remainder > 0)
+            preferences.push({ amount: 1, count: remainder });
+
+        return preferences;
     }
+
 
     async function topUp(mint?: string) {
         mint ??= mints[0];

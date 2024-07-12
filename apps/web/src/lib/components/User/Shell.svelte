@@ -12,6 +12,7 @@
 	import { House } from "phosphor-svelte";
 	import { roundedItemCount } from "$utils/numbers";
 	import Footer from "./Footer.svelte";
+	import { NDKCashuWallet } from "$utils/cashu/wallet";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | undefined | null;
@@ -20,6 +21,7 @@
     export let highlights: Readable<NDKHighlight[]>;
     export let notes: Readable<NDKEvent[]>;
     export let articles: Readable<NDKArticle[]>;
+    export let wallets: Readable<NDKCashuWallet[]>;
     export let videos: Readable<NDKVideo[]>;
     export let wiki: Readable<NDKWiki[]>;
     export let groupsList: Readable<NDKList | undefined>;
@@ -37,6 +39,7 @@
     setContext('userHighlights', highlights);
     setContext('userArticles', articles);
     setContext('userVideos', videos);
+    setContext('userWallets', wallets);
     setContext('userWiki', wiki);
     setContext('userGroupsList', groupsList);
     setContext('userPinList', pinList);

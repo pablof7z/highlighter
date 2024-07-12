@@ -45,7 +45,7 @@
 <UserProfile {user} let:userProfile let:fetching let:authorUrl>
     {#key authorUrl}
         <a
-            href={`${authorUrl}/chat`} class="flex flex-row gap-6 p-3 items-center {$$props.class??""}"
+            href={`${authorUrl}/chat`} class="flex flex-row gap-6 p-3 {$$props.class??""}"
             class:list-item--active={active}
         >
             <div class="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex max-h-36 overflow-clip">

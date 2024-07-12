@@ -16,7 +16,7 @@ const filter = (
     zapperPubkey?: Hexpubkey,
     extraFilter: NDKFilter = { limit: 100 }
 ): NDKFilter => {
-    const filter: NDKFilter = { kinds: [NDKKind.Zap as number], ...extraFilter };
+    const filter: NDKFilter = { kinds: [NDKKind.Zap as number, 7377 ], ...extraFilter };
     if (eventOrUser instanceof NDKUser) filter['#p'] = [eventOrUser.pubkey];
     else {
         filter['#e'] = [eventOrUser.id];
@@ -96,8 +96,19 @@ const mostRecentZapsStore = (
     const receipts: ZapInvoiceWithEvent[] = [];
 
     for (const zap of $zapEvents) {
-        const receipt = zapInvoiceFromEvent(zap);
-        if (receipt && receipt.amount) receipts.push({event: zap, ...receipt});
+        if (zap.kind === NDKKind.Zap) {
+            const receipt = zapInvoiceFromEvent(zap);
+            if (receipt && receipt.amount) receipts.push({event: zap, ...receipt});
+        } else {
+            receipts.push({
+                event: zap,
+                amount: 1000,
+                zappee: zap.pubkey,
+                zapped: zap.tagValue("p") as Hexpubkey,
+                zapper: zap.pubkey,
+                comment: zap.tagValue("comment"),
+            })
+        }
     }
 
     return receipts

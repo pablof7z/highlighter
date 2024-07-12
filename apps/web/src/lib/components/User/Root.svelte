@@ -4,6 +4,7 @@
 	import { ndk } from "$stores/ndk";
     import { deriveStore, deriveListStore } from "$utils/events/derive.js";
 	import { filterArticle } from "$utils/article-filter";
+	import { NDKCashuWallet } from "$utils/cashu/wallet";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | undefined | null;
@@ -24,6 +25,9 @@
         { kinds: [ NDKKind.Highlight ], authors: [user.pubkey], limit: 100 },
         { kinds: [ NDKKind.TierList, NDKKind.SimpleGroupList, NDKKind.PinList ], authors: [user.pubkey] },
         { kinds: [ NDKKind.SubscriptionTier ], authors: [user.pubkey], limit: 100 },
+
+        // cashu wallet
+        { kinds: [ 37375 ], authors: [user.pubkey], limit: 100 },
     ], { subId: 'user-events', groupable: false, onEose });
 
     const highlights = deriveStore<NDKHighlight>(events, NDKHighlight)
@@ -35,6 +39,8 @@
     const pinList = deriveListStore<NDKList>(events, NDKList, [NDKKind.PinList]);
     const tierList = deriveListStore<NDKList>(events, NDKList, [NDKKind.TierList]);
     const allTiers = deriveStore<NDKSubscriptionTier>(events, NDKSubscriptionTier);
+
+    const wallets = deriveStore<NDKCashuWallet>(events, NDKCashuWallet);
 
     const articles = derived(articlesAll, $articlesAll => {
         return $articlesAll.filter(filterArticle);
@@ -88,6 +94,7 @@
     {notes}
     {highlights}
     {articles}
+    {wallets}
     {videos}
     {wiki}
     {groupsList}

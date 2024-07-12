@@ -59,10 +59,8 @@
 </script>
 
 <ModalShell
-    class="w-full sm:max-w-md"
+    class="w-full sm:max-w-lg !p-2"
     {title}
-
-    {actionButtons}
 >
     <div class="flex flex-col gap-4 w-full">
         {#if mode === 'signup'}

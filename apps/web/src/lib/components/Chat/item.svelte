@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Hexpubkey } from '@nostr-dev-kit/ndk';
 	import WithGroup from '$components/Event/WithGroup.svelte';
 	import ReplyAvatars from '$components/Feed/ReplyAvatars.svelte';
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
@@ -11,6 +10,7 @@
 	import { derived, Readable } from 'svelte/store';
 	import { groupsList, userFollows } from '$stores/session';
 	import Swipe from '$components/Swipe.svelte';
+	import AvatarsPill from '$components/Avatars/AvatarsPill.svelte';
     export let tag: NDKTag;
 
     let group: NDKSimpleGroup;
@@ -103,7 +103,7 @@
                             {group.name??"Unnamed Group"}
                         </span>
                         {#if !isMember && pubkeysToFeature}
-                            <ReplyAvatars users={pubkeysToFeature} />
+                            <AvatarsPill pubkeys={pubkeysToFeature} />
                         {:else if $mostRecentEvent}
                             <span class="text-sm text-muted-foreground truncate">
                                 {$mostRecentEvent.content}
