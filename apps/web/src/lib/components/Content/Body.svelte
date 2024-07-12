@@ -7,22 +7,24 @@
     import ModularArticleItem from "./ModularArticle/Item.svelte";
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 
-    const wrappedEvent = getContext('wrappedEvent') as NDKEvent | NDKArticle | NDKVideo;
+    export let event: NDKEvent | NDKArticle | NDKVideo = getContext('wrappedEvent') as NDKEvent | NDKArticle | NDKVideo;
+    export let isPreview = false;
 </script>
 
 <div>
-    {#if wrappedEvent.kind === 30040}
-        <ModularArticleBody event={wrappedEvent} />
-    {:else if wrappedEvent.kind === 30041}
-        <ModularArticleItem article={wrappedEvent} />
-    {:else if (wrappedEvent instanceof NDKArticle) || (wrappedEvent instanceof NDKWiki)}
+    {#if event.kind === 30040}
+        <ModularArticleBody event={event} />
+    {:else if event.kind === 30041}
+        <ModularArticleItem article={event} />
+    {:else if (event instanceof NDKArticle) || (event instanceof NDKWiki)}
         <ArticleBody
-            article={wrappedEvent}
+            article={event}
+            {isPreview}
         />
-    {:else if wrappedEvent instanceof NDKVideo}
-        <VideoBody video={wrappedEvent} />
+    {:else if event instanceof NDKVideo}
+        <VideoBody video={event} />
     {:else}
-        <EventWrapper event={wrappedEvent} />
+        <EventWrapper event={event} />
         <!-- <Event.Body event={wrappedEvent} /> -->
     {/if}
 </div>

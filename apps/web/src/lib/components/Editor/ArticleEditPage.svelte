@@ -23,7 +23,6 @@
     let authorUrl: string | undefined;
 
     function onArticleChange() {
-        console.log(`content changed`);
         contentChangedSinceLastSave++;
     }
 

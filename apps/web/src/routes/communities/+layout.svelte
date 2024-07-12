@@ -24,10 +24,20 @@
         let:group
         let:metadata
         let:members
+        let:articles
         let:admins
         let:tiers
     >
-        <Groups.Shell {group} {isAdmin} {isMember} {metadata} {members} {admins} {tiers}>
+        <Groups.Shell
+            {group}
+            {isAdmin}
+            {isMember}
+            {metadata}
+            {members}
+            {admins}
+            {tiers}
+            {articles}
+        >
             <slot />
         </Groups.Shell>
     </Groups.Root>

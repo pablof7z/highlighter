@@ -46,7 +46,7 @@
 
 <div class="
 " bind:this={navbar}>
-    <div class="flex flex-row justify-between items-center h-full w-full gap-2">
+    <div class="flex flex-row justify-between items-center h-full w-full gap-2 py-3">
         {#if $layout.header?.component}
             <div class="w-full h-full flex flex-col">
                 <svelte:component
@@ -76,7 +76,7 @@
                     {/if}
                 {/if}
                 
-                <div class="flex items-center border justify-between w-full {$$props.containerClass??""}">
+                <div class="flex items-center justify-between w-full {$$props.containerClass??""}">
                     <div class="flex flex-row gap-3 items-center w-full">
                         <HeaderLeftButton />
 

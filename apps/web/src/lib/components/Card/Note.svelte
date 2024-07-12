@@ -21,7 +21,7 @@
         <Event.Header {event} />
 
     </div>
-    <div class="p-4">
+    <div class="p-4 break-words whitespace-normal">
         <EventContent ndk={$ndk} {event} />
     </div>
     <div class="p-4">

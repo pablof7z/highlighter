@@ -24,23 +24,25 @@
 
     let image: string | undefined;
 
-    $layout.sidebar = false;
+    if (!isPreview) {
+        $layout.sidebar = false;
 
-    $layout.footer = {
-        component: Footer,
-        props: { article }
+        $layout.footer = {
+            component: Footer,
+            props: { article }
+        }
     }
 
-    $: {
-        image = article.image
-        if (!image && !isPreview) image ??= userProfile?.image;
-    }
+    $: image = article.image
+    if (!image && !isPreview) image ??= userProfile?.image;
 
-    $layout.header = {
-        component: TopHeader,
-        props: { event: article, userProfile, authorUrl }
+    $: if (!isPreview) {
+        $layout.header = {
+            component: TopHeader,
+            props: { event: article, userProfile, authorUrl }
+        }
+        if (article.title) $layout.title = article.title;
     }
-    if (article.title) $layout.title = article.title;
 </script>
 
 
@@ -51,6 +53,7 @@
     title={article.title}
     {userProfile}
     {authorUrl}
+    {isPreview}
     navOptions={
         [{ name: "Article", href: getEventUrl(article, authorUrl) },]
     }

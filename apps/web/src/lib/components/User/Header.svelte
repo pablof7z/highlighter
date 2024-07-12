@@ -38,6 +38,7 @@
             // headerCache = $layout.header;
             $layout.header = false;
             $layout.navigation = false;
+            $layout.back = { url: "/" }
         } else if (inView === false) {
             $layout.header = headerCache;
             $layout.navigation = options;
@@ -54,11 +55,9 @@
 
 <div class="z-20 w-full sm:min-h-[15rem] flex flex-col" use:inview on:inview_change={inviewchange}>
     <div class="max-sm:h-[7rem] w-full h-32 relative z-0">
-        {#if $appMobileView}
             <div class="z-50 left-2 top-2-safe absolute">
                 <BackButton />
             </div>
-        {/if}
         {#if userProfile?.banner}
             <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-1 transition-all duration-300" alt={userProfile?.name}>
         {/if}

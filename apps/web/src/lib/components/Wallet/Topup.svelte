@@ -40,7 +40,6 @@
         mint ??= mints[0];
         const wallet = new CashuWallet(new CashuMint(mint));
         const quote = await wallet.mintQuote(amount);
-        console.log({quote})
 
         openModal(LnQrModal, { pr: quote.request, satAmount: amount, title: "Top up wallet" });
         

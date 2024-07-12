@@ -11,7 +11,7 @@
     export let userProfile: NDKUserProfile | undefined = undefined;
     export let authorUrl: string | undefined = undefined;
     export let blossom: any | undefined = undefined;
-
+    
     export let event: NDKEvent;
 
     export let image: string | undefined | false;

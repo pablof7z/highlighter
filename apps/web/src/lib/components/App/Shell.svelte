@@ -141,11 +141,11 @@
 
     $: if (!$appMobileView ) {
         if ($layout.fullWidth === false) {
-            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen"
+            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full"
         } else if (withSidebar) {
             mainClass = "";
         } else {
-            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen";
+            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full";
         }
     }
 </script>
@@ -160,7 +160,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="
-    grid min-h-screen w-full
+    min-h-screen w-full
     max-lg:h-[90vw] z-50 overflow-clip
     transition-all duration-300
     {withSidebar ? "md:pl-[360px]" : ""}
@@ -250,7 +250,7 @@
                     <div class="w-full border-b">
                         <div
                             class="
-                                w-full py-3 h-[60px] px-4
+                                w-full h-[60px] responsive-padding
                             "
                             on:touchstart={headerTouchstart}
                             on:touchmove={headerTouchmove}
@@ -269,11 +269,7 @@
                     <!-- Optional Navigation Bar (when there is a header) -->
                     {#if $layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)}
                         <div class="w-full border-b">
-                            <div class="
-                                w-full py-3
-                            ">
-                                <LayoutHeaderNavigation class={mainClass} />
-                            </div>
+                            <LayoutHeaderNavigation class={mainClass} />
                         </div>
                     {/if}
                 </header>

@@ -191,9 +191,9 @@
         
         {#if showPublish}
             <div class="flex flex-row flex-nowrap gap-2">
-                <Button size="icon" variant="secondary" on:click={schedule}>
+                <!-- <Button size="icon" variant="secondary" on:click={schedule}>
                     <Timer size={24} />
-                </Button>
+                </Button> -->
                 <Button on:click={onPublish} disabled={publishing}>
                     {#if publishing}
                         <span class="loading loading-sm"></span>

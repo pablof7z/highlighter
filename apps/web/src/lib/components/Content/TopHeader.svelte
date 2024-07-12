@@ -17,10 +17,14 @@
         <BackButton />
     </div>
     
-    <Avatar {pubkey} {userProfile} size="medium" />
+    <a href={authorUrl}>
+        <Avatar {pubkey} {userProfile} size="medium" />
+    </a>
 
-    <div class="flex flex-col items-start gap-1 grow ml-2">
-        <Name {pubkey} {userProfile} {authorUrl} class="text-foreground font-medium" />
+    <div class="flex flex-col items-start grow ml-2">
+        <a href={authorUrl}>
+            <Name {pubkey} {userProfile} {authorUrl} class="text-foreground font-medium" />
+        </a>
         <EventPublishedTarget {event} />
     </div>
 

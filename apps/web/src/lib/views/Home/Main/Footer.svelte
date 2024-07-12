@@ -6,25 +6,34 @@
 	import { goto } from "$app/navigation";
     import * as Footer from "$components/Footer";
 
-    export let newPost = false;
     export let collapsed = true;
     export let placeholder: string | undefined = "Explore";
     export let value: string = "";
+    export let mainView: string;
 
     function onkeydown(event: KeyboardEvent) {
         if (event.key === "Enter") {
             goto('/search?q=' + encodeURIComponent(value));
         }
     }
+
+    let collapse: () => void;
+
+    function close() {
+        collapse();
+    }
 </script>
 
-<Footer.Shell bind:collapsed>
+<Footer.Shell
+    bind:mainView
+    let:open
+    bind:collapse
+>
     <Button
         variant="accent"
         class="rounded-full flex-none max-sm:w-12 w-10 max-sm:h-12 h-10 p-2"
         on:click={() => {
-            newPost = !newPost;
-            collapsed = false;
+            open("newPost")
         }}
     >
         <Plus class="w-full h-full" weight="bold" />
@@ -42,12 +51,11 @@
             bind:value
             on:keydown={onkeydown}
         />
-
     </div>
 
     <div slot="main">
-        {#if newPost}
-            <NewPost />
+        {#if mainView === "newPost"}
+            <NewPost on:close={close} />
         {/if}
     </div>
 </Footer.Shell>
