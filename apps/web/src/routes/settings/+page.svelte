@@ -15,7 +15,8 @@
 
     $layout = {
         title: 'Profile',
-        navigation: false
+        navigation: false,
+        sidebar: false,
     }
 
     let authorUrl: string;

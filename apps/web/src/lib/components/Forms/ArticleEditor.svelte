@@ -17,9 +17,7 @@
 	import { NavigationOption } from '../../../app';
 	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 
-    export let article: NDKArticle = new NDKArticle($ndk, {
-        content: "",
-    } as NostrEvent);
+    export let article: NDKArticle;
 
     const dispatch = createEventDispatcher();
 
@@ -83,15 +81,15 @@
         toolbar = [];
         if (!article.image || $appMobileView) {
             let name = article.image ? "Change cover image" : "Add cover image";
-            toolbar.push({ name, fn: () => openModal(CoverImageModal, { article, onSave: onSaveCover }), class: "!text-xs" });
+            toolbar.push({ name, fn: () => openModal(CoverImageModal, { article, onSave: onSaveCover }), buttonProps: { variant: 'outline', size: 'xs' } });
         }
 
         if (!showSummary) {
-            toolbar.push({ name: "Add summary", fn: () => showSummary = !showSummary });
+            toolbar.push({ name: "Add summary", fn: () => showSummary = !showSummary, buttonProps: { variant: 'outline', size: 'xs' } });
         }
 
         if (!showTags) {
-            toolbar.push({ name: "Add #hashtags", fn: () => openModal(TagInputModal, { event: article, onSave: onSaveTags }), class: "!text-xs" });
+            toolbar.push({ name: "Add #hashtags", fn: () => openModal(TagInputModal, { event: article, onSave: onSaveTags }), buttonProps: { variant: 'outline', size: 'xs' } });
         }
         
         toolbar = toolbar;
@@ -130,7 +128,7 @@
         {/if}
     </div>
 
-    <div slot="title" class="sticky top-20 max-sm:p-4 max-sm:pb-0">
+    <div slot="title" class="sticky top-20 max-sm:p-4 max-sm:pb-0" class:mt-6={!article.image}>
         <Input
             bind:value={article.title}
             class="!bg-transparent !text-3xl focus-visible:!ring-none focus-visible:!ring-offset-0 focus-visible:!border-none focus-visible:!outline-none !border-none focus:!border-none !p-0 rounded-lg focus:!ring-0 !text-foreground font-['InterDisplay'] placeholder:text-foreground/50 placeholder:font-normal"
@@ -175,10 +173,6 @@
     skipImage={!article.image}
     class="max-sm:max-h-[50vh]"
 >
-    
-
-    
-
     <div slot="content" class="w-full">
         <ContentEditor
             bind:content={article.content}
@@ -186,7 +180,7 @@
             on:submit
             on:focus
             on:blur
-            class="font-serif text-2xl min-h-[50vh]"
+            class="font-serif text-lg min-h-[50vh]"
         />
     </div>
 </ArticleRenderShell>

@@ -8,6 +8,11 @@
     export let dragging = false;
     export let align = "items-center";
     export let mainView: string | undefined = undefined;
+    export let collapse = () => {
+        collapsed = true;
+        mainView = undefined;
+        dispatch("collapse");
+    }
 
     /**
      * Whether, when the component is mounted, it should be opened
@@ -32,12 +37,6 @@
     function touchend() {
         dragging = false;
         position = 0;
-    }
-
-    function collapse() {
-        collapsed = true;
-        mainView = undefined;
-        dispatch("collapse");
     }
 
     onMount(() => {
@@ -70,7 +69,6 @@
         mainView = view;
     }
 
-
 	function toggleCollapse() {
         if (collapsed) {
             open();
@@ -98,7 +96,7 @@
     {#if !hideCollapsedView || collapsed}
         <div class="flex flex-row justify-between {align} w-full gap-2" transition:slide={{axis: 'y'}}>
             <div class="flex flex-row justify-between {align} w-full gap-2">
-                <slot {collapsed} {open} />
+                <slot {collapsed} {open} {collapse} />
             </div>
 
             <Button

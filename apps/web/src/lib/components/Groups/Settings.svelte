@@ -60,15 +60,15 @@
     }
 
     async function saveTiers() {
-        // for (const tier of $existingTiers) {
-        //     tier.publishReplaceable(group.relaySet);
-        // }
+        for (const tier of $existingTiers) {
+            tier.publishReplaceable(group.relaySet);
+        }
         
-        // for (const tier of tiers) {
-        //     tier.tags.push(["h", group.groupId, ...group.relaySet.relayUrls]);
-        //     tier.kind = NDKKind.SubscriptionTier;
-        //     tier.publish(group.relaySet);
-        // }
+        for (const tier of tiers) {
+            tier.tags.push(["h", group.groupId, ...group.relaySet.relayUrls]);
+            tier.kind = NDKKind.SubscriptionTier;
+            tier.publish(group.relaySet);
+        }
 
         if ($existingTiers.length + tiers.length > 0) {
             const e = new NDKEvent($ndk)

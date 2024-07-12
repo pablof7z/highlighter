@@ -5,6 +5,7 @@
     $layout = {
         title: "Notifications",
         fullWidth: false,
+        back: { url: "/" }
     }
 
     onDestroy(() => {

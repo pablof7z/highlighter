@@ -26,9 +26,11 @@
 {#key user?.pubkey}
     {#if user}
         <UserProfile {user} let:userProfile let:fetching let:authorUrl>
-            <User.Shell {user} {userProfile} {fetching} {authorUrl}>
-                <slot />
-            </User.Shell>
+            <User.Root {user} {userProfile} {fetching} {authorUrl} let:highlights let:notes let:articles let:videos let:wiki let:groupsList let:pinList let:tierList let:tiers let:groups let:groupsMetadata let:eosed>
+                <User.Shell {user} {userProfile} {authorUrl} {fetching} {highlights} {notes} {articles} {videos} {wiki} {groupsList} {pinList} {tierList} {tiers} {groups} {groupsMetadata} {eosed}>
+                    <slot />
+                </User.Shell>
+            </User.Root>
         </UserProfile>
     {/if}
 {/key}

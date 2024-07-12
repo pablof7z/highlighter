@@ -1,15 +1,15 @@
 <script lang="ts">
-    import * as Tiers from "$components/Tiers";
-	import Tier from "$components/Tier.svelte";
-    import { ndk } from "$stores/ndk";
-	import { NDKKind, NDKSimpleGroup, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
+	import HorizontalList from '$components/PageElements/HorizontalList';
+	import { NDKArticle, NDKKind, NDKSimpleGroup, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
 	import { getContext } from "svelte";
 	import { Readable } from "svelte/store";
+    import * as Card from "$components/Card";
 
     const group = getContext("group") as NDKSimpleGroup;
     const tiers = getContext("groupTiers") as Readable<NDKSubscriptionTier[]>;
+    const articles = getContext("groupArticles") as Readable<NDKArticle[]>;
 </script>
 
-{#each $tiers as tier}
-    <Tier tier={tier} selected={true} currency="usd" term="monthly" />
-{/each}
+<HorizontalList class="py-[var(--section-vertical-padding)]" title="Articles" items={$articles} let:item>
+    <Card.Article article={item} />
+</HorizontalList>

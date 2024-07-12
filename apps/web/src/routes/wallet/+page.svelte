@@ -61,7 +61,7 @@
                 
             </Card.Header>
             <Card.Content class="p-4 md:pt-0 flex flex-row gap-4 items-stretch">
-                <Topup walletEvent={wallet} amount={1} class="grow" />
+                <Topup walletEvent={wallet} amount={48} class="grow" />
 
                 <Button variant="secondary" class="w-11 rounded-full p-0" href="/wallet/settings?id={wallet.encode()}">
                     <DotsThree size={24} />

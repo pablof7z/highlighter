@@ -6,6 +6,8 @@ import Settings from './Settings.svelte';
 
 import FooterJoin from './Footer/Join.svelte';
 
+import List from './List.svelte';
+
 const Footers = {
     Join: FooterJoin
 };
@@ -17,5 +19,7 @@ export {
     Chat,
     Settings,
 
-    Footers
+    Footers,
+
+    List
 }

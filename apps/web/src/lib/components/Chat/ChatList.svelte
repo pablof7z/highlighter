@@ -2,7 +2,7 @@
     import { groupsList, userFollows } from "$stores/session";
     import * as Chat from "$components/Chat";
 	import { ndk } from "$stores/ndk";
-	import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKList, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
 	import { derived } from "svelte/store";
 
     const groupListsFromFollows = $ndk.storeSubscribe(

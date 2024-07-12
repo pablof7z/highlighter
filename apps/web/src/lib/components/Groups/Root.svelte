@@ -1,9 +1,8 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser';
-	import { NDKFilter, NDKKind, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKFilter, NDKKind, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
 	import { deriveListStore, deriveStore } from "$utils/events/derive";
-	import { setContext } from "svelte";
 	import { derived } from "svelte/store";
 
     export let tag: NDKTag | undefined = undefined;
@@ -27,13 +26,13 @@
 
     // Subscriptions
     const events = $ndk.storeSubscribe([
-        // { kinds: [ NDKKind.GroupNote, NDKKind.GroupReply ], ...hFilter, limit: 50 },
-        // { kinds: [ NDKKind.Article ], ...hFilter, limit: 100 },
-        // { kinds: [ NDKKind.Wiki ], ...hFilter, limit: 100 },
-        // { kinds: [ NDKKind.HorizontalVideo, NDKKind.VerticalVideo ], ...hFilter, limit: 100 },
-        // { kinds: [ NDKKind.Media ], "#m": [ "video/mp4"], ...hFilter, limit: 10 },
-        // { kinds: [ NDKKind.Highlight ], ...hFilter, limit: 100 },
-        // { kinds: [ NDKKind.TierList, NDKKind.PinList ], ...hFilter },
+        { kinds: [ NDKKind.GroupNote, NDKKind.GroupReply ], ...hFilter, limit: 50 },
+        { kinds: [ NDKKind.Article ], ...hFilter, limit: 100 },
+        { kinds: [ NDKKind.Wiki ], ...hFilter, limit: 100 },
+        { kinds: [ NDKKind.HorizontalVideo, NDKKind.VerticalVideo ], ...hFilter, limit: 100 },
+        { kinds: [ NDKKind.Media ], "#m": [ "video/mp4"], ...hFilter, limit: 10 },
+        { kinds: [ NDKKind.Highlight ], ...hFilter, limit: 100 },
+        { kinds: [ NDKKind.TierList, NDKKind.PinList ], ...hFilter },
         { kinds: [ NDKKind.GroupMetadata, NDKKind.GroupAdmins, NDKKind.GroupMembers ], ...dFilter },
     ], { subId: 'group-events', groupable: false, relaySet });
 
@@ -46,6 +45,7 @@
     const admins = deriveListStore(events, NDKSimpleGroupMemberList, [NDKKind.GroupAdmins]);
     const members = deriveListStore(events, NDKSimpleGroupMemberList);
     const tiers = deriveStore(events2, NDKSubscriptionTier);
+    const articles = deriveStore(events, NDKArticle);
 
     $: {
         group.metadata = $metadata;
@@ -74,6 +74,7 @@
     {group}
     {metadata}
     {admins}
+    {articles}
     {members}
     {isAdmin}
     {isMember}

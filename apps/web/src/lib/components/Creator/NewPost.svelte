@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { Microphone, Note, PencilLine, Play, RowsPlusBottom, TextAlignLeft, Timer } from "phosphor-svelte";
     import NewPostItem from "./NewPostItem.svelte";
-	import StreamIcon from "$icons/StreamIcon.svelte";
-	import Box from "$components/PageElements/Box.svelte";
-	import { drafts } from "$stores/drafts";
 	import { closeModal, openModal, replaceModal } from "$utils/modal";
 	import NewPostModal from "$modals/NewPostModal.svelte";
+	import { createEventDispatcher } from "svelte";
+	import NewGroupModal from "$modals/NewGroupModal.svelte";
 
     export let onNewShortPost: (() => void) | undefined = undefined;
+
+    const dispatch = createEventDispatcher();
 
     function shortNote() {
         // if (!!onNewShortPost) {
@@ -15,6 +15,11 @@
         // } else {
             openModal(NewPostModal);
         // }
+    }
+
+    function newCommunity() {
+        dispatch("close");
+        openModal(NewGroupModal);
     }
 </script>
 
@@ -26,10 +31,10 @@
     justify-center
 ">
     <NewPostItem icon='🤙' title="Short Note" on:click={shortNote} />
-    <NewPostItem icon="🗒️" title="Article" href="/articles/new" on:click={closeModal} />
+    <NewPostItem icon="🗒️" title="Article" href="/studio/articles/new" on:click={closeModal} />
     <NewPostItem icon='🎬 ' title="Video" href="/videos/new" on:click={closeModal} />
     <NewPostItem icon='🧵' title="Thread" href="/threads/new" on:click={closeModal} />
     <NewPostItem icon='⏱️' title="Scheduled Posts" href="/schedule" on:click={closeModal} />
     <NewPostItem icon='🖋️' title="Drafts" href="/drafts" on:click={closeModal} />
-    <NewPostItem icon='🏰' title="Community" href="/communities" on:click={closeModal} class="col-span-2" />
+    <NewPostItem icon='🏰' title="Community" href="/communities" on:click={newCommunity} class="col-span-2" />
 </div>
