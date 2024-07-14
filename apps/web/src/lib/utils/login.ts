@@ -125,6 +125,8 @@ export async function login(payload: string | undefined) {
 	method ??= get(loginMethod);
 	let u: NDKUser | null | undefined;
 
+	d(`login method ${method}`);
+
 	switch (method) {
 		case 'none': {
 			loginState.set(null);
@@ -142,6 +144,7 @@ export async function login(payload: string | undefined) {
 		case 'nip07':
 			u = await nip07SignIn($ndk);
 			loginState.set('logged-in');
+			d(`nip07 login ${u}`);
 			break;
 		case 'nip46': {
 			return nip46Login(userPubkey);
@@ -187,8 +190,8 @@ async function nip07SignIn(ndk: NDK): Promise<NDKUser | null> {
 			user.ndk = ndk;
 			if (user) {
 				loginMethod.set('nip07');
+				loggedIn(ndk.signer, user, 'nip07');
 			}
-			userPubkey.set(user.pubkey);
 		} catch (e) {}
 	}
 
@@ -251,6 +254,7 @@ export function loggedIn(signer: NDKSigner, u: NDKUser, method: LoginMethod) {
 export function logout(): void {
 	const $ndk = get(ndk);
 	$ndk.signer = undefined;
+	localStorage.clear();
 	currentUser.set(undefined);
 	loginState.set('logged-out');
 	userFollows.set(new Set());
@@ -262,7 +266,7 @@ export function logout(): void {
 	// explicitly prevent auto-login with NIP-07
 	loginMethod.set('none');
 
-	goto('/');
+	window.location.href = '/';
 }
 
 export const names = [

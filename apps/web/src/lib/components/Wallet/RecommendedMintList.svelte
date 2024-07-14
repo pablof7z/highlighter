@@ -3,9 +3,12 @@
 import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
     import { ndk } from "$stores/ndk";
 	import { userFollows } from "$stores/session";
+	import { CashuMint } from "@cashu/cashu-ts";
 	import { Hexpubkey, NDKEvent } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher } from "svelte";
 	import { derived } from "svelte/store";
+    import CashuMintListItem from "$components/Cashu/Mint/List/Item.svelte";
+	import Record from "$components/buttons/Record.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -57,15 +60,20 @@ import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
         if (!url) return;
         dispatch("click", { url, mint })
     }
-</script>
 
-{Object.keys($recommendationsPerMint).length}
+    const mint = new CashuMint("https://mint.agorist.space")
+    mint.getInfo().then(console.log)
+
+    let selectedMints: Record<string, boolean> = {};
+</script>
 
 <ScrollArea>
     <ul class="h-max divide-y divide-border max-h-[50vh]">
         {#each $sortedMints as mint (mint.id)}
             {#if mint.tagValue("u")}
-                <li class="py-2">
+                <CashuMintListItem url={mint.tagValue("u")} bind:checked={selectedMints[mint.tagValue("u")]}/>
+            
+                <!-- <li class="py-2">
                     <button class="flex flex-row justify-between w-full" on:click={() => click(mint)}>
                         {mint.tagValue("u")}
 
@@ -73,7 +81,7 @@ import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
                             <AvatarsPill pubkeys={Array.from($recommendationsPerMint.get(mint.tagValue("u")))}/>
                         {/if}
                     </button>
-                </li>
+                </li> -->
             {/if}
         {/each}
     </ul>
