@@ -226,7 +226,7 @@ export function cashuInit(ndk: NDKSvelte, currentUser: NDKUser) {
                 toast.success("Zap claimed " + amount);
             } catch (e) {
                 console.error('could not claim zap', e);
-                toast.error("We received a zap but we can't claim it: " + e.message);
+                // toast.error("We received a zap but we can't claim it: " + e.message);
             }
         } else {
             toast.error("We received a zap but we can't claim it; you need to login with your nsec")

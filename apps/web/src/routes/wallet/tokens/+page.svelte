@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from "$components/ui/button";
-    import { activeWallet, activeWalletTokens, checkTokenProofs } from "$stores/cashu";
+    import { _walletTokens, activeWallet, activeWalletTokens, checkTokenProofs, deletedTokens } from "$stores/cashu";
 	import { NDKCashuToken } from "$utils/cashu/token";
 	import { NDKEventId } from "@nostr-dev-kit/ndk";
 	import { Check, TrashSimple } from "phosphor-svelte";
@@ -23,6 +23,23 @@
     }
 
 </script>
+
+{#each $_walletTokens as [walletId, tokens]}
+    <h1>{walletId}</h1>
+
+    <div class="ml-12">
+        {#each tokens as token}
+            <div class="ml-12" class:opacity-50={$deletedTokens.has(token.id)}>
+                {token.mint}
+                {#each token.proofs as proof}
+                    <div class="ml-12">
+                        {proof.amount} ({proof.id})
+                    </div>
+                {/each}
+            </div>
+        {/each}
+    </div>
+{/each}
 
 {#each $activeWalletTokens as token (token.id)}
     {#if !expired.includes(token.id)}

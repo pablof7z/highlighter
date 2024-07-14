@@ -54,27 +54,19 @@
     }
 </script>
 
-<Button on:click={send}>
-    <Coin size={24} />
-    Pay
-</Button>
 
-{#each $_walletTokens as [walletId, tokens]}
-    <h1>{walletId}</h1>
+<div class="flex flex-row max-sm:justify-evenly gap-4">
+    <Button class="max-sm:w-2/5" on:click={send}>
+        <Coin size={24} class="mr-2" />
+        Send
+    </Button>
 
-    <div class="ml-12">
-        {#each tokens as token}
-            <div class="ml-12" class:opacity-50={$deletedTokens.has(token.id)}>
-                {token.mint}
-                {#each token.proofs as proof}
-                    <div class="ml-12">
-                        {proof.amount} ({proof.id})
-                    </div>
-                {/each}
-            </div>
-        {/each}
-    </div>
-{/each}
+    <Button class="max-sm:w-2/5" on:click={send}>
+        <Coin size={24} class="mr-2" />
+        Receive
+    </Button>
+</div>
+
 
 <HorizontalList title="Wallets" items={$walletsWithAdd} let:item={wallet}>
     {#if wallet instanceof NDKCashuWallet}

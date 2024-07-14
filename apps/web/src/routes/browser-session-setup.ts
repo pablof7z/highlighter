@@ -60,6 +60,7 @@ export async function newSessionTryNip07() {
         d('trying nip07 signer');
         signer = new NDKNip07Signer();
         u = await signer.blockUntilReady();
+        loginMethod.set('nip07');
     } catch (e) { d('nip07Signer failed', e); }
 
     if (u && signer) {

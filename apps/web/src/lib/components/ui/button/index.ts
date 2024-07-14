@@ -17,7 +17,7 @@ const buttonVariants = tv({
 			transparent: "border border-input bg-background/10 hover:bg-background hover:text-foreground",
 		},
 		size: {
-			default: "h-10 px-4 py-2",
+			default: "h-10 px-4 py-2 max-sm:text-lg",
 			xs: "h-7 text-xs rounded-md px-3",
 			sm: "h-9 rounded-md px-3",
 			lg: "h-14 rounded-md px-8 text-base",
