@@ -9,6 +9,7 @@
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { onDestroy } from "svelte";
 	import { zap } from "$utils/zap";
+	import { toast } from "svelte-sonner";
 
     export let event: NDKEvent;
 
@@ -33,11 +34,11 @@
     })
 
     async function defaultZap() {
-        zap(
-            1,
-            event,
-            "🌰",
-        )
+        try {
+            await zap(1000, event, "🌰")
+        } catch (e) {
+            toast.error(e.message)
+        }
     }
 </script>
 

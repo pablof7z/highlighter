@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
-    import { checkTokenProofs, walletEvents, walletRelaySet } from "$stores/cashu";
 	import currentUser from "$stores/currentUser";
 	import { ndk } from "$stores/ndk";
-	import { CashuWallet, CashuMint } from "@cashu/cashu-ts";
 	import { NDKEvent, NDKEventId, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { Check, Lightning, TrashSimple } from "phosphor-svelte";
 	import { onDestroy } from 'svelte';

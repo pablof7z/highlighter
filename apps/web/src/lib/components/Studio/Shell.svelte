@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { setContext } from 'svelte';
+	import { onDestroy, setContext } from 'svelte';
 	import { Readable, writable } from 'svelte/store';
 	import { layout } from "$stores/layout";
     import Header from "./Header.svelte";
@@ -8,6 +8,7 @@
     import * as Content from "$components/Content";
     import * as Article from "$components/Content/Article";
     import { publish } from "./actions/publish.js";
+	import { goto } from '$app/navigation';
 
     export let groups: Readable<Record<string, NDKSimpleGroup>>;
     
@@ -24,13 +25,21 @@
             mode,
             event,
             publishAt,
-            onPublish: () => publish($event, $publishAt),
+            onPublish: async () => {
+                const e = await publish($event, $publishAt);
+                if (e) {
+                    // delete draft
+                    goto(`/a/${e.encode()}`);
+                }
+            }
             // onSsveDraft
         }
     }
-</script>
 
-{$publishAt}
+    onDestroy(() => {
+        $layout.header = undefined;
+    });
+</script>
 
 <div class="flex flex-col w-full">
 {#if $mode === 'edit'}

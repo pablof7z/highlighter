@@ -1,20 +1,15 @@
 <script lang="ts">
 	import ZapSent from './ZapSent.svelte';
     import type { Hexpubkey, NDKEvent, NDKFilter, NDKTag, NDKUser } from '@nostr-dev-kit/ndk';
-    import { requestProvider } from 'webln';
 
     import { Heart, Fire, Rocket, Lightning, HeartStraight } from 'phosphor-svelte';
-    import { ndk } from '$stores/ndk.js';
     import { nicelyFormattedSatNumber } from '$utils';
     import { createEventDispatcher } from 'svelte';
     import ZapUserSplit from './ZapUserSplit.svelte';
 	import ZapAmountButton from './ZapAmountButton.svelte';
 	import { Button } from '$components/ui/button';
 	import Input from '$components/ui/input/input.svelte';
-	import { newToasterMessage, toasterItems } from '$stores/toaster';
 	import LnQrCode from '$components/Payment/LnQrCode.svelte';
-	import { activeWalletTokens, chooseProofs, defaultWalletBalance, payWithProofs, userProofs, walletBalance } from '$stores/cashu';
-	import { CashuMint, CashuWallet } from '@cashu/cashu-ts';
     import { zap as realZap } from '$utils/zap';
 
     export let event: NDKEvent | undefined = undefined;
@@ -81,7 +76,7 @@
             return;
         }
 
-        await realZap(1, event || user!, "hello nut");
+        await realZap(amount * 1000, event || user!, comment);
 
         return;
 

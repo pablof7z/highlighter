@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getReplyTag, getRootTag, NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import * as Event from "$components/Event";
+    import MediaCollection from '$components/Events/MediaCollection.svelte';
     import HeaderShell from "$components/Content/HeaderShell.svelte";
 	import ItemViewZaps from '$components/Event/ItemView/ItemViewZaps.svelte';
     import ContentToolbar from "$components/Content/Toolbar.svelte";
@@ -9,6 +10,7 @@
 	import { layout } from "$stores/layout";
 	import WithItem from "$components/Event/ItemView/WithItem.svelte";
 	import LoadEvent from "$components/Event/LoadEvent.svelte";
+	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 
     export let event: NDKEvent;
     export let userProfile: NDKUserProfile | undefined = undefined;
@@ -43,7 +45,13 @@
 >
     <Event.Header {event} {userProfile} />
 
-    <EventContent ndk={$ndk} {event} class="text-xl" />
+    <EventContent
+        ndk={$ndk}
+        {event}
+        class="text-xl"
+        mediaCollectionComponent={MediaCollection}
+        eventCardComponent={EmbeddedEventWrapper}
+    />
 
     <div slot="zaps" class:hidden={!hasZaps}>
         <ItemViewZaps {event} bind:hasZaps class="py-3 responsive-padding" />

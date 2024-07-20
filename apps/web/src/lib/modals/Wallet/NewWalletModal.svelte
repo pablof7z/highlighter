@@ -4,11 +4,10 @@
 	import RecommendedMintList from "$components/Wallet/RecommendedMintList.svelte";
 	import { NavigationOption } from "../../../app";
     import * as Collapsible from "$lib/components/ui/collapsible";
-	import { NDKCashuWallet } from "$utils/cashu/wallet";
 	import { ndk } from "$stores/ndk";
-	import { walletRelaySet } from "$stores/cashu";
 	import { Button } from "$components/ui/button";
 	import { closeModal } from "$utils/modal";
+	import { walletService } from "$stores/wallet";
 
     export let name: string = "My Wallet";
     export let mint: string = "";
@@ -22,12 +21,12 @@
     }
 
     async function create() {
-        const walletEvent = new NDKCashuWallet($ndk);
-        walletEvent.mint = mint;
-        walletEvent.relays = walletRelaySet.relayUrls;
+        const walletEvent = $walletService.createCashuWallet();
+        walletEvent.mints = [mint];
+        walletEvent.relays = $ndk.pool.permanentAndConnectedRelays().map(r => r.url);
         walletEvent.name = name;
         await walletEvent.sign();
-        walletEvent.publish(walletRelaySet);
+        walletEvent.publish(walletEvent.relaySet);
         closeModal();
     }
 

@@ -4,12 +4,12 @@
 	import NewPostModalInner from "./NewPostModalInner.svelte";
 
     let title = "New Post";
-    let wrapperClass = "";
+    let wrapperClass = "max-w-3xl w-full";
     let actionButtons: NavigationOption[] = [];
 </script>
 
 <ModalShell {title}
-    class={wrapperClass}
+    containerClass={wrapperClass}
     {actionButtons}
 >
     <NewPostModalInner

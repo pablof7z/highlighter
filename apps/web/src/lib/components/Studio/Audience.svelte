@@ -8,6 +8,7 @@
 	import { ndk } from "$stores/ndk";
 	import currentUser from "$stores/currentUser";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import { Globe } from "phosphor-svelte";
     
     export let event: Writable<NDKEvent>;
     export let groups: Readable<Record<string, NDKSimpleGroup>>;
@@ -50,44 +51,56 @@
             }
         });
     }
+
+    let widely = true;
 </script>
 
 <div class="flex flex-col gap-6 py-6">
-<section class="settings bg-secondary/30">
-    <div class="field">
-        <div class="title">Communities</div>
-        <div class="description">
-            Select the communities you want to share this post to.
-        </div>
-
-        <div class="border flex flex-col divide-y divide-border rounded">
-            <Groups.List groups={$groups} bind:selectedGroups />
-        </div>
-    </div>
-</section>
-<!-- 
-{#if relays && relays.length > 0}
+    <!-- <div class="border flex flex-col divide-y divide-border rounded">
+        <Checkbox bind:value={widely} class="p-3">
+            <div class="flex flex-row gap-4 items-center">
+                <Globe class="w-8 h-8" />
+        
+                <div class="flex flex-col items-start">
+                    <b>Publicly accessible</b>
+                </div>
+            </div>
+        </Checkbox>
+    </div> -->
+    
     <section class="settings bg-secondary/30">
         <div class="field">
-            <div class="title">Relays</div>
+            <div class="title">Communities</div>
             <div class="description">
-                Select the relays you want to share this post to.
+                Select the communities you want to share this post to.
             </div>
 
             <div class="border flex flex-col divide-y divide-border rounded">
-                {#each relays as relay}
-                    <Checkbox bind:value={selectedRelays[relay]} class="p-3">
-                        <div class="flex flex-row gap-4 items-center">
-                            <div class="flex flex-col items-start">
-                                <b>{relay}</b>
-                            </div>
-                        </div>
-                    </Checkbox>
-                {/each}
+                <Groups.List groups={$groups} bind:selectedGroups />
             </div>
         </div>
     </section>
-{/if} -->
-</div>
+    <!-- 
+    {#if relays && relays.length > 0}
+        <section class="settings bg-secondary/30">
+            <div class="field">
+                <div class="title">Relays</div>
+                <div class="description">
+                    Select the relays you want to share this post to.
+                </div>
 
-{JSON.stringify($event.tags, null, 4)}
+                <div class="border flex flex-col divide-y divide-border rounded">
+                    {#each relays as relay}
+                        <Checkbox bind:value={selectedRelays[relay]} class="p-3">
+                            <div class="flex flex-row gap-4 items-center">
+                                <div class="flex flex-col items-start">
+                                    <b>{relay}</b>
+                                </div>
+                            </div>
+                        </Checkbox>
+                    {/each}
+                </div>
+            </div>
+        </section>
+    {/if} -->
+</div>

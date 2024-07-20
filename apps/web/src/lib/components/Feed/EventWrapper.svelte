@@ -323,7 +323,7 @@
                                             {event}
                                             enableDelete={$currentUser && $currentUser.pubkey === event.pubkey}
                                             on:delete={deleteEvent}
-                                            class="dropdown-end absolute !bg-background z-[9999]"
+                                            class="dropdown-end absolute z-[9999]"
                                         />
                                     {/if}
                                 </div>

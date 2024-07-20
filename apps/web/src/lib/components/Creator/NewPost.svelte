@@ -36,5 +36,5 @@
     <NewPostItem icon='🧵' title="Thread" href="/threads/new" on:click={closeModal} />
     <NewPostItem icon='⏱️' title="Scheduled Posts" href="/schedule" on:click={closeModal} />
     <NewPostItem icon='🖋️' title="Drafts" href="/drafts" on:click={closeModal} />
-    <NewPostItem icon='🏰' title="Community" href="/communities" on:click={newCommunity} class="col-span-2" />
+    <NewPostItem icon='🏰' title="Community" on:click={newCommunity} class="col-span-2" />
 </div>
