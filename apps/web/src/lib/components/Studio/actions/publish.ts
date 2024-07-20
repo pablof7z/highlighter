@@ -1,12 +1,23 @@
 import { ndk } from "$stores/ndk";
-import { relaySetForEvent } from "$utils/event";
 import { NDKEvent, NDKRelay, NDKRelaySet } from "@nostr-dev-kit/ndk";
 import { get } from "svelte/store";
+
+function relaysToPublishTo(event: NDKEvent) {
+    const hTags = event.getMatchingTags("h");
+    const relayUrls = new Set<string>();
+
+    for (const hTag of hTags) {
+        const relayUrl = hTag[2];
+        if (relayUrl) relayUrls.add(relayUrl);
+    }
+
+    return Array.from(relayUrls);
+}
 
 export async function publish(
     event: NDKEvent,
     publishAt?: Date,
-): Promise<void> {
+): Promise<NDKEvent> {
     const $ndk = get(ndk);
     
     event.created_at = undefined;
@@ -17,9 +28,7 @@ export async function publish(
     
     await event.sign();
 
-    console.log(event.rawEvent())
-
     const relaySet = NDKRelaySet.fromRelayUrls(["ws://localhost:2929"], $ndk)
-    const rest = event.publish(relaySet);
-    console.log('publish', rest)
+    const rest = await event.publish(relaySet);
+    return event;
 }

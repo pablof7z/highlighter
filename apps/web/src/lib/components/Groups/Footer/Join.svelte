@@ -7,6 +7,7 @@
 	import Badge from "$components/ui/badge/badge.svelte";
 	import { CaretDown, CaretRight, CrownSimple } from "phosphor-svelte";
 	import { tierAmountToString } from "$lib/events/tiers";
+	import currentUser from "$stores/currentUser";
 
     export let group: NDKSimpleGroup;
     export let metadata: Readable<NDKSimpleGroupMetadata>;
@@ -32,9 +33,9 @@
         return Array.from(allMembers);
     })
 
-    // async function join() {
-    //     group.requestToJoin($currentUser.pubkey, "please, I want to learn about horses!")
-    // }
+    async function join() {
+        group.requestToJoin($currentUser.pubkey, "hello")
+    }
 </script>
 
 <Footer.Shell
@@ -70,6 +71,7 @@
         <Button
             variant="accent"
             class="w-full justify-between"
+            on:click={join}
         >
             {#if $metadata.access === "closed" && $tiers.length > 0}
                 <div>

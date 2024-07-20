@@ -4,7 +4,7 @@
 	import { NavigationOption } from "../../app";
     import InputArray from "$components/ui/input/InputArray.svelte";
 	import { defaultRelays } from "$utils/const";
-	import { NDKEvent, NDKRelaySet, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKKind, NDKList, NDKRelaySet, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
 	import { closeModal } from "$utils/modal";
 	import { groupsList } from "$stores/session";
@@ -42,8 +42,11 @@
         }
         await group.setMetadata({ name, picture, about });
 
-        $groupsList?.addItem([ "group", group.groupId, ...relaySet.relayUrls ])
-        $groupsList?.publishReplaceable();
+        $groupsList ??= new NDKList($ndk);
+        $groupsList.kind = NDKKind.SimpleGroupList;
+
+        $groupsList.addItem([ "group", group.groupId, ...relaySet.relayUrls ])
+        $groupsList.publishReplaceable();
 
         closeModal();
     }

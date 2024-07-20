@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKKind, NDKUser, NDKList, NDKHighlight, NDKEvent, NDKArticle, NDKVideo, NDKWiki, NDKUserProfile, NDKSubscriptionTier, NDKSimpleGroup, NDKRelaySet, NDKTag, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKUser, NDKList, NDKHighlight, NDKEvent, NDKArticle, NDKVideo, NDKWiki, NDKUserProfile, NDKSubscriptionTier, NDKSimpleGroup, NDKRelaySet, NDKTag, NDKSimpleGroupMetadata, NDKCashuMintList } from "@nostr-dev-kit/ndk";
 	import { derived, get, Readable, writable } from "svelte/store";
 	import { setContext } from "svelte";
 	import { layout } from '$stores/layout';
@@ -12,7 +12,6 @@
 	import { House } from "phosphor-svelte";
 	import { roundedItemCount } from "$utils/numbers";
 	import Footer from "./Footer.svelte";
-	import { NDKCashuWallet } from "$utils/cashu/wallet";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | undefined | null;
@@ -21,7 +20,7 @@
     export let highlights: Readable<NDKHighlight[]>;
     export let notes: Readable<NDKEvent[]>;
     export let articles: Readable<NDKArticle[]>;
-    export let wallets: Readable<NDKCashuWallet[]>;
+    export let cashuMintList: Readable<NDKCashuMintList>;
     export let videos: Readable<NDKVideo[]>;
     export let wiki: Readable<NDKWiki[]>;
     export let groupsList: Readable<NDKList | undefined>;
@@ -39,7 +38,7 @@
     setContext('userHighlights', highlights);
     setContext('userArticles', articles);
     setContext('userVideos', videos);
-    setContext('userWallets', wallets);
+    setContext('cashuMintList', cashuMintList);
     setContext('userWiki', wiki);
     setContext('userGroupsList', groupsList);
     setContext('userPinList', pinList);
@@ -100,6 +99,7 @@
     {tierList}
     {allTiers}
     {groups}
+    {cashuMintList}
     {groupsMetadata}
     {tiers}
 />

@@ -93,11 +93,7 @@
             nip19.decode(value);
             const e = await $ndk.fetchEvent(value);
             if (e) {
-                if (e.isParamReplaceable()) {
-                    goto(`/a/${e.encode()}`);
-                } else {
-                    goto(`/e/${e.encode()}`);
-                }
+                goto(`/a/${e.encode()}`);
             }
         } catch {} 
         

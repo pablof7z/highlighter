@@ -14,7 +14,8 @@
 
     addHistory({ title: "Communities", url: "/communities" });
 
-    const relaySet = NDKRelaySet.fromRelayUrls(["wss://groups.fiatjaf.com"], $ndk);
+    const relaySet = NDKRelaySet.fromRelayUrls(["wss://groups.0xchat.com/", "wss://groups.fiatjaf.com"], $ndk, true);
+    relaySet.addRelay($ndk.pool.getRelay("wss://groups.0xchat.com/", true, true));
 
     const groups = $ndk.storeSubscribe(
         { kinds: [NDKKind.GroupMetadata]}, {
@@ -54,7 +55,9 @@
     </Chat.List>
 {/if}
 
-{#each $groups as group}
+{$groups.length}
+
+{#each $groups as group (group.id)}
     <Chat.Item tag={["group", group.dTag, group.relay.url]} />
 {/each}
 

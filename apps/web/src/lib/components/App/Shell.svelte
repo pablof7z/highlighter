@@ -11,6 +11,7 @@
 	import { goto } from "$app/navigation";
 	import { fly, slide } from "svelte/transition";
     import Mobile from "./Mobile.svelte";
+	import Wallet from "./Wallet.svelte";
 
     let withSidebar: boolean;
 
@@ -133,8 +134,6 @@
         } else {
             headerBarCount = 1;
         }
-        console.log({headerBarCount, header: $layout.header, title: $layout.title })
-        
     }
 
     let mainClass = "";
@@ -250,7 +249,7 @@
                     <div class="w-full border-b">
                         <div
                             class="
-                                w-full h-[60px] responsive-padding
+                                w-full h-[60px] responsive-padding flex flex-row
                             "
                             on:touchstart={headerTouchstart}
                             on:touchmove={headerTouchmove}
@@ -298,3 +297,5 @@
 <Modal />
 
 <Toaster />
+
+<Wallet />

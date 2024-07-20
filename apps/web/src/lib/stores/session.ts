@@ -24,7 +24,7 @@ import currentUser from './currentUser';
 import { writable } from 'svelte/store';
 import { creatorRelayPubkey } from '$utils/const';
 import { notificationsSubscribe } from './notifications';
-import { cashuInit } from './cashu';
+import { walletInit } from './wallet.js';
 
 const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
@@ -207,9 +207,6 @@ export async function prepareSession(): Promise<void> {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
 		const $sessionUpdatedAt = alreadyKnowFollows ? get(sessionUpdatedAt) : undefined;
 
-		const userRelays = await getRelayListForUser($currentUser.pubkey, $ndk);
-		console.log('userRelays', userRelays)
-
 		fetchData('user', $ndk, [$currentUser.pubkey], {
 			profileStore: userProfile,
 			followsStore: userFollows,
@@ -241,7 +238,7 @@ export async function prepareSession(): Promise<void> {
 			resolve();
 
 			notificationsSubscribe($ndk, $currentUser);
-			cashuInit($ndk, $currentUser);
+			walletInit($ndk, $currentUser);
 
 			const $userFollows = get(userFollows);
 			const $networkFollows = get(networkFollows);
@@ -581,7 +578,6 @@ async function fetchData(
 			cacheUsage: NDKSubscriptionCacheUsage.PARALLEL,
 			subId: `session:${name}`
 		}, relaySet);
-		console.log('session', {name, relaySet})
 
 		userDataSubscription.on('event', processEvent);
 

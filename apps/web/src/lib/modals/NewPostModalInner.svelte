@@ -71,7 +71,7 @@
         }
     }
 
-    $: wrapperClass = `w-full sm:max-w-2xl max-sm:h-full ${publishing ? "!bg-transparent" : ""}`;
+    $: wrapperClass = `w-full sm:max-w-3xl max-sm:h-full ${publishing ? "!bg-transparent" : ""}`;
 </script>
 
 {#if replyTo}
@@ -79,7 +79,7 @@
         <EventWrapper
             ndk={$ndk}
             event={replyTo}
-            class="text-foreground text-xs max-sm:max-h-[30dvh] overflow-y-auto border border-border rounded"
+            class="text-foreground text-xs max-sm:max-h-[30dvh] overflow-y-auto border border-border rounded bg-secondary/50"
             contentClass="!text-xs"
             compact={true}
             showReply={false}
@@ -108,7 +108,7 @@
     <NewPost
         kind={NDKKind.Text}
         {placeholder}
-        editorClass="text-foreground min-h-[7rem] h-full grow"
+        editorClass="text-foreground min-h-[7rem] h-full grow text-xl"
         skipAvatar={true}
         collapsed={false}
         {forcePublish}
@@ -122,9 +122,11 @@
         skipFadeMode
         on:publish={(e) => {
             const event = e.detail;
-            goto(`/e/${event.encode()}`);
+            goto(`/a/${event.encode()}`);
             closeModal();
         }}
     >
     </NewPost>
 </div>
+
+<div class="hidden w-full sm:max-w-3xl max-sm:h-full"></div>

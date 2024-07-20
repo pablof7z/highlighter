@@ -13,7 +13,7 @@
     const group = getContext('group') as NDKSimpleGroup;
     const metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
 
-    addHistory({ category: 'Chat', title: $metadata.name ?? "Community" });
+    addHistory({ category: 'Chat', title: $metadata?.name ?? "Community" });
     
     $layout.footerInMain = true;
 

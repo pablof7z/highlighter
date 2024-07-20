@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { NDKKind, NDKUser, NDKList, NDKHighlight, NDKEvent, NDKArticle, NDKVideo, NDKWiki, NDKUserProfile, NDKSubscriptionTier, NDKSimpleGroup, NDKRelaySet, NDKTag, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKUser, NDKList, NDKHighlight, NDKEvent, NDKArticle, NDKVideo, NDKWiki, NDKUserProfile, NDKSubscriptionTier, NDKSimpleGroup, NDKRelaySet, NDKTag, NDKSimpleGroupMetadata, NDKCashuMintList } from "@nostr-dev-kit/ndk";
 	import { derived, writable } from "svelte/store";
 	import { ndk } from "$stores/ndk";
     import { deriveStore, deriveListStore } from "$utils/events/derive.js";
 	import { filterArticle } from "$utils/article-filter";
-	import { NDKCashuWallet } from "$utils/cashu/wallet";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | undefined | null;
@@ -23,11 +22,11 @@
         { kinds: [ NDKKind.HorizontalVideo, NDKKind.VerticalVideo ], authors: [user.pubkey], limit: 100 },
         { kinds: [ NDKKind.Media ], "#m": [ "video/mp4"], authors: [user.pubkey], limit: 10 },
         { kinds: [ NDKKind.Highlight ], authors: [user.pubkey], limit: 100 },
-        { kinds: [ NDKKind.TierList, NDKKind.SimpleGroupList, NDKKind.PinList ], authors: [user.pubkey] },
+        { kinds: [ NDKKind.TierList, NDKKind.SimpleGroupList, NDKKind.PinList, NDKKind.CashuMintList ], authors: [user.pubkey] },
         { kinds: [ NDKKind.SubscriptionTier ], authors: [user.pubkey], limit: 100 },
 
-        // cashu wallet
-        { kinds: [ 37375 ], authors: [user.pubkey], limit: 100 },
+        // mint list
+        { kinds: [ NDKKind.CashuMintList ], authors: [user.pubkey], limit: 100 },
     ], { subId: 'user-events', groupable: false, onEose });
 
     const highlights = deriveStore<NDKHighlight>(events, NDKHighlight)
@@ -38,9 +37,8 @@
     const groupsList = deriveListStore<NDKList>(events, NDKList, [NDKKind.SimpleGroupList]);
     const pinList = deriveListStore<NDKList>(events, NDKList, [NDKKind.PinList]);
     const tierList = deriveListStore<NDKList>(events, NDKList, [NDKKind.TierList]);
+    const cashuMintList = deriveListStore<NDKCashuMintList>(events, NDKCashuMintList);
     const allTiers = deriveStore<NDKSubscriptionTier>(events, NDKSubscriptionTier);
-
-    const wallets = deriveStore<NDKCashuWallet>(events, NDKCashuWallet);
 
     const articles = derived(articlesAll, $articlesAll => {
         return $articlesAll.filter(filterArticle);
@@ -94,10 +92,10 @@
     {notes}
     {highlights}
     {articles}
-    {wallets}
     {videos}
     {wiki}
     {groupsList}
+    {cashuMintList}
     {pinList}
     {tierList}
     {tiers}

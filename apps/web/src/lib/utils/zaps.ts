@@ -1,6 +1,7 @@
 import { ndk } from "$stores/ndk.js";
 import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, NDKUser, NDKZap, NDKZapInvoice, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
 import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
+import { NDKNutzap } from "@nostr-dev-kit/ndk-wallet";
 import { Readable, derived, get, readable } from "svelte/store";
 
 export type ZapScore = { pubkey: Hexpubkey, totalSats: number, totalZaps: number, comments?: string[] };
@@ -13,16 +14,14 @@ export type ZapInvoiceWithEvent = NDKZapInvoice & { event: NDKEvent };
  */
 const filter = (
     eventOrUser: NDKEvent | NDKUser,
-    zapperPubkey?: Hexpubkey,
     extraFilter: NDKFilter = { limit: 100 }
 ): NDKFilter => {
-    const filter: NDKFilter = { kinds: [NDKKind.Zap as number, 7377 ], ...extraFilter };
+    const filter: NDKFilter = { kinds: [NDKKind.Zap as number, NDKKind.Nutzap ], ...extraFilter };
     if (eventOrUser instanceof NDKUser) filter['#p'] = [eventOrUser.pubkey];
     else {
         filter['#e'] = [eventOrUser.id];
         if (eventOrUser.isParamReplaceable()) filter['#a'] = [eventOrUser.tagId()!];
     }
-    if (zapperPubkey) filter['authors'] = [zapperPubkey];
     return filter;
 }
 
@@ -34,18 +33,32 @@ const zapsStore = (
     zapperPubkey?: Hexpubkey,
     extraFilter?: NDKFilter,
     subOpts?: NDKSubscriptionOptions,
-) => {
-    return get(ndk).storeSubscribe(
-        filter(eventOrUser, zapperPubkey, extraFilter),
+): UnsubscribableStore<NDKEvent[]> => {
+    const $ndk = get(ndk);
+    
+    const store = $ndk.storeSubscribe(
+        filter(eventOrUser, extraFilter),
         { subId: 'zaps', closeOnEose: true, ...subOpts}
     );
+
+    if (!zapperPubkey) return store;
+
+    return {
+        ...derived(store, $store => {
+            return $store.filter(zap => {
+                if (zap.kind === NDKKind.Zap) return zap.pubkey === zapperPubkey;
+                return true;
+            });
+        }),
+        unsubscribe: store.unsubscribe
+    };
 }
 
 /**
  * Get the top zaps for an event
  */
 const topZapStore = (
-    zapEvents: NDKEventStore<NDKEvent>,
+    zapEvents: UnsubscribableStore<NDKEvent[]>,
     count: number
 ) => derived(zapEvents, $zapEvents => {
     const receipts: ZapInvoiceWithEvent[] = [];
@@ -99,15 +112,18 @@ const mostRecentZapsStore = (
         if (zap.kind === NDKKind.Zap) {
             const receipt = zapInvoiceFromEvent(zap);
             if (receipt && receipt.amount) receipts.push({event: zap, ...receipt});
-        } else {
-            receipts.push({
-                event: zap,
-                amount: 1000,
-                zappee: zap.pubkey,
-                zapped: zap.tagValue("p") as Hexpubkey,
-                zapper: zap.pubkey,
-                comment: zap.tagValue("comment"),
-            })
+        } else if (zap.kind === NDKKind.Nutzap) {
+            const nutzap = NDKNutzap.from(zap);
+            if (nutzap) {
+                receipts.push({
+                    event: zap,
+                    amount: nutzap.amount,
+                    zapped: nutzap.recipientPubkey,
+                    zappee: nutzap.pubkey,
+                    zapper: nutzap.pubkey,
+                    comment: nutzap.comment,
+                })
+            }
         }
     }
 

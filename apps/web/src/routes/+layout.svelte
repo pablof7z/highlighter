@@ -4,7 +4,7 @@
 	import { finalizeLogin } from '$utils/login';
 	import { prepareSession } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
-	import { pwaInfo } from 'virtual:pwa-info';
+	// import { pwaInfo } from 'virtual:pwa-info';
 	import "@fontsource/lora";
 	import "@fontsource/lora/600.css";
 	import "@fontsource/lora/600-italic.css";
@@ -51,8 +51,8 @@
 	// 	defineCustomElements(window);
 	// }
 
-	let webManifestLink: string;
-	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
+	// let webManifestLink: string;
+	// $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
 
 	let hasJwt = false;
 	let mounted = browser ? false : true;

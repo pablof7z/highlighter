@@ -7,11 +7,14 @@
 	import CashuMintSelectorModal from "$modals/CashuMintSelectorModal.svelte";
 	import { layout } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
-	import { NDKCashuWallet } from "$utils/cashu/wallet";
+	import { walletService, wallet as defaultWallet, wallets } from "$stores/wallet";
 	import { openModal } from "$utils/modal";
 	import { NDKRelaySet } from "@nostr-dev-kit/ndk";
+	import { NDKCashuWallet } from "@nostr-dev-kit/ndk-wallet";
 	import { Block } from "konsta/svelte";
 	import { onDestroy } from "svelte";
+	import { toast } from "svelte-sonner";
+	import { derived } from "svelte/store";
 
     $layout.back = { url: "/wallet" }
     $layout.options = [
@@ -22,41 +25,53 @@
         $layout.options = [];
     })
 
-    const eventId = $page.url.searchParams.get("id");
-    let wallet: NDKCashuWallet;
+    const walletId = $page.url.searchParams.get("id");
     let name: string;
     let relays: string[] = [];
     let mints: string[] = [];
 
-    if (eventId) {
-        $ndk.fetchEvent(eventId)
-            .then(async (e) => {
-                if (e) {
-                    wallet = await NDKCashuWallet.from(e);
-                    $layout.title = wallet.name ?? wallet.dTag;
-                    name = wallet.name ?? wallet.dTag ?? "";
-                    relays = wallet.relays;
-                    mints = wallet.mints;
-                    relaySet = NDKRelaySet.fromRelayUrls(wallet.relays, $ndk);
-                    console.log({relaySet: relaySet.relayUrls})
-                    relaySet.relays.forEach((r) => console.log(r.status, r.url));
-                }
-            });
+    const wallet = derived(wallets, ($wallets) => {
+        return $wallets.find((w) => w.dTag === walletId);
+    });
+
+    $: if (!name && $wallet) {
+        name = $wallet.name;
+        relays = $wallet.relays;
+        mints = $wallet.mints;
     }
 
-    let relaySet: NDKRelaySet
+    async function makeDefault() {
+        $walletService.setMintList(wallet);
+    }
+
+    async function checkProofs() {
+        console.log("Checking proofs", $wallet);
+        if (!$wallet) return;
+        await $wallet.checkProofs();
+    }
 
     async function save() {
-        if (!wallet) return;
+        if (!$wallet) return;
 
-        wallet.name = name;
-        wallet.relays = relays;
-        wallet.mints = mints;
-        console.log(wallet.rawEvent());
-        await wallet.publishReplaceable();
+        $wallet.name = name;
+        $wallet.relays = relays;
+        $wallet.mints = mints;
+        console.log($wallet.rawEvent());
+        await $wallet.publishReplaceable();
         goto("/wallet");
     }
 
+    let confirmDelete = false;
+    async function onDelete() {
+        if (confirmDelete) {
+            await $wallet.delete();
+            goto("/wallet");
+            toast("Wallet deleted");
+        } else {
+            confirmDelete = true;
+            setTimeout(() => confirmDelete = false, 3000);
+        }
+    }
 </script>
 
 <Block>
@@ -92,9 +107,25 @@
         </div>
     </div>
 
-    <div class="my-10">
+    <div class="my-10 flex flex-col gap-6">
         <Button variant="accent" class="w-full" on:click={save}>
             Save
+        </Button>
+
+        <Button variant="secondary" class="w-full" on:click={makeDefault}>
+            Make Default
+        </Button>
+
+        <Button variant="secondary" class="w-full" on:click={checkProofs}>
+            Force Sync
+        </Button>
+
+        <Button variant="destructive" class="w-full" disabled={$defaultWallet?.dTag === $wallet?.dTag} on:click={onDelete}>
+            {#if confirmDelete}
+                Are you sure?
+            {:else}
+                Delete Wallet
+            {/if}
         </Button>
     </div>
 </Block>

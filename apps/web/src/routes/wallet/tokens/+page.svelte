@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { Button } from "$components/ui/button";
-    import { _walletTokens, activeWallet, activeWalletTokens, checkTokenProofs, deletedTokens } from "$stores/cashu";
-	import { NDKCashuToken } from "$utils/cashu/token";
 	import { NDKEventId } from "@nostr-dev-kit/ndk";
 	import { Check, TrashSimple } from "phosphor-svelte";
 

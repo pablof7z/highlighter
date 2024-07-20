@@ -30,10 +30,10 @@
     const articleKinds = [ 30023, 30040, 30041 ];
 </script>
 
-<div class="w-full my-2">
+<div class="w-full my-2 bg-secondary rounded">
     {#if event === undefined || event === null}
         <div
-            class="bg-secondary text-secondary-foreground transition-all duration-300 rounded p-4 border"
+            class="bg-secondary text-secondary-foreground transition-all duration-300 rounded-lg p-4 border"
         >
             {#if event === undefined}
                 <span class="p-4">Loading event</span>

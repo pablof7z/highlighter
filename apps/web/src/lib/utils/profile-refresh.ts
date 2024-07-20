@@ -58,6 +58,7 @@ export function execute() {
 
     profilesToRefresh.forEach((entry, pubkey) => {
         d("entry %o %o", entry, {pubkey});
+        if (!pubkey) return;
         const filter: NDKFilter = { authors: [pubkey], kinds: [0] };
         if (entry.currentCreatedAt) {
             filter.since = entry.currentCreatedAt + 1;

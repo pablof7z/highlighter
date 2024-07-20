@@ -92,9 +92,9 @@
         // navigateToEvent(event);
 
         if (isMobileBuild()) {
-            goto(`/e?eventId=${event.encode()}`)
+            goto(`/a?eventId=${event.encode()}`)
         } else {
-            goto(`/e/${event.encode()}`);
+            goto(`/a/${event.encode()}`);
         }
     }
 </script>
