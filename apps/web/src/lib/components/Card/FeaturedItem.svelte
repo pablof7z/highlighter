@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { NDKArticle, NDKSimpleGroup, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKList, NDKSimpleGroup, NDKVideo } from "@nostr-dev-kit/ndk";
 	import FeaturedArticleCard from "./FeaturedArticleCard.svelte";
+	import FeaturedListCard from "./FeaturedListCard.svelte";
 	import FeaturedCommunityCard from "./FeaturedCommunityCard.svelte";
 	import UrlCard from "./UrlCard.svelte";
 	import VideoCard from "./VideoCard.svelte";
@@ -10,6 +11,8 @@
 
 {#if item instanceof NDKArticle}
     <FeaturedArticleCard article={item} {...$$props} />
+{:else if item instanceof NDKList}
+    <FeaturedListCard list={item} {...$$props} />
 {:else if item instanceof NDKSimpleGroup}
     <FeaturedCommunityCard group={item} {...$$props} />
 {:else if item instanceof NDKVideo}

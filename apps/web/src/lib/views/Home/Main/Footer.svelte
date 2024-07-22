@@ -6,6 +6,8 @@
 	import { goto } from "$app/navigation";
     import * as Footer from "$components/Footer";
 
+    import NewItem from "$components/Footer/Views/NewItem";
+
     export let collapsed = true;
     export let placeholder: string | undefined = "Explore";
     export let value: string = "";
@@ -26,19 +28,11 @@
 
 <Footer.Shell
     bind:mainView
-    let:open
     bind:collapse
+    buttons={[
+        NewItem
+    ]}
 >
-    <Button
-        variant="accent"
-        class="rounded-full flex-none max-sm:w-12 w-10 max-sm:h-12 h-10 p-2"
-        on:click={() => {
-            open("newPost")
-        }}
-    >
-        <Plus class="w-full h-full" weight="bold" />
-    </Button>
-
     <div class="flex flex-row relative mx-2">
         <MagnifyingGlass class="absolute top-1/2 left-4 transform -translate-y-1/2" />
         <Input

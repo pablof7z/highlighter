@@ -57,7 +57,9 @@
 
     <div slot="summary" class:hidden={!summary && !$$slots.summary}>
         {#if summary}
-            {summary}
+            <div class="text-xl">
+                {summary}
+            </div>
         {/if}
         {#if $$slots.summary}
             <slot name="summary" />

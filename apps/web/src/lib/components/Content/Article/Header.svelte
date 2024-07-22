@@ -38,10 +38,10 @@
     if (!image && !isPreview) image ??= userProfile?.image;
 
     $: if (!isPreview) {
-        $layout.header = {
-            component: TopHeader,
-            props: { event: article, userProfile, authorUrl }
-        }
+        // $layout.header = {
+        //     component: TopHeader,
+        //     props: { event: article, userProfile, authorUrl }
+        // }
         if (article.title) $layout.title = article.title;
     }
 </script>

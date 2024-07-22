@@ -73,64 +73,11 @@ export const networkFollows = persist(
 	'network-follows-map'
 );
 
-export const allUserTiers = writable<NDKSubscriptionTier[]>([]);
 export const tierList = writable<NDKList|undefined>(undefined);
-export const userTiers = derived(
-	[allUserTiers, tierList],
-	([$allUserTiers, $tierList]) => {
-		const tiers: NDKSubscriptionTier[] = [];
-		if (!tierList || !$tierList) return tiers;
-
-		for (const tag of $tierList.getMatchingTags("e")) {
-			const id = tag[1];
-
-			for (const tier of $allUserTiers) {
-				if (tier.id !== id) continue;
-				if (tier.isValid) {
-					tiers.push(tier);
-				}
-			}
-		}
-
-		d(`return # ${tiers.length}`)
-
-		return tiers;
-	});
-
-export const inactiveUserTiers = derived(
-	[allUserTiers, userTiers],
-	([$allUserTiers, $currentUser]) => {
-		const tiers: NDKSubscriptionTier[] = [];
-
-		for (const tier of $allUserTiers) {
-			let active = false;
-			for (const t of $currentUser) {
-				if (t.tagId() === tier.tagId()) {
-					active = true;
-					break;
-				}
-			}
-
-			if (!active) tiers.push(tier);
-		}
-
-		return tiers;
-	});
 
 export const groupsList = writable<NDKList|undefined>(undefined);
 
 export const userActiveSubscriptions = writable<Map<Hexpubkey, string>>(new Map());
-
-/**
- * Current user app handlers
- */
-type AppHandlerType = string;
-type Nip33EventPointer = string;
-export const userAppHandlers = persist(
-	writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>(new Map()),
-	createLocalStorage(),
-	'user-app-handlers'
-);
 
 /**
  * Current user's lists
@@ -216,12 +163,9 @@ export async function prepareSession(): Promise<void> {
 			userVideoCurationsStore: userVideoCurations,
 			userGenericCurationStore: userGenericCuration,
 			categorizedUserListsStore: categorizedUserLists,
-			userTierStore: allUserTiers,
 			groupsListStore: groupsList,
 			tierListStore: tierList,
 			activeSubscriptionsStore: userActiveSubscriptions,
-			appHandlersStore: userAppHandlers,
-			supportStore: userSupport,
 			waitUntilEoseToResolve: !alreadyKnowFollows,
 			listsKinds: [
 				NDKKind.ArticleCurationSet,
@@ -293,13 +237,10 @@ interface IFetchDataOptions {
 	mutesStore?: Writable<Set<Hexpubkey>>;
 	blossomStore?: Writable<NDKEvent | null>;
 	activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
-	supportStore?: Writable<NDKEvent[]>;
-	appHandlersStore?: Writable<Map<number, Map<AppHandlerType, Nip33EventPointer>>>;
 	userArticleCurationsStore?: Writable<Map<string, NDKList>>;
 	userVideoCurationsStore?: Writable<Map<string, NDKList>>;
 	userGenericCurationStore?: Writable<NDKList>;
 	categorizedUserListsStore?: Writable<Map<string, NDKList>>;
-	userTierStore?: Writable<NDKSubscriptionTier[]>;
 	groupsListStore?: Writable<NDKList | undefined>;
 	tierListStore?: Writable<NDKList | undefined>;
 	listsKinds?: number[];
@@ -357,16 +298,11 @@ async function fetchData(
 			processUserProfile(event, opts.profileStore);
 		} else if (event.kind === NDKKind.GroupMembers && opts.activeSubscriptionsStore) {
 			processSubscriptionList(event, authors[0]);
-		} else if (event.kind === NDKKind.Subscribe) {
-			processSupport(event);
 		} else if (event.kind === NDKKind.AppRecommendation) {
-			processAppRecommendation(event);
 		} else if (event.kind === NDKKind.TierList) {
 			processTierList(event);
 		} else if (event.kind === NDKKind.SimpleGroupList) {
 			groupsListStore(event);
-		} else if (event.kind === NDKKind.SubscriptionTier) {
-			processSubscriptionTier(event);
 		} else if ([
 			NDKKind.ArticleCurationSet,
 			NDKKind.VideoCurationSet,
@@ -403,14 +339,6 @@ async function fetchData(
 		});
 	};
 
-	const processSupport = (event: NDKEvent) => {
-		opts.supportStore!.update((support) => {
-			support.push(event);
-
-			return support;
-		});
-	};
-
 	const processTierList = (event: NDKEvent) => {
 		opts.tierListStore!.update((tierList) => {
 			if (tierList && event.created_at! < tierList.created_at!) return tierList;
@@ -425,36 +353,6 @@ async function fetchData(
 		});
 	}
 
-	const processSubscriptionTier = (event: NDKEvent) => {
-		opts.userTierStore!.update((tiers) => {
-			const tier = NDKSubscriptionTier.from(event);
-
-			tiers.push(tier);
-
-			return tiers;
-		});
-	};
-
-	const processAppRecommendation = (event: NDKEvent) => {
-		opts.appHandlersStore!.update((appHandlersStore) => {
-			if (!event.dTag) return appHandlersStore;
-			const handlerKind = parseInt(event.dTag!);
-			const val = appHandlersStore.get(handlerKind) || new Map();
-
-			for (const tag of event.getMatchingTags('a')) {
-				const [, eventPointer, , handlerType] = tag;
-				val.set(handlerType || 'default', eventPointer);
-			}
-
-			appHandlersStore.set(handlerKind, val);
-
-			return appHandlersStore;
-		});
-	};
-
-	/**
-	 * Called when a newer event of kind 3 is received.
-	 */
 	const processContactList = (event: NDKEvent, store: Writable<Set<Hexpubkey> | PubkeysFollowCount>) => {
 		if (event.id !== processedIdForKind[event.kind!]) {
 			processedIdForKind[event.kind!] = event.id;
@@ -549,12 +447,6 @@ async function fetchData(
 
 		if (opts.blossomStore) kinds.push(10063 as number);
 		if (opts.groupsListStore) kinds.push(NDKKind.SimpleGroupList);
-		if (opts.appHandlersStore) kinds.push(NDKKind.AppRecommendation);
-
-		if (opts.userTierStore) {
-			kinds.push(NDKKind.SubscriptionTier);
-			kinds.push(NDKKind.TierList);
-		}
 
 		if (opts.followsStore) {
 			filters.push(withSinceFilter({ kinds: [3], authors, limit: 50 }));

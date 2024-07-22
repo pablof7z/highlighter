@@ -2,12 +2,12 @@
 	import { getAuthorUrlSync } from '$utils/url';
 	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
-	import { loadedEvent } from "$stores/item-view";
 	import { eventToKind } from "$utils/event";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, NDKEvent, NDKList, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { browser } from '$app/environment';
     import * as Content from "$components/Content";
+	import WithItem from '$components/Event/ItemView/WithItem.svelte';
 
     let id: string;
     let event: NDKEvent | NDKArticle | NDKList | NDKVideo | undefined | null;
@@ -19,8 +19,6 @@
         } catch {}
     }
     
-    $: $loadedEvent = event;
-
     $: if (id !== $page.params.id && browser) {
         id = $page.params.id;
 
@@ -40,10 +38,14 @@
     }
 </script>
 
-{#if $loadedEvent}
-    <Content.Shell
-        event={$loadedEvent}
-    >
-        <slot />
-    </Content.Shell>
-{/if}
+{#key id}
+    <WithItem tagId={id} let:event>
+        {#if event}
+            <Content.Shell
+                {event}
+            >
+                <slot />
+            </Content.Shell>
+        {/if}
+    </WithItem>
+{/key}

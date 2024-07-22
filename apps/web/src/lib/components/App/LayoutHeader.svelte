@@ -8,6 +8,8 @@
 	import { page } from "$app/stores";
 	import HomeButton from "./HomeButton.svelte";
 
+    export let containerClass: string = "";
+
     let render = false;
     let navbar: HTMLElement;
 
@@ -45,6 +47,7 @@
 </script>
 
 <div class="
+w-full
 " bind:this={navbar}>
     <div class="flex flex-row justify-between items-center h-full w-full gap-2 py-3">
         {#if $layout.header?.component}
@@ -70,13 +73,13 @@
             <div class="flex flex-row items-stretch w-full">
                 {#if $layout.sidebar === false}
                     {#if $page.url.pathname !== "/"}
-                        <div class="fixed max-sm:hidden">
+                        <div class="fixed max-sm:hidden ml-2">
                             <HomeButton />
                         </div>
                     {/if}
                 {/if}
                 
-                <div class="flex items-center justify-between w-full {$$props.containerClass??""}">
+                <div class="flex items-center justify-between max-w-[var(--content-focused-width)] mx-auto w-full {containerClass}">
                     <div class="flex flex-row gap-3 items-center w-full">
                         <HeaderLeftButton />
 
@@ -84,7 +87,7 @@
                             <!-- svelte-ignore a11y-missing-attribute -->
                             <img src={$layout.iconUrl} class="w-8 h-8 rounded-full" />
                         {/if}
-                        
+
                         {#if $layout?.title}
                             <div class="
                                 flex flex-row

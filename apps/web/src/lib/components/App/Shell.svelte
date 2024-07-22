@@ -144,7 +144,8 @@
         } else if (withSidebar) {
             mainClass = "";
         } else {
-            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full";
+            // mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full";
+            mainClass = "";
         }
     }
 </script>
@@ -164,8 +165,6 @@
     transition-all duration-300
     {withSidebar ? "md:pl-[360px]" : ""}
 " style={`
-    background-color: rgba(${containerSaturation}, ${containerSaturation}, ${containerSaturation});
-    transition: background-color 0.2s;
 `} on:click={resetView}>
     {#if withSidebar}
         <div

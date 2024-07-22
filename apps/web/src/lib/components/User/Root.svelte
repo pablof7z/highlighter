@@ -4,11 +4,12 @@
 	import { ndk } from "$stores/ndk";
     import { deriveStore, deriveListStore } from "$utils/events/derive.js";
 	import { filterArticle } from "$utils/article-filter";
+	import UserProfile from "./UserProfile.svelte";
 
     export let user: NDKUser;
-    export let userProfile: NDKUserProfile | undefined | null;
-    export let authorUrl: string;
-    export let fetching: boolean;
+    export let userProfile: NDKUserProfile | undefined | null = undefined;
+    export let authorUrl: string | undefined = undefined;
+    export let fetching: boolean | undefined = undefined;
 
     let eosed = false;
     const onEose = () => eosed = true;
@@ -22,6 +23,7 @@
         { kinds: [ NDKKind.HorizontalVideo, NDKKind.VerticalVideo ], authors: [user.pubkey], limit: 100 },
         { kinds: [ NDKKind.Media ], "#m": [ "video/mp4"], authors: [user.pubkey], limit: 10 },
         { kinds: [ NDKKind.Highlight ], authors: [user.pubkey], limit: 100 },
+        { kinds: [ NDKKind.ArticleCurationSet ], authors: [user.pubkey] },
         { kinds: [ NDKKind.TierList, NDKKind.SimpleGroupList, NDKKind.PinList, NDKKind.CashuMintList ], authors: [user.pubkey] },
         { kinds: [ NDKKind.SubscriptionTier ], authors: [user.pubkey], limit: 100 },
 
@@ -37,6 +39,7 @@
     const groupsList = deriveListStore<NDKList>(events, NDKList, [NDKKind.SimpleGroupList]);
     const pinList = deriveListStore<NDKList>(events, NDKList, [NDKKind.PinList]);
     const tierList = deriveListStore<NDKList>(events, NDKList, [NDKKind.TierList]);
+    const curations = deriveStore<NDKList>(events, NDKList, [NDKKind.ArticleCurationSet]);
     const cashuMintList = deriveListStore<NDKCashuMintList>(events, NDKCashuMintList);
     const allTiers = deriveStore<NDKSubscriptionTier>(events, NDKSubscriptionTier);
 
@@ -85,7 +88,13 @@
             .filter(tier => eTags.includes(tier.id))
             // .filter(tier => tier.tagValue("h"))
     });
+
+    const shouldFetchUserProfile = userProfile === undefined && !fetching;
 </script>
+
+{#if shouldFetchUserProfile}
+    <UserProfile {user} bind:userProfile bind:authorUrl  bind:fetching />
+{/if}
 
 <slot
     {user}
@@ -95,6 +104,7 @@
     {videos}
     {wiki}
     {groupsList}
+    {curations}
     {cashuMintList}
     {pinList}
     {tierList}

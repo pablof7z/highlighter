@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { NDKEvent, NDKHighlight, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
+    import { NDKEvent, NDKHighlight, NDKTag } from "@nostr-dev-kit/ndk";
     import { ndk } from "$stores/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import HighlightedContent from "./HighlightedContent.svelte";

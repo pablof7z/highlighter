@@ -1,12 +1,7 @@
 <script lang="ts">
-	import Avatar from '$components/User/Avatar.svelte';
-import Name from '$components/User/Name.svelte';
 import { ndk } from "$stores/ndk.js";
 	import { NDKAppHandlerEvent, NDKDVMJobFeedback, NDKDVMJobResult, NDKEvent, NDKKind, NDKUser, type NDKTag, type NostrEvent, type NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { CaretDown, MagicWand } from "phosphor-svelte";
 	import { derived, type Readable } from "svelte/store";
-    import { userAppHandlers } from '$stores/session';
-    import DvmProfile from "./DvmProfile.svelte";
 
     export let kind: NDKKind;
     export let inputs: NDKTag[];
@@ -14,7 +9,8 @@ import { ndk } from "$stores/ndk.js";
 
     let dvm: NDKAppHandlerEvent;
     let dvmProfile: NDKUserProfile;
-    const dvmId = $userAppHandlers.get(kind)?.values().next().value;
+    // const dvmId = $userAppHandlers.get(kind)?.values().next().value;
+    const dvmId = new Map().get(kind)?.values().next().value;
     const dvmPubkey = dvmId ? dvmId.split(':')?.[1] : undefined;
     if (dvmId) {
         $ndk.fetchEvent(dvmId).then((e) => {

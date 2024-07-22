@@ -4,7 +4,6 @@
 	import { NDKKind, type NDKEvent, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { CaretDown } from 'phosphor-svelte';
 	import ServiceProviderItem from './ServiceProviderItem.svelte';
-	import { userAppHandlers } from '$stores/session';
 	import { ndk } from '$stores/ndk';
 
     export let dvmPubkey: string | undefined;
@@ -17,7 +16,8 @@
 
     $: if (eventId !== fetchedEventId) {
         fetchedEventId = eventId;
-        const appHandlerEvent = $userAppHandlers.get(kind);
+        // const appHandlerEvent = $userAppHandlers.get(kind);
+        const appHandlerEvent = new Map().get(kind);
         if (appHandlerEvent && appHandlerEvent.size > 0) {
             const e = appHandlerEvent.values().next().value;
             if (e) eventId = e;

@@ -1,36 +1,42 @@
 <script lang="ts">
 	import { onDestroy, setContext } from 'svelte';
-	import { Readable, writable } from 'svelte/store';
+	import { Readable, Writable, writable } from 'svelte/store';
 	import { layout } from "$stores/layout";
     import Header from "./Header.svelte";
 	import { NDKArticle, NDKSimpleGroup, NDKVideo } from '@nostr-dev-kit/ndk';
 	import Audience from './Audience.svelte';
     import * as Content from "$components/Content";
     import * as Article from "$components/Content/Article";
-    import { publish } from "./actions/publish.js";
-	import { goto } from '$app/navigation';
+    import { publish, publishThread } from "./actions/publish.js";
+	
+	import { DraftItem } from '$stores/drafts';
+    import { Mode, PublishInGroupStore, Types as StudioItemTypes } from "$components/Studio";
+	import { Thread } from '$utils/thread';
 
     export let groups: Readable<Record<string, NDKSimpleGroup>>;
-    
-    const event = writable<NDKArticle | NDKVideo | undefined>();
-    const mode = writable<string>('edit');
-    const publishAt = writable<Date | undefined>();
-
-    setContext('mode', mode);
-    setContext('event', event);
+    export let event: Writable<NDKArticle | NDKVideo | undefined>;
+    export let thread: Writable<Thread | undefined>;
+    export let draft: DraftItem | undefined = undefined;
+    export let publishInGroups: PublishInGroupStore;
+    export let publishAt: Writable<Date | undefined>;
+    export let mode: Writable<Mode>;
+    export let type: Writable<StudioItemTypes>;
 
     $layout.header = {
         component: Header,
         props: {
             mode,
             event,
+            groups,
             publishAt,
+            publishInGroups,
             onPublish: async () => {
-                const e = await publish($event, $publishAt);
-                if (e) {
-                    // delete draft
-                    goto(`/a/${e.encode()}`);
-                }
+                await publish(
+                    $event,
+                    $thread,
+                    $publishInGroups,
+                    $publishAt,
+                )
             }
             // onSsveDraft
         }
@@ -42,19 +48,22 @@
 </script>
 
 <div class="flex flex-col w-full">
-{#if $mode === 'edit'}
-    <slot {mode} {event} />
-{:else if $mode === 'audience'}
-    <Audience {event} {groups} />
-{:else if $mode === 'preview'}
-    <Article.Header
-        article={$event}
-        isPreview
-    >
+    {#if $mode === 'edit'}
+        <slot {mode} {event} />
+    {:else if $mode === 'audience'}
+        <Audience
+            {groups}
+            {publishInGroups}
+        />
+    {:else if $mode === 'preview'}
+        <Article.Header
+            article={$event}
+            isPreview
+        >
 
-    </Article.Header>
-    <Content.Body event={$event} isPreview>
+        </Article.Header>
+        <Content.Body event={$event} isPreview>
 
-    </Content.Body>
-{/if}
+        </Content.Body>
+    {/if}
 </div>

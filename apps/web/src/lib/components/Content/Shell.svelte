@@ -1,19 +1,21 @@
 <script lang="ts">
-	import { articleKinds, videoKinds } from "$utils/event";
-	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKRelaySet, NDKUserProfile, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { articleKinds, curationKinds, videoKinds } from "$utils/event";
+	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKUserProfile, NDKVideo } from "@nostr-dev-kit/ndk";
     import * as Article from "$components/Content/Article";
     import * as Video from "$components/Content/Video";
     import * as Note from "$components/Content/Note";
     import * as Book from "$components/Content/Book";
+    import * as Curation from "$components/Content/Curation";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { setContext } from "svelte";
 	import { ndk } from "$stores/ndk";
 	import { derived } from "svelte/store";
 	import { layout } from '$stores/layout.js';
+	import { deriveStore } from "$utils/events/derive";
 
     export let event: NDKEvent;
 
-    let wrappedEvent: NDKArticle | NDKVideo | NDKEvent;
+    let wrappedEvent: NDKArticle | NDKVideo | NDKEvent | NDKList;
     let chapters: NDKArticle[];
 
     if (event.kind === 30040) {
@@ -51,6 +53,8 @@
         wrappedEvent = NDKArticle.from(event);
     } else if (videoKinds.includes(event.kind!)) {
         wrappedEvent = NDKVideo.from(event);
+    } else if (curationKinds.includes(event.kind!)) {
+        wrappedEvent = NDKList.from(event);
     } else {
         wrappedEvent = event;
     }
@@ -59,17 +63,15 @@
     let authorUrl: string;
 
     const events = $ndk.storeSubscribe([
-        { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.Zap, NDKKind.Highlight, ], ...wrappedEvent.filter() },
-        { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.GenericRepost, NDKKind.Repost ], "#q": [wrappedEvent.tagId() ] }
+        { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.Zap, NDKKind.Nutzap, NDKKind.Highlight, ], ...wrappedEvent.filter() },
+        { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.GenericRepost, NDKKind.Repost ], "#q": [wrappedEvent.tagId() ] },
+        { kinds: [ NDKKind.ArticleCurationSet ], ...wrappedEvent.filter() },
     ], { subId: 'related-events' });
 
     const wotFilteredEvents =  events; //wotFilteredStore(events);
 
-    const highlights = derived(wotFilteredEvents, $wotFilteredEvents => {
-        return $wotFilteredEvents
-            .filter(e => e.kind === NDKKind.Highlight)
-            .map(e => NDKHighlight.from(e))
-    });
+    const curations = deriveStore(wotFilteredEvents, NDKList, [NDKKind.ArticleCurationSet]);
+    const highlights = deriveStore(wotFilteredEvents, NDKHighlight);
 
     const replies = derived(wotFilteredEvents, $wotFilteredEvents => {
         return $wotFilteredEvents
@@ -82,10 +84,10 @@
     });
 
     const zaps = derived(wotFilteredEvents, $wotFilteredEvents => {
-        return $wotFilteredEvents
-            .filter(e => e.kind === NDKKind.Zap)
+        return $wotFilteredEvents.filter(e => [NDKKind.Zap, NDKKind.Nutzap].includes(e.kind!))
     });
 
+    setContext('curations', curations);
     setContext("wrappedEvent", wrappedEvent);
     setContext('events', events);
     setContext('highlights', highlights);
@@ -120,6 +122,16 @@
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
         <Note.Header
             event={wrappedEvent}
+            {userProfile}
+            {authorUrl}
+        />
+
+        <slot />
+    </div>
+{:else if curationKinds.includes(wrappedEvent.kind)}
+    <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
+        <Curation.Header
+            list={wrappedEvent}
             {userProfile}
             {authorUrl}
         />

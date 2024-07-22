@@ -1,18 +1,22 @@
 <script lang="ts">
     import Button from "$components/ui/button/button.svelte";
-	import { CaretLeft, Eye, Timer, UsersThree, X } from "phosphor-svelte";
-	import { Writable } from "svelte/store";
+	import { CaretLeft, Eye, PaperPlaneTilt, Timer, UsersThree, X } from "phosphor-svelte";
+	import { Readable, Writable } from "svelte/store";
     import * as Tooltip from "$lib/components/ui/tooltip";
-	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKSimpleGroup, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { closeModal, openModal } from "$utils/modal";
 	import ScheduleModal from "$modals/ScheduleModal.svelte";
 	import ToggleDark from "$components/buttons/ToggleDark.svelte";
 	import { goto } from "$app/navigation";
+	import { PublishInGroupStore } from ".";
+	import { pluralize } from "$utils";
 
     export let mode: Writable<string>;
     export let publishing: Writable<boolean>;
     export let publishAt: Writable<Date | undefined>;
     export let event: Writable<NDKArticle | NDKVideo | undefined>;
+    export let groups: Readable<Record<string, NDKSimpleGroup>>;
+    export let publishInGroups: PublishInGroupStore;
 
     export let onPublish: () => Promise<void>;
     
@@ -59,12 +63,24 @@
             }
         });
     }
+
+    let imagesOfGroupsToPublish: string[] = [];
+
+    $: {
+        imagesOfGroupsToPublish = [];
+        for (const groupId of $publishInGroups.keys()) {
+            if ($groups[groupId]?.metadata?.picture) {
+                imagesOfGroupsToPublish.push($groups[groupId].metadata.picture);
+            }
+        }
+    }
 </script>
 
 <div class="flex flex-row items-centerw-full">
 <div class="
     {$$props.class??""}
     flex flex-row items-center justify-between
+    w-full
 ">
     <div class="flex flex-row flex-nowrap gap-2">
         {#if $mode !== 'edit'}
@@ -83,8 +99,25 @@
 
         {#if $mode !== 'audience'}
             <Button variant="outline" on:click={setMode('audience')}>
-                <UsersThree class="md:mr-2" size={20} />
-                <span class="hidden md:block">Audience</span>
+                {#if imagesOfGroupsToPublish.length === 0}
+                    <UsersThree class="md:mr-2" size={20} />
+                {:else}
+                    <div class="flex flex-row items-center rounded-full overflow-clip">
+                        {#each imagesOfGroupsToPublish as image}
+                            <img src={image} class="w-6 h-6 rounded-full" />
+                        {/each}
+                    </div>
+                {/if}
+                
+                {#if $publishInGroups.size > 0}
+                    {#each $publishInGroups.keys() as groupId}
+                        {#if $groups[groupId]}
+                            {$groups[groupId]?.metadata?.name??""}
+                        {/if}
+                    {/each}
+                {:else}
+                    <span class="hidden md:block">Audience</span>
+                {/if}
             </Button>
         {/if}
 
@@ -123,15 +156,21 @@
             {/if}
             
             {#if $publishAt}
-                Schedule
+                <Timer weight="fill" />
+                <span class="hidden md:block">
+                    Schedule
+                </span>
             {:else}
-                Publish
+                <PaperPlaneTilt size={24} />
+                <span class="hidden md:block">
+                    Publish
+                </span>
             {/if}
         </Button>
     </div>
 </div>
 
-<Button on:click={closeClicked} variant="secondary" class="rounded-full flex-none flex flex-col">
+<Button on:click={closeClicked} variant="secondary" class="rounded-full flex-none flex-col hidden md:flex">
     {#if !closing}
         <X size={20} />
     {:else}

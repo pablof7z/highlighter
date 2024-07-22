@@ -129,8 +129,6 @@
 <div class="w-full" class:hidden={!($view === "meta" && $$slots.meta)}>
     <slot name="meta" />
 </div>
-{#if $view === "audience"}
-    <AudiencePage />
 {:else if $view === "publish"}
     <Publish />
 {:else if $view === "published"}

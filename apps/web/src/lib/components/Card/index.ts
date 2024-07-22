@@ -1,7 +1,9 @@
 import Article from "./ArticleCard.svelte";
 import FeaturedArticle from "./FeaturedArticleCard.svelte";
+import FeaturedList from "./FeaturedListCard.svelte";
 import User from "./User.svelte";
 import Community from "./Community.svelte";
+import Curation from "./Curation.svelte";
 import Video from "./VideoCard.svelte";
 import Url from "./UrlCard.svelte";
 import GroupTier from "./GroupTier.svelte";
@@ -14,6 +16,7 @@ export {
     Article,
     User,
     Community,
+    Curation,
     Video,
     Note,
     Url,
@@ -22,5 +25,6 @@ export {
     GroupTier,
 
     FeaturedArticle,
+    FeaturedList,
     FeaturedItem
 };

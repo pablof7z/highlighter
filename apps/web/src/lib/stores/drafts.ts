@@ -34,6 +34,11 @@ export type DraftCheckpoint = {
 	time: number;
 	data: CheckpointData;
 	manuallySaved: boolean;
+
+	/**
+	 * Random checkpoint id
+	 */
+	id: string;
 };
 
 export type DraftItemType = "article" | "video" | 'thread';

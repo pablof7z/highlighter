@@ -14,7 +14,6 @@
 	import { layout } from '$stores/layout';
 	import HomePageSidebar from './HomePageSidebar.svelte';
 	import { vanityUrls } from '$utils/const';
-	import User from '$components/Card/User.svelte';
 
     $layout.fullWidth = true;
 
@@ -30,7 +29,7 @@
         { kinds: [NDKKind.HorizontalVideo, NDKKind.HorizontalVideo+1], authors: Array.from($userFollows), limit: 50 },
         { kinds: [NDKKind.HorizontalVideo], authors: Array.from($userFollows), limit: 50 },
     ], undefined, NDKVideo);
-    const filteredVideos = wotFilteredStore(articles) as Readable<NDKArticle[]>;
+    const filteredVideos = wotFilteredStore(videos) as Readable<NDKVideo[]>;
 
     let highlightsEosed = false;
     const highlights = $ndk.storeSubscribe([

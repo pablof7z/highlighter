@@ -1,6 +1,5 @@
 <script lang="ts">
     import Input from '$components/ui/input/input.svelte';
-	import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, type NostrEvent } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 	import ContentEditor from './ContentEditor.svelte';
@@ -105,7 +104,7 @@
         {#if article.image}
             <div class="text-foreground text-sm font-normal w-full h-full group" transition:slide>
                 {#if !$appMobileView}
-                    <div class="absolute left-2 top-2 z-50 flex flex-row gap-1 transition-all duration-300 group-hover:opacity-100" class:opacity-50={!!article.image}>
+                    <div class="absolute left-2 top-2 z-1 flex flex-row gap-1 transition-all duration-300 group-hover:opacity-100" class:opacity-50={!!article.image}>
                         <Button forceNonMobile variant="default" size="sm" on:click={() => openModal(CoverImageModal, { article, onSave: onSaveCover })}>
                             {article.image ? "Change" : "Add"} cover image
                         </Button>

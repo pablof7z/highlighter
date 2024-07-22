@@ -8,9 +8,12 @@
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { ndk } from "$stores/ndk";
 	import { layout } from "$stores/layout";
-	import WithItem from "$components/Event/ItemView/WithItem.svelte";
 	import LoadEvent from "$components/Event/LoadEvent.svelte";
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
+	import EventWrapper from "$components/Feed/EventWrapper.svelte";
+	import { goto } from "$app/navigation";
+	import { getEventUrl } from "$utils/url";
+	import Footer from "./Footer.svelte";
 
     export let event: NDKEvent;
     export let userProfile: NDKUserProfile | undefined = undefined;
@@ -19,6 +22,14 @@
 
     $layout.title = "Thread";
     $layout.sidebar = false;
+    $layout.footerInMain = true;
+    $: $layout.footer = {
+        component: Footer,
+        props: {
+            event,
+            userProfile
+        }
+    }
 
     let showToolbar = false;
     let hasZaps = false;
@@ -27,9 +38,17 @@
     
 </script>
 
+<div class="discussion-wrapper">
 {#if replyTag}
-    <LoadEvent tag={replyTag} {event} let:event>
-        {event?.id}
+    <LoadEvent tag={replyTag} {event} let:event={f}>
+        {#if f}
+            <EventWrapper
+                event={f}
+                compact
+                on:open:note={() => goto(getEventUrl(f))}
+                class="text-sm text-muted-foreground"
+            />
+        {/if}
     </LoadEvent>
 {/if}
 
@@ -43,15 +62,17 @@
     zaps={hasZaps}
     toolbar={showToolbar}
 >
-    <Event.Header {event} {userProfile} />
+    <div class="p-4 text-foreground">
+        <Event.Header {event} {userProfile} />
 
-    <EventContent
-        ndk={$ndk}
-        {event}
-        class="text-xl"
-        mediaCollectionComponent={MediaCollection}
-        eventCardComponent={EmbeddedEventWrapper}
-    />
+        <EventContent
+            ndk={$ndk}
+            {event}
+            class="text-xl"
+            mediaCollectionComponent={MediaCollection}
+            eventCardComponent={EmbeddedEventWrapper}
+        />
+    </div>
 
     <div slot="zaps" class:hidden={!hasZaps}>
         <ItemViewZaps {event} bind:hasZaps class="py-3 responsive-padding" />
@@ -67,3 +88,4 @@
 
     <slot />
 </HeaderShell>
+</div>

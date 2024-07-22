@@ -8,6 +8,7 @@ import Body from './Body.svelte';
 import View from './View.svelte';
 import Comments from './Comments.svelte';
 import Zaps from './Zaps.svelte';
+import Curations from './Curations.svelte';
 
 export {
     Shell,
@@ -16,5 +17,6 @@ export {
     Body,
     View,
     Comments,
-    Zaps
+    Zaps,
+    Curations
 }

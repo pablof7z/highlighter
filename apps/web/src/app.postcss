@@ -214,19 +214,27 @@
 	}
 
 	.article h1 {
-		@apply !mb-0 mt-8 text-4xl text-foreground font-semibold;
+		@apply !mb-0 mt-8 text-4xl text-foreground font-bold;
 	}
 
 	.article h2 {
-		@apply mb-1 mt-8 text-xl;
+		@apply mb-1 mt-8 text-2xl font-semibold;
 	}
 
 	.article h3 {
-		@apply mb-1 mt-8 text-lg;
+		@apply mb-1 mt-8 text-xl font-semibold;
 	}
 
 	.article p {
-		@apply mt-0 mb-4 leading-8 text-lg !font-thin;
+		@apply mt-0 mb-6 leading-8 text-lg;
+	}
+
+	.article ul {
+		@apply list-disc pl-6;
+	}
+
+	.article li {
+		@apply mt-0 mb-2 leading-8 text-lg;
 	}
 
 	.toast {

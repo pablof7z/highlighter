@@ -6,13 +6,18 @@
 	import { openModal } from "$utils/modal";
 	import { NDKKind, NDKList, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
 	import { Button } from '$components/ui/button';
-	import { derived } from 'svelte/store';
+	import { derived, get } from 'svelte/store';
     import * as Chat from "$components/Chat";
+    import * as Card from "$components/Card";
 	import { Plus } from 'phosphor-svelte';
-	import Section from '$components/Layout/Headers/Section.svelte';
 	import { addHistory } from '$stores/history';
+    import * as Group from "$components/Groups";
+    import HorizontalList from "$components/PageElements/HorizontalList/List.svelte";
+	import JoinModal from '$components/Groups/Modals/JoinModal.svelte';
 
     addHistory({ title: "Communities", url: "/communities" });
+
+    $layout.title = "Communities";
 
     const relaySet = NDKRelaySet.fromRelayUrls(["wss://groups.0xchat.com/", "wss://groups.fiatjaf.com"], $ndk, true);
     relaySet.addRelay($ndk.pool.getRelay("wss://groups.0xchat.com/", true, true));
@@ -45,21 +50,23 @@
             .slice(0, 10)
             .map(k => JSON.parse(k));
     })
+
+
 </script>
 
-{#if groupsList && $groupsList}
+{#if $groupsList && $groupsList.items.length > 0}
     <Chat.List>
-        {#each $groupsList.items as item (item)}
-            <Chat.Item tag={item} />
+        {#each $groupsList.items as group (group[1])}
+            <Chat.Item tag={["group", group[1], group[0]]} />
         {/each}
     </Chat.List>
 {/if}
 
-{$groups.length}
-
-{#each $groups as group (group.id)}
-    <Chat.Item tag={["group", group.dTag, group.relay.url]} />
-{/each}
+<Chat.List>
+    {#each $groups as group (group.id)}
+        <Chat.Item tag={["group", group.dTag, group.relay.url]} />
+    {/each}
+</Chat.List>
 
 <h2>Communities to check out</h2>
 

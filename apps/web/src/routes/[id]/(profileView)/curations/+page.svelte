@@ -1,19 +1,14 @@
 <script lang="ts">
-	import { page } from "$app/stores";
-	import Curations from "$components/Curations.svelte";
-	import { layoutMode } from "$stores/layout";
-	import { NDKUser } from "@nostr-dev-kit/ndk";
+    import { NDKList } from "@nostr-dev-kit/ndk";
+	import { getContext } from "svelte";
+	import { Readable } from "svelte/store";
+    import * as Card from "$components/Card";
 
-    $layoutMode = "single-column-focused";
-
-    let user: NDKUser;
-
-    $: user = $page.data.user;
+    const curations = getContext("userCurations") as Readable<NDKList[]>;
 </script>
 
-<div class="flex flex-row gap-10">
-    <Curations
-        filter={{"authors": [user.pubkey]}}
-        skipAuthor={true}
-    />
+<div class="flex flex-col gap-4">
+    {#each $curations as event (event.id)}
+        <Card.FeaturedList list={event} />
+    {/each}
 </div>

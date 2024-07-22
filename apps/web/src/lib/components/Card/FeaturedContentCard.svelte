@@ -32,18 +32,20 @@
             md:h-full
             flex-none
             lg:w-[20rem] h-full object-cover
-            z-[1] rounded
+            z-[1] rounded-t-md md:rounded
         "
     />
     <div class="w-full overflow-clip px-4 py-2 flex flex-col">
-        <h3 class="font-semibold grow max-h-[64px] overflow-clip text-foreground text-2xl">
-            {title}
-        </h3>
-        {#if description}
-            <div class="text-base text-muted-foreground font-normal max-h-[10rem] overflow-clip grow">
-                {description}
-            </div>
-        {/if}
+        <div class="flex flex-col grow">
+            <h3 class="font-semibold max-h-[64px] overflow-clip text-foreground text-2xl">
+                {title}
+            </h3>
+            {#if description}
+                <div class="text-base text-muted-foreground font-normal max-h-[10rem] overflow-clip">
+                    {description}
+                </div>
+            {/if}
+        </div>
         {#if !skipAuthor && author}
             <div class="text-sm text-muted-foreground font-normal truncate pt-2">
                 {#if author instanceof NDKUser}

@@ -1,9 +1,11 @@
-import { Hexpubkey, NDKArticle, NDKKind, NDKList, NDKRelaySet, NDKTag, NDKVideo, eventIsReply, type NDKEvent } from '@nostr-dev-kit/ndk';
+import { Hexpubkey, NDKArticle, NDKEvent, NDKKind, NDKList, NDKRelaySet, NDKTag, NDKVideo, eventIsReply } from '@nostr-dev-kit/ndk';
 import { getDefaultRelaySet } from './ndk';
 import { nip19 } from 'nostr-tools';
 import { AddressPointer, EventPointer } from 'nostr-tools/nip19';
 import { requiredTiersFor } from '$lib/events/tiers';
 import createDebugger from 'debug';
+import { get } from 'svelte/store';
+import { ndk } from '$stores/ndk';
 
 const debug = createDebugger('HL:utils:event');
 
@@ -17,6 +19,11 @@ export const articleKinds = [
 export const videoKinds = [
 	NDKKind.HorizontalVideo,
 	NDKKind.HorizontalVideo + 1,
+];
+
+export const curationKinds = [
+	NDKKind.ArticleCurationSet,
+	NDKKind.VideoCurationSet,
 ];
 
 export const mainContentKinds = [
@@ -58,9 +65,10 @@ export function encodeTag(tag: NDKTag) {
 }
 
 export function eventToKind(event: NDKEvent) {
+	console.log('eventToKind', event.kind);
 	switch (event.kind) {
 		case 30818: return NDKArticle.from(event);
-		case NDKKind.Article, 30040, 30041: return NDKArticle.from(event);
+		case NDKKind.Article: return NDKArticle.from(event);
 		case NDKKind.HorizontalVideo: return NDKVideo.from(event); 
 		case NDKKind.ArticleCurationSet: return NDKList.from(event);
 		case NDKKind.VideoCurationSet: return NDKList.from(event);
@@ -167,4 +175,22 @@ export function isEventFullVersion(event: NDKEvent) {
 
 export function chronologically(a: NDKEvent, b: NDKEvent) {
 	return a.created_at! - b.created_at!;
+}
+
+export function createEventReply(originalEvent: NDKEvent) {
+	const $ndk = get(ndk);
+	const reply = new NDKEvent($ndk);
+	reply.kind = replyKind(originalEvent);
+	reply.tags = originalEvent.getMatchingTags("h");
+	reply.tag(originalEvent, "reply");
+	return reply;
+}
+
+export function replyKind(event: NDKEvent): NDKKind {
+	switch (event.kind) {
+		case NDKKind.GroupNote: return NDKKind.GroupReply;
+		case NDKKind.GroupChat: return NDKKind.GroupChat;
+		default:
+			return NDKKind.Text;
+	}
 }

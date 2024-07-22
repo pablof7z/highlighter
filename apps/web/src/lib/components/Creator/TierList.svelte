@@ -2,12 +2,11 @@
 	import { ndk } from "$stores/ndk";
 	import { NDKEvent, NDKKind, NDKRelay, NDKSubscriptionCacheUsage, NDKSubscriptionTier, type NostrEvent } from '@nostr-dev-kit/ndk';
 	import TierEditor from './TierEditor.svelte';
-	import type { Readable } from 'svelte/store';
+	import { writable, type Readable } from 'svelte/store';
 	import { getDefaultRelaySet } from '$utils/ndk';
 	import { goto } from '$app/navigation';
 	import { CaretDown, CaretUp, Plus, Trash } from 'phosphor-svelte';
     import { createEventDispatcher, onMount, tick } from 'svelte';
-	import { inactiveUserTiers, userProfile, userTiers } from '$stores/session';
 	import CollapsedTierListItem from './CollapsedTierListItem.svelte';
     import nip29 from '$lib/nip29';
 	import { defaultVerifierPubkey } from '$utils/const';
@@ -27,15 +26,15 @@
     const dispatch = createEventDispatcher();
 
     export let tiers: NDKSubscriptionTier[] = [];
-    let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
+    // let currentTiers: Readable<NDKEvent[]> | undefined = undefined;
     export let expandedTierIndex: number | undefined = undefined;
 
     // Tracks the deleted tiers so we don't re-add them
     let deletedDtags = new Set<string>();
     let autofocus: number | undefined = undefined;
 
-    currentTiers = userTiers;
-
+    const currentTiers = writable<NDKEvent[]>([]);
+    
     onMount(async () => {
         if ($currentUser && $currentTiers && $currentTiers.length === 0) {
             const userTiers = await $ndk.fetchEvent({ kinds: [NDKKind.SubscriptionTier], authors: [$currentUser.pubkey], limit: 1})
@@ -305,7 +304,7 @@
         </div>
     </div>
 
-    {#if $inactiveUserTiers.length > 0}
+    <!-- {#if $inactiveUserTiers.length > 0}
         <div class="divider"></div>
 
         <button class="self-start button" on:click={() => showInactive = !showInactive}>
@@ -318,5 +317,5 @@
                 <button class="self-end button-black" on:click={() => restore(tier)}>Restore</button>
             {/each}
         {/if}
-    {/if}
+    {/if} -->
 </div>

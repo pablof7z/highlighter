@@ -3,8 +3,12 @@
 	import { lastSeenTimestamp, notifications } from '$stores/notifications';
 	import StoreFeed from '$components/Feed/StoreFeed.svelte';
 	import { onDestroy, onMount } from 'svelte';
+	import { layout } from "$stores/layout";
 
     let timeout: any;
+
+    $layout.sidebar = false;
+    $layout.navigation = false;
 
     let originalLastSeenTimestamp = $lastSeenTimestamp;
 

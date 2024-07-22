@@ -5,11 +5,11 @@
     import { inview } from 'svelte-inview';
 	import { pluralize } from "$utils";
 	import GroupNote from "$components/Events/GroupNote.svelte";
-	import CurationItem from "$components/CurationItem.svelte";
 	import { goto } from "$app/navigation";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import Article from "./Article.svelte";
 	import Video from "./Video.svelte";
+    import * as Card from "$components/Card";
 
     export let feed: Readable<NDKEvent[]>;
     export let renderLimit = 10;
@@ -102,7 +102,7 @@
         originalEvent.preventDefault();
         // navigateToEvent(event);
 
-        goto(`/e/${event.encode()}`);
+        goto(`/a/${event.encode()}`);
     }
 
     export let gridSetup = "grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
@@ -156,7 +156,7 @@
                     {...($$props.eventProps||{})}
                 />
             {:else if event.kind === NDKKind.ArticleCurationSet}
-                <CurationItem list={NDKList.from(event)} grid={false} />
+                <Card.Curation list={NDKList.from(event)} />
             {:else}
                 <EventWrapper
                     {event}

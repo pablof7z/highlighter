@@ -4,7 +4,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import mkcert from 'vite-plugin-mkcert';
 
-const mobileBuild = !!process.env.MOBILE;
+const mobileBuild = !!process.env.VITE_MOBILE;
 
 let pwa: any[] = mobileBuild ? [] : [SvelteKitPWA({
     strategies: 'generateSW',

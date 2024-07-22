@@ -4,41 +4,31 @@
 	import { onMount } from "svelte";
 	import { Writable, Readable, get } from "svelte/store";
     import * as Groups from "$components/Groups";
-	import { group } from "console";
 	import { ndk } from "$stores/ndk";
 	import currentUser from "$stores/currentUser";
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-	import { Globe } from "phosphor-svelte";
+	import { PublishInGroupStore } from ".";
     
-    export let event: Writable<NDKEvent>;
     export let groups: Readable<Record<string, NDKSimpleGroup>>;
+    export let publishInGroups: PublishInGroupStore;
 
     let selectedGroups: Record<string, boolean> = {};
     let selectedRelays: Record<string, boolean> = {};
 
     onMount(() => {
-        console.log($event.tags);
-        for (const tag of $event.getMatchingTags("h")) {
-            selectedGroups[tag[1]] = true;
+        for (const groupId of $publishInGroups.keys()) {
+            selectedGroups[groupId] = true;
         }
         selectedGroups = selectedGroups;
         console.log(selectedGroups);
     })
 
-    function isNotHWithValue(value: string) {
-        return (tag: NDKTag) => !(tag[0] === "h" && tag[1] === value);
-    }
-
-    $: if (selectedGroups) {
-        // remove all h tags from $event and add the h tags that are true in selectedGroups
-        for (const [id, selected] of Object.entries(selectedGroups)) {
-            $event.tags = $event.tags.filter(isNotHWithValue(id));
-            if (selected) {
-                $event.tags.push(["h", id, ...$groups[id].relayUrls() as string[]]);
-            }
+    $: for (const groupId in selectedGroups) {
+        const group = $groups[groupId];
+        if (selectedGroups[groupId]) {
+            $publishInGroups.set(groupId, group.relayUrls());
+        } else {
+            $publishInGroups.delete(groupId);
         }
-
-        // $event = $event;
     }
 
     let relays: string[] | undefined;

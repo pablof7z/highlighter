@@ -20,7 +20,7 @@
     <div class="justify-center items-center text-[42px]">
         {icon}
     </div>
-    <div class="text-base font-medium">
+    <div class="text-base font-medium text-white">
         {title}
     </div>
 </a>

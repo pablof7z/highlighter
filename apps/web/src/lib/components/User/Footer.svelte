@@ -6,13 +6,13 @@
 	import PinModal from "$modals/PinModal.svelte";
 	import currentUser from "$stores/currentUser";
 	import { openModal } from "$utils/modal";
-    import { NDKUser } from "@nostr-dev-kit/ndk";
-    import ZapButton from "$components/Layout/Footers/Buttons/Zap.svelte";
+    import { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import Zap from "$components/Events/Zaps/Zap.svelte";
 
     export let user: NDKUser;
     export let collapsed = true;
     export let mainView: string;
+    export let userProfile: NDKUserProfile | undefined;
     let collapse: () => void;
 
     let isFollowed: boolean | undefined;
@@ -26,11 +26,18 @@
         collapse();
         zapped = true;
     }
+
+    let placeholder = "Write";
+
+    $: if (userProfile?.displayName) {
+        placeholder = `Write to ${userProfile.displayName}`;
+    }
 </script>
 
 <Footer.Shell
     bind:collapse
     bind:mainView
+    {placeholder}
     let:open
 >
     {#if collapsed}
@@ -38,7 +45,6 @@
             {#if !isFollowed}
                 <FollowButton bind:isFollowed {user} />
             {:else}
-                <ZapButton target={user} bind:zapped {open} />
                 <SubscribeButton {user} />
             {/if}
         {/if}

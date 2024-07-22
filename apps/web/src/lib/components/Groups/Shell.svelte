@@ -9,6 +9,7 @@
     import GroupFooterJoin from "$components/Groups/Footer/Join.svelte";
 	import { roundedItemCount } from "$utils/numbers";
 	import { House } from "phosphor-svelte";
+    import * as Group from "$components/Groups";
 
     export let group: NDKSimpleGroup;
     export let isAdmin: Readable<boolean>;
@@ -42,32 +43,30 @@
 
     $: if ($articles.length > 0) optionManager.setOption('articles', { id: 'articles', name: "Articles", badge: roundedItemCount($articles!), href: getGroupUrl(group, "articles") }, true);
 
-    $: if ($metadata) {
-        $layout.title = $metadata.name ?? "Untitled group";
-        $layout.iconUrl = $metadata.picture;
+    $: {
+        $layout.title = $metadata?.name ?? "Untitled group";
+        $layout.iconUrl = $metadata?.picture;
     }
 
     $: $layout.navigation = options;
 
     $: if ($isMember === false) {
-        if ($metadata && $layout.footer?.component !== GroupFooterJoin) {
-            $layout.footer = {
-                component: GroupFooterJoin,
-                props: {
-                    group,
-                    metadata,
-                    admins,
-                    members,
-                    tiers,
-                },
-            }
+        $layout.footer = {
+            component: Group.Footers.Join,
+            props: {
+                group,
+                metadata,
+                admins,
+                members,
+                tiers,
+            },
         }
-    } else if ($layout.footer?.component === GroupFooterJoin) {
-        $layout.footer = undefined;
     }
-</script>
 
-{$articles?.length}
+    // } else if ($layout.footer?.component === GroupFooterJoin) {
+    //     $layout.footer = undefined;
+    // }
+</script>
 
 <slot
     {group}

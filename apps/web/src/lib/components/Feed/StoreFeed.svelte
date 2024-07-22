@@ -5,13 +5,13 @@
     import { inview } from 'svelte-inview';
 	import EventWrapper from "./EventWrapper.svelte";
 	import { pluralize } from "$utils";
-	import CurationItem from "$components/CurationItem.svelte";
 	import { goto } from "$app/navigation";
 	import VideoLink from "$components/Events/VideoLink.svelte";
 	import Article from "$components/Grid/Article.svelte";
 	import { isMobileBuild } from "$utils/view/mobile";
 	import { ndk } from "$stores/ndk";
 	import { Recycle } from "phosphor-svelte";
+    import * as Card from "$components/Card";
 
     export let feed: Readable<NDKEvent[]>;
     export let renderLimit = 10;
@@ -140,7 +140,7 @@
                     {...($$props.eventProps||{})}
                 />
             {:else if event.kind === NDKKind.ArticleCurationSet}
-                <CurationItem list={NDKList.from(event)} grid={false} />
+                <Card.Curation list={NDKList.from(event)} />
             {:else if event.kind === NDKKind.Reaction}
                 {#if event.getMatchingTags("e")[0]}
                     {#await $ndk.fetchEventFromTag(event.getMatchingTags("e")[0], event, {groupable: true, groupableDelayType: 'at-least'})}

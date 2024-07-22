@@ -18,6 +18,7 @@
     export let authorUrl: string;
     export let fetching: boolean;
     export let highlights: Readable<NDKHighlight[]>;
+    export let curations: Readable<NDKList[]>;
     export let notes: Readable<NDKEvent[]>;
     export let articles: Readable<NDKArticle[]>;
     export let cashuMintList: Readable<NDKCashuMintList>;
@@ -36,6 +37,7 @@
     setContext('user', user);
     setContext('userNotes', notes);
     setContext('userHighlights', highlights);
+    setContext('userCurations', curations);
     setContext('userArticles', articles);
     setContext('userVideos', videos);
     setContext('cashuMintList', cashuMintList);
@@ -61,6 +63,7 @@
     $: if (authorUrl) optionManager.setOption('posts', { id: 'posts', name: "Posts", href: getUserUrl(authorUrl, user, "notes") }, eosed);
     $: if (authorUrl && $articles.length > 0) optionManager.setOption('articles', { id: 'articles', name: "Articles", badge: roundedItemCount($articles!), href: getUserUrl(authorUrl, user, "articles") }, eosed);
     $: if (authorUrl && $videos.length > 0) optionManager.setOption('videos', { id: 'videos', name: "Videos", badge: roundedItemCount($videos!), href: getUserUrl(authorUrl, user, "videos") }, eosed);
+    $: if (authorUrl && $curations.length > 0) optionManager.setOption('curations', { id: 'curations', name: "Curations", badge: roundedItemCount($videos!), href: getUserUrl(authorUrl, user, "curations") }, eosed);
     $: if (authorUrl && $highlights.length > 0) optionManager.setOption('highlights', { id: 'highlights', name: "Highlights", badge: roundedItemCount($highlights!), href: getUserUrl(authorUrl, user, "highlights") }, eosed);
     $: if (authorUrl && $groupsList && $groupsList.items.length > 0) {
         optionManager.setOption('communities', { id: 'communities', name: "Communities", badge: roundedItemCount($groupsList!.items), href: getUserUrl(authorUrl, user, "communities") }, eosed);

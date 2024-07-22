@@ -4,7 +4,6 @@
 	import { Readable } from "svelte/store";
 	import { Button } from "$components/ui/button";
 	import { getGroupUrl } from "$utils/url";
-	import PinButton from "./Elements/PinButton.svelte";
 
     export let group: NDKSimpleGroup;
     export let tag: NDKTag | undefined = undefined;
@@ -14,11 +13,10 @@
     export let isAdmin: Readable<boolean>;
 </script>
 
-{#if $metadata}
     <ContentCard
-        title={$metadata.name??"Unnamed"}
-        image={$metadata.picture}
-        description={$metadata.about}
+        title={$metadata?.name??group?.groupId}
+        image={$metadata?.picture}
+        description={$metadata?.about??group.relayUrls().join(', ')}
         {...$$props}
         class="cursor-pointer"
         event={$metadata}
@@ -26,7 +24,7 @@
         on:click
     >
         <div class="flex flex-row gap-2">
-            {#if $metadata.access}
+            {#if $metadata?.access}
                 <Button variant="secondary" size="xs">
                     Info
                 </Button>
@@ -36,4 +34,3 @@
             </Button>
         </div>
     </ContentCard>
-{/if}

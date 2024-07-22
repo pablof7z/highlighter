@@ -147,11 +147,11 @@
                 <progress value={progress} max="100" />
             </div>
         {:else if recorded && !uploading}
-            <PaperPlaneTilt class="w-4 h-4" weight="fill" />
+            <PaperPlaneTilt class="w-full h-full" weight="fill" />
         {:else if !recording}
-            <Microphone class="w-4 h-4" weight="bold" />
+            <Microphone class="w-full h-full" weight="fill" />
         {:else}
-            <Stop class="w-4 h-4" weight="fill" />
+            <Stop class="w-full h-full" weight="fill" />
         {/if}
     </Button>
 

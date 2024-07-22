@@ -27,7 +27,7 @@
 {/if}
 
 <div class="lg:grid {gridSetup} gap-6 flex flex-col flex-wrap max-lg:divide-y divide-border">
-    {#each $store as article}
+    {#each $store as article (article.id)}
         {#if !$featuredItemIds.includes(article.id)}
             <div class="py-[var(--section-vertical-padding)] w-full">
                 <Card.Article

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ndk } from '$stores/ndk';
+	import { NDKUserProfile, NDKVideo } from '@nostr-dev-kit/ndk';
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 
     export let video: NDKVideo;
