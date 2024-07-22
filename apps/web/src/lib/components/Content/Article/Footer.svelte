@@ -1,31 +1,30 @@
 <script lang="ts">
-	import Zap from "$components/Events/Zaps/Zap.svelte";
+	import NewCuration from './NewCuration.svelte';
     import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
-	import { BookmarkSimple, Check, Lightning, Repeat } from "phosphor-svelte";
+	import { BookmarkSimple, CardsThree, Check, Lightning, Repeat } from "phosphor-svelte";
 	import Tts from '$components/Actions/TTS/TTS.svelte';
 	import ReaderButton from "$components/Event/Article/ReaderButton.svelte";
 	import { openModal } from "$utils/modal";
 	import ShareModal from "$modals/ShareModal.svelte";
 	import BookmarkFooterButton from "$components/Layout/Footers/Buttons/BookmarkFooterButton.svelte";
-    import ZapButton from "$components/Layout/Footers/Buttons/Zap.svelte";
+	import Curation from "./Curation.svelte";
+	import { createEventReply } from '$utils/event';
+    import Zap from '$components/Footer/Views/Zap';
 
     export let article: NDKArticle;
-    export let mainView: 'zap' | 'tts' | "content" | undefined = undefined;
+    export let mainView: 'zap' | 'tts' | 'curation' | "content" | "new-collection" | undefined = undefined;
     export let collapsed = true;
     export let placeholder = "Reply";
 
-    let collapse: () => void;
+    let forceSaveNewCollection = false;
+    let forceSaveCollections = false;
+
     let zapped = false;
 
-    function onZapping(){
-        collapse();
-    }
-    
     function onZapped() {
-        collapse();
         zapped = true;
     }
 
@@ -36,40 +35,37 @@
         content = "";
     }
 
+    async function onPublish(content: string) {
+        const reply = createEventReply(article);
+        reply.content = content;
+        await reply.sign();
+        reply.publish();
+    }
+
     function publishContentEditor() {
         mainView = undefined;
         console.log(content);
         content = "";
     }
+
+    let open: (view?: string | false) => void;
 </script>
 
 <Footer.Shell
     bind:collapsed
     bind:mainView
-    bind:collapse
-    let:open
+    bind:open
+    {onPublish}
+    buttons={[
+        {...Zap, buttonProps: { zapped }, props: { event: article, onZapped }}
+    ]}
 >
     {#if collapsed}
-        <ZapButton target={article} bind:zapped {open} />
-
         <ReaderButton
             {article}
             variant="outline"
             class="rounded w-[38px] h-[38px] p-0 flex-none"
-            onShow={() => mainView = 'tts' }
-        />
-
-        <ContentEditor
-            class="
-                grow h-11 border border-border bg-background rounded px-4 p-2 !text-lg
-                placeholder:text-muted-foreground placeholder:!text-lg scrollbar-hide
-
-            "
-            {placeholder}
-            allowMarkdown={false}
-            on:focus={() => { mainView = "content" }}
-            toolbar={false}
-            bind:content
+            onShow={() => open('tts')}
         />
     {:else if mainView === "content"}
         <div class="flex flex-row justify-between w-full">
@@ -80,6 +76,27 @@
             <Button variant="accent" on:click={publishContentEditor}>
                 Publish
             </Button>
+        </div>
+    {:else if mainView === 'curation'}
+        <div class="flex flex-row justify-between w-full gap-2">
+            <Button on:click={() => open('new-collection')}>
+                New Collection
+            </Button>
+
+            <Button variant="accent" on:click={() => forceSaveCollections = true}>
+                Save
+            </Button>
+        </div>
+    {:else if mainView === 'new-collection'}
+        <div class="flex flex-row justify-between w-full gap-2">
+            <Button on:click={() => open('curation')}>
+                Cancel
+            </Button>
+
+            <Button variant="accent" on:click={() => forceSaveNewCollection = true}>
+                Save
+            </Button>
+
         </div>
     {/if}
 
@@ -96,14 +113,20 @@
                 autofocus
                 bind:content
             />
-        {:else if mainView === 'zap'}
-            <Zap
-                event={article}
-                on:zap={onZapped}
-                on:zapping={onZapping}
-            />
         {:else if mainView === 'tts'}
             <Tts event={article} />
+        {:else if mainView === 'curation'}
+            <Curation
+                {article}
+                bind:forceSave={forceSaveCollections}
+                on:close={() => open(false)}
+            />
+        {:else if mainView === 'new-collection'}
+            <NewCuration
+                {article}
+                bind:forceSave={forceSaveNewCollection}
+                on:close={() => open(false)}
+            />
         {:else}
             <div class="grid grid-cols-3 gap-2">
                 <Button variant="outline" class="footer-button flex flex-col items-center gap-2 h-auto text-lg text-foreground bg-opacity-50 p-4"
@@ -115,9 +138,11 @@
 
                 <BookmarkFooterButton event={article} />
 
-                <Button variant="outline" class="footer-button flex flex-col items-center gap-2 h-auto text-lg text-foreground bg-opacity-50 p-4">
-                    <BookmarkSimple size={40} />
-                    Bookmark
+                <Button variant="outline" class="footer-button flex flex-col items-center gap-2 h-auto text-lg text-foreground bg-opacity-50 p-4"
+                    on:click={() => open('curation')}
+                >
+                    <CardsThree size={40} />
+                    Curate
                 </Button>
             </div>
         {/if}

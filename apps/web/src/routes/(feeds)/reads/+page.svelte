@@ -14,7 +14,7 @@
     $layout.title = "Reads";
     $layout.back = { url: "/" };
     $layout.fullWidth = true;
-    $layout.sidebar = undefined;
+    $layout.sidebar = false;
 
     onMount(() => {
         addHistory({ title: "Articles", url: $page.url.toString() })

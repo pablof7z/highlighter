@@ -34,7 +34,7 @@
     })
 
     async function join() {
-        group.requestToJoin($currentUser.pubkey, "hello")
+        group.requestToJoin($currentUser.pubkey)
     }
 </script>
 

@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { ScrollArea } from "$components/ui/scroll-area";
-	import { appMobileView } from "$stores/app";
 	import { CaretRight } from "phosphor-svelte";
-	import { onMount } from "svelte";
 	import { inview } from "svelte-inview";
 
     export let title: string | undefined = undefined;

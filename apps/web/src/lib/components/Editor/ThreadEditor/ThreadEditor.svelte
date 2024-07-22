@@ -3,12 +3,10 @@
 	import Shell from "$components/PostEditor/Shell.svelte";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import currentUser from "$stores/currentUser";
-	import ThreadItem from "./ThreadItem.svelte";
 	import { Plus } from "phosphor-svelte";
 	import { afterUpdate, onMount } from 'svelte';
 	import { Thread } from '$utils/thread.js';
 	import { event, view } from "$stores/post-editor";
-	import { debounce } from "@sveu/shared";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
@@ -28,30 +26,12 @@
 		$event = thread;
 	});
 
-	const saveDraftNow = (manuallySaved: boolean) => {
-		const item = addDraftCheckpoint(
-			manuallySaved,
-			draftItem,
-			thread.serialize(),
-			"thread",
-		);
-		
-		if (item) {
-			draftItem = item;
-			$drafts = $drafts;
-			newToasterMessage("Draft saved", "success");
-		}
-	}
+	
 
-	const throttleSave = debounce(saveDraftNow, 2);
+	
 
-	// Automatic saving triggers
-	function contentChanged() { throttleSave(false); }
-	function removeItem(i: number) {
-		thread.items.splice(i, 1);
-		thread.items = thread.items;
-		throttleSave(false);
-	}
+	
+	
 
 	let currentView = "view-edit";
 	let previewEvents: NDKEvent[] = [];
@@ -104,7 +84,7 @@
 >
 	<UserProfile user={$currentUser} let:userProfile>
 		{#each thread.items as item, i (i)}
-			<ThreadItem
+			<!-- <ThreadItem
 				bind:item
 				bind:content={item.event.content}
 				bind:urls={item.urls}
@@ -114,11 +94,11 @@
 				on:remove={() => removeItem(i)}
 				on:submit={() => {thread.newItem(); thread.items = thread.items}}
 				on:contentChanged={contentChanged}
-			/>
+			/> -->
 		{/each}
 		<div class="flex flex-col items-center flex-none w-10 sm:w-16 self-stretch">
 			<button class="
-				btn btn-circle bg-zinc-800 text-foreground
+				rounded-full p-2 text-foreground
 				transition-all duration-300
 				hover:!bg-accent
 				hover:ring-8 ring-accent/30

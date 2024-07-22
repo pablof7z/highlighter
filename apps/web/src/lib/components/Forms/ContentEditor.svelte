@@ -9,6 +9,7 @@
 	import { wysiwygEditor } from '$stores/settings.js';
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
 	import { newToasterMessage } from "$stores/toaster.js";
+	import Checkbox from "./Checkbox.svelte";
 
     export let content: string = "";
     export let placeholder = "Write your heart out...";
@@ -16,6 +17,7 @@
     export let autofocus = false;
     export let allowMarkdown = true;
     export let enterSubmits = false;
+    export let forceWywsiwyg = false;
 
     const dispatch = createEventDispatcher();
 
@@ -145,7 +147,7 @@
     }
 
     onMount(async () => {
-        if ($wysiwygEditor) enableEditor();
+        if ($wysiwygEditor || forceWywsiwyg) enableEditor();
     })
 
     function fileUploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {
@@ -193,8 +195,9 @@
 
 <div class="flex flex-col border-none sm:rounded-xl border grow">
     {#if toolbar}
-        <div bind:this={toolbarEl} class="-mt-4 toolbar sticky z-40 top-[var(--navbar-height)] bg-background/80  !backdrop-blur-[50px] !border-b !border-border toolbar-container w-full">
-            {#if $wysiwygEditor}
+        <div class="flex flex-row items-start justify-between font-sans">
+        <div bind:this={toolbarEl} class="-mt-4 toolbar sticky z-40 top-[var(--navbar-height)] bg-background/80  !backdrop-blur-[50px] toolbar-container w-full">
+            {#if $wysiwygEditor || forceWywsiwyg}
                 <span class="ql-formats">
                     <select class="ql-header"></select>
                 </span>
@@ -212,23 +215,23 @@
                     <button class="ql-formula"></button>
                 </span>
             {/if}
-            <div class="self-end grow flex flex-row justify-end">
-                <!-- <Checkbox
-                    class="border-none"
-                    type="switch"
-                    bind:value={$wysiwygEditor}
-                    on:change={toggleEditor}
-                >
-                    WYSIWYG
-                </Checkbox> -->
-            </div>
+        </div>
+
+            <Checkbox
+                class="border-none text-muted-foreground text-sm"
+                type="switch"
+                bind:value={$wysiwygEditor}
+                on:change={toggleEditor}
+            >
+                WYSIWYG
+            </Checkbox>
         </div>
     {/if}
     {#if $$slots.belowToolbar}
         <slot name="belowToolbar" />
     {/if}
     <div class="pt-0 flex flex-col gap-4 transition-all duration-100 {$$props.class??""}">
-        {#if $wysiwygEditor}
+        {#if $wysiwygEditor || forceWywsiwyg}
             <div bind:this={editorEl} class="
                 editor h-full {$$props.class??""}
             " />

@@ -71,6 +71,11 @@
         })
     }
 
+    function pin(group: NDKSimpleGroup) {
+        $groupsList?.addItem(["h", group.groupId, ...group.relayUrls()]);
+        $groupsList?.publishReplaceable();
+    }
+    
     function unpin(groupId) {
         $groupsList?.removeItemByValue(groupId);
         $groupsList = $groupsList;
@@ -83,11 +88,11 @@
         if ($groupsList?.has(group.groupId))
             rightOptions.push({ label: 'Unpin', class: 'bg-secondary/50', cb: () => unpin(group.groupId) })
         else
-            rightOptions.push({ label: 'Pin', class: 'bg-secondary/50', action: () => group?.follow() })
+            rightOptions.push({ label: 'Pin', class: 'bg-secondary/50', cb: () => pin(group) })
         if (isMember)
-            rightOptions.push({ label: 'Leave', class: 'bg-secondary', action: () => group?.leave() })
+            rightOptions.push({ label: 'Leave', class: 'bg-secondary', cb: () => group?.leave() })
         else
-            rightOptions.push({ label: 'Join', class: 'bg-secondary', action: () => group?.join() })
+            rightOptions.push({ label: 'Join', class: 'bg-secondary', cb: () => group?.join() })
     }
 </script>
 

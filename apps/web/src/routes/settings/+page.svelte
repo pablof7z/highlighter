@@ -17,6 +17,7 @@
         title: 'Profile',
         navigation: false,
         sidebar: false,
+        fullWidth: false,
     }
 
     let authorUrl: string;

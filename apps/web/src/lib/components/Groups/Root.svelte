@@ -62,6 +62,7 @@
     );
     const isMember = derived(
         [ currentUser, members, admins ], ([ $currentUser, $members, $admins ]) => {
+            console.log("isMember", {currentUser: $currentUser, members: $members, admins: $admins})
             if ($currentUser && $members && $admins) {
                 return $members.hasMember($currentUser.pubkey) || $admins.hasMember($currentUser.pubkey);
             }

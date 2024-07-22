@@ -4,6 +4,7 @@
 	import NewPostModal from "$modals/NewPostModal.svelte";
 	import { createEventDispatcher } from "svelte";
 	import NewGroupModal from "$modals/NewGroupModal.svelte";
+	import { NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 
     export let onNewShortPost: (() => void) | undefined = undefined;
 
@@ -33,7 +34,7 @@
     <NewPostItem icon='🤙' title="Short Note" on:click={shortNote} />
     <NewPostItem icon="🗒️" title="Article" href="/studio/articles/new" on:click={closeModal} />
     <NewPostItem icon='🎬 ' title="Video" href="/videos/new" on:click={closeModal} />
-    <NewPostItem icon='🧵' title="Thread" href="/threads/new" on:click={closeModal} />
+    <NewPostItem icon='🧵' title="Thread" href="/studio/threads/new" on:click={closeModal} />
     <NewPostItem icon='⏱️' title="Scheduled Posts" href="/schedule" on:click={closeModal} />
     <NewPostItem icon='🖋️' title="Drafts" href="/drafts" on:click={closeModal} />
     <NewPostItem icon='🏰' title="Community" on:click={newCommunity} class="col-span-2" />

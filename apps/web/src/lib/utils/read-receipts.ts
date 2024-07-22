@@ -7,7 +7,6 @@ import {
 } from '@nostr-dev-kit/ndk';
 import { get } from 'svelte/store';
 import createDebug from 'debug';
-import { writeAppHandler } from './app-handler';
 import { browser } from '$app/environment';
 import currentUser from '$stores/currentUser';
 
@@ -57,7 +56,7 @@ export function addReadReceipt(eventOrUser: NDKEvent | NDKUser): void {
 
 			if (eventOrUser instanceof NDKEvent) {
 				const event = eventOrUser as NDKEvent;
-				writeAppHandler(event.kind!, true);
+				// writeAppHandler(event.kind!, true);
 			}
 		}, flushTimer);
 	}

@@ -6,12 +6,13 @@
 	import { goto } from "$app/navigation";
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
 	import { derived, Readable } from "svelte/store";
-	import ChatFooter from "./ChatFooter.svelte";
+    import * as Groups from "$components/Groups";
 	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 	import { addHistory } from "$stores/history";
 
     const group = getContext('group') as NDKSimpleGroup;
     const metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
+    const isMember = getContext("isMember") as Readable<boolean>;
 
     addHistory({ category: 'Chat', title: $metadata?.name ?? "Community" });
     
@@ -31,9 +32,11 @@
 
     let tags: NDKTag[] = [ [ "h", group.groupId ] ];
 
-    $layout.footer = {
-        component: ChatFooter,
-        props: { tags, group, kind: NDKKind.GroupChat, placeholder: "Say something..." }
+    $: if ($isMember) {
+        $layout.footer = {
+            component: Groups.Footers.Chat,
+            props: { tags, group, kind: NDKKind.GroupChat, placeholder: "Say something..." }
+        }
     }
 
     $: if ($chat.length > 0) {

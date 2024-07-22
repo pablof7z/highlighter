@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
+	import Button from "$components/ui/button/button.svelte";
 	import Name from "$components/User/Name.svelte";
 	import { ndk } from "$stores/ndk";
 	import { relaySetForEvent } from "$utils/event";
@@ -16,7 +17,7 @@
 
     let relaySet = event ? relaySetForEvent(event) : undefined;
 
-    let content = '';
+    export let content = '';
     let publishing = false;
 
     let resetAt = new Date();
@@ -30,17 +31,16 @@
         } as NostrEvent)
 
         relaySet = group?.relaySet ?? relaySetForEvent(event);
+        console.log('relaySet', Array.from(relaySet.relays)[0])
 
-        console.log('relay sets', event.rawEvent(), relaySet);
-        
         event.publish(relaySet)
-        .then(() => {
+        .then((e) => {
+            console.log("then", e);
             event = undefined;
         })
         .catch((e: NDKPublishError) => {
-            console.log(e);
+            toast.error(e.relayErrors ?? "Error");
             content = event.content;
-            toast.error(e.relayErrors?.join(', '));
             console.error(e);
         });
         content = '';
@@ -56,7 +56,7 @@
     }
 </script>
 
-<div class="flex flex-row justify-stretch !backdrop-blur-[50px] border-__t border-white/20 px-4">
+<div class="flex flex-row justify-stretch">
     {#key resetAt}
         <div class="flex flex-col w-full">
             {#if showReplyingTo && event}
@@ -64,29 +64,35 @@
                     <span class="text-xs text-accent">Replying to <Name pubkey={event.pubkey} /></span>
                 {/key}
             {/if}
-            <ContentEditor
-                markdown={false}
-                toolbar={false}
-                autofocus={true}
-                bind:content
-                rows={1}
-                enterSubmits={true}
-                class="!min-h-none w-full grow flex items-center justify-center overflow-hidden text-base {$$props.class??""}"
-                on:keydown={onkeydown}
-                on:submit={submit}
-                {placeholder}
-                captureTyping={true}
-            />
+            <div class="grow w-full border p-2 bg-background/50 rounded overflow-clip border-border">
+                <ContentEditor
+                    forceWywsiwyg
+                    markdown={false}
+                    toolbar={false}
+                    autofocus={true}
+                    bind:content
+                    rows={1}
+                    enterSubmits={true}
+                    class="
+                        !min-h-none w-full grow flex items-center justify-center overflow-hidden text-base {$$props.class??""}
+                        text-lg h-full outline-none !bg-transparent
+                    "
+                    on:keydown={onkeydown}
+                    on:submit={submit}
+                    {placeholder}
+                    captureTyping={true}
+                />
+            </div>
         </div>
     {/key}
 
-    <div class="z-50 right-2 flex justify-end items-center bottom-0">
+    <div class="z-50 right-2 flex justify-end items-center bottom-0" class:hidden={!publishing && content.length === 0}>
         {#if publishing}
             <div class="loading loading-sm text-accent loading-bars"></div>
         {:else}
-            <button class="button rounded-full w-10 h-10 p-0.5 opacity-80">
-                <PaperPlaneTilt class="text-black" />
-            </button>
+            <Button variant="accent" class="">
+                <PaperPlaneTilt weight="fill" class="w-full h-full" />
+            </Button>
         {/if}
     </div>
 </div>

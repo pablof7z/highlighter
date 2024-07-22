@@ -7,8 +7,8 @@
     export let event: NDKEvent;
     export let tag: NDKTag | undefined = undefined;
     export let id: string | undefined = undefined;
+    export let fetched: NDKEvent | undefined = undefined;
 
-    let e: NDKEvent | null;
     let article: NDKArticle | undefined;
     let video: NDKVideo | undefined;
     let articleList: NDKList | undefined;
@@ -16,25 +16,25 @@
     if (tag) $ndk.fetchEventFromTag(tag, event).then(process);
     if (id) $ndk.fetchEvent(id, {subId:'Loadevent'}).then(process);
     
-    function process(e: NDKEvent | null) {
-        e = e;
+    function process(e: NDKEvent | null | undefined) {
         if (e) {
             const res = eventToSpecificKind(e);
             article = res.article;
             video = res.video;
             articleList = res.articleList;
+            fetched = e;
         }
     }
 
 </script>
 
-{#if e}
-    <UserProfile user={e.author} let:authorUrl let:userProfile let:fetching>
+{#if fetched}
+    <UserProfile user={fetched.author} let:authorUrl let:userProfile let:fetching>
         <slot
             {article}
             {video}
             {articleList}
-            event={e}
+            event={fetched}
             {authorUrl}
             {userProfile}
             {fetching}

@@ -1,12 +1,10 @@
 <script lang="ts">
-	import EventWrapper from "$components/Feed/EventWrapper.svelte";
     import { NDKEvent } from "@nostr-dev-kit/ndk";
     import * as Event from "$components/Event";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { ndk } from "$stores/ndk";
 	import TopPlusRecentZaps from "$components/Events/Zaps/TopPlusRecentZaps.svelte";
 	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
-	import { goto } from "$app/navigation";
 	import { getEventUrl } from "$utils/url";
 
     export let event: NDKEvent;

@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { page } from "$app/stores";
     import * as Groups from "$components/Groups";
+	import { layout } from "$stores/layout";
 
     let groupId: string;
     let relays: string[];
+
+    $layout.back = { url: '/communities' };
 
     $: {
         const r = $page.url.searchParams.get('relays');

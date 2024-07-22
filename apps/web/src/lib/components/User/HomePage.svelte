@@ -82,7 +82,18 @@
     $: if (!featuredItems && userArticles && userVideos && userPinList) {
         featuredItems = derived([ userArticles, userVideos, userGroups, userGroupsMetadata, userPinList ], ([ $userArticles, $userVideos, $userGroups, $userGroupsMetadata, $userPinList ]) => {
             const items: (NDKArticle | NDKVideo | NDKSimpleGroup)[] = [];
-            if (!$userPinList) return items;
+            if (!$userPinList) {
+                // get most recent articles or video
+                const firstVideo = $userVideos[0];
+                const firstArticle = $userArticles[0];
+                let mostRecent: NDKVideo | NDKArticle;
+                if (firstVideo && firstArticle) mostRecent = firstVideo?.created_at! > firstArticle?.created_at! ? firstVideo : firstArticle;
+                mostRecent ??= firstVideo ?? firstArticle;
+                if (mostRecent) {
+                    items.push(mostRecent);
+                }
+                return items;
+            }
 
             for (const pin of $userPinList.items) {
                 const tag = pin[1];
@@ -128,7 +139,7 @@
 <div class="flex flex-col w-full divide-y divide-border">
 
     <!-- <UserProfile {user} bind:userProfile bind:authorUrl /> -->
-    {#if featuredItems && $featuredItems}
+    {#if $featuredItems && $featuredItems.length > 0}
         <div class="flex flex-col gap-4 responsive-padding max-w-[100vw] py-[var(--section-vertical-padding)]">
             {#each $featuredItems as item (item.id)}
                 <Card.FeaturedItem item={item} skipAuthor />

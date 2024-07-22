@@ -1,8 +1,18 @@
 <script lang="ts">
     import { Checkbox } from "$lib/components/ui/checkbox";
+    import { Switch } from "$lib/components/ui/switch";
+	import { createEventDispatcher } from "svelte";
+
+    const dispatch = createEventDispatcher();
     
     export let value: boolean | undefined = undefined;
     export let type: "check" | "switch" = "check";
+    export let icon: string | undefined = undefined;
+
+    function toggle() {
+        value = !value;
+        dispatch("change", { value });
+    }
 </script>
 
 <label class="items-top space-x-2 text-foreground text-base font-medium flex flex-row gap-2 items-center justify-between {$$props.class??""}">
@@ -11,16 +21,20 @@
             <Checkbox bind:checked={value} on:click />
         {/if}
 
-        <button class="text-left flex flex-col sm:flex-row gap-2 justify-stretch items-center w-full" on:click={() => value = !value}>
+        {#if icon}
+            <img src={icon} class="w-10 h-10 rounded-sm" />
+        {/if}
+
+        <button class="text-left flex flex-row gap-2 justify-stretch items-center w-full" on:click={toggle}>
             <div class="flex flex-col items-start grow w-full">
                 <slot />
-                <div class="text-neutral-500">
+                <div class="text-muted-foreground">
                     <slot name="description" />
                 </div>
             </div>
 
             {#if type === 'switch'}
-                <input type="checkbox" class="toggle [--tglbg:gray] ml-3" bind:checked={value} on:change on:focus={(e) => e.target.blur()} />
+                <Switch bind:checked={value} on:click={(e) => e.preventDefault() } />
             {/if}
 
             {#if $$slots.button}
