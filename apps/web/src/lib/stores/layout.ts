@@ -9,7 +9,7 @@ type LayoutMode = "content-focused" | "full-width" | "single-column-focused" | "
 
 export const layoutMode = writable<LayoutMode>("single-column-focused");
 
-interface Component {
+export interface Component {
 	component: ConstructorOfATypedSvelteComponent;
 	props?: { [key: string]: any };
 	containerClass?: string;

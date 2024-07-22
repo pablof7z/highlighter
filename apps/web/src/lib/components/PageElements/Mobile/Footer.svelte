@@ -4,13 +4,17 @@
     import ContentEditor from '$components/Forms/ContentEditor.svelte';
 	import { Plus } from "phosphor-svelte";
     import NewPost from '$components/Creator/NewPost.svelte';
+	import { NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 
     export let newPost = false;
     export let collapsed = true;
     export let placeholder: string | undefined = undefined;
+    export let group: NDKSimpleGroup | undefined = undefined;
 </script>
 
-<Footer.Shell bind:collapsed>
+<Footer.Shell
+    bind:collapsed
+>
     <Button
         variant="accent"
         class="rounded-full flex-none w-12 h-12 p-2"

@@ -23,8 +23,6 @@
     const articles = getContext("groupArticles") as Readable<NDKArticle[]>;
 </script>
 
-
-isMember = {$isMember}
 <HorizontalList class="py-[var(--section-vertical-padding)]" title="Articles" items={$articles} let:item>
     <Card.Article article={item} />
 </HorizontalList>

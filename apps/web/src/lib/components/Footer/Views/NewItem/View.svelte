@@ -15,7 +15,7 @@
         // if (!!onNewShortPost) {
         //     onNewShortPost();
         // } else {
-            openModal(NewPostModal);
+            openModal(NewPostModal, { group });
         // }
     }
 

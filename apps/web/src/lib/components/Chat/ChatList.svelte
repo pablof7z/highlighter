@@ -29,8 +29,6 @@
     // })
 </script>
 
-<h1 class="text-2xl px-4">Your Communities</h1>
-
 {#if groupsList && $groupsList}
     <Chat.List>
         {#each $groupsList.items as item (item)}
