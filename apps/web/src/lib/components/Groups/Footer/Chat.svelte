@@ -28,10 +28,6 @@
         await event.sign();
         event.publish(group?.relaySet);
     }
-
-    async function onPublish(content: string) {
-
-    }
 </script>
 
 <Footer.Shell

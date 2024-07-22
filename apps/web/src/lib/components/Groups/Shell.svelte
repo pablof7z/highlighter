@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { layout } from "$stores/layout";
+	import { Component, layout } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
 	import { NDKArticle, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../../app";
@@ -50,7 +50,10 @@
 
     $: $layout.navigation = options;
 
+    let prevFooter: Component | undefined;
+
     $: if ($isMember === false) {
+        prevFooter = $layout.footer;
         $layout.footer = {
             component: Group.Footers.Join,
             props: {
@@ -61,6 +64,9 @@
                 tiers,
             },
         }
+    } else if (prevFooter) {
+        $layout.footer = prevFooter;
+        prevFooter = undefined;
     }
 
     // } else if ($layout.footer?.component === GroupFooterJoin) {

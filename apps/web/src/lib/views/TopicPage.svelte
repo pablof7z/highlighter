@@ -1,7 +1,5 @@
 <script lang="ts">
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";
-	import ComplexHeaderWithBanner from "$components/PageElements/ComplexHeaderWithBanner.svelte";
-	import currentUser from "$stores/currentUser";
 import { wotFiltered, wotFilteredStore } from "$stores/wot";
 	import { mainContentKinds } from "$utils/event";
 	import { ndk } from "$stores/ndk.js";
@@ -20,13 +18,13 @@ import { wotFiltered, wotFilteredStore } from "$stores/wot";
     <title>{topic}</title>
 </svelte:head>
 
-<ComplexHeaderWithBanner
+<!-- <ComplexHeaderWithBanner
     user={$currentUser}
     image={`https://picsum.photos/800/600?random=${encodeURIComponent(topic)}`}
->
-    <span slot="title">{topic}</span>
+> -->
+    <h1>{topic}</h1>
 
 <StoreFeed
     feed={filteredEvents}
 />
-</ComplexHeaderWithBanner>
+<!-- </ComplexHeaderWithBanner> -->

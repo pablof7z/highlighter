@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import CreatorShell from "$components/Creator/CreatorShell.svelte";
 	import UserProfileHomePage from "$views/UserProfileHomePage.svelte";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKUser } from "@nostr-dev-kit/ndk";
@@ -21,9 +20,7 @@
     {#key userId}
         {#if view === "profile"}
             {#key user.pubkey}
-                <CreatorShell {user}>
-                    <UserProfileHomePage {user} />
-                </CreatorShell>
+                <UserProfileHomePage {user} />
             {/key}
         {:else}
         {/if}

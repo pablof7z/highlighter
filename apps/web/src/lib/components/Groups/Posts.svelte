@@ -1,17 +1,16 @@
 <script lang="ts">
-	import GroupPosts from './GroupPosts.svelte';
 	import { layout, pageHeader } from "$stores/layout";
-    import ChatInput from "$components/Chat/Input.svelte";
 	import { ndk } from "$stores/ndk";
-	import { NDKEvent, NDKKind, NDKSimpleGroup, NDKTag } from "@nostr-dev-kit/ndk";
-	import { onDestroy } from "svelte";
-	import { derived } from "svelte/store";
+	import { NDKEvent, NDKKind, NDKSimpleGroup, NDKSimpleGroupMetadata, NDKTag } from "@nostr-dev-kit/ndk";
+	import { getContext, onDestroy } from "svelte";
 	import StoreFeed from '$components/Feed/StoreFeed.svelte';
-	import NewPost from '$components/Feed/NewPost/NewPost.svelte';
-	import Footer from '$components/PageElements/Mobile/Footer.svelte';
+	import { Readable } from "svelte/store";
+    import * as Groups from "$components/Groups";
 
-    export let group: NDKSimpleGroup;
-
+    const group = getContext('group') as NDKSimpleGroup;
+    const metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
+    const isMember = getContext("isMember") as Readable<boolean>;
+        
     const posts = $ndk.storeSubscribe([
         {kinds: [NDKKind.GroupNote], "#h": [group.groupId]},
         {kinds: [NDKKind.GroupReply], "#h": [group.groupId]},
@@ -24,9 +23,9 @@
     let tags: NDKTag[] = [ [ "h", group.groupId ] ];
 
     $layout.footer = {
-        component: Footer,
+        component: Groups.Footers.Post,
         props: { tags, group, kind: NDKKind.GroupNote, placeholder: "Say something..." }
-    }
+    };
 
     $: if ($posts.length > 0) {
         tags = tags.filter((t) => t[0] !== "previous");
