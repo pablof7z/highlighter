@@ -7,7 +7,7 @@ let config: CapacitorConfig = {
   webDir: 'build',
   plugins: {
     Keyboard: {
-      resize: KeyboardResize.Body,
+      resize: KeyboardResize.Native,
       style: KeyboardStyle.Dark,
       resizeOnFullScreen: true,
     },
