@@ -1,15 +1,28 @@
 <script lang="ts">
     import * as Feed from '$components/Feed';
-	import { getContext } from 'svelte';
+	import { getContext, onDestroy } from 'svelte';
 	import { Readable } from 'svelte/store';
-    import { NDKArticle } from "@nostr-dev-kit/ndk";
+    import { NDKArticle, NDKKind, NDKUser } from "@nostr-dev-kit/ndk";
+	import { layout } from '$stores/layout';
+	import { ndk } from '$stores/ndk';
 
-    const userArticles = getContext('userArticles') as Readable<NDKArticle[]>;
+    $layout.fullWidth = false;
+    
+    const user = getContext('user') as NDKUser;
+
+    const articles = $ndk.storeSubscribe(
+        { kinds: [ NDKKind.Article], authors: [ user.pubkey ] },
+        undefined, NDKArticle 
+    );
+
+    onDestroy(() => {
+        articles.unsubscribe();
+    });
 </script>
 
 <div class="responsive-padding">
     <Feed.Articles
-        store={userArticles}
+        store={articles}
         skipAuthor
     />
 </div>

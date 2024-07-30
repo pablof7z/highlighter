@@ -63,7 +63,7 @@
 
     let confirmDelete = false;
     async function onDelete() {
-        if (confirmDelete) {
+        if (confirmDelete && $wallet) {
             await $wallet.delete();
             goto("/wallet");
             toast("Wallet deleted");

@@ -68,7 +68,7 @@ export let unreadNotifications: Readable<number>;
 const notificationKinds = [
 	1, // Tweet
 	9, 10, 12, 9735, 30023, 9802,
-	6250, 7000
+	6250, 7000, NDKKind.Nutzap
 ]
 
 export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {

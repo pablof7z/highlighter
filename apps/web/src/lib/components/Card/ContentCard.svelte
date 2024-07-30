@@ -1,15 +1,19 @@
 <script lang="ts">
 	import { Hexpubkey, NDKEvent, NDKHighlight, NDKUser, NDKUserProfile } from '@nostr-dev-kit/ndk';
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
-	import { Paperclip, Pinwheel, PushPin } from 'phosphor-svelte';
+	import { Paperclip, Pinwheel, PushPin, Star } from 'phosphor-svelte';
 	import PinButton from './Elements/PinButton.svelte';
 	import currentUser from '$stores/currentUser';
+	import { Badge } from '$components/ui/badge';
+	import RelatedEvents from '$components/Feed/Item/RelatedEvents.svelte';
+	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
+    import * as Event from '$components/Event';
 
     export let event: NDKEvent | undefined = undefined;
     export let title: string;
     export let author: string | NDKUser | undefined = undefined;
     export let image: string | undefined = undefined;
-    export let description: string | undefined;
+    export let description: string | undefined | null = undefined;
     export let href: string | undefined = undefined;
     export let highlights: NDKHighlight[] | undefined = undefined;
     export let skipAuthor = false;
@@ -47,26 +51,63 @@
                 "
             />
 
+            <div class="top-2 right-2 absolute z-[3] flex flex-row gap-2">
+                {#if $$slots.tags}
+                    <slot name="tags" />
+                {/if}
+                <Event.Dropdown {event} size="tiny" />
+            </div>
+
             <div class="
                 metadata-container
-                relative w-full z-[3] px-4 py-2 palce-self-end
+                relative w-full z-[3] px-4 py-2 place-self-end
                 flex flex-row justify-between items-end
             ">
-                <div class="flex flex-col items-start justify-stretch">
-                    <h3 class="font-semibold grow max-h-[64px] overflow-clip text-foreground text-lg truncate">
-                        {title}
-                    </h3>
-                    {#if !skipAuthor && author}
-                        <div class="text-sm text-muted-foreground font-normal truncate pt-2">
-                            {#if author instanceof NDKUser}
-                                <AvatarWithName user={author} avatarSize="tiny" avatarType="square" bind:userProfile />
-                            {:else}
-                                {author}
+                <div class="flex flex-col items-start justify-stretch w-full">
+                    <div class="flex flex-row w-full justify-between items-center gap-2">
+                        <h3 class="font-semibold grow max-h-[64px] overflow-clip text-foreground text-lg truncate">
+                            {title}
+                        </h3>
+
+                        {#if event}
+                            <RelativeTime {event} class="text-muted-foreground text-sm lg:text-xs flex-none" />
+                        {/if}
+                    </div>
+                    <div class="text-sm text-muted-foreground font-normal truncate pt-2 flex flex-row w-full justbify-between">
+                        {#if !skipAuthor && author}
+                            <span class="grow">
+                                {#if author instanceof NDKUser}
+                                    <AvatarWithName user={author} avatarSize="tiny" avatarType="square" bind:userProfile />
+                                {:else}
+                                    {author}
+                                {/if}
+                            </span>
+
+                            {#if event?.hasTag("full")}
+                                <Badge variant="secondary" class="
+                                    font-regular
+                                ">
+                                    <Star class="w-4 h-4 mr-1.5" weight="fill" />
+                                    Preview
+                                </Badge>
+                            {:else if event?.hasTag("f")}
+                                <Badge variant="gold" class="
+                                    font-regular
+                                ">
+                                    <Star class="w-4 h-4 mr-1.5" weight="fill" />
+                                    Exclusive
+                                </Badge>
                             {/if}
-                        </div>
-                    {:else if description}
-                        <div class="text-sm text-muted-foreground font-normal truncate max-w-screen">
-                            {description}
+                        {:else if description}
+                            <div class="text-sm text-muted-foreground font-normal truncate max-w-screen">
+                                {description}
+                            </div>
+                        {/if}
+                    </div>
+
+                    {#if event}
+                        <div class="flex flex-row w-full justify-between items-end">
+                            <RelatedEvents {event} />
                         </div>
                     {/if}
                 </div>

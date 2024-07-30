@@ -18,7 +18,6 @@ import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import createDebug from 'debug';
 import type { UserProfileType } from '../../app';
-import { getDefaultRelaySet } from '$utils/ndk';
 import { filterValidPTags } from '$utils/event';
 import currentUser from './currentUser';
 import { writable } from 'svelte/store';
@@ -30,6 +29,12 @@ const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
 
 type PubkeysFollowCount = Map<Hexpubkey, number>;
+type PubkeysGroupsCount = Map<GroupEntry, number>;
+
+interface GroupEntry {
+	groupId: Hexpubkey;
+	relayUrl: WebSocket["url"];
+}
 
 export const jwt = persist(writable<string | null>(null), createLocalStorage(), 'jwt');
 
@@ -71,6 +76,12 @@ export const networkFollows = persist(
 	writable(new Map<Hexpubkey, number>()),
 	createLocalStorage(),
 	'network-follows-map'
+);
+
+export const networkGroupsList = persist(
+	writable(new Map<GroupEntry, number>()),
+	createLocalStorage(),
+	'network-groups-lists'
 );
 
 export const tierList = writable<NDKList|undefined>(undefined);
@@ -192,20 +203,16 @@ export async function prepareSession(): Promise<void> {
 			$ndk.outboxTracker!.trackUsers(Array.from($userFollows));
 
 			if ($networkFollows.size < 1000 || !$sessionUpdatedAt || $sessionUpdatedAt < oneHourAgo) {
-				const kind3RelaySet = NDKRelaySet.fromRelayUrls(["wss://purplepag.es"], $ndk);
+				const kind3RelaySet = NDKRelaySet.fromRelayUrls(["wss://purplepag.es/"], $ndk);
 
 				fetchData('wot', $ndk, Array.from($currentUserFollows), {
 					followsStore: networkFollows,
+					groupsCountStore: networkGroupsList,
 					closeOnEose: true,
 					since: $sessionUpdatedAt,
 				}, kind3RelaySet).then(() => {
 					sessionUpdatedAt.set(Math.floor(Date.now() / 1000));
 				})
-
-				fetchData('network-support', $ndk, Array.from($currentUserFollows), {
-					supportStore: networkSupport,
-					closeOnEose: true
-				}, getDefaultRelaySet())
 			}
 		});
 	}).catch((e) => {
@@ -242,6 +249,7 @@ interface IFetchDataOptions {
 	userGenericCurationStore?: Writable<NDKList>;
 	categorizedUserListsStore?: Writable<Map<string, NDKList>>;
 	groupsListStore?: Writable<NDKList | undefined>;
+	groupsCountStore?: Writable<Map<GroupEntry, number>>;
 	tierListStore?: Writable<NDKList | undefined>;
 	listsKinds?: number[];
 	extraKinds?: number[];
@@ -301,8 +309,10 @@ async function fetchData(
 		} else if (event.kind === NDKKind.AppRecommendation) {
 		} else if (event.kind === NDKKind.TierList) {
 			processTierList(event);
-		} else if (event.kind === NDKKind.SimpleGroupList) {
+		} else if (event.kind === NDKKind.SimpleGroupList && opts.groupsListStore) {
 			groupsListStore(event);
+		} else if (event.kind === NDKKind.SimpleGroupList && opts.groupsCountStore) {
+			groupsCountStore(event);
 		} else if ([
 			NDKKind.ArticleCurationSet,
 			NDKKind.VideoCurationSet,
@@ -349,6 +359,12 @@ async function fetchData(
 	const groupsListStore = (event: NDKEvent) => {
 		opts.groupsListStore!.update((groupsList) => {
 			if (groupsList && event.created_at! < groupsList.created_at!) return groupsList;
+			return NDKList.from(event);
+		});
+	}
+
+	const groupsCountsStore = (event: NDKEvent) => {
+		opts.groupsCountStore!.update((groupsCounts) => {
 			return NDKList.from(event);
 		});
 	}
@@ -464,6 +480,7 @@ async function fetchData(
 			filters.push({ authors, kinds: [7001 as number] });
 		}
 
+		console.log("Starting subscription for", name);
 		const userDataSubscription = $ndk.subscribe(filters, {
 			closeOnEose: opts.closeOnEose!,
 			groupable: false,

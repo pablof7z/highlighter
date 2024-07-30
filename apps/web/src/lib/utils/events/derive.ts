@@ -16,7 +16,7 @@ export function deriveStore<T>(
     return derived(store, $events => {
         const filtered = $events.filter(event => kinds!.includes(event.kind!));
 
-        if (kinds.includes(37001)) console.log('looking for', kinds, 'found', filtered.length, 'events', $events.map(e => e.kind));
+        console.log('running derived store of kind '+ kinds[0] + $events.length +" filtered to " + filtered.length, filtered?.[0]?.rawEvent());
 
         if (klass?.from)
             return filtered.map(e => klass.from!(e));
@@ -37,6 +37,7 @@ export function deriveListStore<T>(
     return derived(store, $events => {
         const lists = $events.filter(event => kinds!.includes(event.kind!));
         const event = lists.sort(chronologically)[0];
+        console.log ('running derived list store of kind '+ kinds[0]);
         return event ? klass?.from!(event) : undefined;
     })
 }

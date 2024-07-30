@@ -24,8 +24,9 @@ export function walletInit(
 ) {
     const $walletService = get(walletService);
     $walletService.ndk = ndk;
-    $walletService.on("wallet", () => { wallets.set($walletService.wallets); });
+    $walletService.on("wallet", (w) => { console.log('got wallet '+w.p2pkPubkey, w.rawEvent()); wallets.set($walletService.wallets); });
     $walletService.on("wallet:default", (w: NDKCashuWallet) => {
+        console.log("setting default wallet", w);
         wallet.set(w);
         if (!ndk.walletConfig) ndk.walletConfig = {};
         ndk.walletConfig.onNutPay = onNutPay;
@@ -52,36 +53,44 @@ async function onLnPay(details: NDKZapDetails<LnPaymentInfo>): Promise<NDKZapCon
     const { amount, unit, target, comment } = details;
     const { pr } = details.info;
 
-    const preimage = await $wallet?.lnPay(pr);
-    if (!preimage) throw new Error("failed to pay");
+    try {
+        const preimage = await $wallet?.lnPay(pr);
+        if (!preimage) throw new Error("failed to pay");
 
-    d("payment successful", preimage);
+        d("payment successful", preimage);
 
-    return { preimage };
+        return { preimage };
+    } catch (e) {
+        d("payment failed", e);
+
+        throw e;
+    }
 }
 
 async function onNutPay(details: NDKZapDetails<NutPaymentInfo>): Promise<NDKZapConfirmation> {
-    const $ndk = get(ndk);
     const $wallet = get(wallet);
-    const { mints, p2pkPubkey, relays } = details.info;
-    const { amount, unit, target, recipientPubkey, comment } = details;
+    const { mints, p2pkPubkey } = details.info;
+    const { amount, unit } = details;
 
     d("received Nut payment request", details);
 
     if (!$wallet) throw new Error("no wallet selected");
 
-    const res = await $wallet.nutPay(amount, unit, mints, p2pkPubkey);
-    if (!res) throw new Error("failed to pay");
+    try {
+        const res = await $wallet.nutPay(amount, unit, mints, p2pkPubkey);
+        if (!res) throw new Error("failed to pay");
 
-    d("payment successful", res);
+        d("payment successful", res);
 
-    const recipient = $ndk.getUser({pubkey: recipientPubkey })
+        const nutzap = await $wallet.publishNutzap(res.proofs, res.mint, details);
 
-    const nutzap = await $wallet.publishNutzap(res.proofs, res.mint, amount, unit, target, recipient, relays, comment);
+        d("nutzap published", nutzap.rawEvent());
 
-    d("nutzap published", nutzap.rawEvent());
-
-    return nutzap;
+        return nutzap;
+    } catch (e) {
+        d("payment failed", e);
+        throw e;
+    }
 }
 
 function onPaymentComplete(confirmation: NDKZapConfirmation | Error) {

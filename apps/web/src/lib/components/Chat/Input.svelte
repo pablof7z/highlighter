@@ -5,6 +5,7 @@
 	import { ndk } from "$stores/ndk";
 	import { relaySetForEvent } from "$utils/event";
 	import { NDKEvent, NDKKind, NDKPublishError, NDKRelay, NDKSimpleGroup, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { PaperPlaneTilt } from "phosphor-svelte";
 	import { toast } from "svelte-sonner";
 
@@ -13,7 +14,8 @@
     export let tags: NDKTag[] = [];
     export let kind: NDKKind = NDKKind.GroupChat;
     export let placeholder: string = "Type a message";
-    export let showReplyingTo: boolean = false;
+    export let showReplyingTo: boolean | undefined = undefined;
+    export let replyTo: NDKEvent | undefined = undefined;
 
     let relaySet = event ? relaySetForEvent(event) : undefined;
 
@@ -29,6 +31,8 @@
             kind,
             tags,
         } as NostrEvent)
+
+        if (replyTo) event.tag(replyTo, "reply")
 
         relaySet = group?.relaySet ?? relaySetForEvent(event);
         console.log('relaySet', Array.from(relaySet.relays)[0])
@@ -56,12 +60,20 @@
     }
 </script>
 
-<div class="flex flex-row justify-stretch">
+<div class="flex flex-row justify-stretch w-full">
     {#key resetAt}
         <div class="flex flex-col w-full">
-            {#if showReplyingTo && event}
-                {#key event?.pubkey}
-                    <span class="text-xs text-accent">Replying to <Name pubkey={event.pubkey} /></span>
+            {#if showReplyingTo !== false && replyTo}
+                {#key replyTo?.pubkey}
+                    <button
+                        class="responsive-padding text-left max-w-[calc(70dvw)]"
+                        on:click={() => replyTo = undefined}
+                    >
+                        <span class="text-xs text-accent">Replying to <Name pubkey={replyTo.pubkey} /></span>
+                        <div class="bg-secondary text-secondary-foreground text-sm truncate border-l-2 border-accent pl-2 py-2">
+                            <EventContent ndk={$ndk} event={replyTo} />
+                        </div>
+                    </button>
                 {/key}
             {/if}
             <div class="grow w-full border p-2 bg-background/50 rounded overflow-clip border-border">
@@ -75,7 +87,7 @@
                     enterSubmits={true}
                     class="
                         !min-h-none w-full grow flex items-center justify-center overflow-hidden text-base {$$props.class??""}
-                        text-lg h-full outline-none !bg-transparent
+                        text-lg h-full outline-none !bg-transparent px-2 placeholder::!px-4
                     "
                     on:keydown={onkeydown}
                     on:submit={submit}
@@ -90,9 +102,9 @@
         {#if publishing}
             <div class="loading loading-sm text-accent loading-bars"></div>
         {:else}
-            <Button variant="accent" class="">
-                <PaperPlaneTilt weight="fill" class="w-full h-full" />
-            </Button>
+            <button class="px-2 w-10 h-10" on:click={submit}>
+                <PaperPlaneTilt weight="fill" class="text-accent w-full h-full" />
+            </button>
         {/if}
     </div>
 </div>

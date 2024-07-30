@@ -4,11 +4,12 @@
 
     export let pubkeys: Hexpubkey[];
     export let size = "tiny";
+    export let count = 5;
 </script>
 
 <div class="flex flex-row items-center rounded-full overflow-clip">
     <div class="flex flex-row items-center -space-x-2">
-        {#each pubkeys as pubkey}
+        {#each pubkeys.slice(0, count) as pubkey}
             <div class="flex flex-row items-center space-x-1">
                 <Avatar {pubkey} {size} />
             </div>

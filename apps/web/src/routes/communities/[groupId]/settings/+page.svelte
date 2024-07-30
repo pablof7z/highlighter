@@ -2,4 +2,4 @@
 	import * as Groups from "$components/Groups";
 </script>
 
-<Groups.Settings />
+<Groups.Views.Settings />

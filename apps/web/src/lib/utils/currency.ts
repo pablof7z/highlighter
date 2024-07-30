@@ -1,5 +1,5 @@
 import { nicelyFormattedMilliSatNumber } from '$utils';
-import type { NDKTag } from '@nostr-dev-kit/ndk';
+import type { NDKSubscriptionAmount, NDKTag } from '@nostr-dev-kit/ndk';
 
 export const possibleCurrencies = ['USD', 'EUR', 'msat'];
 
@@ -80,6 +80,19 @@ export async function calculateSatAmountFromAmountTag(amountTag: NDKTag): Promis
 		return Math.floor((Number(value) / bitcoinPrice) * 100_000_000) / 100; // expressed in cents in the tag
 	} else if (currency === 'msat') {
 		return value / 1000; // expressed in msats in the tag
+	} else {
+		throw new Error('Currency not supported');
+	}
+}
+
+export async function calculateSatAmountFromAmount(data: NDKSubscriptionAmount): Promise<number> {
+	const { amount, currency } = data;
+
+	if (['USD', 'EUR'].includes(currency)) {
+		const bitcoinPrice = await getBitcoinPrice(currency);
+		return Math.floor((Number(amount) / bitcoinPrice) * 100_000_000) / 100; // expressed in cents in the tag
+	} else if (currency === 'msat') {
+		return amount / 1000; // expressed in msats in the tag
 	} else {
 		throw new Error('Currency not supported');
 	}

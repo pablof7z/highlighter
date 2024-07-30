@@ -1,10 +1,10 @@
 <script lang="ts">
 	import HorizontalList from '$components/PageElements/HorizontalList';
 	import { wotFilteredStore } from '$stores/wot';
-	import { NDKArticle, NDKHighlight, NDKKind, NDKVideo } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKHighlight, NDKKind, NDKList, NDKSimpleGroup, NDKVideo } from '@nostr-dev-kit/ndk';
 	
 	import { ndk } from "$stores/ndk";
-	import { userFollows } from "$stores/session";
+	import { groupsList, userFollows } from "$stores/session";
 	import { derived, Readable } from "svelte/store";
 	import { filterArticles } from '$utils/article-filter';
 	import HighlightBody from '$components/HighlightBody.svelte';
@@ -14,6 +14,7 @@
 	import { layout } from '$stores/layout';
 	import HomePageSidebar from './HomePageSidebar.svelte';
 	import { vanityUrls } from '$utils/const';
+    import * as Chat from '$components/Chat';
 
     $layout.fullWidth = true;
 
@@ -21,9 +22,7 @@
         kinds: [NDKKind.Article], limit: 50
     }, undefined, NDKArticle);
     const wotF = wotFilteredStore(articles) as Readable<NDKArticle[]>;
-    const filteredArticles = derived(wotF, ($wotF) => {
-        return filterArticles(wotF);
-    });
+    const filteredArticles = filterArticles(wotF);
 
     const videos = $ndk.storeSubscribe([
         { kinds: [NDKKind.HorizontalVideo, NDKKind.HorizontalVideo+1], authors: Array.from($userFollows), limit: 50 },
@@ -36,13 +35,35 @@
         {kinds: [NDKKind.Highlight], limit: 50},
         {kinds: [NDKKind.Highlight], authors: Array.from($userFollows), limit: 150},
     ], {
-        groupable: false,
         onEose: () => { highlightsEosed = true; }
     }, NDKHighlight);
 
     const filteredHighlights = wotFilteredStore<NDKHighlight>(highlights);
     const followHighlights = derived(highlights, $highlights => {
         return $highlights.filter(highlight => $userFollows.has(highlight.pubkey));
+    });
+
+    const followGroups = $ndk.storeSubscribe([
+        { kinds: [ NDKKind.SimpleGroupList ], authors: Array.from($userFollows) }
+    ], undefined, NDKList);
+    const groupsByCount = derived(followGroups, $followGroups => {
+        const groups: Record<string, number> = {};
+        const groupRelays: Record<string, string> = {};
+
+        for (const list of $followGroups) {
+            for (const item of list.items) {
+                if (item[0] !== "group" || !item[1] && !item[2]) continue;
+
+                const groupId = item[1];
+                groups[groupId] = (groups[groupId] || 0) + 1;
+                groupRelays[groupId] = item[2];
+            }
+        }
+
+        // sort
+        return Object.entries(groups)
+            .sort((a, b) => b[1] - a[1])
+            .map(([groupId, count]) => [ groupId, groupRelays[groupId] ]);
     });
 
     $layout = {
@@ -60,6 +81,14 @@
         ).map(pubkey => $ndk.getUser({ pubkey }))
         .map(user => { return { user, id: user.pubkey } });
 </script>
+
+{#if $groupsList && $groupsList.items.length > 0}
+    <Chat.List>
+        {#each $groupsList.items as group (group[1])}
+            <Chat.Item tag={["group", group[1], group[2]]} />
+        {/each}
+    </Chat.List>
+{/if}
 
 <HorizontalList title="Featured Creators" items={featuredUsers} let:item>
     <Card.User user={item.user} />

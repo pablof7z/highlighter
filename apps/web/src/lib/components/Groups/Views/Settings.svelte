@@ -1,34 +1,41 @@
 <script lang="ts">
 	import { Plus, X, CaretDown } from 'phosphor-svelte';
     import { Button } from "$components/ui/button";
-	import TiersModal from "$modals/TiersModal.svelte";
-	import { loadedGroup } from "$stores/item-view";
 	import { ndk } from "$stores/ndk";
-	import { openModal } from "$utils/modal";
-	import { Block } from "konsta/svelte";
-    import * as Tiers from "$components/Tiers/index.js";
 	import { getContext } from "svelte";
 	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
-	import { NDKSubscriptionTier, NDKSimpleGroup, NDKKind, NDKEvent, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
-    import * as Tabs from "$components/ui/tabs";
-    import * as Popover from "$lib/components/ui/popover";
-    import * as Select from "$lib/components/ui/select";
-	import Input from '$components/ui/input/input.svelte';
+	import { NDKSubscriptionTier, NDKSimpleGroup, NDKKind, NDKEvent, NDKSimpleGroupMetadata, NDKSimpleGroupMemberList } from "@nostr-dev-kit/ndk";
     import * as Collapsible from "$lib/components/ui/collapsible";
 
 	import TierEditor from '$components/Creator/TierEditor.svelte';
 	import { Readable } from 'svelte/store';
-	import EditMetadata from './EditMetadata.svelte';
+	import EditMetadata from '../EditMetadata.svelte';
+	import { layout } from '$stores/layout';
+	import JoinRequests from './JoinRequests.svelte';
 
-    const group = getContext("group") as NDKSimpleGroup;
-    const groupMetadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
-    const existingTiers = getContext("groupTiers") as Readable<NDKSubscriptionTier[]>;
+    export let group = getContext("group") as NDKSimpleGroup;
+    export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
+    export let existingTiers = getContext("groupTiers") as Readable<NDKSubscriptionTier[]>;
+    export let members = getContext("groupMembers") as Readable<NDKSimpleGroupMemberList>;
+
+    $layout.fullWidth = false;
+    $layout.sidebar = false;
 
     function addMember() {
         const pubkey = prompt("Enter the pubkey of the member you want to add");
         if (pubkey) {
             const user = $ndk.getUser({pubkey})
-            group.addUser(user);
+            group.addUser(user).then(async (e) => {
+                await e.publish(group.relaySet)
+
+                const e2 = new NDKEvent($ndk);
+                e2.kind = 9003;
+                e2.tags.push(["h", group.groupId]);
+                e2.tags.push(["p", pubkey]);
+                e2.tags.push(["permission", "add-user"]);
+                e2.tags.push(["permission", "remove-user"]);
+                e2.publish(group.relaySet);
+            });
         }
     }
 
@@ -79,6 +86,22 @@
             e.tags.push(["h", group.groupId ]);
             e.tags.push(["closed"]);
             e.publish(group.relaySet);
+
+            const creatorRelayPubkey = import.meta.env.VITE_CREATOR_RELAY_PUBKEY;
+            if (creatorRelayPubkey) {
+                let event = new NDKEvent($ndk);
+                event.kind = NDKKind.GroupAdminAddUser;
+                event.tags.push(["h", group.groupId]);
+                event.tags.push(["p", creatorRelayPubkey]);
+                await event.publish(group.relaySet);
+
+                event.kind = 9003;
+                event.tags.push(["h", group.groupId]);
+                event.tags.push(["p", creatorRelayPubkey]);
+                event.tags.push(["permission", "add-user"]);
+                event.tags.push(["permission", "remove-user"]);
+                await event.publish(group.relaySet);
+            }
         }
     }
 
@@ -93,9 +116,9 @@
             <span class="sr-only">Toggle</span>
         </Button>
         </Collapsible.Trigger>
-    <Collapsible.Content>
+    <Collapsible.Content class="flex flex-col gap-6">
         <EditMetadata {group} bind:forceSave={saveMetadata} />
-        <Button on:click={() => saveMetadata = true}>
+        <Button class="w-fit" on:click={() => saveMetadata = true}>
             Save
         </Button>
     </Collapsible.Content>
@@ -169,13 +192,14 @@
         {/if}
     </div> -->
 
-        
+    
+    <JoinRequests {group} />
     
     
     <h1>Members</h1>
     
-    {#if $loadedGroup?.memberList}
-        {#each $loadedGroup.memberList.members as member}
+    {#if $members}
+        {#each $members.members as member}
             <div>{member}</div>
         {/each}
     {/if}

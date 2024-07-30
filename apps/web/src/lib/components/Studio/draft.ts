@@ -1,8 +1,8 @@
-import currentUser from "$stores/currentUser";
+import NDK, { NDKArticle } from "@nostr-dev-kit/ndk";
+import currentUser from "$stores/currentUser.js";
 import { CheckpointData, DraftCheckpoint, DraftItem, drafts, ThreadCheckpoint } from "$stores/drafts";
 import { ndk } from "$stores/ndk";
 import { Thread } from "$utils/thread";
-import { check } from "drizzle-orm/mysql-core";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
 
@@ -25,7 +25,7 @@ export function getDraft(
     const payload = checkpoint?.data;
 
     const $currentUser = get(currentUser);
-    const $ndk = get(ndk);
+    const $ndk = get(ndk) as NDK;
 
     switch (draft.type) {
         case "thread":
@@ -36,6 +36,11 @@ export function getDraft(
             );
 
             return { draft, thread };
+        case "article":
+            const { event } = payload as ArticleCheckpoint;
+            const article = NDKArticle.from(JSON.parse(event));
+            article.ndk = $ndk;
+            return { draft, article };
     }
 }
 

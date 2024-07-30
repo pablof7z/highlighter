@@ -150,7 +150,7 @@
 
     $: if (selectedView === "nostr") {
         actionButtons = [
-            { name: publishing ? "Publishing" : "Publish", fn: publish, buttonProps: { variant: 'accent', size: 'lg' } }
+            { name: publishing ? "Publishing" : "Publish", fn: publish }
         ];
     } else {
         actionButtons = [];
@@ -189,6 +189,7 @@
                 allowMarkdown={false}
                 class="
                     w-full min-h-[10rem]
+                    text-lg
                     {$$props.class??""}
                 "
             />

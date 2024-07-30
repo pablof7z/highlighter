@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import UserProfileHomePage from "$views/UserProfileHomePage.svelte";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKUser } from "@nostr-dev-kit/ndk";
+    import * as User from "$components/User";
 
     let userId: string | null;
     let view: string;
@@ -18,11 +18,18 @@
 
 {#if user}
     {#key userId}
-        {#if view === "profile"}
-            {#key user.pubkey}
-                <UserProfileHomePage {user} />
-            {/key}
-        {:else}
-        {/if}
+        <User.Root {user} let:user let:notes let:highlights let:articles let:videos let:wiki let:groupsList let:curations let:cashuMintList let:pinList let:tierList let:tiers let:groups let:groupsMetadata let:eosed let:userProfile let:fetching let:authorUrl>
+            <User.Shell {user} {notes} {highlights} {articles} {videos} {wiki} {groupsList} {curations} {cashuMintList} {pinList} {tierList} {tiers} {groups} {groupsMetadata} {eosed} {userProfile} {fetching} {authorUrl}>
+                {#if view === "profile"}
+                    <User.Views.Home {user} {userProfile} {authorUrl} />
+                {:else if view === 'notes'}
+                    <User.Views.Notes {user} {userProfile} {authorUrl} />
+                {:else if view === 'articles'}
+                    <User.Views.Articles {user} />
+                {:else if view === 'videos'}
+                    <User.Views.Videos {user} />
+                {/if}
+            </User.Shell>
+        </User.Root>
     {/key}
 {/if}

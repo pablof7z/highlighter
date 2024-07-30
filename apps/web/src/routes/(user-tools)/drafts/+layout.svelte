@@ -1,25 +1,18 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import { layoutMode, pageHeader, resetLayout } from "$stores/layout";
+    import { layout, layoutMode, pageHeader, resetLayout } from "$stores/layout";
 	import { onDestroy } from "svelte";
 
     let id: string;
 
     $: id = $page.url.search?.substring(1);
 
-    $pageHeader = {
+    $layout = {
         title: "Drafts",
+        sidebar: false,
+        back: { url: "/" },
+        fullWidth: false
     }
-
-    $layoutMode = "single-column-focused";
-
-    onDestroy(() => {
-        resetLayout();
-    })
 </script>
-
-<svelte:head>
-    <title>Drafts</title>
-</svelte:head>
 
 <slot />

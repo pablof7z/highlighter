@@ -1,8 +1,10 @@
 <script lang="ts">
 	import Checkbox from "$components/Forms/Checkbox.svelte";
-	import { makePublicAfter } from "$stores/post-editor";
     import * as Select from "$lib/components/ui/select";
+	import { writable } from "svelte/store";
 
+    const makePublicAfter = writable<number | false>(false);
+    
     let makeFreeCheck = $makePublicAfter !== undefined && Number($makePublicAfter) > 0;
 
     $: if (!makeFreeCheck) $makePublicAfter = false;

@@ -1,6 +1,7 @@
 import { writable, type Writable } from 'svelte/store';
 import { NavigationOption } from '../../app';
 import { appMobileHideNewPostButton } from './app';
+import { NDKEvent } from '@nostr-dev-kit/ndk';
 
 /**
  * `list-column` - The sidebar takes about 1/3 of the screen and the main content takes about 2/3 of the screen
@@ -25,8 +26,6 @@ export function resetLayout() {
 	appMobileHideNewPostButton.set(false);
 }
 
-resetLayout();
-
 export const searching: Writable<boolean> = writable(false);
 
 export const modalState: Writable<"open" | "closing" | "closed"> = writable("closed");
@@ -34,6 +33,12 @@ export const modalState: Writable<"open" | "closing" | "closed"> = writable("clo
 export const activeNewPostId: Writable<string | null> = writable(null);
 
 export type Layout = {
+	/**
+	 * Can be used to display information and actions
+	 * for a particular event.
+	 */
+	event?: NDKEvent;
+	
 	header?: Component | false;
 	navigation?: NavigationOption[] | false;
 	sidebar?: Component | false;

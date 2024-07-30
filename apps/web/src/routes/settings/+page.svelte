@@ -27,6 +27,7 @@
     <title>Settings</title>
 </svelte:head>
 
+<div class="responsive-padding">
 {#if $currentUser}
     <AvatarWithName user={$currentUser} bind:authorUrl nameClass="text-xl text-foreground font-semibold"
         spacing="gap-4"
@@ -62,26 +63,6 @@
                     </a>
                 </li>
             {/if}
-            
-            <li>
-                <a href="/settings/tiers">
-                    <span>
-                        <ShareNetwork class="w-5 h-5" />
-                        Tiers
-                    </span>
-                    <CaretRight class="w-5 h-5" />
-                </a>
-            </li>
-
-            <li>
-                <a href="/settings/subscriptions">
-                    <span>
-                        <ShareNetwork class="w-5 h-5" />
-                        Subscriptions
-                    </span>
-                    <CaretRight class="w-5 h-5" />
-                </a>
-            </li>
         </ul>
     </section>
 
@@ -160,6 +141,7 @@
         </li>
     </ul>
 {/if}
+</div>
 
 <style>
     ul {

@@ -6,6 +6,7 @@
 	import { Readable, derived } from "svelte/store";
 	import { getRepliesStore, getConversationRepliesStore, getThreadStore, computeScore } from "./replies";
 	import CommentsButton from "$components/buttons/CommentsButton.svelte";
+    import * as Event from "$components/Event";
 	import ReplyAvatars from "./ReplyAvatars.svelte";
 	import RelayIndicator from '$components/Events/RelayIndicator.svelte';
 	import ViewConversation from './ViewConversation.svelte';
@@ -61,8 +62,6 @@
     export let placeholder: string | undefined = undefined;
     export let skipFooter = false;
     export let compact = false;
-
-    export let disableSwipe = false;
 
     export let hTag = op.tagValue("h");
 
@@ -200,12 +199,8 @@
     }
 
     export let deleted = false;
-    function deleteEvent() {
-        deleted = true;
-        event.delete();
-    }
-
-    
+    function deleteEvent() { deleted = true; }
+    function cancelDeleteEvent() { deleted = false; }
 
     function reply() {
         if (event.pubkey === $currentUser?.pubkey) {
@@ -319,11 +314,10 @@
                                         {/if}
                                     {/key}
                                     {#if !$appMobileView}
-                                        <EventCardDropdownMenu
+                                        <Event.Dropdown
                                             {event}
-                                            enableDelete={$currentUser && $currentUser.pubkey === event.pubkey}
                                             on:delete={deleteEvent}
-                                            class="dropdown-end absolute z-[9999]"
+                                            on:delete:cancel={cancelDeleteEvent}
                                         />
                                     {/if}
                                 </div>
@@ -401,6 +395,7 @@
                         {/if}
                     </div>
 
+                    {#if !isMobileBuild()}
                     <div class:hidden={swipeActive} class="
                         flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4
                         grayscale group-hover:grayscale-0
@@ -426,6 +421,7 @@
                             <SmallZapButton {event} />
                         </div>
                     </div>
+                    {/if}
                 </div>
             {/if}
         </UserProfile>

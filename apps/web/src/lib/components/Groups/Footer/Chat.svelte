@@ -4,13 +4,16 @@
     import * as Footer from "$components/Footer";
 	import { ndk } from '$stores/ndk';
     import { NDKSimpleGroup, NDKEvent, NDKTag, NDKKind } from "@nostr-dev-kit/ndk";
+	import { afterUpdate } from 'svelte';
+	import { Writable } from 'svelte/store';
 
     export let group: NDKSimpleGroup | undefined = undefined;
     export let event: NDKEvent;
     export let tags: NDKTag[] = [];
     export let kind: NDKKind = NDKKind.GroupChat;
     export let placeholder: string = "Type a message";
-    export let showReplyingTo: boolean = false;
+    export let showReplyingTo: boolean | undefined = undefined;
+    export let replyTo: Writable<NDKEvent | undefined>;
 
     let collapsed = true;
     let recordingActive = false;
@@ -34,10 +37,11 @@
     bind:collapsed
     align="items-center"
 >
-    <div class="w-full" class:hidden={recordingActive}>
+    <div class="flex flex-row items-end w-full">
+    <div class="w-full flex flex-col overflow-clip max-w-[50vh]" class:hidden={recordingActive}>
         <ChatInput
-            {group} {event} {tags} {kind} {placeholder} {showReplyingTo}
-            class="w-full"
+            {group} {event} {tags} {kind} {placeholder} {showReplyingTo} bind:replyTo={$replyTo}
+            class="w-full max-w-screen flex overflow-clip"
             bind:content
         />
     </div>
@@ -51,4 +55,5 @@
             on:uploaded={onUploaded}
         />
     {/if}
+    </div>
 </Footer.Shell>

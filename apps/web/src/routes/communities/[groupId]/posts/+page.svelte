@@ -2,4 +2,4 @@
 	import * as Groups from "$components/Groups";
 </script>
 
-<Groups.Posts />
+<Groups.Views.Posts />

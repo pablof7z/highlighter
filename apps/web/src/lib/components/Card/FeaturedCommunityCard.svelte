@@ -6,7 +6,6 @@
 
     export let group: NDKSimpleGroup;
     export let tag: NDKTag | undefined = undefined;
-    export let highlights: NDKHighlight[] = [];
 
     const metadata = group.metadata;
 </script>

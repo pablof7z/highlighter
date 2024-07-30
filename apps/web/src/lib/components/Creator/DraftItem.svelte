@@ -5,6 +5,7 @@
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import ArticleLink from '$components/Events/ArticleLink.svelte';
     import ThreadItem from "$components/Drafts/Items/Thread.svelte";
+	import FeaturedArticleCard from "$components/Card/FeaturedArticleCard.svelte";
 
     export let item: DraftItem;
 
@@ -22,10 +23,14 @@
             if ($currentUser) article.pubkey = $currentUser.pubkey;
             break;
     }
+
+    function url(item: DraftItem) {
+        return `/drafts/${item.id}`;
+    }
 </script>
 
 {#if item.type === "article"}
-    <ArticleLink
+    <FeaturedArticleCard
         article={article}
         size="small"
         grid={true}

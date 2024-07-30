@@ -14,8 +14,10 @@
 	import JoinModal from '$components/Groups/Modals/JoinModal.svelte';
 
     export let user: NDKUser = getContext('user') as NDKUser;
-    export let userProfile: NDKUserProfile | undefined | null;
-    export let authorUrl: string;
+    export let userProfile: NDKUserProfile | undefined | null = getContext('userProfile') as NDKUserProfile;
+    export let authorUrl: string | undefined | null = getContext('authorUrl') as string;
+
+    $layout.fullWidth = false;
 
     const userHighlights = getContext('userHighlights') as Readable<NDKHighlight[]>;
     const userArticles = getContext('userArticles') as Readable<NDKArticle[]>;

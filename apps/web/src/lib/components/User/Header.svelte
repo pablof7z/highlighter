@@ -17,6 +17,7 @@
 	import { Button } from "$components/ui/button";
 	import { openModal } from "$utils/modal";
 	import NewGroupModal from "$modals/NewGroupModal.svelte";
+	import { throttle } from "@sveu/shared";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | null | undefined = undefined;
@@ -29,20 +30,22 @@
 
     let headerCache: any;
 
-    function inviewchange(e) {
-        const { inView } = e.detail;
-
-        console.log({inView});
-
+    const throttledViewChange = throttle((inView: boolean) => {
         if (inView) {
-            // headerCache = $layout.header;
+            headerCache = $layout.header;
             $layout.header = false;
+            console.log("SETTING HEADER TO FALSE")
             $layout.navigation = false;
             $layout.back = { url: "/" }
         } else if (inView === false) {
             $layout.header = headerCache;
             $layout.navigation = options;
         }
+    }, 1000);
+
+    function inviewchange(e) {
+        console.log("RUNNING IN VIEW CHANGE")
+        throttledViewChange(e.detail.inView);
     }
 
     onMount(() => {

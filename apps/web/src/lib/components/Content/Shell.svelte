@@ -75,7 +75,9 @@
 
     const replies = derived(wotFilteredEvents, $wotFilteredEvents => {
         return $wotFilteredEvents
-            .filter(e => e.kind === NDKKind.Text)
+            .filter(e => [
+                NDKKind.Text, NDKKind.GroupReply
+            ].includes(e.kind!))
     });
 
     const shares = derived(wotFilteredEvents, $wotFilteredEvents => {
@@ -118,7 +120,7 @@
 
         <slot />
     </div>
-{:else if [NDKKind.Text].includes(wrappedEvent.kind)}
+{:else if [NDKKind.Text, NDKKind.GroupNote, NDKKind.GroupReply].includes(wrappedEvent.kind)}
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
         <Note.Header
             event={wrappedEvent}

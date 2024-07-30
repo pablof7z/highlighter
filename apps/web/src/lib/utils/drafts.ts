@@ -31,8 +31,9 @@ export function addDraftCheckpoint(
     type: DraftItemType,
     event: NDKEvent
 ) {
+    const id = randomId();
     const checkpoints: DraftCheckpoint[] = draftItem?.checkpoints ? JSON.parse(draftItem?.checkpoints) : [];
-    const checkpoint: DraftCheckpoint = { time: Date.now(), data, manuallySaved }
+    const checkpoint: DraftCheckpoint = { id, time: Date.now(), data, manuallySaved }
 
     if (draftItem) {
         const mostRecentCheckpoint = checkpoints[0];

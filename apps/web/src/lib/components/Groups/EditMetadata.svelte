@@ -10,6 +10,7 @@
 	import { Camera, CaretDown, Image, Upload } from "phosphor-svelte";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import { createEventDispatcher } from "svelte";
+	import Checkbox from "$components/Forms/Checkbox.svelte";
 
     export let group: NDKSimpleGroup | undefined = undefined;
     export let forceSave: boolean = false;
@@ -56,6 +57,8 @@
     function uploaded(e) {
         picture = e.detail.url;
     }
+
+    let privateScope: boolean = group?.metadata?.scope === "private" ?? false;
 </script>
 
 <div class="flex flex-col gap-6">
@@ -83,4 +86,10 @@
         "
         placeholder="Community Description"
     />
+
+    <div class="border p-4 rounded">
+        <Checkbox bind:value={privateScope}>
+            Allow non-members to see the content of this community
+        </Checkbox>
+    </div>
 </div>

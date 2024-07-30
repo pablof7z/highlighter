@@ -5,12 +5,14 @@
 	import currentUser from '$stores/currentUser';
 	import { ndk } from '$stores/ndk';
 	import { getGroupUrl } from '$utils/url';
-    import { Hexpubkey, NDKEvent, NDKFilter, NDKSimpleGroup, NDKTag } from '@nostr-dev-kit/ndk';
+    import { Hexpubkey, NDKArticle, NDKEvent, NDKFilter, NDKSimpleGroup, NDKTag } from '@nostr-dev-kit/ndk';
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { derived, Readable } from 'svelte/store';
 	import { groupsList, userFollows } from '$stores/session';
 	import Swipe from '$components/Swipe.svelte';
 	import AvatarsPill from '$components/Avatars/AvatarsPill.svelte';
+	import { deriveStore } from '$utils/events/derive';
+	import Badge from '$components/ui/badge/badge.svelte';
     export let tag: NDKTag;
 
     let group: NDKSimpleGroup;
@@ -37,6 +39,8 @@
             }
         }
     }
+
+    let recentArticles: Readable<NDKArticle[]>;
 
     $: if (group && isMember && !recentEvents) {
         const lastSeen = getLastTimeGroupWasChecked(group);
@@ -69,6 +73,8 @@
 
             return choosenEvent;
         })
+
+        recentArticles = deriveStore(recentEvents, NDKArticle);
     }
 
     function pin(group: NDKSimpleGroup) {
@@ -97,9 +103,9 @@
 </script>
 
 <WithGroup tag={tag} bind:group>
-    {#if group}
+    {#if group && group.name}
         <Swipe {rightOptions}>
-            <a href={getGroupUrl(group)} class="py-2 w-full">
+            <a href={getGroupUrl(group)} class="py-2 w-full group">
                 <div class="responsive-padding flex flex-row items-center p-2 gap-4 w-full">
                     <img src={group.picture??`https://picsum.photos/24/24?random=${group.name}`} />
                     
@@ -120,11 +126,29 @@
                         {/if}
                     </div>
 
+                    {#if $recentArticles && $recentArticles.length > 0}
+                        <Badge>
+                            {$recentArticles.length}
+                        </Badge>
+                    {/if}
+                    
                     {#if $mostRecentEvent}
                         <span>
                             <RelativeTime event={$mostRecentEvent} relative={true} />
                         </span>
                     {/if}
+
+                    <div class="hidden lg:group-hover:flex">
+                        {#if $groupsList?.has(group.groupId)}
+                            <button on:click|stopPropagation|preventDefault={() => unpin(group.groupId)}>
+                                unpin
+                            </button>
+                        {:else}
+                            <button on:click|stopPropagation|preventDefault={() => pin(group)}>
+                                pin
+                            </button>
+                        {/if}
+                    </div>
                 </div>
             </a>
         </Swipe>

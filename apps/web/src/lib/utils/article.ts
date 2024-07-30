@@ -20,3 +20,21 @@ export function getSummary(article: NDKArticle, force = false) {
 export function countWords(content: string) {
 	return content.split(/\s+/).length;
 }
+
+export function readTime(content: string): string {
+	const words = countWords(content);
+	const minutes = Math.ceil(words / 200);
+
+	if (minutes < 1) {
+		return '1 min';
+	}
+
+	// convert minutes to hours
+	if (minutes > 60) {
+		const hours = Math.floor(minutes / 60);
+		const remainingMinutes = minutes % 60;
+		return `${hours} hour`;
+	} else  {
+		return `${minutes} min`;
+	}
+}

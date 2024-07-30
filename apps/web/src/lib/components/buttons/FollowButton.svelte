@@ -5,6 +5,7 @@
 	import { Checkbox } from "konsta/svelte";
 	import { Plus, User, UserMinus, UserPlus } from "phosphor-svelte";
 	import { Button } from "$components/ui/button";
+	import currentUser from "$stores/currentUser";
 
     export let user: NDKUser;
     export let isFollowed: boolean | undefined = undefined;
@@ -14,14 +15,14 @@
     async function follow() {
         const currentFollows = new Set<NDKUser>();
         $userFollows.forEach((pubkey) => currentFollows.add($ndk.getUser({ pubkey })));
-        // $currentUser?.follow(user, currentFollows);
+        $currentUser?.follow(user, currentFollows);
         isFollowed = true;
     }
 
     async function unfollow() {
         const currentFollows = new Set<NDKUser>();
         $userFollows.forEach((pubkey) => currentFollows.add($ndk.getUser({ pubkey })));
-        // $currentUser?.unfollow(user, currentFollows);
+        $currentUser?.unfollow(user, currentFollows);
         isFollowed = false;
     }
 

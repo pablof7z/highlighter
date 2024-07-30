@@ -1,28 +1,62 @@
 import { ndk } from "$stores/ndk";
 import { Thread } from "$utils/thread";
-import { NDKEvent, NDKRelay, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
+import { calculateRelaySetFromEvent, getRelayListForUser, NDKEvent, NDKRelay, NDKRelaySet, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
 import { get } from "svelte/store";
-import { GroupId, Relays } from "..";
+import { GroupId, Relays, Scope } from "..";
+import currentUser from "$stores/currentUser";
 
-function getRelaySet(publishInGroups?: Map<GroupId, Relays>): NDKRelaySet | undefined {
+export async function getRelaySet(
+    event: NDKEvent,
+    publishInGroups?: Map<GroupId, Relays>,
+    scope?: Scope,
+    isPreview = false
+): Promise<NDKRelaySet> {
     const $ndk = get(ndk);
     const urls = new Set<string>();
 
-    if (publishInGroups) {
+    if (publishInGroups && publishInGroups.size > 0) {
         for (const [groupId, relays] of publishInGroups) {
             for (const url of relays) {
                 urls.add(url);
             }
         }
+
+        if (urls.size === 0) {
+            console.log('no relays found for groups', publishInGroups);
+            throw new Error("No relays found for groups");
+        }
     }
 
-    if (urls.size === 0) return undefined;
+    if (urls.size === 0) {
+        return await calculateRelaySetFromEvent($ndk, event)
+    }
+
+    // if we are returning an explicit list of relays we need to include
+    // the user's own relays if the scope is public
+    
+    if (scope === "public" || isPreview) {
+        const $ndk = get(ndk);
+        const $currentUser = get(currentUser);
+        if ($currentUser) {
+            const userRelays = await getRelayListForUser($currentUser.pubkey, $ndk);
+            // add the user's relays to the list
+            for (const url of userRelays.relays) {
+                urls.add(url);
+            }
+        }
+    }
 
     return NDKRelaySet.fromRelayUrls(Array.from(urls), $ndk);
 }
 
-function getTags(publishInGroups?: Map<GroupId, Relays>): NDKTag[] {
+function getTags(
+    publishInGroups?: Map<GroupId, Relays>,
+    scope?: Scope,
+    publishInTiers?: Map<string, NDKSubscriptionTier>,
+    isPreviewForEvent?: NDKEvent
+): NDKTag[] {
     const tags: NDKTag[] = [];
+    const isPreview = !!isPreviewForEvent;
 
     if (publishInGroups) {
         for (const [groupId, relays] of publishInGroups) {
@@ -32,47 +66,121 @@ function getTags(publishInGroups?: Map<GroupId, Relays>): NDKTag[] {
         }
     }
 
+    // non-preview tags
+    if (!isPreview) {
+        console.log('adding non-preview tags')
+        if (scope === "private") {
+            tags.push(['-']);
+        }
+
+        if (publishInTiers) {
+            for (const [dTag, tier] of publishInTiers) {
+                tags.push(
+                    [ "f", dTag ]
+                );
+            }
+        }
+    } else {
+        console.log('adding preview tags')
+
+        // add a marker to the full version
+        tags.push([ "full", isPreviewForEvent?.tagId() ]);
+
+        // add which tiers are required
+        if (publishInTiers) {
+            for (const [dTag, tier] of publishInTiers) {
+                tags.push(
+                    [ "tier", dTag ]
+                );
+            }
+        }
+    }
+
     return tags;
 }
 
 export async function publish(
-    event?: NDKEvent,
-    thread?: Thread,
+    event: NDKEvent,
+    preview?: NDKEvent,
     publishInGroups?: Map<GroupId, Relays>,
     publishAt?: Date,
+    scope?: Scope,
+    publishInTiers?: Map<string, NDKSubscriptionTier>,
+    mainEventRelaySet?: NDKRelaySet,
+    previewEventRelaySet?: NDKRelaySet
 ) {
-    const relaySet = getRelaySet(publishInGroups);
+    const tags = getTags(
+        publishInGroups,
+        scope,
+        publishInTiers
+    );
 
-    const tags = getTags(publishInGroups);
+    const finalEvent = await finalizeEvent(event, tags, publishAt);
+    let finalPreview: NDKEvent | undefined;
 
-    if (event) {
-        publishEvent(event, relaySet, tags, publishAt);
+    if (preview) {
+        const previewTags = getTags(
+            publishInGroups,
+            scope,
+            publishInTiers,
+            finalEvent
+        );
+        try {
+            finalPreview = await finalizeEvent(preview, previewTags, publishAt);
+        } catch (e) {
+            console.error('Error finalizing preview', e);
+        }
     }
+
+    console.log('main event', finalEvent.rawEvent());
+    console.log('preview event', finalPreview?.rawEvent());
+
+    return await publishEvents(
+        finalEvent,
+        finalPreview,
+        mainEventRelaySet,
+        previewEventRelaySet
+    )
 }
 
-export async function publishEvent(
+export async function finalizeEvent(
     event: NDKEvent,
-    relaySet: NDKRelaySet | undefined,
     tags: NDKTag[],
     publishAt?: Date,
+    scope?: Scope
 ): Promise<NDKEvent> {
-    const $ndk = get(ndk);
-    
     event.created_at = undefined;
     event.id = "";
     if (publishAt) {
         event.created_at = Math.floor(publishAt.getTime() / 1000);
     }
-    event.tags = event.tags.filter(tag => tag[0] !== "h");
+
+    const tagsToRemove = new Set([ "h", "tier", "f", "full", "-" ]);
+    event.tags = event.tags.filter(t => tagsToRemove.has(t[0]) === false);
     event.tags.push(...tags);
     
     await event.sign();
 
-    const rest = await event.publish(relaySet);
-    console.log('published', relaySet?.relayUrls, event.rawEvent())
-    console.log(rest);
-
     return event;
+}
+
+export async function publishEvents(
+    event: NDKEvent,
+    preview?: NDKEvent,
+    mainEventRelaySet?: NDKRelaySet,
+    previewEventRelaySet?: NDKRelaySet
+) {
+    const $ndk = get(ndk);
+
+    const rest = await event.publish(mainEventRelaySet, 5000);
+
+    if (preview) {
+        const previewRest = await preview.publish(previewEventRelaySet);
+        console.log('published preview', previewEventRelaySet?.relayUrls, preview.rawEvent())
+        console.log(previewRest);
+    }
+
+    return rest;
 }
 
 

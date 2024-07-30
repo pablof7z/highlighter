@@ -17,6 +17,7 @@
         event.content = content;
         if (group) event.tags.push(["h", group.groupId, ...group.relayUrls() ]);
         await event.sign();
+        console.log("publishing", group?.relaySet);   
         event.publish(group?.relaySet);
     }
 </script>

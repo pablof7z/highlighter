@@ -18,7 +18,7 @@
 
 <ModalShell {title} class={wrapperClass} {actionButtons}>
 	{#if !showNewShortPost}
-		<NewPost boxClass="px-0 pb-0 !bg-transparent" {onNewShortPost} />
+		<NewPost {onNewShortPost} />
 	{:else}
 		<NewPostModalInner bind:title bind:wrapperClass bind:actionButtons />
 	{/if}

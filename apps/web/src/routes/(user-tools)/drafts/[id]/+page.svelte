@@ -9,7 +9,7 @@
 	import { Thread } from "$utils/thread";
 	import ThreadEditor from "$components/Editor/ThreadEditor/ThreadEditor.svelte";
 	import ArticleRender from '$components/ArticleRender.svelte';
-	import { pageHeader } from '$stores/layout';
+	import { layout, pageHeader } from '$stores/layout';
 
     let draftId: string;
     let draftItem: DraftItem | undefined;
@@ -55,13 +55,12 @@
                         article.pubkey ??= $currentUser.pubkey;
                         article.author = $currentUser;
 
-                        $pageHeader = {
-                            title: "Draft",
-                            right: {
-                                label: "Continue Editing",
-                                url: `/articles/new?draft=${draftId}`
-                            }
-                        }
+                        $layout.title = "Draft";
+                        $layout.back = { url: "/drafts" }
+                        $layout.navigation = [
+                            { name: "Continue Editing", href: editUrl(draftItem) },
+                            { name: !discarding ? "Discard" : "Confirm", buttonProps: { variant: "destructive" }, fn: discard }
+                        ]
                         
                         break;
                     }
@@ -75,13 +74,41 @@
         }
     }
 
+    function editUrl(item?: DraftItem) {
+        if (!item) return "/drafts";
+        const url = new URL("/studio/"+item.type, window.location.href);
+        url.searchParams.set("draft", item.id);
+
+        if (checkpointTime) {
+            url.searchParams.set("checkpoint", checkpointTime.toString());
+        }
+
+        return url.toString();
+    }
+    
+    $: if (draftItem) {
+        $layout.navigation = [
+            { name: "Continue Editing", href: editUrl(draftItem) },
+            { name: !discarding ? "Discard" : "Confirm", buttonProps: { variant: "destructive" }, fn: discard }
+        ]
+    }
+
+    let discarding = false;
+    function discard() {
+        if (!discarding)  {
+            discarding = true;
+            setTimeout(() => {
+                discarding = false;
+            }, 2000);
+        } else {
+        }
+    }
+
     $: if (mounted && $currentUser) {
         draftId = $page.params.id;
 
         fetchDrafItem(draftId);
     }
-
-
 </script>
 
 {#key draftId + checkpointTime??""}

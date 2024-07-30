@@ -12,6 +12,7 @@ export const badgeVariants = tv({
 				"border-transparent bg-destructive text-destructive-foreground hover:bg-destructive",
 			outline: "text-foreground",
 			accent: "bg-accent text-accent-foreground hover:bg-accent/90",
+			gold: "bg-gold/10 text-gold",
 		},
 	},
 	defaultVariants: {

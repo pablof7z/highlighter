@@ -19,6 +19,8 @@
 	import { ndk } from '$stores/ndk';
 	import AppShell from '$components/App/Shell.svelte';
 	import { App } from 'konsta/svelte';
+	import { title } from '$stores/item-view';
+	import { layout } from '$stores/layout';
 	
 
 	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
@@ -131,6 +133,12 @@
 		}
 	}
 </script>
+
+<svelte:head>
+	{#if $layout.title}
+		<title>{$layout.title}</title>
+	{/if}
+</svelte:head>
 
 <!-- <NetworkHandler /> -->
 

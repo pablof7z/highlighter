@@ -1,23 +1,26 @@
 <script lang="ts">
     import Button from "$components/ui/button/button.svelte";
-	import { CaretLeft, Eye, PaperPlaneTilt, Timer, UsersThree, X } from "phosphor-svelte";
-	import { Readable, Writable } from "svelte/store";
+	import { CaretLeft, Eye, PaperPlaneTilt, PencilRuler, Star, Timer, UsersThree, X } from "phosphor-svelte";
+	import { derived, Readable, writable, Writable } from "svelte/store";
     import * as Tooltip from "$lib/components/ui/tooltip";
 	import { NDKArticle, NDKSimpleGroup, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { closeModal, openModal } from "$utils/modal";
 	import ScheduleModal from "$modals/ScheduleModal.svelte";
 	import ToggleDark from "$components/buttons/ToggleDark.svelte";
 	import { goto } from "$app/navigation";
-	import { PublishInGroupStore } from ".";
+	import { PublishInGroupStore, Scope } from ".";
 	import { pluralize } from "$utils";
+    import * as Draft from "$components/Draft";
 
     export let mode: Writable<string>;
     export let publishing: Writable<boolean>;
     export let publishAt: Writable<Date | undefined>;
     export let event: Writable<NDKArticle | NDKVideo | undefined>;
+    export let publishScope: Writable<Scope>;
     export let groups: Readable<Record<string, NDKSimpleGroup>>;
     export let publishInGroups: PublishInGroupStore;
 
+    export let onSaveDraft: () => Promise<boolean>;
     export let onPublish: () => Promise<void>;
     
     let closing: any;
@@ -64,16 +67,17 @@
         });
     }
 
-    let imagesOfGroupsToPublish: string[] = [];
-
-    $: {
-        imagesOfGroupsToPublish = [];
-        for (const groupId of $publishInGroups.keys()) {
+    const imagesOfGroupsToPublish = derived(publishInGroups, $publishInGroups => {
+        const images: string[] = [];
+        $publishInGroups.forEach((relays, groupId) => {
             if ($groups[groupId]?.metadata?.picture) {
-                imagesOfGroupsToPublish.push($groups[groupId].metadata.picture);
+                images.push($groups[groupId].metadata.picture);
+            } else {
+                console.log("No picture for group", groupId);
             }
-        }
-    }
+        });
+        return images;
+    });
 </script>
 
 <div class="flex flex-row items-centerw-full">
@@ -98,25 +102,29 @@
         {/if}
 
         {#if $mode !== 'audience'}
-            <Button variant="outline" on:click={setMode('audience')}>
-                {#if imagesOfGroupsToPublish.length === 0}
-                    <UsersThree class="md:mr-2" size={20} />
+            <Button class="flex flex-row gap-2" variant="outline" on:click={setMode('audience')}>
+                    {#if $publishScope === 'public'}
+                        <UsersThree class="" size={20} />
+                        Public
+                        {#if $imagesOfGroupsToPublish.length > 0}
+                            <span class="hidden md:block">
+                                +
+                            </span>
+                        {/if}
+                    {:else}
+                        <span>
+                            <Star class="w-4 h-4 text-gold md:mr-1 inline" size={20} weight="fill" />
+                            Private
+                        </span>
+                    {/if}
+
+                {#if $imagesOfGroupsToPublish.length === 0}
                 {:else}
-                    <div class="flex flex-row items-center rounded-full overflow-clip">
-                        {#each imagesOfGroupsToPublish as image}
+                    <div class="flex flex-row items-center rounded-full overflow-clip -space-x-2">
+                        {#each $imagesOfGroupsToPublish as image}
                             <img src={image} class="w-6 h-6 rounded-full" />
                         {/each}
                     </div>
-                {/if}
-                
-                {#if $publishInGroups.size > 0}
-                    {#each $publishInGroups.keys() as groupId}
-                        {#if $groups[groupId]}
-                            {$groups[groupId]?.metadata?.name??""}
-                        {/if}
-                    {/each}
-                {:else}
-                    <span class="hidden md:block">Audience</span>
                 {/if}
             </Button>
         {/if}
@@ -140,9 +148,11 @@
     </div>
 
     <div class="flex flex-row flex-nowrap gap-2">
+        <Draft.Button save={onSaveDraft} />
+        
         <Tooltip.Root>
-            <Tooltip.Trigger asChild let:builder>
-                <Button size="icon" variant="outline" on:click={schedule}>
+            <Tooltip.Trigger>
+                <Button size="icon" variant="outline" on:click={() => schedule()}>
                     <Timer size={24} />
                 </Button>
             </Tooltip.Trigger>
@@ -150,7 +160,7 @@
                 Choose a time to schedule
             </Tooltip.Content>
         </Tooltip.Root>
-        <Button on:click={onPublish} disabled={$publishing} variant="accent">
+        <Button on:click={onPublish} disabled={$publishing}>
             {#if $publishing}
                 <span class="loading loading-sm"></span>
             {/if}
@@ -161,8 +171,8 @@
                     Schedule
                 </span>
             {:else}
-                <PaperPlaneTilt size={24} />
-                <span class="hidden md:block">
+                <PaperPlaneTilt size={24} weight="fill" />
+                <span class="hidden md:block ml-2">
                     Publish
                 </span>
             {/if}

@@ -4,7 +4,7 @@
 	import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
-	import { BookmarkSimple, CardsThree, Check, Lightning, Repeat } from "phosphor-svelte";
+	import { BookmarkSimple, CardsThree, Check, Lightning, Pen, Repeat } from "phosphor-svelte";
 	import Tts from '$components/Actions/TTS/TTS.svelte';
 	import ReaderButton from "$components/Event/Article/ReaderButton.svelte";
 	import { openModal } from "$utils/modal";
@@ -13,6 +13,8 @@
 	import Curation from "./Curation.svelte";
 	import { createEventReply } from '$utils/event';
     import Zap from '$components/Footer/Views/Zap';
+	import { goto } from '$app/navigation';
+	import currentUser from '$stores/currentUser';
 
     export let article: NDKArticle;
     export let mainView: 'zap' | 'tts' | 'curation' | "content" | "new-collection" | undefined = undefined;
@@ -128,7 +130,7 @@
                 on:close={() => open(false)}
             />
         {:else}
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-3 lg:grid-cols-5 gap-2">
                 <Button variant="outline" class="footer-button flex flex-col items-center gap-2 h-auto text-lg text-foreground bg-opacity-50 p-4"
                     on:click={() => openModal(ShareModal, { event: article })}
                 >
@@ -144,6 +146,15 @@
                     <CardsThree size={40} />
                     Curate
                 </Button>
+
+                {#if $currentUser?.pubkey === article.pubkey}
+                    <Button variant="outline" class="footer-button flex flex-col items-center gap-2 h-auto text-lg text-foreground bg-opacity-50 p-4"
+                        on:click={() => goto(`/studio/article?eventId=${article.encode()}`)}
+                    >
+                        <Pen size={40} />
+                        Edit
+                    </Button>
+                {/if}
             </div>
         {/if}
     </div>
