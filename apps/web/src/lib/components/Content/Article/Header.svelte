@@ -8,8 +8,7 @@
 	import { getEventUrl } from "$utils/url";
 	import { page } from "$app/stores";
 	import { addHistory } from "$stores/history";
-	import { title } from "process";
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 
     export let article: NDKArticle;
     export let skipImage = false;
@@ -17,6 +16,8 @@
     export let userProfile: NDKUserProfile | undefined = undefined;
     export let authorUrl: string | undefined = undefined;
     export let blossom: any | undefined = undefined;
+
+    const title = article.title;
 
     onMount(() => {
         addHistory({ category: "Read", title, url: $page.url.toString() })
@@ -43,7 +44,13 @@
         //     props: { event: article, userProfile, authorUrl }
         // }
         if (article.title) $layout.title = article.title;
+        $layout.event = article;
+        $layout.header = undefined;
     }
+
+    onDestroy(() => {
+        $layout.event = undefined;
+    })
 </script>
 
 

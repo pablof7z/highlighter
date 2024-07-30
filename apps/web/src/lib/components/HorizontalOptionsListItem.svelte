@@ -40,7 +40,7 @@
                 dispatch("click");
                 value = option.value ?? option.name ?? "Untitled";
             }}
-            class="gap-2 !rounded-full"
+            class="gap-2"
         >
             {#if option.icon}
                 <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline" {...option.iconProps??{}} />

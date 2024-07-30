@@ -6,4 +6,4 @@
 	
 </script>
 
-<Groups.Home />
+<Groups.Views.Home />

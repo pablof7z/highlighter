@@ -4,13 +4,11 @@
 	import Login from "./Login.svelte";
 	import Welcome from "./Welcome.svelte";
 	import ModalShell from '$components/ModalShell.svelte';
-	import LogoGradient from '$icons/LogoGradient.svelte';
-	import { Block } from 'konsta/svelte';
-	import { DoorOpen, User } from 'phosphor-svelte';
 	import { closeModal } from '$utils/modal.js';
 	import Button from '$components/ui/button/button.svelte';
+	import { onMount } from 'svelte';
 
-    export let mode: 'signup' | 'login' | 'welcome' = 'signup';
+    export let mode: 'signup' | 'login' | 'welcome';
 
     function signedUp() {
         closeModal();
@@ -30,6 +28,14 @@
             title = 'Welcome!';
             break;
     }
+
+    onMount(() => {
+        if (!!window.nostr) {
+            mode ??= 'login';
+        } else {
+            mode = 'signup';
+        }
+    })
     
 
     let actionButtons: NavigationOption[] = [];

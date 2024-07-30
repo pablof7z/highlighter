@@ -15,13 +15,13 @@
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | undefined | null;
-    export let authorUrl: string;
-    export let fetching: boolean;
+    export let authorUrl: string | undefined;
+    export let fetching: boolean | undefined;
     export let highlights: Readable<NDKHighlight[]>;
     export let curations: Readable<NDKList[]>;
     export let notes: Readable<NDKEvent[]>;
     export let articles: Readable<NDKArticle[]>;
-    export let cashuMintList: Readable<NDKCashuMintList>;
+    export let cashuMintList: Readable<NDKCashuMintList | undefined>;
     export let videos: Readable<NDKVideo[]>;
     export let wiki: Readable<NDKWiki[]>;
     export let groupsList: Readable<NDKList | undefined>;
@@ -32,7 +32,7 @@
     export let groupsMetadata: Readable<Record<string, NDKSimpleGroupMetadata>>;
     export let tiers: Readable<NDKSubscriptionTier[]>;
 
-    export let eosed = false;
+    export let eosed: boolean | undefined = false;
 
     setContext('user', user);
     setContext('userNotes', notes);

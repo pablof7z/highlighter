@@ -1,13 +1,14 @@
 <script lang="ts">
-    import { NDKEvent, NDKList } from "@nostr-dev-kit/ndk";
+    import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 	import { PushPin } from "phosphor-svelte";
 	import { Readable } from "svelte/store";
 	import { getContext } from 'svelte';
+	import { ndk } from "$stores/ndk";
 
     export let event: NDKEvent;
     export let align = "right-2";
 
-    const userPinList = getContext('userPinList') as Readable<NDKList>;
+    const userPinList = getContext('userPinList') as Readable<NDKList | undefined>;
 
     let isPinned: boolean | undefined = undefined;
 
@@ -16,12 +17,18 @@
     }
 
     async function pin(e: MouseEvent) {
-        if (isPinned) {
-            $userPinList.removeItemByValue(event.tagId())
-        } else {
-            $userPinList.addItem(event.tagReference());
+        let pinList = $userPinList;
+        if (pinList === undefined) {
+            pinList = new NDKList($ndk);
+            pinList.kind = NDKKind.PinList;
         }
-        $userPinList.publishReplaceable();
+        
+        if (isPinned) {
+            pinList.removeItemByValue(event.tagId())
+        } else {
+            pinList.addItem(event.tagReference());
+        }
+        pinList.publishReplaceable();
     }
 </script>
 

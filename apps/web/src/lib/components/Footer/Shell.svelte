@@ -10,6 +10,7 @@
     export let dragging = false;
     export let align = "items-center";
     export let mainView: string | undefined = undefined;
+    export let maxHeight = "50vh";
     export let placeholder: string | undefined = "Reply";
     export let onPublish: ((content: string) => void) | undefined = undefined;
     export let collapse = () => {
@@ -124,19 +125,20 @@
     on:touchstart={touchstart}
     on:touchend={touchend}
     on:touchmove={touchmove}
-    style="background: rgba(51, 51, 51, 0.66);
+    style="
     {
         (dragging) ? "transform: translateY(" + dragged/50 + "px);" : ""
     }"
     class="
+        footer-shell
         max-w-[var(--content-focused-width)] mx-auto
-        bg-black/50
-        backdrop-blur-lg
+        max-sm:backdrop-blur-lg
         overflow-clip
-        max-sm:p-4 max-sm:px-6
+        max-sm:p-2 max-sm:px-2
         max-sm:right-0 sm:right-[360px]
-        rounded-t-3xl p-3 px-4 h-auto 
+        rounded-t-3xl py-3 h-auto 
         flex flex-col justify-between items-center
+        {$$props.class??""}
     ">
     {#if !hideCollapsedView || collapsed}
         <div class="flex flex-row justify-between {align} w-full gap-2" transition:slide={{axis: 'y'}}>
@@ -149,7 +151,7 @@
                         Cancel
                     </Button>
                     
-                    <Button variant="accent" on:click={editorPublish}>
+                    <Button on:click={editorPublish}>
                         Publish
                     </Button>
                 </div>
@@ -182,7 +184,7 @@
     {/if}
 
     {#if !collapsed}
-        <div class="flex flex-col gap-2 w-full mt-4 max-h-[50vh] overflow-y-auto scrollbar-hide" transition:slide>
+        <div class="flex flex-col gap-2 w-full mt-4 overflow-y-auto scrollbar-hide" transition:slide style="max-height: {maxHeight}">
             {#each buttons as button}
                 {#if mainView === button.name}
                     <svelte:component this={button.View} {open} on:close={() => open(false)} {...button.props} />

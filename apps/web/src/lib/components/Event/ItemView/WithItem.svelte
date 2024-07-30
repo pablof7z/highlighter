@@ -1,9 +1,8 @@
 <script lang="ts">
     import UserProfile from "$components/User/UserProfile.svelte";
 	import { page } from "$app/stores";
-	import { startUserView, userSubscription } from "$stores/user-view";
 	import { type NDKUser, NDKArticle, NDKVideo, NDKEvent, type NDKFilter, type NostrEvent, NDKKind, filterFromId, NIP33_A_REGEX, NDKRelay, NDKRelaySet } from "@nostr-dev-kit/ndk";
-	import { onDestroy, onMount } from "svelte";
+	import { onDestroy } from "svelte";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { debugMode, userActiveSubscriptions } from "$stores/session";
 	import { requiredTiersFor } from "$lib/events/tiers";
@@ -42,8 +41,6 @@
     let needsToLoad: boolean;
     let authed: boolean;
 
-    if (user) startUserView(user);
-
     // if we are still loading after 1 second, show the loading screen
     setTimeout(() => { loading = true; }, 1000);
 
@@ -77,7 +74,6 @@
     $ndk.pool.on("relay:connect", fetchEventFromRecentlyConnectedRelay);
 
     onDestroy(() => {
-        userSubscription?.unref();
         events?.unsubscribe();
         $ndk.pool.off("relay:ready", fetchEventFromRecentlyConnectedRelay);
     })

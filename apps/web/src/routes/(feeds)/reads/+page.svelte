@@ -13,7 +13,7 @@
 
     $layout.title = "Reads";
     $layout.back = { url: "/" };
-    $layout.fullWidth = true;
+    $layout.fullWidth = false;
     $layout.sidebar = false;
 
     onMount(() => {
@@ -37,9 +37,7 @@
 
     const wotF = wotFilteredStore(articles) as Readable<NDKArticle[]>;
 
-    const filteredArticles = derived(wotF, ($wotF) => {
-        return filterArticles(wotF);
-    });
+    const filteredArticles = filterArticles(wotF);
 
     onDestroy(() => {
         articles.unsubscribe();
@@ -49,6 +47,5 @@
 <div class="responsive-padding">
     <Feed.Articles
         store={filteredArticles}
-        gridSetup="lg:grid-cols-5"
     />
 </div>

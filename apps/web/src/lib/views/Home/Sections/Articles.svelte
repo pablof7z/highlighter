@@ -10,10 +10,8 @@ import StoreFeed from "$components/Feed/StoreFeed.svelte";
     export let start: number = 0;
     export let end: number = 7;
 
-    const filteredArticles = derived(articles, ($articles) => {
-        return filterArticles(articles)
+    const filteredArticles = filterArticles(articles)
             .slice(start, end);
-    });
 
     const tags = derived(filteredArticles, ($filteredArticles) => {
         const tags = new Map<string, number>();
@@ -29,6 +27,8 @@ import StoreFeed from "$components/Feed/StoreFeed.svelte";
             .sort((a, b) => b[1] - a[1])
             .slice(5, 15);
     });
+
+    throw "Sections/Articles.svelte is not implemented yet";
 </script>
 
 <div class="max-w-[var(--home-layout-feed-width)] w-full flex flex-row-reverse gap-8">

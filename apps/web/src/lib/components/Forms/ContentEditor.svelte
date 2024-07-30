@@ -2,6 +2,7 @@
 	import { NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher, onMount } from "svelte";
     import QuillMarkdown from 'quilljs-markdown';
+    import 'quill-paste-smart';
     import quillEditorMention from "./quill-editor-mention.js";
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
@@ -17,7 +18,7 @@
     export let autofocus = false;
     export let allowMarkdown = true;
     export let enterSubmits = false;
-    export let forceWywsiwyg = false;
+    export let forceWywsiwyg = !toolbar;
 
     const dispatch = createEventDispatcher();
 
@@ -247,6 +248,8 @@
         {/if}
     </div>
 </div>
+
+<pre>{JSON.stringify(content)}</pre>
 
 <style>
     .editor {

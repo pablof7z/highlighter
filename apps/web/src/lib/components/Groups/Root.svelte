@@ -1,9 +1,11 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser';
-	import { NDKArticle, NDKFilter, NDKKind, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKFilter, NDKKind, NDKRelayAuthPolicies, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
 	import { deriveListStore, deriveStore } from "$utils/events/derive";
 	import { derived } from "svelte/store";
+	import { onDestroy } from 'svelte';
+	import { ContentStores } from '.';
 
     export let tag: NDKTag | undefined = undefined;
     export let groupId: string | undefined = undefined;
@@ -20,37 +22,50 @@
     const hFilter: NDKFilter = { "#h": [groupId] };
     const dFilter: NDKFilter = { "#d": [groupId] };
 
-    const relaySet = NDKRelaySet.fromRelayUrls(relays||[], $ndk);
+    const relaySet = NDKRelaySet.fromRelayUrls(relays||[], $ndk, false);
+    // relaySet.relays.forEach((r) => r.authPolicy = NDKRelayAuthPolicies
 
     const group = new NDKSimpleGroup($ndk, relaySet, groupId);
 
     // Subscriptions
     const events = $ndk.storeSubscribe([
         { kinds: [ NDKKind.GroupNote, NDKKind.GroupReply ], ...hFilter, limit: 50 },
+        { kinds: [ NDKKind.GroupChat ], ...hFilter, limit: 50 },
         { kinds: [ NDKKind.Article ], ...hFilter, limit: 100 },
         { kinds: [ NDKKind.Wiki ], ...hFilter, limit: 100 },
         { kinds: [ NDKKind.HorizontalVideo, NDKKind.VerticalVideo ], ...hFilter, limit: 100 },
         { kinds: [ NDKKind.Media ], "#m": [ "video/mp4"], ...hFilter, limit: 10 },
         { kinds: [ NDKKind.Highlight ], ...hFilter, limit: 100 },
         { kinds: [ NDKKind.TierList, NDKKind.PinList ], ...hFilter },
+        { kinds: [ NDKKind.SubscriptionTier ], ...hFilter },
         { kinds: [ NDKKind.GroupMetadata, NDKKind.GroupAdmins, NDKKind.GroupMembers ], ...dFilter },
     ], { subId: 'group-events', groupable: false, relaySet });
+    
+    relaySet.relays.forEach((r) => {
+        r.on("authed", () => {
+            events.unsubscribe();
+            events.startSubscription();
+        });
+    });
 
-    const events2 = $ndk.storeSubscribe([
-        { kinds: [ NDKKind.SubscriptionTier ], ...hFilter, limit: 100 },
-    ], { subId: 'group-events-2', groupable: false, relaySet });
+    onDestroy(() => {
+        events.unsubscribe();
+    });
+
+    // const events2 = $ndk.storeSubscribe([
+    //     { kinds: [ NDKKind.SubscriptionTier ], ...hFilter, limit: 100 },
+    // ], { subId: 'group-events-2', groupable: false, relaySet });
 
     // Derivations
     const metadata = deriveListStore(events, NDKSimpleGroupMetadata);
     const admins = deriveListStore(events, NDKSimpleGroupMemberList, [NDKKind.GroupAdmins]);
     const members = deriveListStore(events, NDKSimpleGroupMemberList);
-    const tiers = deriveStore(events2, NDKSubscriptionTier);
     const articles = deriveStore(events, NDKArticle);
-
-    $: {
-        group.metadata = $metadata;
-        console.log("assigning group metadata", {groupId, metadata: $metadata?.tags})
-    }
+    const videos = deriveStore(events, NDKVideo);
+    const wiki = deriveStore(events, NDKWiki);
+    const notes = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupNote, NDKKind.GroupReply, NDKKind.Text ]);
+    const chat = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupChat ]);
+    const tiers = deriveStore(events, NDKSubscriptionTier);
     
     const isAdmin = derived(
         [ currentUser, admins ], ([ $currentUser, $admins ]) => {
@@ -69,15 +84,27 @@
             return false;
         }
     );
+
+    const stores: ContentStores = {
+        articles,
+        wiki,
+        videos,
+        notes,
+        chat
+    };
 </script>
 
-<slot
-    {group}
-    {metadata}
-    {admins}
-    {articles}
-    {members}
-    {isAdmin}
-    {isMember}
-    {tiers}
-/>
+{#if $metadata}
+    <slot
+        {group}
+        {metadata}
+        {admins}
+        {members}
+        {isAdmin}
+        {isMember}
+        {tiers}
+        {stores}
+    />
+{:else}
+    loading
+{/if}

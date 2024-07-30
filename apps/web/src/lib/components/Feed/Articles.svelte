@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { derived, Readable } from "svelte/store";
+    import * as Item from './Item';
     import * as Card from '$components/Card';
+	import { filterArticles } from "$utils/article-filter";
+	import { isMobileBuild } from "$utils/view/mobile";
+	import { appMobileView } from "$stores/app";
 
+    export let includeLowQuality = false;
     export let store: Readable<NDKArticle[]>;
     export let featuredItems = derived(store, $store => {
         return $store.slice(0, 1);
@@ -15,6 +20,8 @@
         return $featuredItems.map(item => item.id);
     });
 
+    const articles = includeLowQuality ? store : filterArticles(store);
+
 
 </script>
 
@@ -26,17 +33,28 @@
     </div>
 {/if}
 
-<div class="lg:grid {gridSetup} gap-6 flex flex-col flex-wrap max-lg:divide-y divide-border">
-    {#each $store as article (article.id)}
+<div class="flex flex-col divide-y divide-border">
+    {#each $articles as article (article.id)}
         {#if !$featuredItemIds.includes(article.id)}
-            <div class="py-[var(--section-vertical-padding)] w-full">
-                <Card.Article
-                    {article}
-                    {skipAuthor}
-                    width="w-full"
-                    inContentFeed
-                />
-            </div>
+            {#if !$appMobileView}
+                <div class="py-[var(--section-vertical-padding)] w-full">
+                    <Item.Article
+                        {article}
+                        {skipAuthor}
+                        width="w-full"
+                        inContentFeed
+                    />
+                </div>
+            {:else}
+                <div class="py-[var(--section-vertical-padding)] w-full">
+                    <Card.Article
+                        {article}
+                        {skipAuthor}
+                        width="w-full"
+                        inContentFeed
+                    />
+                </div>
+            {/if}
         {/if}
     {/each}
 </div>

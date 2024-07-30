@@ -13,12 +13,23 @@
 	import { Timer } from "phosphor-svelte";
 	import ScheduleModal from "./ScheduleModal.svelte";
 	import { dvmScheduleEvent } from "$lib/dvm";
+	import { replyKind } from "$utils/event";
 
     export let replyTo: NDKEvent | undefined = undefined;
     export let tags: NDKTag[] = [];
     export let placeholder = "What is happening?!";
     export let title = "New Post";
     export let wrapperClass: string = "";
+
+    export let kind: NDKKind | undefined = undefined;
+    
+    if (!kind) {
+        if (replyTo) {
+            kind = replyKind(replyTo);
+        } else {
+            kind = NDKKind.Text;
+        }
+    }
     
     if (replyTo) {
         const e = new NDKEvent($ndk);
@@ -43,6 +54,12 @@
     export let actionButtons: NavigationOption[] = [];
 
     let event: NDKEvent;
+
+    if (replyTo) {
+        const e = new NDKEvent($ndk);
+        e.tag(replyTo, "reply");
+        tags = [...tags, ...e.tags]
+    }
     
     function schedule() {
         forceGenerateEvent = true;
@@ -63,7 +80,7 @@
     $: {
         actionButtons = [
             { icon: Timer, fn: schedule },
-            { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, buttonProps: {variant: "accent"} }
+            { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, buttonProps: { variant: 'default' } }
         ];
 
         if (!$appMobileView) {
@@ -75,7 +92,7 @@
 </script>
 
 {#if replyTo}
-    {#if replyTo.kind === 1}
+    {#if [NDKKind.Text, NDKKind.GroupNote, NDKKind.GroupReply].includes(replyTo.kind)}
         <EventWrapper
             ndk={$ndk}
             event={replyTo}
@@ -106,7 +123,7 @@
     {/if}
 
     <NewPost
-        kind={NDKKind.Text}
+        {kind}
         {placeholder}
         editorClass="text-foreground min-h-[7rem] h-full grow text-xl"
         skipAvatar={true}

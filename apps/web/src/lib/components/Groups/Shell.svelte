@@ -6,7 +6,6 @@
 	import { setContext } from "svelte";
 	import { Navigation } from "$utils/navigation";
 	import { Readable } from "svelte/store";
-    import GroupFooterJoin from "$components/Groups/Footer/Join.svelte";
 	import { roundedItemCount } from "$utils/numbers";
 	import { House } from "phosphor-svelte";
     import * as Group from "$components/Groups";
@@ -18,7 +17,9 @@
     export let admins: Readable<NDKSimpleGroupMemberList | undefined>;
     export let members: Readable<NDKSimpleGroupMemberList | undefined>;
     export let tiers: Readable<NDKSubscriptionTier[]>;
-    export let articles: Readable<NDKArticle[]>;
+    export let stores: Group.ContentStores;
+
+    const { articles, videos, wiki, notes, chat } = stores;
     
     setContext('group', group);
     setContext("groupMetadata", metadata);
@@ -28,6 +29,10 @@
     setContext("isMember", isMember);
     setContext("groupTiers", tiers);
     setContext("groupArticles", articles);
+    setContext("groupVideos", videos);
+    setContext("groupWiki", wiki);
+    setContext("groupNotes", notes);
+    setContext("groupChat", chat);
 
     let options: NavigationOption[] = [];
     const optionManager = new Navigation();
@@ -35,17 +40,19 @@
 
     optionManager.setOption('home', { id: 'home', icon: House, iconProps: { weight: 'fill' }, href: getGroupUrl(group) }, undefined, true);
 
-    optionManager.setOption('chat', { name: "Chat", href: getGroupUrl(group, "chat") });
+    optionManager.setOption('chat', { name: "Chat", badge: roundedItemCount($chat!), href: getGroupUrl(group, "chat") });
     optionManager.setOption('posts', { name: "Posts", href: getGroupUrl(group, "posts") });
     if ($isAdmin) {
         optionManager.setOption('settings', { name: "Settings", href: getGroupUrl(group, "settings") });
     }
 
     $: if ($articles.length > 0) optionManager.setOption('articles', { id: 'articles', name: "Articles", badge: roundedItemCount($articles!), href: getGroupUrl(group, "articles") }, true);
+    $: if ($videos.length > 0) optionManager.setOption('videos', { id: 'videos', name: "Videos", badge: roundedItemCount($videos!), href: getGroupUrl(group, "videos") }, true);
 
     $: {
         $layout.title = $metadata?.name ?? "Untitled group";
         $layout.iconUrl = $metadata?.picture;
+        $layout.back = { url: '/communities' };
     }
 
     $: $layout.navigation = options;
@@ -68,10 +75,6 @@
         $layout.footer = prevFooter;
         prevFooter = undefined;
     }
-
-    // } else if ($layout.footer?.component === GroupFooterJoin) {
-    //     $layout.footer = undefined;
-    // }
 </script>
 
 <slot

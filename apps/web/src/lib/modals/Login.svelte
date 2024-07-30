@@ -3,7 +3,6 @@
 	import { NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
 	import { onMount } from "svelte";
 	import { closeModal } from '$utils/modal';
-	import { slide } from "svelte/transition";
 	import { nip19 } from "nostr-tools";
 	import currentUser, { loginMethod, nip46LocalKey, privateKey, userPubkey } from '$stores/currentUser';
 	import { loginState } from '$stores/session';
@@ -15,6 +14,7 @@
 	import UserProfile from '$components/User/UserProfile.svelte';
 	import Avatar from '$components/User/Avatar.svelte';
 	import Name from '$components/User/Name.svelte';
+	import { newSessionTryNip07 } from '../../routes/browser-session-setup';
 
     export let value: string = "";
     export let nsec: string = "";
@@ -43,6 +43,11 @@
         $bunkerNDK.connect(2500);
     });
 
+    async function nip07Login() {
+        newSessionTryNip07()
+        closeModal();
+    }
+
     async function loginWithNpub() {
         $currentUser = $ndk.getUser({npub});
         $currentUser = $currentUser;
@@ -52,6 +57,7 @@
     }
 
     async function loginNip46(token: string) {
+        $bunkerNDK.connect()
         const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
         let localSigner: NDKPrivateKeySigner;``
 
@@ -229,7 +235,6 @@
 </script>
 
 <div class="flex flex-col gap-4 p-4">
-    {loginType}
     {#if !user}
         <div class="w-full">
             <div class="field mx-2 w-full">
@@ -269,6 +274,8 @@
             {:else if loginType === 'npub'}
                 Find Me
                 <MagnifyingGlass size={22} class="ml-2" />
+            {:else}
+                Enter your login information
             {/if}
         </Button>
 
@@ -278,6 +285,15 @@
         >
             Create New Profile
         </Button>
+
+        {#if !!window.nostr}
+            <Button
+                variant="secondary"
+                on:click={nip07Login}
+            >
+                Login with Nostr Extension
+            </Button>
+        {/if}
     {:else}
         <div class="flex flex-col items-center gap-6">
             <UserProfile {user} let:userProfile let:fetching>

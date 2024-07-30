@@ -1,59 +1,65 @@
  <script lang="ts">
 	import { page } from "$app/stores";
     import * as Studio from "$components/Studio";
-	import { DraftCheckpoint, DraftItem } from "$stores/drafts";
 	import { layout } from "$stores/layout";
-	import { getDraft } from "./drafts";
-    import { Thread } from '$utils/thread';
-	import { Writable } from "svelte/store";
+	import { writable, Writable } from "svelte/store";
 
     const draftId = $page.url.searchParams.get("draft") || undefined;
     const checkpointId = $page.url.searchParams.get("checkpoint") || undefined;
-    let draft: DraftItem | undefined = undefined;
-    let checkpoint: DraftCheckpoint | undefined = undefined;
 
-    if (draftId) {
-        const res = getDraft(draftId, checkpointId);
-        if (res) {
-            draft = res.draft;
-        }
-    }
+    const eventId = $page.url.searchParams.get("eventId") || undefined;
 
     $layout.fullWidth = false;
     $layout.title = "Studio";
     $layout.navigation = false;
     $layout.sidebar = false;
 
-    let publishInGroups: Writable<Map<string, string[]>>;
+    let publishInGroups: Writable<Map<string, string[]>> = writable(new Map());
     let groupsSet = false;
     $: if ($publishInGroups && !groupsSet) {
         groupsSet = true;
         const groupId = $page.url.searchParams.get("group");
         const relays = $page.url.searchParams.getAll("relay");
         if (groupId) {
-            $publishInGroups.set(groupId, relays);
+            publishInGroups.set(
+                new Map([[groupId, relays]])
+            );
         }
     }
 
     
 </script>
 
+
 <Studio.Root
+    {draftId} {checkpointId}
+    {eventId}
     let:groups
     bind:publishInGroups
     let:mode
+    let:preview
+    let:publishScope
     let:publishAt
+    let:withPreview
+    let:publishInTiers
     let:type
     let:event
+    let:thread
+    let:draft
 >
     <Studio.Shell
         {groups}
         {event}
-        {draft}
+        {preview}
+        {withPreview}
+        {publishScope}
+        {thread}
         {mode}
         {publishInGroups}
+        {publishInTiers}
         {publishAt}
         {type}
+        {draft}
     >
         <slot />
     </Studio.Shell>

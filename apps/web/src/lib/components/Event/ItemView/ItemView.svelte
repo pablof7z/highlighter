@@ -7,8 +7,6 @@
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import Whoops from "$components/PageElements/Whoops.svelte";
-	import ListShell from "$views/List/ListShell.svelte";
-	import VideoView from "./VideoView.svelte";
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 	import { ndk } from "$stores/ndk";
 	import { page } from "$app/stores";
@@ -68,14 +66,8 @@
 
 {#if articleKinds.includes(event.kind)}
 {:else if event instanceof NDKVideo}
-    <VideoView
-        video={event}
-        isFullVersion={isEventFullVersion(event)}
-    />
 {:else if !event}
     <Whoops message="Event has not been provided" devMessage="<ItemView /> component requires an event prop" />
-{:else if event.kind === NDKKind.ArticleCurationSet}
-    <ListShell list={NDKList.from(event)} activeItemId={$page.params.subId} />
 {:else if event.kind === NDKKind.Text}
     <div class="discussion-wrapper">
         <EventWrapper

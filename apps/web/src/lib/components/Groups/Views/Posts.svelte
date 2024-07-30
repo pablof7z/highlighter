@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { layout, pageHeader } from "$stores/layout";
+	import { layout, } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
-	import { NDKEvent, NDKKind, NDKSimpleGroup, NDKSimpleGroupMetadata, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKSimpleGroup, NDKSimpleGroupMetadata, NDKTag } from "@nostr-dev-kit/ndk";
 	import { getContext, onDestroy } from "svelte";
 	import StoreFeed from '$components/Feed/StoreFeed.svelte';
 	import { Readable } from "svelte/store";
@@ -10,6 +10,8 @@
     const group = getContext('group') as NDKSimpleGroup;
     const metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
     const isMember = getContext("isMember") as Readable<boolean>;
+
+    $layout.footerInMain = true;
         
     const posts = $ndk.storeSubscribe([
         {kinds: [NDKKind.GroupNote], "#h": [group.groupId]},

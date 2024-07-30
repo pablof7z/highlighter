@@ -66,7 +66,7 @@
     ]}
     on:close={() => showQuoteOptions = false}
     {rightOptions}
-    let:sswipeActive
+    bind:swipeActive
 >
     <slot />
 </Swipe>

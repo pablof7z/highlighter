@@ -1,15 +1,17 @@
 import { get, get as getStore } from 'svelte/store';
 import 'websocket-polyfill';
-import { explicitRelayUrls, ndk, ndkRelaysWithAuth } from "$stores/ndk";
+import { explicitRelayUrls, ndk } from "$stores/ndk";
+import { ndkRelaysWithAuth } from "$stores/auth-relays.js";
 // import NDKRedisAdapter from '@nostr-dev-kit/ndk-cache-redis';
-import { newToasterMessage } from '$stores/toaster';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
-import NDKCacheAdapterNostr from "@nostr-dev-kit/ndk-cache-nostr";
-import { NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
+// import NDKCacheAdapterNostr from "@nostr-dev-kit/ndk-cache-nostr";
+import { NDKEvent, NDKKind, NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage, NDKUser } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 import { debugMode } from '$stores/session';
 import { defaultRelays } from './const';
 import NDKSigVerificationWorker from "@nostr-dev-kit/ndk/workers/sig-verification?worker";
+import { toast } from 'svelte-sonner';
+import NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 // import NDKSqliteWorker from "@nostr-dev-kit/ndk-cache-sqlite-wasm/worker?worker";
 
 const debug = createDebug('HL:ndk');
@@ -40,6 +42,7 @@ export function getDefaultRelaySet() {
 
 export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	const $ndk = getStore(ndk);
+	console.log('setting default policy localhost')
 	$ndk.httpFetch = nodeFetch as typeof fetch;
 
 	// $ndk.devWriteRelaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
@@ -68,7 +71,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 export async function configureFeNDK() {
 	const $ndk = getStore(ndk);
 	const $debugMode = getStore(debugMode);
-	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL13' });
+	$ndk.cacheAdapter = new NDKCacheAdapterDexie({ dbName: 'HL14' });
 	// const NDKCacheAdapterSqlite = await import('@nostr-dev-kit/ndk-cache-sqlite-wasm');
 	// $ndk.cacheAdapter = new NDKCacheAdapterSqlite(
 		// import.meta.env.DEV ?
@@ -84,15 +87,20 @@ export async function configureFeNDK() {
 	$ndk.pool.on("notice", (relay: NDKRelay, notice: string) => {
 		debug('Relay notice', relay.url, notice);
 		if ($debugMode) {
-			newToasterMessage(`${relay.url}: ${notice}`);
+			toast.warning(`${relay.url}: ${notice}`);
 		}
 	});
 
+	/**
+	 * Default auth policy for non-explicit relays
+	 */
 	$ndk.relayAuthDefaultPolicy = async (relay: NDKRelay, challenge: string) => {
 		const $ndkRelaysWithAuth = get(ndkRelaysWithAuth);
 		if (!($ndkRelaysWithAuth instanceof Map)) {
 			ndkRelaysWithAuth.set(new Map());
 		}
+
+		return true;
 
 		if ($ndkRelaysWithAuth.get(relay.url) === undefined) {
 			return new Promise<boolean>((resolve) => {
@@ -135,9 +143,9 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 	// $ndk.httpFetch = nodeFetch as typeof fetch;
 	$ndk.debug.enabled = true;
 	$ndk.signer = new NDKPrivateKeySigner(privateKey);
-	$ndk.cacheAdapter = new NDKCacheAdapterNostr({
-		relayUrl: "ws://localhost:3002",
-	})
+	// $ndk.cacheAdapter = new NDKCacheAdapterNostr({
+	// 	relayUrl: "ws://localhost:3002",
+	// })
 	// const redisAdapter = new NDKRedisAdapter({path: "redis://localhost:6379"});
 	// const redisConnected = new Promise<void>((resolve) => {
 	//     redisAdapter.redis.on("connect", () => {
@@ -155,4 +163,62 @@ export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch
 
 	// $ndk.cacheAdapter = redisAdapter;
 	// console.log(`redis status: ${redisAdapter.redis.status}`);
+
+	background();
+}
+
+async function background() {
+	const d = debug.extend('background');
+	const $ndk = get(ndk);
+	d('starting background');
+
+	const relayUrl = import.meta.env.VITE_RELAY;
+	const myPubkey = await (await $ndk.signer?.user())?.pubkey;
+
+	d('relayUrl', relayUrl);
+	d('myPubkey', myPubkey);
+
+	if (!myPubkey || !relayUrl) {
+		throw new Error('missing myPubkey or relayUrl');
+	}
+
+	const groups = $ndk.subscribe(
+		{ kinds: [ NDKKind.GroupAdmins ], "#p": [myPubkey] }
+	)
+
+	groups.on("event", (event: NDKEvent) => {
+		if (!event.dTag) {
+			d('no dTag', event.rawEvent());
+			return;
+		}
+		
+		d('monitoring group', event.dTag);
+		const monitor = $ndk.subscribe(
+			{ kinds: [7001, 9021], "#h": [event.dTag] }
+		)
+
+		monitor.on("event", async (event: NDKEvent) => {
+			d("event", event.rawEvent())
+			await checkForZap($ndk, event.author, event.dTag!)
+		});
+	});
+}
+
+async function checkForZap(
+	ndk: NDKSvelte,
+	sender: NDKUser,
+	groupId: string
+): Promise<boolean> {
+	const zaps = await ndk.fetchEvents([
+		{ kinds: [ NDKKind.Nutzap ], authors: [sender.pubkey], "#h": [groupId] }
+	])
+
+	if (zaps.size === 0) {
+		console.log("No zaps found")
+		return false;
+	}
+
+	console.log("Found zaps", Array.from(zaps).map(z => z.rawEvent()))
+
+	return true;
 }

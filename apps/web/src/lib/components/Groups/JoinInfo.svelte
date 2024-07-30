@@ -13,7 +13,6 @@
     export let admins: Readable<NDKSimpleGroupMemberList>;
     export let tiers: Readable<NDKSubscriptionTier[]>;
     export let collapsed = true;
-    export let openOnMount: boolean | undefined;
 
     export let onClose: (() => void) | undefined;
 

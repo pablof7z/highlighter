@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores";
     import * as Groups from "$components/Groups";
+	import { ndkRelaysWithAuth } from "$stores/auth-relays";
 	import { layout } from "$stores/layout";
 
     let groupId: string;
@@ -12,6 +13,10 @@
         const r = $page.url.searchParams.get('relays');
         if (r) {
             relays = r.split(',');
+
+            for (const relay of relays) {
+                $ndkRelaysWithAuth.set(relay, true);
+            }
         }
     }
 
@@ -27,19 +32,19 @@
         let:group
         let:metadata
         let:members
-        let:articles
-        let:admins
+        let:stores
         let:tiers
+        let:admins
     >
         <Groups.Shell
             {group}
             {isAdmin}
             {isMember}
+            {tiers}
             {metadata}
             {members}
             {admins}
-            {tiers}
-            {articles}
+            {stores}
         >
             <slot />
         </Groups.Shell>

@@ -112,4 +112,7 @@
     {groups}
     {groupsMetadata}
     {eosed}
+    {userProfile}
+    {fetching}
+    {authorUrl}
 />

@@ -1,17 +1,10 @@
 import "websocket-polyfill";
 import { writable } from 'svelte/store';
-import NDK, { NDKRelayAuthPolicies } from '@nostr-dev-kit/ndk';
+import NDK from '@nostr-dev-kit/ndk';
 import NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { BROWSER, DEV } from 'esm-env';
-import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
-import { browser } from '$app/environment';
-import { initNostrWasm } from 'nostr-wasm';
-import { setNostrWasm, verifyEvent } from 'nostr-tools/wasm';
 
-export const ndkRelaysWithAuth = persist(
-    writable<Map<string, boolean | ((value: boolean) => void)>>(new Map()),
-    createLocalStorage(), 'ndk.relays-with-auth'
-);
+import { browser } from '$app/environment';
 
 // get relays from localstorage
 let relays;
@@ -40,9 +33,10 @@ export const explicitRelayUrls = [
 
 const _ndk: NDKSvelte = new NDKSvelte({
     enableOutboxModel: browser,
+    initialValidationRatio: 0.5,
+    lowestValidationRatio: 0.01
 }) as NDKSvelte;
-
-initNostrWasm().then(setNostrWasm)
+_ndk.relayAuthDefaultPolicy = async () => true;
 
 _ndk.pool.blacklistRelayUrls.add("wss://relayer.fiatjaf.com/")
 _ndk.pool.blacklistRelayUrls.add("wss://relay.nostr.info/")

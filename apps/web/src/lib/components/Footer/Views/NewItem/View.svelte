@@ -63,7 +63,7 @@
         justify-center
     ">
         <NewPostItem icon='🤙' title="Short Note" on:click={shortNote} />
-        <NewPostItem icon="🗒️" title="Article" href={url("/studio/articles/new")} on:click={close} />
+        <NewPostItem icon="🗒️" title="Article" href={url("/studio/article")} on:click={close} />
         <NewPostItem icon='🎬 ' title="Video" href={url("/videos/new")} on:click={close} />
         <NewPostItem icon='🧵' title="Thread" href={url("/studio/threads/new")} on:click={close} />
         {#if !group}

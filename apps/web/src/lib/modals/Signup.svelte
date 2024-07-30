@@ -225,5 +225,16 @@
         >
             Already on Highlighter or Nostr?
         </Button>
+
+        {#if window.nostr}
+            <Button
+                variant="secondary"
+                size="lg"
+                class="text-lg"
+                on:click={() => mode = 'login'}
+            >
+                Already on Highlighter or Nostr?
+            </Button>
+        {/if}
     </div>
 </div>

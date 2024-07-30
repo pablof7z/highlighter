@@ -65,7 +65,6 @@ export function encodeTag(tag: NDKTag) {
 }
 
 export function eventToKind(event: NDKEvent) {
-	console.log('eventToKind', event.kind);
 	switch (event.kind) {
 		case 30818: return NDKArticle.from(event);
 		case NDKKind.Article: return NDKArticle.from(event);
@@ -189,6 +188,7 @@ export function createEventReply(originalEvent: NDKEvent) {
 export function replyKind(event: NDKEvent): NDKKind {
 	switch (event.kind) {
 		case NDKKind.GroupNote: return NDKKind.GroupReply;
+		case NDKKind.GroupReply: return NDKKind.GroupReply;
 		case NDKKind.GroupChat: return NDKKind.GroupChat;
 		default:
 			return NDKKind.Text;

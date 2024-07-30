@@ -36,7 +36,7 @@
     getRelayListForUser($currentUser?.pubkey!, $ndk).then((relayList) => {
         if (!relayList) return;
         for (const writeRelay of relayList.writeRelayUrls) {
-            const r = new NDKRelay(writeRelay, undefined);
+            const r = new NDKRelay(writeRelay, undefined, $ndk);
             relaySet.addRelay(r);
         }
     })

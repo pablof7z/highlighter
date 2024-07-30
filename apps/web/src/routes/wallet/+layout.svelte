@@ -4,6 +4,7 @@
     $layout = {
         title: "Wallet",
         sidebar: false,
+        fullWidth: false,
 
         navigation: [
             { name: "Overview", href: "/wallet" },

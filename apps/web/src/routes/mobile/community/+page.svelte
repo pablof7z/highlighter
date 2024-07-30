@@ -1,80 +1,66 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import WithGroup from "$components/Event/WithGroup.svelte";
-	import { groupView, loadedGroup } from "$stores/item-view";
-	import { layout, pageHeader } from "$stores/layout";
-	import { getGroupUrl } from "$utils/url";
-	import GroupChat from "$views/Groups/GroupChat.svelte";
-	import GroupHomePage from "$views/Groups/GroupHomePage.svelte";
-	import GroupPosts from "$views/Groups/GroupPosts.svelte";
-	import GroupSettings from "$views/Groups/GroupSettings.svelte";
-	import { NavigationOption } from "../../../app.d.js";
-    import * as Groups from "$components/Groups/";
+    import * as Groups from "$components/Groups";
+	import { ndkRelaysWithAuth } from "$stores/auth-relays";
+	import { layout } from "$stores/layout";
 
     let groupId: string;
     let relays: string[];
     let view: string;
 
+    $layout.back = { url: '/communities' };
+
     $: {
         const r = $page.url.searchParams.get('relays');
         if (r) {
             relays = r.split(',');
-        }
-    }
 
-    $: groupId = $page.url.searchParams.get('groupId')!;
-    $: view = $page.url.searchParams.get('view')!;
-
-    $: if ($loadedGroup) {
-        const opts: NavigationOption[] = [];
-
-        opts.push({ name: "Chat", href: getGroupUrl($loadedGroup, "chat") });
-        opts.push({ name: "Posts", href: getGroupUrl($loadedGroup, "posts") });
-
-        if ($groupView.isAdmin) {
-            opts.push({ name: "Settings", href: getGroupUrl($loadedGroup, "settings") });
-        }
-
-        // $pageHeader = {
-        //     left: { label: "Back", url: "/communities" },
-        //     title: $loadedGroup.name ?? "Community",
-        //     subNavbarOptions: opts,
-        // };
-
-        $layout.navigation = opts;
-    }
-
-    $: if ($loadedGroup) {
-        $layout.title = $loadedGroup.name ?? "Community";
-        $layout.iconUrl = $loadedGroup.picture;
-        if ($groupView.isMember === false) {
-            $layout.footer = {
-                component: Groups.Footers.Join,
-                props: { group: $loadedGroup },
+            for (const relay of relays) {
+                $ndkRelaysWithAuth.set(relay, true);
             }
         }
     }
+
+    $: groupId = $page.params.groupId ?? $page.url.searchParams.get('groupId');
+    $: view = $page.url.searchParams.get('view') ?? 'home';
 </script>
 
-{#key groupId}
-    <WithGroup
+{#if groupId}
+    <Groups.Root
         {groupId}
         {relays}
-        bind:group={$loadedGroup}
-        bind:isMember={$groupView.isMember}
-        bind:isAdmin={$groupView.isAdmin}
+        let:isMember
+        let:isAdmin
+        let:group
+        let:metadata
+        let:members
+        let:stores
+        let:tiers
+        let:admins
     >
-        {#if $loadedGroup}
-            {#if view === "posts"}
-                <GroupPosts group={$loadedGroup} />
-            {:else if view === "chat"}
-                <GroupChat group={$loadedGroup} />
-            {:else if view === "settings"}
-                <GroupSettings group={$loadedGroup} />
+        <Groups.Shell
+            {group}
+            {isAdmin}
+            {isMember}
+            {tiers}
+            {metadata}
+            {members}
+            {admins}
+            {stores}
+        >
+            {#if view === 'chat'}
+                <Groups.Views.Chat {group} {metadata} />
+            {:else if view === 'posts'}
+                <Groups.Views.Posts {group} {metadata} />
+            {:else if view === 'articles'}
+                <Groups.Views.Articles {group} {metadata} />
+            {:else if view === 'settings'}
+                <Groups.Views.Settings {group} {metadata} existingTiers={tiers} {members} />
             {:else}
-                <GroupHomePage group={$loadedGroup} />
+                <Groups.Views.Home {group} {metadata} {isAdmin} {isMember} />
             {/if}
-
-        {/if}
-    </WithGroup>
-{/key}
+        </Groups.Shell>
+    </Groups.Root>
+{:else}
+    <Groups.Views.Index />
+{/if}

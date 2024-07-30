@@ -160,6 +160,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="
+    max-sm:h-[100dvh]
     min-h-screen w-full
     max-lg:h-[90vw] z-50 overflow-clip
     transition-all duration-300
@@ -179,7 +180,7 @@
                         <svelte:component this={$layout.sidebar.component} {...$layout.sidebar.props} />
                     {/if}
                 </div>
-                <div class="mt-auto">
+                <div class="mt-auto narrow-footer-container">
                     {#if $layout?.footer && !$layout.footerInMain}
                         <svelte:component this={$layout.footer.component} {...$layout.footer.props} />
                     {/if}
@@ -275,7 +276,7 @@
             {/if}
 
             <main class="
-                flex flex-1 flex-col gap-4 lg:gap-6
+                flex flex-1 flex-col lg:gap-6
                 overflow-x-clip
                 {mainClass}
             ">
@@ -283,7 +284,7 @@
                 <div class="mt-8-safe" style={`height: ${footerHeight}px`} />
                 {#if $appMobileView || $layout.footerInMain}
                     {#if $layout.footer}
-                        <footer class="fixed bottom-0 max-sm:bottom-6-safe w-full z-20 {mainClass} " bind:this={footerContainer}>
+                        <footer class="fixed bottom-0 left-0 bg-background border-t border-border right-0 max-sm:bottom-0-safe w-full z-20" bind:this={footerContainer}>
                             <svelte:component this={$layout.footer.component} {...$layout.footer.props} />
                         </footer>
                     {/if}

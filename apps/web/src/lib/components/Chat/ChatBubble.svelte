@@ -1,7 +1,7 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
     import currentUser from "$stores/currentUser";
-	import { NDKKind, type NDKEvent, NDKArticle, Hexpubkey, NDKFilter } from "@nostr-dev-kit/ndk";
+	import { NDKKind, type NDKEvent, NDKArticle, Hexpubkey, NDKFilter, getReplyTag } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import Article from "$components/List/Article.svelte";
@@ -12,6 +12,8 @@
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import { ndk } from "$stores/ndk";
 	import Avatar from "$components/User/Avatar.svelte";
+	import WithItem from "$components/Event/ItemView/WithItem.svelte";
+	import LoadEvent from "$components/Event/LoadEvent.svelte";
 
     export let event: NDKEvent;
     export let detailed = false;
@@ -63,6 +65,8 @@
     let fetching: boolean;
     let isGradient = ![NDKKind.Text, NDKKind.GroupChat].includes(event.kind!);
     let authorUrl: string;
+
+    let replyTo = event.getMatchingTags("e", "reply")[0];
 </script>
 
 <div 
@@ -87,9 +91,9 @@
         <div class="w-8"></div>
     {/if}
     <div class="
-        bubble-container rounded flex items-stretch justify-stretch w-fit max-w-[90%]
+        rounded flex items-stretch justify-stretch w-fit max-w-[90%]
         {isMine ? "bg-accent text-accent-foreground" : "bg-secondary"}
-        border border-border p-4
+        border border-border p-3 max-sm:py-2 
         {isGradient ? "sm:min-w-[28rem]" : ""}
     ">
         <div class="
@@ -111,6 +115,16 @@
             {#if event.kind === NDKKind.Article}
                 <Article article={NDKArticle.from(event)} />
             {:else}
+                {#if replyTo}
+                    <LoadEvent {event} tag={replyTo} let:event>
+                        {#if event}
+                            <div class="bg-foreground/20 border-l-4 border-foreground truncate p-1 px-2 flex flex-col text-sm mb-1">
+                                <Name pubkey={event.pubkey} class="text-muted-foreground" />:
+                                {event?.content}
+                            </div>
+                        {/if}
+                    </LoadEvent>
+                {/if}
                 <EventContent ndk={$ndk} {event} />
             {/if}
 

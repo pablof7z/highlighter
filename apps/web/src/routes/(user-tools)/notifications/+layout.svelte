@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { layout, pageHeader, resetLayout } from "$stores/layout";
+	import { notifications } from "$stores/notifications";
 	import { onDestroy } from "svelte";
 
     $layout = {
@@ -13,4 +14,6 @@
     });
 </script>
 
-<slot />
+{#if $notifications}
+    <slot />
+{/if}

@@ -3,8 +3,6 @@
 	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 	import WithItem from "$components/Event/ItemView/WithItem.svelte";
 	import { appMobileHideNewPostButton } from "$stores/app";
-	import { pageHeader, resetLayout } from "$stores/layout";
-	import { onDestroy, onMount } from "svelte";
     import { PageTransition } from 'sveltekit-page-transitions';
     import * as Content from "$components/Content";
 
@@ -16,18 +14,7 @@
     $: ignoreHeader = !!$page.url.searchParams.get('ignoreHeader');
     $: mode = $page.url.searchParams.get('view') || 'event';
 
-    $appMobileHideNewPostButton = true;
-
     let prevPageHeader: any;
-
-    onMount(() => {
-        prevPageHeader = $pageHeader;
-    })
-
-    onDestroy(() => {
-        resetLayout();
-        $pageHeader = prevPageHeader;
-    });
 </script>
 
 <PageTransition>
