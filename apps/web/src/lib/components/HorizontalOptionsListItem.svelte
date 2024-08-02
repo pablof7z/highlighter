@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { page } from "$app/stores";
+    import { cn } from "$lib/utils.js";
 	import { NavigationOption } from "../../app";
 	import { createEventDispatcher } from "svelte";
 	import Button from "./ui/button/button.svelte";
     import * as Tooltip from "$lib/components/ui/tooltip";
+	import { Plus } from "phosphor-svelte";
 
 
     export let option: NavigationOption;
@@ -40,8 +42,15 @@
                 dispatch("click");
                 value = option.value ?? option.name ?? "Untitled";
             }}
-            class="gap-2"
+            class={cn('gap-2', option.buttonProps?.class)}
         >
+            {#if option.button?.icon && option.button?.fn}
+                <Button variant="secondary" class="bg-background/20 hover:bg-background/20 rounded-full -ml-5 rounded-r-none p-0.5 px-3 mr-0.5"
+                    on:click={(e) => { option.button?.fn(); e.preventDefault(); e.stopPropagation(); }}
+                >
+                    <svelte:component this={option.button.icon} class="w-4 h-4" {...option.button.iconProps??{}} />
+                </Button>
+            {/if}
             {#if option.icon}
                 <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline" {...option.iconProps??{}} />
             {/if}

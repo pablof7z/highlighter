@@ -18,6 +18,7 @@
 	import { openModal } from "$utils/modal";
 	import NewGroupModal from "$modals/NewGroupModal.svelte";
 	import { throttle } from "@sveu/shared";
+	import CreatorProfileModal from "$modals/CreatorProfileModal";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | null | undefined = undefined;
@@ -85,7 +86,7 @@
                     <FollowButton {user} />
                 {/if}
             {:else}
-                <Button variant="accent" on:click={() => openModal(NewGroupModal)}>
+                <Button variant="accent" on:click={() => openModal(CreatorProfileModal)}>
                     Setup creator profile
                 </Button>
             {/if}

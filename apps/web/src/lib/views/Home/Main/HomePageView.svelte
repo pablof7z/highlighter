@@ -7,7 +7,6 @@
 	import { groupsList, userFollows } from "$stores/session";
 	import { derived, Readable } from "svelte/store";
 	import { filterArticles } from '$utils/article-filter';
-	import HighlightBody from '$components/HighlightBody.svelte';
     import * as Card from '$components/Card';
     import Footer from "./Footer.svelte";
 	import HorizontalListOfTaggedItems from '$components/PageElements/Sections/HorizontalListOfTaggedItems.svelte';
@@ -107,8 +106,6 @@
 {/if}
 
 <HorizontalList title="Highlights" items={$highlights} let:item>
-    <div class="w-64 whitespace-normal">
-        <HighlightBody highlight={item} />
-    </div>
+    <Card.Highlight highlight={item} />
 </HorizontalList>
 

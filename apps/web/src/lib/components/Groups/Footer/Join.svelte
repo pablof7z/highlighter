@@ -1,18 +1,20 @@
 <script lang="ts">
 	import { title } from '$stores/item-view';
-    import { Hexpubkey, NDKEvent, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKZapConfirmation } from "@nostr-dev-kit/ndk";
+    import { Hexpubkey, NDKEvent, NDKKind, NDKPaymentConfirmation, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKZapConfirmation, NDKZapSplit } from "@nostr-dev-kit/ndk";
     import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
 	import { derived, Readable } from "svelte/store";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import Badge from "$components/ui/badge/badge.svelte";
-	import { CaretDown, CaretRight, CrownSimple } from "phosphor-svelte";
+	import { CaretDown, CaretRight, CheckCircle, CrownSimple } from "phosphor-svelte";
 	import { tierAmountToString } from "$lib/events/tiers";
 	import currentUser from "$stores/currentUser";
 	import PricingTiers from "./PricingTiers.svelte";
 	import { createSubscriptionEvent } from "$components/Payment/subscription-event";
 	import { ndk } from "$stores/ndk";
 	import { calculateSatAmountFromAmount } from "$utils/currency";
+	import { onDestroy, getContext } from 'svelte';
+	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 
     export let group: NDKSimpleGroup;
     export let metadata: Readable<NDKSimpleGroupMetadata>;
@@ -20,8 +22,29 @@
     export let admins: Readable<NDKSimpleGroupMemberList>;
     export let tiers: Readable<NDKSubscriptionTier[]>;
     export let openOnMount: boolean | undefined;
+    export let isMember: Readable<boolean>;
 
     export let onClose: (() => void) | undefined;
+
+    let myJoinRequests: NDKEventStore<NDKEvent> | undefined;
+    let joinRequested = false;
+
+    $: console.log('currenUser', !!$currentUser, $isMember === false, !!myJoinRequests)
+
+    $: if ($currentUser && $isMember === false && !myJoinRequests) {
+        console.log('sending')
+        myJoinRequests = $ndk.storeSubscribe({
+            kinds: [NDKKind.GroupAdminRequestJoin],
+            "#h": [group.groupId],
+            authors: [$currentUser.pubkey]
+        }, { relaySet: group.relaySet });
+    }
+    $: joinRequested = !!(myJoinRequests && $myJoinRequests.length > 0);
+
+    onDestroy(() => {
+        myJoinRequests?.unsubscribe();
+    })
+
 
     const memberCount = derived([members, admins], ([$members, $admins]) => {
         if (!$members || !$admins) return;
@@ -38,17 +61,19 @@
     })
 
     async function join() {
+        if (!$currentUser) return;
         group.requestToJoin($currentUser.pubkey)
     }
 
     async function subscribe() {
+        if (!$currentUser) return;
         if (!selectedTier) return;
         const a = selectedTier.amounts[0];
         if (!a) return;
         const { amount, term, currency } = a;
         if (!amount || !term || !currency) return;
 
-        group.requestToJoin($currentUser.pubkey)
+        // group.requestToJoin($currentUser.pubkey)
         
         const startEvent = await createSubscriptionEvent($ndk, amount.toString(), currency, term, selectedTier.author, selectedTier);
 
@@ -58,19 +83,24 @@
 
         const satAmount = await calculateSatAmountFromAmount(a);
 
-        const res = await $ndk.zap(selectedTier.author, Math.floor(satAmount * 1000), "Membership to NIP-29 group "+$metadata.name, zapTags);
-        res.on("complete", async (info: NDKZapConfirmation | Error) => {
+        const res = await $ndk.zap(
+            selectedTier.author,
+            Math.floor(satAmount * 1000),
+            {
+                comment: "Membership in community "+$metadata.name,
+                tags: zapTags
+        });
+        res.on("complete", async (results: Map<NDKZapSplit, NDKPaymentConfirmation | Error | undefined>) => {
+            const info = results.values().next().value;
             if (info instanceof Error) {
                 console.error(info);
                 return;
             }
             
             startEvent.publish();
-
-            if (info instanceof NDKEvent) {
-                info.publish();
-            }
+            startEvent.publish(group.relaySet);
         });
+        await res.zap();
     }
 
     let selectedTier: NDKSubscriptionTier | undefined;
@@ -87,18 +117,25 @@
     bind:mainView
     maxHeight="100vh"
 >
-    {#if mainView === "subscribe"}
-        <div class="flex flex-row items-center gap-2">
-            {#if $metadata.picture}
-                <img src={$metadata.picture} class="rounded-full w-8 h-8 object-cover" />
-            {/if}
-        
-            <b>{$metadata.name}</b>
-        </div>
-    {:else}
+    {#if joinRequested}
         <Button variant="accent" class="w-full" on:click={() => open()}>
-            View Info & Join
+            <CheckCircle size={16} class="mr-1" />
+            Requested to Join
         </Button>
+    {:else}
+        {#if mainView === "subscribe"}
+            <div class="flex flex-row items-center gap-2">
+                {#if $metadata.picture}
+                    <img src={$metadata.picture} class="rounded-full w-8 h-8 object-cover" />
+                {/if}
+            
+                <b>{$metadata.name}</b>
+            </div>
+        {:else}
+            <Button variant="accent" class="w-full" on:click={() => open()}>
+                View Info & Join
+            </Button>
+        {/if}
     {/if}
 
     <div class="flex flex-col gap-3 items-center justify-stretch w-full" slot="main">

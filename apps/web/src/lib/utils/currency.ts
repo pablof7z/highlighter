@@ -16,6 +16,19 @@ export function currencyCode(currency: string) {
 	}
 }
 
+export function currencyName(currency: string) {
+	switch (currency) {
+		case 'USD':
+			return 'USD';
+		case 'EUR':
+			return 'EUR';
+		case 'msat':
+			return 'sats';
+		default:
+			return currency;
+	}
+}
+
 export function currencySymbol(currency: string) {
 	switch (currency) {
 		case 'USD':

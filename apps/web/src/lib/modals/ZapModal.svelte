@@ -4,6 +4,7 @@
 	import ModalShell from "$components/ModalShell.svelte";
     import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../app";
+	import { Lightning } from 'phosphor-svelte';
 
     export let event: NDKEvent;
 
@@ -20,8 +21,12 @@
                 zapping ? "Zapping..." :
                 zapAmount ? `Zap ${nicelyFormattedSatNumber(zapAmount)} sats` : `Zap`
             ),
+            icon: Lightning,
+            iconProps: { weight: "fill" },
             buttonProps: {
-                variant: "accent", disabled: !zapButtonEnabled, size: 'lg'
+                variant: 'default',
+                class: '!w-full',
+                disabled: !zapButtonEnabled,
             },
             fn: () => {forceZap = true; }
         }
@@ -33,7 +38,7 @@
     {actionButtons}
 >
     <Zap
-        {event}
+        target={event}
         bind:zapButtonEnabled
         bind:amount={zapAmount}
         bind:zapping

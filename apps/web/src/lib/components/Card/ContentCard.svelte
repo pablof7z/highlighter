@@ -31,6 +31,13 @@
     const highlighters = new Set<Hexpubkey>();
 
     $: if (highlights) highlights.forEach(h => highlighters.add(h.pubkey));
+
+    let isPaidOnly = false;
+
+    if (event) {
+        const hasFree = event.getMatchingTags("f").some(t => t[1] === "Free");
+        isPaidOnly = !hasFree && event.hasTag("f");
+    }
 </script>
 
 <div class="flex flex-col gap-2" class:in-content-feed={inContentFeed}>
@@ -40,7 +47,7 @@
         {$$props.class??""}
     " on:click>
         {#if event && (alwaysShowPinButton || event?.pubkey === $currentUser?.pubkey)}
-            <PinButton {event} />
+            <PinButton {event} align="left-2" />
         {/if}
         <div class="relative w-full h-full justify-end flex flex-col">
             <img
@@ -55,7 +62,9 @@
                 {#if $$slots.tags}
                     <slot name="tags" />
                 {/if}
-                <Event.Dropdown {event} size="tiny" />
+                {#if event}
+                    <Event.Dropdown {event} size="tiny" />
+                {/if}
             </div>
 
             <div class="
@@ -63,7 +72,7 @@
                 relative w-full z-[3] px-4 py-2 place-self-end
                 flex flex-row justify-between items-end
             ">
-                <div class="flex flex-col items-start justify-stretch w-full">
+                <div class="flex flex-col items-start justify-stretch w-full truncate">
                     <div class="flex flex-row w-full justify-between items-center gap-2">
                         <h3 class="font-semibold grow max-h-[64px] overflow-clip text-foreground text-lg truncate">
                             {title}
@@ -90,7 +99,7 @@
                                     <Star class="w-4 h-4 mr-1.5" weight="fill" />
                                     Preview
                                 </Badge>
-                            {:else if event?.hasTag("f")}
+                            {:else if isPaidOnly}
                                 <Badge variant="gold" class="
                                     font-regular
                                 ">

@@ -50,7 +50,7 @@ export function refresh(
 
 export function execute() {
     const $ndk = get(ndk);
-    const filters: NDKFilter[] = [];
+    let filters: NDKFilter[] = [];
 
     d("Executing profile refresh", profilesToRefresh.size);
 
@@ -74,6 +74,13 @@ export function execute() {
     d("Profile refresh filters %o", filters);
 
     const results = new Map<Hexpubkey, NDKEvent>();
+
+    // remove filters with empty authors
+    filters = filters.filter(f => f.authors && f.authors.length > 0);
+    if (filters.length === 0) {
+        d("No profiles to refresh");
+        return;
+    }
 
     const sub = $ndk.subscribe(
         filters,

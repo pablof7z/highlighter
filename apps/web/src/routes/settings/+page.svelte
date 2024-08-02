@@ -9,6 +9,7 @@
 	import { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
 	import { Key, CaretRight, ShareNetwork, Bell, Keyhole, Package, Code } from 'phosphor-svelte';
 	import { Button } from "$components/ui/button";
+	import FailedPublishesIndicator from "$components/FailedPublishesIndicator.svelte";
     let id: string;
 
     $: id = $page.url.search?.substring(1);
@@ -74,6 +75,7 @@
         <ul class="w-full">
             <li>
                 <ToggleDark />
+                <FailedPublishesIndicator />
             </li>
             <li>
                 <a href="/settings/drafts">

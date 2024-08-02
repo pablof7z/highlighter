@@ -16,7 +16,7 @@
 </script>
 
 <Zap
-    {event}
+    target={event}
     on:zap={zapped}
     on:zapping={zapping}
 />

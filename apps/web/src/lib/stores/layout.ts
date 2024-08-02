@@ -32,6 +32,8 @@ export const modalState: Writable<"open" | "closing" | "closed"> = writable("clo
 
 export const activeNewPostId: Writable<string | null> = writable(null);
 
+export const footerMainView = writable<string | undefined>(undefined);
+
 export type Layout = {
 	/**
 	 * Can be used to display information and actions

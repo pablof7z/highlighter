@@ -3,6 +3,7 @@
     import * as DropdownMenu from "$components/ui/dropdown-menu";
 	import { Pen } from "phosphor-svelte";
 	import { goto } from "$app/navigation";
+	import currentUser from "$stores/currentUser";
 
     export let event: NDKEvent;
 
@@ -12,7 +13,7 @@
         NDKKind.Article,
     ]);
     
-    $: canEdit = editableKinds.has(event.kind!);
+    $: canEdit = $currentUser?.pubkey === event.pubkey && editableKinds.has(event.kind!);
 
     function clicked() {
         switch (event.kind) {

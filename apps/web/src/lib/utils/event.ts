@@ -1,4 +1,4 @@
-import { Hexpubkey, NDKArticle, NDKEvent, NDKKind, NDKList, NDKRelaySet, NDKTag, NDKVideo, eventIsReply } from '@nostr-dev-kit/ndk';
+import { Hexpubkey, NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKTag, NDKVideo, eventIsReply } from '@nostr-dev-kit/ndk';
 import { getDefaultRelaySet } from './ndk';
 import { nip19 } from 'nostr-tools';
 import { AddressPointer, EventPointer } from 'nostr-tools/nip19';
@@ -71,6 +71,7 @@ export function eventToKind(event: NDKEvent) {
 		case NDKKind.HorizontalVideo: return NDKVideo.from(event); 
 		case NDKKind.ArticleCurationSet: return NDKList.from(event);
 		case NDKKind.VideoCurationSet: return NDKList.from(event);
+		case NDKKind.Highlight: return NDKHighlight.from(event);
 		default: return event;
 	}
 }

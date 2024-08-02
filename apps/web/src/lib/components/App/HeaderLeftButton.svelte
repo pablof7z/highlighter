@@ -15,7 +15,7 @@
 <a
     href={$layout.back?.url??"#"}
     on:click={leftClicked}
-    class="text-primary whitespace-nowrap flex flex-nowrap items-center truncate"
+    class="text-primary whitespace-nowrap flex flex-nowrap items-center truncate flex-none"
 >
     {#if $layout.back?.icon}
         <span class="inline">

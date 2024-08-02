@@ -13,8 +13,7 @@
 	import { toast } from 'svelte-sonner';
 
     export let event: NDKEvent;
-    export let swipeActive = false;
-    export let disableSwipe = false;
+    export let disableSwipe: boolean | undefined = undefined;
     
     let rightOptions: any;
 
@@ -60,14 +59,13 @@
 {#if disableSwipe}
     <slot />
 {:else}
-<Swipe
-    leftOptions={[
-        { label: 'Reply', icon: ChatCircle, class: "bg-accent", cb: onSwipeToReply },
-    ]}
-    on:close={() => showQuoteOptions = false}
-    {rightOptions}
-    bind:swipeActive
->
-    <slot />
-</Swipe>
+    <Swipe
+        leftOptions={[
+            { label: 'Reply', icon: ChatCircle, class: "bg-accent", cb: onSwipeToReply },
+        ]}
+        on:close={() => showQuoteOptions = false}
+        {rightOptions}
+    >
+        <slot />
+    </Swipe>
 {/if}

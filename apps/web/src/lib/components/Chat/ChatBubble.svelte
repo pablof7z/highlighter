@@ -12,7 +12,6 @@
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import { ndk } from "$stores/ndk";
 	import Avatar from "$components/User/Avatar.svelte";
-	import WithItem from "$components/Event/ItemView/WithItem.svelte";
 	import LoadEvent from "$components/Event/LoadEvent.svelte";
 
     export let event: NDKEvent;
@@ -93,8 +92,11 @@
     <div class="
         rounded flex items-stretch justify-stretch w-fit max-w-[90%]
         {isMine ? "bg-accent text-accent-foreground" : "bg-secondary"}
-        border border-border p-3 max-sm:py-2 
+        px-3 py-2 max-sm:py-2 
+        { skipAvatar || skipName ? "my-0.25" : ""}
         {isGradient ? "sm:min-w-[28rem]" : ""}
+        { skipAvatar ? ( isMine ? "!rounded-br-none" : "!rounded-bl-none" ) : "" }
+        { skipName ? ( isMine ? "!rounded-tr-none" : "!rounded-tl-none" ) : "" }
     ">
         <div class="
             w-full flex-1 grow

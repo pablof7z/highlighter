@@ -13,6 +13,7 @@
 	import AvatarsPill from '$components/Avatars/AvatarsPill.svelte';
 	import { deriveStore } from '$utils/events/derive';
 	import Badge from '$components/ui/badge/badge.svelte';
+	import { randomImage } from '$utils/image';
     export let tag: NDKTag;
 
     let group: NDKSimpleGroup;
@@ -107,7 +108,7 @@
         <Swipe {rightOptions}>
             <a href={getGroupUrl(group)} class="py-2 w-full group">
                 <div class="responsive-padding flex flex-row items-center p-2 gap-4 w-full">
-                    <img src={group.picture??`https://picsum.photos/24/24?random=${group.name}`} />
+                    <img src={group.picture??randomImage(group.name, 300, 300)} />
                     
                     <div class="flex flex-col gap-1 grow">
                         <span class="text-foreground font-semibold text-lg truncate">

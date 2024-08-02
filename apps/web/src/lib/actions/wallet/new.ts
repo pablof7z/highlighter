@@ -8,8 +8,9 @@ export async function createNewWallet() {
 
     const wallet = $walletService.createCashuWallet();
     wallet.name = "Wallet";
-    wallet.mints = ["https://mint.minibits.cash/Bitcoin", "https://mint.agorist.space"];
-    wallet.relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.nostr.band"];
+    wallet.mints = ["https://mint.minibits.cash/Bitcoin", "https://mint.agorist.space", "https://21mint.me"];   
+    wallet.relays = ["wss://relay.damus.io", "wss://relay.primal.net", "wss://relay.f7z.io", "wss://relay.highlighter.com", "wss://relay.nostr.band"];
+    debugger
     await wallet.sign();
     const rest = await wallet.publish(wallet.relaySet);
 

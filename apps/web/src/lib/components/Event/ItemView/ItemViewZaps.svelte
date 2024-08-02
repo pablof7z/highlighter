@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ZapButton from "$components/buttons/ZapButton.svelte";
 	import TopZap from "$components/Events/TopZap.svelte";
     import RecentZaps from "$components/Events/Zaps/RecentZaps.svelte";
 	import { NDKEvent, NDKEventId } from "@nostr-dev-kit/ndk";
@@ -29,7 +30,7 @@
 <!-- </div> -->
 
 <!-- <div class="flex flex-row gap-2 flex-nowrap items-center overflow-x-auto scrollbar-hide"> -->
-    <!-- <ZapButton {event} class="text-xs" {showHelperText} /> -->
+    <ZapButton {event} class="text-xs" {showHelperText} />
     <!-- <div class="w-[1px] h-[20px] mx-2 border-l border-border" class:hidden={recentZaps.length < 2}></div> -->
     <RecentZaps {event} class="text-xs flex-none" avatarSize="tiny" skipEventIds={skipRecentZaps} bind:zapEvents={recentZaps} />
 </div>

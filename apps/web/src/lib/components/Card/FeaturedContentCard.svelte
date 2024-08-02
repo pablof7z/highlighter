@@ -20,7 +20,7 @@
     $: if (highlights) highlights.forEach(h => highlighters.add(h.pubkey));
 </script>
 
-<a {href} class="flex flex-col md:flex-row w-full overflow-clip flex-none group md:max-h-72 relative">
+<a {href} class="flex flex-col md:flex-row w-full overflow-clip flex-none group md:max-h-72 relative !no-underline">
     {#if event && (alwaysShowPinButton || event?.pubkey === $currentUser?.pubkey)}
         <PinButton {event} align="left-2" />
     {/if}

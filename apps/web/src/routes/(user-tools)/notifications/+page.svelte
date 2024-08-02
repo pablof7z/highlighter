@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKNutzap } from '@nostr-dev-kit/ndk-wallet';
+	import { NDKNutzap } from '@nostr-dev-kit/ndk';
 	import { deriveStore } from '$utils/events/derive';
 	import { derived, Readable } from 'svelte/store';
 	import { NavigationOption } from './../../../app.d.js';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKNutzap } from '@nostr-dev-kit/ndk-wallet';
+	import { NDKNutzap } from '@nostr-dev-kit/ndk';
 	import { wallet, walletBalance, walletService } from "$stores/wallet";
     import { nicelyFormattedSatNumber } from "$utils";
     import { Lightning } from "phosphor-svelte";
@@ -7,10 +7,12 @@
 	import { writable } from 'svelte/store';
 	import { slide } from 'svelte/transition';
 	import Avatar from '$components/User/Avatar.svelte';
+	import currentUser from '$stores/currentUser';
 
     const newZaps = writable<NDKNutzap[]>([]);
 
-    let loading = $walletService.state === "loading";
+    let loading = false;
+    $: loading = !!($currentUser && $walletService.state === "loading");
     $walletService.on("ready", () => {
         console.log('wallet ready');
         loading = false;

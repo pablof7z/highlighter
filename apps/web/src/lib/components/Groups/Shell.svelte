@@ -15,6 +15,7 @@
     export let isMember: Readable<boolean>;
     export let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
     export let admins: Readable<NDKSimpleGroupMemberList | undefined>;
+    export let joinRequests: Readable<NDKEvent[]>;
     export let members: Readable<NDKSimpleGroupMemberList | undefined>;
     export let tiers: Readable<NDKSubscriptionTier[]>;
     export let stores: Group.ContentStores;
@@ -27,6 +28,7 @@
     setContext("groupMembers", members);
     setContext("isAdmin", isAdmin);
     setContext("isMember", isMember);
+    setContext("joinRequests", joinRequests);
     setContext("groupTiers", tiers);
     setContext("groupArticles", articles);
     setContext("groupVideos", videos);
@@ -59,7 +61,7 @@
 
     let prevFooter: Component | undefined;
 
-    $: if ($isMember === false) {
+    function setFooter() {
         prevFooter = $layout.footer;
         $layout.footer = {
             component: Group.Footers.Join,
@@ -69,11 +71,15 @@
                 admins,
                 members,
                 tiers,
+                isMember,
             },
         }
-    } else if (prevFooter) {
-        $layout.footer = prevFooter;
-        prevFooter = undefined;
+    }
+
+    $: {
+        if ($isMember === false) {
+            setFooter();
+        }
     }
 </script>
 
@@ -81,6 +87,7 @@
     {group}
     {metadata}
     {admins}
+    {joinRequests}
     {members}
     {isAdmin}
     {isMember}

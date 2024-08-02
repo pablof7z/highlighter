@@ -10,6 +10,7 @@
     import * as Chat from "$components/Chat";
 	import { Plus } from 'phosphor-svelte';
 	import { addHistory } from '$stores/history';
+	import { onDestroy } from 'svelte';
 
     addHistory({ title: "Communities", url: "/communities" });
 
@@ -24,6 +25,10 @@
             relaySet
         }
     );
+
+    onDestroy(() => {
+        groups.unsubscribe();
+    })
 
     const groupListsFromFollows = $ndk.storeSubscribe(
         { kinds: [NDKKind.SimpleGroupList], limit: 300, authors: Array.from($userFollows) },

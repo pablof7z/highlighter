@@ -18,6 +18,8 @@ import ModalShell from "$components/ModalShell.svelte";
         
         retryingId.add(event.id);
         try {
+            console.log("Retrying event", event.id, relaySet?.relayUrls);
+            debugger
             await event.publish(relaySet);
             if ($ndk.cacheAdapter?.discardUnpublishedEvent)
                 $ndk.cacheAdapter.discardUnpublishedEvent(event.id);
@@ -54,6 +56,11 @@ import ModalShell from "$components/ModalShell.svelte";
                         {#if relays}
                             <div class="text-xs text-muted-foreground">
                                 Tried to publish to {relays.length} {pluralize(relays.length, "relay")}.
+                                {#each relays as relay}
+                                    <div class="flex flex-row items-center">
+                                        <span class="text-xs text-muted-foreground">{relay}</span>
+                                    </div>
+                                {/each}
                             </div>
                         {/if}
                     </div>

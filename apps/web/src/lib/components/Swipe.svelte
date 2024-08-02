@@ -2,6 +2,7 @@
 	import { type SvelteComponent } from 'svelte';
     import { createEventDispatcher } from 'svelte';
 	import { appMobileView } from '$stores/app';
+	import { isMobileBuild } from '$utils/view/mobile';
 
     const dispatch = createEventDispatcher();
 
@@ -14,7 +15,6 @@
 
     export let leftOptions: Option[] = [];
     export let rightOptions: Option[] = [];
-    export let disableSwipe = false;
 
     let positionX = 0;
 
@@ -198,46 +198,46 @@
     }
 </script>
 
-{#if $appMobileView && !disableSwipe}
-<div class="w-full relative"
-    style="
-        touch-action: pan-y;
-    " on:touchstart|passive={onTouchStart} on:touchmove={onTouchMove} on:touchend|passive={onTouchEnd}
->
-    <div class="options-wrapper left-0" style={`
-        width: ${leftOptionWidth}px;
-        opacity: ${(absOffsetX / triggerActionRequirement)};
-    `}>
-        {#each leftOptions as opt, i}
-            <button
-                on:click={() => { if (opt.cb() !== true) setTimeout(() => updatePosition(0), 500); }}
-                class="focus:brightness-50 option {opt.class??""}"
-                style={`width: ${triggerActionRequirement}px;`}
-            >
-                <svelte:component this={opt.icon} class="w-12 h-12 !text-foreground" />
-                <span class="text-foreground">{opt.label}</span>
-            </button>
-        {/each}
+{#if isMobileBuild() || $appMobileView}
+    <div class="w-full relative"
+        style="
+            touch-action: pan-y;
+        " on:touchstart|passive={onTouchStart} on:touchmove={onTouchMove} on:touchend|passive={onTouchEnd}
+    >
+        <div class="options-wrapper left-0" style={`
+            width: ${leftOptionWidth}px;
+            opacity: ${(absOffsetX / triggerActionRequirement)};
+        `}>
+            {#each leftOptions as opt, i}
+                <button
+                    on:click={() => { if (opt.cb() !== true) setTimeout(() => updatePosition(0), 500); }}
+                    class="focus:brightness-50 option {opt.class??""}"
+                    style={`width: ${triggerActionRequirement}px;`}
+                >
+                    <svelte:component this={opt.icon} class="w-12 h-12 !text-foreground" />
+                    <span class="text-foreground">{opt.label}</span>
+                </button>
+            {/each}
+        </div>
+        <div class={$$props.class??""} bind:this={element}>
+            <slot swapActive={true} />
+        </div>
+        <div class="options-wrapper right-0" style={`
+            width: ${rightOptionWidth}px;
+            opacity: ${(absOffsetX / triggerActionRequirement)};
+        `}>
+            {#each rightOptions as opt, i}  
+                <button
+                    on:click={() => { if (opt.cb() !== true) setTimeout(() => updatePosition(0), 500); }}
+                    class="focus:brightness-50 option {opt.class??""}"
+                    style={`width: ${triggerActionRequirement}px;`}
+                >
+                    <svelte:component this={opt.icon} class="w-12 h-12" />
+                    <span class="text-foreground">{opt.label}</span>
+                </button>
+            {/each}
+        </div>
     </div>
-    <div class={$$props.class??""} bind:this={element}>
-        <slot swapActive={true} />
-    </div>
-    <div class="options-wrapper right-0" style={`
-        width: ${rightOptionWidth}px;
-        opacity: ${(absOffsetX / triggerActionRequirement)};
-    `}>
-        {#each rightOptions as opt, i}  
-            <button
-                on:click={() => { if (opt.cb() !== true) setTimeout(() => updatePosition(0), 500); }}
-                class="focus:brightness-50 option {opt.class??""}"
-                style={`width: ${triggerActionRequirement}px;`}
-            >
-                <svelte:component this={opt.icon} class="w-12 h-12" />
-                <span class="text-foreground">{opt.label}</span>
-            </button>
-        {/each}
-    </div>
-</div>
 {:else}
     <slot swapActive={false} />
 {/if}

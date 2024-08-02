@@ -4,8 +4,10 @@
 	import { ndk } from "$stores/ndk";
 	import { deriveListStore, deriveStore } from "$utils/events/derive";
 	import { derived } from "svelte/store";
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { ContentStores } from '.';
+	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
+	import { Readable } from 'svelte/store';
 
     export let tag: NDKTag | undefined = undefined;
     export let groupId: string | undefined = undefined;
@@ -27,8 +29,7 @@
 
     const group = new NDKSimpleGroup($ndk, relaySet, groupId);
 
-    // Subscriptions
-    const events = $ndk.storeSubscribe([
+    const filters: NDKFilter[] = [
         { kinds: [ NDKKind.GroupNote, NDKKind.GroupReply ], ...hFilter, limit: 50 },
         { kinds: [ NDKKind.GroupChat ], ...hFilter, limit: 50 },
         { kinds: [ NDKKind.Article ], ...hFilter, limit: 100 },
@@ -39,59 +40,67 @@
         { kinds: [ NDKKind.TierList, NDKKind.PinList ], ...hFilter },
         { kinds: [ NDKKind.SubscriptionTier ], ...hFilter },
         { kinds: [ NDKKind.GroupMetadata, NDKKind.GroupAdmins, NDKKind.GroupMembers ], ...dFilter },
-    ], { subId: 'group-events', groupable: false, relaySet });
-    
-    relaySet.relays.forEach((r) => {
-        r.on("authed", () => {
-            events.unsubscribe();
-            events.startSubscription();
-        });
-    });
+    ];
 
-    onDestroy(() => {
-        events.unsubscribe();
-    });
+    let events: NDKEventStore<NDKEvent> | undefined = undefined;
 
-    // const events2 = $ndk.storeSubscribe([
-    //     { kinds: [ NDKKind.SubscriptionTier ], ...hFilter, limit: 100 },
-    // ], { subId: 'group-events-2', groupable: false, relaySet });
-
-    // Derivations
-    const metadata = deriveListStore(events, NDKSimpleGroupMetadata);
-    const admins = deriveListStore(events, NDKSimpleGroupMemberList, [NDKKind.GroupAdmins]);
-    const members = deriveListStore(events, NDKSimpleGroupMemberList);
-    const articles = deriveStore(events, NDKArticle);
-    const videos = deriveStore(events, NDKVideo);
-    const wiki = deriveStore(events, NDKWiki);
-    const notes = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupNote, NDKKind.GroupReply, NDKKind.Text ]);
-    const chat = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupChat ]);
-    const tiers = deriveStore(events, NDKSubscriptionTier);
-    
-    const isAdmin = derived(
-        [ currentUser, admins ], ([ $currentUser, $admins ]) => {
-            if ($currentUser && $admins) {
-                return $admins.hasMember($currentUser.pubkey);
+    onMount(() => {
+        // Subscriptions
+        events = $ndk.storeSubscribe(filters, { subId: 'group-events', groupable: false, relaySet });
+        metadata = deriveListStore(events, NDKSimpleGroupMetadata);
+        admins = deriveListStore(events, NDKSimpleGroupMemberList, [NDKKind.GroupAdmins]);
+        members = deriveListStore(events, NDKSimpleGroupMemberList);
+        articles = deriveStore(events, NDKArticle);
+        videos = deriveStore(events, NDKVideo);
+        wiki = deriveStore(events, NDKWiki);
+        notes = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupNote, NDKKind.GroupReply, NDKKind.Text ]);
+        chat = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupChat ]);
+        tiers = deriveStore(events, NDKSubscriptionTier);
+        joinRequests = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupAdminRequestJoin ]);
+        isAdmin = derived(
+            [ currentUser, admins ], ([ $currentUser, $admins ]) => {
+                if ($currentUser && $admins) {
+                    return $admins.hasMember($currentUser.pubkey);
+                }
+                return false;
             }
-            return false;
-        }
-    );
-    const isMember = derived(
-        [ currentUser, members, admins ], ([ $currentUser, $members, $admins ]) => {
-            console.log("isMember", {currentUser: $currentUser, members: $members, admins: $admins})
+        );
+        isMember = derived([ currentUser, members, admins ], ([ $currentUser, $members, $admins ]) => {
+            console.log('running derived store for isMember', $members)
             if ($currentUser && $members && $admins) {
                 return $members.hasMember($currentUser.pubkey) || $admins.hasMember($currentUser.pubkey);
             }
             return false;
-        }
-    );
+        });
 
-    const stores: ContentStores = {
-        articles,
-        wiki,
-        videos,
-        notes,
-        chat
-    };
+        stores = {
+            articles,
+            wiki,
+            videos,
+            notes,
+            chat
+        };
+    });
+
+    onDestroy(() => {
+        events?.unsubscribe();
+    });
+
+    // Derivations
+    let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
+    let admins: Readable<NDKSimpleGroupMemberList | undefined>;
+    let members: Readable<NDKSimpleGroupMemberList | undefined>;
+    let articles: Readable<NDKArticle[]>;
+    let videos: Readable<NDKVideo[]>;
+    let wiki: Readable<NDKWiki[]>;
+    let notes: Readable<NDKEvent[]>;
+    let chat: Readable<NDKEvent[]>;
+    let tiers: Readable<NDKSubscriptionTier[]>;
+    let joinRequests: Readable<NDKEvent[]>;
+    let isAdmin: Readable<boolean>;
+    let isMember: Readable<boolean>;
+
+    let stores: ContentStores;
 </script>
 
 {#if $metadata}
@@ -102,6 +111,7 @@
         {members}
         {isAdmin}
         {isMember}
+        {joinRequests}
         {tiers}
         {stores}
     />

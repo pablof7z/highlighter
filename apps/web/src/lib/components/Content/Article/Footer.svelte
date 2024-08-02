@@ -17,9 +17,15 @@
 	import currentUser from '$stores/currentUser';
 
     export let article: NDKArticle;
+    export let forceMainView: 'zap' | 'tts' | 'curation' | "content" | "new-collection" | undefined = undefined;
     export let mainView: 'zap' | 'tts' | 'curation' | "content" | "new-collection" | undefined = undefined;
     export let collapsed = true;
     export let placeholder = "Reply";
+
+    $: if (forceMainView) {
+        open(forceMainView);
+        forceMainView = undefined;
+    }
 
     let forceSaveNewCollection = false;
     let forceSaveCollections = false;
@@ -50,6 +56,11 @@
         content = "";
     }
 
+    function edit() {
+        goto(`/studio/article?eventId=${article.encode()}`)
+        open(false)
+    }
+
     let open: (view?: string | false) => void;
 </script>
 
@@ -75,17 +86,17 @@
                 Cancel
             </Button>
 
-            <Button variant="accent" on:click={publishContentEditor}>
+            <Button on:click={publishContentEditor}>
                 Publish
             </Button>
         </div>
     {:else if mainView === 'curation'}
         <div class="flex flex-row justify-between w-full gap-2">
-            <Button on:click={() => open('new-collection')}>
+            <Button variant="secondary" on:click={() => open('new-collection')}>
                 New Collection
             </Button>
 
-            <Button variant="accent" on:click={() => forceSaveCollections = true}>
+            <Button on:click={() => forceSaveCollections = true}>
                 Save
             </Button>
         </div>
@@ -95,7 +106,7 @@
                 Cancel
             </Button>
 
-            <Button variant="accent" on:click={() => forceSaveNewCollection = true}>
+            <Button on:click={() => forceSaveNewCollection = true}>
                 Save
             </Button>
 
@@ -149,7 +160,7 @@
 
                 {#if $currentUser?.pubkey === article.pubkey}
                     <Button variant="outline" class="footer-button flex flex-col items-center gap-2 h-auto text-lg text-foreground bg-opacity-50 p-4"
-                        on:click={() => goto(`/studio/article?eventId=${article.encode()}`)}
+                        on:click={edit}
                     >
                         <Pen size={40} />
                         Edit

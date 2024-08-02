@@ -50,7 +50,7 @@
 </script>
 
 <ScrollArea orientation="vertical">
-    <ul class="h-max bg-background/50 rounded border border-border overflow-clip gap-0">
+    <ul class="h-max bg-background/50 rounded border border-border overflow-clip gap-0 divide-y divide-border">
         {#each $userArticleCurations.values() as curation (curation.id)}
             <li class="m-0 p-0">
                 <Checkbox
