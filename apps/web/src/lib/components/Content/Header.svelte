@@ -68,16 +68,17 @@
 
     <div slot="zaps">
         {#if !isPreview}
-            <ItemViewZaps {event} bind:hasZaps class="py-3 responsive-padding" />
+            <ItemViewZaps {event} bind:hasZaps class="py-[var(--section-vertical-padding)] responsive-padding border-y border-border" />
         {/if}
     </div>
 
-    <div slot="toolbar" class="py-3">
+    <div slot="toolbar" class="py-[var(--section-vertical-padding)] border-b border-border mb-[var(--section-vertical-padding)]" class:hidden={isPreview}>
         {#if !isPreview}
             <ContentToolbar
                 {event}
                 {navOptions}
                 {authorUrl}
+                on:curate
             />
         {/if}
     </div>

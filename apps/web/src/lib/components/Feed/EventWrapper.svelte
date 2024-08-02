@@ -219,12 +219,12 @@
         NDKKind.DVMReqTextToSpeech + 1000
     ];
 
-    let swipeActive = false;
+    export let disableSwipe: boolean | undefined = undefined;
 </script>
 
 <EventShell
     {event}
-    bind:swipeActive
+    disableSwipe
 >
     <div class="
         w-full text-left md:p-4 pb-0 max-sm:py-4 max-sm:max-w-[100vw] flex flex-col items-start {$$props.class??""}
@@ -292,17 +292,17 @@
                             <div class="flex flex-row items-center justify-end gap-2 place-self-end">
                                 <!-- Relay indicators / hidden in mobile -->
                                 <div class="flex flex-row items-center max-sm:hidden gap-2 opacity-20 group-hover:opacity-80">
-                                    {#if event.relay}
+                                    <!-- {#if event.relay}
                                         <RelayIndicator relay={event.relay.url} />
                                     {/if}
                                     {#each event.onRelays.slice(0, 4) as relay}
                                         {#if relay.url !== event.relay?.url}
                                             <RelayIndicator relay={relay.url} />
                                         {/if}
-                                    {/each}
+                                    {/each} -->
                                 </div>
 
-                                <div class="flex flex-row flex-nowrap gap-2">
+                                <div class="flex flex-row flex-nowrap gap-2 items-center">
                                     <RelativeTime timestamp={mostRecentActivity * 1000} class="opacity-50" />
                                     {#key event.publishStatus}
                                         {#if event.publishStatus !== "success"}
@@ -395,32 +395,32 @@
                         {/if}
                     </div>
 
-                    {#if !isMobileBuild()}
-                    <div class:hidden={swipeActive} class="
-                        flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4
-                        grayscale group-hover:grayscale-0
-                    ">
-                        <div class="w-1/4 flex justify-center items-end">
-                            {#if !($eventsInThread.length > 0 && !expandThread) && !($replies.length > 0 && !expandReplies)}
-                                <button class="" on:click|stopPropagation={reply}>
-                                    <CommentsButton {event} prefetchedReplies={replies} />
-                                </button>
-                            {/if}
-                        </div>
+                    {#if !isMobileBuild() && !$appMobileView && !disableSwipe}
+                        <div class="
+                            flex flex-row sm:basis-0 text-xs w-full items-center justify-between gap-4
+                            grayscale group-hover:grayscale-0
+                        ">
+                            <div class="w-1/4 flex justify-center items-end">
+                                {#if !($eventsInThread.length > 0 && !expandThread) && !($replies.length > 0 && !expandReplies)}
+                                    <button class="" on:click|stopPropagation={reply}>
+                                        <CommentsButton {event} prefetchedReplies={replies} />
+                                    </button>
+                                {/if}
+                            </div>
 
-                        <div class="w-1/4 flex justify-center items-end ">
-                            <BoostButton {event} on:publish />
-                        </div>
+                            <div class="w-1/4 flex justify-center items-end ">
+                                <BoostButton {event} on:publish />
+                            </div>
 
-                        <div class="w-1/4 flex justify-center items-end">
-                            <Bookmark {event} />
-                        </div>
-                            <!-- <div class="shrink flex flex-row gap-3 items-center text-foreground/50 border grow justify-between"> -->
+                            <div class="w-1/4 flex justify-center items-end">
+                                <Bookmark {event} />
+                            </div>
+                                <!-- <div class="shrink flex flex-row gap-3 items-center text-foreground/50 border grow justify-between"> -->
 
-                        <div class="w-1/4 flex justify-center items-end ">
-                            <SmallZapButton {event} />
+                            <div class="w-1/4 flex justify-center items-end ">
+                                <SmallZapButton {event} />
+                            </div>
                         </div>
-                    </div>
                     {/if}
                 </div>
             {/if}

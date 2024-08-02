@@ -1,7 +1,6 @@
 <script lang="ts">
     import Button from "$components/ui/button/button.svelte";
 import * as DropdownMenu from "$components/ui/dropdown-menu";
-	import currentUser from "$stores/currentUser";
 	import { NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
 	import { DotsThreeVertical, TrashSimple } from "phosphor-svelte";
 
@@ -22,16 +21,16 @@ import * as DropdownMenu from "$components/ui/dropdown-menu";
             padding = '3px';
             break;
         case "normal":
-            pixels = 32;
-            padding = '0.5rem';
+            pixels = 30;
+            padding = '0.25rem';
             break;
     }
 </script>
 
 <DropdownMenu.Root bind:open>
     <DropdownMenu.Trigger>
-        <Button variant="outline" class="rounded-full p-2" style="width: {pixels}px; height: {pixels}px; padding: {padding}">
-            <DotsThreeVertical class="w-full h-full text-muted-foreground" weight="bold" />
+        <Button variant="secondary" class="!bg-opacity-50 rounded-sm" style="width: {pixels}px; height: {pixels}px; padding: {padding}">
+            <DotsThreeVertical class="w-full h-full !text-muted-foreground" />
         </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>

@@ -7,24 +7,28 @@
 	import { DotsThree, Lightning } from "phosphor-svelte";
 	import Topup from "./Topup.svelte";
 	import { Button } from "$components/ui/button";
+    import { wallet as defaultWallet } from "$stores/wallet";
 
     export let wallet: NDKCashuWallet;
 
     let balance: number | undefined;
 
     $: balance = $walletsBalance.get(wallet.walletId);
+
+    let isDefault: boolean = false;
+
+    $: isDefault = ($defaultWallet?.dTag === wallet.dTag)
 </script>
 
 <Card.Root class="w-64 bg-secondary/20 text-secondary-foreground">
     <Card.Header class="p-4 flex flex-col gap-4">
-        <Card.Title class="text-muted-foreground">{wallet.name}</Card.Title>
+        {isDefault}
+        <Card.Title class="text-muted-foreground">{wallet.name??"Wallet"}</Card.Title>
         <Card.Description>
-            {#if balance}
-                <div class="flex flex-row gap-1 text-3xl text-foreground items-center font-bold">
-                    <Lightning class="text-accent w-6 h-6" weight="fill" />
-                    {nicelyFormattedSatNumber(balance)} sats
-                </div>
-            {/if}
+            <div class="flex flex-row gap-1 text-3xl text-foreground items-center font-bold">
+                <Lightning class="text-accent w-6 h-6" weight="fill" />
+                {nicelyFormattedSatNumber(balance??0)} sats
+            </div>
         </Card.Description>
 
         <div class="flex flex-row gap-2 items-center">
@@ -52,3 +56,4 @@
         
     </Card.Content>
 </Card.Root>
+

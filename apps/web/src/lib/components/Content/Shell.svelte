@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { articleKinds, curationKinds, videoKinds } from "$utils/event";
+	import { articleKinds, curationKinds, eventToKind, videoKinds } from "$utils/event";
 	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKUserProfile, NDKVideo } from "@nostr-dev-kit/ndk";
     import * as Article from "$components/Content/Article";
     import * as Video from "$components/Content/Video";
     import * as Note from "$components/Content/Note";
+    import * as Highlight from "$components/Content/Highlight";
     import * as Book from "$components/Content/Book";
     import * as Curation from "$components/Content/Curation";
 	import UserProfile from "$components/User/UserProfile.svelte";
@@ -12,6 +13,7 @@
 	import { derived } from "svelte/store";
 	import { layout } from '$stores/layout.js';
 	import { deriveStore } from "$utils/events/derive";
+	import Highlight from "$components/Highlight.svelte";
 
     export let event: NDKEvent;
 
@@ -49,14 +51,8 @@
                 }
             });
         
-    } else if (articleKinds.includes(event.kind!)) {
-        wrappedEvent = NDKArticle.from(event);
-    } else if (videoKinds.includes(event.kind!)) {
-        wrappedEvent = NDKVideo.from(event);
-    } else if (curationKinds.includes(event.kind!)) {
-        wrappedEvent = NDKList.from(event);
     } else {
-        wrappedEvent = event;
+        wrappedEvent = eventToKind(event);
     }
 
     let userProfile: NDKUserProfile;
@@ -80,9 +76,22 @@
             ].includes(e.kind!))
     });
 
+    const tagId = wrappedEvent.tagId();
+    const tagReference = wrappedEvent.tagReference();
+
     const shares = derived(wotFilteredEvents, $wotFilteredEvents => {
         return $wotFilteredEvents
-            .filter(e => [NDKKind.Repost, NDKKind.GenericRepost].includes(e.kind!))
+            .filter(e => {
+                if ([NDKKind.Repost, NDKKind.GenericRepost].includes(e.kind!))
+                    return true;
+                const qTag = e.tagValue("q");
+                if (qTag === tagId) return true;
+
+                const mentionTag = e.getMatchingTags(tagReference[0], "mention")?.[0];
+                if (mentionTag && mentionTag[1] === tagId) return true;
+                
+                return false;
+            });
     });
 
     const zaps = derived(wotFilteredEvents, $wotFilteredEvents => {
@@ -123,6 +132,16 @@
 {:else if [NDKKind.Text, NDKKind.GroupNote, NDKKind.GroupReply].includes(wrappedEvent.kind)}
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
         <Note.Header
+            event={wrappedEvent}
+            {userProfile}
+            {authorUrl}
+        />
+
+        <slot />
+    </div>
+{:else if wrappedEvent.kind === NDKKind.Highlight}
+    <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
+        <Highlight.Header
             event={wrappedEvent}
             {userProfile}
             {authorUrl}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Input from "$components/ui/input/input.svelte";
 	import { defaultRelays } from "$utils/const";
-	import { NDKEvent, NDKRelaySet, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
 	import { groupsList } from "$stores/session";
 	import { toast } from "svelte-sonner";
@@ -9,11 +9,13 @@
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
 	import { Camera, CaretDown, Image, Upload } from "phosphor-svelte";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
-	import { createEventDispatcher } from "svelte";
+	import { createEventDispatcher, getContext } from "svelte";
 	import Checkbox from "$components/Forms/Checkbox.svelte";
+	import { Readable } from "svelte/store";
 
     export let group: NDKSimpleGroup | undefined = undefined;
     export let forceSave: boolean = false;
+    export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata | undefined>;
 
     const dispatch = createEventDispatcher();
 
@@ -22,9 +24,9 @@
         save();
     }
 
-    let name: string = group?.name ?? "";
-    let picture: string = group?.picture ?? "";
-    let about: string = group?.about ?? "";
+    let name: string = $metadata?.name ?? "";
+    let picture: string = $metadata?.picture ?? "";
+    let about: string = $metadata?.about ?? "";
     let relays: string[] = group?.relayUrls() ?? defaultRelays;
 
     async function save() {

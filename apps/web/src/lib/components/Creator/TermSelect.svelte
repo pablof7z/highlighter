@@ -1,15 +1,18 @@
 <script lang="ts">
+    import * as Select from "$lib/components/ui/select";
     import { possibleTerms } from "$utils/term";
 	import type { NDKIntervalFrequency } from "@nostr-dev-kit/ndk";
 
     export let term: NDKIntervalFrequency;
 </script>
 
-<select class="select bg-foreground/10 text-foreground border border-border flex-grow {$$props.class}" bind:value={term}>
-    {#if !term}
-        <option value="" selected>select interval {term}</option>
-    {/if}
-    {#each possibleTerms as term}
-        <option value={term}>{term}</option>
-    {/each}
-</select>
+<Select.Root portal={null} onSelectedChange={(e) => term = e.value}>
+    <Select.Trigger class="w-32 w-fit {$$props.class??""}">
+        <Select.Value placeholder={term} />
+    </Select.Trigger>
+    <Select.Content>
+        {#each possibleTerms as term}
+            <Select.Item value={term}>{term}</Select.Item>
+        {/each}
+    </Select.Content>
+</Select.Root>

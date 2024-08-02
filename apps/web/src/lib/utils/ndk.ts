@@ -5,7 +5,7 @@ import { ndkRelaysWithAuth } from "$stores/auth-relays.js";
 // import NDKRedisAdapter from '@nostr-dev-kit/ndk-cache-redis';
 import NDKCacheAdapterDexie from '@nostr-dev-kit/ndk-cache-dexie';
 // import NDKCacheAdapterNostr from "@nostr-dev-kit/ndk-cache-nostr";
-import { NDKEvent, NDKKind, NDKPrivateKeySigner, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage, NDKUser } from '@nostr-dev-kit/ndk';
+import { NDKEvent, NDKKind, NDKPrivateKeySigner, NDKPublishError, NDKRelay, NDKRelayAuthPolicies, NDKRelaySet, NDKSubscriptionCacheUsage, NDKUser } from '@nostr-dev-kit/ndk';
 import createDebug from 'debug';
 import { debugMode } from '$stores/session';
 import { defaultRelays } from './const';
@@ -65,6 +65,11 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 	});
 	$ndk.pool.on('relay:disconnect', (relay) => {
 		debug('relay disconnect', relay.url);
+	});
+	$ndk.on('event:publish-failed', (event: NDKEvent, error: NDKPublishError) => {
+		debug('event publish failed', event.rawEvent(), error);
+		let msg = error?.relayErrors ?? error.message
+		toast.error(`Failed to publish event: ${msg}`);
 	});
 }
 

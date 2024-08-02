@@ -4,7 +4,7 @@
     import { NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
 
     export let event: NDKEvent;
-    export let userProfile: NDKUserProfile | undefined;
+    export let userProfile: NDKUserProfile | undefined = undefined;
 </script>
 
 <div class="flex flex-row justify-between items-center">

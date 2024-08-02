@@ -85,16 +85,16 @@ w-full
                 {/if}
                 
                 <div class="flex items-center justify-between max-w-[var(--content-focused-width)] mx-auto w-full {containerClass}">
-                    <div class="flex flex-row gap-3 items-center w-full">
+                    <div class="flex flex-row gap-3 items-center w-full truncate">
                         <HeaderLeftButton />
 
                         {#if $layout?.iconUrl}
                             <!-- svelte-ignore a11y-missing-attribute -->
-                            <img src={$layout.iconUrl} class="w-8 h-8 rounded-full" />
+                            <img src={$layout.iconUrl} class="w-8 h-8 rounded-full flex-none" />
                         {:else if $layout.event}
                             <UserProfile user={$layout.event.author} let:userProfile let:authorUrl>
-                                <a href={authorUrl}>
-                                    <Avatar {userProfile} pubkey={$layout.event.author} class="w-8 h-8" />
+                                <a href={authorUrl} class="flex-none">
+                                    <Avatar {userProfile} pubkey={$layout.event.pubkey} class="w-8 h-8" />
                                 </a>
                             </UserProfile>
                         {/if}
@@ -115,7 +115,7 @@ w-full
                     </div>
 
                     {#if $layout.event}
-                        <RelativeTime event={$layout.event} class="text-muted-foreground text-sm" />
+                        <RelativeTime event={$layout.event} class="text-muted-foreground text-sm ml-4" />
                         <Event.Dropdown
                             event={$layout.event}
                             on:delete={() => goto('/')}

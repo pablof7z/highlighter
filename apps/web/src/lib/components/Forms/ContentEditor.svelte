@@ -1,16 +1,18 @@
 <script lang="ts">
-	import { NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher, onMount } from "svelte";
     import QuillMarkdown from 'quilljs-markdown';
     import 'quill-paste-smart';
     import quillEditorMention from "./quill-editor-mention.js";
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
-	import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
+	import { EventContent, prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
 	import { wysiwygEditor } from '$stores/settings.js';
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
 	import { newToasterMessage } from "$stores/toaster.js";
 	import Checkbox from "./Checkbox.svelte";
+    import Tiptap from "$components/Editor/Tiptap.svelte"
+	import { ndk } from "$stores/ndk.js";
 
     export let content: string = "";
     export let placeholder = "Write your heart out...";
@@ -131,14 +133,13 @@
 
         if (!allowMarkdown) options.formats = ['mention'];
 
+        
         quill = new Quill(editorEl, options);
-        quill.setText(content)
+        new QuillMarkdown(quill, {})
         quill.on("text-change", () => {
             content = getContents(quill);
             dispatch("contentChanged");
         });
-
-        new QuillMarkdown(quill, {})
 
         const editorChild = editorEl.firstChild as HTMLElement;
         editorChild.addEventListener("focusin", () => dispatch("focus"));
@@ -235,7 +236,9 @@
         {#if $wysiwygEditor || forceWywsiwyg}
             <div bind:this={editorEl} class="
                 editor h-full {$$props.class??""}
-            " />
+            ">
+                <EventContent ndk={$ndk} content={content} event={new NDKArticle($ndk, { content })} />
+            </div>
         {:else}
             <textarea
                 bind:value={content}
@@ -248,8 +251,6 @@
         {/if}
     </div>
 </div>
-
-<pre>{JSON.stringify(content)}</pre>
 
 <style>
     .editor {

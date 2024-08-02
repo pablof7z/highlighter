@@ -188,7 +188,7 @@
     {#each blocks as block}
         {#if block === "highlights"}
             <HorizontalList class="py-[var(--section-vertical-padding)]" title="Highlights" items={$userHighlights} let:item>
-                <HighlightBody highlight={item} />
+                <Card.Highlight highlight={item} />
             </HorizontalList>
         {:else if block === "notes" && $highQualityNotes}
             <HorizontalList class="py-[var(--section-vertical-padding)]" title="Notes" items={$highQualityNotes} let:item>

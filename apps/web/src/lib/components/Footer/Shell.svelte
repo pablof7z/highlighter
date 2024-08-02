@@ -5,6 +5,7 @@
 	import { ComponentType, createEventDispatcher, onMount, SvelteComponent } from 'svelte';
 	import { Input } from '$components/ui/input';
 	import ContentEditor from '$components/Forms/ContentEditor.svelte';
+	import { footerMainView } from '$stores/layout';
 
     export let collapsed = true;
     export let dragging = false;
@@ -18,6 +19,8 @@
         mainView = undefined;
         dispatch("collapse");
     }
+
+    $: mainView = $footerMainView;
 
     type ButtonView = {
         name: string,

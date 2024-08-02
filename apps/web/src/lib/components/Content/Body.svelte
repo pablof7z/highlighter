@@ -9,9 +9,12 @@
     import ModularArticleItem from "./ModularArticle/Item.svelte";
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 	import { curationKinds } from '$utils/event';
+	import { layout } from '$stores/layout';
 
     export let event: NDKEvent | NDKArticle | NDKVideo = getContext('wrappedEvent') as NDKEvent | NDKArticle | NDKVideo;
     export let isPreview = false;
+
+    $layout.event = event;
 </script>
 
 <div>

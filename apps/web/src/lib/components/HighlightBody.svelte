@@ -55,7 +55,7 @@ import { ndk } from "$stores/ndk.js";
     {#key highlightedArticle}
         {#if highlightedArticle}
             <a href={highlightedArticleLink} class="
-                flex bg-secondary border-t-2 border-border p-4
+                flex bg-secondary/30 border-t-2 border-border p-4
                 hover:bg-foreground/10
                 hover:text-neutral-400 transition-all duration-200
                 rounded-b-box

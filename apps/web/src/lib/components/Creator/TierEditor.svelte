@@ -10,6 +10,7 @@
 
     export let tier: NDKSubscriptionTier;
     export let autofocus = false;
+    export let border = " border border-border";
 
     const dispatch = createEventDispatcher();
 
@@ -112,7 +113,7 @@
     let perkWithFocus: number | undefined;
 </script>
 
-<div class="w-full rounded-xl flex-col border border-border text-muted-foreground">
+<div class="w-full rounded-xl flex-col {border} text-muted-foreground">
     <div class="self-stretch flex-col justify-start items-start gap-6 flex">
         <section class="w-full">
             <div class="field">

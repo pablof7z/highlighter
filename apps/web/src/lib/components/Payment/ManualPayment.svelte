@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { calculateSatAmountFromAmountTag, currencyFormat } from "$utils/currency";
     import UserProfile from "$components/User/UserProfile.svelte";
-	import { NDKEvent, NDKSubscription, NDKUser, NDKZap } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKSubscription, NDKUser } from "@nostr-dev-kit/ndk";
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import { creatorRelayPubkey } from "$utils/const";
 	import { Check } from "phosphor-svelte";
@@ -44,11 +44,11 @@
     amount = amountTag[1];
 	currency = amountTag[2];
     calculateSatAmountFromAmountTag(amountTag).then(async (amount) => {
-        const zap = new NDKZap({
-            ndk: $ndk,
-            zappedEvent: event,
-            zappedUser: recipient
-        });
+        // const zap = new NDKZap({
+        //     ndk: $ndk,
+        //     zappedEvent: event,
+        //     zappedUser: recipient
+        // });
         satAmount = amount;
 
         amount = 10;

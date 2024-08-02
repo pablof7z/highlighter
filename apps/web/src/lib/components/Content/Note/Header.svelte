@@ -21,6 +21,7 @@
     export let blossom: any | undefined = undefined;
 
     $layout.title = "Thread";
+    $layout.event = event;
     $layout.sidebar = false;
     $layout.footerInMain = true;
     $: $layout.footer = {

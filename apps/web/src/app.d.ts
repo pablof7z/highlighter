@@ -49,6 +49,10 @@ export type NavigationOption = {
     href?: string;
 	badge?: string | true;
     id?: string;
+	button?: {
+		icon: SvelteComponent;
+		fn: () => void;
+	},
     component?: {
 		component: typeof SvelteComponent;
 		unstyled?: boolean;

@@ -1,7 +1,7 @@
 import { ndk } from "$stores/ndk.js";
-import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, NDKUser, NDKZap, NDKZapInvoice, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
+import { Hexpubkey, NDKEvent, NDKFilter, NDKKind, NDKSubscriptionCacheUsage, NDKSubscriptionOptions, NDKUser, NDKZapInvoice, zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
 import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-import { NDKNutzap } from "@nostr-dev-kit/ndk-wallet";
+import { NDKNutzap } from "@nostr-dev-kit/ndk";
 import { Readable, derived, get, readable } from "svelte/store";
 
 export type ZapScore = { pubkey: Hexpubkey, totalSats: number, totalZaps: number, comments?: string[] };
@@ -150,8 +150,8 @@ export async function getTopZapsByIndividualAmount(
 }
 
 export const getZapperPubkey = async (eventOrUser: NDKEvent | NDKUser) => {
-    const $ndk = get(ndk);
-    return await NDKZap.getZapperPubkey($ndk, eventOrUser.pubkey);
+    const user = eventOrUser instanceof NDKUser ? eventOrUser : eventOrUser.author;
+    return await user.getZapperPubkey();
 }
 
 /**

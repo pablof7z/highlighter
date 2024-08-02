@@ -69,19 +69,13 @@
             format="m[m]"
         />
     {:else if distanceOfTime < 60 * 60 * 24}
-        <Time
-            live={true}
-            {timestamp}
-            class={$$props.class || ``}
-            format="h[h]"
-        />
+        <span class={$$props.class || ``}>
+            {Math.floor(distanceOfTime/60/60)}h
+        </span>
     {:else if distanceOfTime < 60 * 60 * 24 * 30}
-        <Time
-            live={true}
-            {timestamp}
-            class={$$props.class || ``}
-            format="d[d]"
-        />
+        <span class={$$props.class || ``}>
+            {Math.floor(distanceOfTime/60/60/24)}d
+        </span>
     {:else}
         <Time
             live={true}

@@ -33,6 +33,7 @@
         let:metadata
         let:members
         let:stores
+        let:joinRequests
         let:tiers
         let:admins
     >
@@ -41,6 +42,7 @@
             {isAdmin}
             {isMember}
             {tiers}
+            {joinRequests}
             {metadata}
             {members}
             {admins}
@@ -51,4 +53,5 @@
     </Groups.Root>
 {:else}
     <slot />
+    loading without groupid
 {/if}

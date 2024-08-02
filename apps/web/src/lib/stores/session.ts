@@ -23,7 +23,7 @@ import currentUser from './currentUser';
 import { writable } from 'svelte/store';
 import { creatorRelayPubkey } from '$utils/const';
 import { notificationsSubscribe } from './notifications';
-import { walletInit } from './wallet.js';
+import { onLnPay, onPaymentComplete, walletInit } from './wallet.js';
 
 const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
@@ -164,6 +164,12 @@ export async function prepareSession(): Promise<void> {
 	return new Promise<void>(async (resolve) => {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
 		const $sessionUpdatedAt = alreadyKnowFollows ? get(sessionUpdatedAt) : undefined;
+
+		console.log("$ndk.walletConfig", $ndk.walletConfig);
+		$ndk.walletConfig = {
+			onLnPay,
+			onPaymentComplete
+		};
 
 		fetchData('user', $ndk, [$currentUser.pubkey], {
 			profileStore: userProfile,
@@ -312,7 +318,7 @@ async function fetchData(
 		} else if (event.kind === NDKKind.SimpleGroupList && opts.groupsListStore) {
 			groupsListStore(event);
 		} else if (event.kind === NDKKind.SimpleGroupList && opts.groupsCountStore) {
-			groupsCountStore(event);
+			groupsCountsStore(event);
 		} else if ([
 			NDKKind.ArticleCurationSet,
 			NDKKind.VideoCurationSet,
@@ -365,7 +371,17 @@ async function fetchData(
 
 	const groupsCountsStore = (event: NDKEvent) => {
 		opts.groupsCountStore!.update((groupsCounts) => {
-			return NDKList.from(event);
+			const list = NDKList.from(event);
+			const groups = list.getMatchingTags("group");
+
+			for (const group of groups) {
+				const groupId = group[1];
+				const relay = group[2]??'';
+				const count = groupsCounts.get({ groupId, relayUrl: relay }) ?? 0;
+				groupsCounts.set({ groupId, relayUrl: relay }, count + 1);
+			}
+
+			return groupsCounts;
 		});
 	}
 

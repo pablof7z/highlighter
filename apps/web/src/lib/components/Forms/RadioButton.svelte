@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Button } from "$components/ui/button";
-	import { Check } from "phosphor-svelte";
+	import { Check, CheckFat } from "phosphor-svelte";
     import { createEventDispatcher } from "svelte";
 
     export let currentValue: string | undefined = undefined;
     export let value: string | undefined = undefined;
+    export let color = "accent";
 
     const dispatch = createEventDispatcher();
 
@@ -18,13 +18,15 @@
     }
 </script>
 
-<Button variant="outline" class="
+<button class="
+    text-left
+    border-2 rounded p-2 px-4
     flex flex-row gap-2 items-center justify-between w-full {$$props.class??""}
-    hover:bg-accent/10 hover:text-accent-foreground
-    { selected ? "border-accent" : ""}
+    hover:bg-{color}/10 hover:text-{color}-foreground
+    { selected ? `border-${color}` : "border-muted-foreground opacity-50 hover:opacity-100"}
 " on:click={onClick}>
     <div class="flex flex-row items-start w-full">
-        <div class="flex flex-row gap-2 justify-stretch items-start w-full">
+        <div class="flex flex-row gap-10 justify-stretch items-center w-full">
             <div class="flex flex-col items-start grow w-full">
                 <span><slot /></span>
                 <div>
@@ -33,8 +35,9 @@
             </div>
 
             {#if !$$props.skipCheck}
-                <Check class="text-accent {!selected ? 'hidden' : ''}" />
+                <CheckFat size={20} weight="fill" class="text-{color} { selected ? "" : "opacity-0" }" />
+                <!-- <Checkbox checked={true}/> -->
             {/if}
         </div>
     </div>
-</Button>
+</button>

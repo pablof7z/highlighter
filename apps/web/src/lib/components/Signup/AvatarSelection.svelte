@@ -16,7 +16,7 @@
 </script>
 
 <div class="flex flex-col items-center gap-2">
-    <img src={acatar} class="w-24 h-24 rounded-full ring-2 border-4 border-transparent" />
+    <img src={acatar} class="w-24 h-24 rounded-full ring-2 border-4 border-transparent object-cover " />
             
     <div class="flex flex-row gap-4 items-center">
         {#each skeletonAvatars as src}
@@ -28,6 +28,7 @@
                     class="
                         w-24 h-24 rounded-full
                         ring-2
+                        object-cover
                         border-4 border-transparent
                         transition-all duration-500 avatar
                         {src === acatar ? 'selected' : ''}

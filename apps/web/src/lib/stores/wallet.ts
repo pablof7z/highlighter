@@ -1,4 +1,4 @@
-import NDK, { LnPaymentInfo, NDKUser, NDKZapConfirmation, NDKZapDetails, NutPaymentInfo } from "@nostr-dev-kit/ndk";
+import NDK, { LnPaymentInfo, NDKPaymentConfirmation, NDKPaymentConfirmationCashu, NDKPaymentConfirmationLN, NDKUser, NDKZapConfirmation, NDKZapDetails, NDKZapSplit, NutPaymentInfo } from "@nostr-dev-kit/ndk";
 import NDKWallet, { NDKCashuWallet } from "@nostr-dev-kit/ndk-wallet";
 import { derived, get, writable } from "svelte/store";
 import createDebug from "debug";
@@ -24,12 +24,14 @@ export function walletInit(
 ) {
     const $walletService = get(walletService);
     $walletService.ndk = ndk;
-    $walletService.on("wallet", (w) => { console.log('got wallet '+w.p2pkPubkey, w.rawEvent()); wallets.set($walletService.wallets); });
+    $walletService.on("wallet", (w) => { console.log('got wallet '+w.p2pk, w.rawEvent()); wallets.set($walletService.wallets); });
     $walletService.on("wallet:default", (w: NDKCashuWallet) => {
         console.log("setting default wallet", w);
         wallet.set(w);
-        if (!ndk.walletConfig) ndk.walletConfig = {};
-        ndk.walletConfig.onNutPay = onNutPay;
+        // w.on("insufficient_balance", (data) => {
+        //     console.log("insufficient balance", data);
+        // });
+        ndk.walletConfig.onCashuPay = w.cashuPay.bind(w);
     });
     $walletService.on("wallet:balance", (w: NDKCashuWallet) => {
         walletsBalance.update((b) => {
@@ -39,22 +41,16 @@ export function walletInit(
         });
     });
     $walletService.start();
-    
-    d("fetching user wallets");
-
-    ndk.walletConfig = {
-        onLnPay,
-        onPaymentComplete,
-    }
 }
 
-async function onLnPay(details: NDKZapDetails<LnPaymentInfo>): Promise<NDKZapConfirmation> {
+export async function onLnPay(details: NDKZapDetails<LnPaymentInfo>): Promise<NDKPaymentConfirmationLN | undefined> {
     const $wallet = get(wallet);
-    const { amount, unit, target, comment } = details;
-    const { pr } = details.info;
+    const { amount, unit, target, comment, pr } = details;
+
+    // do we have a NIP-60 wallet?
 
     try {
-        const preimage = await $wallet?.lnPay(pr);
+        const preimage = await $wallet?.lnPay({pr});
         if (!preimage) throw new Error("failed to pay");
 
         d("payment successful", preimage);
@@ -67,35 +63,11 @@ async function onLnPay(details: NDKZapDetails<LnPaymentInfo>): Promise<NDKZapCon
     }
 }
 
-async function onNutPay(details: NDKZapDetails<NutPaymentInfo>): Promise<NDKZapConfirmation> {
-    const $wallet = get(wallet);
-    const { mints, p2pkPubkey } = details.info;
-    const { amount, unit } = details;
-
-    d("received Nut payment request", details);
-
-    if (!$wallet) throw new Error("no wallet selected");
-
-    try {
-        const res = await $wallet.nutPay(amount, unit, mints, p2pkPubkey);
-        if (!res) throw new Error("failed to pay");
-
-        d("payment successful", res);
-
-        const nutzap = await $wallet.publishNutzap(res.proofs, res.mint, details);
-
-        d("nutzap published", nutzap.rawEvent());
-
-        return nutzap;
-    } catch (e) {
-        d("payment failed", e);
-        throw e;
-    }
-}
-
-function onPaymentComplete(confirmation: NDKZapConfirmation | Error) {
-    if (confirmation instanceof Error) {
-        toast.error(confirmation.message);
-        return;
+export function onPaymentComplete(results: Map<NDKZapSplit, NDKPaymentConfirmation | Error | undefined>) {
+    for (const [split, confirmation] of results) {
+        if (confirmation instanceof Error) {
+            toast.error(confirmation.message);
+            return;
+        }
     }
 }

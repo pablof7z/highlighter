@@ -32,8 +32,8 @@
         ]
     });
 
-    function create() {
-        const wallet = createNewWallet();
+    async function create() {
+        const wallet = await createNewWallet();
         goto(`/wallet/settings?id=${wallet.dTag}`);
     }
 

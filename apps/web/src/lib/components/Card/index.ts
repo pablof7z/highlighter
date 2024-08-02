@@ -1,4 +1,5 @@
 import Article from "./ArticleCard.svelte";
+import Highlight from "./Highlight.svelte";
 import FeaturedArticle from "./FeaturedArticleCard.svelte";
 import FeaturedList from "./FeaturedListCard.svelte";
 import User from "./User.svelte";
@@ -14,6 +15,7 @@ import Note from "./Note.svelte";
 
 export {
     Article,
+    Highlight,
     User,
     Community,
     Curation,

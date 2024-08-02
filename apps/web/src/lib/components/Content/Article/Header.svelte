@@ -24,6 +24,7 @@
     })
 
     let image: string | undefined;
+    let mainView: string;
 
     if (!isPreview) {
         $layout.sidebar = false;
@@ -34,6 +35,8 @@
         }
         $layout.footerInMain = true;
     }
+
+    $: $layout.footer!.props.forceMainView = mainView;
 
     $: image = article.image
     if (!image && !isPreview) image ??= userProfile?.image;
@@ -53,7 +56,6 @@
     })
 </script>
 
-
 <ContentHeader
     event={article}
     image={article.image}
@@ -65,4 +67,5 @@
     navOptions={
         [{ name: "Article", href: getEventUrl(article, authorUrl) },]
     }
+    on:curate={() => mainView = "curation"}
 />

@@ -1,12 +1,11 @@
 <script lang="ts">
-	import StylishContainer from './../PageElements/StylishContainer.svelte';
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 	import { ndk } from "$stores/ndk";
 	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { eventToKind, mainContentKinds } from '$utils/event';
 	import ItemLink from './ItemLink.svelte';
-	import Article from '$components/Grid/Article.svelte';
 	import { Button } from '$components/ui/button';
+    import * as Card from '$components/Card';
 
     export let id: string;
     export let relays: string[] | undefined = undefined;
@@ -50,7 +49,7 @@
             {/if}
         </div>
     {:else if articleKinds.includes(event.kind)}
-        <Article article={NDKArticle.from(event)} wideView />
+        <Card.FeaturedArticle article={NDKArticle.from(event)} />
     {:else if mainContentKinds.includes(event.kind)}
         <div class="w-full border border-border">
             <ItemLink {event} class="event-wrapper--content" />
