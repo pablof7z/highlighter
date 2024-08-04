@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { type NDKEvent } from "@nostr-dev-kit/ndk";
-	import { Toolbar } from "konsta/svelte";
 	import { appMobileView } from "$stores/app";
 	import { loadedMedia, loadedMediaStatus, togglePause } from "$stores/media";
 	import Button from "$components/ui/button/button.svelte";

@@ -82,10 +82,6 @@
             { icon: Timer, fn: schedule },
             { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, buttonProps: { variant: 'default' } }
         ];
-
-        if (!$appMobileView) {
-            actionButtons.unshift({ name: "Cancel", fn: closeModal, class: "", buttonProps: {variant: "ghost"}});
-        }
     }
 
     $: wrapperClass = `w-full sm:max-w-3xl max-sm:h-full ${publishing ? "!bg-transparent" : ""}`;
@@ -112,7 +108,7 @@
     {/if}
 {/if}
 
-<div class="w-full flex flex-col max-sm:min-h-[100dvh]">
+<div class="w-full flex flex-col max-sm:min-h-[80dvh]">
     {#if replyTo}
         <UserProfile user={replyTo.author} bind:userProfile={replyToUserProfile}>
             <div class="text-xs translate-y-2 mt-2 mb-4 text-muted-foreground">
