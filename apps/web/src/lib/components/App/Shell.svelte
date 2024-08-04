@@ -186,7 +186,7 @@
     transition-all duration-300
     {withSidebar ? "md:pl-[360px]" : ""}
 " style={`
-`} on:click={resetView}>
+`} on:click={resetView} data-vaul-drawer-wrapper>
     {#if withSidebar}
         <div
             class="hidden border-r md:block fixed left-0 h-screen w-[360px]"

@@ -6,7 +6,6 @@
 	import { NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 	import { derived, get } from "svelte/store";
 	import { groupsList } from "$stores/session";
-	import { groupView } from '$stores/item-view';
 	import { groupKey } from '$stores/groups';
 
     const otherGroups = $ndk.storeSubscribe([

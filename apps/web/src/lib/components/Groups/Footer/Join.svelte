@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { title } from '$stores/item-view';
     import { Hexpubkey, NDKEvent, NDKKind, NDKPaymentConfirmation, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKZapConfirmation, NDKZapSplit } from "@nostr-dev-kit/ndk";
     import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";

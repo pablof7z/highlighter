@@ -6,12 +6,14 @@
     import { closeModal } from '$utils/modal';
 	import { beforeNavigate } from '$app/navigation';
 	import { appMobileView } from '$stores/app';
-	import { X } from 'phosphor-svelte';
-	import { Block, Link, Toolbar } from 'konsta/svelte';
 	import { NavigationOption } from '../../app';
 	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
+	import { Button } from './ui/button';
+    import * as Dialog from "$lib/components/ui/dialog/index.js";
+    import * as Drawer from "$lib/components/ui/drawer/index.js";
 
     export let title: string | undefined = undefined;
+    export let open = true;
 
     /**
      * Buttons to render on the shell
@@ -73,106 +75,48 @@
     }
 </script>
 
-{#if $appMobileView}
-    {#if actionButtons.length > 0}
-        <Toolbar top>
-            <div class="left">
-                <Link onClick={() => closeModal()}>
-                    Close
-                </Link>
-            </div>
+{#if !$appMobileView}
+    <Dialog.Root bind:open>
+        <Dialog.Content class="sm:max-w-[425px]">
+            <Dialog.Header>
+                <Dialog.Title>{title}</Dialog.Title>
+            </Dialog.Header>
 
-            <div class="right flex flex-row">
-                <HorizontalOptionsList options={actionButtons} />
-                <!-- {#each actionButtons as item, i}
-                    <Button on:click={item.fn} variant={item.variant} size="sm">
-                        {item.name}
-                    </Button>
-                {/each} -->
-            </div>
-        </Toolbar>
-        {#if $$slots.titleRight}
-            <div class="mx-auto">
-                <slot name="titleRight" />
-            </div>
-        {/if}
-    {:else if $$slots.titleRight}
-        <Toolbar translucent top class="mx-auto !w-fit mt-4">
-            <slot name="titleRight" />
-        </Toolbar>
-    {/if}
-    <Block class="max-h-[80vh] overflow-y-auto {$$props.class??""} max-sm:text-base">
-        <slot />
-    </Block>
-{:else}
-    <div class="fixed top-0 bottom-0 left-0 w-screen h-screen z-[98] flex items-center justify-center pointer-events-none" bind:this={containerEl}>
-        <div class="
-            max-sm:fixed max-sm:top-0 max-sm:bottom-0 z-[99] max-sm:w-full  max-sm:!pb-0
-            rounded-3xl overflow-clip bg-background border border-border
-            {$$props.containerClass??""}
-        ">
-            {#if mounted}
-                <div class="
-                    !rounded-3xl
-                    max-sm:!rounded-b-none
-                    mx-auto
-                    !overflow-hidden
-                    w-full
-                    p-6
-                    {$$props.class}
-                " style="
-                    pointer-events: auto;
-                ">
-                    <div class="inner flex flex-col items-center transition-all duration-300
-                    {$$props.class}">
-                        {#if title}
-                            <div class="flex flex-row justify-between w-full border-b border-border pb-2 mb-4">
-                                <div class="flex flex-row flex-none gap-4 items-end justify-start">
-                                    <button on:click={closeModal}>
-                                        <X class="text-foreground w-7 h-7" />
-                                    </button>
-                                    
-                                    <h3 class="title w-full text-left text-foreground font-bold text-xl">{title}</h3>
-                                </div>
+            <slot />
 
-                                {#if $$slots.titleRight}
-                                    <slot name="titleRight" />
-                                {/if}
-                            </div>
-                        {/if}
-                    
-                        <div class="overflow-y-auto max-h-[65vh] grow shrink w-full scrollbar-hide">
-                            <slot />
-                        </div>
-
-                        {#if $$slots.footer}
-                            <div class="w-full flex flex-row gap-4 items-center justify-end flex-none mt-4">
-                                <slot name="footer" />
-                            </div>
-                        {:else if actionButtons.length > 0}
-                            <div class="w-full flex flex-row gap-4 items-center justify-between flex-none mt-4">
-                                {#if $$slots.footerExtra}
-                                    <slot name="footerExtra" />
-                                {:else}
-                                    <div class="grow"></div>
-                                {/if}
-                                
-                                <div>
-                                    <HorizontalOptionsList options={actionButtons} />
-                                </div>
-                            </div>
-                        {/if}
+            <Dialog.Footer>
+                {#if $$slots.footer}
+                    <div class="w-full flex flex-row gap-4 items-center justify-end flex-none mt-4">
+                        <slot name="footer" />
                     </div>
-                </div>
-            {/if}
+                {:else if actionButtons.length > 0}
+                    <div class="w-full flex flex-row gap-4 items-center justify-between flex-none mt-4">
+                        {#if $$slots.footerExtra}
+                            <slot name="footerExtra" />
+                        {:else}
+                            <div class="grow"></div>
+                        {/if}
+                        
+                        <div>
+                            <HorizontalOptionsList options={actionButtons} />
+                        </div>
+                    </div>
+                {/if}
+            </Dialog.Footer>
+        </Dialog.Content>
+    </Dialog.Root>
+{:else}
+  <Drawer.Root shouldScaleBackground bind:open>
+    <Drawer.Content>
+      <Drawer.Header class="text-left flex flex-row w-full justify-between items-end">
+        <Drawer.Title class="truncate grow">{title}</Drawer.Title>
+        <div class="w-fit">
+            <HorizontalOptionsList options={actionButtons} />
+
         </div>
-    </div>
+      </Drawer.Header>
+      <slot />
+    </Drawer.Content>
+  </Drawer.Root>
 {/if}
 
-
-
-<style lang="postcss">
-    .title {
-        @apply w-full text-left text-foreground font-bold text-lg;
-    }
-</style>
