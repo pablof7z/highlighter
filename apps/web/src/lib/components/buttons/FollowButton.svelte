@@ -2,7 +2,6 @@
     import { categorizedUserLists, sortedUserLists, userFollows } from "$stores/session";
 	import { ndk } from "$stores/ndk.js";
     import { NDKUser } from "@nostr-dev-kit/ndk";
-	import { Checkbox } from "konsta/svelte";
 	import { Plus, User, UserMinus, UserPlus } from "phosphor-svelte";
 	import { Button } from "$components/ui/button";
 	import currentUser from "$stores/currentUser";

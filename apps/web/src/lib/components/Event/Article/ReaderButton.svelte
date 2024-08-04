@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { NDKRelaySet, NDKSubscription, NostrEvent } from "@nostr-dev-kit/ndk";
-	import { toast } from "svelte-sonner";
 	import { NDKArticle, NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Button } from "$components/ui/button";
 	import { appMobileView } from "$stores/app";
@@ -9,7 +8,6 @@
 	import { Play, Stop } from "phosphor-svelte";
 	import { ndk } from "$stores/ndk";
 	import { openModal } from "$utils/modal";
-	import LnQrModal from "$modals/LnQrModal.svelte";
 	import TtsModal from '$modals/TTSModal.svelte';
     import { loadedMedia, togglePause } from '$stores/media';
 

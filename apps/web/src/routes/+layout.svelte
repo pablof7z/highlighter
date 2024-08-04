@@ -17,8 +17,6 @@
 	import { ModeWatcher } from "mode-watcher";
 	import { ndk } from '$stores/ndk';
 	import AppShell from '$components/App/Shell.svelte';
-	import { App } from 'konsta/svelte';
-	import { title } from '$stores/item-view';
 	import { layout } from '$stores/layout';
 	import { initialize } from '@capacitor-community/safe-area';
 

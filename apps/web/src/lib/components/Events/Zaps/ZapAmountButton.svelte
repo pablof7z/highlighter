@@ -14,7 +14,7 @@
 </script>
 
 <div class="flex flex-col items-center gap-1">
-    <Button forceNonMobile variant={active ? "default" : "secondary"} on:click={click} class="grid place-items-center {$$props.class || ``} ">
+    <Button variant={active ? "default" : "secondary"} on:click={click} class="grid place-items-center {$$props.class || ``} ">
         <slot />
     </Button>
     <span

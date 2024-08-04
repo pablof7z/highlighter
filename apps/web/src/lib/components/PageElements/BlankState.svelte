@@ -10,7 +10,7 @@
     </p>
 
     {#if $$props.cta}
-        <Button forceNonMobile size="lg" variant="default" on:click>
+        <Button size="lg" variant="default" on:click>
             {$$props.cta}
         </Button>
     {/if}

@@ -39,7 +39,7 @@
             {:else}
                 <span class="p-4">Unable to load event</span>
 
-                <Button forceNonMobile variant="secondary" size="sm" on:click={() => showMore = true}>Details</Button> 
+                <Button variant="secondary" size="sm" on:click={() => showMore = true}>Details</Button> 
 
                 {#if showMore}
                     <p>

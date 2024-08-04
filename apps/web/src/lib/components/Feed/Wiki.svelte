@@ -3,7 +3,6 @@
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
     import { NDKWiki } from "@nostr-dev-kit/ndk";
-	import { Card } from "konsta/svelte";
 	import { derived, Readable } from "svelte/store";
 
     export let store: Readable<NDKWiki[]>;
@@ -84,8 +83,6 @@
 <!-- auto grid -->
 <div class="flex flex-row flex-wrap">
     {#each $topics as topic}
-        <Card class="w-fit">
             <h2>{topic}</h2>
-        </Card>
     {/each}
 </div>

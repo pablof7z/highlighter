@@ -4,10 +4,7 @@
 	import { ndk } from "$stores/ndk.js";
 	import { onDestroy } from "svelte";
     import HorizontalList from "$components/PageElements/HorizontalList";
-	import { Card } from "konsta/svelte";
-	import Scroll from "quill/blots/scroll";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import EventTags from "$components/Events/EventTags.svelte";
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 
     const feed = $ndk.storeSubscribe(
@@ -92,8 +89,6 @@
 <!-- auto grid -->
 <div class="flex flex-row flex-wrap">
     {#each $topics as topic}
-        <Card class="w-fit">
             <h2>{topic}</h2>
-        </Card>
     {/each}
 </div>
