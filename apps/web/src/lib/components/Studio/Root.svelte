@@ -71,12 +71,12 @@
         <User.Root
             user={$currentUser}
             let:authorUrl
-            let:groups
+            let:groupsList
         >
             <slot
-                {groups}
                 {mode}
                 {publishScope}
+                {groupsList}
                 {thread}
                 {event}
                 {preview}

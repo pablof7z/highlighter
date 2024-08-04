@@ -90,3 +90,5 @@ export const featuredCreatorsPerCategory: Record<string, Hexpubkey[]> = {
         vanityUrls.hodlbod
     ],
 }
+
+export const unicodeEmojiRegex = /[\p{Emoji}]/gu;

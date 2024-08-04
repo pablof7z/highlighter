@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKEvent, NDKWiki, NDKVideo } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKEvent, NDKWiki, NDKVideo, NDKList } from '@nostr-dev-kit/ndk';
     import { getContext } from 'svelte';
     import ArticleBody from "./Article/Body.svelte";
     import CurationBody from "./Curation/Body.svelte";
@@ -11,7 +11,7 @@
 	import { curationKinds } from '$utils/event';
 	import { layout } from '$stores/layout';
 
-    export let event: NDKEvent | NDKArticle | NDKVideo = getContext('wrappedEvent') as NDKEvent | NDKArticle | NDKVideo;
+    export let event: NDKEvent | NDKArticle | NDKVideo | NDKList = getContext('wrappedEvent') as NDKEvent | NDKArticle | NDKVideo | NDKList;
     export let isPreview = false;
 
     $layout.event = event;

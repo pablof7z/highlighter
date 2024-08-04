@@ -10,6 +10,6 @@
     });
 </script>
 
-<div class="responsive-padding lg:p-6">
+<div class="lg:p-6">
     <slot />
 </div>

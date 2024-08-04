@@ -3,16 +3,36 @@
     import * as Tooltip from "$lib/components/ui/tooltip";
 	import { Check, PencilRuler } from "phosphor-svelte";
     
-    export let save: () => Promise<boolean>;
+    export let save: (manuallySaved: boolean) => Promise<boolean>;
+    export let timer: number | undefined = undefined;
 
     let manuallySaved = false;
     let state: "idle" | "saving" | "saved" = "idle";
+
+    const autoSave = async () => {
+        if (state === "idle") {
+            manuallySaved = false;
+            state = "saving";
+
+            if (await save(manuallySaved)) {
+                state = "saved";
+            } else {
+                console.error("Failed to save");
+            }
+
+            setTimeout(autoSave, timer! * 1000);
+        }
+    }
+
+    if (timer) {
+        setTimeout(autoSave, timer * 1000);
+    }
 
     async function click() {
         manuallySaved = true;
         state = "saving";
 
-        if (await save()) {
+        if (await save(manuallySaved)) {
             state = "saved";
             setTimeout(() => { state = "idle"; }, 2000);
         } else {

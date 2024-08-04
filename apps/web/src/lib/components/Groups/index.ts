@@ -1,4 +1,5 @@
 import Root from './Root.svelte';
+import RootList from './RootList.svelte';
 import Shell from './Shell.svelte';
 
 import * as Views from './Views';
@@ -19,6 +20,7 @@ export type ContentStores = {
 
 export {
     Root,
+    RootList,
     Shell,
 
     Views,

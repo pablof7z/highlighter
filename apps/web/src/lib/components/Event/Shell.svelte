@@ -6,7 +6,6 @@
 	import Scheduler from '$modals/Scheduler.svelte';
 	import ZapModal from '$modals/ZapModal.svelte';
 	import { userGenericCuration } from '$stores/session';
-	import { newToasterMessage } from '$stores/toaster';
 	import { openModal } from '$utils/modal';
 	import { NDKEvent } from '@nostr-dev-kit/ndk';
 	import { Quotes, BookmarkSimple, Lightning, Repeat, Timer, ChatCircle } from 'phosphor-svelte';
@@ -51,7 +50,7 @@
             toast.success("Bookmark saved");
             $userGenericCuration = await toggleBookmarkedEvent(event, $userGenericCuration);
         } catch (e: any) {
-            newToasterMessage(e.relayErrors ?? e.message, "error")
+            toast.error(e.relayErrors ?? e.message, "error")
         }
     }
 </script>

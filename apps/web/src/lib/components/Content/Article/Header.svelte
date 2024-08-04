@@ -4,7 +4,6 @@
     import ContentHeader from "$components/Content/Header.svelte";
 	import { layout } from "$stores/layout";
 	import Footer from "./Footer.svelte";
-	import TopHeader from "../TopHeader.svelte";
 	import { getEventUrl } from "$utils/url";
 	import { page } from "$app/stores";
 	import { addHistory } from "$stores/history";

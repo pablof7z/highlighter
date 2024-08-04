@@ -13,9 +13,7 @@
     onDestroy(() => articles.unsubscribe())
 </script>
 
-<div class="responsive-padding">
-    <Feed.Articles
-        store={articles}
-        skipAuthor
-    />
-</div>
+<Feed.Articles
+    store={articles}
+    skipAuthor
+/>

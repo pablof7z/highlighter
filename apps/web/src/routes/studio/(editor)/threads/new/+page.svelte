@@ -1,6 +1,5 @@
 <script lang="ts">
 	import UserProfile from '$components/User/UserProfile.svelte';
-	import ThreadEditor from "$components/Editor/ThreadEditor/ThreadEditor.svelte";
 	import currentUser from "$stores/currentUser";
 	import { ndk } from "$stores/ndk";
 	import { Thread } from "$utils/thread";
@@ -8,7 +7,6 @@
 	import { getContext } from "svelte";
 	import { Writable } from "svelte/store";
     import ThreadItem from "$components/Editor/Thread/Item.svelte";
-	import { addDraftCheckpoint } from '$utils/drafts';
 	import { Plus } from 'phosphor-svelte';
     import { Types as StudioItemTypes } from "$components/Studio";
 
@@ -31,7 +29,6 @@
 	// 	if (item) {
 	// 		draftItem = item;
 	// 		$drafts = $drafts;
-	// 		newToasterMessage("Draft saved", "success");
 	// 	}
 	// }
     

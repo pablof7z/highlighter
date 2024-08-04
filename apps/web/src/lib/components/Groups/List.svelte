@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { get } from 'svelte/store';
 	import { NDKSimpleGroup, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
     import ListItem from "./ListItem.svelte";
 	import { PublishInTierStore, Scope } from "$components/Studio";
+	import Root from "./Root.svelte";
+	import { groups } from '$stores/groups';
 
-    export let groups: Record<string, NDKSimpleGroup>;
     export let selectedGroups: Record<string, boolean>;
     export let publishInTiers: PublishInTierStore;
     export let scope: Scope;
@@ -25,13 +27,11 @@
     }
 </script>
 
-{#each Object.entries(groups) as [id, group]}
-    {#if group.name}
+{#each Object.entries($groups) as [id, group] (id)}
         <ListItem
             {group}
             {scope}
             bind:selected={selectedGroups[id]}
             bind:selectedTiers={selectedTiers[id]}
         />
-    {/if}
 {/each}

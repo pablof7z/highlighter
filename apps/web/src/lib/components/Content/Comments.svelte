@@ -4,7 +4,7 @@
 	import { getContext } from "svelte";
 	import { derived, Readable } from "svelte/store";
 
-    const wrappedEvent = getContext("wrappedEvent") as NDKEvent;
+    export let wrappedEvent = getContext("wrappedEvent") as NDKEvent;
     const replies = getContext("replies") as Readable<NDKEvent[]>;
 
     const tagsConsideredOps = new Set<string>();

@@ -24,9 +24,8 @@ export function walletInit(
 ) {
     const $walletService = get(walletService);
     $walletService.ndk = ndk;
-    $walletService.on("wallet", (w) => { console.log('got wallet '+w.p2pk, w.rawEvent()); wallets.set($walletService.wallets); });
+    $walletService.on("wallet", (w) => wallets.set($walletService.wallets) );
     $walletService.on("wallet:default", (w: NDKCashuWallet) => {
-        console.log("setting default wallet", w);
         wallet.set(w);
         // w.on("insufficient_balance", (data) => {
         //     console.log("insufficient balance", data);

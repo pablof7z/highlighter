@@ -15,11 +15,10 @@
     $: if ($isMember) {
         $layout.footer = {
             component: Groups.Footers.Home,
-            props: { group }
+            props: { group, metadata }
         }
     }
 
-    const tiers = getContext("groupTiers") as Readable<NDKSubscriptionTier[]>;
     const articles = getContext("groupArticles") as Readable<NDKArticle[]>;
 </script>
 

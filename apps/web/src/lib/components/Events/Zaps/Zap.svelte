@@ -198,7 +198,7 @@
                 </div>
 
                 {#if !skipButton}
-                    <Button variant="accent" on:click={zap} class="{$$props.buttonClass??""}" disabled={!zapButtonEnabled}>
+                    <Button variant="gold" on:click={zap} class="{$$props.buttonClass??""}" disabled={!zapButtonEnabled}>
                         Zap
                         {nicelyFormattedSatNumber(amount)}
                         sats

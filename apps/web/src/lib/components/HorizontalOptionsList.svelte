@@ -7,6 +7,7 @@
     const dispatch = createEventDispatcher();
 
     export let options: NavigationOption[] = [];
+    export let activeOption: NavigationOption | null;
     export let value: string = "";
     export let tabs = false;
 </script>
@@ -70,7 +71,8 @@
                             if (!option.href) {
                                 e.preventDefault();
                             }
-                            dispatch("changed", { value: option.name });
+                            activeOption = option;
+                            dispatch("changed", { value: option.name, option });
                             if (option.fn) option.fn();
                             value = option.name;
                         }}

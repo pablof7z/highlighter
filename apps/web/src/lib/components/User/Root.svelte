@@ -3,7 +3,7 @@
 	import { derived, writable } from "svelte/store";
 	import { ndk } from "$stores/ndk";
     import { deriveStore, deriveListStore } from "$utils/events/derive.js";
-	import { filterArticle } from "$utils/article-filter";
+	import { filterArticle, filterArticles } from "$utils/article-filter";
 	import UserProfile from "./UserProfile.svelte";
 
     export let user: NDKUser;
@@ -43,42 +43,7 @@
     const cashuMintList = deriveListStore<NDKCashuMintList>(events, NDKCashuMintList);
     const allTiers = deriveStore<NDKSubscriptionTier>(events, NDKSubscriptionTier);
 
-    const articles = derived(articlesAll, $articlesAll => {
-        return $articlesAll.filter(filterArticle);
-    });
-
-    const groups = writable<Record<string, NDKSimpleGroup>>({});
-    const groupsMetadata = writable<Record<string, NDKSimpleGroupMetadata>>({});
-
-    // load groups
-    let loadedGroups = new Set<string>();
-    $: if ($groupsList && $groupsList.items) {
-        for (const group of $groupsList.items) {
-            const groupId = group[1];
-            if (!loadedGroups.has(groupId)) {
-                loadedGroups.add(groupId);
-                loadGroup(group);
-            }
-        }
-    }
-
-    async function loadGroup(tag: NDKTag) {
-        const [ _, groupId, relay ] = tag;
-        const relaySet = NDKRelaySet.fromRelayUrls([relay], $ndk);
-        const group = new NDKSimpleGroup($ndk, relaySet, groupId);
-        group.getMemberListEvent();
-        group.getMetadata().then((metadata) => {
-            groupsMetadata.update(groups => {
-                groups[groupId] = metadata;
-                return groups;
-            });
-        });
-
-        groups.update(groups => {
-            groups[groupId] = group;
-            return groups;
-        });
-    }
+    const articles = filterArticles(articlesAll);
 
     const tiers = derived([tierList, allTiers], ([$tierList, $userAllTiers]) => {
         if (!$tierList) return [];
@@ -109,8 +74,6 @@
     {pinList}
     {tierList}
     {tiers}
-    {groups}
-    {groupsMetadata}
     {eosed}
     {userProfile}
     {fetching}

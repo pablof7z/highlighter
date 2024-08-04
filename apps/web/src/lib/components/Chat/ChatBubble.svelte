@@ -13,6 +13,7 @@
 	import { ndk } from "$stores/ndk";
 	import Avatar from "$components/User/Avatar.svelte";
 	import LoadEvent from "$components/Event/LoadEvent.svelte";
+	import { unicodeEmojiRegex } from "$utils/const";
 
     export let event: NDKEvent;
     export let detailed = false;
@@ -66,6 +67,8 @@
     let authorUrl: string;
 
     let replyTo = event.getMatchingTags("e", "reply")[0];
+
+    let isEmoji = event.content.trim().length <= 2 && !!event.content.match(unicodeEmojiRegex);
 </script>
 
 <div 
@@ -89,6 +92,9 @@
     {:else}
         <div class="w-8"></div>
     {/if}
+    {#if isEmoji}
+        <div class="text-7xl mt-2">{event.content}</div>
+    {:else}
     <div class="
         rounded flex items-stretch justify-stretch w-fit max-w-[90%]
         {isMine ? "bg-accent text-accent-foreground" : "bg-secondary"}
@@ -160,6 +166,7 @@
             {/if}
         </div>
     </div>
+    {/if}
 </div>
 
 <style lang="postcss">

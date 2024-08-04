@@ -21,7 +21,7 @@
         {/if}
         <ScrollArea class="whitespace-nowrap scrollbar-hide max-sm:w-screen" orientation="horizontal">
             <div class="flex w-max gap-8">
-                {#each items.slice(0, renderLimit) as item (item.id)}
+                {#each items as item, i (item.id)}
                     <slot {item} />
                 {/each}
 

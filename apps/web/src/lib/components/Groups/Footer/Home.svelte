@@ -1,11 +1,13 @@
 <script lang="ts">
     import * as Footer from "$components/Footer";
 	import { ndk } from '$stores/ndk';
-    import { NDKSimpleGroup, NDKEvent, NDKTag, NDKKind } from "@nostr-dev-kit/ndk";
+    import { NDKSimpleGroup, NDKEvent, NDKTag, NDKKind, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
 
     import NewItem from "$components/Footer/Views/NewItem";
+	import { Readable } from "svelte/store";
 
     export let group: NDKSimpleGroup | undefined = undefined;
+    export let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
     export let event: NDKEvent;
     export let tags: NDKTag[] = [];
     export let kind: NDKKind = NDKKind.GroupChat;
@@ -40,7 +42,7 @@
     bind:open
     align="items-start"
     buttons={[
-        { ...NewItem, props: { group } }
+        { ...NewItem, props: { group, groupMetadata: $metadata } }
     ]}
 >
 </Footer.Shell>

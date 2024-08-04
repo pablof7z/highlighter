@@ -6,6 +6,7 @@
 	import { NavigationOption } from "../../../app";
 	import HeaderShell from "./HeaderShell.svelte";
     import ContentToolbar from "./Toolbar.svelte";
+	import { layout } from "$stores/layout";
 
     export let isPreview = false;
     export let userProfile: NDKUserProfile | undefined = undefined;
@@ -25,6 +26,13 @@
     function titleViewChange(e) {
         const { inView } = e.detail;
         dispatcher("title:inview_change", inView);
+
+        if (inView) {
+            $layout.navigation = false;
+        } else {
+            $layout.header = undefined;
+            $layout.navigation = navOptions;
+        }
     }
 
     let hasZaps: boolean;

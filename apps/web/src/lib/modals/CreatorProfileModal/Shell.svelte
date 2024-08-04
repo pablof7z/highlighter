@@ -12,11 +12,8 @@
 	import currentUser from "$stores/currentUser";
 	import { writable } from "svelte/store";
 	import { CreateState } from ".";
-	import { stringify } from "querystring";
-	import { create } from "domain";
 	import { NDKEvent, NDKKind, NDKList, NDKRelaySet, NDKSimpleGroup, NDKSubscription, NDKSubscriptionTier, NostrEvent } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
-	import { toast } from "svelte-sonner";
 	import { groupsList, tierList } from "$stores/session";
 
     let title: string;

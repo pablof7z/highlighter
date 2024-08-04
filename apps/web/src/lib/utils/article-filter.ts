@@ -33,9 +33,9 @@ export function filterArticles(
     removeTest = true
 ): Readable<NDKArticle[]> {
     return derived([articles, userFollows], ([$articles, $userFollows]) => {
-        let ret = get(articles).filter((article) => {
+        let ret = $articles.filter((article) => {
             // if it's followed by the user, we want to show it
-            if ($userFollows.has(article.pubkey)) return true;
+            // if ($userFollows.has(article.pubkey)) return true;
 
             return filterArticle(article, minWordCount, removeTest);
         });

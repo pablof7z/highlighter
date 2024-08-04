@@ -3,6 +3,7 @@
     import AvatarWithName from '$components/User/AvatarWithName.svelte';
 	import PinButton from './Elements/PinButton.svelte';
 	import currentUser from '$stores/currentUser';
+	import TopZap from '$components/Events/TopZap.svelte';
 
     export let event: NDKEvent | undefined = undefined;
     export let title: string;
@@ -44,6 +45,10 @@
                 <div class="text-base text-muted-foreground font-normal max-h-[10rem] overflow-clip">
                     {description}
                 </div>
+            {/if}
+            {#if event}
+                <div class="grow"></div>
+                <TopZap {event} class="w-fit" />
             {/if}
         </div>
         {#if !skipAuthor && author}

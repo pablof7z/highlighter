@@ -4,10 +4,11 @@
 	import { createEventDispatcher } from "svelte";
 	import NewGroupModal from "$modals/NewGroupModal.svelte";
 	import NewPostItem from "$components/Creator/NewPostItem.svelte";
-	import { NDKSimpleGroup } from "@nostr-dev-kit/ndk";
+	import { NDKSimpleGroup, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
 
     export let onNewShortPost: (() => void) | undefined = undefined;
     export let group: NDKSimpleGroup | undefined = undefined;
+    export let groupMetadata: NDKSimpleGroupMetadata | undefined = undefined;
 
     const dispatch = createEventDispatcher();
 
@@ -43,15 +44,15 @@
 </script>
 
 <div class="flex flex-col gap-2">
-    {#if group}
+    {#if groupMetadata}
         <div class="bg-background/50 border p-4 rounded font-medium text-muted-foreground flex flex-row items-center gap-2">
-            {#if group.picture}
-                <img src={group.picture} class="w-12 h-12 rounded-full object-cover" />
+            {#if groupMetadata.picture}
+                <img src={groupMetadata.picture} class="w-12 h-12 rounded-full object-cover" />
             {/if}
 
             New Post on
             
-            <span class="text-foreground font-bold">{group.name}</span>
+            <span class="text-foreground font-bold">{groupMetadata.name}</span>
         </div>
     {/if}
     

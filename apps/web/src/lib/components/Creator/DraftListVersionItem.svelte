@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { DraftCheckpoint } from "$stores/drafts";
-	import { newToasterMessage } from "$stores/toaster.js";
 	import DraftItem from "./DraftItem.svelte";
 	import { countWords } from "$utils/article";
 	import { Badge } from "$components/ui/badge";

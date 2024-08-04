@@ -1,9 +1,6 @@
 <script lang="ts">
-	import WithGroup from '$components/Event/WithGroup.svelte';
-	import ReplyAvatars from '$components/Feed/ReplyAvatars.svelte';
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
 	import currentUser from '$stores/currentUser';
-	import { ndk } from '$stores/ndk';
 	import { getGroupUrl } from '$utils/url';
     import { Hexpubkey, NDKArticle, NDKEvent, NDKFilter, NDKSimpleGroup, NDKTag } from '@nostr-dev-kit/ndk';
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
@@ -11,12 +8,11 @@
 	import { groupsList, userFollows } from '$stores/session';
 	import Swipe from '$components/Swipe.svelte';
 	import AvatarsPill from '$components/Avatars/AvatarsPill.svelte';
-	import { deriveStore } from '$utils/events/derive';
 	import Badge from '$components/ui/badge/badge.svelte';
 	import { randomImage } from '$utils/image';
-    export let tag: NDKTag;
+	import { GroupEntry } from '$stores/groups';
 
-    let group: NDKSimpleGroup;
+    export let groupEntry: GroupEntry;
 
     let recentEvents: NDKEventStore<NDKEvent>;
     let mostRecentEvent: Readable<NDKEvent | undefined>;
@@ -28,13 +24,13 @@
 
     let isMember: boolean | undefined;
     
-    $: isMember = $currentUser ? group?.memberList?.hasMember($currentUser?.pubkey) : false;
+    $: isMember = $currentUser ? groupEntry?.members?.has($currentUser?.pubkey) : false;
 
     let pubkeysToFeature: Hexpubkey[] | undefined;
 
-    $: if (group?.memberList && !isMember && !pubkeysToFeature) {
+    $: if (groupEntry?.members && !isMember && !pubkeysToFeature) {
         pubkeysToFeature = [];
-        for (const member of group.memberList.members) {
+        for (const member of groupEntry?.members) {
             if ($userFollows.has(member)) {
                 pubkeysToFeature.push(member);
             }
@@ -43,118 +39,115 @@
 
     let recentArticles: Readable<NDKArticle[]>;
 
-    $: if (group && isMember && !recentEvents) {
-        const lastSeen = getLastTimeGroupWasChecked(group);
-        const filters: NDKFilter[] = [{
-            kinds: [1, 9, 10, 11, 12, 30023 ],
-            "#h": [group.groupId]
-        }];
+    // $: if (group && isMember && !recentEvents) {
+    //     const lastSeen = getLastTimeGroupWasChecked(group);
+    //     const filters: NDKFilter[] = [{
+    //         kinds: [1, 9, 10, 11, 12, 30023 ],
+    //         "#h": [groupEntry.groupId]
+    //     }];
 
-        if (lastSeen) {
-            // this makes sure we receive something in case there is nothing new
-            filters.push({ ...filters[0], limit: 1, until: lastSeen })
-            filters[0].since = lastSeen;
-        }
+    //     if (lastSeen) {
+    //         // this makes sure we receive something in case there is nothing new
+    //         filters.push({ ...filters[0], limit: 1, until: lastSeen })
+    //         filters[0].since = lastSeen;
+    //     }
 
-        recentEvents = $ndk.storeSubscribe(
-            filters,
-            { subId: 'recent-group-events', closeOnEose: true, relaySet: group.relaySet },
-        )
+    //     recentEvents = $ndk.storeSubscribe(
+    //         filters,
+    //         { subId: 'recent-group-events', closeOnEose: true, relaySet: group.relaySet },
+    //     )
 
-        mostRecentEvent = derived(recentEvents, $recentEvents => {
-            if (!$recentEvents || $recentEvents.length === 0) return undefined;
+    //     mostRecentEvent = derived(recentEvents, $recentEvents => {
+    //         if (!$recentEvents || $recentEvents.length === 0) return undefined;
             
-            let choosenEvent: NDKEvent | undefined = $recentEvents[0];
+    //         let choosenEvent: NDKEvent | undefined = $recentEvents[0];
 
-            for (let i = 1; i < $recentEvents.length; i++) {
-                if ($recentEvents[i].created_at! > choosenEvent.created_at!) {
-                    choosenEvent = $recentEvents[i];
-                }
-            }
+    //         for (let i = 1; i < $recentEvents.length; i++) {
+    //             if ($recentEvents[i].created_at! > choosenEvent.created_at!) {
+    //                 choosenEvent = $recentEvents[i];
+    //             }
+    //         }
 
-            return choosenEvent;
-        })
+    //         return choosenEvent;
+    //     })
 
-        recentArticles = deriveStore(recentEvents, NDKArticle);
-    }
+    //     recentArticles = deriveStore(recentEvents, NDKArticle);
+    // }
 
-    function pin(group: NDKSimpleGroup) {
-        $groupsList?.addItem(["h", group.groupId, ...group.relayUrls()]);
+    function pin() {
+        $groupsList?.addItem(["group", groupEntry.groupId, ...groupEntry.relaySet.relayUrls]);
         $groupsList?.publishReplaceable();
     }
     
-    function unpin(groupId) {
-        $groupsList?.removeItemByValue(groupId);
+    function unpin() {
+        $groupsList?.removeItemByValue(groupEntry.groupId);
         $groupsList = $groupsList;
     }
 
     let rightOptions: [] = [];
 
-    $: if (group) {
+    $: if (groupEntry) {
         rightOptions = [];
-        if ($groupsList?.has(group.groupId))
-            rightOptions.push({ label: 'Unpin', class: 'bg-secondary/50', cb: () => unpin(group.groupId) })
+        if ($groupsList?.has(groupEntry.groupId))
+            rightOptions.push({ label: 'Unpin', class: 'bg-secondary/50', cb: unpin })
         else
-            rightOptions.push({ label: 'Pin', class: 'bg-secondary/50', cb: () => pin(group) })
+            rightOptions.push({ label: 'Pin', class: 'bg-secondary/50', cb: pin })
         if (isMember)
             rightOptions.push({ label: 'Leave', class: 'bg-secondary', cb: () => group?.leave() })
         else
             rightOptions.push({ label: 'Join', class: 'bg-secondary', cb: () => group?.join() })
     }
+    $: console.log('group name', groupEntry.name)
 </script>
 
-<WithGroup tag={tag} bind:group>
-    {#if group && group.name}
-        <Swipe {rightOptions}>
-            <a href={getGroupUrl(group)} class="py-2 w-full group">
-                <div class="responsive-padding flex flex-row items-center p-2 gap-4 w-full">
-                    <img src={group.picture??randomImage(group.name, 300, 300)} />
-                    
-                    <div class="flex flex-col gap-1 grow">
-                        <span class="text-foreground font-semibold text-lg truncate">
-                            {group.name??"Unnamed Group"}
-                        </span>
-                        {#if !isMember && pubkeysToFeature}
-                            <AvatarsPill pubkeys={pubkeysToFeature} />
-                        {:else if $mostRecentEvent}
-                            <span class="text-sm text-muted-foreground truncate">
-                                {$mostRecentEvent.content}
-                            </span>
-                        {:else if tag[2]}
-                            <span class="text-xs text-muted-foreground truncate">
-                                {tag[2]}
-                            </span>
-                        {/if}
+<Swipe {rightOptions}>
+    <a href={getGroupUrl(groupEntry)} class="py-2 w-full group">
+        <div class="responsive-padding flex flex-row items-center p-2 gap-4 w-full">
+            <img src={groupEntry.picture??randomImage(groupEntry.name, 300, 300)} />
+            
+            <div class="flex flex-col gap-1 grow">
+                <span class="text-foreground font-semibold text-lg truncate">
+                    {groupEntry.name??"Unnamed Group"}
+                </span>
+                {#if !isMember && pubkeysToFeature}
+                    <AvatarsPill pubkeys={pubkeysToFeature} />
+                {:else if $mostRecentEvent}
+                    <span class="text-sm text-muted-foreground truncate">
+                        {$mostRecentEvent.content}
+                    </span>
+                {:else}
+                    <div class="text-sm text-muted-foreground truncate">
+                        {groupEntry.relaySet.relayUrls[0]}
                     </div>
+                {/if}
+            </div>
 
-                    {#if $recentArticles && $recentArticles.length > 0}
-                        <Badge>
-                            {$recentArticles.length}
-                        </Badge>
-                    {/if}
-                    
-                    {#if $mostRecentEvent}
-                        <span>
-                            <RelativeTime event={$mostRecentEvent} relative={true} />
-                        </span>
-                    {/if}
+            {#if $recentArticles && $recentArticles.length > 0}
+                <Badge>
+                    {$recentArticles.length}
+                </Badge>
+            {/if}
+            
+            {#if $mostRecentEvent}
+                <span>
+                    <RelativeTime event={$mostRecentEvent} relative={true} />
+                </span>
+            {/if}
 
-                    <div class="hidden lg:group-hover:flex">
-                        {#if $groupsList?.has(group.groupId)}
-                            <button on:click|stopPropagation|preventDefault={() => unpin(group.groupId)}>
-                                unpin
-                            </button>
-                        {:else}
-                            <button on:click|stopPropagation|preventDefault={() => pin(group)}>
-                                pin
-                            </button>
-                        {/if}
-                    </div>
-                </div>
-            </a>
-        </Swipe>
-    {/if}
-</WithGroup>
+            <div class="hidden lg:group-hover:flex">
+                {#if $groupsList?.has(groupEntry.groupId)}
+                    <button on:click|stopPropagation|preventDefault={unpin}>
+                        unpin
+                    </button>
+                {:else}
+                    <button on:click|stopPropagation|preventDefault={pin}>
+                        pin
+                    </button>
+                {/if}
+            </div>
+        </div>
+    </a>
+</Swipe>
 
 <style lang="postcss">
     img {

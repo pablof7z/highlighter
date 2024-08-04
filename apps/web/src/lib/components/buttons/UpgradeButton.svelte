@@ -1,7 +1,6 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser';
 	import SignupModal from '$modals/SignupModal.svelte';
-	import BecomeSupporterModal from '$modals/BecomeSupporterModal.svelte';
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Crown, CrownSimple, LockSimple } from "phosphor-svelte";
 	import { openModal } from '$utils/modal';
@@ -15,8 +14,6 @@
     function upgrade() {
         if (!$currentUser) {
             openModal(SignupModal, { redirect: window.location.pathname });
-        } else {
-            openModal(BecomeSupporterModal, { user: author });
         }
     }
 </script>

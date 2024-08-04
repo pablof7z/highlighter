@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ArticleEditor from "$components/Forms/ArticleEditor.svelte";
+    import ArticleEditor from "$components/Studio/Editor/Article.svelte";
 	import currentUser from "$stores/currentUser";
 	import { ndk } from "$stores/ndk";
 	import { NDKArticle } from "@nostr-dev-kit/ndk";

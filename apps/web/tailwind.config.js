@@ -1,6 +1,4 @@
 import { fontFamily } from "tailwindcss/defaultTheme";
-const konstaConfig = require('konsta/config');
-
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -77,4 +75,4 @@ const config = {
 	},
 };
 
-export default konstaConfig(config);
+export default config;

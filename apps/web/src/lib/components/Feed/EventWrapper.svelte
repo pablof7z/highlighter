@@ -19,11 +19,9 @@
 	import BoostButton from '$components/buttons/BoostButton.svelte';
 	import { onDestroy } from 'svelte';
     import { createEventDispatcher } from 'svelte';
-	import ClientName from '$components/ClientName.svelte';
 	import NewPost from './NewPost/NewPost.svelte';
 	import HighlightBody from '$components/HighlightBody.svelte';
 	import { openModal } from '$utils/modal';
-    import QuoteModal from '$modals/QuoteModal.svelte';
 	import NewPostModal from '$modals/NewPostModal.svelte';
 	import { getAuthorUrl } from '$utils/url';
 	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
@@ -282,26 +280,11 @@
                                 <a href={authorUrl}>
                                 </a>
                                 <Name user={author} {userProfile} {fetching} />
-                                {#if !compact}
-                                    <ClientName {event} class="ml-2 text-xs opacity-50 inline" />
-                                {/if}
                             </div>
                         </div>
 
                         <div class="justify-self-end text-sm h-full absolute right-0">
                             <div class="flex flex-row items-center justify-end gap-2 place-self-end">
-                                <!-- Relay indicators / hidden in mobile -->
-                                <div class="flex flex-row items-center max-sm:hidden gap-2 opacity-20 group-hover:opacity-80">
-                                    <!-- {#if event.relay}
-                                        <RelayIndicator relay={event.relay.url} />
-                                    {/if}
-                                    {#each event.onRelays.slice(0, 4) as relay}
-                                        {#if relay.url !== event.relay?.url}
-                                            <RelayIndicator relay={relay.url} />
-                                        {/if}
-                                    {/each} -->
-                                </div>
-
                                 <div class="flex flex-row flex-nowrap gap-2 items-center">
                                     <RelativeTime timestamp={mostRecentActivity * 1000} class="opacity-50" />
                                     {#key event.publishStatus}

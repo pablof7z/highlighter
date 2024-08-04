@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { getSummary } from "$utils/article";
 	import { NDKArticle, NDKList, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import ContentHeader from "$components/Content/Header.svelte";
 	import { layout } from "$stores/layout";
-	import TopHeader from "../TopHeader.svelte";
 	import { getEventUrl } from "$utils/url";
 	import { page } from "$app/stores";
 	import { addHistory } from "$stores/history";
@@ -31,11 +29,8 @@
     if (!image && !isPreview) image ??= userProfile?.image;
 
     $: if (!isPreview) {
-        $layout.header = {
-            component: TopHeader,
-            props: { event: list, userProfile, authorUrl }
-        }
         if (list.title) $layout.title = list.title;
+        $layout.event = list;
     }
 </script>
 

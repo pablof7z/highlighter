@@ -5,10 +5,6 @@
 	import { Plus } from "phosphor-svelte";
 	import { Thread } from '$utils/thread.js';
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
-	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
-	import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import { pageHeader } from "$stores/layout";
-	import { ndk } from "$stores/ndk";
 
     export let thread: Thread;
     export let draftItem: DraftItem | undefined = undefined;

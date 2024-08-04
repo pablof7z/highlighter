@@ -206,10 +206,6 @@
 </div>
 
 <style lang="postcss">
-    section.settings {
-        @apply gap-4;
-    }
-
     section > .description {
         @apply text-neutral-500 -mt-4;
     }
@@ -218,42 +214,3 @@
         @apply text-neutral-500 text-sm;
     }
 </style>
-
-<!-- <style lang="postcss">
-    section {
-        @apply flex flex-col lg:flex-row lg:gap-6 w-full;
-    }
-
-    section .section-info {
-        @apply lg:w-1/3;
-        @apply flex sm:flex-col gap-2 items-start;
-    }
-
-    section .main {
-        @apply lg:w-2/3 flex flex-col w-full;
-    }
-
-    section .section-info .title-and-description {
-        @apply flex flex-col;
-    }
-
-    section .section-info .title {
-        @apply text-foreground font-medium text-lg whitespace-nowrap;
-    }
-
-    section .section-info .description {
-        @apply text-foreground/60 font-light text-sm;
-    }
-
-    section .section-info button {
-        @apply mt-2 text-xs whitespace-nowrap;
-    }
-
-    .perk-item:not(:last-child) {
-        @apply border-b border-white/5;
-    }
-
-    button[disabled] {
-        @apply !opacity-40;
-    }
-</style> -->

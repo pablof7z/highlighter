@@ -1,26 +1,25 @@
 <script lang="ts">
-	import { NDKSimpleGroupMetadata, NDKHighlight, type NDKTag, NDKSimpleGroup, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
+	import { NDKSimpleGroupMetadata, NDKHighlight, type NDKTag, NDKSubscriptionTier, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 	import ContentCard from "./ContentCard.svelte";
 	import { Readable } from "svelte/store";
 	import { Button } from "$components/ui/button";
 	import { getGroupUrl } from "$utils/url";
 
-    export let group: NDKSimpleGroup;
-    export let tag: NDKTag | undefined = undefined;
-    export let highlights: NDKHighlight[] = [];
-    export let tiers: Readable<NDKSubscriptionTier[]>;
+    export let group: NDKSimpleGroup | undefined = undefined;
+    export let groupId: string = group?.groupId!;
+    export let relays: string[] = group?.relayUrls()!;
     export let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
-    export let isAdmin: Readable<boolean>;
+    export let isAdmin: Readable<boolean> | undefined = undefined;
 </script>
 
     <ContentCard
-        title={$metadata?.name??group?.groupId}
+        title={$metadata?.name??groupId}
         image={$metadata?.picture}
-        description={$metadata?.about??group.relayUrls().join(', ')}
+        description={$metadata?.about??relays.join(', ')}
         {...$$props}
         class="cursor-pointer"
         event={$metadata}
-        alwaysShowPinButton={$isAdmin}
+        alwaysShowPinButton={isAdmin && $isAdmin}
         on:click
     >
         <div class="flex flex-row gap-2">
@@ -29,7 +28,7 @@
                     Info
                 </Button>
             {/if}
-            <Button variant="accent" size="xs" href={getGroupUrl(group)}>
+            <Button variant="accent" size="xs">
                 Visit
             </Button>
         </div>

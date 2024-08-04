@@ -1,8 +1,5 @@
 <script lang="ts">
 	import { NavigationOption } from './../../app.d.ts';
-    import Signup from './Signup.svelte';
-	import Login from "./Login.svelte";
-	import Welcome from "./Welcome.svelte";
 	import ModalShell from '$components/ModalShell.svelte';
 	import { closeModal } from '$utils/modal.js';
 	import Button from '$components/ui/button/button.svelte';
@@ -16,18 +13,6 @@
     }
 
     let title: string;
-
-    $: switch (mode) {
-        case 'signup':
-            title = 'Sign Up';
-            break;
-        case 'login':
-            title = 'Log In';
-            break;
-        case 'welcome':
-            title = 'Welcome!';
-            break;
-    }
 
     onMount(() => {
         if (!!window.nostr) {
@@ -71,7 +56,7 @@
     <div class="flex flex-col gap-4 w-full">
         {#if mode === 'signup'}
             <div class="w-full flex flex-col gap-5">
-                <Signup on:signed-up={signedUp} bind:actionButtons bind:mode />
+                <Signup on:signed-up={signedUp} bind:actionButtons bind:mode bind:title />
             </div>
         {:else if mode === 'login'}
             <div class="w-full flex flex-col gap-5">

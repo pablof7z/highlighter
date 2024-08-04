@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import ItemView from "$components/Event/ItemView/ItemView.svelte";
 	import WithItem from "$components/Event/ItemView/WithItem.svelte";
-	import { appMobileHideNewPostButton } from "$stores/app";
     import { PageTransition } from 'sveltekit-page-transitions';
     import * as Content from "$components/Content";
 

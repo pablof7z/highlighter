@@ -20,7 +20,7 @@
         return $featuredItems.map(item => item.id);
     });
 
-    const articles = includeLowQuality ? store : filterArticles(store);
+    const articles = filterArticles(store);
 
 
 </script>
@@ -36,25 +36,13 @@
 <div class="flex flex-col divide-y divide-border">
     {#each $articles as article (article.id)}
         {#if !$featuredItemIds.includes(article.id)}
-            {#if !$appMobileView}
-                <div class="py-[var(--section-vertical-padding)] w-full">
-                    <Item.Article
-                        {article}
-                        {skipAuthor}
-                        width="w-full"
-                        inContentFeed
-                    />
-                </div>
-            {:else}
-                <div class="py-[var(--section-vertical-padding)] w-full">
-                    <Card.Article
-                        {article}
-                        {skipAuthor}
-                        width="w-full"
-                        inContentFeed
-                    />
-                </div>
-            {/if}
+            <div class="py-[var(--section-vertical-padding)] w-full">
+                <Item.Article
+                    {article}
+                    {skipAuthor}
+                    class="responsive-padding"
+                />
+            </div>
         {/if}
     {/each}
 </div>

@@ -2,12 +2,12 @@
     import { userProfile as currentUserProfile } from "$stores/session";
     import { profileFromEvent, type Hexpubkey, type NDKEvent, type NDKSubscriptionOptions, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
     import currentUser from "$stores/currentUser";
-    import type { NDKRelay, NDKSubscription, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+    import type { NDKRelay, NDKSubscription, NDKUser, NDKUserProfile, NDKCacheEntry } from "@nostr-dev-kit/ndk";
     import type { UserProfileType } from "../../../app";
 	import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
     import { createEventDispatcher, onDestroy } from "svelte";
     import createDebug from "debug";
-    import { refresh } from "$utils/profile-refresh.js";
+    import { alreadyRefreshed, refresh } from "$utils/profile-refresh.js";
     import { inview } from 'svelte-inview';
 	import { vanityUrls } from "$utils/const";
 	import { isMobileBuild } from "$utils/view/mobile";
@@ -63,22 +63,21 @@
 
     if ($ndk.cacheAdapter?.fetchProfile && user?.pubkey && !checkedCache) {
         checkedCache = true
-        $ndk.cacheAdapter?.fetchProfile(user.pubkey).then((p) => {
+        $ndk.cacheAdapter?.fetchProfile(user.pubkey).then((p as NDKCacheEntry<NDKUserProfile>) => {
             if (p) {
                 userProfile ??= p;
 
-                // not sure why this hack is needed
-                // setTimeout(() => {
-                //     userProfile ??= p;
-                // }, 100);
-
-                // push a profile refresh to be grouped
-                refresh(user.pubkey, p, (newProfile: NDKUserProfile, newEvent: NDKEvent) => {
-                    d(`refreshed profile`, newProfile);
-                    userProfile = newProfile;
-                    event = newEvent;
-                    dispatch("newProfileAfterEose", userProfile);
-                });
+                
+                const now = Math.floor(Date.now() / 1000);
+                if (!userProfile?.cachedAt || now - userProfile.cachedAt > 60 * 60) {
+                    // push a profile refresh to be grouped
+                    refresh(user.pubkey, p, (newProfile: NDKUserProfile, newEvent: NDKEvent) => {
+                        d(`refreshed profile`, newProfile);
+                        userProfile = newProfile;
+                        event = newEvent;
+                        dispatch("newProfileAfterEose", userProfile);
+                    });
+                }
             }
         }).catch((e: any) => {
             console.error(e);
@@ -110,6 +109,7 @@
         if (subscription) {
             subscription.on("event", (e: NDKEvent, r: NDKRelay) => {
                 // console.log('event profile', user?.pubkey, e.rawEvent())
+                alreadyRefreshed.add(e.pubkey);
                 
                 const noKind0Event = !kind0Event;
                 const kind0EventIsOlder = kind0Event?.created_at! < e.created_at!;

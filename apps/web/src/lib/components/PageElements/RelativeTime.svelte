@@ -60,7 +60,9 @@
 
 {#if !Number.isNaN(timestamp)}
     {#if distanceOfTime < 60}
-        just now
+        <span class={$$props.class || ``}>
+            just now
+        </span>
     {:else if distanceOfTime < 60 * 60}
         <Time
             live={true}

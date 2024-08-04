@@ -2,7 +2,6 @@
 	import { onMount } from "svelte";
     import { webln } from "@getalby/sdk";
     import { createEventDispatcher } from "svelte";
-	import { newToasterMessage } from "$stores/toaster.js";
 	import { CheckCircle } from "phosphor-svelte";
 
     const dispatch = createEventDispatcher();
@@ -39,7 +38,7 @@
             }
         } catch (e: any) {
             if (e?.message) {
-                newToasterMessage(e.message, 'error');
+                toast.error(e.message);
             }
             dispatch("cancel");
         }

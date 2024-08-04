@@ -16,9 +16,9 @@
 	import FollowButton from "$components/buttons/FollowButton.svelte";
 	import { Button } from "$components/ui/button";
 	import { openModal } from "$utils/modal";
-	import NewGroupModal from "$modals/NewGroupModal.svelte";
 	import { throttle } from "@sveu/shared";
 	import CreatorProfileModal from "$modals/CreatorProfileModal";
+	import { goto } from "$app/navigation";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | null | undefined = undefined;
@@ -35,17 +35,16 @@
         if (inView) {
             headerCache = $layout.header;
             $layout.header = false;
-            console.log("SETTING HEADER TO FALSE")
             $layout.navigation = false;
             $layout.back = { url: "/" }
         } else if (inView === false) {
-            $layout.header = headerCache;
+            $layout.header = undefined;
+            $layout.title = userProfile?.name;
             $layout.navigation = options;
         }
-    }, 1000);
+    }, 1);
 
     function inviewchange(e) {
-        console.log("RUNNING IN VIEW CHANGE")
         throttledViewChange(e.detail.inView);
     }
 
@@ -57,23 +56,24 @@
     $layout.navigation = false;
 </script>
 
-<div class="z-20 w-full sm:min-h-[15rem] flex flex-col" use:inview on:inview_change={inviewchange}>
-    <div class="max-sm:h-[7rem] w-full h-32 relative z-0">
-            <div class="z-50 left-2 top-2-safe absolute">
-                <BackButton />
+<div class="z-20 w-full sm:min-h-[15rem] flex flex-col">
+    <!-- Banner -->
+    <div class="max-sm:h-[calc(var(--safe-area-inset-top)+6rem)] w-full h-32 relative z-0">
+            <div class="z-50 left-2 top-[var(--safe-area-inset-top)] absolute">
+                <BackButton href="/" />
             </div>
         {#if userProfile?.banner}
             <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-1 transition-all duration-300" alt={userProfile?.name}>
         {/if}
     </div>
 
-    <div class="flex flex-row items-end w-full px-4 -mt-14 z-1 relative py-[var(--section-vertical-padding)]">
+    <div class="pt-[var(--safe-area-inset-top)] flex flex-row items-end w-full px-4 -mt-[calc(var(--safe-area-inset-top)+2.5rem)] z-1 relative py-[var(--section-vertical-padding)]">
         <div class="flex flex-row items-end grow gap-4">
             <Avatar user={user} {userProfile} {fetching} class="
                 transition-all duration-300 flex-none object-cover w-24 h-24
             "/>
 
-            <div class="flex flex-col gap-0">
+            <div class="flex flex-col gap-0" use:inview on:inview_change={inviewchange}>
                 <Name {user} {userProfile} {fetching} class="text-foreground font-bold whitespace-nowrap mb-0 transition-all duration-300 text-xl max-h" />
                 <Npub {user} />
             </div>

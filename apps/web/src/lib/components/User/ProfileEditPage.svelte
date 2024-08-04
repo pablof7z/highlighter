@@ -7,11 +7,11 @@
     import { Image, Warning } from "phosphor-svelte";
 	import CategorySelector from '$components/Forms/CategorySelector.svelte';
 	import { ndk } from '$stores/ndk';
-	import { newToasterMessage } from '$stores/toaster';
 	import { Input } from '$components/ui/input';
 	import BlossomUpload from '$components/buttons/BlossomUpload.svelte';
 	import { defaultRelays } from '$utils/const';
 	import Button from '$components/ui/button/button.svelte';
+	import { toast } from 'svelte-sonner';
 
     export let forceSave = false;
 
@@ -106,7 +106,7 @@
 
             if (Object.keys(newProfile).length === 0) {
                 console.log("Refusing to update profile");
-                newToasterMessage("Profile not updated", "error");
+                toast.error("Profile not updated");
                 return;
             }
 

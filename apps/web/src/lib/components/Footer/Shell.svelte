@@ -137,7 +137,8 @@
         max-w-[var(--content-focused-width)] mx-auto
         max-sm:backdrop-blur-lg
         overflow-clip
-        max-sm:p-2 max-sm:px-2
+        !pb-[var(--safe-area-inset-bottom)]
+        max-sm:p-2 max-sm:px-3
         max-sm:right-0 sm:right-[360px]
         rounded-t-3xl py-3 h-auto 
         flex flex-col justify-between items-center

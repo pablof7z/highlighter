@@ -13,7 +13,7 @@
 </script>
 
 <Button
-    variant={zapped ? undefined : "accent"}
+    variant={zapped ? undefined : "transparent"}
     class="
         flex-none w-10 h-10 p-2
         {zapped ? 'bg-green-500' : ''}
@@ -21,7 +21,7 @@
     on:click
 >
     {#if !zapped}
-        <Lightning class="w-full h-full" weight="fill" />
+        <Lightning class="w-full h-full text-gold" weight="fill" />
     {:else}
         <Check class="w-full h-full" weight="bold" />
     {/if}

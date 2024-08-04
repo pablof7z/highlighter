@@ -12,6 +12,7 @@
 	import { fly, slide } from "svelte/transition";
     import Mobile from "./Mobile.svelte";
 	import Wallet from "./Wallet.svelte";
+	import { throttle } from "@sveu/shared";
 
     let withSidebar: boolean;
 
@@ -27,8 +28,6 @@
     let historyContainer: HTMLDivElement;
 
     function headerTouchstart(event: TouchEvent) {
-        event.preventDefault();
-
         startTouchY = event.touches[0].clientY;
     }
 
@@ -96,8 +95,6 @@
     }
 
     function headerTouchend(e: TouchEvent) {
-        console.log({posY, degreeOfGoingBackHome})
-        
         if (posY >= 100) {
             if (degreeOfGoingBackHome >= 0.3) {
                 setTimeout(() => goto("/"), 1);
@@ -148,6 +145,29 @@
             mainClass = "";
         }
     }
+
+    let scrollDir: "up" | "down" | undefined;
+
+    function markScrollingDirection() {
+        if (currentY > prevY && currentY > 50) {
+            scrollDir = "down";
+        } else if (currentY < prevY) {
+            scrollDir = "up";
+        }
+
+        prevY = currentY;
+    }
+
+    function mainScroll(e) {
+        // show how far we are from the top
+        currentY = e.target.scrollTop;
+
+        throttle(markScrollingDirection, 100)();
+    }
+
+    let currentY = 0;
+    let prevY = 0;
+
 </script>
 
 <Mobile />
@@ -197,7 +217,7 @@
         "
     >
         <div
-            class="w-full items-center flex flex-col-reverse -translate-y-full fixed top-0"
+            class="w-full items-center flex flex-col-reverse -translate-y-full fixed top-0 p-[var(--safe-area-inset-top)]"
             bind:this={historyContainer}
             on:click={resetView}
         >
@@ -235,6 +255,7 @@
         <div
             bind:this={mainContainer}
             class="flex flex-col bg-background z-50 h-screen overflow-y-auto"
+            on:scroll={mainScroll}
         >
             {#if headerBarCount > 0}
                 <!-- Header 1 -->
@@ -249,30 +270,30 @@
                     <div class="w-full border-b">
                         <div
                             class="
-                                w-full h-[60px] responsive-padding flex flex-row
+                                w-full h-[calc(var(--safe-area-inset-top)+60px)] responsive-padding flex flex-row
                             "
-                            on:touchstart={headerTouchstart}
-                            on:touchmove={headerTouchmove}
-                            on:touchend={headerTouchend}
+                            on:touchstart|passive={headerTouchstart}
+                            on:touchmove|passive={headerTouchmove}
+                            on:touchend|passive={headerTouchend}
                         >
                             {#if $layout.header || $layout.title}
-                                <LayoutHeader containerClass={$layout.sidebar === false ? mainClass : ""} />
+                                <LayoutHeader {scrollDir} containerClass={$layout.sidebar === false ? mainClass : ""} />
                             {:else if $appMobileView}
                                 <DefaultHeader />
                             {:else if $layout.navigation !== false}
                                 <!-- If we are not showing a header, show the navigation bar -->
-                                <LayoutHeaderNavigation class={mainClass} />
+                                <LayoutHeaderNavigation {scrollDir} class={mainClass} />
                             {/if}
                         </div>
                     </div>
                     <!-- Optional Navigation Bar (when there is a header) -->
                     {#if $layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)}
                         <div class="w-full border-b">
-                            <LayoutHeaderNavigation class={mainClass} />
+                            <LayoutHeaderNavigation {scrollDir} class={mainClass} />
                         </div>
                     {/if}
                 </header>
-                <div transition:slide class="flex-none" style={`height: ${60*headerBarCount}px`} />
+                <div transition:slide class="flex-none mt-[var(--safe-area-inset-top)]" style={`height: ${60*headerBarCount}px`} />
             {/if}
 
             <main class="
