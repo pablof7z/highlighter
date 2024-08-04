@@ -85,7 +85,7 @@
         });
     }
 
-    let top = -10000;
+    let top = 10000;
     let left = 0;
 
     let cleanup: (() => void) | null = null;

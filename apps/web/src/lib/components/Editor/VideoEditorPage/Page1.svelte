@@ -2,7 +2,6 @@
 	import VideoUploader from '$components/Forms/VideoUploader.svelte';
 	import type { NDKVideo } from '@nostr-dev-kit/ndk';
 	import TitleInput from './TitleInput.svelte';
-    import { status } from '$stores/post-editor';
 
     export let video: NDKVideo;
     export let videoFile: File | undefined;

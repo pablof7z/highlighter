@@ -28,8 +28,6 @@
     export let pinList: Readable<NDKList | undefined>;
     export let tierList: Readable<NDKList | undefined>;
     export let allTiers: Readable<NDKSubscriptionTier[]>;
-    export let groups: Readable<Record<string, NDKSimpleGroup>>;
-    export let groupsMetadata: Readable<Record<string, NDKSimpleGroupMetadata>>;
     export let tiers: Readable<NDKSubscriptionTier[]>;
 
     export let eosed: boolean | undefined = false;
@@ -46,8 +44,6 @@
     setContext('userPinList', pinList);
     setContext('userTierList', tierList);
     setContext('userTiers', tiers);
-    setContext('userGroups', groups);
-    setContext('userGroupsMetadata', groupsMetadata);
 
     let addedToHistory = false;
     $: if (userProfile?.displayName && !addedToHistory) {
@@ -101,8 +97,6 @@
     {pinList}
     {tierList}
     {allTiers}
-    {groups}
     {cashuMintList}
-    {groupsMetadata}
     {tiers}
 />

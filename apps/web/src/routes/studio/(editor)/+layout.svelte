@@ -34,10 +34,10 @@
 <Studio.Root
     {draftId} {checkpointId}
     {eventId}
-    let:groups
     bind:publishInGroups
     let:mode
     let:preview
+    let:groupsList
     let:publishScope
     let:publishAt
     let:withPreview
@@ -48,10 +48,10 @@
     let:draft
 >
     <Studio.Shell
-        {groups}
         {event}
         {preview}
         {withPreview}
+        {groupsList}
         {publishScope}
         {thread}
         {mode}

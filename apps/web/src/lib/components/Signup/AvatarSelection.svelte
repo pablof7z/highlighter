@@ -50,10 +50,6 @@
         @apply flex flex-col gap-2;
     }
 
-    label {
-        @apply text-foreground text-lg;
-    }
-
     img.avatar {
         @apply rounded-full w-8 h-8 opacity-40 transition-all duration-500;
         @apply ring-foreground/50;

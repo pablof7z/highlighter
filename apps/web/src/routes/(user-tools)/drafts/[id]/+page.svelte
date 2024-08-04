@@ -8,8 +8,8 @@
 	import { onMount } from "svelte";
 	import { Thread } from "$utils/thread";
 	import ThreadEditor from "$components/Editor/ThreadEditor/ThreadEditor.svelte";
-	import ArticleRender from '$components/ArticleRender.svelte';
 	import { layout, pageHeader } from '$stores/layout';
+    import * as Content from '$components/Content';
 
     let draftId: string;
     let draftItem: DraftItem | undefined;
@@ -113,7 +113,14 @@
 
 {#key draftId + checkpointTime??""}
     {#if article}
-        <ArticleRender {article} isFullVersion={true} isPreview={true} />
+        <Content.Shell
+            event={article}
+            let:wrappedEvent
+            isPreview
+        >
+            <Content.Body event={wrappedEvent} />
+        </Content.Shell>
+        <!-- <ArticleRender {article} isFullVersion={true} isPreview={true} /> -->
     {:else if thread}
         <ThreadEditor bind:thread bind:draftItem />
     {/if}

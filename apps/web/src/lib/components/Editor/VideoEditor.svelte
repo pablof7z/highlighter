@@ -3,7 +3,6 @@
 	import { NDKVideo, type NostrEvent } from "@nostr-dev-kit/ndk";
     import Page1 from "./VideoEditorPage/Page1.svelte";
 	import { type TierSelection, getTierSelectionFromAllTiers } from '$lib/events/tiers';
-	import { getUserSubscriptionTiersStore } from '$stores/user-view';
 
     export let video: NDKVideo = new NDKVideo($ndk, {
         content: "",
@@ -12,8 +11,6 @@
     export let teaser: NDKVideo = new NDKVideo($ndk);
 
     let tiers: TierSelection = { "Free": { name: "Free", selected: true } };
-    const allTiers = getUserSubscriptionTiersStore();
-    $: tiers = getTierSelectionFromAllTiers($allTiers);
 
     $: teaser.content = video.content;
 </script>

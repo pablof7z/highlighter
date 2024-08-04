@@ -53,5 +53,4 @@
     </Groups.Root>
 {:else}
     <slot />
-    loading without groupid
 {/if}

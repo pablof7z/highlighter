@@ -150,7 +150,7 @@
 
     $: if (selectedView === "nostr") {
         actionButtons = [
-            { name: publishing ? "Publishing" : "Publish", fn: publish }
+            { name: publishing ? "Publishing" : "Publish", fn: publish, buttonProps: { variant: 'default' } }
         ];
     } else {
         actionButtons = [];

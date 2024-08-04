@@ -1,10 +1,9 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-	import { newToasterMessage } from "$stores/toaster.js";
 	import { activeBlossomServer } from "$stores/session";
 	import { Uploader } from "$utils/upload";
 	import { NDKPrivateKeySigner, NDKSigner } from "@nostr-dev-kit/ndk";
-	import { get } from "svelte/store";
+	import { toast } from "svelte-sonner";
 
     type UploadType = "file" | "image" | "video" | "audio" | "*";
 
@@ -85,7 +84,7 @@
         };
         uploader.onError = (e) => {
             console.error(e);
-            newToasterMessage("Failed to upload image: " +e, "error")
+            toast.error("Failed to upload image: " +e)
         };
         uploader.start();
     }

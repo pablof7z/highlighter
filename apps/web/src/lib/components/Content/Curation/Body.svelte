@@ -19,8 +19,8 @@
     // }
 </script>
 
-<List.Root {list}>
-    <List.Shell let:item>
+<List.Root {list} let:items>
+    <List.Shell orientation="vertical" {items} let:item>
         <div class="px-2 flex flex-col gap-2 pb-6">
             <Card.FeaturedArticle article={item} />
             <!-- <List.Item {item} /> -->

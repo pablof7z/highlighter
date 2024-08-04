@@ -4,6 +4,7 @@
 	import ModalShell from "$components/ModalShell.svelte";
     import { NDKEvent, NDKHighlight, NDKKind } from "@nostr-dev-kit/ndk";
 	import { ChatCircle, CardsThree, Lightning, Recycle, Repeat } from "phosphor-svelte";
+    import * as Content from "$components/Content";
 
     export let highlight: NDKEvent;
     export let skipArticle = true;
@@ -13,16 +14,10 @@
     class="max-w-3xl"
     title="Highlight"
 >
+    <Content.Shell event={highlight} let:wrappedEvent>
+        <Content.Comments {wrappedEvent} />
+    </Content.Shell>
     {#key highlight.content}
-        <HighlightBody
-            highlight={NDKHighlight.from(highlight)}
-            skipHighlighter={true}
-            scrollable={true}
-            {skipArticle}
-            scrollIntoView={true}
-            class="p-4max-h-[20vh] overflow-auto scrollbar-hide"
-        />
-
         <HorizontalOptionsList options={[
             { name: "Comments", href: `/comments`, icon: ChatCircle, badge: "1" },
             { name: "Shares", href: `/highlights`, icon: Repeat },

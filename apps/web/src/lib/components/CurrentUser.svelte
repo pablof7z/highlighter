@@ -31,8 +31,8 @@
             </a>
         </UserProfile>
     {:else}
-        <button on:click={openSignupModal} class="w-10 h-10">
+        <a href="/signup" class="w-10 h-10">
             <UserCircle class="w-full h-full" weight="light" />
-        </button>
+        </a>
     {/if}
 </div>

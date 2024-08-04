@@ -4,7 +4,6 @@
     It's intended to be displayed for the creator.
 -->
 <script lang="ts">
-	import { getUserSubscriptionTiersStore, getUserSupporters } from "$stores/user-view";
 	import { creatorRelayPubkey } from "$utils/const";
 	import { NDKKind, type Hexpubkey, NDKSubscription, NDKSubscriptionReceipt, NDKSubscriptionStart, NDKUser, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
@@ -19,20 +18,7 @@
     let tierNames: Record<string, string> = {};
 
     // onMount(() => {
-        supporters = getUserSupporters();
     // });
-
-    const tiers = getUserSubscriptionTiersStore();
-
-    $: for (const tier of $tiers) {
-        const dTag = tier.dTag!;
-        if (!dTag) {
-            console.warn("No d tag for tier", tier.rawEvent());
-            continue;
-        } else {
-            tierNames[dTag] = tier.title ?? dTag;
-        }
-    }
 
     const relaySet = getDefaultRelaySet();
     const receipts = $ndk.storeSubscribe([

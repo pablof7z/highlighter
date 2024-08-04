@@ -1,20 +1,13 @@
 <script lang="ts">
-	import { type SvelteComponent } from 'svelte';
     import { createEventDispatcher } from 'svelte';
 	import { appMobileView } from '$stores/app';
 	import { isMobileBuild } from '$utils/view/mobile';
+	import { NavigationOption } from '../../app';
 
     const dispatch = createEventDispatcher();
 
-    type Option = {
-        label: string;
-        icon: typeof SvelteComponent;
-        class?: string;
-        cb: () => true | void;
-    };
-
-    export let leftOptions: Option[] = [];
-    export let rightOptions: Option[] = [];
+    export let leftOptions: NavigationOption[] = [];
+    export let rightOptions: NavigationOption[] = [];
 
     let positionX = 0;
 
@@ -116,7 +109,7 @@
             return;
         }
 
-        event.preventDefault();
+        // event.preventDefault();
 
         // limit the x offset to the triggerActionRequirement
         updatePosition(xOffset);
@@ -143,7 +136,6 @@
         // if we were fully opened and now we're closing, dispatch close
         if (fullyOpened && absOffsetX === 0) {
             fullyOpened = false;
-            console.log('dispatching close');
             dispatch('close');
         }
     }
@@ -172,7 +164,7 @@
             const closerToFullThanZero = absOffsetX > maxSwipe.left / 2;
 
             if (exactlyOneOption && somethingShouldTrigger) {
-                if (leftOptions[0].cb() !== true) updatePosition(0);
+                if (leftOptions[0].fn?.() !== true) updatePosition(0);
             } else if (closerToFullThanZero) {
                 const pos = triggerActionRequirement * leftOptions.length;
                 updatePosition(pos);
@@ -185,12 +177,11 @@
             const closerToFullThanZero = absOffsetX > maxSwipe.right / 2;
 
             if (exactlyOneOption && somethingShouldTrigger) {
-                if (rightOptions[0].cb() !== true) updatePosition(0);
+                if (rightOptions[0].fn?.() !== true) updatePosition(0);
             } else if (closerToFullThanZero) {
                 const pos = -triggerActionRequirement * rightOptions.length;
                 updatePosition(pos);
                 fullyOpened = true;
-                console.log('setting fully opened');
             } else {
                 updatePosition(0);
             }
@@ -202,7 +193,7 @@
     <div class="w-full relative"
         style="
             touch-action: pan-y;
-        " on:touchstart|passive={onTouchStart} on:touchmove={onTouchMove} on:touchend|passive={onTouchEnd}
+        " on:touchstart|passive={onTouchStart} on:touchmove|passive={onTouchMove} on:touchend|passive={onTouchEnd}
     >
         <div class="options-wrapper left-0" style={`
             width: ${leftOptionWidth}px;
@@ -210,12 +201,12 @@
         `}>
             {#each leftOptions as opt, i}
                 <button
-                    on:click={() => { if (opt.cb() !== true) setTimeout(() => updatePosition(0), 500); }}
+                    on:click={() => { if (opt.fn?.() !== true) setTimeout(() => updatePosition(0), 500); }}
                     class="focus:brightness-50 option {opt.class??""}"
                     style={`width: ${triggerActionRequirement}px;`}
                 >
                     <svelte:component this={opt.icon} class="w-12 h-12 !text-foreground" />
-                    <span class="text-foreground">{opt.label}</span>
+                    <span class="text-foreground">{opt.name}</span>
                 </button>
             {/each}
         </div>
@@ -228,12 +219,12 @@
         `}>
             {#each rightOptions as opt, i}  
                 <button
-                    on:click={() => { if (opt.cb() !== true) setTimeout(() => updatePosition(0), 500); }}
+                    on:click={() => { if (opt.fn?.() !== true) setTimeout(() => updatePosition(0), 500); }}
                     class="focus:brightness-50 option {opt.class??""}"
                     style={`width: ${triggerActionRequirement}px;`}
                 >
                     <svelte:component this={opt.icon} class="w-12 h-12" />
-                    <span class="text-foreground">{opt.label}</span>
+                    <span class="text-foreground">{opt.name}</span>
                 </button>
             {/each}
         </div>

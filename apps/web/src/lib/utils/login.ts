@@ -11,7 +11,6 @@ import {
 	NDKKind,
 	NDKRelayList
 } from '@nostr-dev-kit/ndk';
-import { generateLoginEvent } from '$actions/signLoginEvent';
 import { get } from 'svelte/store';
 import { jwt as jwtStore, loginState, userFollows, userProfile } from '$stores/session';
 import createDebug from 'debug';
@@ -19,8 +18,6 @@ import currentUser, { loginMethod, nip46LocalKey, privateKey, userPubkey } from 
 import { goto } from '$app/navigation';
 import { vanityUrls } from './const';
 import { ndk, bunkerNDK } from '$stores/ndk';
-import { newToasterMessage } from '$stores/toaster';
-import { nip19 } from 'nostr-tools';
 
 export type LoginMethod = 'none' | 'pk' | 'npub' | 'nip07' | 'nip46' | 'guest';
 
@@ -42,19 +39,6 @@ export async function pkSignup() {
 	currentUser.set(user);
 	$ndk.signer = signer;
 	userPubkey.set(user.pubkey);
-}
-
-export async function finalizeLogin() {
-	const url = import.meta.env.VITE_BASE_URL;
-	const hostname = new URL(url).hostname;
-	// fetch jwt
-	// const loginEvent = await generateLoginEvent(hostname);
-	// if (!loginEvent) return null;
-	// const jwt = await fetchJWT(loginEvent);
-	// if (jwt) {
-	// 	jwtStore.set(jwt);
-	// 	document.cookie = `jwt=${jwt}; path=/; domain=${hostname};`;
-	// }
 }
 
 async function pkLogin(key: string, method: LoginMethod = 'pk') {
@@ -158,7 +142,6 @@ export async function login(payload: string | undefined) {
 					if (window.nostr) {
 						clearInterval(loadNip07Interval);
 						const user = nip07SignIn($ndk);
-						// await finalizeLogin();
 						resolve(user);
 					}
 

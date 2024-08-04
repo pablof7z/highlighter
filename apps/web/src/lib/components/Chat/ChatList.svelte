@@ -29,14 +29,14 @@
     // })
 </script>
 
-{#if groupsList && $groupsList}
+hi
+<!-- {#if groupsList && $groupsList}
     <Chat.List>
         {#each $groupsList.items as item (item)}
-            {item[1]}
             <Chat.Item tag={item} />
         {/each}
     </Chat.List>
-{/if}
+{/if} -->
 
 <!-- <h2>Communities to check out</h2>
 

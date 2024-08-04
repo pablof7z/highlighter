@@ -1,6 +1,6 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser';
-	import { NDKArticle, NDKEvent, NDKFilter, NDKKind, NDKRelayAuthPolicies, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKFilter, NDKKind, NDKList, NDKRelayAuthPolicies, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
 	import { deriveListStore, deriveStore } from "$utils/events/derive";
 	import { derived } from "svelte/store";
@@ -9,15 +9,9 @@
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { Readable } from 'svelte/store';
 
-    export let tag: NDKTag | undefined = undefined;
     export let groupId: string | undefined = undefined;
     export let relays: string[] | undefined = undefined;
     export let skipFooter: boolean = false;
-
-    if (tag) {
-        groupId = tag[1];
-        relays = tag.slice(2, tag.length);
-    }
 
     groupId ??= "";
 
@@ -27,7 +21,8 @@
     const relaySet = NDKRelaySet.fromRelayUrls(relays||[], $ndk, false);
     // relaySet.relays.forEach((r) => r.authPolicy = NDKRelayAuthPolicies
 
-    const group = new NDKSimpleGroup($ndk, relaySet, groupId);
+    export let group: NDKSimpleGroup | undefined = undefined;
+    group ??= new NDKSimpleGroup($ndk, relaySet, groupId);
 
     const filters: NDKFilter[] = [
         { kinds: [ NDKKind.GroupNote, NDKKind.GroupReply ], ...hFilter, limit: 50 },
@@ -46,7 +41,7 @@
 
     onMount(() => {
         // Subscriptions
-        events = $ndk.storeSubscribe(filters, { subId: 'group-events', groupable: false, relaySet });
+        events = $ndk.storeSubscribe(filters, { subId: 'group-events', groupable: false, relaySet: group.relaySet });
         metadata = deriveListStore(events, NDKSimpleGroupMetadata);
         admins = deriveListStore(events, NDKSimpleGroupMemberList, [NDKKind.GroupAdmins]);
         members = deriveListStore(events, NDKSimpleGroupMemberList);
@@ -66,7 +61,6 @@
             }
         );
         isMember = derived([ currentUser, members, admins ], ([ $currentUser, $members, $admins ]) => {
-            console.log('running derived store for isMember', $members)
             if ($currentUser && $members && $admins) {
                 return $members.hasMember($currentUser.pubkey) || $admins.hasMember($currentUser.pubkey);
             }
@@ -115,6 +109,4 @@
         {tiers}
         {stores}
     />
-{:else}
-    loading
 {/if}

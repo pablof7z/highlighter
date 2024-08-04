@@ -9,18 +9,17 @@
 	import ToggleDark from "$components/buttons/ToggleDark.svelte";
 	import { goto } from "$app/navigation";
 	import { PublishInGroupStore, Scope } from ".";
-	import { pluralize } from "$utils";
     import * as Draft from "$components/Draft";
+	import { groups } from "$stores/groups";
 
     export let mode: Writable<string>;
     export let publishing: Writable<boolean>;
     export let publishAt: Writable<Date | undefined>;
     export let event: Writable<NDKArticle | NDKVideo | undefined>;
     export let publishScope: Writable<Scope>;
-    export let groups: Readable<Record<string, NDKSimpleGroup>>;
     export let publishInGroups: PublishInGroupStore;
 
-    export let onSaveDraft: () => Promise<boolean>;
+    export let onSaveDraft: (manuallySaved: boolean) => Promise<boolean>;
     export let onPublish: () => Promise<void>;
     
     let closing: any;
@@ -143,12 +142,12 @@
             </Tooltip.Root>
         {/if}
 
-        <ToggleDark />
+        <ToggleDark variant="outline" />
         
     </div>
 
     <div class="flex flex-row flex-nowrap gap-2">
-        <Draft.Button save={onSaveDraft} />
+        <Draft.Button timer={30} save={onSaveDraft} />
         
         <Tooltip.Root>
             <Tooltip.Trigger>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Component, layout } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
-	import { NDKArticle, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../../app";
 	import { setContext } from "svelte";
 	import { Navigation } from "$utils/navigation";

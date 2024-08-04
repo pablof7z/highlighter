@@ -3,7 +3,6 @@ import { NDKSubscriptionStart } from '@nostr-dev-kit/ndk';
 import { redirect } from '@sveltejs/kit';
 import Stripe from 'stripe';
 import { get } from 'svelte/store';
-import { processNewSubscription } from '$utils/subscriptions';
 import createDebug from 'debug';
 import { STRIPE_KEY } from '$env/static/private';
 import { getStripeSession, updateStripeSession } from '$lib/server/stripe.js';
@@ -45,7 +44,7 @@ export async function load({ url }) {
         if (sessionData.payment_status === 'paid') {
             const event = new NDKSubscriptionStart($ndk, JSON.parse(checkoutSession.event!));
             debug("processing new payment")
-            await processNewSubscription(event, recipient, $ndk, debug);
+            // await processNewSubscription(event, recipient, $ndk, debug);
 
             // mark session as paid in db
             await updateStripeSession(session, { paid: true });

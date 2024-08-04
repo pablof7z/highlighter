@@ -1,17 +1,16 @@
 <script lang="ts">
 	import HorizontalList from '$components/PageElements/HorizontalList';
-	import NDK, { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKUser, NDKUserProfile, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
+	import NDK, { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKSubscriptionTier, NDKUser, NDKUserProfile, NDKVideo, getRelayListForUser, isEventOriginalPost } from "@nostr-dev-kit/ndk";
 	import { derived, writable, type Readable } from "svelte/store";
 	import { getContext, onDestroy, onMount } from "svelte";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-    import * as Chat from "$components/Chat";
-    import * as Card from '$components/Card';
-	import HighlightBody from '$components/HighlightBody.svelte';
-	import currentUser from '$stores/currentUser';
     import * as Group from "$components/Groups";
+    import * as Card from '$components/Card';
+	import currentUser from '$stores/currentUser';
 	import { layout } from '$stores/layout';
 	import { openModal } from '$utils/modal';
 	import JoinModal from '$components/Groups/Modals/JoinModal.svelte';
+	import { groupKey } from '$stores/groups';
 
     export let user: NDKUser = getContext('user') as NDKUser;
     export let userProfile: NDKUserProfile | undefined | null = getContext('userProfile') as NDKUserProfile;
@@ -26,8 +25,6 @@
     const userGroupsList = getContext('userGroupsList') as Readable<NDKList>;
     const userPinList = getContext('userPinList') as Readable<NDKList>;
     const userTiers = getContext('userTiers') as Readable<NDKSubscriptionTier[]>;
-    const userGroups = getContext('userGroups') as Readable<Record<string, NDKSimpleGroup>>;
-    const userGroupsMetadata = getContext('userGroupsMetadata') as Readable<Record<string, NDKSimpleGroupMetadata>>;
 
     $layout.footerInMain = true;
 
@@ -79,11 +76,11 @@
         }
     }
 
-    let featuredItems: Readable<(NDKArticle | NDKVideo | NDKSimpleGroup)[]> | undefined;
+    let featuredItems: Readable<(NDKArticle | NDKVideo)[]> | undefined;
 
     $: if (!featuredItems && userArticles && userVideos && userPinList) {
-        featuredItems = derived([ userArticles, userVideos, userGroups, userGroupsMetadata, userPinList ], ([ $userArticles, $userVideos, $userGroups, $userGroupsMetadata, $userPinList ]) => {
-            const items: (NDKArticle | NDKVideo | NDKSimpleGroup)[] = [];
+        featuredItems = derived([ userArticles, userVideos, userPinList ], ([ $userArticles, $userVideos, $userPinList ]) => {
+            const items: (NDKArticle | NDKVideo)[] = [];
             if (!$userPinList) {
                 // get most recent articles or video
                 const firstVideo = $userVideos[0];
@@ -107,12 +104,12 @@
                     lookIn = $userArticles;
                 } else if (kind === NDKKind.HorizontalVideo && $userVideos) {
                     lookIn = $userVideos;
-                } else if (kind === NDKKind.GroupMetadata && $userGroupsMetadata[id]) {
+                } else if (kind === NDKKind.GroupMetadata) {
                     lookIn = undefined;
-                    if ($userGroups[id]?.metadata?.name || $userGroupsMetadata[id].name) {
-                        // $userGroups[id].metadata = $userGroupsMetadata[id];
-                        items.push($userGroups[id]);
-                    }
+                    // if ($userGroupList[id]?.metadata?.name || $userGroupsMetadata[id].name) {
+                    //     // $userGroups[id].metadata = $userGroupsMetadata[id];
+                    //     items.push($userGroups[id]);
+                    // }
                 }
 
                 if (lookIn) {
@@ -150,14 +147,13 @@
     {/if}
 
     {#if $userGroupsList}
-        <HorizontalList class="py-[var(--section-vertical-padding)]" title="Communities" items={$userGroupsList.items.map(tag => { return {tag, id: tag[1]} })} let:item>
+        <HorizontalList renderLimit={7} class="py-[var(--section-vertical-padding)]" title="Communities" items={$userGroupsList.items.map(tag => { return {tag, id: groupKey(tag[1], tag.slice(2))} })} let:item>
             <Group.Root
-                tag={item.tag}
+                groupId={item.tag[1]}
+                relays={item.tag.slice(2)}
                 let:group
                 let:metadata
                 let:tiers
-                let:members
-                let:admins
                 let:isAdmin
             >
                 <Card.Community
@@ -165,9 +161,6 @@
                     {metadata}
                     {tiers}
                     {isAdmin}
-                    on:click={() => {
-                        openModal(JoinModal, { group, metadata, tiers, members, admins })
-                    }}
                 />
             </Group.Root>
         </HorizontalList>
@@ -195,11 +188,11 @@
                 <Card.Note event={item} />
             </HorizontalList>
         {:else if block === "groups" && $userGroupsList}
-            <Chat.List>
+            <!-- <Chat.List>
                 {#each $userGroupsList.items as item (item)}
                     <Chat.Item tag={item} />
                 {/each}
-            </Chat.List>
+            </Chat.List> -->
         {/if}
     {/each}
 

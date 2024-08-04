@@ -80,6 +80,7 @@
   },
   "dependencies": {
     "@bonosoft/sveltekit-qrcode": "^0.0.3",
+    "@capacitor-community/safe-area": "6.0.0-alpha.6",
     "@capacitor-community/sqlite": "^6.0.1",
     "@capacitor-community/text-to-speech": "^4.0.1",
     "@capacitor-firebase/messaging": "^6.0.0",

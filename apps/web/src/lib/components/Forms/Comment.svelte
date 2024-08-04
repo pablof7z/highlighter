@@ -7,6 +7,7 @@
     import { debugMode } from "$stores/session";
 	import { canUserComment } from "$lib/events/tiers";
 	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
+	import { toast } from "svelte-sonner";
 
     const dispatch = createEventDispatcher();
 
@@ -115,7 +116,7 @@
             reply = reply;
         } catch (e) {
             let message = `Ooops, the comment could not be published (${e?.message??"Unknown error"})`;
-            newToasterMessage(message, "error");
+            toast.error(message, "error");
         }
 
         dispatch("published", reply);

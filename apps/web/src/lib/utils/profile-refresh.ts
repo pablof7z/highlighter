@@ -5,7 +5,7 @@ import createDebug from 'debug';
 
 const d = createDebug('HL:profile-refresh');
 
-const alreadyRefreshed: Set<Hexpubkey> = new Set();
+export const alreadyRefreshed: Set<Hexpubkey> = new Set();
 
 /**
  * A map of profiles where the value is the 
@@ -28,7 +28,6 @@ export function refresh(
     if (profilesToRefresh.has(pubkey)) return;
 
     if (alreadyRefreshed.has(pubkey)) {
-        d("Already refreshed %s", pubkey);
         return;
     }
 

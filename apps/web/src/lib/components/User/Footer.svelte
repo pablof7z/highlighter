@@ -1,11 +1,8 @@
 <script lang="ts">
 	import FollowButton from "$components/buttons/FollowButton.svelte";
-	import SubscribeButton from "$components/buttons/SubscribeButton.svelte";
     import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
-	import PinModal from "$modals/PinModal.svelte";
 	import currentUser from "$stores/currentUser";
-	import { openModal } from "$utils/modal";
     import { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import Zap from "$components/Events/Zaps/Zap.svelte";
 
@@ -44,8 +41,6 @@
         {#if !isCurrentUser}
             {#if !isFollowed}
                 <FollowButton bind:isFollowed {user} />
-            {:else}
-                <SubscribeButton {user} />
             {/if}
         {/if}
     {/if}
@@ -69,14 +64,6 @@
                 </Button>
                 
                 <FollowButton bind:isFollowed {user} class="w-full" />
-            {:else}
-                <Button
-                    variant="outline"
-                    class="flex-none w-full"
-                    on:click={() => openModal(PinModal)}
-                >
-                    Pin
-                </Button>
             {/if}
         {/if}
     </div>

@@ -2,8 +2,8 @@
 	import FailedEventModals from "$modals/FailedEventModals.svelte";
 	import { failedPublishEvents } from "$stores/events";
 	import { openModal } from "$utils/modal";
-	import { newToasterMessage } from "$stores/toaster.js";
 	import { Warning } from "phosphor-svelte";
+	import { toast } from "svelte-sonner";
 
     function showErrors() {
         openModal(FailedEventModals);
@@ -13,7 +13,7 @@
     
     $: if ($failedPublishEvents.size !== failedCount) {
         if ($failedPublishEvents.size > failedCount) {
-            newToasterMessage("Failed to publish", "error");
+            toast.error("Failed to publish");
         }
 
         failedCount = $failedPublishEvents.size;

@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { ndk } from "$stores/ndk.js";
 	import { type NDKArticle, NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
-	import { pageHeader } from '$stores/layout';
+	import { layout } from '$stores/layout';
 	// import HighlightingArea from './HighlightingArea.svelte';
-	import HighlightedContent from './HighlightedContent.svelte';
 	import { onDestroy } from "svelte";
 
     export let article: NDKArticle;
@@ -22,7 +21,7 @@
         highlights?.unsubscribe();
     });
 
-    $pageHeader = { title: article?.title }
+    $layout.title = article.title;
 </script>
 
 <svelte:head>

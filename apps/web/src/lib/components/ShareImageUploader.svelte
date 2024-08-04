@@ -5,7 +5,7 @@
 	import { toBlob } from "html-to-image";
 	import { Uploader } from "$utils/upload";
 	import { activeBlossomServer } from "$stores/session";
-	import { newToasterMessage } from '$stores/toaster';
+	import { toast } from 'svelte-sonner';
 
     export let article: NDKArticle;
     export let status: "initial" | "uploading" | "uploaded" | "error" = "initial";
@@ -67,7 +67,7 @@
             status = "uploaded";
         };
         uploader.onError = (e) => {
-            newToasterMessage("Failed to upload image: " + e, "error");
+            toast.error("Failed to upload image: " + e);
             dispatcher('error', e);
             status = "error";
         };

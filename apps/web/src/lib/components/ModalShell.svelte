@@ -117,6 +117,7 @@
                     max-sm:!rounded-b-none
                     mx-auto
                     !overflow-hidden
+                    w-full
                     p-6
                     {$$props.class}
                 " style="

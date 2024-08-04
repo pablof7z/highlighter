@@ -1,13 +1,10 @@
 <script lang="ts">
     import type { NDKVideo } from '@nostr-dev-kit/ndk';
-    import { status } from '$stores/post-editor';
 	import ChooseVideoThumbnail from '$components/Forms/ChooseVideoThumbnail.svelte';
     import createDebug from "debug";
 	import { ndk } from '$stores/ndk';
-	import { newToasterMessage } from '$stores/toaster';
 	import { Uploader } from '$utils/upload';
 	import { activeBlossomServer } from '$stores/session';
-	import { blob } from 'drizzle-orm/sqlite-core';
 
     export let videoFile: File | undefined = undefined;
     export let video: NDKVideo;
@@ -32,7 +29,7 @@
         };
         uploader.onError = (e) => {
             console.error(e);
-            newToasterMessage("Failed to upload image: " +e, "error")
+            toast.error("Failed to upload image: " +e)
             status.update((s) => s.filter((st) => st !== st));
         };
         uploader.start();

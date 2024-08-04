@@ -42,7 +42,10 @@ export type Layout = {
 	event?: NDKEvent;
 	
 	header?: Component | false;
+	headerOptions?: NavigationOption[];
 	navigation?: NavigationOption[] | false;
+	activeOption: NavigationOption | null;
+	forceShowNavigation?: boolean;
 	sidebar?: Component | false;
 	footer?: Component;
 

@@ -4,7 +4,7 @@
 	import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
-	import { BookmarkSimple, CardsThree, Check, Lightning, Pen, Repeat } from "phosphor-svelte";
+	import { BookmarkSimple, CardsThree, Check, Lightning, Pen, Plus, Repeat } from "phosphor-svelte";
 	import Tts from '$components/Actions/TTS/TTS.svelte';
 	import ReaderButton from "$components/Event/Article/ReaderButton.svelte";
 	import { openModal } from "$utils/modal";
@@ -92,7 +92,8 @@
         </div>
     {:else if mainView === 'curation'}
         <div class="flex flex-row justify-between w-full gap-2">
-            <Button variant="secondary" on:click={() => open('new-collection')}>
+            <Button variant="outline" on:click={() => open('new-collection')}>
+                <Plus size={24} class="mr-2" />
                 New Collection
             </Button>
 
@@ -102,7 +103,7 @@
         </div>
     {:else if mainView === 'new-collection'}
         <div class="flex flex-row justify-between w-full gap-2">
-            <Button on:click={() => open('curation')}>
+            <Button variant="outline" on:click={() => open('curation')}>
                 Cancel
             </Button>
 

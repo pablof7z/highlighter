@@ -11,7 +11,6 @@
 	import { title } from 'process';
 	import { onMount } from 'svelte';
 	import { Footer } from '../Article';
-	import TopHeader from '../TopHeader.svelte';
 	import { getEventUrl } from '$utils/url';
 
     export let video: NDKVideo;
@@ -44,10 +43,7 @@
         if (!image && !isPreview) image ??= userProfile?.image;
     }
 
-    $layout.header = {
-        component: TopHeader,
-        props: { event: video, userProfile, authorUrl }
-    }
+    $layout.event = video;
     if (video.title) $layout.title = video.title;
 </script>
 

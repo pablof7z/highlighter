@@ -58,7 +58,7 @@ export type NavigationOption = {
 		unstyled?: boolean;
         props?: Record<string, any>;
     }
-    fn?: () => void;
+    fn?: () => void | boolean;
 	buttonProps?: Record<string, any>;
 };
 

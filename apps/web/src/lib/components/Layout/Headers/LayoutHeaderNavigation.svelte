@@ -5,6 +5,9 @@
 	import { layout } from "$stores/layout";
 	import { openModal } from "$utils/modal";
 	import { House, MagnifyingGlass } from "phosphor-svelte";
+	import { slide } from "svelte/transition";
+
+    export let scrollDir: 'up' | 'down' | undefined;
 
     function search() {
         openModal(SearchModal);
@@ -23,8 +26,13 @@
     ];
 </script>
 
-{#if options}
-    <ScrollArea class="py-3 lg:px-4 whitespace-nowrap {$$props.class??""}" orientation="horizontal">
-        <HorizontalOptionsList {options} />
-    </ScrollArea>
+{#if options && (scrollDir !== 'down' || $layout.forceShowNavigation)}
+    <div transition:slide>
+        <ScrollArea class="py-1 lg:py-3 lg:px-4 whitespace-nowrap {$$props.class??""}" orientation="horizontal">
+            <HorizontalOptionsList
+                {options}
+                bind:activeOption={$layout.activeOption}
+            />
+        </ScrollArea>
+    </div>
 {/if}

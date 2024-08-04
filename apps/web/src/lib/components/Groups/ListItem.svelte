@@ -6,8 +6,9 @@
     import { Button } from "$lib/components/ui/button/index.js";
 	import { PublishInTierStore, Scope } from "$components/Studio";
 	import { onDestroy } from "svelte";
+	import { GroupEntry } from "$stores/groups";
 
-    export let group: NDKSimpleGroup;
+    export let group: GroupEntry;
     export let selected: boolean;
     export let scope: Scope;
     export let selectedTiers: NDKSubscriptionTier[];

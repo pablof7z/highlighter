@@ -1,23 +1,22 @@
 <script lang="ts">
 	import Checkbox from "$components/Forms/Checkbox.svelte";
-    import { getRelayListForUser, NDKArticle, NDKEvent, NDKRelayList, NDKSimpleGroup, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
+    import { getRelayListForUser, NDKArticle, NDKEvent, NDKList, NDKRelayList, NDKRelaySet, NDKSimpleGroup, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
 	import { getContext, onMount } from "svelte";
-	import { Writable, Readable, get } from "svelte/store";
+	import { Writable, Readable, get, derived } from "svelte/store";
     import * as Groups from "$components/Groups";
 	import { ndk } from "$stores/ndk";
 	import currentUser from "$stores/currentUser";
 	import { PublishInGroupStore, PublishInTierStore, Scope, Types } from ".";
 	import { Globe, Star, Timer } from "phosphor-svelte";
 	import { Button } from "$components/ui/button";
-	import ArticlePreviewEditor from "$components/PostEditor/ArticlePreviewEditor.svelte";
     import * as Tabs from "$lib/components/ui/tabs/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
+	import { groups } from '$stores/groups';
 
 	// import MakePublicAfter from "$components/Editor/Audience/MakePublicAfter.svelte";
     
     export let type: Writable<Types>;
     
-    export let groups: Readable<Record<string, NDKSimpleGroup>>;
     export let publishInGroups: PublishInGroupStore;
     export let preview: Readable<NDKArticle | NDKEvent | undefined>;
     export let withPreview: Writable<boolean>;
@@ -43,7 +42,7 @@
         if (!group) continue;
         if (selectedGroups[groupId]) {
             publishInGroups.update(v => {
-                v.set(groupId, group.relayUrls());
+                v.set(groupId, group.relayUrls);
                 return v;
             });
         } else {
@@ -66,7 +65,7 @@
     }
 </script>
 
-<div class="flex flex-col gap-6 py-6">
+<div class="flex flex-col gap-6 py-6 responsive-padding">
     <Card.Root>
         <Card.Header>
             <Card.Title>Audience Scope</Card.Title>
@@ -102,7 +101,7 @@
                     <div class="flex flex-col gap-6">
                         <div class="rounded border px-4 py-2 text-muted-foreground lg:text-sm bg-secondary">
                             This post will be accessible
-                            <span class="text-foreground">only to subscribers</span>.
+                            <span class="text-foreground">only to community members</span>.
                         </div>
                     </div>
                 </Tabs.Content>

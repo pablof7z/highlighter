@@ -69,20 +69,21 @@
 
             <div class="
                 metadata-container
+                !bg-black/60
                 relative w-full z-[3] px-4 py-2 place-self-end
                 flex flex-row justify-between items-end
             ">
                 <div class="flex flex-col items-start justify-stretch w-full truncate">
                     <div class="flex flex-row w-full justify-between items-center gap-2">
-                        <h3 class="font-semibold grow max-h-[64px] overflow-clip text-foreground text-lg truncate">
+                        <h3 class="font-semibold grow max-h-[64px] overflow-clip text-white text-lg truncate">
                             {title}
                         </h3>
 
                         {#if event}
-                            <RelativeTime {event} class="text-muted-foreground text-sm lg:text-xs flex-none" />
+                            <RelativeTime {event} class="text-white/80 text-sm lg:text-xs flex-none" />
                         {/if}
                     </div>
-                    <div class="text-sm text-muted-foreground font-normal truncate pt-2 flex flex-row w-full justbify-between">
+                    <div class="text-sm text-white/80 font-normal truncate pt-2 flex flex-row w-full justify-between">
                         {#if !skipAuthor && author}
                             <span class="grow">
                                 {#if author instanceof NDKUser}
@@ -108,7 +109,7 @@
                                 </Badge>
                             {/if}
                         {:else if description}
-                            <div class="text-sm text-muted-foreground font-normal truncate max-w-screen">
+                            <div class="text-sm text-white/80 font-normal truncate max-w-screen">
                                 {description}
                             </div>
                         {/if}
@@ -137,6 +138,6 @@
     }
 
     :not(.in-content-feed) .metadata-container {
-        @apply bg-background/90;
+        @apply bg-black/90;
     }
 </style>

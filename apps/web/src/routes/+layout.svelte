@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import '../app.postcss';
-	import { finalizeLogin } from '$utils/login';
 	import { prepareSession } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
 	// import { pwaInfo } from 'virtual:pwa-info';
@@ -21,6 +20,10 @@
 	import { App } from 'konsta/svelte';
 	import { title } from '$stores/item-view';
 	import { layout } from '$stores/layout';
+	import { initialize } from '@capacitor-community/safe-area';
+
+	initialize();
+
 	
 
 	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
@@ -81,35 +84,6 @@
 		}
     });
 
-	let finalizingLogin = false;
-
-	// let shouldOpenWelcomeModal: boolean | undefined = undefined;
-	// $: if (mounted && $userProfile && !$welcomeScreenSeen) {
-	// 	const date = Math.floor(Date.now() / 1000) - 600;
-	// 	if ($userProfile.created_at >= date) {
-	// 		shouldOpenWelcomeModal = true;
-	// 	} else {
-	// 		// Not a new nostr user; no need to welcome them since they didn't create their account just now
-	// 		$welcomeScreenSeen = true;
-	// 	}
-	// }
-
-	// $: if (shouldOpenWelcomeModal) {
-	// 	openModal(SignupModal, { mode: 'welcome' });
-	// }
-
-	// $: if (mounted && !hasJwt) {
-	// 	hasJwt = !!$jwt && document.cookie.includes('jwt=');
-	// 	d(`hasJwt`, hasJwt);
-	// }
-
-	$: if (mounted && $currentUser && $ndk.signer && !hasJwt && !finalizingLogin) {
-		finalizingLogin = true;
-		try {
-			finalizeLogin();
-		} catch {}
-	}
-
 	let sessionPreparationStarted = false;
 
 	$: if (!sessionPreparationStarted && !!$currentUser) {
@@ -144,8 +118,6 @@
 
 <ModeWatcher />
 
-<App theme="ios">
 	<AppShell>
 		<slot />
 	</AppShell>
-</App>

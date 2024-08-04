@@ -9,9 +9,9 @@
 	import currentUser from "$stores/currentUser";
 	import { appMobileView } from '$stores/app';
 	import { ndk } from "$stores/ndk";
-	import { newToasterMessage } from "$stores/toaster";
 	import Avatar from "$components/User/Avatar.svelte";
 	import Button from "$components/ui/button/button.svelte";
+	import { toast } from "svelte-sonner";
 
     export let extraTags: NDKTag[] = [];
     export let kind: NDKKind;
@@ -84,7 +84,7 @@
             dispatch("event-generated");
         } catch (e) {
             console.error(e);
-            newToasterMessage(e.relayErrors ?? e.message, "error");
+            toast.error(e.relayErrors ?? e.message, "error");
         }
     }
 
@@ -105,7 +105,7 @@
             isCollapsed = collapsed ?? true;
         } catch (e) {
             console.error(e);
-            newToasterMessage(e.relayErrors ?? e.message, "error");
+            toast.error(e.relayErrors ?? e.message, "error");
         } finally {
             publishing = false;
         }

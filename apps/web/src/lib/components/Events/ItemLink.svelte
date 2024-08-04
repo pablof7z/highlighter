@@ -4,7 +4,6 @@
 	import type { UserProfileType } from "../../../app";
 	import { urlFromEvent } from "$utils/url";
 	import UserProfile from "$components/User/UserProfile.svelte";
-	import SaveForLaterButton from "$components/SaveForLaterButton.svelte";
 	import DurationTag from "$components/DurationTag.svelte";
 	import TopZap from "./TopZap.svelte";
 	import EventTags from "./EventTags.svelte";
@@ -54,10 +53,6 @@
     {grid ? "flex-col sm:flex-col" : "max-sm:flex-col flex-row sm:gap-6"}
 
 " {href} class:!cursor-default={skipLink}>
-    {#if !grid && $currentUser && event.sig}
-        <!-- Create a div so that clicks on the save button don't trigger the link -->
-        <!-- <SaveForLaterButton {event} class="absolute top-0 right-2" /> -->
-    {/if}
     <a {href} class="
         flex-none overflow-hidden relative
         {grid ? "sm:w-full h-[30vh] sm:h-[180px]" : (

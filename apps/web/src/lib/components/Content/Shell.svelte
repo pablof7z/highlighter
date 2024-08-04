@@ -13,9 +13,9 @@
 	import { derived } from "svelte/store";
 	import { layout } from '$stores/layout.js';
 	import { deriveStore } from "$utils/events/derive";
-	import Highlight from "$components/Highlight.svelte";
 
     export let event: NDKEvent;
+    export let isPreview = false;
 
     let wrappedEvent: NDKArticle | NDKVideo | NDKEvent | NDKList;
     let chapters: NDKArticle[];
@@ -113,6 +113,7 @@
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
         <Article.Header
             article={wrappedEvent}
+            {isPreview}
             {userProfile}
             {authorUrl}
         />
@@ -147,7 +148,7 @@
             {authorUrl}
         />
 
-        <slot />
+        <slot {wrappedEvent} />
     </div>
 {:else if curationKinds.includes(wrappedEvent.kind)}
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
@@ -161,6 +162,6 @@
     </div>
 {:else}
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
-        <slot />
+        <slot {wrappedEvent} />
     </div>
 {/if}

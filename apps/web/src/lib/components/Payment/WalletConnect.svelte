@@ -3,7 +3,6 @@
     import Input from '$components/ui/input/input.svelte';
 	import { ArrowDown, ArrowLeft } from "phosphor-svelte";
 	import { slide } from "svelte/transition";
-	import { finalizeLogin } from '$utils/login';
     import { createEventDispatcher } from 'svelte';
 	import WalletConnectNwa from './WalletConnectNWA.svelte';
 	import NwcIcon from '$icons/NwcIcon.svelte';
@@ -25,24 +24,10 @@
 
     let nwc: string;
 
-    async function nwcConnect(url: string) {
-        await fetch("/api/user/nwc", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ nwc: url })
-        })
-        await finalizeLogin();
-        nwcUrl = url;
-        dispatch('connected', {url});
-    }
-
     const onSuccess = async (e: CustomEvent<{url: string, nwc: any}>) => {
         const { url, nwc } = e?.detail || {};
 
-        if (url) nwcConnect(url);
-        else dispatch('connected', {url});
+        // else dispatch('connected', {url});
     }
 </script>
 
@@ -164,7 +149,7 @@
                 bind:value={nwc}
             />
             <div class="self-stretch flex-col justify-start items-start gap-1.5 flex">
-                <button class="button w-full" on:click={() => nwcConnect(nwc)}>
+                <button class="button w-full">
                     Connect
                 </button>
             </div>
@@ -188,7 +173,7 @@
             </div>
         </div>
 
-        <button class="button w-full" on:click={() => nwcConnect(nwc)}>
+        <button class="button w-full">
             Connect
         </button>
     </div>

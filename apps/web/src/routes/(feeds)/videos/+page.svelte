@@ -10,6 +10,9 @@
 
     $layout.sidebar = false;
     $layout.fullWidth = true;
+    $layout.title = "Watch";
+    $layout.back = { url: "/" };
+    $layout.navigation = false;
 
     const videos = $ndk.storeSubscribe(
         { kinds: [NDKKind.HorizontalVideo], limit: 200 },

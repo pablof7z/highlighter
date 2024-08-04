@@ -5,6 +5,8 @@ PODS:
     - Capacitor
   - CapacitorApp (6.0.0):
     - Capacitor
+  - CapacitorCommunitySafeArea (6.0.0-alpha.6):
+    - Capacitor
   - CapacitorCommunitySqlite (6.0.1):
     - Capacitor
     - SQLCipher
@@ -91,6 +93,7 @@ DEPENDENCIES:
   - "Capacitor (from `../../../../node_modules/.pnpm/@capacitor+ios@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/ios`)"
   - "CapacitorActionSheet (from `../../../../node_modules/.pnpm/@capacitor+action-sheet@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/action-sheet`)"
   - "CapacitorApp (from `../../../../node_modules/.pnpm/@capacitor+app@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/app`)"
+  - "CapacitorCommunitySafeArea (from `../../../../node_modules/.pnpm/@capacitor-community+safe-area@6.0.0-alpha.6_@capacitor+core@6.0.0/node_modules/@capacitor-community/safe-area`)"
   - "CapacitorCommunitySqlite (from `../../../../node_modules/.pnpm/@capacitor-community+sqlite@6.0.1_@capacitor+core@6.0.0/node_modules/@capacitor-community/sqlite`)"
   - "CapacitorCommunityTextToSpeech (from `../../../../node_modules/.pnpm/@capacitor-community+text-to-speech@4.0.1_@capacitor+core@6.0.0/node_modules/@capacitor-community/text-to-speech`)"
   - "CapacitorCordova (from `../../../../node_modules/.pnpm/@capacitor+ios@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/ios`)"
@@ -121,6 +124,8 @@ EXTERNAL SOURCES:
     :path: "../../../../node_modules/.pnpm/@capacitor+action-sheet@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/action-sheet"
   CapacitorApp:
     :path: "../../../../node_modules/.pnpm/@capacitor+app@6.0.0_@capacitor+core@6.0.0/node_modules/@capacitor/app"
+  CapacitorCommunitySafeArea:
+    :path: "../../../../node_modules/.pnpm/@capacitor-community+safe-area@6.0.0-alpha.6_@capacitor+core@6.0.0/node_modules/@capacitor-community/safe-area"
   CapacitorCommunitySqlite:
     :path: "../../../../node_modules/.pnpm/@capacitor-community+sqlite@6.0.1_@capacitor+core@6.0.0/node_modules/@capacitor-community/sqlite"
   CapacitorCommunityTextToSpeech:
@@ -144,6 +149,7 @@ SPEC CHECKSUMS:
   Capacitor: 559d073c4ca6c27f8e7002c807eea94c3ba435a9
   CapacitorActionSheet: de123f478f394373f84a96614ce2b1a6c30253e4
   CapacitorApp: 9d53aec7101f7b030a950c5bdc4df8612576b279
+  CapacitorCommunitySafeArea: 75387b732c4fcb2e9b635a0116f3f22c61f03124
   CapacitorCommunitySqlite: d0b543e12a06ee6fd0dc287c389e6b435ec4acdf
   CapacitorCommunityTextToSpeech: abafdfd8358b0f1b37f153e79bcaa3a71b5b0907
   CapacitorCordova: 8c4bfdf69368512e85b1d8b724dd7546abeb30af
@@ -164,6 +170,6 @@ SPEC CHECKSUMS:
   SQLCipher: 30a8e81afa6128e600b17ffa77d0f92fa05ed208
   ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
 
-PODFILE CHECKSUM: 9b9d04bf52404967197abd81d83893b4c357f29c
+PODFILE CHECKSUM: e4ebce0f0f9a911399b1fc4f5b3193c86269cb3b
 
 COCOAPODS: 1.15.2

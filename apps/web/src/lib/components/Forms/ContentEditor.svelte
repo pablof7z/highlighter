@@ -9,10 +9,9 @@
 	import { EventContent, prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
 	import { wysiwygEditor } from '$stores/settings.js';
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
-	import { newToasterMessage } from "$stores/toaster.js";
 	import Checkbox from "./Checkbox.svelte";
-    import Tiptap from "$components/Editor/Tiptap.svelte"
 	import { ndk } from "$stores/ndk.js";
+	import { toast } from "svelte-sonner";
 
     export let content: string = "";
     export let placeholder = "Write your heart out...";
@@ -183,7 +182,7 @@
             quill.insertText(index, "\n");
             quill.insertEmbed(index, "image", url);
         } else {
-            newToasterMessage("Failed to upload image", "error");
+            toast.error("Failed to upload image", "error");
         }
     }
 

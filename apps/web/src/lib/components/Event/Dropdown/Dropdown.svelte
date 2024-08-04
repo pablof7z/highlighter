@@ -29,8 +29,8 @@ import * as DropdownMenu from "$components/ui/dropdown-menu";
 
 <DropdownMenu.Root bind:open>
     <DropdownMenu.Trigger>
-        <Button variant="secondary" class="!bg-opacity-50 rounded-sm" style="width: {pixels}px; height: {pixels}px; padding: {padding}">
-            <DotsThreeVertical class="w-full h-full !text-muted-foreground" />
+        <Button variant="secondary" class="!bg-black/50 rounded-sm" style="width: {pixels}px; height: {pixels}px; padding: {padding}">
+            <DotsThreeVertical class="w-full h-full !text-white/80" />
         </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>

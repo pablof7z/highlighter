@@ -1,5 +1,6 @@
 import { get as getStore, type Writable, derived, get } from 'svelte/store';
 import { ndk } from "$stores/ndk";
+import { initGroups } from "$stores/groups";
 import {
 	NDKEvent,
 	NDKList,
@@ -7,12 +8,10 @@ import {
 	NDKListKinds,
 	type Hexpubkey,
 	profileFromEvent,
-	NDKSubscriptionTier,
 	NDKRelaySet,
 	NostrEvent,
 	NDKSubscriptionCacheUsage,
 	NDKFilter,
-	getRelayListForUser,
 } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
@@ -165,7 +164,7 @@ export async function prepareSession(): Promise<void> {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
 		const $sessionUpdatedAt = alreadyKnowFollows ? get(sessionUpdatedAt) : undefined;
 
-		console.log("$ndk.walletConfig", $ndk.walletConfig);
+		initGroups();
 		$ndk.walletConfig = {
 			onLnPay,
 			onPaymentComplete

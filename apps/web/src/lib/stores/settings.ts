@@ -2,6 +2,12 @@ import { getDefaultRelaySet } from '$utils/ndk';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import { writable } from 'svelte/store';
 
+export const hasSwiped = persist(
+	writable<boolean>(false),
+	createLocalStorage(),
+	'has-swiped'
+);
+
 export const devMode = persist(
 	writable<boolean>(false),
 	createLocalStorage(),

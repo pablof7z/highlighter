@@ -10,11 +10,19 @@
 	import { page } from "$app/stores";
     import { addHistory } from "$stores/history.js";
     import * as Feed from "$components/Feed";
+	import { Fire } from "phosphor-svelte";
 
     $layout.title = "Reads";
     $layout.back = { url: "/" };
     $layout.fullWidth = false;
     $layout.sidebar = false;
+
+    $layout.navigation = [
+        { value: "", name: "Newest" },
+        { name: "🔥 Hot" },
+        { name: "⚡️ Zapped" },
+    ]
+    $layout.activeOption = $layout.navigation[0];
 
     onMount(() => {
         addHistory({ title: "Articles", url: $page.url.toString() })
@@ -44,8 +52,6 @@
     });
 </script>
 
-<div class="responsive-padding">
-    <Feed.Articles
-        store={filteredArticles}
-    />
-</div>
+<Feed.Articles
+    store={filteredArticles}
+/>

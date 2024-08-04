@@ -21,6 +21,9 @@
 
     export let actionButtons: NavigationOption[] = [];
     export let mode: string;
+    export let title: string;
+
+    title = 'Welcome!'
 
     const signer = NDKPrivateKeySigner.generate();
 
@@ -183,8 +186,6 @@
         class="flex flex-col gap-4 transition-opacity duration-0"
     >
         <div class="flex flex-col">
-            <h1>Welcome!</h1>
-    
             <p class="text-lg text-muted-foreground grow">
                 Highlighter is a
                 calm place for
@@ -225,16 +226,5 @@
         >
             Already on Highlighter or Nostr?
         </Button>
-
-        {#if window.nostr}
-            <Button
-                variant="secondary"
-                size="lg"
-                class="text-lg"
-                on:click={() => mode = 'login'}
-            >
-                Already on Highlighter or Nostr?
-            </Button>
-        {/if}
     </div>
 </div>
