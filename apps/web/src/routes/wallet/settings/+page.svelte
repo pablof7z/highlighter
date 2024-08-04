@@ -6,13 +6,10 @@
 	import InputArray from "$components/ui/input/InputArray.svelte";
 	import CashuMintSelectorModal from "$modals/CashuMintSelectorModal.svelte";
 	import { layout } from "$stores/layout";
-	import { ndk } from "$stores/ndk";
 	import { walletService, wallet as defaultWallet, wallets } from "$stores/wallet";
 	import { openModal } from "$utils/modal";
 	import { NDKCashuWallet } from "@nostr-dev-kit/ndk-wallet";
-	import { Block } from "konsta/svelte";
 	import { Key } from "phosphor-svelte";
-	import { stringify } from "querystring";
 	import { onDestroy } from "svelte";
 	import { toast } from "svelte-sonner";
 	import { derived, writable } from "svelte/store";
@@ -88,7 +85,6 @@
 </script>
 
 {#if wallet}
-    <Block>
         <div class="flex flex-col gap-6 w-full items-start">
             <div class="w-full">
                 <h1>Name</h1>
@@ -159,5 +155,4 @@
                 {/if}
             </Button>
         </div>
-    </Block>
 {/if}

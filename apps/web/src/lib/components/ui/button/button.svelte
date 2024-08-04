@@ -3,14 +3,10 @@
 	import { type Events, type Props, buttonVariants } from "./index.js";
 	import { cn } from "$lib/utils.js";
 	import { appMobileView } from "$stores/app.js";
-	import { Button as MobileButton } from "konsta/svelte";
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
-
-	const dispatcher = createEventDispatcher();
 
 	type $$Props = Props & {
 		class?: string;
-		forceNonMobile?: boolean;
 	};
 	type $$Events = Events;
 
@@ -19,7 +15,6 @@
 	export let size: $$Props["size"] = "default";
 	export let builders: $$Props["builders"] = [];
 	export { className as class };
-	export let forceNonMobile: boolean = true;
 
 	let localClass = "";
 
@@ -28,21 +23,13 @@
 	}
 </script>
 
-{#if $appMobileView && !forceNonMobile}
-	{#if variant === "outline"}
-		<MobileButton outline onClick={(e) => dispatcher("click", e)} {...$$props} class={cn(localClass, $$props.class)}><slot /></MobileButton>
-	{:else}
-		<MobileButton onClick={(e) => dispatcher("click", e)} {...$$props} class={cn(localClass, $$props.class)}><slot /></MobileButton>
-	{/if}
-{:else}
-	<ButtonPrimitive.Root
-		{builders}
-		class={cn(buttonVariants({ variant, size, className }))}
-		type="button"
-		{...$$restProps}
-		on:click
-		on:keydown
-	>
-		<slot />
-	</ButtonPrimitive.Root>
-{/if}
+<ButtonPrimitive.Root
+	{builders}
+	class={cn(buttonVariants({ variant, size, className }))}
+	type="button"
+	{...$$restProps}
+	on:click
+	on:keydown
+>
+	<slot />
+</ButtonPrimitive.Root>

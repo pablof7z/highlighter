@@ -34,7 +34,6 @@
 <Tooltip.Root>
     <Tooltip.Trigger>
         <Button
-            forceNonMobile={true}
             href={option.href}
             variant={active ? "accent" : "secondary"}
             {...option.buttonProps??{}}

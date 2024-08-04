@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { type NDKEvent } from "@nostr-dev-kit/ndk";
 	import ItemFooterInner from './ItemFooterInner.svelte';
-	import { Toolbar } from "konsta/svelte";
 	import { appMobileView } from "$stores/app";
 
     export let event: NDKEvent;
