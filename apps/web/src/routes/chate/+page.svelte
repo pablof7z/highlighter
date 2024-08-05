@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ChatInput from '$components/Chat/Input.svelte';
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
-	import { pageHeader } from "$stores/layout";
 	import { userFollows } from "$stores/session";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
@@ -17,12 +16,12 @@
         return $feed.filter((e: NDKEvent) => !e.tagValue("e"));
     })
 
-    $pageHeader = {
-        footer: {
-            component: ChatInput,
-            props: { tags: [], kind: 1, placeholder: "What's going on?!" }
-        }
-    }
+    // $pageHeader = {
+    //     footer: {
+    //         component: ChatInput,
+    //         props: { tags: [], kind: 1, placeholder: "What's going on?!" }
+    //     }
+    // }
 </script>
 
 <div class="flex flex-col grow justify-end gap-6 overflow-y-auto scrollable-content relative">

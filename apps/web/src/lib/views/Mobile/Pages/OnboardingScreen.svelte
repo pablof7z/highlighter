@@ -4,7 +4,6 @@
 	import { onMount } from 'svelte';
 	import Button from "$components/ui/button/button.svelte";
 	import LogoSmall from "$icons/LogoSmall.svelte";
-    import { pageHeader, layoutMode } from "$stores/layout";
     import { register } from 'swiper/element/bundle';
 	import { toggleMode } from 'mode-watcher';
 	import { createGuestAccount } from '$utils/user/guest';
@@ -12,16 +11,7 @@
     onMount(() => {
         register();
     })
-
-    $pageHeader = {
-        title: "Welcome",
-        left: {
-            icon: Sun,
-            fn: toggleMode
-        }
-    };
-
-    $layoutMode = "mobile-full-screen";
+    
     let activeIndex = 0;
     let swiper: any;
 

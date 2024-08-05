@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { layout, pageHeader } from "$stores/layout";
+	import { layout } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
 	import { NDKEvent, NDKKind, NDKSimpleGroup, NDKSimpleGroupMetadata, NDKTag } from "@nostr-dev-kit/ndk";
 	import { getContext, onDestroy } from "svelte";
-	import { goto } from "$app/navigation";
 	import ChatBubble from "$components/Chat/ChatBubble.svelte";
 	import { derived, Readable, writable } from "svelte/store";
     import * as Groups from "$components/Groups";
@@ -15,9 +14,13 @@
     export let group = getContext('group') as NDKSimpleGroup;
     export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
     const isMember = getContext("isMember") as Readable<boolean>;
+    const optionManager = getContext("optionManager") as Navigation;
+    optionManager.options.subscribe(value => $layout.navigation = value);
 
     addHistory({ category: 'Chat', title: $metadata?.name ?? "Community" });
     
+    $layout.header = undefined;
+    $layout.title = "Chat";
     $layout.footerInMain = true;
 
     function onEvent() {
@@ -100,11 +103,11 @@
 </script>
 
 <ScrollArea>
-    <div class="flex flex-col">
+    <div class="flex flex-col py-2">
         {#each $sortedChat as event, i (event.id)}
             <Swipe
                 leftOptions={[
-                    { label: 'Reply', icon: ChatCircle, class: "bg-accent", cb: () => onReply(event) },
+                    { name: 'Reply', icon: ChatCircle, class: "bg-accent", fn: () => onReply(event) },
                 ]}
             >
                 <ChatBubble

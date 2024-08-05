@@ -9,12 +9,22 @@
 	import { closeModal } from "$utils/modal";
 	import { groupsList } from "$stores/session";
 	import { toast } from "svelte-sonner";
+    import { Keyboard } from '@capacitor/keyboard';
+
+    if (isMobileBuild()) {
+        onMount(() => {
+            Keyboard.show();
+        });
+    }
 
     import * as Collapsible from "$lib/components/ui/collapsible";
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
 	import { Camera, CaretDown, Image, Upload } from "phosphor-svelte";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import { Button } from "$components/ui/button";
+	import { onMount } from "svelte";
+	import { appMobileView } from "$stores/app";
+	import { isMobileBuild } from "$utils/view/mobile";
 
 
     let name: string;
@@ -24,7 +34,8 @@
     const actionButtons: NavigationOption[] = [
         {
             name: "Next",
-            buttonProps: {variant: 'accent'},
+            class: 'w-full',
+            buttonProps: {variant: 'default', class: 'w-full'},
             fn: create,
         },
     ];
@@ -57,8 +68,8 @@
 </script>
 
 <ModalShell
+    class="responsive-padding"
     title="New Community"
-    class="max-w-xl w-full"
     {actionButtons}
 >
     <div class="flex flex-col gap-6">
@@ -73,7 +84,7 @@
             </BlossomUpload>
 
             <div class="flex flex-col w-full">
-                <Input bind:value={name} placeholder="Community Name" class="text-xl py-6" />
+                <Input bind:value={name} placeholder="Community Name" class="text-xl py-6" autofocus />
             </div>
         </div>
 

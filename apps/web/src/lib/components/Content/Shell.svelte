@@ -17,7 +17,7 @@
     export let event: NDKEvent;
     export let isPreview = false;
 
-    let wrappedEvent: NDKArticle | NDKVideo | NDKEvent | NDKList;
+    export let wrappedEvent: NDKArticle | NDKVideo | NDKEvent | NDKList;
     let chapters: NDKArticle[];
 
     if (event.kind === 30040) {
@@ -52,7 +52,7 @@
             });
         
     } else {
-        wrappedEvent = eventToKind(event);
+        wrappedEvent ??= eventToKind(event);
     }
 
     let userProfile: NDKUserProfile;

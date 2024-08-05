@@ -61,7 +61,7 @@
         open(false)
     }
 
-    let open: (view?: string | false) => void;
+    let open: Footer.OpenFn;
 </script>
 
 <Footer.Shell

@@ -33,11 +33,6 @@ export type EventType =
 	| 'highlight'
 	| 'curation';
 
-export interface UserUploadQuota {
-	used: number;
-	total: number;
-}
-
 export type NavigationOption = {
     value?: string;
     name?: string;

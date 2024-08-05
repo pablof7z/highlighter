@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ScrollArea } from "$components/ui/scroll-area";
 	import { CaretRight } from "phosphor-svelte";
 	import { inview } from "svelte-inview";
 
@@ -19,9 +18,10 @@
                 <CaretRight class="text-muted-foreground" size={18} />
             </a>
         {/if}
-        <ScrollArea class="whitespace-nowrap scrollbar-hide max-sm:w-screen" orientation="horizontal">
+        <div class="flex flex-row flex-nowrap overflow-x-auto scrollbar-hide">
+        <!-- <ScrollArea class="whitespace-nowrap scrollbar-hide max-sm:w-screen" orientation="horizontal"> -->
             <div class="flex w-max gap-8">
-                {#each items as item, i (item.id)}
+                {#each items.slice(0, renderLimit) as item, i (item.id)}
                     <slot {item} />
                 {/each}
 
@@ -35,7 +35,8 @@
                     </button>
                 {/if}
             </div>
-        </ScrollArea>
+        </div>
+        <!-- </ScrollArea> -->
     </div>
 </div>
 

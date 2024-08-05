@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { pageHeader } from "$stores/layout";
+    import { layout } from "$stores/layout";
 	import NDKCacheAdapterDexie, { db } from '@nostr-dev-kit/ndk-cache-dexie';
 	import { ndk } from "$stores/ndk";
 	import { browser } from '$app/environment';
@@ -8,12 +8,9 @@
 	import Checkbox from '$components/Forms/Checkbox.svelte';
 	import { devMode } from '$stores/settings';
 
-    $pageHeader = {
+    $layout = {
         title: "Highlighter",
-        left: {
-            label: "Back",
-            url: "/settings",
-        }
+        back: { url: "/settings", }
     };
 
     let lruProfileCount: number | undefined

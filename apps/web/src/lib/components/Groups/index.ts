@@ -2,6 +2,8 @@ import Root from './Root.svelte';
 import RootList from './RootList.svelte';
 import Shell from './Shell.svelte';
 
+import Header from './Header.svelte';
+
 import * as Views from './Views';
 
 import * as Footers from './Footer/';
@@ -22,6 +24,8 @@ export {
     Root,
     RootList,
     Shell,
+
+    Header,
 
     Views,
 

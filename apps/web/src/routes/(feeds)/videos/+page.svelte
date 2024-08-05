@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { NDKArticle, NDKKind, NDKVideo } from "@nostr-dev-kit/ndk";
-	import { layout, layoutMode } from "$stores/layout";
+	import { layout } from "$stores/layout";
 	import { onDestroy } from "svelte";
-	import StoreGrid from "$components/Grid/StoreGrid.svelte";
 	import { wot, wotFiltered, wotFilteredStore } from "$stores/wot";
-	import { ndk } from "$stores/ndk.js";
 	import { Readable, derived } from "svelte/store";
     import * as Feed from "$components/Feed";
 

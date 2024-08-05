@@ -4,7 +4,7 @@
 	import { ndk } from "$stores/ndk.js";
 	import { NDKKind, type NDKFilter, NDKSubscriptionCacheUsage, NDKEvent } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
-    import { layout, layoutMode, searching } from "$stores/layout";
+    import { layout, searching } from "$stores/layout";
 	import { getNip50RelaySet } from "$utils/ndk";
 	import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";

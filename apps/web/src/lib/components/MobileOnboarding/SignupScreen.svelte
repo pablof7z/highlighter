@@ -1,8 +1,6 @@
 <script lang="ts">
-	import PageTitle from "$components/PageElements/PageTitle.svelte";
 	import { Button } from "$components/ui/button";
 	import { Input } from "$components/ui/input";
-	import { pageHeader } from "$stores/layout";
     import { createEventDispatcher } from "svelte";
 
     const dispatcher = createEventDispatcher();
@@ -11,18 +9,10 @@
 
     }
 
-    $pageHeader ??= {};
-    $pageHeader.right = {
-        label: "Skip",
-        fn: skip
-    }
-
     let name: string;
 </script>
 
 <div class="flex flex-col items-start justify-center w-4/5">
-    <PageTitle title="Welcome" />
-    
     <label class="mb-2">
         What should people call you?
     </label>

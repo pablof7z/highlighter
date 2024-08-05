@@ -1,28 +1,17 @@
 <script lang="ts">
 	import ProfileEditPage from "$components/User/ProfileEditPage.svelte";
-	import { pageHeader } from "$stores/layout";
+	import { layout } from "$stores/layout";
 	import { goto } from '$app/navigation';
 
     let forceSave = false;
     let saving = false;
 
-    $pageHeader = {
+    $layout = {
         title: "Profile",
-        left: {
-            label: "Back",
+        back: {
             url: "/settings",
-        },
-        right: {
-            label: "Save",
-            fn: () => forceSave = true
         }
     };
-
-    $: if (saving) {
-        $pageHeader!.right!.label = "loading";
-    } else {
-        $pageHeader!.right!.label = "Save";
-    }
 </script>
 
     <ProfileEditPage

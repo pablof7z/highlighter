@@ -1,14 +1,11 @@
 <script lang="ts">
-	import { pageHeader } from "$stores/layout";
+	import { layout } from "$stores/layout";
 
-    $pageHeader = {
+    $layout = {
         title: "Settings",
-        left: {
-            label: "Back",
+        back: {
             url: "/settings",
         },
-        right: {
-        }
     }
 </script>
 

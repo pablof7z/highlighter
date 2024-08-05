@@ -18,6 +18,9 @@
     export let value: string = "";
     export let onSearch: (q: string) => void;
     export let displayResults = true;
+    export let placeholder: string = "Search";
+    export let autofocus = true;
+    export let inputClass = "w-full border-none text-xl focus-visible:!outline-none focus-visible:!ring-0 foucs-visible:!outline-offset-0";
 
     const dispatch = createEventDispatcher();
 
@@ -166,14 +169,14 @@
     {#if searching}
         <span class="loading loading-sm text-accent"></span>
     {:else}
-        <MagnifyingGlass class="w-8 h-8 text-muted-foreground" />
+        <MagnifyingGlass class="w-6 h-6 text-muted-foreground" />
     {/if}
     
-    <Input
+    <input
         bind:value
-        placeholder="Search"
-        autofocus={true}
-        class="w-full border-none text-xl focus-visible:!outline-none focus-visible:!ring-0 foucs-visible:!outline-offset-0"
+        {placeholder}
+        {autofocus}
+        class={inputClass}
         on:keyup={keydown}
         on:focus={() => displayResults = true}
     />

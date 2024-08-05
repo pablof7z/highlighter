@@ -264,7 +264,7 @@
     }
 
     :global(.ql-editor.ql-blank::before) {
-        @apply text-muted-foreground left-0 right-0;
+        @apply text-muted-foreground right-0;
         font-style: normal;
     }
 

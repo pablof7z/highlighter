@@ -1,7 +1,7 @@
 <script lang="ts">
 	import LayoutHeaderNavigation from '$components/Layout/Headers/LayoutHeaderNavigation.svelte';
 	import NewGroupModal from '$modals/NewGroupModal.svelte';
-    import { layout, layoutMode, pageHeader } from "$stores/layout";
+    import { layout } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
 	import { groupsList, userFollows } from "$stores/session";
 	import { openModal } from "$utils/modal";

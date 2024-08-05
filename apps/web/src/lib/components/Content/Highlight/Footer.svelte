@@ -1,12 +1,11 @@
 <script lang="ts">
 	import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
-    import { NDKEvent, NDKKind, NDKUserProfile } from "@nostr-dev-kit/ndk";
+    import { NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
 	import { Repeat } from "phosphor-svelte";
 	import { openModal } from "$utils/modal";
 	import ShareModal from "$modals/ShareModal.svelte";
 	import BookmarkFooterButton from "$components/Layout/Footers/Buttons/BookmarkFooterButton.svelte";
-	import currentUser from "$stores/currentUser";
 	import { createEventReply } from "$utils/event";
     import Zap from '$components/Footer/Views/Zap';
 
@@ -14,7 +13,6 @@
     export let mainView: 'zap' | "content" | undefined = undefined;
     export let collapsed = true;
     export let placeholder = "Reply";
-    export let userProfile: NDKUserProfile | undefined = undefined;
 
     let zapped = false;
 

@@ -12,7 +12,7 @@
     if (type === "follows") {
         filters[0].authors = Array.from($userFollows);
     } else if (type === "You") {
-        filters[0].authors = [$currentUser!.pubkey];
+        filters[0].authors = [$currentUser?.pubkey];
     } else if (type === "recent") {
         const twoDaysAgo = Math.floor(Date.now() / 1000) - 2 * 24 * 60 * 60;
         filters[0].since = twoDaysAgo;

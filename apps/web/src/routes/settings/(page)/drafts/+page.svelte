@@ -3,16 +3,13 @@
 	import Checkbox from "$components/Forms/Checkbox.svelte";
 	import { Button } from "$components/ui/button";
 	import Input from "$components/ui/input/input.svelte";
-    import { pageHeader } from "$stores/layout";
+    import { layout } from "$stores/layout";
 	import { publishDraftsToRelays } from "$stores/settings";
 	import { getDefaultRelaySet } from "$utils/ndk";
 
-    $pageHeader = {
+    $layout = {
         title: "Drafts",
-        left: {
-            label: 'Back',
-            url: '/settings',
-        }
+        back: { url: '/settings' }
     };
 
     let enabled = $publishDraftsToRelays !== false;

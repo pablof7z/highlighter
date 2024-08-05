@@ -1,7 +1,6 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser.js';
     import { createEventDispatcher } from 'svelte';
-	import { pageHeader } from '$stores/layout.js';
 	import ProfileEditPage from '$components/User/ProfileEditPage.svelte';
 	import LoadingScreen from '$components/LoadingScreen.svelte';
 	import { goto } from "$app/navigation";
@@ -16,18 +15,6 @@
     }
 
     let forceSave = false;
-
-	$pageHeader = {
-		title: "Profile",
-		left: {
-			label: "Back",
-			url: "/welcome",
-		},
-		right: {
-			label: saving ? "loading" : "Save",
-			fn: saveClicked
-		}
-	};
 </script>
 
 <LoadingScreen ready={!!$currentUser}>

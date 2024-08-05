@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
 	import { appMobileView } from '$stores/app';
 	import { isMobileBuild } from '$utils/view/mobile';
 	import { NavigationOption } from '../../app';
@@ -8,10 +8,32 @@
 
     export let leftOptions: NavigationOption[] = [];
     export let rightOptions: NavigationOption[] = [];
+    export let preview: boolean = false;
+
+    onMount(() => {
+        if (preview) {
+            setTimeout(() => {
+                element.style.transition = "all 0.5s";
+                leftWrapper.style.transition = "all 0.3s";
+                goingLeft = true;
+                updatePosition(100);
+            }, 1500);
+
+            setTimeout(() => {
+                goingLeft = false;
+                updatePosition(0);
+            }, 2500);
+
+            setTimeout(() => {
+                element.style.transition = "";
+            }, 3000);
+        }
+    })
 
     let positionX = 0;
 
     let element: HTMLElement;
+    let leftWrapper: HTMLElement;
 
     let viewportWidth = window.innerWidth;
     let triggerActionRequirement = viewportWidth / 4;
@@ -198,7 +220,7 @@
         <div class="options-wrapper left-0" style={`
             width: ${leftOptionWidth}px;
             opacity: ${(absOffsetX / triggerActionRequirement)};
-        `}>
+        `} bind:this={leftWrapper}>
             {#each leftOptions as opt, i}
                 <button
                     on:click={() => { if (opt.fn?.() !== true) setTimeout(() => updatePosition(0), 500); }}

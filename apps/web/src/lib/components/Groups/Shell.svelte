@@ -36,20 +36,22 @@
     setContext("groupNotes", notes);
     setContext("groupChat", chat);
 
-    let options: NavigationOption[] = [];
+    let navigation: NavigationOption[] = [];
     const optionManager = new Navigation();
-    optionManager.options.subscribe(value => options = value);
+    optionManager.options.subscribe(value => navigation = value);
 
-    optionManager.setOption('home', { id: 'home', icon: House, iconProps: { weight: 'fill' }, href: getGroupUrl(group) }, undefined, true);
+    setContext("optionManager", optionManager);
 
-    optionManager.setOption('chat', { name: "Chat", badge: roundedItemCount($chat!), href: getGroupUrl(group, "chat") });
-    optionManager.setOption('posts', { name: "Posts", href: getGroupUrl(group, "posts") });
+    optionManager.setOption('home', { id: 'home', icon: House, iconProps: { weight: 'fill' }, href: getGroupUrl(group.groupId, group.relayUrls()) }, undefined, true);
+
+    optionManager.setOption('chat', { name: "Chat", badge: roundedItemCount($chat!), href: getGroupUrl(group.groupId, group.relayUrls(), "chat") });
+    optionManager.setOption('posts', { name: "Posts", href: getGroupUrl(group.groupId, group.relayUrls(), "posts") });
     if ($isAdmin) {
-        optionManager.setOption('settings', { name: "Settings", href: getGroupUrl(group, "settings") });
+        optionManager.setOption('settings', { name: "Settings", href: getGroupUrl(group.groupId, group.relayUrls(), "settings") });
     }
 
-    $: if ($articles.length > 0) optionManager.setOption('articles', { id: 'articles', name: "Articles", badge: roundedItemCount($articles!), href: getGroupUrl(group, "articles") }, true);
-    $: if ($videos.length > 0) optionManager.setOption('videos', { id: 'videos', name: "Videos", badge: roundedItemCount($videos!), href: getGroupUrl(group, "videos") }, true);
+    $: if ($articles.length > 0) optionManager.setOption('articles', { id: 'articles', name: "Articles", badge: roundedItemCount($articles!), href: getGroupUrl(group.groupId, group.relayUrls(), "articles") }, true);
+    $: if ($videos.length > 0) optionManager.setOption('videos', { id: 'videos', name: "Videos", badge: roundedItemCount($videos!), href: getGroupUrl(group.groupId, group.relayUrls(), "videos") }, true);
 
     $: {
         $layout.title = $metadata?.name ?? "Untitled group";
@@ -57,7 +59,7 @@
         $layout.back = { url: '/communities' };
     }
 
-    $: $layout.navigation = options;
+    $: $layout.navigation = navigation;
 
     let prevFooter: Component | undefined;
 
@@ -92,4 +94,5 @@
     {isAdmin}
     {isMember}
     {tiers}
+    {navigation}
 />

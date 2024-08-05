@@ -1,14 +1,11 @@
 <script lang="ts">
 	import Checkbox from "$components/Forms/Checkbox.svelte";
-    import { pageHeader } from "$stores/layout";
+    import { layout } from "$stores/layout";
 	import { ndk } from "$stores/ndk.js";
 
-    $pageHeader = {
+    $layout = {
         title: "Privacy",
-        left: {
-            label: 'Back',
-            url: '/settings',
-        }
+        back: { url: '/settings' }
     };
 
     let announceClient = !!$ndk.clientNip89;

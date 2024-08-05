@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { pushState } from '$app/navigation';
     import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import Search from '$views/Search.svelte';
 	import FilterFeed from '$components/Feed/FilterFeed.svelte';
-	import PageTitle from '$components/PageElements/PageTitle.svelte';
 	import { getNip50RelaySet } from '$utils/ndk';
-	import { layout, pageHeader } from '$stores/layout';
+	import { layout } from '$stores/layout';
 	import { onDestroy } from 'svelte';
 
     $layout.title = 'Search';
@@ -36,32 +34,31 @@
         }
     }
 
-    $pageHeader ??= {}
-    $pageHeader.component = Search;
-    $pageHeader.props = {
-        value: query,
-        onSearch: (q: string) => {
-            query = q
-            displayResults = false;
+    $layout.header = {
+        component: Search,
+        props: {
+            value: query,
+            onSearch: (q: string) => {
+                query = q
+                displayResults = false;
 
-            if ($pageHeader.props) {
-                $pageHeader.props.value = q;
-                $pageHeader.props.displayResults = false;
+                // if ($pageHeader.props) {
+                //     $pageHeader.props.value = q;
+                //     $pageHeader.props.displayResults = false;
 
-                const uri = new URL(window.location.href);
-                uri.searchParams.set('q', q);
-                pushState(uri.pathname + uri.search, {});
-            }
-            $pageHeader.props
-        },
-        displayResults
-    };
+                //     const uri = new URL(window.location.href);
+                //     uri.searchParams.set('q', q);
+                //     pushState(uri.pathname + uri.search, {});
+                // }
+                // $pageHeader.props
+            },
+            displayResults
+        }
+    }
 </script>
 
 <!-- <Search value={query} on:change={(e) => query = e.detail} /> -->
 {#if query}
-    <PageTitle title={`Search: ${query}`} />
-
     {#key query}
         <FilterFeed
             filters={[ { search: query } ]}

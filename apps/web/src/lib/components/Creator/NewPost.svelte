@@ -1,10 +1,8 @@
 <script lang="ts">
     import NewPostItem from "./NewPostItem.svelte";
-	import { closeModal, openModal, replaceModal } from "$utils/modal";
-	import NewPostModal from "$modals/NewPostModal.svelte";
+	import { closeModal, openModal } from "$utils/modal";
 	import { createEventDispatcher } from "svelte";
 	import NewGroupModal from "$modals/NewGroupModal.svelte";
-	import { NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 
     export let onNewShortPost: (() => void) | undefined = undefined;
 
@@ -14,7 +12,8 @@
         // if (!!onNewShortPost) {
         //     onNewShortPost();
         // } else {
-            openModal(NewPostModal);
+        dispatch("close");
+            // openModal(NewPostModal);
         // }
     }
 
@@ -31,7 +30,7 @@
     grid-cols-2 md:grid-cols-2
     justify-center
 ">
-    <NewPostItem icon='🤙' title="Short Note" on:click={shortNote} />
+    <NewPostItem icon='🤙' title="Short Not2e2" on:click={shortNote} />
     <NewPostItem icon="🗒️" title="Article" href="/studio/article" on:click={closeModal} />
     <NewPostItem icon='🎬 ' title="Video" href="/videos/new" on:click={closeModal} />
     <NewPostItem icon='🧵' title="Thread" href="/studio/threads/new" on:click={closeModal} />

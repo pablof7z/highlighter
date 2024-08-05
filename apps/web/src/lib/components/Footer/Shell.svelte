@@ -1,17 +1,21 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
 	import { Button } from "$components/ui/button";
 	import { CaretUp } from "phosphor-svelte";
 	import { ComponentType, createEventDispatcher, onMount, SvelteComponent } from 'svelte';
 	import { Input } from '$components/ui/input';
 	import ContentEditor from '$components/Forms/ContentEditor.svelte';
 	import { footerMainView } from '$stores/layout';
+    import { Keyboard } from '@capacitor/keyboard';
+	import { isMobileBuild } from '$utils/view/mobile';
+	import { ButtonView } from ".";
 
     export let collapsed = true;
     export let dragging = false;
     export let align = "items-center";
     export let mainView: string | undefined = undefined;
+    const initialMainView = mainView;
     export let maxHeight = "50vh";
+    export let visibleHeight = 60;
     export let placeholder: string | undefined = "Reply";
     export let onPublish: ((content: string) => void) | undefined = undefined;
     export let collapse = () => {
@@ -22,13 +26,22 @@
 
     $: mainView = $footerMainView;
 
-    type ButtonView = {
-        name: string,
-        Button: ComponentType,
-        View: ComponentType,
-        buttonProps?: Record<string, any>
-        props?: Record<string, any>
+    let kHeight = 0;
+
+    if (isMobileBuild()) {
+        Keyboard.addListener("keyboardWillHide", () => {
+            kHeight = 0;
+        });
+        
+        Keyboard.addListener('keyboardWillShow', info => {
+            const { keyboardHeight } = info;
+            kHeight = keyboardHeight;
+
+            // el.style.setProperty('transform', 'translate3d(0, -' + keyboardHeight + 'px, 0)');
+        });
     }
+
+    
     export let buttons: ButtonView[] = [];
 
     /**
@@ -54,26 +67,36 @@
     function touchend() {
         dragging = false;
         position = 0;
+        el.style.setProperty('transition', 'transform 0.3s');
+        setTimeout(() => {
+            dragged = 0;
+        }, 100);
+        setTimeout(() => {
+            el.style.setProperty('transition', 'none');
+        }, 300);
     }
 
     onMount(() => {
         if (openOnMount) {
             collapsed = false;
+            mainView = initialMainView;
         }
     })
 
     const touchmove = (e: TouchEvent) => {
         if (dragging) {
-            e.preventDefault();
             dragged = e.touches[0].clientY - position;
 
             if (collapsed && dragged > 0) dragged = 0;
             else if (!collapsed && dragged < 0) dragged = 0;
 
+            el.style.setProperty('transform', 'translate3d(0, ' + dragged + 'px, 0)');
+
             if (collapsed && dragged < -100) {
                 collapsed = false;
             } else if (!collapsed && dragged > 100) {
-                collapse()
+                el.style.setProperty('transform', 'translate3d(0, 0, 0)');
+                collapse();
             }
         }
     }
@@ -122,22 +145,21 @@
     $: {
         buttonViewNames = new Set(buttons.map(b => b.name));
     }
+
+    let el: HTMLDivElement;
 </script>
 
 <div
-    on:touchstart={touchstart}
+    bind:this={el}
+    on:touchstart|passive={touchstart}
     on:touchend={touchend}
-    on:touchmove={touchmove}
-    style="
-    {
-        (dragging) ? "transform: translateY(" + dragged/50 + "px);" : ""
-    }"
+    on:touchmove|passive={touchmove}
     class="
         footer-shell
         max-w-[var(--content-focused-width)] mx-auto
         max-sm:backdrop-blur-lg
         overflow-clip
-        !pb-[var(--safe-area-inset-bottom)]
+        !pb-[calc(var(--safe-area-inset-bottom)+0.5rem)]
         max-sm:p-2 max-sm:px-3
         max-sm:right-0 sm:right-[360px]
         rounded-t-3xl py-3 h-auto 
@@ -145,7 +167,7 @@
         {$$props.class??""}
     ">
     {#if !hideCollapsedView || collapsed}
-        <div class="flex flex-row justify-between {align} w-full gap-2" transition:slide={{axis: 'y'}}>
+        <div class="flex flex-row justify-between {align} w-full gap-2">
             {#each buttons as button}
                 <svelte:component this={button.Button} on:click={() => open(button.name)} {...button.buttonProps} />
             {/each}
@@ -188,7 +210,11 @@
     {/if}
 
     {#if !collapsed}
-        <div class="flex flex-col gap-2 w-full mt-4 overflow-y-auto scrollbar-hide" transition:slide style="max-height: {maxHeight}">
+        <div
+            class:pt-4={!hideCollapsedView}
+            class="flex flex-col gap-2 w-full overflow-y-auto scrollbar-hide transition-all duration-1000"
+            style="max-height: {maxHeight}"
+        >
             {#each buttons as button}
                 {#if mainView === button.name}
                     <svelte:component this={button.View} {open} on:close={() => open(false)} {...button.props} />

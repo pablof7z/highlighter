@@ -4,10 +4,9 @@
 	import { Readable } from "svelte/store";
 	import { NavigationOption } from "../../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
-	import { appMobileView } from '$stores/app';
 	import Avatar from '$components/User/Avatar.svelte';
 	import Name from '$components/User/Name.svelte';
-	import { layout, pageHeader } from '$stores/layout';
+	import { layout } from '$stores/layout';
 	import { userFollows } from '$stores/session';
 	import currentUser from '$stores/currentUser';
 	import Npub from '$components/User/Npub.svelte';
@@ -18,7 +17,6 @@
 	import { openModal } from "$utils/modal";
 	import { throttle } from "@sveu/shared";
 	import CreatorProfileModal from "$modals/CreatorProfileModal";
-	import { goto } from "$app/navigation";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | null | undefined = undefined;
@@ -59,7 +57,7 @@
 <div class="z-20 w-full sm:min-h-[15rem] flex flex-col">
     <!-- Banner -->
     <div class="max-sm:h-[calc(var(--safe-area-inset-top)+6rem)] w-full h-32 relative z-0">
-            <div class="z-50 left-2 top-[var(--safe-area-inset-top)] absolute">
+            <div class="z-10 left-2 top-[var(--safe-area-inset-top)] absolute">
                 <BackButton href="/" />
             </div>
         {#if userProfile?.banner}

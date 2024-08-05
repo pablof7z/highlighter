@@ -28,10 +28,13 @@
 
 {#if options && (scrollDir !== 'down' || $layout.forceShowNavigation)}
     <div transition:slide>
-        <ScrollArea class="py-1 lg:py-3 lg:px-4 whitespace-nowrap {$$props.class??""}" orientation="horizontal">
+        <ScrollArea class="py-1 responsive-padding lg:py-3 lg:px-4 whitespace-nowrap {$$props.class??""}" orientation="horizontal">
             <HorizontalOptionsList
                 {options}
                 bind:activeOption={$layout.activeOption}
+                on:changed={() => {
+                    $layout.forceShowNavigation = false;
+                }}
             />
         </ScrollArea>
     </div>

@@ -2,11 +2,8 @@
     import { page } from "$app/stores";
     import type { NDKUser } from "@nostr-dev-kit/ndk";
     import { onDestroy } from "svelte";
-	import { resetLayout } from "$stores/layout";
 
     export let user: NDKUser = $page.data.user;
-
-    onDestroy(resetLayout);
 
     $: {
         user = $page.data.user;

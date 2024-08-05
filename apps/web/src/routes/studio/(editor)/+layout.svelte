@@ -26,10 +26,7 @@
             );
         }
     }
-
-    
 </script>
-
 
 <Studio.Root
     {draftId} {checkpointId}

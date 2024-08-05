@@ -27,8 +27,8 @@
         <EventContent ndk={$ndk} {event} />
     </a>
     <div class="p-4">
-        <ScrollArea orientation="horizontal">
+        <div class="p-4 flex flex-row flex-nowrap overflow-x-auto scrollbar-hide">
             <TopPlusRecentZaps {event} />
-        </ScrollArea>
+        </div>
     </div>
 </div>

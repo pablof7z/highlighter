@@ -18,8 +18,10 @@
     export let replyTo: NDKEvent | undefined = undefined;
     export let tags: NDKTag[] = [];
     export let placeholder = "What is happening?!";
-    export let title = "New Post";
+    export let title: string | undefined;
     export let wrapperClass: string = "";
+
+    $: title = $appMobileView ? undefined : "New Post";
 
     export let kind: NDKKind | undefined = undefined;
     
@@ -80,7 +82,7 @@
     $: {
         actionButtons = [
             { icon: Timer, fn: schedule },
-            { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, buttonProps: { variant: 'default' } }
+            { name: publishing ? "Publishing" : "Publish", fn: () => { forcePublish = true; }, buttonProps: { variant: 'default', class: 'px-6' } }
         ];
     }
 

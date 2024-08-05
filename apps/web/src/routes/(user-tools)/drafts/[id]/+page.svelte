@@ -8,7 +8,7 @@
 	import { onMount } from "svelte";
 	import { Thread } from "$utils/thread";
 	import ThreadEditor from "$components/Editor/ThreadEditor/ThreadEditor.svelte";
-	import { layout, pageHeader } from '$stores/layout';
+	import { layout } from '$stores/layout';
     import * as Content from '$components/Content';
 
     let draftId: string;

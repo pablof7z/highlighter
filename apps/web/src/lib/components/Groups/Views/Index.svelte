@@ -14,7 +14,8 @@
 
     addHistory({ title: "Communities", url: "/communities" });
 
-    $layout.title = "Communities";
+    $layout.back = { url: "/" };
+    $layout.title = "🏡 Communities";
     $layout.iconUrl = undefined;
 
     const groupListsFromFollows = $ndk.storeSubscribe(

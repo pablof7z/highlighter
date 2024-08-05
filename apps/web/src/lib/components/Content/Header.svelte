@@ -22,6 +22,8 @@
     export let navOptions: NavigationOption[] = [];
 
     const dispatcher = createEventDispatcher();
+
+    $layout.activeOption = navOptions[0];
     
     function titleViewChange(e) {
         const { inView } = e.detail;
@@ -53,7 +55,7 @@
         {#if image !== false}
             <svelte:element
                 this={image ? 'img' : 'div'}
-                class="w-full object-cover bg-secondary max-sm:h-[203px]"
+                class="w-full object-cover bg-secondary"
                 {...(image ? { src: image } : {})}
             />
         {/if}

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import { ndk } from "$stores/ndk.js";
-	import { resetLayout } from '$stores/layout';
 	import { onDestroy } from 'svelte';
 	import { NDKUser } from '@nostr-dev-kit/ndk';
 	import { getUserFromUrlId } from '$utils/user/from-url-id';
@@ -19,8 +18,6 @@
             if (user) user.ndk = $ndk;
         });
     }
-
-    onDestroy(resetLayout);
 </script>
 
 {#key user?.pubkey}

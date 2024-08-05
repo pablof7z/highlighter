@@ -2,12 +2,10 @@
     import { page } from '$app/stores';
 	import UrlView from '$components/UrlView.svelte';
     import { fetchArticle } from '$lib/article';
-	import { layoutMode, pageHeader, resetLayout } from '$stores/layout.js';
     import { NDKUser, type Hexpubkey } from '@nostr-dev-kit/ndk';
-	import { onDestroy } from 'svelte';
 
     export let data;
-    const { text, contentType, title, articleUrl } = data;
+    const { text, contentType } = data;
 
     let url: string;
     let author: string;
@@ -34,8 +32,6 @@
             } catch(e) {}
         }
     }
-
-    $pageHeader = {};
 </script>
 
 {#if text}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { openModal, replaceModal } from "$utils/modal";
+	import { openModal } from "$utils/modal";
 	import NewPostModal from "$modals/NewPostModal.svelte";
 	import { createEventDispatcher } from "svelte";
 	import NewGroupModal from "$modals/NewGroupModal.svelte";
@@ -16,6 +16,7 @@
         // if (!!onNewShortPost) {
         //     onNewShortPost();
         // } else {
+        dispatch("close");
             openModal(NewPostModal, { group });
         // }
     }

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser';
-	import { NDKArticle, NDKEvent, NDKFilter, NDKKind, NDKList, NDKRelayAuthPolicies, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKFilter, NDKKind, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
 	import { deriveListStore, deriveStore } from "$utils/events/derive";
 	import { derived } from "svelte/store";
@@ -19,7 +19,6 @@
     const dFilter: NDKFilter = { "#d": [groupId] };
 
     const relaySet = NDKRelaySet.fromRelayUrls(relays||[], $ndk, false);
-    // relaySet.relays.forEach((r) => r.authPolicy = NDKRelayAuthPolicies
 
     export let group: NDKSimpleGroup | undefined = undefined;
     group ??= new NDKSimpleGroup($ndk, relaySet, groupId);
@@ -41,6 +40,7 @@
 
     onMount(() => {
         // Subscriptions
+        console.log('sending subscription', { groupId })
         events = $ndk.storeSubscribe(filters, { subId: 'group-events', groupable: false, relaySet: group.relaySet });
         metadata = deriveListStore(events, NDKSimpleGroupMetadata);
         admins = deriveListStore(events, NDKSimpleGroupMemberList, [NDKKind.GroupAdmins]);
