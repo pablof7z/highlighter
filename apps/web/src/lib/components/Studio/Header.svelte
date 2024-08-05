@@ -79,7 +79,7 @@
     });
 </script>
 
-<div class="flex flex-row items-centerw-full">
+<div class="flex flex-row items-center w-full py-3">
 <div class="
     {$$props.class??""}
     flex flex-row items-center justify-between
@@ -179,7 +179,7 @@
     </div>
 </div>
 
-<Button on:click={closeClicked} variant="secondary" class="rounded-full flex-none flex-col hidden md:flex">
+<Button on:click={closeClicked} variant="secondary" class="rounded-full flex-none flex-col hidden md:flex absolute right-2">
     {#if !closing}
         <X size={20} />
     {:else}

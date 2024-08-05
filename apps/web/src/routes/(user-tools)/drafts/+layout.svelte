@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import { layout, layoutMode, pageHeader, resetLayout } from "$stores/layout";
-	import { onDestroy } from "svelte";
+    import { layout } from "$stores/layout";
 
     let id: string;
 

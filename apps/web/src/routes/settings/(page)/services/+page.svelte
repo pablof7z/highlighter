@@ -1,19 +1,12 @@
 <script lang="ts">
-    import { pageHeader } from "$stores/layout";
 	import ServiceItem from './ServiceItem.svelte';
 	import { NDKKind } from '@nostr-dev-kit/ndk';
 	import BlossomSection from './BlossomSection.svelte';
-	import PageTitle from "$components/PageElements/PageTitle.svelte";
+	import { layout } from '$stores/layout';
 
-    $pageHeader = {
-        left: {
-            label: "Back",
-            url: "/settings",
-        }
-    };
+    $layout.title = "Services";
+    $layout.back = { url: '/settings' };
 </script>
-
-<PageTitle title="Services" defaultTitle="Settings" />
 
 <div class="flex flex-col gap-6">
     <section>

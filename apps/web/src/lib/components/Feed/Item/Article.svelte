@@ -15,6 +15,7 @@
     export let article: NDKArticle;
     export let skipAuthor = false;
     export let href: string | undefined = undefined;
+    export let index: number | undefined = undefined;
 
     const summary = getSummary(article, true);
 
@@ -39,6 +40,7 @@
 
 <Swipe
     {leftOptions}
+    preview={index === 0}
 >
 <a {href} class="flex flex-col gap-2 min-h-[5rem] lg:min-h-[10rem] {$$props.class??""}">
     <div class="flex flex-row gap-4 ">

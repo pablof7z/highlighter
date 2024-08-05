@@ -1,14 +1,11 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import StoreGrid from "$components/Grid/StoreGrid.svelte";
-	import { layoutMode } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
 	import { NDKEvent, NDKKind, NDKSubscriptionCacheUsage, NDKTag, NDKUser } from "@nostr-dev-kit/ndk";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { onDestroy } from "svelte";
 
-    $layoutMode = "full-width";
-    
     let user: NDKUser;
     let newPostTags: NDKTag[] = [];
 

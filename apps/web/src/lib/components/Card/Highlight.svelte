@@ -4,12 +4,10 @@
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { ndk } from "$stores/ndk";
 	import TopPlusRecentZaps from "$components/Events/Zaps/TopPlusRecentZaps.svelte";
-	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 	import { getEventUrl, urlFromEvent, urlSuffixFromEvent } from "$utils/url";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import Avatar from "$components/User/Avatar.svelte";
 	import Name from "$components/User/Name.svelte";
-	import { CaretRight } from "phosphor-svelte";
 
     export let highlight: NDKHighlight;
     export let highlightedArticle: NDKArticle | NDKEvent | string | undefined = undefined;
@@ -28,6 +26,8 @@
             highlightedArticleLink = urlFromEvent(highlightedArticle);
         }
     }
+
+    console.log('rendering highlight ', highlight.id)
 </script>
 
 <div class="
@@ -47,10 +47,8 @@
         class="p-4 break-words whitespace-normal grow cursor-pointer font-serif highlight">
         <EventContent ndk={$ndk} event={highlight} />
     </a>
-    <div class="p-4">
-        <ScrollArea orientation="horizontal">
-            <TopPlusRecentZaps event={highlight} />
-        </ScrollArea>
+    <div class="p-4 flex flex-row flex-nowrap overflow-x-auto scrollbar-hide">
+        <TopPlusRecentZaps event={highlight} />
     </div>
 
     {#key highlightedArticle}

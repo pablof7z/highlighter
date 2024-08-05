@@ -26,6 +26,7 @@
     let appWrapper: HTMLDivElement;
     let mainContainer: HTMLDivElement;
     let historyContainer: HTMLDivElement;
+    let headerContainer: HTMLElement;
 
     function headerTouchstart(event: TouchEvent) {
         startTouchY = event.touches[0].clientY;
@@ -49,7 +50,7 @@
         // disable clicks on main content
         mainContainer.style.pointerEvents = "none";
 
-        event.preventDefault();
+        // event.preventDefault();
         
         const viewportHeight = window.innerHeight * 0.5;
 
@@ -71,6 +72,14 @@
     function gotoAndReset(url: string) {
         goto(url);
         resetView();
+    }
+
+    function setForceHeaderOpacity() {
+        forceHeaderOpacity = true;
+        headerContainer.style.opacity = "1";
+        setTimeout(() => {
+            forceHeaderOpacity = false;
+        }, 10000);
     }
     
     function resetView() {
@@ -147,23 +156,41 @@
     }
 
     let scrollDir: "up" | "down" | undefined;
+    let forceHeaderOpacity = false;
 
-    function markScrollingDirection() {
+    function markScrollingDirection(e: Event) {
+        if (!e.target) return;
+        
+        const { scrollTop, scrollHeight, clientHeight } = e.target as HTMLElement;
+
+        currentY = scrollTop;
+        scrollPercentage = (currentY / (scrollHeight - clientHeight)) * 100;
+
         if (currentY > prevY && currentY > 50) {
             scrollDir = "down";
-        } else if (currentY < prevY) {
+        } else if (currentY < prevY - 10) {
             scrollDir = "up";
+        }
+
+        if (headerContainer) {
+            let opacity = 1;
+            if (!forceHeaderOpacity && $layout.event) {
+                if (scrollDir === "down") {
+                    if (scrollPercentage > 10) {
+                        opacity = 1 - (scrollPercentage - 10) / 10;
+                    }
+                    if (opacity < 0.25) opacity = 0.25;
+                }
+            }
+            headerContainer.style.opacity = opacity.toString();
         }
 
         prevY = currentY;
     }
 
-    function mainScroll(e) {
-        // show how far we are from the top
-        currentY = e.target.scrollTop;
+    let scrollPercentage = 0;
 
-        throttle(markScrollingDirection, 100)();
-    }
+    const mainScroll = throttle(markScrollingDirection, 0.1);
 
     let currentY = 0;
     let prevY = 0;
@@ -264,8 +291,9 @@
                     flex items-center fixed top-0 w-full
                     z-50
                     flex-col
-                "
+                " bind:this={headerContainer}
                     style={`height: '${60*headerBarCount}px'`}
+                    on:click={setForceHeaderOpacity}
                 >
                     <div class="w-full border-b">
                         <div
@@ -277,7 +305,7 @@
                             on:touchend|passive={headerTouchend}
                         >
                             {#if $layout.header || $layout.title}
-                                <LayoutHeader {scrollDir} containerClass={$layout.sidebar === false ? mainClass : ""} />
+                                <LayoutHeader {scrollPercentage} {scrollDir} containerClass={$layout.sidebar === false ? mainClass : ""} />
                             {:else if $appMobileView}
                                 <DefaultHeader />
                             {:else if $layout.navigation !== false}
@@ -305,7 +333,7 @@
                 <div class="mt-8-safe" style={`height: ${footerHeight}px`} />
                 {#if $appMobileView || $layout.footerInMain}
                     {#if $layout.footer}
-                        <footer class="fixed bottom-0 left-0 bg-background border-t border-border right-0 max-sm:bottom-0-safe w-full z-20" bind:this={footerContainer}>
+                        <footer class="fixed bottom-0 left-0 border-t border-border right-0 max-sm:bottom-0-safe w-full z-20" bind:this={footerContainer}>
                             <svelte:component this={$layout.footer.component} {...$layout.footer.props} />
                         </footer>
                     {/if}

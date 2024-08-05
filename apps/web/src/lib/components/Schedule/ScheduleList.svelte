@@ -1,6 +1,5 @@
 <script lang="ts">
 	import NewItemModal from '$modals/NewItemModal.svelte';
-	import { event } from "$components/Feed/NoteOld.svelte";
     import currentUser from "$stores/currentUser";
 	import { ndk } from "$stores/ndk.js";
 	import { NDKEvent, NDKEventId, NDKKind } from "@nostr-dev-kit/ndk";
@@ -9,7 +8,6 @@
 	import Schedule from "$lib/illustrations/schedule.svelte";
 	import { openModal } from "$utils/modal";
 	import BlankState from '$components/PageElements/BlankState.svelte';
-	import PageTitle from '$components/PageElements/PageTitle.svelte';
 
     type ScheduledEvent = {
         scheduleEvent: NDKEvent;
@@ -58,10 +56,6 @@
         })
     }
 </script>
-
-{#if eventsToPublish.length > 0}
-    <PageTitle title="Schedule" />
-{/if}
 
 <div>
     {#if eventsToPublish.length === 0}

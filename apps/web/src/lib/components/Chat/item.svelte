@@ -11,6 +11,10 @@
 	import Badge from '$components/ui/badge/badge.svelte';
 	import { randomImage } from '$utils/image';
 	import { GroupEntry } from '$stores/groups';
+	import { group } from 'console';
+	import pinGroup from '$actions/Groups/pin';
+	import { toast } from 'svelte-sonner';
+	import { NavigationOption } from '../../../app';
 
     export let groupEntry: GroupEntry;
 
@@ -75,8 +79,8 @@
     // }
 
     function pin() {
-        $groupsList?.addItem(["group", groupEntry.groupId, ...groupEntry.relaySet.relayUrls]);
-        $groupsList?.publishReplaceable();
+        pinGroup(groupEntry.groupId, groupEntry.relayUrls);
+        toast.success('Group pinned');
     }
     
     function unpin() {
@@ -84,24 +88,24 @@
         $groupsList = $groupsList;
     }
 
-    let rightOptions: [] = [];
+    let rightOptions: NavigationOption[] = [];
 
     $: if (groupEntry) {
         rightOptions = [];
         if ($groupsList?.has(groupEntry.groupId))
-            rightOptions.push({ label: 'Unpin', class: 'bg-secondary/50', cb: unpin })
+            rightOptions.push({ name: 'Unpin', class: 'bg-secondary/50', fn: unpin })
         else
-            rightOptions.push({ label: 'Pin', class: 'bg-secondary/50', cb: pin })
+            rightOptions.push({ name: 'Pin', class: 'bg-secondary/50', fn: pin })
         if (isMember)
-            rightOptions.push({ label: 'Leave', class: 'bg-secondary', cb: () => group?.leave() })
+            rightOptions.push({ name: 'Leave', class: 'bg-secondary', fn: () => group?.leave() })
         else
-            rightOptions.push({ label: 'Join', class: 'bg-secondary', cb: () => group?.join() })
+            rightOptions.push({ name: 'Join', class: 'bg-secondary', fn: () => group?.join() })
     }
     $: console.log('group name', groupEntry.name)
 </script>
 
 <Swipe {rightOptions}>
-    <a href={getGroupUrl(groupEntry)} class="py-2 w-full group">
+    <a href={getGroupUrl(groupEntry.groupId, groupEntry.relayUrls)} class="py-2 w-full group">
         <div class="responsive-padding flex flex-row items-center p-2 gap-4 w-full">
             <img src={groupEntry.picture??randomImage(groupEntry.name, 300, 300)} />
             

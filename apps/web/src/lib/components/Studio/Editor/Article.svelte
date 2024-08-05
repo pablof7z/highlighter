@@ -31,7 +31,7 @@
 
     function fetchRandomImage() {
         const title = article.title || "Nature";
-            fetch(`https://picsum.photos/800/600?random=${title}`)
+            fetch(`https://picsum.photos/800/350?random=${title}`)
                 .then((res) => {
                     article.image = res.url;
                     article = article;
@@ -98,6 +98,7 @@
 <Content.HeaderShell
     isPreview={false}
     skipImage={!article.image}
+    ignoreHeader
 >
     <div slot="image" class="w-full h-full relative">
         {#if article.image}

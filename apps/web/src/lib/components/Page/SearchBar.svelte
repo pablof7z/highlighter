@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
     import Input from '$components/ui/input/input.svelte';
 	import SearchModal from '$modals/SearchModal.svelte';
-	import { pageHeader, searching } from '$stores/layout';
+	import { searching } from '$stores/layout';
 	import { openModal } from '$utils/modal';
 	import { ndk } from "$stores/ndk";
 	import { nip19 } from 'nostr-tools';
@@ -81,10 +81,6 @@
 
         if (looksLikeUrl(value)) {
             return redirectTo(`/load?url=${encodeURIComponent(value)}`);
-        }
-
-        if ($pageHeader?.searchFn) {
-            return $pageHeader.searchFn(value);
         }
     }
 

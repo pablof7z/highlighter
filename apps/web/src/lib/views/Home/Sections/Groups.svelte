@@ -2,6 +2,7 @@
 	import HorizontalList from '$components/PageElements/HorizontalList';
     import * as Card from '$components/Card';
     import * as Groups from '$components/Groups';
+    import * as Chat from '$components/Chat';
 	import { ndk } from "$stores/ndk";
 	import { NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 	import { derived, get } from "svelte/store";
@@ -42,14 +43,14 @@
     });
 </script>
 
-<!-- {#if $groupsList && $groupsList.items.length > 0}
-    <Chat.List>
-        <Groups.RootList tags={$groupsList.items} let:groupEntry>
-            <Chat.Item {groupEntry} />
-        </Groups.RootList>
-    </Chat.List>
+{#if $groupsList && $groupsList.items.length > 0}
+<div class="divide-y divide-border border-y">
+    <Groups.RootList tags={$groupsList.items} let:groupEntry>
+        <Chat.Item {groupEntry} />
+    </Groups.RootList>
+</div>
 {/if}
- -->
+
 <!-- <div class="my-6" /> -->
 
 {#if $selectedGroups.length > 0}

@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
+    import { NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { inview } from "svelte-inview";
+	import { layout } from "$stores/layout";
+	import BackButton from "$components/App/Navigation/BackButton.svelte";
 
     export let isPreview = false;
     export let userProfile: NDKUserProfile | undefined = undefined;
@@ -14,15 +16,38 @@
     export let zaps = false;
     export let toolbar = false;
 
+    export let ignoreHeader = false;
     export let maxImageHeight = "max-h-[20rem]";
+
+    let isInView: boolean;
+    
+    function inViewChange(e) {
+        if (ignoreHeader) return;
+        const { inView } = e.detail;
+
+        isInView = inView;
+        
+        if (inView) {
+            $layout.header = false;
+        } else {
+            $layout.header = undefined;
+            $layout.title = title;
+        }
+    }
 </script>
+
 
 <div class="
     flex flex-col gap-4 {(!skipImage) ? '' : ""}
     {$$props.class??""}
-" use:inview on:inview_change>
+" use:inview on:inview_change={inViewChange}>
     {#if !skipImage}
-        <div class="{maxImageHeight} overflow-clip flex">
+        <div class="overflow-clip flex relative">
+            {#if !ignoreHeader}
+                <div class="z-10 left-2 top-[var(--safe-area-inset-top)] absolute">
+                    <BackButton href="/" />
+                </div>
+            {/if}
             <slot name="image" />
         </div>
     {/if}

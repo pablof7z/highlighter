@@ -1,10 +1,8 @@
 <script lang="ts">
     import StoreFeed from "$components/Feed/StoreFeed.svelte";
-	import PageTitle from "$components/PageElements/PageTitle.svelte";
-	import { userFollows } from "$stores/session";
 	import { wotFiltered } from "$stores/wot";
     import { ndk } from "$stores/ndk.js";
-    import { NDKEvent, NDKKind, NDKRelay, NDKRelaySet } from "@nostr-dev-kit/ndk";
+    import { NDKKind } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { derived } from "svelte/store";
 
@@ -23,8 +21,6 @@
         return wotFiltered(sorted);
     });
 </script>
-
-<PageTitle title="Collections" />
 
 {#if collections}
     <StoreFeed feed={sortedCollections} />

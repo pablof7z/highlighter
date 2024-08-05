@@ -26,9 +26,10 @@ export async function getSaveForLaterListForEvent(
             if (list && list.dTag === "saved") return list;
         }
 
-        const list = new NDKList(get($ndk));
+        const list = new NDKList($ndk);
         list.kind = NDKKind.ArticleCurationSet,
         list.title = "Read Later";
+        list.dTag = "saved";
 
         return list;
     }

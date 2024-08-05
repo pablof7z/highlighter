@@ -2,15 +2,17 @@
 	import { page } from '$app/stores';
 	import { modalState } from '$stores/layout';
 	import { onDestroy, onMount } from 'svelte';
-	import { onBeforeClose } from "svelte-modals";
+	import { action, onBeforeClose } from "svelte-modals";
     import { closeModal } from '$utils/modal';
 	import { beforeNavigate } from '$app/navigation';
 	import { appMobileView } from '$stores/app';
 	import { NavigationOption } from '../../app';
 	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
-	import { Button } from './ui/button';
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import * as Drawer from "$lib/components/ui/drawer/index.js";
+    import { Keyboard } from '@capacitor/keyboard';
+	import { isMobileBuild } from '$utils/view/mobile';
+    import * as Modal from "./Modal";
 
     export let title: string | undefined = undefined;
     export let open = true;
@@ -27,6 +29,18 @@
 
     let mounted = false;
     let containerEl: HTMLElement;
+    let kHeight = 0;
+
+    if (isMobileBuild()) {
+        Keyboard.addListener("keyboardWillHide", () => {
+            kHeight = 0;
+        });
+        
+        Keyboard.addListener('keyboardWillShow', info => {
+            const { keyboardHeight } = info;
+            kHeight = keyboardHeight;
+        });
+    }
 
     onMount(() => {
         mounted = true;
@@ -51,36 +65,17 @@
 
     onDestroy(() => {
         $modalState = "closed";
-        window.visualViewport?.removeEventListener("resize", resizeHandler);
     })
-
-    const viewport = window.visualViewport;
-
-    onMount(() => {
-        if (viewport) window.visualViewport?.addEventListener("resize", resizeHandler);
-
-        // add an event listener that fires on any input element focus
-        document.body.addEventListener("focus", resizeHandler);
-        document.body.addEventListener("blur", resizeHandler);
-    })
-
-    let height = viewport?.height;
-
-    function resizeHandler() {
-        if (!containerEl) return;
-        
-        if (!/iPhone|iPad|iPod/.test(window.navigator.userAgent)&& viewport?.height && height && viewport.height !== height) {
-            containerEl.style.bottom = `${height - viewport.height + 10}px`;
-        }
-    }
 </script>
 
 {#if !$appMobileView}
     <Dialog.Root bind:open>
         <Dialog.Content class="sm:max-w-[425px]">
-            <Dialog.Header>
-                <Dialog.Title>{title}</Dialog.Title>
-            </Dialog.Header>
+            {#if title}
+                <Dialog.Header>
+                    <Dialog.Title>{title}</Dialog.Title>
+                </Dialog.Header>
+            {/if}
 
             <slot />
 
@@ -106,17 +101,23 @@
         </Dialog.Content>
     </Dialog.Root>
 {:else}
-  <Drawer.Root shouldScaleBackground bind:open>
-    <Drawer.Content>
-      <Drawer.Header class="text-left flex flex-row w-full justify-between items-end">
-        <Drawer.Title class="truncate grow">{title}</Drawer.Title>
-        <div class="w-fit">
-            <HorizontalOptionsList options={actionButtons} />
-
-        </div>
-      </Drawer.Header>
-      <slot />
-    </Drawer.Content>
-  </Drawer.Root>
+    <Drawer.Root shouldScaleBackground bind:open>
+        <Drawer.Content
+            class="{$$props.class??""} transition-all duration-500 max-h-[calc(100vh-2rem)] overflow-y-auto"
+            style="padding-bottom: {kHeight}px;"
+        >
+        <Drawer.Header class="text-left flex flex-row w-full justify-between items-end">
+            {#if title}
+                <Drawer.Title class="truncate grow">{title}</Drawer.Title>
+            {:else if actionButtons}
+                <div class="w-full grow"></div>
+                {#each actionButtons as option, index (option.id ?? option.name ?? option.href)}
+                    <Modal.Shell.DrawerButton {option} {index} />
+                {/each}
+            {/if}
+        </Drawer.Header>
+        <slot />
+        </Drawer.Content>
+    </Drawer.Root>
 {/if}
 

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { pageHeader } from "$stores/layout";
+	import { layout } from "$stores/layout";
 
-    $pageHeader ??= {};
-    $pageHeader.subNavbarOptions = [
+    $layout ??= {};
+    $layout.navigation = [
         { name: "Bookmarks", href: "/bookmarks" },
         { name: "Collections", href: "/collections" },
     ];

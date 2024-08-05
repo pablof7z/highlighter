@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { pageHeader } from "$stores/layout";
+    import { layout } from "$stores/layout";
     import { getDefaultRelaySet } from "$utils/ndk";
 	import { RelayList } from "@nostr-dev-kit/ndk-svelte-components";
 	import { creatorRelayPubkey } from '$utils/const';
@@ -8,12 +8,9 @@
 	import { ndk } from "$stores/ndk";
 	import Input from "$components/ui/input/input.svelte";
 
-    $pageHeader = {
+    $layout = {
         title: "Network Settings",
-        left: {
-            label: "Back",
-            url: "/settings",
-        }
+        back: { url: "/settings", }
     };
 
     const creatorRelays = getDefaultRelaySet();

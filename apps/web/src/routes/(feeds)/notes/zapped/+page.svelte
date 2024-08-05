@@ -4,9 +4,6 @@
 	import { ndk } from "$stores/ndk.js";
 	import { onDestroy } from "svelte";
     import Zap from "./Zap.svelte";
-	import { layoutMode } from "$stores/layout";
-
-    $layoutMode = "single-column-focused";
 
     const zaps = $ndk.storeSubscribe([
         { kinds: [NDKKind.Zap], "#P": Array.from($userFollows), limit: 2 }

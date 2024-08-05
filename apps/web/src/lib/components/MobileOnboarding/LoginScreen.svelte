@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import PageTitle from "$components/PageElements/PageTitle.svelte";
 	import { Button } from "$components/ui/button";
 	import { Input } from "$components/ui/input";
 	import currentUser from "$stores/currentUser";
@@ -15,8 +14,6 @@
 </script>
 
 <div class="flex flex-col items-start justify-center w-4/5">
-    <PageTitle title="Login" />
-    
     <label class="mb-2">
         Enter your key to login
     </label>

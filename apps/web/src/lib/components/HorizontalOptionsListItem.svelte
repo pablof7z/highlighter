@@ -5,8 +5,6 @@
 	import { createEventDispatcher } from "svelte";
 	import Button from "./ui/button/button.svelte";
     import * as Tooltip from "$lib/components/ui/tooltip";
-	import { Plus } from "phosphor-svelte";
-
 
     export let option: NavigationOption;
     export let value: string = "";
@@ -32,10 +30,10 @@
 </script>
 
 <Tooltip.Root>
-    <Tooltip.Trigger>
+    <Tooltip.Trigger class="{option.class??""}">
         <Button
             href={option.href}
-            variant={active ? "accent" : "secondary"}
+            variant={active ? "default" : "secondary"}
             {...option.buttonProps??{}}
             on:click={() => {
                 dispatch("click");

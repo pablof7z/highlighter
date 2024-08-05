@@ -1,6 +1,6 @@
 <script lang="ts">
 	import HorizontalList from '$components/PageElements/HorizontalList';
-	import { NDKArticle, NDKKind, NDKSimpleGroup, NDKSimpleGroupMetadata, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKKind, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
 	import { getContext } from "svelte";
 	import { Readable } from "svelte/store";
     import * as Card from "$components/Card";
@@ -9,6 +9,7 @@
 
     export let group = getContext('group') as NDKSimpleGroup;
     export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
+    export let members = getContext("groupMembers") as Readable<NDKSimpleGroupMemberList | undefined>;
     export let isMember = getContext("isMember") as Readable<boolean>;
     
     $layout.footerInMain = true;
@@ -22,6 +23,21 @@
     const articles = getContext("groupArticles") as Readable<NDKArticle[]>;
 </script>
 
+<Groups.Header
+    metadata={$metadata}
+    members={$members}
+    isMember={$isMember}
+
+/>
+
 <HorizontalList class="py-[var(--section-vertical-padding)]" title="Articles" items={$articles} let:item>
     <Card.Article article={item} />
 </HorizontalList>
+
+
+<div class="h-screen">
+    hello
+</div>
+<div class="h-screen">
+    hello
+</div>

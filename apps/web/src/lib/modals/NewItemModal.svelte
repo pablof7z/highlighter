@@ -17,6 +17,7 @@
 </script>
 
 <ModalShell {title} class={wrapperClass} {actionButtons}>
+	er
 	{#if !showNewShortPost}
 		<NewPost {onNewShortPost} />
 	{:else}

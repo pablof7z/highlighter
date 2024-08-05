@@ -4,8 +4,6 @@
     import * as Item from './Item';
     import * as Card from '$components/Card';
 	import { filterArticles } from "$utils/article-filter";
-	import { isMobileBuild } from "$utils/view/mobile";
-	import { appMobileView } from "$stores/app";
 
     export let includeLowQuality = false;
     export let store: Readable<NDKArticle[]>;
@@ -22,6 +20,9 @@
 
     const articles = filterArticles(store);
 
+    const articlesWithoutFeatured = derived([store, featuredItemIds], ([$store, $featuredItemIds]) => {
+        return $store.filter(article => !$featuredItemIds.includes(article.id));
+    });
 
 </script>
 
@@ -34,15 +35,14 @@
 {/if}
 
 <div class="flex flex-col divide-y divide-border">
-    {#each $articles as article (article.id)}
-        {#if !$featuredItemIds.includes(article.id)}
-            <div class="py-[var(--section-vertical-padding)] w-full">
-                <Item.Article
-                    {article}
-                    {skipAuthor}
-                    class="responsive-padding"
-                />
-            </div>
-        {/if}
+    {#each $articlesWithoutFeatured as article, index (article.id)}
+        <div class="py-[var(--section-vertical-padding)] w-full">
+            <Item.Article
+                {index}
+                {article}
+                {skipAuthor}
+                class="responsive-padding"
+            />
+        </div>
     {/each}
 </div>

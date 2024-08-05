@@ -19,6 +19,7 @@
         navigation: false,
         sidebar: false,
         fullWidth: false,
+        back: { url: '/' }
     }
 
     let authorUrl: string;
