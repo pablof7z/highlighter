@@ -16,7 +16,7 @@ let config: CapacitorConfig = {
       offset: 0,
     },
     Keyboard: {
-      resize: KeyboardResize.Native,
+      resize: KeyboardResize.Body,
       style: KeyboardStyle.Dark,
       resizeOnFullScreen: true,
     },
@@ -37,8 +37,8 @@ if (process.env.NODE_ENV === 'development') {
   config = {
     bundledWebRuntime: false,
     server: {
-      url: "http://192.168.1.115:3000",
-      // url: "http://10.10.242.180:3000",
+      // url: "http://192.168.1.115:3000",
+      url: "http://10.10.242.231",
       // url: "http://10.8.4.16:3000",
       // url: "http://10.8.4.108:3000",
       cleartext: true
