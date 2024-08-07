@@ -2,12 +2,13 @@
 	import HorizontalList from '$components/PageElements/HorizontalList';
     import * as Card from '$components/Card';
     import * as Groups from '$components/Groups';
-    import * as Chat from '$components/Chat';
 	import { ndk } from "$stores/ndk";
 	import { NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 	import { derived, get } from "svelte/store";
 	import { groupsList } from "$stores/session";
 	import { groupKey } from '$stores/groups';
+	import { appMobileView } from '$stores/app';
+	import Sidebar from '../Main/Sidebar.svelte';
 
     const otherGroups = $ndk.storeSubscribe([
         { kinds: [ NDKKind.SimpleGroupList ] }
@@ -43,13 +44,10 @@
     });
 </script>
 
-{#if $groupsList && $groupsList.items.length > 0}
-<div class="divide-y divide-border border-y">
-    <Groups.RootList tags={$groupsList.items} let:groupEntry>
-        <Chat.Item {groupEntry} />
-    </Groups.RootList>
-</div>
+{#if $appMobileView}
+    <Sidebar />
 {/if}
+
 
 <!-- <div class="my-6" /> -->
 

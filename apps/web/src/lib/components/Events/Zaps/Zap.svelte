@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ZapSent from './ZapSent.svelte';
-    import { Hexpubkey, NDKEvent, NDKFilter, NDKTag, NDKUser } from '@nostr-dev-kit/ndk';
+    import { Hexpubkey, NDKEvent, NDKFilter, NDKPaymentConfirmation, NDKTag, NDKUser, NDKZapSplit } from '@nostr-dev-kit/ndk';
 
     import { Heart, Fire, Rocket, Lightning, HeartStraight } from 'phosphor-svelte';
     import { nicelyFormattedSatNumber } from '$utils';
@@ -81,7 +81,11 @@
         const zapper = $ndk.zap(target, amount * 1000, {
             comment,
         });
-        zapper.on("complete", () => {
+        zapper.on("split:complete", (split: NDKZapSplit, info: NDKPaymentConfirmation | Error | undefined) => {
+            console.log('split:complete', split, info);
+        });
+        zapper.on("complete", (res) => {
+            console.log('complete', res);
             zapping = false;
         });
         $wallet?.on("insufficient_balance", ({pr, amount}) => {

@@ -1,15 +1,15 @@
 import { appMobileView } from "$stores/app";
 import { modals } from "$stores/layout";
-import { SvelteComponent } from "svelte";
+import { ComponentType, SvelteComponent } from "svelte";
 
-export function openModal(component: typeof SvelteComponent, props?: { [key: string]: any }) {
+export function openModal(component: ComponentType, props?: { [key: string]: any }) {
     modals.update($modals => {
         $modals.push({ component, props: props ?? {} })
         return $modals;
     });
 }
 
-export function closeModal(component?: typeof SvelteComponent) {
+export function closeModal(component?: ComponentType) {
     modals.update($modals => {
         if (component) {
             $modals = $modals.filter(m => m.component !== component);

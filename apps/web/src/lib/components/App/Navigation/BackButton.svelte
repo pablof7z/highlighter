@@ -8,10 +8,12 @@
 
     $: href ??= $layout.back?.url;
 
-    function click() {
+    function click(e: MouseEvent) {
+        console.log("click", href);
         if (href) return;
         if (fn) fn();
-        else window.history.back();
+        else if (window.history.length > 1) window.history.back();
+        else goto("/");
     }
 </script>
 

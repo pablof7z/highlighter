@@ -1,25 +1,47 @@
 <script lang="ts">
 	import ModalShell from "$components/ModalShell.svelte";
-	import { NDKSimpleGroup } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKKind, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 	import type { NavigationOption } from "../../app";
-	import NewPostModalInner from "./NewPostModalInner.svelte";
-	import { appMobileView } from "$stores/app";
+    import * as Composer from "$components/Composer";
+	import { closeModal } from "$utils/modal";
+	import EventWrapper from "$components/Feed/EventWrapper.svelte";
+	import { replyKind } from "$utils/event";
 
     export let group: NDKSimpleGroup | undefined = undefined;
+    export let replyTo: NDKEvent | undefined = undefined;
+    export let kind: NDKKind | undefined = undefined;
+    export let onPublish: ((event: NDKEvent) => void) | undefined = undefined;
+
+    if (replyTo) kind ??= replyKind(replyTo);
 
     let title: string | undefined;
-    let wrapperClass = "max-w-3xl w-full";
-    let actionButtons: NavigationOption[] = [];
 </script>
 
-<ModalShell {title}
-    containerClass={wrapperClass}
-    {actionButtons}
+<Composer.Root
+    {replyTo}
+    {kind}
+    let:state
+    let:actionButtons
+    let:secondaryButtons
+    on:publish={(e) => {
+        onPublish?.(e);
+        closeModal();
+    }}
 >
-    <NewPostModalInner
-        bind:title
-        bind:wrapperClass
-        bind:actionButtons
-        {...$$props}
-    />
-</ModalShell>
+    <ModalShell {title}
+        {secondaryButtons}
+        {actionButtons}
+        class="max-sm:h-[90dvh]"
+    >
+        {#if replyTo}
+            <EventWrapper
+                event={replyTo}
+                compact
+                skipFooter
+                class="bg-secondary rounded max-h-[15dvh] overflow-y-auto"
+            />
+        {/if}
+        <Composer.Editor {state} />
+        <Composer.Attachments {state} />
+    </ModalShell>
+</Composer.Root>

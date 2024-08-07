@@ -33,7 +33,7 @@
             md:h-full
             flex-none
             lg:w-[20rem] h-full object-cover
-            z-[1] rounded-t-md md:rounded
+            z-[1] md:rounded-t-md md:rounded
         "
     />
     <div class="w-full overflow-clip px-4 py-2 flex flex-col">

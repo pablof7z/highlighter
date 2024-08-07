@@ -31,16 +31,6 @@
             $layout.title = metadata.name;
             $layout.iconUrl = metadata.picture;
             $layout.navigation = options;
-            $layout.options = [
-                {
-                    name: "Join",
-                    href: "/groups/join",
-                    buttonProps: {
-                        variant: "gold",
-                        class: "px-6 ml-4"
-                    }
-                }
-            ]
         }
     }, 1);
 
@@ -89,14 +79,14 @@
         </div>
     </div>
 
-    <div class="flex flex-col gap-4 items-center border-b border-border py-[var(--section-vertical-padding)] z-0 relative">
+    <div class="flex flex-col gap-4 items-center border-b border-border py-[var(--section-vertical-padding)] z-0 relative responsive-padding px-6 max-w-[var(--content-focused-width)] mx-auto w-full">
         <div class="responsive-padding text-center">
             {metadata.about}
         </div>
 
         {#if members && !isMember}
-            <div class="flex flex-row items-center gap-2 w-fit responsive-padding">
-                <div class="w-1/2 flex justify-end">
+            <div class="flex flex-row items-center gap-2 w-full justify-between responsive-padding">
+                <div class="flex">
                     <AvatarsPill size="small" pubkeys={Array.from(members.members)} />
                 </div>
                 <Button variant="gold" class="px-10">

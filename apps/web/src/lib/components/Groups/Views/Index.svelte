@@ -17,6 +17,7 @@
     $layout.back = { url: "/" };
     $layout.title = "🏡 Communities";
     $layout.iconUrl = undefined;
+    $layout.options = undefined;
 
     const groupListsFromFollows = $ndk.storeSubscribe(
         { kinds: [NDKKind.SimpleGroupList], limit: 300 },

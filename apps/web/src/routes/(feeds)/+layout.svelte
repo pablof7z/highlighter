@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onDestroy } from "svelte";
 	import { layout } from "$stores/layout";
 
     $layout.fullWidth = true;

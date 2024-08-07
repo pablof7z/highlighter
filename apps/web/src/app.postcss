@@ -251,7 +251,7 @@
 	}
 
 	.mobile-nav {
-		@apply bg-background/80 backdrop-blur-[50px];
+		@apply bg-background/50 backdrop-blur-[50px];
 	}
 
 	.article hr {
@@ -480,11 +480,16 @@ blockquote.app-quote .author {
 
 .footer-shell {
 	@media (max-width: 640px) {
-		background: rgba(51, 51, 51, 0.66) !important;
+		/* background: rgba(51, 51, 51, 0.66) !important; */
 	}
 }
 
 .narrow-footer-container .footer-shell {
 	background: rgba(51, 51, 51, 0.66) !important;
 	@apply sm:px-3;
+}
+
+.section-title {
+	@apply font-bold text-xl text-foreground;
+	@apply flex flex-row items-center gap-2 px-4 mb-1 max-sm:text-2xl;
 }

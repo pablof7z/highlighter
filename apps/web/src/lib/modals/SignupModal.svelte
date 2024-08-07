@@ -53,27 +53,5 @@
     class="w-full sm:max-w-lg !p-2"
     {title}
 >
-    <div class="flex flex-col gap-4 w-full">
-        {#if mode === 'signup'}
-            <div class="w-full flex flex-col gap-5">
-                <Signup on:signed-up={signedUp} bind:actionButtons bind:mode bind:title />
-            </div>
-        {:else if mode === 'login'}
-            <div class="w-full flex flex-col gap-5">
-                <Login bind:actionButtons bind:mode />
-            </div>
-        {:else if mode === 'welcome'}
-            <div class="w-full flex flex-col gap-5">
-                <Welcome />
-            </div>
-        {/if}
-    </div>
-
-    <svelte:fragment slot="footerExtra">
-        {#if mode !== "welcome"}
-            <Button size="sm">
-                Continue as Guest
-            </Button>
-        {/if}
-    </svelte:fragment>
+    
 </ModalShell>

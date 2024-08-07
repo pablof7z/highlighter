@@ -1,10 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { modalState } from '$stores/layout';
-	import { onDestroy, onMount } from 'svelte';
-	import { action, onBeforeClose } from "svelte-modals";
     import { closeModal } from '$utils/modal';
-	import { beforeNavigate } from '$app/navigation';
 	import { appMobileView } from '$stores/app';
 	import { NavigationOption } from '../../app';
 	import HorizontalOptionsList from './HorizontalOptionsList.svelte';
@@ -13,64 +9,47 @@
     import { Keyboard } from '@capacitor/keyboard';
 	import { isMobileBuild } from '$utils/view/mobile';
     import * as Modal from "./Modal";
+	import { action } from 'svelte-modals';
+	import { onMount } from 'svelte';
 
     export let title: string | undefined = undefined;
     export let open = true;
+    export let padding = "responsive-padding";
 
+    export let secondaryButtons: NavigationOption[] | undefined = undefined;
+    
     /**
      * Buttons to render on the shell
      */
     export let actionButtons: NavigationOption[] = [];
 
-    const slideAnimationDuration = 300;
 
     let url = $page.url.pathname;
     $: if ($page.url.pathname !== url) closeModal();
 
-    let mounted = false;
-    let containerEl: HTMLElement;
     let kHeight = 0;
 
     if (isMobileBuild()) {
-        Keyboard.addListener("keyboardWillHide", () => {
-            kHeight = 0;
-        });
-        
-        Keyboard.addListener('keyboardWillShow', info => {
-            const { keyboardHeight } = info;
-            kHeight = keyboardHeight;
-        });
+        try {
+            Keyboard.addListener("keyboardWillHide", () => {
+                kHeight = 0;
+            });
+            
+            Keyboard.addListener('keyboardWillShow', info => {
+                const { keyboardHeight } = info;
+                kHeight = keyboardHeight;
+            });
+        } catch {}
     }
-
-    onMount(() => {
-        mounted = true;
-        $modalState = "open";
-    });
-
-    beforeNavigate(() => {
-        $modalState = "closing";
-        // $modal = null;
-    })
-
-    if (!$appMobileView) {
-        onBeforeClose(() => {
-            if (mounted === true) {
-                $modalState = "closing";
-                mounted = false;
-                setTimeout(closeModal, slideAnimationDuration);
-                return false;
-            }
-        });
-    }
-
-    onDestroy(() => {
-        $modalState = "closed";
-    })
 </script>
+
+<!-- <div class="fixed top-52 left-2 bg-red-500 p-4 z-[9999999]">
+    {kHeight}
+</div> -->
 
 {#if !$appMobileView}
     <Dialog.Root bind:open>
-        <Dialog.Content class="sm:max-w-[425px]">
+        <Dialog.Content class="{$$props.class??""}">
             {#if title}
                 <Dialog.Header>
                     <Dialog.Title>{title}</Dialog.Title>
@@ -86,7 +65,11 @@
                     </div>
                 {:else if actionButtons.length > 0}
                     <div class="w-full flex flex-row gap-4 items-center justify-between flex-none mt-4">
-                        {#if $$slots.footerExtra}
+                        {#if secondaryButtons}
+                            <div>
+                                <HorizontalOptionsList options={secondaryButtons} activeOption={false} />
+                            </div>
+                        {:else if $$slots.footerExtra}
                             <slot name="footerExtra" />
                         {:else}
                             <div class="grow"></div>
@@ -103,20 +86,33 @@
 {:else}
     <Drawer.Root shouldScaleBackground bind:open>
         <Drawer.Content
-            class="{$$props.class??""} transition-all duration-500 max-h-[calc(100vh-2rem)] overflow-y-auto"
-            style="padding-bottom: {kHeight}px;"
+            class="
+                {padding}
+                transition-all duration-500 overflow-y-auto
+                {$$props.class??""}
+            "
+            style="padding-bottom: {kHeight}px; max-height: calc(100dvh - 2rem);"
         >
         <Drawer.Header class="text-left flex flex-row w-full justify-between items-end">
             {#if title}
                 <Drawer.Title class="truncate grow">{title}</Drawer.Title>
-            {:else if actionButtons}
+            {:else}
                 <div class="w-full grow"></div>
+            {/if}
+            {#if actionButtons}
                 {#each actionButtons as option, index (option.id ?? option.name ?? option.href)}
-                    <Modal.Shell.DrawerButton {option} {index} />
+                    <Modal.Shell.DrawerButton total={actionButtons.length} {option} {index} />
                 {/each}
             {/if}
         </Drawer.Header>
         <slot />
+
+        {#if secondaryButtons}
+            <Drawer.Footer>
+                <HorizontalOptionsList options={secondaryButtons} activeOption={false} />
+            </Drawer.Footer>
+        {/if}
+        
         </Drawer.Content>
     </Drawer.Root>
 {/if}

@@ -2,13 +2,12 @@
 	import { BookmarkSimple, CaretRight, ChatCircle, HourglassHigh, Lightning, Quotes, Repeat, Timer, Warning } from 'phosphor-svelte';
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { Hexpubkey, NDKEvent, NDKFilter, NDKHighlight, NDKKind, NDKTag, NDKUserProfile, NostrEvent,getReplyTag,getRootEventId, isEventOriginalPost } from "@nostr-dev-kit/ndk";
-	import { EventCardDropdownMenu, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable, derived } from "svelte/store";
 	import { getRepliesStore, getConversationRepliesStore, getThreadStore, computeScore } from "./replies";
 	import CommentsButton from "$components/buttons/CommentsButton.svelte";
     import * as Event from "$components/Event";
 	import ReplyAvatars from "./ReplyAvatars.svelte";
-	import RelayIndicator from '$components/Events/RelayIndicator.svelte';
 	import ViewConversation from './ViewConversation.svelte';
 	import Bookmark from '$components/Bookmark.svelte';
 	import MediaCollection from '$components/Events/MediaCollection.svelte';
@@ -213,7 +212,7 @@
     const skipViewConversationKinds = [
         NDKKind.Highlight,
         NDKKind.Zap,
-        7377,
+        NDKKind.Nutzap,
         NDKKind.DVMReqTextToSpeech + 1000
     ];
 
@@ -222,7 +221,6 @@
 
 <EventShell
     {event}
-    disableSwipe
 >
     <div class="
         w-full text-left md:p-4 pb-0 max-sm:py-4 max-sm:max-w-[100vw] flex flex-col items-start {$$props.class??""}

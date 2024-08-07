@@ -1,6 +1,7 @@
 <script lang="ts">
+	import currentUser from '$stores/currentUser';
 	import NewPost from "$components/Feed/NewPost/NewPost.svelte";
-	import { NDKEvent, NDKKind, NDKTag, dvmSchedule } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKHighlight, NDKKind, NDKTag, dvmSchedule } from "@nostr-dev-kit/ndk";
     import { closeModal, openModal } from "$utils/modal";
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { appMobileView } from "$stores/app";
@@ -14,6 +15,7 @@
 	import ScheduleModal from "./ScheduleModal.svelte";
 	import { dvmScheduleEvent } from "$lib/dvm";
 	import { replyKind } from "$utils/event";
+	import HighlightBody from "$components/HighlightBody.svelte";
 
     export let replyTo: NDKEvent | undefined = undefined;
     export let tags: NDKTag[] = [];
@@ -105,6 +107,12 @@
             expandReplies={false}
             exppandThread={false}
         />
+    {:else if replyTo instanceof NDKHighlight}
+        <HighlightBody
+            highlight={replyTo}
+            skipArticle
+            skipHighlighter
+            />
     {:else}
         <ItemLink event={replyTo} />
     {/if}

@@ -14,11 +14,19 @@
     let active = false;
     let el: HTMLElement;
 
+    let hrefPath: string | undefined;
+    if (option.href && option.href.length > 5) {
+        try {
+            hrefPath = new URL(option.href).pathname;
+        } catch {}
+    }
+
     $: {
-        active = (value === (option.value || option.name ) || $page.url.pathname === option.href);
-        if (option.href && option.href.length > 5) {
-            active = $page.url.pathname.endsWith(option.href) || $page.url.toString().includes(option.href);
+        active = (value === (option.value || option.name || option.id ) || $page.url.pathname === option.href);
+        if (hrefPath) {
+            active = $page.url.pathname === hrefPath || $page.url.toString().includes(option.href);
         }
+        
         // scroll into view
         if (active) {
             const isInView = el?.offsetLeft < el?.scrollLeft;

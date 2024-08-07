@@ -1,27 +1,20 @@
 <script lang="ts">
-    import StoreFeed from "$components/Feed/StoreFeed.svelte";
-	import { wotFiltered } from "$stores/wot";
     import { ndk } from "$stores/ndk.js";
-    import { NDKKind } from "@nostr-dev-kit/ndk";
+    import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { derived } from "svelte/store";
+    import * as Feed from "$components/Feed";
+	import { filterLists } from "$utils/curation-filter";
 
     onDestroy(() => {
-        collections.unsubscribe();
+        curations.unsubscribe();
     })
 
-    let events = [];
-
-    const collections = $ndk.storeSubscribe([
+    const curations = $ndk.storeSubscribe([
         { kinds: [NDKKind.ArticleCurationSet], limit: 10 }
-    ]);
-
-    const sortedCollections = derived(collections, $collections => {
-        const sorted = Array.from($collections.values()).sort((a, b) => a.created_at! + b.created_at!);
-        return wotFiltered(sorted);
-    });
+    ], undefined, NDKList);
 </script>
 
-{#if collections}
-    <StoreFeed feed={sortedCollections} />
-{/if}
+<Feed.Curations
+    store={filterLists(curations)}
+/>

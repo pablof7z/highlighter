@@ -94,7 +94,7 @@ async function startGroup(groupId: string, relays: string[]) {
 
     // filters that shouldn't have a since
     filters.push({ kinds: [
-        NDKKind.GroupMetadata, NDKKind.GroupAdmins, NDKKind.GroupMembers,
+        NDKKind.GroupAdmins, NDKKind.GroupMembers,
     ], "#d": [groupId] });
 
     const defaultGroupEntry: GroupEntry = { groupId, relaySet, relayUrls: relaySet.relayUrls, members: new Set(), admins: new Set() };
@@ -138,13 +138,18 @@ async function startGroup(groupId: string, relays: string[]) {
         })
     }
 
+    $ndk.storeSubscribe([
+        { kinds: [NDKKind.GroupMetadata], "#d": [groupId] },
+    ], { groupable: false, relaySet, cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY,
+        onEvent: updateMetadata
+    });
+
     const relayEvents = $ndk.storeSubscribe(filters, {
         subId: 'group-events',
         relaySet,
         cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY,
         onEvent: ((event: NDKEvent) => {
-            if (event.kind === NDKKind.GroupMetadata) updateMetadata(event);
-            else if (event.kind === NDKKind.GroupMembers || event.kind === NDKKind.GroupAdmins) updateList(event);
+            if (event.kind === NDKKind.GroupMembers || event.kind === NDKKind.GroupAdmins) updateList(event);
         })
     })
 

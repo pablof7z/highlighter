@@ -10,6 +10,10 @@
 	import { addHistory } from "$stores/history";
 	import { ChatCircle } from "phosphor-svelte";
 	import Swipe from "$components/Swipe.svelte";
+    import { Keyboard } from '@capacitor/keyboard';
+	import { isMobileBuild } from '$utils/view/mobile';
+	import { Navigation } from "$utils/navigation";
+	import Joined from "$components/Chat/Joined.svelte";
 
     export let group = getContext('group') as NDKSimpleGroup;
     export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
@@ -18,38 +22,46 @@
     optionManager.options.subscribe(value => $layout.navigation = value);
 
     addHistory({ category: 'Chat', title: $metadata?.name ?? "Community" });
+
+    if (isMobileBuild()) {
+        try {
+            Keyboard.addListener('keyboardWillShow', scrollToBottom);
+        } catch {}
+    }
     
     $layout.header = undefined;
-    $layout.title = "Chat";
+    $: if ($isMember) $layout.title = "Chat";
     $layout.footerInMain = true;
+    $layout.fullWidth = false;
+    $layout.headerCanBeTransparent = false;
 
-    function onEvent() {
-        setTimeout(() => {
-            // scroll into view
-            const last = $sortedChat[$sortedChat.length - 1];
-            const lastElement = document.getElementById(last.id);
-            if (lastElement) {
-                lastElement.scrollIntoView({ behavior: 'smooth' });
-            }
-        }, 50);
+    function scrollToBottom() {
+        const last = $sortedChat[$sortedChat.length - 1];
+        const lastElement = document.getElementById(last.id);
+        if (lastElement) {
+            lastElement.scrollIntoView({ behavior: 'smooth' });
+        }
     }
+
+    function onEvent() { setTimeout(scrollToBottom, 50); }
 
     let eosed = false;
     function onEose() {
         setTimeout(() => eosed = true, 5000);
     }
 
-    const chat = $ndk.storeSubscribe({
-        kinds: [NDKKind.GroupChat], "#h": [group.groupId]
-    }, { groupable: false, subId: 'group-content', relaySet: group.relaySet, onEvent, onEose });
+    const chat = $ndk.storeSubscribe([
+        {"#h": [group.groupId]},
+        {"#d": [group.groupId]},
+    ], { groupable: false, subId: 'group-content', relaySet: group.relaySet, onEvent, onEose });
 
     const sortedChat = derived(chat, ($chat) => {
-        console.log('running derived sorted chat')
         return $chat.sort((a, b) => a.created_at! - b.created_at!);
     });
 
     onDestroy(() => {
         chat.unsubscribe();
+        $layout.headerCanBeTransparent = undefined;
     })
 
     let tags: NDKTag[] = [ [ "h", group.groupId ] ];
@@ -84,7 +96,6 @@
     $: if ($sortedChat.length > 0) {
         const lastMessage = $sortedChat[$sortedChat.length - 1];
         const lastMessageId = lastMessage.id;
-        console.log('last message id', lastMessageId);
 
         setTimeout(() => {
             const lastMessageElement = document.getElementById(lastMessageId);
@@ -105,6 +116,11 @@
 <ScrollArea>
     <div class="flex flex-col py-2">
         {#each $sortedChat as event, i (event.id)}
+            {#if event.kind === NDKKind.GroupAdminRequestJoin}
+                <!-- <JoinRequest {event} /> -->
+            {:else if event.kind === 9000}
+                <Joined {event} />
+            {:else if event.kind === NDKKind.GroupChat}
             <Swipe
                 leftOptions={[
                     { name: 'Reply', icon: ChatCircle, class: "bg-accent", fn: () => onReply(event) },
@@ -117,6 +133,7 @@
                     skipTime={$chat[i - 1] && $chat[i - 1].created_at > event.created_at - 60}
                 />
             </Swipe>
+            {/if}
             <span id={event.id}></span>
         {/each}
     </div>

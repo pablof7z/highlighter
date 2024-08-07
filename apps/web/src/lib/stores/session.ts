@@ -35,8 +35,6 @@ interface GroupEntry {
 	relayUrl: WebSocket["url"];
 }
 
-export const jwt = persist(writable<string | null>(null), createLocalStorage(), 'jwt');
-
 export const userProfile = persist(
 	writable<UserProfileType | undefined>(undefined),
 	createLocalStorage(),

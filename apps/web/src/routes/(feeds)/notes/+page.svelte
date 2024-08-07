@@ -6,10 +6,8 @@
 	import { onDestroy, onMount } from "svelte";
 	import { layout } from "$stores/layout";
 
-    $layout = {
-        title: "Notes",
-        fullWidth: false
-    };
+    $layout.title = "Notes";
+    $layout.fullWidth = false;
 
     onDestroy(() => {
         $layout.fullWidth = undefined;

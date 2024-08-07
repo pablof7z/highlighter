@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { MagnifyingGlass, Plus } from "phosphor-svelte";
-    import NewPost from '$components/Creator/NewPost.svelte';
+	import { MagnifyingGlass } from "phosphor-svelte";
 	import Input from "$components/ui/input/input.svelte";
 	import { goto } from "$app/navigation";
     import * as Footer from "$components/Footer";
@@ -18,18 +17,14 @@
         }
     }
 
-    function close() {
-        open(false);
-    }
-
     let open: Footer.OpenFn;
 
-    let buttons: Footer.ButtonView[] = [];
+    let views: Footer.FooterView[] = [];
 
     $: if (mainView === 'search') {
-        buttons = [];
+        views = [];
     } else {
-        buttons = [
+        views = [
             NewItem
         ];
     }
@@ -40,7 +35,7 @@
     bind:mainView
     bind:open
     hideCollapsedView={mainView === 'search'}
-    {buttons}
+    {views}
 >
     <div class="flex flex-row relative mx-2">
         <MagnifyingGlass class="absolute top-1/2 left-4 transform -translate-y-1/2" />
@@ -58,9 +53,7 @@
     </div>
 
     <div slot="main">
-        {#if mainView === "newPost"}
-            <NewPost on:close={close} />
-        {:else if mainView === 'search'}
+        {#if mainView === 'search'}
             <div class="h-[50dvh] bg-black/50 border rounded overflow-y-auto scrollbar-hide">
                 <Search
                     placeholder="Explore"

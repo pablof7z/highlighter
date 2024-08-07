@@ -8,27 +8,27 @@
 
     export let leftOptions: NavigationOption[] = [];
     export let rightOptions: NavigationOption[] = [];
-    export let preview: boolean = false;
+    // export let preview: boolean = false;
 
-    onMount(() => {
-        if (preview) {
-            setTimeout(() => {
-                element.style.transition = "all 0.5s";
-                leftWrapper.style.transition = "all 0.3s";
-                goingLeft = true;
-                updatePosition(100);
-            }, 1500);
+    // onMount(() => {
+    //     if (preview) {
+    //         setTimeout(() => {
+    //             element.style.transition = "all 0.5s";
+    //             leftWrapper.style.transition = "all 0.3s";
+    //             goingLeft = true;
+    //             updatePosition(100);
+    //         }, 1500);
 
-            setTimeout(() => {
-                goingLeft = false;
-                updatePosition(0);
-            }, 2500);
+    //         setTimeout(() => {
+    //             goingLeft = false;
+    //             updatePosition(0);
+    //         }, 2500);
 
-            setTimeout(() => {
-                element.style.transition = "";
-            }, 3000);
-        }
-    })
+    //         setTimeout(() => {
+    //             element.style.transition = "";
+    //         }, 3000);
+    //     }
+    // })
 
     let positionX = 0;
 
@@ -227,8 +227,10 @@
                     class="focus:brightness-50 option {opt.class??""}"
                     style={`width: ${triggerActionRequirement}px;`}
                 >
-                    <svelte:component this={opt.icon} class="w-12 h-12 !text-foreground" />
-                    <span class="text-foreground">{opt.name}</span>
+                    <svelte:component this={opt.icon} class="w-10 h-10 !text-foreground" {...opt.iconProps} />
+                    {#if opt.name}
+                        <span class="text-foreground">{opt.name}</span>
+                    {/if}
                 </button>
             {/each}
         </div>
@@ -245,8 +247,10 @@
                     class="focus:brightness-50 option {opt.class??""}"
                     style={`width: ${triggerActionRequirement}px;`}
                 >
-                    <svelte:component this={opt.icon} class="w-12 h-12" />
-                    <span class="text-foreground">{opt.name}</span>
+                    <svelte:component this={opt.icon} class="w-10 h-10" {...opt.iconProps} />
+                    {#if opt.name}
+                        <span class="text-foreground">{opt.name}</span>
+                    {/if}
                 </button>
             {/each}
         </div>

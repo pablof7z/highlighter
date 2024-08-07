@@ -13,7 +13,7 @@
 <div class="w-full flex flex-row max-sm:w-screen py-[var(--section-vertical-padding)] {$$props.class??""}">
     <div class="w-full flex flex-col">
         {#if title}
-            <a {href} class="">
+            <a {href} class="section-title">
                 {title}
                 <CaretRight class="text-muted-foreground" size={18} />
             </a>
@@ -39,10 +39,3 @@
         <!-- </ScrollArea> -->
     </div>
 </div>
-
-<style lang="postcss">
-    a {
-        @apply font-bold text-xl text-foreground;
-        @apply flex flex-row items-center gap-2 px-4 mb-1 max-sm:text-2xl;
-    }
-</style>

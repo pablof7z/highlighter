@@ -27,7 +27,7 @@
             <slot name="icon" />
         {/if}
 
-        <button class="text-left flex flex-col md:flex-row gap-2 justify-stretch items-center w-full" on:click={toggle}>
+        <button class="text-left flex flex-row-reverse md:flex-row gap-2 justify-stretch items-center w-full" on:click={toggle}>
             <div class="flex flex-col items-start grow w-full">
                 <slot />
                 <div class="text-muted-foreground">

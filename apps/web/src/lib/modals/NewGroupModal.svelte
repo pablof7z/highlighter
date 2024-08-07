@@ -13,7 +13,7 @@
 
     if (isMobileBuild()) {
         onMount(() => {
-            Keyboard.show();
+            try { Keyboard.show(); } catch {}
         });
     }
 
@@ -25,12 +25,13 @@
 	import { onMount } from "svelte";
 	import { appMobileView } from "$stores/app";
 	import { isMobileBuild } from "$utils/view/mobile";
+	import { writable } from "svelte/store";
 
 
     let name: string;
     let picture: string;
     let about: string;
-    let relays: string[] = defaultRelays;
+    let relays = writable<string[]>(defaultRelays);
     const actionButtons: NavigationOption[] = [
         {
             name: "Next",
@@ -41,7 +42,7 @@
     ];
 
     async function create() {
-        const relaySet = NDKRelaySet.fromRelayUrls(relays, $ndk);
+        const relaySet = NDKRelaySet.fromRelayUrls($relays, $ndk);
 
         const group = new NDKSimpleGroup($ndk, relaySet);
         const randomNumber = Math.floor(Math.random() * 1000000);
