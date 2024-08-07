@@ -109,7 +109,7 @@
         <div class="responsive-padding flex flex-row items-center p-2 gap-4 w-full">
             <img src={groupEntry.picture??randomImage(groupEntry.name, 300, 300)} />
             
-            <div class="flex flex-col gap-1 grow">
+            <div class="flex flex-col gap-1 grow truncate">
                 <span class="text-foreground font-semibold text-lg truncate">
                     {groupEntry.name??"Unnamed Group"}
                 </span>
@@ -119,6 +119,10 @@
                     <span class="text-sm text-muted-foreground truncate">
                         {$mostRecentEvent.content}
                     </span>
+                {:else if groupEntry.about}
+                    <div class="text-sm text-muted-foreground truncate">
+                        {groupEntry.about}
+                    </div>
                 {:else}
                     <div class="text-sm text-muted-foreground truncate">
                         {groupEntry.relaySet.relayUrls[0]}

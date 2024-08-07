@@ -7,8 +7,6 @@
     let groupId: string;
     let relays: string[];
 
-    $layout.back = { url: '/communities' };
-
     $: {
         const r = $page.url.searchParams.get('relays');
         if (r) {
@@ -20,7 +18,10 @@
         }
     }
 
-    $: groupId = $page.params.groupId ?? $page.url.searchParams.get('groupId');
+    $: {
+        groupId = $page.params.groupId ?? $page.url.searchParams.get('groupId');
+        $layout.back = { url: groupId ? '/communities' : '/' };
+    }
 </script>
 
 {#if groupId}

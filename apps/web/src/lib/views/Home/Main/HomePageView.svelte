@@ -13,6 +13,8 @@
 	import { layout } from '$stores/layout';
 	import { vanityUrls } from '$utils/const';
 	import Groups from '../Sections/Groups.svelte';
+	import Sidebar from './Sidebar.svelte';
+	import Reads from './Sections/Reads.svelte';
 
     $layout.fullWidth = true;
 
@@ -41,6 +43,9 @@
     });
 
     $layout = {
+        sidebar: {
+            component: Sidebar,
+        },
         footer: {
             component: Footer,
             props: {}
@@ -53,25 +58,25 @@
         .map(user => { return { user, id: user.pubkey } });
 </script>
 
-<Groups />
+<div class="flex flex-col gap-[var(--section-vertical-padding)]">
+    <Groups />
 
-<HorizontalList title="Featured Creators" items={featuredUsers} let:item>
-    <Card.User user={item.user} />
-</HorizontalList>
+    <Reads />
 
-<HorizontalList title="Articles" items={$filteredArticles} let:item>
-    <Card.Article article={item} />
-</HorizontalList>
+    <!-- <HorizontalList title="Articles" items={$filteredArticles} let:item>
+        <Card.Article article={item} />
+    </HorizontalList> -->
 
-<HorizontalList title="Videos" items={$filteredVideos} let:item>
-    <Card.Video video={item} />
-</HorizontalList>
+    <HorizontalList title="Featured Creators" items={featuredUsers} let:item>
+        <Card.User user={item.user} />
+    </HorizontalList>
 
-{#if highlightsEosed}
-    <HorizontalListOfTaggedItems title="Reads" highlights={followHighlights} />
-{/if}
+    {#if highlightsEosed}
+        <HorizontalListOfTaggedItems title="Reads" highlights={followHighlights} />
+    {/if}
 
-<HorizontalList title="Highlights" items={$highlights} let:item>
-    <Card.Highlight highlight={item} />
-</HorizontalList>
+    <HorizontalList title="Highlights" items={$highlights} let:item>
+        <Card.Highlight highlight={item} />
+    </HorizontalList>
 
+</div>

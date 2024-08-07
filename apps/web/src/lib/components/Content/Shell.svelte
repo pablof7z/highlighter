@@ -1,5 +1,16 @@
 <script lang="ts">
-	import { articleKinds, curationKinds, eventToKind, videoKinds } from "$utils/event";
+    /**
+     * 🫲 Receives an event
+     * 
+     * 🔥 Wraps the event in it's class container depending on it's kind
+     * 🔥 Fetches related events (curations, comments, shares, etc)
+     * 🔥 Puts the related event stores in the context
+     * 
+     * 👀 Renders the chrome of this event, which usually is the header, depending on what the event kind requires
+     * 
+     * 👉 Sends the wrapped event and the stores to the <slot />
+     */
+	import { curationKinds, eventToKind } from "$utils/event";
 	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKUserProfile, NDKVideo } from "@nostr-dev-kit/ndk";
     import * as Article from "$components/Content/Article";
     import * as Video from "$components/Content/Video";
@@ -13,11 +24,12 @@
 	import { derived } from "svelte/store";
 	import { layout } from '$stores/layout.js';
 	import { deriveStore } from "$utils/events/derive";
+	import { WrappedEvent } from "../../../app";
 
     export let event: NDKEvent;
     export let isPreview = false;
 
-    export let wrappedEvent: NDKArticle | NDKVideo | NDKEvent | NDKList;
+    export let wrappedEvent: WrappedEvent | undefined = undefined;
     let chapters: NDKArticle[];
 
     if (event.kind === 30040) {
@@ -55,6 +67,10 @@
         wrappedEvent ??= eventToKind(event);
     }
 
+    if (!wrappedEvent) {
+        throw new Error("No wrapped event");
+    }
+
     let userProfile: NDKUserProfile;
     let authorUrl: string;
 
@@ -62,9 +78,9 @@
         { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.Zap, NDKKind.Nutzap, NDKKind.Highlight, ], ...wrappedEvent.filter() },
         { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.GenericRepost, NDKKind.Repost ], "#q": [wrappedEvent.tagId() ] },
         { kinds: [ NDKKind.ArticleCurationSet ], ...wrappedEvent.filter() },
-    ], { subId: 'related-events' });
+    ], { groupable: false, subId: 'related-events' });
 
-    const wotFilteredEvents =  events; //wotFilteredStore(events);
+    const wotFilteredEvents = events; //wotFilteredStore(events);
 
     const curations = deriveStore(wotFilteredEvents, NDKList, [NDKKind.ArticleCurationSet]);
     const highlights = deriveStore(wotFilteredEvents, NDKHighlight);
@@ -140,7 +156,7 @@
 
         <slot />
     </div>
-{:else if wrappedEvent.kind === NDKKind.Highlight}
+{:else if wrappedEvent instanceof NDKHighlight}
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
         <Highlight.Header
             event={wrappedEvent}
@@ -158,10 +174,13 @@
             {authorUrl}
         />
 
-        <slot />
+        <slot {wrappedEvent} />
     </div>
 {:else}
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
-        <slot {wrappedEvent} />
+        <slot
+            {wrappedEvent}
+
+        />
     </div>
 {/if}

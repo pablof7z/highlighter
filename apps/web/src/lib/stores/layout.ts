@@ -2,11 +2,6 @@ import { writable, type Writable } from 'svelte/store';
 import { NavigationOption } from '../../app';
 import { NDKEvent } from '@nostr-dev-kit/ndk';
 
-/**
- * `list-column` - The sidebar takes about 1/3 of the screen and the main content takes about 2/3 of the screen
- */
-type LayoutMode = "content-focused" | "full-width" | "single-column-focused" | "mobile-full-screen";
-
 export interface Component {
 	component: ConstructorOfATypedSvelteComponent;
 	props?: { [key: string]: any };
@@ -19,7 +14,7 @@ export const searching: Writable<boolean> = writable(false);
 
 export const modalState: Writable<"open" | "closing" | "closed"> = writable("closed");
 
-export const footerMainView = writable<string | undefined>(undefined);
+export const footerMainView = writable<string | undefined | false>(undefined);
 
 export type Layout = {
 	/**
@@ -56,3 +51,5 @@ export type Layout = {
 };
 
 export const layout = writable<Layout>({});
+
+export const scrollPercentage = writable<number>(0);

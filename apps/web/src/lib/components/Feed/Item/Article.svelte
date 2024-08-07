@@ -61,7 +61,7 @@
                     <RelativeTime event={article} />
                 </Badge>
 
-                <Badge variant="secondary" class="font-normal text-muted-foreground">
+                <Badge variant="secondary" class="font-normal text-muted-foreground whitespace-nowrap">
                     {time}
                 </Badge>
             </div>

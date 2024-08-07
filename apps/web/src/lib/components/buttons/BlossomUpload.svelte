@@ -17,8 +17,6 @@
     const dispatch = createEventDispatcher();
 
     async function getVideoDuration(): Promise<number | void> {
-        let fileInput = file;
-
         return new Promise<number | void>((resolve) => {
             if (fileInput.files && fileInput.files[0]) {
                 let videoFile = fileInput.files[0];
@@ -89,11 +87,11 @@
         uploader.start();
     }
 
-    let file: HTMLInputElement;
+    export let fileInput: HTMLInputElement | undefined = undefined;
 </script>
 
 {#if progress === undefined}
-    <button class={$$props.class??""} on:click={() => file.click()}>
+    <button class={$$props.class??""} on:click={() => fileInput.click()}>
         <slot />
     </button>
 {:else}
@@ -101,7 +99,7 @@
 {/if}
 
 <input
-    bind:this={file}
+    bind:this={fileInput}
     type="file"
     accept="{type}/*"
     class="hidden"

@@ -13,14 +13,14 @@
     export let isMember = getContext("isMember") as Readable<boolean>;
     
     $layout.footerInMain = true;
+    $layout.title = $metadata.name;
+    $layout.fullWidth = false;
     $: if ($isMember) {
         $layout.footer = {
             component: Groups.Footers.Home,
             props: { group, metadata }
         }
     }
-
-    const articles = getContext("groupArticles") as Readable<NDKArticle[]>;
 </script>
 
 <Groups.Header
@@ -29,15 +29,3 @@
     isMember={$isMember}
 
 />
-
-<HorizontalList class="py-[var(--section-vertical-padding)]" title="Articles" items={$articles} let:item>
-    <Card.Article article={item} />
-</HorizontalList>
-
-
-<div class="h-screen">
-    hello
-</div>
-<div class="h-screen">
-    hello
-</div>

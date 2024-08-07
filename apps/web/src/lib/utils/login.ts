@@ -12,11 +12,9 @@ import {
 	NDKRelayList
 } from '@nostr-dev-kit/ndk';
 import { get } from 'svelte/store';
-import { jwt as jwtStore, loginState, userFollows, userProfile } from '$stores/session';
+import { loginState, userFollows, userProfile } from '$stores/session';
 import createDebug from 'debug';
 import currentUser, { loginMethod, nip46LocalKey, privateKey, userPubkey } from '$stores/currentUser';
-import { goto } from '$app/navigation';
-import { vanityUrls } from './const';
 import { ndk, bunkerNDK } from '$stores/ndk';
 
 export type LoginMethod = 'none' | 'pk' | 'npub' | 'nip07' | 'nip46' | 'guest';

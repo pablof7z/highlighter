@@ -11,6 +11,7 @@
 	import { openModal } from '$utils/modal';
 	import HighlightModal from '$modals/HighlightModal.svelte';
 	import { browser } from '$app/environment';
+	import { footerMainView, layout } from '$stores/layout';
 
     export let event: NDKEvent | undefined = undefined;
     export let highlights: Readable<NDKEvent[]>;
@@ -32,9 +33,14 @@
         if (highlightId) {
             const highlight = $highlights.find(h => h.id === highlightId);
             if (highlight) {
-                pushState(`/e/${highlight.encode()}`, {
-                });
-                openModal(HighlightModal, { highlight });
+                if ($layout.footer?.props) {
+                    $footerMainView = 'highlight-viewer';
+                    $layout.footer.props.highlight = highlight;
+                }
+                // $layout.footer.
+                // pushState(`/e/${highlight.encode()}`, {
+                // });
+                // openModal(HighlightModal, { highlight });
             }
         }
     }

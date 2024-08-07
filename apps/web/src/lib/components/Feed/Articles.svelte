@@ -5,20 +5,16 @@
     import * as Card from '$components/Card';
 	import { filterArticles } from "$utils/article-filter";
 
-    export let includeLowQuality = false;
     export let store: Readable<NDKArticle[]>;
     export let featuredItems = derived(store, $store => {
         return $store.slice(0, 1);
     });
 
     export let skipAuthor = false;
-    export let gridSetup = "lg:grid-cols-2";
 
     const featuredItemIds = derived(featuredItems, $featuredItems => {
         return $featuredItems.map(item => item.id);
     });
-
-    const articles = filterArticles(store);
 
     const articlesWithoutFeatured = derived([store, featuredItemIds], ([$store, $featuredItemIds]) => {
         return $store.filter(article => !$featuredItemIds.includes(article.id));

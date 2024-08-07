@@ -15,33 +15,12 @@
     export let showReplyingTo: boolean = false;
 
     let open: (value?: string | false) => void;
-    
-    let collapsed = true;
-    let recordingActive = false;
-    let content = '';
-
-    async function onUploaded(e: CustomEvent) {
-        const { url, mediaEvent } = e.detail;
-        console.log("uploaded", e.detail.url, e.detail.mediaEvent);
-
-        const event = new NDKEvent($ndk);
-        event.kind = kind;
-        event.tags = tags;
-        if (mediaEvent) event.tags = [ ...mediaEvent.tags, ...event.tags ]
-        event.content = url;
-        await event.sign();
-        event.publish(group?.relaySet);
-    }
-
-    async function onPublish(content: string) {
-
-    }
 </script>
 
 <Footer.Shell
     bind:open
     align="items-start"
-    buttons={[
+    views={[
         { ...NewItem, props: { group, groupMetadata: $metadata } }
     ]}
 >

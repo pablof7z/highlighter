@@ -139,10 +139,10 @@
     flex flex-col
 " class:hidden={publishing}>
     <div class="
-        flex flex-row
+        flex flex-row gap-4
     ">
         {#if !skipAvatar && $currentUser}
-            <Avatar user={$currentUser} size="small" class="ml-4 mt-4" />
+            <Avatar user={$currentUser} size="small" class="" />
         {/if}
         {#key resetEditorAt}
             <div class="relative flex-grow flex flex-col w-full">
@@ -155,7 +155,9 @@
                     {autofocus}
                     allowMarkdown={false}
                     on:submit={publish}
-                    class="p-4 {
+                    class="
+                        text-lg
+                        {
                         $$props.editorClass ? $$props.editorClass : (
                             `text-foreground ${(
                                 isCollapsed ? "sm:min-h-[7rem]" : "sm:min-h-[10rem] flex-grow"

@@ -1,8 +1,5 @@
 <script lang="ts">
-	import { getSaveForLaterListForEvent } from "$actions/Events/save-for-later";
     import { layout } from "$stores/layout";
-	import { ndk } from "$stores/ndk";
-	import { NDKArticle } from "@nostr-dev-kit/ndk";
     
     $layout.title = "Reads";
     $layout.back = { url: "/" };

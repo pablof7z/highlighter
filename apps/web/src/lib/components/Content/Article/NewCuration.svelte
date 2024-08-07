@@ -46,6 +46,8 @@
         }
     }
 
+    randomImage();
+
     async function randomImage() {
         const k = title || "Nature";
         const i = await fetch(`https://picsum.photos/800/600?random=${k}`);
@@ -72,7 +74,7 @@
         placeholder="Description"
     />
 
-    <div class="h-48 bg-background/50 rounded overflow-clip relative w-full">
+    <div class="h-48 bg-secondary rounded overflow-clip relative w-full">
         {#if image}
             <img class="w-full md:!h-48 object-cover" src={image} />
         {/if}
@@ -81,13 +83,13 @@
             <BlossomUpload
                 on:uploaded={uploaded}
             >
-                <Button variant="outline" class="py-2 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit">
-                    <Image class="w-8 h-8" />
+                <Button size="icon" variant="outline" class="flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap">
+                    <Image class="w-5 h-5" />
                 </Button>
             </BlossomUpload>
 
-            <Button variant="outline" class="py-2 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit" on:click={randomImage}>
-                <Shuffle class="w-8 h-8" />
+            <Button size="icon" variant="outline" class="flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap" on:click={randomImage}>
+                <Shuffle class="w-5 h-5" />
             </Button>
 
         </div>

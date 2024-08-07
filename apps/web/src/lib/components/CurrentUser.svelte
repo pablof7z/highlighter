@@ -26,7 +26,7 @@
 <div class="{$$props.class??""}">
     {#if $currentUser}
         <UserProfile user={$currentUser} let:userProfile let:authorUrl let:fetching>
-            <a href="/settings" class="flex-none">
+            <a href="/settings" class="flex-none" on:click={() => console.log('navigate again')}>
                 <Avatar user={$currentUser} {userProfile} {fetching} class="w-[40px] h-[40px] object-cover flex-none {$$props.avatarClass??""}" />
             </a>
         </UserProfile>

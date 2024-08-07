@@ -6,7 +6,7 @@
 	import currentUser from '$stores/currentUser';
 	import { ndk } from '$stores/ndk';
 	import { logout } from '$utils/login';
-	import { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
+	import { NDKEvent, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
 	import { Key, CaretRight, ShareNetwork, Bell, Keyhole, Package, Code } from 'phosphor-svelte';
 	import { Button } from "$components/ui/button";
 	import FailedPublishesIndicator from "$components/FailedPublishesIndicator.svelte";

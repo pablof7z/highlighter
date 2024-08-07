@@ -40,7 +40,6 @@
 
     onMount(() => {
         // Subscriptions
-        console.log('sending subscription', { groupId })
         events = $ndk.storeSubscribe(filters, { subId: 'group-events', groupable: false, relaySet: group.relaySet });
         metadata = deriveListStore(events, NDKSimpleGroupMetadata);
         admins = deriveListStore(events, NDKSimpleGroupMemberList, [NDKKind.GroupAdmins]);

@@ -31,7 +31,6 @@
         <VideoBody video={event} />
     {:else if event.kind === 1}
         <NoteBody {event} />
-        this
     {:else if curationKinds.includes(event.kind)}
         <CurationBody
             list={event}

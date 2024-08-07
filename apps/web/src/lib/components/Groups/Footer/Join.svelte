@@ -31,7 +31,6 @@
     $: console.log('currenUser', !!$currentUser, $isMember === false, !!myJoinRequests)
 
     $: if ($currentUser && $isMember === false && !myJoinRequests) {
-        console.log('sending')
         myJoinRequests = $ndk.storeSubscribe({
             kinds: [NDKKind.GroupAdminRequestJoin],
             "#h": [group.groupId],
@@ -109,7 +108,6 @@
 </script>
 
 <Footer.Shell
-    {openOnMount}
     bind:open
     hideCollapsedView={mainView !== 'subscribe'}
     on:collapse={() => { if (onClose) onClose() }}

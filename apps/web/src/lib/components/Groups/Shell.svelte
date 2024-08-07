@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Component, layout } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
-	import { NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../../app";
 	import { setContext } from "svelte";
 	import { Navigation } from "$utils/navigation";
@@ -57,6 +57,21 @@
         $layout.title = $metadata?.name ?? "Untitled group";
         $layout.iconUrl = $metadata?.picture;
         $layout.back = { url: '/communities' };
+
+        if ($isMember === false) {
+            $layout.options = [
+                {
+                    name: "Join",
+                    href: "/groups/join",
+                    buttonProps: {
+                        variant: "gold",
+                        class: "px-6 ml-4"
+                    }
+                }
+            ]
+        } else {
+            $layout.options = undefined;
+        }
     }
 
     $: $layout.navigation = navigation;

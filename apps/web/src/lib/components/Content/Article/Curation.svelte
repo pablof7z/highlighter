@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Checkbox from "$components/Forms/Checkbox.svelte";
+	import BlankState from "$components/PageElements/BlankState.svelte";
     import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 	import { userArticleCurations } from "$stores/session";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
@@ -51,6 +52,12 @@
 
 <ScrollArea orientation="vertical">
     <ul class="h-max bg-background/50 rounded border border-border overflow-clip gap-0 divide-y divide-border">
+        {#if $userArticleCurations.size === 0}
+            <BlankState cta="Create Curation">
+                You don't have any curations. Create one to add this article to.
+            </BlankState>
+        {/if}
+
         {#each $userArticleCurations.values() as curation (curation.id)}
             <li class="m-0 p-0">
                 <Checkbox

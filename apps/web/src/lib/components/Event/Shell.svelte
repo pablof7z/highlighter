@@ -21,15 +21,15 @@
 
     $: if (!showQuoteOptions) {
         rightOptions = [
-            { label: "Quote", icon: Quotes, class: "bg-white/10 !text-green-500", cb: () => { showQuoteOptions = true; return true; } },
-            { label: 'Bookmark', icon: BookmarkSimple, class: "bg-white/20 !text-red-500", cb: bookmark },
-            { label: 'Zap!', icon: Lightning, class: "bg-white/30 !text-yellow-500", cb: () => openModal(ZapModal, { event })}
+            { id: "Quote", icon: Quotes, class: "bg-green-500/10 !text-green-500", fn: () => { showQuoteOptions = true; return true; } },
+            { id: 'Bookmark', icon: BookmarkSimple, class: "bg-red-500/10 !text-red-500", fn: bookmark },
+            { id: 'Zap!', icon: Lightning, class: "bg-yellow-500/10 !text-yellow-500", iconProps: { weight: 'fill' }, fn: () => openModal(ZapModal, { event })}
         ]
     } else {
         rightOptions = [
-            { label: "Repost", icon: Repeat, class: "bg-success/10", cb: repost },
-            { label: "Quote", icon: Quotes, class: "bg-success/20", cb: () => openModal(QuoteModal, { event }) },
-            { label: "Schedule", icon: Timer, class: "bg-success/30", cb: () => {openModal(Scheduler, {event})} }
+            { name: "Repost", icon: Repeat, class: "bg-foreground/30", fn: repost },
+            { name: "Quote", icon: Quotes, class: "bg-foreground/60", fn: () => openModal(QuoteModal, { event }) },
+            { name: "Schedule", icon: Timer, class: "bg-foreground/90", fn: () => {openModal(Scheduler, {event})} }
         ];
     }
 
@@ -50,7 +50,7 @@
             toast.success("Bookmark saved");
             $userGenericCuration = await toggleBookmarkedEvent(event, $userGenericCuration);
         } catch (e: any) {
-            toast.error(e.relayErrors ?? e.message, "error")
+            toast.error(e.relayErrors ?? e.message)
         }
     }
 </script>
@@ -60,7 +60,7 @@
 {:else}
     <Swipe
         leftOptions={[
-            { label: 'Reply', icon: ChatCircle, class: "bg-accent", cb: onSwipeToReply },
+            { id: 'Reply', icon: ChatCircle, class: "!bg-accent/10 text-accent", fn: onSwipeToReply },
         ]}
         on:close={() => showQuoteOptions = false}
         {rightOptions}

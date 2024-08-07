@@ -4,6 +4,8 @@
 import type { Hexpubkey, NDKUserProfile } from '@nostr-dev-kit/ndk';
 import type { SvelteComponent } from "svelte";
 
+export type WrappedEvent = NDKArticle | NDKVideo | NDKEvent | NDKHighlight | NDKList;
+
 export type TierEntry = {
 	name?: string;
 	selected: boolean;
@@ -53,7 +55,7 @@ export type NavigationOption = {
 		unstyled?: boolean;
         props?: Record<string, any>;
     }
-    fn?: () => void | boolean;
+    fn?: () => void | boolean | Promise<void | boolean>;
 	buttonProps?: Record<string, any>;
 };
 

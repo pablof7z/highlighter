@@ -22,8 +22,6 @@
 
 	initialize();
 
-	
-
 	// import { defineCustomElements } from "@ionic/pwa-elements/loader";
 	// import { setupIonicSvelte } from "ionic-svelte";
 	// import { PushNotifications } from '@capacitor/push-notifications';
@@ -57,7 +55,6 @@
 	// let webManifestLink: string;
 	// $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ''
 
-	let hasJwt = false;
 	let mounted = browser ? false : true;
 
 	$: if (!$currentUser && browser) {
@@ -65,8 +62,6 @@
 		configureFeNDK().then(async () => {
 			await browserSetupPromise;
 		});
-
-		// hasJwt = !!$jwt && document.cookie.includes('jwt=');
 	}
 
 	onMount(async () => {

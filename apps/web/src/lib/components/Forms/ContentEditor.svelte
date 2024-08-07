@@ -32,9 +32,12 @@
 
     async function enableEditor() {
         const {default: Quill} = await import('quill');
+        const {Mention} = await import('quill-mention');
         const { default: QuillImageDropAndPaste } = await import ('quill-image-drop-and-paste');
-        await import ("quill-mention");
-        Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste)
+
+        // check if Quill already has modules/mention
+        if (!Quill.imports['modules/mention']) Quill.register('modules/mention', Mention);
+        if (!Quill.imports['modules/imageDropAndPaste']) Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste);
 
         const options: any = {
             theme: 'snow',
@@ -235,7 +238,7 @@
         {#if $wysiwygEditor || forceWywsiwyg}
             <div bind:this={editorEl} class="
                 editor h-full {$$props.class??""}
-            ">
+            " style={$$props.style??""}>
                 <EventContent ndk={$ndk} content={content} event={new NDKArticle($ndk, { content })} />
             </div>
         {:else}
@@ -246,6 +249,7 @@
                     editor
                     !bg-transparent border-none {$$props.class??""}
                 "
+                style={$$props.style??""}
             />
         {/if}
     </div>
@@ -264,7 +268,7 @@
     }
 
     :global(.ql-editor.ql-blank::before) {
-        @apply text-muted-foreground right-0;
+        @apply text-muted-foreground right-0 left-0;
         font-style: normal;
     }
 
@@ -312,6 +316,10 @@
         @apply !text-foreground;
     }
 
+    :global(.ql-editor) {
+        @apply !p-0;
+    }
+    
     :global(.ql-editor .mention) {
         @apply text-foreground font-medium;
     }

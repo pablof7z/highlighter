@@ -14,6 +14,8 @@
 	import Avatar from "$components/User/Avatar.svelte";
 	import LoadEvent from "$components/Event/LoadEvent.svelte";
 	import { unicodeEmojiRegex } from "$utils/const";
+	import MediaCollection from "$components/Events/MediaCollection.svelte";
+	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
 
     export let event: NDKEvent;
     export let detailed = false;
@@ -98,24 +100,29 @@
     <div class="
         rounded flex items-stretch justify-stretch w-fit max-w-[90%]
         {isMine ? "bg-accent text-accent-foreground" : "bg-secondary"}
-        px-3 py-2 max-sm:py-2 
-        { skipAvatar || skipName ? "my-0.25" : ""}
+        px-3 py-2 max-sm:py-2
         {isGradient ? "sm:min-w-[28rem]" : ""}
         { skipAvatar ? ( isMine ? "!rounded-br-none" : "!rounded-bl-none" ) : "" }
         { skipName ? ( isMine ? "!rounded-tr-none" : "!rounded-tl-none" ) : "" }
-    ">
+    " style={
+        (skipAvatar || skipName) ? "margin-top: 1px;" : ""
+    }>
         <div class="
             w-full flex-1 grow
             break-words max-w-[70vw] overflow-clip
             {isGradient ? "bg-secondary m-[1px]" : ""}]
         ">
             {#if !skipName || !skipTime}
-                <div class="text-muted-foreground text-xs flex flex-row items-center gap-6 w-full justify-between">
+                <div class="
+                    { !isMine ? "text-muted-foreground" : "text-accent-foreground/60" }
+                    text-xs flex flex-row items-center gap-6 w-full justify-between">
                     {#if !skipName}
                         <Name {userProfile} {fetching} class="truncate" />
+                    {:else}
+                        <div class="grow"></div>
                     {/if}
                     <time class="whitespace-nowrap">
-                        <RelativeTime timestamp={event.created_at*1000} />
+                        <RelativeTime {event} />
                     </time>
                 </div>
             {/if}
@@ -133,7 +140,15 @@
                         {/if}
                     </LoadEvent>
                 {/if}
-                <EventContent ndk={$ndk} {event} />
+                {#if event.kind !== NDKKind.GroupChat}
+                    {event.kind}
+                {/if}
+                <EventContent
+                    ndk={$ndk}
+                    mediaCollectionComponent={MediaCollection}
+                    eventCardComponent={EmbeddedEventWrapper}
+                    {event}
+                />
             {/if}
 
             {#if $replyingPubkeys.length > 0}

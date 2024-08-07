@@ -14,10 +14,6 @@
 
     const highlights = getContext('highlights') as Readable<NDKHighlight[]>;
 
-    const newHighlightTags: NDKTag[] = [
-        ...article.referenceTags()
-    ];
-
     let el: HTMLDivElement;
 
     onMount(() => {
@@ -28,7 +24,7 @@
 
 <div class="break-inside max-sm:ml-4 max-sm:mr-12 relative" bind:this={el}>
     {#if !isPreview}
-        <HighlightingArea tags={newHighlightTags}>
+        <HighlightingArea>
             <HighlightedContent event={article} highlights={highlights} />
 
             {#if !isFullVersion}

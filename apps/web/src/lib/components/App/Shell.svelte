@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LayoutHeader from "./LayoutHeader.svelte";
-	import { layout } from "$stores/layout";
+	import { layout, scrollPercentage } from "$stores/layout";
 	import Modal from "./Modal.svelte";
 	import { Toaster } from "$components/ui/sonner";
 	import { appMobileView } from "$stores/app";
@@ -8,11 +8,19 @@
 	import DefaultHeader from "$components/Layout/Headers/DefaultHeader.svelte";
 	import { history } from '$stores/history';
 	import { ArrowDown, House } from "phosphor-svelte";
-	import { goto } from "$app/navigation";
+	import { goto, onNavigate } from "$app/navigation";
 	import { fly, slide } from "svelte/transition";
     import Mobile from "./Mobile.svelte";
 	import Wallet from "./Wallet.svelte";
 	import { throttle } from "@sveu/shared";
+    import { Keyboard } from '@capacitor/keyboard';
+	import { isMobileBuild } from '$utils/view/mobile';
+	import { onMount } from "svelte";
+
+    onNavigate(() => {
+        console.log("navigate")
+		mainContainer.scrollTop = 0;
+	})
 
     let withSidebar: boolean;
 
@@ -27,6 +35,28 @@
     let mainContainer: HTMLDivElement;
     let historyContainer: HTMLDivElement;
     let headerContainer: HTMLElement;
+
+    let kHeight = 0;
+
+    if (isMobileBuild()) {
+        onMount(() => {
+            Keyboard.addListener("keyboardWillHide", () => {
+                kHeight = 0;
+                document.documentElement.style.setProperty('--bottom-padding', 'var(--safe-area-inset-bottom)');
+                mainContainer.style.setProperty('bottom-padding', '0');
+            });
+            
+            Keyboard.addListener('keyboardWillShow', info => {
+                const { keyboardHeight } = info;
+                kHeight = keyboardHeight;
+
+                // set in the root element the variable --bottom-padding to the keyboard height
+                document.documentElement.style.setProperty('--bottom-padding', `${keyboardHeight}px`);
+            });
+        });
+    } else {
+        document.documentElement.style.setProperty('--bottom-padding', 'var(--safe-area-inset-bottom)');
+    }
 
     function headerTouchstart(event: TouchEvent) {
         startTouchY = event.touches[0].clientY;
@@ -150,8 +180,8 @@
         } else if (withSidebar) {
             mainClass = "";
         } else {
-            // mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full";
-            mainClass = "";
+            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full";
+            // mainClass = "";
         }
     }
 
@@ -163,21 +193,31 @@
         
         const { scrollTop, scrollHeight, clientHeight } = e.target as HTMLElement;
 
+        const isAtTop = scrollTop === 0;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight;
+
         currentY = scrollTop;
-        scrollPercentage = (currentY / (scrollHeight - clientHeight)) * 100;
+        $scrollPercentage = (currentY / (scrollHeight - clientHeight)) * 100;
+
+        if (isAtBottom) {
+            $scrollPercentage = 100;
+        } else if (isAtTop) {
+            $scrollPercentage = 0;
+        }
 
         if (currentY > prevY && currentY > 50) {
             scrollDir = "down";
         } else if (currentY < prevY - 10) {
             scrollDir = "up";
+            if (isMobileBuild()) try { Keyboard.hide(); } catch {}
         }
 
         if (headerContainer) {
             let opacity = 1;
-            if (!forceHeaderOpacity && $layout.event) {
+            if (!forceHeaderOpacity && $layout.event && $layout.headerCanBeTransparent !== false) {
                 if (scrollDir === "down") {
-                    if (scrollPercentage > 10) {
-                        opacity = 1 - (scrollPercentage - 10) / 10;
+                    if ($scrollPercentage > 10) {
+                        opacity = 1 - ($scrollPercentage - 10) / 10;
                     }
                     if (opacity < 0.25) opacity = 0.25;
                 }
@@ -188,14 +228,35 @@
         prevY = currentY;
     }
 
-    let scrollPercentage = 0;
+    $scrollPercentage = 0;
 
-    const mainScroll = throttle(markScrollingDirection, 0.1);
+    function onScroll(e: Event) {
+        markScrollingDirection(e);
+        updateHeaderSize(e);
+    }
+
+    function updateHeaderSize() {
+        const headerHeight = headerContainer?.offsetHeight || 0;
+        document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+    }
+    
+    const mainScroll = throttle(onScroll, 0.1);
 
     let currentY = 0;
     let prevY = 0;
 
+    let bottomPadding = "0";
+
+    setInterval(() => {
+        // get css variable bottom-padding
+        bottomPadding = getComputedStyle(document.documentElement).getPropertyValue('--footer-height');
+    }, 1000)
+
 </script>
+
+<!-- <div class="fixed top-52 left-2 bg-red-500 p-4 z-[9999999]">
+    {bottomPadding}
+</div> -->
 
 <Mobile />
 
@@ -207,9 +268,9 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="
-    max-sm:h-[100dvh]
-    min-h-screen w-full
-    max-lg:h-[90vw] z-50 overflow-clip
+    w-full
+    max-sm:h-screen
+    max-lg:h-[90vw] z-50
     transition-all duration-300
     {withSidebar ? "md:pl-[360px]" : ""}
 " style={`
@@ -281,7 +342,10 @@
         <!-- Main content -->
         <div
             bind:this={mainContainer}
-            class="flex flex-col bg-background z-50 h-screen overflow-y-auto"
+            class="
+                flex flex-col bg-background z-50 h-screen overflow-y-auto scrollbar-hide
+                pb-[calc(var(--bottom-padding)+var(--footer-height))]
+            "
             on:scroll={mainScroll}
         >
             {#if headerBarCount > 0}
@@ -301,11 +365,11 @@
                                 w-full h-[calc(var(--safe-area-inset-top)+60px)] responsive-padding flex flex-row
                             "
                             on:touchstart|passive={headerTouchstart}
-                            on:touchmove|passive={headerTouchmove}
+                            on:touchmove={headerTouchmove}
                             on:touchend|passive={headerTouchend}
                         >
                             {#if $layout.header || $layout.title}
-                                <LayoutHeader {scrollPercentage} {scrollDir} containerClass={$layout.sidebar === false ? mainClass : ""} />
+                                <LayoutHeader scrollPercentage={$scrollPercentage} {scrollDir} containerClass={$layout.sidebar === false ? mainClass : ""} />
                             {:else if $appMobileView}
                                 <DefaultHeader />
                             {:else if $layout.navigation !== false}
@@ -333,7 +397,11 @@
                 <div class="mt-8-safe" style={`height: ${footerHeight}px`} />
                 {#if $appMobileView || $layout.footerInMain}
                     {#if $layout.footer}
-                        <footer class="fixed bottom-0 left-0 border-t border-border right-0 max-sm:bottom-0-safe w-full z-20" bind:this={footerContainer}>
+                        <footer
+                            class="mobile-nav fixed bottom-0 left-0 border-t border-border right-0 max-sm:bottom-0-safe w-full z-20
+                            transition-all duration-300
+                            "
+                        >
                             <svelte:component this={$layout.footer.component} {...$layout.footer.props} />
                         </footer>
                     {/if}

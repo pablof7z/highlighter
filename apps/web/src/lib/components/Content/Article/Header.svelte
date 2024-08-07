@@ -35,16 +35,12 @@
         $layout.footerInMain = true;
     }
 
-    $: $layout.footer!.props.forceMainView = mainView;
+    $: if ($layout.footer?.props) $layout.footer!.props.forceMainView = mainView;
 
     $: image = article.image
     if (!image && !isPreview) image ??= userProfile?.image;
 
     $: if (!isPreview) {
-        // $layout.header = {
-        //     component: TopHeader,
-        //     props: { event: article, userProfile, authorUrl }
-        // }
         if (article.title) $layout.title = article.title;
         $layout.event = article;
         $layout.header = undefined;

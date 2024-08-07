@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { Button } from "$components/ui/button";
-	import { CaretUp } from "phosphor-svelte";
-	import { ComponentType, createEventDispatcher, onMount, SvelteComponent } from 'svelte';
+	import { CaretUp, X } from "phosphor-svelte";
+	import { createEventDispatcher, onMount, SvelteComponent } from 'svelte';
 	import { Input } from '$components/ui/input';
 	import ContentEditor from '$components/Forms/ContentEditor.svelte';
-	import { footerMainView } from '$stores/layout';
-    import { Keyboard } from '@capacitor/keyboard';
-	import { isMobileBuild } from '$utils/view/mobile';
-	import { ButtonView } from ".";
+	import { footerMainView, layout } from '$stores/layout';
+	import type { FooterView } from ".";
+	import { Writable } from "svelte/store";
 
     export let collapsed = true;
     export let dragging = false;
@@ -16,33 +15,20 @@
     const initialMainView = mainView;
     export let maxHeight = "50vh";
     export let visibleHeight = 60;
+    export let padding = "calc(var(--safe-area-inset-bottom) + 0.5rem)";
     export let placeholder: string | undefined = "Reply";
     export let onPublish: ((content: string) => void) | undefined = undefined;
     export let collapse = () => {
         collapsed = true;
-        mainView = undefined;
+        $footerMainView = mainView = activeView = undefined;
         dispatch("collapse");
     }
 
-    $: mainView = $footerMainView;
-
-    let kHeight = 0;
-
-    if (isMobileBuild()) {
-        Keyboard.addListener("keyboardWillHide", () => {
-            kHeight = 0;
-        });
-        
-        Keyboard.addListener('keyboardWillShow', info => {
-            const { keyboardHeight } = info;
-            kHeight = keyboardHeight;
-
-            // el.style.setProperty('transform', 'translate3d(0, -' + keyboardHeight + 'px, 0)');
-        });
+    $: if ($footerMainView !== mainView) {
+        open($footerMainView);
     }
-
     
-    export let buttons: ButtonView[] = [];
+    export let views: FooterView[] = [];
 
     /**
      * Whether, when the component is mounted, it should be opened
@@ -112,6 +98,7 @@
             view = "main"
 
         mainView = view;
+        $footerMainView = view;
     }
 
 	function toggleCollapse() {
@@ -140,13 +127,31 @@
         content = "";
     }
 
-    let buttonViewNames = new Set<string>();
+    let viewNames = new Set<string>();
 
-    $: {
-        buttonViewNames = new Set(buttons.map(b => b.name));
+    $: if (views) {
+        viewNames = new Set(views.map(b => b.name));
     }
 
     let el: HTMLDivElement;
+
+    // record height of el height as footer-height
+    $: if (el && (collapsed || !collapsed)) {
+        document.documentElement.style.setProperty('--footer-height', el.clientHeight + 'px');
+    }
+
+    let activeView: FooterView | undefined;
+    let activeViewStore: Writable<any> | undefined;
+
+    $: if (mainView && viewNames.has(mainView)) {
+        activeView = views.find(v => v.name === mainView);
+        activeViewStore = activeView?.createStateStore?.();
+    }
+
+    $: if (!collapsed && activeView && !activeView.View) {
+        collapsed = true;
+    }
+
 </script>
 
 <div
@@ -156,21 +161,40 @@
     on:touchmove|passive={touchmove}
     class="
         footer-shell
-        max-w-[var(--content-focused-width)] mx-auto
         max-sm:backdrop-blur-lg
         overflow-clip
-        !pb-[calc(var(--safe-area-inset-bottom)+0.5rem)]
         max-sm:p-2 max-sm:px-3
         max-sm:right-0 sm:right-[360px]
-        rounded-t-3xl py-3 h-auto 
+        py-3
         flex flex-col justify-between items-center
+        !pb-[calc(var(--bottom-padding)+0.5rem)]
+
+        { !$layout.sidebar && !$layout.fullWidth ? "max-w-[var(--content-focused-width)] mx-auto" : "" }
+        
         {$$props.class??""}
     ">
-    {#if !hideCollapsedView || collapsed}
+    {#if activeView}
+        {#if activeView.Toolbar}
+            <div class="flex flex-row justify-between {align} w-full gap-2">
+                <svelte:component this={activeView.Toolbar} {open} stateStore={activeViewStore} {...activeView.props} />
+
+                <Button
+                    size="icon"
+                    variant="secondary"
+                    class="
+                    rounded-full
+                        flex-none w-10 h-10 p-2
+                        transform-gpu transition-transform duration-300
+                        {!collapsed ? 'rotate-180' : ''}
+                    "
+                    on:click={() => open(false)}
+                >
+                    <X class="w-full h-full" weight="bold" />
+                </Button>
+            </div>
+        {/if}
+    {:else if !hideCollapsedView || collapsed}
         <div class="flex flex-row justify-between {align} w-full gap-2">
-            {#each buttons as button}
-                <svelte:component this={button.Button} on:click={() => open(button.name)} {...button.buttonProps} />
-            {/each}
             {#if mainView === 'editor' && onPublish}
                 <div class="flex flex-row justify-between {align} w-full gap-2">
                     <Button variant="outline" on:click={cancelEditor}>
@@ -182,6 +206,13 @@
                     </Button>
                 </div>
             {:else}
+                {#if views}
+                    {#each views as view}
+                        {#if view.Button}
+                            <svelte:component this={view.Button} on:click={() => open(view.name)} {...view.buttonProps} />
+                        {/if}
+                    {/each}
+                {/if}
                 <div class="flex flex-row justify-between {align} w-full gap-2">
                     <slot {collapsed} {open} {collapse} {mainView} />
 
@@ -196,9 +227,11 @@
                 </div>
             {/if}
             <Button
+                size="icon"
+                variant="secondary"
                 class="
+                rounded-full
                     flex-none w-10 h-10 p-2
-                    bg-opacity-50
                     transform-gpu transition-transform duration-300
                     {!collapsed ? 'rotate-180' : ''}
                 "
@@ -215,12 +248,17 @@
             class="flex flex-col gap-2 w-full overflow-y-auto scrollbar-hide transition-all duration-1000"
             style="max-height: {maxHeight}"
         >
-            {#each buttons as button}
-                {#if mainView === button.name}
-                    <svelte:component this={button.View} {open} on:close={() => open(false)} {...button.props} />
-                {/if}
-            {/each}
-            {#if mainView === 'editor'}
+            {#if activeView?.View}
+                <svelte:component
+                    this={activeView.View}
+                    bind:hideCollapsedView
+                    {open}
+                    on:close={() => open(false)}
+                    {...$$props}
+                    {...activeView.props}
+                    stateStore={activeViewStore}
+                />
+            {:else if mainView === 'editor'}
                 <div class="bg-background/50 rounded p-4 text-lg overflow-y-auto flex flex-col">
                     <ContentEditor
                         autofocus={true}
@@ -232,7 +270,7 @@
                         {placeholder}
                     />
                 </div>
-            {:else if !buttonViewNames.has(mainView)}
+            {:else}
                 <slot name="main" {open} />
             {/if}
         </div>

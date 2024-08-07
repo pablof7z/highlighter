@@ -8,9 +8,7 @@
 </script>
 
 <div class="flex flex-col gap-4">
-    heres
     {#each $curations as event (event.id)}
-    item
         <Card.FeaturedList list={event} />
     {/each}
 </div>

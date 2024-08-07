@@ -1,9 +1,9 @@
 <script lang="ts">
     import Button from "$components/ui/button/button.svelte";
 	import { CaretLeft, Eye, PaperPlaneTilt, PencilRuler, Star, Timer, UsersThree, X } from "phosphor-svelte";
-	import { derived, Readable, writable, Writable } from "svelte/store";
+	import { derived, Writable } from "svelte/store";
     import * as Tooltip from "$lib/components/ui/tooltip";
-	import { NDKArticle, NDKSimpleGroup, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { closeModal, openModal } from "$utils/modal";
 	import ScheduleModal from "$modals/ScheduleModal.svelte";
 	import ToggleDark from "$components/buttons/ToggleDark.svelte";

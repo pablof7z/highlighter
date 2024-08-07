@@ -7,9 +7,17 @@
     const dispatch = createEventDispatcher();
 
     export let options: NavigationOption[] = [];
-    export let activeOption: NavigationOption | null;
-    export let value: string = "";
+    export let activeOption: NavigationOption | null = null;
+    export let value: string | undefined | false = undefined;
     export let tabs = false;
+
+    function optionId(option: NavigationOption, index: number) {
+        return option.id ?? option.name ?? option.href ?? index.toString();
+    }
+
+    $: if (value === undefined && options.length > 0) {
+        if (value !== false) value = optionId(options[0], 0);
+    }
 </script>
 
 {#if options}
@@ -45,11 +53,11 @@
             transition-all duration-300
         
         ">
-            {#each options as option (option.id ?? option.name ?? option.href)}
+            {#each options as option, index (optionId(option, index))}
                 {#if option.component}
                     {#if !option.component.unstyled}
                         <div class="max-lg:rounded-full transition-all duration-300 max-lg:hover:bg-white/10 items-center">
-                            <div class="rounded-full p-[2px]" class:text-foreground={value === (option.value || option.name)}>
+                            <div class="rounded-full p-[2px]" class:text-foreground={value === optionId(option, index)}>
                                 <svelte:component
                                     this={option.component.component}
                                     {...option.component.props??{}}
@@ -66,6 +74,7 @@
                     <HorizontalOptionsListItem
                         {option}
                         {value}
+                        {index}
                         class={$$props.itemClass??""}
                         on:click={(e) => {
                             if (!option.href) {
@@ -74,7 +83,7 @@
                             activeOption = option;
                             dispatch("changed", { value: option.name, option });
                             if (option.fn) option.fn();
-                            value = option.name;
+                            value = optionId(option, index);
                         }}
                     />
                 {/if}

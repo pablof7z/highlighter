@@ -120,7 +120,6 @@
         >
             <Content.Body event={wrappedEvent} />
         </Content.Shell>
-        <!-- <ArticleRender {article} isFullVersion={true} isPreview={true} /> -->
     {:else if thread}
         <ThreadEditor bind:thread bind:draftItem />
     {/if}

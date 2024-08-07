@@ -10,6 +10,7 @@
 	import { Button } from "$components/ui/button";
 	import { fade } from "svelte/transition";
 	import { CaretDown } from "phosphor-svelte";
+	import BackButton from "./Navigation/BackButton.svelte";
 
     export let containerClass: string = "";
     export let scrollDir: 'up' | 'down' | undefined;
@@ -35,9 +36,14 @@
                 {/if}
             {/if}
             
-            <div class="flex items-center justify-between max-w-[var(--content-focused-width)] mx-auto w-full {containerClass}">
+            <div
+                class="
+                    flex items-center justify-between px-2 mx-auto w-full {containerClass}
+                    { !$layout.sidebar && !$layout.fullWidth ? "max-w-[var(--content-focused-width)] mx-auto" : "" }
+                "
+            >
                 <div class="flex flex-row gap-2 items-center w-full truncate">
-                    <HeaderLeftButton />
+                    <BackButton />
 
                     {#if $layout?.iconUrl}
                         <!-- svelte-ignore a11y-missing-attribute -->
@@ -64,7 +70,7 @@
                     <HeaderRightButton />
                 {:else if $layout.navigation && $layout.navigation.length > 1 && (scrollDir === 'down' && !$layout.forceShowNavigation)}
                     <div in:fade>
-                        <Button variant="accent" on:click={(e) => $layout.forceShowNavigation = true }>
+                        <Button variant="accent" size="sm" class="rounded-full" on:click={(e) => $layout.forceShowNavigation = true }>
                             {#if ($layout.activeOption||$layout.navigation[0]).icon}
                                 <svelte:component
                                     this={($layout.activeOption||$layout.navigation[0]).icon}
