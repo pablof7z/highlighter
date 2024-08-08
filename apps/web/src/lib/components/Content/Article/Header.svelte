@@ -19,7 +19,7 @@
     const title = article.title;
 
     onMount(() => {
-        addHistory({ category: "Read", title, url: $page.url.toString() })
+        if (title) addHistory({ category: "Read", title, url: $page.url.toString() })
     })
 
     let image: string | undefined;

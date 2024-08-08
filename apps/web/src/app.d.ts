@@ -25,16 +25,6 @@ export type UserProfileType = NDKUserProfile & {
 	categories?: string[];
 };
 
-export type EventType =
-	| 'article'
-	| 'book'
-	| 'group-note'
-	| 'group-reply'
-	| 'video'
-	| 'short-note'
-	| 'highlight'
-	| 'curation';
-
 export type NavigationOption = {
     value?: string;
     name?: string;
@@ -61,7 +51,6 @@ export type NavigationOption = {
 
 declare global {
 	namespace App {
-		type FilterType = 'all' | EventType;
 		// interface Error {}
 		// interface Locals {}
 		// interface PageData {}

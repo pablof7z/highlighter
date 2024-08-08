@@ -4,7 +4,13 @@ import Attachments from './Attachments.svelte';
 import { NDKEvent, NDKKind, NDKRelaySet, NDKTag } from '@nostr-dev-kit/ndk';
 import { EventDispatcher } from 'svelte';
 
-export type ComposerState = {
+export type Actions = {
+    publish: () => void;
+    upload: () => void;
+    schedule: () => void;
+};
+
+export type State = {
     // Content of the event
     content?: string;
 
@@ -12,7 +18,7 @@ export type ComposerState = {
     attachments?: string[];
 
     // When set, the Attachments component will show a file upload dialog
-    forceFileUpload: boolean;
+    forceFileUpload?: boolean;
 
     kind?: NDKKind;
     tags?: NDKTag[];

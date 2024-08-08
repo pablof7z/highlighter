@@ -18,6 +18,9 @@
     $layout.title = "🏡 Communities";
     $layout.iconUrl = undefined;
     $layout.options = undefined;
+    $layout.sidebar = false;
+    $layout.fullWidth = false;
+    $layout.event = undefined;
 
     const groupListsFromFollows = $ndk.storeSubscribe(
         { kinds: [NDKKind.SimpleGroupList], limit: 300 },

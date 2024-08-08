@@ -40,13 +40,14 @@ const zapsStore = (
         filter(eventOrUser, extraFilter),
         { subId: 'zaps', closeOnEose: true, ...subOpts}
     );
+    console.log({filter: filter(eventOrUser, extraFilter), subOpts, store})
 
-    if (!zapperPubkey) return store;
+    // if (!zapperPubkey) return store;
 
     return {
         ...derived(store, $store => {
             return $store.filter(zap => {
-                if (zap.kind === NDKKind.Zap) return zap.pubkey === zapperPubkey;
+                // if (zap.kind === NDKKind.Zap) return zap.pubkey === zapperPubkey;
                 return true;
             });
         }),

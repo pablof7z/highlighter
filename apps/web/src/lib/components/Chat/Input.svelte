@@ -23,12 +23,9 @@
 
     let resetAt = new Date();
 
-    $: if (group) {
-        console.log("Chat.Input relay status", Array.from(group.relaySet.relays)[0].status)
-    }
-
     async function submit() {
-        if (content.trim().length === 0) return;
+        content = content.trim();
+        if (content.length === 0) return;
 
         publishing = true;
         event ??= new NDKEvent($ndk, {
@@ -50,6 +47,7 @@
             content = event.content;
             console.error(e);
         });
+        replyTo = undefined;
         content = '';
         resetAt = new Date();
 

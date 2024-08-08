@@ -5,6 +5,7 @@
 	import { wot, wotFiltered, wotFilteredStore } from "$stores/wot";
 	import { Readable, derived } from "svelte/store";
     import * as Feed from "$components/Feed";
+	import { ndk } from "$stores/ndk";
 
     $layout.sidebar = false;
     $layout.fullWidth = true;

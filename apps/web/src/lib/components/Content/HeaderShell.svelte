@@ -32,7 +32,7 @@
         
         if (inView) {
             $layout.header = false;
-        } else {
+        } else if (title) {
             $layout.header = undefined;
             $layout.title = title;
         }
@@ -62,7 +62,7 @@
             <slot name="summary" />
         </div>
 
-        {#if event}
+        {#if event && !ignoreHeader}
             <div class="flex flex-row gap-6 my-2">
                 <Badge variant="secondary">
                     <a href={authorUrl}>

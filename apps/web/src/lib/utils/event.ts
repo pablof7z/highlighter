@@ -6,6 +6,7 @@ import { requiredTiersFor } from '$lib/events/tiers';
 import createDebugger from 'debug';
 import { get } from 'svelte/store';
 import { ndk } from '$stores/ndk';
+import { WrappedEvent } from '../../app';
 
 const debug = createDebugger('HL:utils:event');
 
@@ -64,10 +65,18 @@ export function encodeTag(tag: NDKTag) {
 	}
 }
 
+/**
+ * @deprecated Use `wrapEvent` instead
+ */
 export function eventToKind(event: NDKEvent) {
+	return wrapEvent(event);
+}
+
+export function wrapEvent(event: NDKEvent): WrappedEvent {
 	switch (event.kind) {
 		case 30818: return NDKArticle.from(event);
 		case NDKKind.Article: return NDKArticle.from(event);
+		case NDKKind.ModularArticle: return NDKArticle.from(event);
 		case NDKKind.HorizontalVideo: return NDKVideo.from(event); 
 		case NDKKind.ArticleCurationSet: return NDKList.from(event);
 		case NDKKind.VideoCurationSet: return NDKList.from(event);

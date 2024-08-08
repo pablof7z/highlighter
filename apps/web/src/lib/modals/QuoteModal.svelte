@@ -13,7 +13,7 @@
 
     let publishing = false;
 
-    let state: Writable<Composer.ComposerState>;
+    let state: Writable<Composer.State>;
 </script>
 
 <Composer.Root

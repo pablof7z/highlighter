@@ -99,7 +99,7 @@
             ndk={$ndk}
             {event}
             bind:content
-            class="prose-lg leading-8"
+            class="prose-lg leading-8 article-kind--{event.kind}"
             on:click={handleClick}
             sanitizeHtmlOptions={{
                 allowedAttributes: {

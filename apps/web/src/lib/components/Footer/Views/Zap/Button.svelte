@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Check, Lightning } from 'phosphor-svelte';
 	import { Button } from "$components/ui/button";
+	import { countWords } from '$utils/article';
 
     export let zapped = false;
     let _zapped = zapped;

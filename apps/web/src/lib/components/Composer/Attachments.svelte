@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ComposerState } from '.';
+	import { State } from '.';
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
 	import { isImage, isVideo } from "$utils/media";
 	import { NDKTag } from "@nostr-dev-kit/ndk";
@@ -7,7 +7,7 @@
 	import { Writable } from "svelte/store";
 	import { slide } from "svelte/transition";
 
-    export let state: Writable<ComposerState>;
+    export let state: Writable<State>;
     export let uploadedFiles: string[] = [];
 
     function uploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {

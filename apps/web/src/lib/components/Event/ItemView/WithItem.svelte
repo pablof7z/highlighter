@@ -12,8 +12,6 @@
 	import { isEventFullVersion, mainContentKinds } from "$utils/event";
 	import { getDefaultRelaySet } from "$utils/ndk";
 	import { nip19 } from "nostr-tools";
-	import { getEventType } from "./get-event-type";
-	import { EventType } from "../../../../app";
 	import currentUser from "$stores/currentUser";
 	import { ndk } from "$stores/ndk";
 
@@ -173,12 +171,10 @@
         }
     }
 
-    export let eventType: EventType | undefined = undefined;
     let tiersWithFullAccess: string[] | undefined;
     let isFullVersion: boolean;
     let hasAccessToFullVersion: boolean | undefined;
 
-    $: if (event && !eventType) eventType = getEventType(event);
     $: if (event) isFullVersion = isEventFullVersion(event);
     $: if (event && tiersWithFullAccess === undefined) tiersWithFullAccess = requiredTiersFor(event);
     $: if (event && isFullVersion === false && tiersWithFullAccess && hasAccessToFullVersion === undefined) {
@@ -217,10 +213,11 @@
     {/if}
 </svelte:head>
 
+
 {#if needsToLoad || (!!event || eosed)}
     {#if event}
         <UserProfile user={event.author} bind:authorUrl let:userProfile>
-            <slot {event} {urlPrefix} {eventType} {article} {video} {isFullVersion} {authorUrl} {userProfile} />
+            <slot {event} {urlPrefix} {article} {video} {isFullVersion} {authorUrl} {userProfile} />
         </UserProfile>
 
         {#if $debugMode}
@@ -233,4 +230,3 @@
     {/if}
 {/if}
 
-<!-- <div class="py-24"></div> -->

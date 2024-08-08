@@ -19,6 +19,18 @@ export const lastSeenGroupTimestamp = persist(
 	'last-seen-group-timestamp'
 );
 
+export function markGroupEventSeen(groupId: string, event: NDKEvent) {
+	lastSeenGroupTimestamp.update(($lastSeenGroupTimestamp) => {
+		const current = $lastSeenGroupTimestamp[groupId];
+		if (current && current > event.created_at!) {
+			return $lastSeenGroupTimestamp;
+		}
+		$lastSeenGroupTimestamp[groupId] = event.created_at!;
+		console.log(`Marked group ${groupId} as seen at ${event.created_at!}`);
+		return $lastSeenGroupTimestamp;
+	});
+}
+
 export const lastSeenTimestamp = persist(
 	writable<number>(),
 	createLocalStorage(),

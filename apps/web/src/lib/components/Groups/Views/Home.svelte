@@ -1,9 +1,7 @@
 <script lang="ts">
-	import HorizontalList from '$components/PageElements/HorizontalList';
-	import { NDKArticle, NDKKind, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
+	import { NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
 	import { getContext } from "svelte";
 	import { Readable } from "svelte/store";
-    import * as Card from "$components/Card";
     import * as Groups from "$components/Groups";
 	import { layout } from '$stores/layout';
 
@@ -14,6 +12,7 @@
     
     $layout.footerInMain = true;
     $layout.title = $metadata.name;
+    $layout.event = undefined;
     $layout.fullWidth = false;
     $: if ($isMember) {
         $layout.footer = {

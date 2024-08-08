@@ -4,8 +4,9 @@
 
     const event = getContext('wrappedEvent');
 </script>
+
 {#if [1, 11, 9802].includes(event.kind)}
-    <Content.Comments />
+    <Content.Views.Comments />
 {:else}
     <Content.Body />
 {/if}

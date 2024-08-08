@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { GroupId } from '..';
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
 	import currentUser from '$stores/currentUser';
 	import { getGroupUrl } from '$utils/url';
-    import { Hexpubkey, NDKArticle, NDKEvent, NDKFilter, NDKSimpleGroup, NDKTag } from '@nostr-dev-kit/ndk';
+    import { Hexpubkey, NDKArticle, NDKEvent, NDKFilter, NDKKind, NDKSimpleGroup, NDKTag } from '@nostr-dev-kit/ndk';
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { derived, Readable } from 'svelte/store';
 	import { groupsList, userFollows } from '$stores/session';
@@ -10,20 +11,23 @@
 	import AvatarsPill from '$components/Avatars/AvatarsPill.svelte';
 	import Badge from '$components/ui/badge/badge.svelte';
 	import { randomImage } from '$utils/image';
-	import { GroupEntry } from '$stores/groups';
+	import { GroupEntry, groupKey } from '$stores/groups';
 	import { group } from 'console';
 	import pinGroup from '$actions/Groups/pin';
 	import { toast } from 'svelte-sonner';
 	import { NavigationOption } from '../../../app';
+	import { ndk } from '$stores/ndk';
+	import { deriveStore } from '$utils/events/derive';
+	import { goto } from '$app/navigation';
+	import { lastSeenGroupTimestamp, lastSeenTimestamp } from '$stores/notifications';
 
     export let groupEntry: GroupEntry;
 
     let recentEvents: NDKEventStore<NDKEvent>;
     let mostRecentEvent: Readable<NDKEvent | undefined>;
 
-    function getLastTimeGroupWasChecked(group: NDKSimpleGroup) {
-        // TODO
-        return undefined;
+    function getLastTimeGroupWasChecked(): number | undefined {
+        return $lastSeenGroupTimestamp[groupEntry.groupId];
     }
 
     let isMember: boolean | undefined;
@@ -41,42 +45,50 @@
         }
     }
 
-    let recentArticles: Readable<NDKArticle[]>;
+    let unseenEvents: Readable<NDKEvent[]>;
+    let unseenArticles: Readable<NDKArticle[]>;
+    let unseenChats: Readable<NDKEvent[]>;
 
-    // $: if (group && isMember && !recentEvents) {
-    //     const lastSeen = getLastTimeGroupWasChecked(group);
-    //     const filters: NDKFilter[] = [{
-    //         kinds: [1, 9, 10, 11, 12, 30023 ],
-    //         "#h": [groupEntry.groupId]
-    //     }];
+    $: if (groupEntry && isMember && !recentEvents) {
+        const lastSeen = getLastTimeGroupWasChecked();
+        const filters: NDKFilter[] = [{
+            "#h": [groupEntry.groupId]
+        }];
 
-    //     if (lastSeen) {
-    //         // this makes sure we receive something in case there is nothing new
-    //         filters.push({ ...filters[0], limit: 1, until: lastSeen })
-    //         filters[0].since = lastSeen;
-    //     }
+        if (lastSeen) {
+            // this makes sure we receive something in case there is nothing new
+            filters.push({ ...filters[0], limit: 1, until: lastSeen })
+            filters[0].since = lastSeen;
+        }
 
-    //     recentEvents = $ndk.storeSubscribe(
-    //         filters,
-    //         { subId: 'recent-group-events', closeOnEose: true, relaySet: group.relaySet },
-    //     )
+        recentEvents = $ndk.storeSubscribe(
+            filters,
+            { subId: 'recent-group-events', groupable: false, relaySet: groupEntry.relaySet },
+        )
 
-    //     mostRecentEvent = derived(recentEvents, $recentEvents => {
-    //         if (!$recentEvents || $recentEvents.length === 0) return undefined;
+        mostRecentEvent = derived(recentEvents, $recentEvents => {
+            if (!$recentEvents || $recentEvents.length === 0) return undefined;
             
-    //         let choosenEvent: NDKEvent | undefined = $recentEvents[0];
+            let choosenEvent: NDKEvent | undefined = $recentEvents[0];
 
-    //         for (let i = 1; i < $recentEvents.length; i++) {
-    //             if ($recentEvents[i].created_at! > choosenEvent.created_at!) {
-    //                 choosenEvent = $recentEvents[i];
-    //             }
-    //         }
+            for (let i = 1; i < $recentEvents.length; i++) {
+                if ($recentEvents[i].created_at! > choosenEvent.created_at!) {
+                    choosenEvent = $recentEvents[i];
+                }
+            }
 
-    //         return choosenEvent;
-    //     })
+            return choosenEvent;
+        })
 
-    //     recentArticles = deriveStore(recentEvents, NDKArticle);
-    // }
+        unseenEvents = derived(recentEvents, $recentEvents => {
+            const lastTimeSeen = getLastTimeGroupWasChecked();
+            if (!$recentEvents || lastTimeSeen === undefined) return $recentEvents;
+            return $recentEvents.filter(e => e.created_at! > lastTimeSeen);
+        });
+
+        unseenArticles = deriveStore(unseenEvents, NDKArticle);
+        unseenChats = deriveStore<NDKEvent>(unseenEvents, undefined, [NDKKind.GroupChat]);
+    }
 
     function pin() {
         pinGroup(groupEntry.groupId, groupEntry.relayUrls);
@@ -96,53 +108,64 @@
             rightOptions.push({ name: 'Unpin', class: 'bg-secondary/50', fn: unpin })
         else
             rightOptions.push({ name: 'Pin', class: 'bg-secondary/50', fn: pin })
-        if (isMember)
-            rightOptions.push({ name: 'Leave', class: 'bg-secondary', fn: () => group?.leave() })
-        else
-            rightOptions.push({ name: 'Join', class: 'bg-secondary', fn: () => group?.join() })
+        rightOptions.push({ name: 'Visit', class: 'bg-secondary', fn: () => goto(getGroupUrl(groupEntry.groupId, groupEntry.relayUrls)) })
     }
-    $: console.log('group name', groupEntry.name)
 </script>
 
 <Swipe {rightOptions}>
-    <a href={getGroupUrl(groupEntry.groupId, groupEntry.relayUrls)} class="py-2 w-full group">
-        <div class="responsive-padding flex flex-row items-center p-2 gap-4 w-full">
+    <a href={getGroupUrl(groupEntry.groupId, groupEntry.relayUrls)} class="py-2 w-full group relative hover:bg-secondary transition-all duration-100 ease-in-out">
+        <div class="responsive-padding flex flex-row items-stretch px-2 gap-3 w-full">
             <img src={groupEntry.picture??randomImage(groupEntry.name, 300, 300)} />
             
-            <div class="flex flex-col gap-1 grow truncate">
-                <span class="text-foreground font-semibold text-lg truncate">
-                    {groupEntry.name??"Unnamed Group"}
-                </span>
-                {#if !isMember && pubkeysToFeature}
-                    <AvatarsPill pubkeys={pubkeysToFeature} />
-                {:else if $mostRecentEvent}
-                    <span class="text-sm text-muted-foreground truncate">
-                        {$mostRecentEvent.content}
+            <div class="flex flex-col grow">
+                <div class="flex flex-row gap-1 grow truncate justify-between items-center">
+                    <span class="text-foreground font-medium text-base truncate">
+                        {groupEntry.name??"Unnamed Group"}
                     </span>
-                {:else if groupEntry.about}
-                    <div class="text-sm text-muted-foreground truncate">
-                        {groupEntry.about}
+
+                    <span class="text-xs text-muted-foreground whitespace-nowrap shrink">
+                        {#if $mostRecentEvent}
+                            <RelativeTime event={$mostRecentEvent} />
+                        {/if}
+                    </span>
+                </div>
+
+                <div class="flex flex-row gap-1 grow truncate items-center justify-between">
+                    {#if !isMember && pubkeysToFeature}
+                        <AvatarsPill pubkeys={pubkeysToFeature} />
+                    {:else if $mostRecentEvent}
+                        <span class="text-sm lg:text-xs text-muted-foreground truncate">
+                            {$mostRecentEvent.content}
+                        </span>
+                    {:else if groupEntry.about}
+                        <div class="text-sm lg:text-xs text-muted-foreground truncate">
+                            {groupEntry.about}
+                        </div>
+                    {:else}
+                        <div class="text-sm text-muted-foreground truncate">
+                            {groupEntry.relaySet.relayUrls[0]}
+                        </div>
+                    {/if}
+
+                    <div class="flex flex-col items-end">
+                        <div class="flex flex-row gap-2">
+                            {#if $unseenArticles && $unseenArticles.length > 0}
+                                <Badge class="whitespace-nowrap" variant="secondary">
+                                    📚 {$unseenArticles.length}
+                                </Badge>
+                            {/if}
+    
+                            {#if $unseenEvents && $unseenEvents.length > 0}
+                                <Badge class="whitespace-nowrap" variant="accent">
+                                    {$unseenEvents.length}
+                                </Badge>
+                            {/if}
+                        </div>
                     </div>
-                {:else}
-                    <div class="text-sm text-muted-foreground truncate">
-                        {groupEntry.relaySet.relayUrls[0]}
-                    </div>
-                {/if}
+                </div>
             </div>
 
-            {#if $recentArticles && $recentArticles.length > 0}
-                <Badge>
-                    {$recentArticles.length}
-                </Badge>
-            {/if}
-            
-            {#if $mostRecentEvent}
-                <span>
-                    <RelativeTime event={$mostRecentEvent} relative={true} />
-                </span>
-            {/if}
-
-            <div class="hidden lg:group-hover:flex">
+            <div class="hidden lg:group-hover:flex absolute top-0 right-0">
                 {#if $groupsList?.has(groupEntry.groupId)}
                     <button on:click|stopPropagation|preventDefault={unpin}>
                         unpin
@@ -160,5 +183,9 @@
 <style lang="postcss">
     img {
         @apply w-12 h-12 rounded-full flex-none;
+    }
+
+    .grid > * {
+        @apply bg-secondary;
     }
 </style>

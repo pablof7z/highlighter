@@ -54,14 +54,14 @@ async function startGroup(groupId: string, relays: string[]) {
     d(`Starting group ${groupId}`, {relays});
 
     const filters: NDKFilter[] = [
-        { kinds: [NDKKind.GroupNote, NDKKind.GroupReply ], "#h": [groupId], limit: 50 },
-        { kinds: [NDKKind.GroupChat ], "#h": [groupId], limit: 50 },
-        { kinds: [NDKKind.Article ], "#h": [groupId], limit: 50 },
-        { kinds: [NDKKind.Wiki ], "#h": [groupId], limit: 50 },
-        { kinds: [NDKKind.HorizontalVideo, NDKKind.VerticalVideo ], "#h": [groupId], limit: 50 },
-        { kinds: [NDKKind.Media ], "#m": ["video/mp4"], "#h": [groupId], limit: 50 },
-        { kinds: [NDKKind.Highlight ], "#h": [groupId], limit: 50 },
-        { kinds: [NDKKind.SubscriptionTier ], "#h": [groupId], limit: 50 },
+        // { kinds: [NDKKind.GroupNote, NDKKind.GroupReply ], "#h": [groupId], limit: 50 },
+        // { kinds: [NDKKind.GroupChat ], "#h": [groupId], limit: 50 },
+        // { kinds: [NDKKind.Article ], "#h": [groupId], limit: 50 },
+        // { kinds: [NDKKind.Wiki ], "#h": [groupId], limit: 50 },
+        // { kinds: [NDKKind.HorizontalVideo, NDKKind.VerticalVideo ], "#h": [groupId], limit: 50 },
+        // { kinds: [NDKKind.Media ], "#m": ["video/mp4"], "#h": [groupId], limit: 50 },
+        // { kinds: [NDKKind.Highlight ], "#h": [groupId], limit: 50 },
+        // { kinds: [NDKKind.SubscriptionTier ], "#h": [groupId], limit: 50 },
     ];
 
     // // const cachedEvents = await $ndk.fetchEvents(filters, { cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE });

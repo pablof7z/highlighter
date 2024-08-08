@@ -28,8 +28,6 @@
     let myJoinRequests: NDKEventStore<NDKEvent> | undefined;
     let joinRequested = false;
 
-    $: console.log('currenUser', !!$currentUser, $isMember === false, !!myJoinRequests)
-
     $: if ($currentUser && $isMember === false && !myJoinRequests) {
         myJoinRequests = $ndk.storeSubscribe({
             kinds: [NDKKind.GroupAdminRequestJoin],
@@ -113,9 +111,10 @@
     on:collapse={() => { if (onClose) onClose() }}
     bind:mainView
     maxHeight="100vh"
+    class="max-w-[var(--content-focused-width)] mx-auto"
 >
     {#if joinRequested}
-        <Button variant="accent" class="w-full" on:click={() => open()}>
+        <Button variant="accent" class="w-full" on:click={() => open('main')}>
             <CheckCircle size={16} class="mr-1" />
             Requested to Join
         </Button>
@@ -129,7 +128,7 @@
                 <b>{$metadata.name}</b>
             </div>
         {:else}
-            <Button variant="accent" class="w-full" on:click={() => open()}>
+            <Button variant="accent" class="w-full" on:click={() => open('main')}>
                 View Info & Join
             </Button>
         {/if}
