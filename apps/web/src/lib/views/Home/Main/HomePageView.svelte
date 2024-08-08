@@ -15,6 +15,7 @@
 	import Groups from '../Sections/Groups.svelte';
 	import Sidebar from './Sidebar.svelte';
 	import Reads from './Sections/Reads.svelte';
+	import { Generic } from '$components/Groups/Sidebar';
 
     $layout.fullWidth = true;
 
@@ -44,7 +45,7 @@
 
     $layout = {
         sidebar: {
-            component: Sidebar,
+            component: Generic,
         },
         footer: {
             component: Footer,

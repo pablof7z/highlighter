@@ -18,7 +18,6 @@
 	import { onMount } from "svelte";
 
     onNavigate(() => {
-        console.log("navigate")
 		mainContainer.scrollTop = 0;
 	})
 
@@ -279,7 +278,7 @@
         <div
             class="hidden border-r md:block fixed left-0 h-screen w-[360px]"
         >
-            <div class="flex h-full max-h-screen flex-col gap-2">
+            <div class="flex h-full max-h-screen flex-col">
                 <div class="flex h-14 items-center border-b px-4 lg:h-[60px]">
                     <DefaultHeader />
                 </div>
@@ -391,6 +390,7 @@
             <main class="
                 flex flex-1 flex-col lg:gap-6
                 overflow-x-clip
+                pb-[var(--footer-height)]
                 {mainClass}
             ">
                 <slot />

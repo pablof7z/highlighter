@@ -1,8 +1,8 @@
 import { Writable } from "svelte/store";
-import { ComposerState } from "..";
+import { State } from "..";
 
 export default async function (
-    state: Writable<ComposerState>,
+    state: Writable<State>,
 ) {
     state.update(s => {
         s.forceFileUpload = true;

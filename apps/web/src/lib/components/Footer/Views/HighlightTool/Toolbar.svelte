@@ -11,6 +11,7 @@
 	import { getTextFromSelection } from "$utils/text";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { Quotes, ChatCircle, X } from "phosphor-svelte";
+	import { toast } from "svelte-sonner";
 
     export let event: NDKEvent;
     export let hideCollapsedView: boolean;
@@ -31,8 +32,18 @@
         const hl = await createHighlight();
         if (!hl) return;
         hl.publish();
-        open('highlight-viewer');
-        $layout.footer!.props!.highlight = hl;
+
+        open(false);
+
+        toast.success("Highlight saved", {
+            action: {
+                label: "Open",
+                onClick: () => {
+                    open('highlight-viewer');
+                    $layout.footer!.props!.highlight = hl;
+                }
+            }
+        })
     }
 
     async function quote() {

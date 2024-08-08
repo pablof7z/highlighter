@@ -7,6 +7,7 @@ import Header from './Header.svelte';
 import * as Views from './Views';
 
 import * as Footers from './Footer/';
+import * as Sidebars from './Sidebar/index.js';
 
 import List from './List.svelte';
 import { Readable } from 'svelte/store';
@@ -30,6 +31,8 @@ export {
     Views,
 
     Footers,
+
+    Sidebars,
     
     List
 }

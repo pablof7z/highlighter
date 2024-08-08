@@ -25,6 +25,7 @@
     $layout.event = event;
     $layout.sidebar = false;
     $layout.footerInMain = true;
+    $layout.headerCanBeTransparent = false;
     $: $layout.footer = {
         component: Footer,
         props: {
@@ -61,6 +62,7 @@
     skipImage={true}
     {event}
     {blossom}
+    ignoreHeader
     zaps={hasZaps}
     toolbar={showToolbar}
 >

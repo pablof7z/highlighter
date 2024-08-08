@@ -14,21 +14,12 @@
     export let showReplyingTo: boolean | undefined = undefined;
     export let replyTo: Writable<NDKEvent | undefined>;
 
-        console.log('loaded with... group', group)
-        if (group?.relaySet?.relays?.size > 0) {
-        console.log('loaded with group', Array.from(group.relaySet.relays)[0].status)
-    } else {
-        console.log('loaded without group')
-    }
-    console.log("group", group?.relaySet);
-
     let collapsed = true;
     let recordingActive = false;
     let content = '';
 
     async function onUploaded(e: CustomEvent) {
         const { url, mediaEvent } = e.detail;
-        console.log("uploaded", e.detail.url, e.detail.mediaEvent);
 
         const event = new NDKEvent($ndk);
         event.kind = kind;

@@ -1,16 +1,16 @@
 import { NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
-import { ComposerState } from "..";
+import { State } from "..";
 import { get, Writable } from "svelte/store";
 import { ndk } from "$stores/ndk";
 
 export default async function (
-    state: Writable<ComposerState>,
+    state: Writable<State>,
 ) {
     const $state = get(state);
     const $ndk = get(ndk);
     const event = new NDKEvent($ndk);
     event.kind = $state.kind;
-    event.content = $state.content ?? "";
+    event.content = $state.content?.trim() ?? "";
 
     // add extra tags
     if ($state.tags && $state.tags.length > 0) {

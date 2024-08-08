@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Writable, writable } from "svelte/store";
-	import { ComposerState } from ".";
+	import { Actions, State } from ".";
 	import publish from "./actions/publish.js";
 	import { NDKEvent, NDKKind, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
 	import upload from "./actions/upload";
@@ -17,8 +17,7 @@
      */
     export let relaySet: NDKRelaySet | undefined = undefined;
     
-    export let state: Writable<ComposerState> | undefined = undefined;
-    state = writable<ComposerState>({
+    export let state = writable<State>({
         kind,
         tags,
         replyTo,
@@ -27,7 +26,7 @@
         dispatch: createEventDispatcher(),
     });
 
-    const actions = {
+    export let actions: Actions = {
         publish: publish.bind(null, state),
         upload: upload.bind(null, state),
         schedule: () => {},

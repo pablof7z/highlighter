@@ -54,7 +54,7 @@
                         <div class="
                             flex flex-row
                             text-foreground
-                            font-bold text-xl
+                            font-medium text-lg
                             gap-2
                             col-span-5
                             text-center

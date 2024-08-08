@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { NDKVideo } from '@nostr-dev-kit/ndk';
 	import { page } from '$app/stores';
-	import WithItem from '$components/Event/ItemView/WithItem.svelte';
 	import { NDKArticle, NDKEvent, NDKUser } from '@nostr-dev-kit/ndk';
 	import { layout } from '$stores/layout';
+    import * as Content from '$components/Content';
 
     let user: NDKUser;
     let tagId: string;
@@ -19,6 +19,10 @@
     $: $layout.back = { url: authorUrl }
 </script>
 
-<WithItem {user} {tagId} bind:authorUrl bind:event bind:article bind:video>
-        <slot />
-</WithItem>
+<Content.Root {user} dTag={tagId} let:wrappedEvent>
+    {#if wrappedEvent}
+        <Content.Shell {wrappedEvent}>
+            <slot />
+        </Content.Shell>
+    {/if}
+</Content.Root>

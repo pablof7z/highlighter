@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Component, layout } from "$stores/layout";
+	import { Component, footerMainView, layout } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
 	import { NDKEvent, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../../app";
@@ -8,7 +8,7 @@
 	import { Readable } from "svelte/store";
 	import { roundedItemCount } from "$utils/numbers";
 	import { House } from "phosphor-svelte";
-    import * as Group from "$components/Groups";
+    import * as Groups from "$components/Groups";
 
     export let group: NDKSimpleGroup;
     export let isAdmin: Readable<boolean>;
@@ -18,7 +18,7 @@
     export let joinRequests: Readable<NDKEvent[]>;
     export let members: Readable<NDKSimpleGroupMemberList | undefined>;
     export let tiers: Readable<NDKSubscriptionTier[]>;
-    export let stores: Group.ContentStores;
+    export let stores: Groups.ContentStores;
 
     const { articles, videos, wiki, notes, chat } = stores;
     
@@ -53,6 +53,10 @@
     $: if ($articles.length > 0) optionManager.setOption('articles', { id: 'articles', name: "Articles", badge: roundedItemCount($articles!), href: getGroupUrl(group.groupId, group.relayUrls(), "articles") }, true);
     $: if ($videos.length > 0) optionManager.setOption('videos', { id: 'videos', name: "Videos", badge: roundedItemCount($videos!), href: getGroupUrl(group.groupId, group.relayUrls(), "videos") }, true);
 
+    $layout.sidebar = {
+        component: Groups.Sidebars.Generic,
+    }
+
     $: {
         $layout.title = $metadata?.name ?? "Untitled group";
         $layout.iconUrl = $metadata?.picture;
@@ -62,7 +66,9 @@
             $layout.options = [
                 {
                     name: "Join",
-                    href: "/groups/join",
+                    fn: () => {
+                        $footerMainView = 'main'
+                    },
                     buttonProps: {
                         variant: "gold",
                         class: "px-6 ml-4"
@@ -81,7 +87,7 @@
     function setFooter() {
         prevFooter = $layout.footer;
         $layout.footer = {
-            component: Group.Footers.Join,
+            component: Groups.Footers.Join,
             props: {
                 group,
                 metadata,

@@ -14,6 +14,7 @@
 	import { isMobileBuild } from '$utils/view/mobile';
 	import { Navigation } from "$utils/navigation";
 	import Joined from "$components/Chat/Joined.svelte";
+	import { markGroupEventSeen } from "$stores/notifications";
 
     export let group = getContext('group') as NDKSimpleGroup;
     export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
@@ -128,6 +129,7 @@
             >
                 <ChatBubble
                     {event}
+                    on:click={() => onReply(event)}
                     skipName={$chat[i - 1]?.pubkey === event.pubkey}
                     skipAvatar={$chat[i + 1]?.pubkey === event.pubkey}
                     skipTime={$chat[i - 1] && $chat[i - 1].created_at > event.created_at - 60}

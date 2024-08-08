@@ -2,7 +2,6 @@
 	import { Button } from "$components/ui/button";
 	import { CaretUp, X } from "phosphor-svelte";
 	import { createEventDispatcher, onMount, SvelteComponent } from 'svelte';
-	import { Input } from '$components/ui/input';
 	import ContentEditor from '$components/Forms/ContentEditor.svelte';
 	import { footerMainView, layout } from '$stores/layout';
 	import type { FooterView } from ".";
@@ -88,7 +87,7 @@
     }
 
     export function open(view?: any | string | false) {
-        if (view === false) {
+        if (view === false || view === undefined) {
             collapse();
             return;
         }
@@ -103,15 +102,12 @@
 
 	function toggleCollapse() {
         if (collapsed) {
-            open();
+            open('main');
         } else {
             collapse();
         }
 	}
 
-    function onEditorFocused() {
-        open('editor');
-    }
     export let content = "";
 
     function cancelEditor() {
@@ -141,11 +137,16 @@
     }
 
     let activeView: FooterView | undefined;
-    let activeViewStore: Writable<any> | undefined;
-
+    let viewStores: Record<string, Writable<any>> = {};
+    
     $: if (mainView && viewNames.has(mainView)) {
         activeView = views.find(v => v.name === mainView);
-        activeViewStore = activeView?.createStateStore?.();
+    }
+
+    $: for (const view of views) {
+        if (!viewStores[view.name] && view.createStateStore) {
+            viewStores[view.name] = view.createStateStore();
+        }
     }
 
     $: if (!collapsed && activeView && !activeView.View) {
@@ -174,25 +175,27 @@
         {$$props.class??""}
     ">
     {#if activeView}
-        {#if activeView.Toolbar}
-            <div class="flex flex-row justify-between {align} w-full gap-2">
-                <svelte:component this={activeView.Toolbar} {open} stateStore={activeViewStore} {...activeView.props} />
+        <div class="flex flex-row justify-between {align} w-full gap-2">
+            {#if activeView.Toolbar}
+                <svelte:component this={activeView.Toolbar} {open} stateStore={viewStores[mainView]} {...activeView.props} {mainView} />
+            {:else}
+                <div class="grow"></div>
+            {/if}
 
-                <Button
-                    size="icon"
-                    variant="secondary"
-                    class="
-                    rounded-full
-                        flex-none w-10 h-10 p-2
-                        transform-gpu transition-transform duration-300
-                        {!collapsed ? 'rotate-180' : ''}
-                    "
-                    on:click={() => open(false)}
-                >
-                    <X class="w-full h-full" weight="bold" />
-                </Button>
-            </div>
-        {/if}
+            <Button
+                size="icon"
+                variant="secondary"
+                class="
+                rounded-full
+                    flex-none w-10 h-10 p-2
+                    transform-gpu transition-transform duration-300
+                    {!collapsed ? 'rotate-180' : ''}
+                "
+                on:click={() => open(false)}
+            >
+                <X class="w-full h-full" weight="bold" />
+            </Button>
+        </div>
     {:else if !hideCollapsedView || collapsed}
         <div class="flex flex-row justify-between {align} w-full gap-2">
             {#if mainView === 'editor' && onPublish}
@@ -209,22 +212,19 @@
                 {#if views}
                     {#each views as view}
                         {#if view.Button}
-                            <svelte:component this={view.Button} on:click={() => open(view.name)} {...view.buttonProps} />
+                            <svelte:component
+                                this={view.Button}
+                                on:click={() => open(view.name)}
+                                {...view.props}
+                                {...view.buttonProps}
+                                {open}
+                                {mainView}
+                                stateStore={viewStores[view.name]}
+                            />
                         {/if}
                     {/each}
                 {/if}
-                <div class="flex flex-row justify-between {align} w-full gap-2">
-                    <slot {collapsed} {open} {collapse} {mainView} />
-
-                    {#if collapsed && onPublish}
-                        <Input
-                            {placeholder}
-                            class="text-lg bg-background/50 rounded px-4 w-full text-muted-foreground"
-                            on:focus={onEditorFocused}
-                            bind:value={content}
-                        />
-                    {/if}
-                </div>
+                <slot {collapsed} {open} {collapse} {mainView} />
             {/if}
             <Button
                 size="icon"
@@ -256,7 +256,7 @@
                     on:close={() => open(false)}
                     {...$$props}
                     {...activeView.props}
-                    stateStore={activeViewStore}
+                    stateStore={viewStores[mainView]}
                 />
             {:else if mainView === 'editor'}
                 <div class="bg-background/50 rounded p-4 text-lg overflow-y-auto flex flex-col">

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { NDKNutzap } from '@nostr-dev-kit/ndk';
-	import { wallet, walletBalance, walletService } from "$stores/wallet";
+	import { walletBalance, walletService } from "$stores/wallet";
     import { nicelyFormattedSatNumber } from "$utils";
     import { Lightning } from "phosphor-svelte";
 	import { onMount } from "svelte";
@@ -37,6 +37,7 @@
     class="
         flex items-center justify-between flex-grow flex-col border border-secondary w-full rounded-full overflow-clip
         transition-all duration-300 ease-in-out
+        bg-background/50
         { $newZaps.length > 0 ? "bg-gold/20" : "" }
     "
 >

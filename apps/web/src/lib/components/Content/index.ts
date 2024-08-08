@@ -1,24 +1,19 @@
 // Components
+import Root from './Root.svelte';
 import Shell from './Shell.svelte';
 import Header from './Header.svelte';
 import HeaderShell from './HeaderShell.svelte';
 import Body from './Body.svelte';
 
 // Pages
-import View from './View.svelte';
-import Comments from './Comments.svelte';
-import Zaps from './Zaps.svelte';
-import Curations from './Curations.svelte';
-import Highlights from './Highlights.svelte';
+import * as Views from './Views/';
 
 export {
+    Root,
     Shell,
     Header,
     HeaderShell,
     Body,
-    View,
-    Comments,
-    Highlights,
-    Zaps,
-    Curations
+
+    Views,
 }

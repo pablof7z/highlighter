@@ -20,7 +20,7 @@
 
     $: {
         groupId = $page.params.groupId ?? $page.url.searchParams.get('groupId');
-        $layout.back = { url: groupId ? '/communities' : '/' };
+        $layout.back = { url: groupId ? '/communities?'+groupId : '/' };
     }
 </script>
 

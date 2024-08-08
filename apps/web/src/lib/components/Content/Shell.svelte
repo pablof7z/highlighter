@@ -1,8 +1,7 @@
 <script lang="ts">
     /**
-     * 🫲 Receives an event
+     * 🫲 Receives a wrappedEvent
      * 
-     * 🔥 Wraps the event in it's class container depending on it's kind
      * 🔥 Fetches related events (curations, comments, shares, etc)
      * 🔥 Puts the related event stores in the context
      * 
@@ -21,55 +20,46 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { setContext } from "svelte";
 	import { ndk } from "$stores/ndk";
-	import { derived } from "svelte/store";
-	import { layout } from '$stores/layout.js';
+	import { derived, Readable } from "svelte/store";
 	import { deriveStore } from "$utils/events/derive";
 	import { WrappedEvent } from "../../../app";
+	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 
-    export let event: NDKEvent;
     export let isPreview = false;
 
-    export let wrappedEvent: WrappedEvent | undefined = undefined;
+    export let wrappedEvent: WrappedEvent;
     let chapters: NDKArticle[];
 
-    if (event.kind === 30040) {
-        wrappedEvent = NDKArticle.from(event)
-        try {
-            const stupidJsonBody = JSON.parse(event.content)
-            if (stupidJsonBody.title)
-                (wrappedEvent as NDKArticle).title = stupidJsonBody.title;
-        } catch {}
+    // if (wrappedEvent.kind === 30040) {
+    //     try {
+    //         const stupidJsonBody = JSON.parse(wrappedEvent.content)
+    //         if (stupidJsonBody.title)
+    //             (wrappedEvent as NDKArticle).title = stupidJsonBody.title;
+    //     } catch {}
 
-        const eventIds = event.getMatchingTags("e")
-        console.log({eventIds})
+    //     const eventIds = wrappedEvent.getMatchingTags("e")
+    //     console.log({eventIds})
         
-        const relaySet = new NDKRelaySet(new Set([event.relay!]), $ndk);
-        console.log({eventIds, relaySet})
-        $ndk.fetchEvents(eventIds, undefined, relaySet)
-            .then(events => {
-                for (const e of eventIds) {
-                    for (const event of events) {
-                        if (event.id === e[1]) {
-                            chapters.push(NDKArticle.from(event));
-                        }
-                    }
-                }
+    //     const relaySet = new NDKRelaySet(new Set([wrappedEvent.relay!]), $ndk);
+    //     console.log({eventIds, relaySet})
+    //     $ndk.fetchEvents(eventIds, undefined, relaySet)
+    //         .then(events => {
+    //             for (const e of eventIds) {
+    //                 for (const event of events) {
+    //                     if (event.id === e[1]) {
+    //                         chapters.push(NDKArticle.from(event));
+    //                     }
+    //                 }
+    //             }
 
-                $layout.sidebar = {
-                    component: Book.Sidebar,
-                    props: {
-                        chapters
-                    }
-                }
-            });
-        
-    } else {
-        wrappedEvent ??= eventToKind(event);
-    }
-
-    if (!wrappedEvent) {
-        throw new Error("No wrapped event");
-    }
+    //             $layout.sidebar = {
+    //                 component: Book.Sidebar,
+    //                 props: {
+    //                     chapters
+    //                 }
+    //             }
+    //         });
+    // }
 
     let userProfile: NDKUserProfile;
     let authorUrl: string;
@@ -123,7 +113,7 @@
     setContext('zaps', zaps);
 </script>
 
-<UserProfile user={event.author} bind:userProfile bind:authorUrl />
+<UserProfile user={wrappedEvent.author} bind:userProfile bind:authorUrl />
 
 {#if wrappedEvent instanceof NDKArticle}
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">

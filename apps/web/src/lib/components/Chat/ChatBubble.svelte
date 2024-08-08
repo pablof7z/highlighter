@@ -16,6 +16,7 @@
 	import { unicodeEmojiRegex } from "$utils/const";
 	import MediaCollection from "$components/Events/MediaCollection.svelte";
 	import EmbeddedEventWrapper from "$components/Events/EmbeddedEventWrapper.svelte";
+	import { markGroupEventSeen } from "$stores/notifications";
 
     export let event: NDKEvent;
     export let detailed = false;
@@ -27,6 +28,8 @@
 
     const filter: NDKFilter = { kinds: [9, 11, 12, 7, 5, 9735 ], ...event.filter(), limit: 100 }
     const hTag = event.tagValue("h");
+
+    markGroupEventSeen(hTag!, event);
 
     if (hTag) {
         filter["#h"] = [hTag];
@@ -73,15 +76,17 @@
     let isEmoji = event.content.trim().length <= 2 && !!event.content.match(unicodeEmojiRegex);
 </script>
 
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div 
     class="
     text-left
     flex items-end gap-1
-    hover:brightness-150 transition-all duration-100 ease-in-out
+    cursor-pointer transition-all duration-100 ease-in-out
     responsive-padding
     {$$props.class??""}
     {isMine ? 'justify-start flex-row-reverse' : 'justify-start flex-row'}
-" class:mb-4={!skipAvatar}
+" on:click class:mb-4={!skipAvatar}
     on:click>
     <UserProfile user={author} bind:userProfile bind:fetching bind:authorUrl />
     {#if !skipAvatar}
@@ -89,10 +94,10 @@
             href={authorUrl}
             class:opacity-0={skipAvatar}
         >
-            <Avatar user={author} {userProfile} {fetching} size="small" />
+            <Avatar user={author} {userProfile} {fetching} size="tiny" />
         </a>
     {:else}
-        <div class="w-8"></div>
+        <div class="w-6"></div>
     {/if}
     {#if isEmoji}
         <div class="text-7xl mt-2">{event.content}</div>
