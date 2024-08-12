@@ -83,6 +83,6 @@
 <!-- auto grid -->
 <div class="flex flex-row flex-wrap">
     {#each $topics as topic}
-            <h2>{topic}</h2>
+        <h2>{topic}</h2>
     {/each}
 </div>

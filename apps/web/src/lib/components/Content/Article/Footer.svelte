@@ -3,7 +3,6 @@
 	import { Button } from "$components/ui/button";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { BookmarkSimple, CardsThree, Check, Lightning, Pen, Plus, Repeat } from "phosphor-svelte";
-	import { createEventReply } from '$utils/event';
     import Zap from '$components/Footer/Views/Zap';
     import Curate from '$components/Footer/Views/Curate';
 	import { goto } from '$app/navigation';
@@ -18,13 +17,7 @@
 	import Comment from '$components/Footer/Views/Comment';
 
     export let article: NDKArticle;
-    export let forceMainView: 'zap' | 'tts' | 'curation' | "content" | "new-collection" | undefined = undefined;
     export let placeholder = "Reply";
-
-    $: if (forceMainView) {
-        open(forceMainView);
-        forceMainView = undefined;
-    }
 
     let zapped = false;
 

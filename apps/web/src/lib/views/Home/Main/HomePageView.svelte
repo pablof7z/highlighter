@@ -13,17 +13,14 @@
 	import { layout } from '$stores/layout';
 	import { vanityUrls } from '$utils/const';
 	import Groups from '../Sections/Groups.svelte';
-	import Sidebar from './Sidebar.svelte';
 	import Reads from './Sections/Reads.svelte';
+	import ReadsSidebar from './Sections/ReadsSidebar.svelte';
 	import { Generic } from '$components/Groups/Sidebar';
 
+    $layout.title = undefined;
     $layout.fullWidth = true;
-
-    const articles = $ndk.storeSubscribe({
-        kinds: [NDKKind.Article], limit: 50
-    }, undefined, NDKArticle);
-    const wotF = wotFilteredStore(articles) as Readable<NDKArticle[]>;
-    const filteredArticles = filterArticles(wotF);
+    $layout.header = undefined;
+    $layout.navigation = undefined;
 
     const videos = $ndk.storeSubscribe([
         { kinds: [NDKKind.HorizontalVideo, NDKKind.HorizontalVideo+1], authors: Array.from($userFollows), limit: 50 },
@@ -43,15 +40,9 @@
         return $highlights.filter(highlight => $userFollows.has(highlight.pubkey));
     });
 
-    $layout = {
-        sidebar: {
-            component: Generic,
-        },
-        footer: {
-            component: Footer,
-            props: {}
-        }
-    }
+    $layout.sidebar = { component: Generic };
+    $layout.footer = { component: Footer, props: {} };
+    $layout.footerInMain = false;
 
     const featuredUsers = Array.from(
             new Set(Object.values(vanityUrls))
@@ -62,7 +53,15 @@
 <div class="flex flex-col gap-[var(--section-vertical-padding)]">
     <Groups />
 
-    <Reads />
+    <div class="flex flex-row items-start gap-6">
+        <div class="w-full max-w-[var(--content-focused-width)]">
+            <Reads />
+        </div>
+
+        <div class="hidden xl:flex flex-col w-[260px] h-full">
+            <ReadsSidebar />
+        </div>
+    </div>
 
     <!-- <HorizontalList title="Articles" items={$filteredArticles} let:item>
         <Card.Article article={item} />

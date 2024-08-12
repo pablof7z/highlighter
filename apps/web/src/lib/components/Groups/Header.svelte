@@ -11,12 +11,11 @@
 	import { throttle } from "@sveu/shared";
 	import AvatarsPill from "$components/Avatars/AvatarsPill.svelte";
 	import { Navigation } from "$utils/navigation";
+	import { Group } from ".";
 
-    export let metadata: NDKSimpleGroupMetadata;
-    export let members: NDKSimpleGroupMemberList | undefined;
+    export let group: Readable<Group>;
     export let tiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
     export let options: NavigationOption[] = [];
-    export let isMember: boolean;
 
     const optionManager = getContext("optionManager") as Navigation;
     optionManager?.options.subscribe(value => options = value);
@@ -26,10 +25,11 @@
             $layout.header = false;
             $layout.back = { url: "/" }
             $layout.navigation = false;
+            $layout.title = undefined;
         } else if (inView === false) {
             $layout.header = undefined;
-            $layout.title = metadata.name;
-            $layout.iconUrl = metadata.picture;
+            $layout.title = $group.name;
+            $layout.iconUrl = $group.picture;
             $layout.navigation = options;
         }
     }, 1);
@@ -39,7 +39,6 @@
     }
 
     onMount(() => {
-        $layout.event = metadata;
         $layout.navigation = false;
         $layout.header = false;
     })
@@ -56,8 +55,8 @@
 ">
     <!-- Banner -->
     <div class="w-full z-0 relative">
-        {#if metadata.picture}
-            <img src={metadata.picture} class="absolute opacity-30 w-full h-full object-full z-1 transition-all duration-300 blur-[100px]">
+        {#if $group.picture}
+            <img src={$group.picture} class="absolute opacity-30 w-full h-full object-full z-1 transition-all duration-300 blur-[100px]">
         {/if}
 
         <div class="flex flex-row items-end w-full px-4 z-10 pt-4 relative">
@@ -66,13 +65,13 @@
             </div>
             <div class="flex flex-col items-center grow gap-4">
                 <img
-                    src={metadata.picture}
+                    src={$group.picture}
                     class="rounded-full transition-all duration-300 flex-none object-cover w-24 h-24"
                 />
 
                 <div class="flex flex-col gap-0" use:inview on:inview_change={inviewchange}>
                     <div class="text-foreground font-bold whitespace-nowrap mb-0 transition-all duration-300 text-xl max-h">
-                        {metadata.name}
+                        {$group.name}
                     </div>
                 </div>
             </div>
@@ -81,13 +80,13 @@
 
     <div class="flex flex-col gap-4 items-center border-b border-border py-[var(--section-vertical-padding)] z-0 relative responsive-padding px-6 max-w-[var(--content-focused-width)] mx-auto w-full">
         <div class="responsive-padding text-center">
-            {metadata.about}
+            {$group.about}
         </div>
 
-        {#if members && !isMember}
+        {#if $group.members && !$group.isMember}
             <div class="flex flex-row items-center gap-2 w-full justify-between responsive-padding">
                 <div class="flex">
-                    <AvatarsPill size="small" pubkeys={Array.from(members.members)} />
+                    <AvatarsPill size="small" pubkeys={Array.from($group.members.members)} />
                 </div>
                 <Button variant="gold" class="px-10">
                     Join

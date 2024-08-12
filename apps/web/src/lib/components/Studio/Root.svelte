@@ -5,65 +5,67 @@
 	import { writable } from "svelte/store";
 	import { Thread } from "$utils/thread";
 	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
-	import { type Mode, Types, PublishInGroupStore, Scope, PublishInTierStore } from ".";
+	import { State, type Type } from ".";
     import { getDraft } from "./draft.js";
 	import { DraftItem } from "$stores/drafts";
-	import { ndk } from "$stores/ndk";
-	import { eventToKind } from "$utils/event";
 	import LoadingScreen from "$components/LoadingScreen.svelte";
+    import { State as AudienceState } from "$components/Audience";
+    import * as Studio from "$components/Studio";
+	import { ndk } from "$stores/ndk";
 
     export let draftId: string | undefined = undefined;
     export let checkpointId: string | undefined = undefined;
     export let eventId: string | undefined = undefined;
 
+    export let audience: AudienceState = { scope: 'public' };
+
+    export let type: Type;
+    export let actions: Studio.Actions = {
+        saveDraft: () => false,
+        publish: () => $state.mode = 'publish',
+    }
+
+    function createInitialState<T extends Type>(type: T): State<T> {
+        return {
+            mode: "edit",
+            audience,
+            type,
+            ...(type === "article" ? { article: new NDKArticle($ndk) } : {}),
+            ...(type === "video" ? { video: new NDKVideo($ndk) } : {}),
+            ...(type === "thread" ? { thread: {} as Thread } : {}),
+        } as State<T>;
+    }
+
+    // Initialize the store with the correctly typed state
+    const state = writable(createInitialState(type));
+
     let draft: DraftItem | undefined;
 
-    const relays = writable(new Set());
-    const thread = writable<Thread | undefined>();
-    const event = writable<NDKArticle | NDKVideo>();
-    const preview = writable<NDKArticle | NDKVideo | undefined>();
-    const withPreview = writable<boolean>(true);
-    
-    const mode = writable<Mode>('edit');
-    const type = writable<Types>();
-
-    const publishAt = writable<Date | undefined>();
-    const publishScope = writable<Scope>('public');
-    const makePublicIn = writable<Date | undefined>();
-    export let publishInGroups: PublishInGroupStore;
-    const publishInTiers: PublishInTierStore = writable(new Map());
-    let ready = true;
 
     if (draftId) {
         const res = getDraft(draftId, checkpointId);
         console.log({getDraft: res})
         if (res) {
             draft = res.draft;
-            if (res.article) $event = res.article as NDKArticle;
+            // if (res.article) $event = res.article as NDKArticle;
         }
     }
 
     let error: string | undefined = undefined;
 
-    if (eventId) {
-        ready = false;
-        $ndk.fetchEvent(eventId).then((e) => {
-            if (e) {
-                $event = eventToKind(e) as NDKArticle | NDKVideo;
-                ready = true;
-            }
-        });
-    }
+    let ready = true;
 
-    setContext('mode', mode);
-    setContext('publishScope', publishScope);
-    setContext('relays', relays);
-    setContext('event', event);
-    setContext('preview', preview);
-    setContext('thread', thread);
-    setContext('type', type);
-    setContext('publishInGroups', publishInGroups);
-    setContext('makePublicIn', makePublicIn);
+    // if (eventId) {
+    //     ready = false;
+    //     $ndk.fetchEvent(eventId).then((e) => {
+    //         if (e) {
+    //             $event = wrapEvent(e) as NDKArticle | NDKVideo;
+    //             ready = true;
+    //         }
+    //     });
+    // }
+
+    setContext('state', state);
 </script>
 
 {#if $currentUser}
@@ -71,24 +73,11 @@
         <User.Root
             user={$currentUser}
             let:authorUrl
-            let:groupsList
         >
             <slot
-                {mode}
-                {publishScope}
-                {groupsList}
-                {thread}
-                {event}
-                {preview}
-                {draft}
+                {state}
+                {actions}
                 {authorUrl}
-                {draftId}
-                {type}
-                {withPreview}
-                {publishAt}
-                {publishInGroups}
-                {publishInTiers}
-                {makePublicIn}
             />
         </User.Root>
     </LoadingScreen>

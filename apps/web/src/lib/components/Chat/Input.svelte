@@ -2,21 +2,18 @@
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import Name from "$components/User/Name.svelte";
 	import { ndk } from "$stores/ndk";
-	import { relaySetForEvent } from "$utils/event";
-	import { NDKEvent, NDKKind, NDKPublishError, NDKRelay, NDKSimpleGroup, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKKind, NDKPublishError, NDKRelay, NDKRelaySet, NDKSimpleGroup, type NDKTag, type NostrEvent } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { PaperPlaneTilt } from "phosphor-svelte";
 	import { toast } from "svelte-sonner";
 
-    export let group: NDKSimpleGroup | undefined = undefined;
+    export let relaySet: NDKRelaySet | undefined = undefined;
     export let event: NDKEvent | undefined = undefined;
     export let tags: NDKTag[] = [];
-    export let kind: NDKKind = NDKKind.GroupChat;
+    export let kind: NDKKind;
     export let placeholder: string = "Type a message";
     export let showReplyingTo: boolean | undefined = undefined;
     export let replyTo: NDKEvent | undefined = undefined;
-
-    let relaySet = event ? relaySetForEvent(event) : undefined;
 
     export let content = '';
     let publishing = false;
@@ -36,8 +33,7 @@
 
         if (replyTo) event.tag(replyTo, "reply")
 
-        relaySet = group?.relaySet ?? relaySetForEvent(event);
-
+        console.log('publish to', relaySet)
         event.publish(relaySet)
         .then((e) => {
             event = undefined;

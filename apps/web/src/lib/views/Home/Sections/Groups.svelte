@@ -6,7 +6,6 @@
 	import { NDKKind, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 	import { derived, get } from "svelte/store";
 	import { groupsList } from "$stores/session";
-	import { groupKey } from '$stores/groups';
 	import { appMobileView } from '$stores/app';
 	import Sidebar from '../Main/Sidebar.svelte';
 

@@ -26,7 +26,7 @@
                         return [...taggedItems, {id: article}];
                     });
                 }
-            });
+            }).catch(e => {});
         }
     })
 

@@ -1,27 +1,19 @@
 <script lang="ts">
     import Button from "$components/ui/button/button.svelte";
 	import { CaretLeft, Eye, PaperPlaneTilt, PencilRuler, Star, Timer, UsersThree, X } from "phosphor-svelte";
-	import { derived, Writable } from "svelte/store";
+	import { derived, writable, Writable } from "svelte/store";
     import * as Tooltip from "$lib/components/ui/tooltip";
-	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { closeModal, openModal } from "$utils/modal";
 	import ScheduleModal from "$modals/ScheduleModal.svelte";
 	import ToggleDark from "$components/buttons/ToggleDark.svelte";
 	import { goto } from "$app/navigation";
-	import { PublishInGroupStore, Scope } from ".";
     import * as Draft from "$components/Draft";
-	import { groups } from "$stores/groups";
+    import * as Audience from "$components/Audience";
+	import * as Studio from '$components/Studio';
 
-    export let mode: Writable<string>;
-    export let publishing: Writable<boolean>;
-    export let publishAt: Writable<Date | undefined>;
-    export let event: Writable<NDKArticle | NDKVideo | undefined>;
-    export let publishScope: Writable<Scope>;
-    export let publishInGroups: PublishInGroupStore;
+    export let state: Writable<Studio.State<Studio.Type>>;
+    export let actions: Studio.Actions;
 
-    export let onSaveDraft: (manuallySaved: boolean) => Promise<boolean>;
-    export let onPublish: () => Promise<void>;
-    
     let closing: any;
     function closeClicked() {
         if (closing) {
@@ -33,8 +25,8 @@
         }
     }
 
-    function setMode(m: string) {
-        return () => { $mode = m; }
+    function setMode(m: Studio.Mode) {
+        return () => { $state.mode = m; }
     }
 
     async function schedule(
@@ -59,24 +51,15 @@
             cta: schedule ? "Schedule" : "Continue",
             action,
             onSchedule: async (timestamp: number) => {
-                $publishAt = new Date(timestamp);
+                $state.publishAt = new Date(timestamp);
                 closeModal();
                 // if (schedule) $view = "publish";
             }
         });
     }
 
-    const imagesOfGroupsToPublish = derived(publishInGroups, $publishInGroups => {
-        const images: string[] = [];
-        $publishInGroups.forEach((relays, groupId) => {
-            if ($groups[groupId]?.metadata?.picture) {
-                images.push($groups[groupId].metadata.picture);
-            } else {
-                console.log("No picture for group", groupId);
-            }
-        });
-        return images;
-    });
+    const audienceState = writable<Audience.State>($state.audience);
+    $: $state.audience = $audienceState;
 </script>
 
 <div class="flex flex-row items-center w-full py-3">
@@ -86,7 +69,7 @@
     w-full
 ">
     <div class="flex flex-row flex-nowrap gap-2">
-        {#if $mode !== 'edit'}
+        {#if $state.mode !== 'edit'}
             <Tooltip.Root>
                 <Tooltip.Trigger asChild let:builder>
                     <Button variant="outline" on:click={setMode('edit')}>
@@ -100,22 +83,23 @@
             </Tooltip.Root>
         {/if}
 
-        {#if $mode !== 'audience'}
-            <Button class="flex flex-row gap-2" variant="outline" on:click={setMode('audience')}>
-                    {#if $publishScope === 'public'}
-                        <UsersThree class="" size={20} />
-                        Public
-                        {#if $imagesOfGroupsToPublish.length > 0}
-                            <span class="hidden md:block">
-                                +
-                            </span>
-                        {/if}
-                    {:else}
-                        <span>
-                            <Star class="w-4 h-4 text-gold md:mr-1 inline" size={20} weight="fill" />
-                            Private
+        {#if $state.mode === 'edit'}
+            <Audience.Button state={audienceState} />
+            <!-- <Button class="flex flex-row gap-2" variant="outline" on:click={setMode('audience')}>
+                {#if $publishScope === 'public'}
+                    <UsersThree class="" size={20} />
+                    Public
+                    {#if $imagesOfGroupsToPublish.length > 0}
+                        <span class="hidden md:block">
+                            +
                         </span>
                     {/if}
+                {:else}
+                    <span>
+                        <Star class="w-4 h-4 text-gold md:mr-1 inline" size={20} weight="fill" />
+                        Private
+                    </span>
+                {/if}
 
                 {#if $imagesOfGroupsToPublish.length === 0}
                 {:else}
@@ -125,10 +109,8 @@
                         {/each}
                     </div>
                 {/if}
-            </Button>
-        {/if}
+            </Button> -->
 
-        {#if $mode !== 'preview'}
             <Tooltip.Root>
                 <Tooltip.Trigger asChild let:builder>
                     <Button variant="outline" on:click={setMode('preview')}>
@@ -143,11 +125,10 @@
         {/if}
 
         <ToggleDark variant="outline" />
-        
     </div>
 
     <div class="flex flex-row flex-nowrap gap-2">
-        <Draft.Button timer={30} save={onSaveDraft} />
+        <Draft.Button timer={30} save={actions.saveDraft} />
         
         <Tooltip.Root>
             <Tooltip.Trigger>
@@ -159,12 +140,12 @@
                 Choose a time to schedule
             </Tooltip.Content>
         </Tooltip.Root>
-        <Button on:click={onPublish} disabled={$publishing}>
-            {#if $publishing}
+        <Button on:click={actions.publish}>
+            <!-- {#if $publishing}
                 <span class="loading loading-sm"></span>
-            {/if}
+            {/if} -->
             
-            {#if $publishAt}
+            {#if $state.publishAt}
                 <Timer weight="fill" />
                 <span class="hidden md:block">
                     Schedule

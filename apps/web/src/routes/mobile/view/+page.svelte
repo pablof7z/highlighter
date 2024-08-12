@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import WithItem from "$components/Event/ItemView/WithItem.svelte";
     import { PageTransition } from 'sveltekit-page-transitions';
     import * as Content from "$components/Content";
 
@@ -18,7 +17,7 @@
 <PageTransition>
     {#if eventId}
         {#key eventId}
-            <WithItem tagId={eventId} let:event>
+            <Content.Root bech32={eventId} let:event>
                 {#if event}
                     <Content.Shell {event}>
                         {#if mode === 'event'}
@@ -28,7 +27,7 @@
                         {/if}
                     </Content.Shell>
                 {/if}
-            </WithItem>
+            </Content.Root>
         {/key}
     {/if}
 </PageTransition>

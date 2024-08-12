@@ -1,6 +1,5 @@
 import { get as getStore, type Writable, derived, get } from 'svelte/store';
 import { ndk } from "$stores/ndk";
-import { initGroups } from "$stores/groups";
 import {
 	NDKEvent,
 	NDKList,
@@ -28,7 +27,6 @@ const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
 
 type PubkeysFollowCount = Map<Hexpubkey, number>;
-type PubkeysGroupsCount = Map<GroupEntry, number>;
 
 interface GroupEntry {
 	groupId: Hexpubkey;
@@ -46,9 +44,6 @@ export type LoginState = 'logging-in' | 'logged-in' | 'contacting-remote-signer'
 export const loginState = writable<LoginState | null>(null);
 
 export const debugMode = writable<boolean>(false);
-export const debugPageFilter = writable<string | null>(null);
-
-export const loadingScreen = writable<boolean>(false);
 
 export const userBlossom = writable<NDKList | null>(null);
 export const activeBlossomServer = persist(
@@ -94,39 +89,7 @@ export const userArticleCurations = writable<Map<string, NDKList>>(new Map());
 export const userVideoCurations = writable<Map<string, NDKList>>(new Map());
 export const userGenericCuration = writable<NDKList>(new NDKList($ndk, { kind: NDKKind.BookmarkList, created_at: 0 } as NostrEvent));
 
-function wantedLists(list: NDKList) {
-	// Skip known bad names
-	const dTag = list.dTag ?? "";
-	if ([ "allowlist", "mute", "mutelists" ].includes(dTag)) return false;
-	if (dTag.startsWith("chats/")) return false;
-	if (dTag.startsWith("notications/")) return false;
-
-	return true;
-}
-
 export const categorizedUserLists = writable<Map<string, NDKList>>(new Map());
-export const sortedUserLists = derived(categorizedUserLists, ($categorizedUserLists) => {
-	// Lists with highest item count go first
-	// then alphabetical order (by title ?? dTag)
-	const lists = Array.from($categorizedUserLists.values());
-	return lists
-		.filter(wantedLists)
-		.sort((a, b) => {
-		const aCount = a.items.length;
-		const bCount = b.items.length;
-
-		if (aCount > bCount) return -1;
-		if (aCount < bCount) return 1;
-
-		const aTitle = a.title ?? a.dTag ?? "";
-		const bTitle = b.title ?? b.dTag ?? "";
-
-		if (aTitle < bTitle) return -1;
-		if (aTitle > bTitle) return 1;
-
-		return 0;
-	});
-});
 
 /**
  * Current user's supported people
@@ -143,11 +106,6 @@ export const sessionUpdatedAt = persist(
 )
 
 /**
- * Network's supported people
- */
-export const networkSupport = writable<NDKEvent[]>([]);
-
-/**
  * Main entry point to prepare the session.
  */
 export async function prepareSession(): Promise<void> {
@@ -162,7 +120,6 @@ export async function prepareSession(): Promise<void> {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
 		const $sessionUpdatedAt = alreadyKnowFollows ? get(sessionUpdatedAt) : undefined;
 
-		initGroups();
 		$ndk.walletConfig = {
 			onLnPay,
 			onPaymentComplete
@@ -362,7 +319,20 @@ async function fetchData(
 	const groupsListStore = (event: NDKEvent) => {
 		opts.groupsListStore!.update((groupsList) => {
 			if (groupsList && event.created_at! < groupsList.created_at!) return groupsList;
-			return NDKList.from(event);
+			const list = NDKList.from(event);
+
+			for (const item of list.items) {
+				if (item[0] === "group") {
+					const relays = item.slice(2);
+
+					for (const relay of relays) {
+						$ndk.pool.getRelay(relay, true, false);
+					}
+				}
+			}
+
+			// ensure we connect to the relays as soon as we see them
+			return list;
 		});
 	}
 

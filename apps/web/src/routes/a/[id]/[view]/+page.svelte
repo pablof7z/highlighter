@@ -14,7 +14,6 @@
     }
 
     let component: ComponentType | undefined;
-
     $: component = (Content.Views[view] as ComponentType);
 </script>
 

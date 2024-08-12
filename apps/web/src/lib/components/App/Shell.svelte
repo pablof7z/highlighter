@@ -16,6 +16,7 @@
     import { Keyboard } from '@capacitor/keyboard';
 	import { isMobileBuild } from '$utils/view/mobile';
 	import { onMount } from "svelte";
+	import { h } from "vidstack/dist/types/vidstack-YccYOULG.js";
 
     onNavigate(() => {
 		mainContainer.scrollTop = 0;
@@ -174,13 +175,12 @@
     let mainClass = "";
 
     $: if (!$appMobileView ) {
-        if ($layout.fullWidth === false) {
-            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full"
-        } else if (withSidebar) {
+        if ($layout.fullWidth === true) {
             mainClass = "";
-        } else {
-            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full";
-            // mainClass = "";
+        } else if (withSidebar) {
+            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full"
+        } else if ($layout.fullWidth === false) {
+            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full"
         }
     }
 
@@ -248,7 +248,7 @@
 
     setInterval(() => {
         // get css variable bottom-padding
-        bottomPadding = getComputedStyle(document.documentElement).getPropertyValue('--footer-height');
+        bottomPadding = document.documentElement.style.getPropertyValue('--footer-height');
     }, 1000)
 
 </script>

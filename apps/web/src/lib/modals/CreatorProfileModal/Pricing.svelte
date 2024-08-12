@@ -35,7 +35,7 @@
     tier.addAmount(500, "USD", "monthly");
 
     let amounts: NDKSubscriptionAmount[] = [
-        { amount: 500, currency: "USD", term: "monthly" },
+        { amount: 5, currency: "USD", term: "monthly" },
     ];
 
     const presets: NDKSubscriptionAmount[][] = [

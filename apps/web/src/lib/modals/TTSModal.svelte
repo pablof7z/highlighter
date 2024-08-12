@@ -1,9 +1,9 @@
 <script lang="ts">
 	import ModalShell from "$components/ModalShell.svelte";
 	import { NavigationOption } from '../../app';
-	import { closeModal } from 'svelte-modals';
 	import Tts from "$components/Actions/TTS/TTS.svelte";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
+	import { closeModal } from "$utils/modal";
 
     export let event: NDKEvent;
 

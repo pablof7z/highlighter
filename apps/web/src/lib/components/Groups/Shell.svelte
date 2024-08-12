@@ -1,40 +1,24 @@
 <script lang="ts">
 	import { Component, footerMainView, layout } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
-	import { NDKEvent, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../../app";
 	import { setContext } from "svelte";
 	import { Navigation } from "$utils/navigation";
-	import { Readable } from "svelte/store";
 	import { roundedItemCount } from "$utils/numbers";
 	import { House } from "phosphor-svelte";
     import * as Groups from "$components/Groups";
+	import { Readable } from "svelte/store";
 
-    export let group: NDKSimpleGroup;
-    export let isAdmin: Readable<boolean>;
-    export let isMember: Readable<boolean>;
-    export let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
-    export let admins: Readable<NDKSimpleGroupMemberList | undefined>;
-    export let joinRequests: Readable<NDKEvent[]>;
-    export let members: Readable<NDKSimpleGroupMemberList | undefined>;
+    export let group: Readable<Groups.Group>;
+    export let articles: Readable<NDKArticle[]>;
+    export let videos: Readable<NDKVideo[]>;
+    export let wiki: Readable<NDKWiki[]>;
+    export let notes: Readable<NDKEvent[]>;
+    export let chat: Readable<NDKEvent[]>;
     export let tiers: Readable<NDKSubscriptionTier[]>;
-    export let stores: Groups.ContentStores;
 
-    const { articles, videos, wiki, notes, chat } = stores;
-    
     setContext('group', group);
-    setContext("groupMetadata", metadata);
-    setContext("groupAdmins", admins);
-    setContext("groupMembers", members);
-    setContext("isAdmin", isAdmin);
-    setContext("isMember", isMember);
-    setContext("joinRequests", joinRequests);
-    setContext("groupTiers", tiers);
-    setContext("groupArticles", articles);
-    setContext("groupVideos", videos);
-    setContext("groupWiki", wiki);
-    setContext("groupNotes", notes);
-    setContext("groupChat", chat);
 
     let navigation: NavigationOption[] = [];
     const optionManager = new Navigation();
@@ -42,27 +26,27 @@
 
     setContext("optionManager", optionManager);
 
-    optionManager.setOption('home', { id: 'home', icon: House, iconProps: { weight: 'fill' }, href: getGroupUrl(group.groupId, group.relayUrls()) }, undefined, true);
+    optionManager.setOption('home', { id: 'home', icon: House, iconProps: { weight: 'fill' }, href: getGroupUrl($group) }, undefined, true);
 
-    optionManager.setOption('chat', { name: "Chat", badge: roundedItemCount($chat!), href: getGroupUrl(group.groupId, group.relayUrls(), "chat") });
-    optionManager.setOption('posts', { name: "Posts", href: getGroupUrl(group.groupId, group.relayUrls(), "posts") });
-    if ($isAdmin) {
-        optionManager.setOption('settings', { name: "Settings", href: getGroupUrl(group.groupId, group.relayUrls(), "settings") });
+    optionManager.setOption('chat', { name: "Chat", badge: roundedItemCount($chat!), href: getGroupUrl($group, "chat") });
+    optionManager.setOption('posts', { name: "Posts", href: getGroupUrl($group, "posts") });
+    if ($group.isAdmin) {
+        optionManager.setOption('settings', { name: "Settings", href: getGroupUrl($group, "settings") });
     }
 
-    $: if ($articles.length > 0) optionManager.setOption('articles', { id: 'articles', name: "Articles", badge: roundedItemCount($articles!), href: getGroupUrl(group.groupId, group.relayUrls(), "articles") }, true);
-    $: if ($videos.length > 0) optionManager.setOption('videos', { id: 'videos', name: "Videos", badge: roundedItemCount($videos!), href: getGroupUrl(group.groupId, group.relayUrls(), "videos") }, true);
+    $: if ($articles.length > 0) optionManager.setOption('articles', { id: 'articles', name: "Articles", badge: roundedItemCount($articles!), href: getGroupUrl($group, "articles") }, true);
+    $: if ($videos.length > 0) optionManager.setOption('videos', { id: 'videos', name: "Videos", badge: roundedItemCount($videos!), href: getGroupUrl($group, "videos") }, true);
 
     $layout.sidebar = {
         component: Groups.Sidebars.Generic,
     }
 
     $: {
-        $layout.title = $metadata?.name ?? "Untitled group";
-        $layout.iconUrl = $metadata?.picture;
+        $layout.title = $group.name ?? "Untitled group";
+        $layout.iconUrl = $group.picture;
         $layout.back = { url: '/communities' };
 
-        if ($isMember === false) {
+        if ($group.isMember === false) {
             $layout.options = [
                 {
                     name: "Join",
@@ -90,17 +74,12 @@
             component: Groups.Footers.Join,
             props: {
                 group,
-                metadata,
-                admins,
-                members,
-                tiers,
-                isMember,
             },
         }
     }
 
     $: {
-        if ($isMember === false) {
+        if ($group.isMember === false) {
             setFooter();
         }
     }
@@ -108,12 +87,11 @@
 
 <slot
     {group}
-    {metadata}
-    {admins}
-    {joinRequests}
-    {members}
-    {isAdmin}
-    {isMember}
+    {articles}
+    {videos}
+    {wiki}
+    {notes}
+    {chat}
     {tiers}
     {navigation}
 />

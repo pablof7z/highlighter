@@ -9,8 +9,6 @@
     import { Keyboard } from '@capacitor/keyboard';
 	import { isMobileBuild } from '$utils/view/mobile';
     import * as Modal from "./Modal";
-	import { action } from 'svelte-modals';
-	import { onMount } from 'svelte';
 
     export let title: string | undefined = undefined;
     export let open = true;

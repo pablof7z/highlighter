@@ -1,32 +1,19 @@
 <script lang="ts">
 	import { NDKTag } from '@nostr-dev-kit/ndk';
-	import { GroupEntryKey, groupKey, groups, refGroup, refGroups, unrefGroups } from '$stores/groups';
-	import { onDestroy } from 'svelte';
-	import { writable } from 'svelte/store';
+    import { Group, Root} from '$components/Groups';
+	import { Writable } from 'svelte/store';
 
     export let tags: NDKTag[];
     export let skipFooter: boolean = false;
 
-    const refedTags = new Set<NDKTag>();
-    const keys = writable(new Set<GroupEntryKey>());
-
-    $: for (const tag of tags) {
-        if (!refedTags.has(tag)) {
-            const keys = refGroups([tag]);
-            for (const key of keys) {
-                $keys.add(key);
-            }
-            refedTags.add(tag);
-        }
-    }
-
-    onDestroy(() => {
-        unrefGroups(Array.from(refedTags));
-    });
+    export let groups: Record<string, Writable<Group>> = {};
 </script>
 
-{#each Array.from($keys) as key (key)}
-    {#if $groups[key]}
-        <slot groupEntry={$groups[key]} {key} />
-    {/if}
+{#each tags as tag}
+    <Root
+        groupId={tag[1]} relays={tag.slice(2)}
+        bind:group={groups[tag[1]]}
+    >
+        <slot group={groups[tag[1]]} />
+    </Root>
 {/each}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { LoginMethod, login as _login } from '$utils/login';
 	import { NDKNip46Signer, NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk";
-	import { onMount } from "svelte";
+	import { createEventDispatcher, onMount } from "svelte";
 	import { closeModal } from '$utils/modal';
 	import { nip19 } from "nostr-tools";
 	import currentUser, { loginMethod, nip46LocalKey, privateKey, userPubkey } from '$stores/currentUser';
@@ -24,9 +24,7 @@
     export let npub = "";
     export let mode: string;
 
-    function signup() {
-        mode = "signup";
-    }
+    const dispatch = createEventDispatcher();
 
     let blocking = false;
     let advanced = false;
@@ -52,11 +50,9 @@
     }
 
     async function loginNip46(token: string) {
-        $bunkerNDK.connect()
+        // $bunkerNDK.connect()
         const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
         let localSigner: NDKPrivateKeySigner;``
-
-        console.log({token})
 
         if (existingPrivateKey) {
             localSigner = new NDKPrivateKeySigner(existingPrivateKey);
@@ -69,6 +65,7 @@
         }
 
         try {
+            
             const remoteSigner = new NDKNip46Signer($bunkerNDK, token, localSigner);
             remoteSigner.on("authUrl", (url: string) => {
                 window.open(url, "nsecbunker", 'width=300,height=300');
@@ -88,6 +85,8 @@
             loginMethod.set('nip46');
             userPubkey.set($currentUser.pubkey);
 
+            dispatch('logged-in')
+
             // loginNip46();
 
             closeModal();
@@ -99,7 +98,7 @@
 
     async function loginWithBunker() {
         let token: string;
-        
+
         try {
             const uri = new URL(value);
             let remotePubkey = uri.hostname;
@@ -110,20 +109,21 @@
 
             if (relay) $bunkerNDK.pool.getRelay(relay);
 
-            await $bunkerNDK.connect(2500);
+            // await $bunkerNDK.connect(2500);
 
             token = remotePubkey;
             if (secret) token += "#" + secret;
         } catch (e) {
-            console.error(e);
-            error = "Invalid bunker URI";
-            return;
+            token = value;
+            // console.error(e);
+            // error = "Invalid bunker URI";
+            // return;
         }
 
-        if (!token) {
-            error = "Invalid user";
-            return;
-        }
+        // if (!token) {
+        //     error = "Invalid user";
+        //     return;
+        // }
 
         loginNip46(token);
     }
@@ -174,7 +174,7 @@
         loginState.set('logged-in');
         privateKey.set(signer.privateKey);
         loginMethod.set('pk');
-        closeModal();
+        dispatch('logged-in')
     }
 
     let loginType: LoginMethod | undefined;
@@ -265,6 +265,8 @@
             {#if loginType === 'pk'}
                 Login with nsec
                 <Key size={22} class="ml-2" />
+            {:else if loginType === 'nip46'}
+                Login with remote signer
             {:else if loginType === 'npub'}
                 Find Me
                 <MagnifyingGlass size={22} class="ml-2" />

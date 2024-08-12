@@ -26,8 +26,6 @@
             highlightedArticleLink = urlFromEvent(highlightedArticle);
         }
     }
-
-    console.log('rendering highlight ', highlight.id)
 </script>
 
 <div class="

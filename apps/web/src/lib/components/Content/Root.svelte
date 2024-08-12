@@ -4,7 +4,7 @@
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { onDestroy, onMount } from "svelte";
 	import { WrappedEvent } from "../../../app";
-	import { wrapEvent } from "$utils/event";
+	import { mainContentKinds, wrapEvent } from "$utils/event";
 
     /**
      * This component makes an event available based on some information,
@@ -64,10 +64,10 @@
     function loadViaBech32() {
         if (!bech32) return;
         const { filter, relaySet } = filterAndRelaySetFromBech32(bech32, $ndk);
-        console.log({filter, bech32})
+        console.log({filter, relays: relaySet?.relayUrls, bech32})
         sub = $ndk.storeSubscribe(filter, {
             ...subOpts,
-            // relaySet,
+            relaySet,
             onEose: () => {
                 // check if we have been able to fetch from this relay (if a relayset was provided)
                 // if we eosed, there was a relayset and we didn't load anything, run without relayset
@@ -88,7 +88,7 @@
         console.log('loading via user');
         if (!user || !dTag) return;
         startLoadingTimer();
-        sub = $ndk.storeSubscribe({ authors: [user.pubkey], "#d": [dTag] }, {
+        sub = $ndk.storeSubscribe({ authors: [user.pubkey], "#d": [dTag], kinds: mainContentKinds }, {
             ...subOpts, onEose, onEvent
         });
     }

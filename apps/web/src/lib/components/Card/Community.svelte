@@ -3,7 +3,6 @@
 	import ContentCard from "./ContentCard.svelte";
 	import { Readable } from "svelte/store";
 	import { Button } from "$components/ui/button";
-	import { getGroupUrl } from "$utils/url";
 
     export let group: NDKSimpleGroup | undefined = undefined;
     export let groupId: string = group?.groupId!;

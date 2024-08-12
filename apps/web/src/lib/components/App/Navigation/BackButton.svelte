@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import Button from "$components/ui/button/button.svelte";
 	import { layout } from "$stores/layout";
 	import { CaretLeft } from "phosphor-svelte";

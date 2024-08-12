@@ -6,9 +6,6 @@
 	import { Check, Lightning, TrashSimple } from "phosphor-svelte";
 	import { onDestroy } from 'svelte';
 	import AvatarWithName from '$components/User/AvatarWithName.svelte';
-	import EventWrapper from '$components/Feed/EventWrapper.svelte';
-	import WithItem from '$components/Event/ItemView/WithItem.svelte';
-	import { page } from '$app/stores';
 
     let historyItems: NDKEventStore<NDKEvent>;
     
@@ -41,14 +38,6 @@
                     </AvatarWithName>
                 {/if}
             </div>
-            {#if item.getMatchingTags("e", "recipient")[0]}
-                {item.getMatchingTags("e", "recipient")[0][1]}
-                <WithItem tagId={item.getMatchingTags("e", "recipient")[0][1]} let:event>
-                    {#if event}
-                        <EventWrapper {event} compact />
-                    {/if}
-                </WithItem>
-            {/if}
         </div>
     {/each}
 {/if}

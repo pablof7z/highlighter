@@ -4,13 +4,11 @@
 	import { NDKKind, NDKSimpleGroup, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
-	import { PublishInTierStore, Scope } from "$components/Studio";
 	import { onDestroy } from "svelte";
-	import { GroupEntry } from "$stores/groups";
+	import { Group } from ".";
 
-    export let group: GroupEntry;
+    export let group: Group;
     export let selected: boolean;
-    export let scope: Scope;
     export let selectedTiers: NDKSubscriptionTier[];
 
     let groupTiers: Record<string, boolean> = {};

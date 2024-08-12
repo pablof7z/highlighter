@@ -1,146 +1,157 @@
 import { ndk } from "$stores/ndk";
 import { Thread } from "$utils/thread";
 import { calculateRelaySetFromEvent, getRelayListForUser, NDKEvent, NDKRelay, NDKRelaySet, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
-import { get } from "svelte/store";
-import { GroupId, Relays, Scope } from "..";
+import { get, Writable } from "svelte/store";
 import currentUser from "$stores/currentUser";
+import * as Studio from "./index.js";
+import { produceRelaySet, produceTags } from "$components/Audience";
 
-export async function getRelaySet(
-    event: NDKEvent,
-    publishInGroups?: Map<GroupId, Relays>,
-    scope?: Scope,
-    isPreview = false
-): Promise<NDKRelaySet> {
-    const $ndk = get(ndk);
-    const urls = new Set<string>();
+// function getTags(
+//     publishInGroups?: Map<GroupId, Relays>,
+//     scope?: Scope,
+//     publishInTiers?: Map<string, NDKSubscriptionTier>,
+//     isPreviewForEvent?: NDKEvent
+// ): NDKTag[] {
+//     const tags: NDKTag[] = [];
+//     const isPreview = !!isPreviewForEvent;
 
-    if (publishInGroups && publishInGroups.size > 0) {
-        for (const [groupId, relays] of publishInGroups) {
-            for (const url of relays) {
-                urls.add(url);
-            }
-        }
+//     if (publishInGroups) {
+//         for (const [groupId, relays] of publishInGroups) {
+//             tags.push(
+//                 [ "h", groupId, ...relays ]
+//             );
+//         }
+//     }
 
-        if (urls.size === 0) {
-            console.log('no relays found for groups', publishInGroups);
-            throw new Error("No relays found for groups");
-        }
-    }
+//     // non-preview tags
+//     if (!isPreview) {
+//         console.log('adding non-preview tags')
+//         if (scope === "private") {
+//             tags.push(['-']);
+//         }
 
-    if (urls.size === 0) {
-        return await calculateRelaySetFromEvent($ndk, event)
-    }
+//         if (publishInTiers) {
+//             for (const [dTag, tier] of publishInTiers) {
+//                 tags.push(
+//                     [ "f", dTag ]
+//                 );
+//             }
+//         }
+//     } else {
+//         console.log('adding preview tags')
 
-    // if we are returning an explicit list of relays we need to include
-    // the user's own relays if the scope is public
-    
-    if (scope === "public" || isPreview) {
-        const $ndk = get(ndk);
-        const $currentUser = get(currentUser);
-        if ($currentUser) {
-            const userRelays = await getRelayListForUser($currentUser.pubkey, $ndk);
-            // add the user's relays to the list
-            for (const url of userRelays.relays) {
-                urls.add(url);
-            }
-        }
-    }
+//         // add a marker to the full version
+//         tags.push([ "full", isPreviewForEvent?.tagId() ]);
 
-    return NDKRelaySet.fromRelayUrls(Array.from(urls), $ndk);
+//         // add which tiers are required
+//         if (publishInTiers) {
+//             for (const [dTag, tier] of publishInTiers) {
+//                 tags.push(
+//                     [ "tier", dTag ]
+//                 );
+//             }
+//         }
+//     }
+
+//     return tags;
+// }
+
+export type PublishingState = 'publishing' | 'published' | false | Error;
+
+export type RelayPublishState = {
+    mainEvent: PublishingState;
+    previewEvent: PublishingState;
 }
 
-function getTags(
-    publishInGroups?: Map<GroupId, Relays>,
-    scope?: Scope,
-    publishInTiers?: Map<string, NDKSubscriptionTier>,
-    isPreviewForEvent?: NDKEvent
-): NDKTag[] {
-    const tags: NDKTag[] = [];
-    const isPreview = !!isPreviewForEvent;
-
-    if (publishInGroups) {
-        for (const [groupId, relays] of publishInGroups) {
-            tags.push(
-                [ "h", groupId, ...relays ]
-            );
-        }
-    }
-
-    // non-preview tags
-    if (!isPreview) {
-        console.log('adding non-preview tags')
-        if (scope === "private") {
-            tags.push(['-']);
-        }
-
-        if (publishInTiers) {
-            for (const [dTag, tier] of publishInTiers) {
-                tags.push(
-                    [ "f", dTag ]
-                );
-            }
-        }
-    } else {
-        console.log('adding preview tags')
-
-        // add a marker to the full version
-        tags.push([ "full", isPreviewForEvent?.tagId() ]);
-
-        // add which tiers are required
-        if (publishInTiers) {
-            for (const [dTag, tier] of publishInTiers) {
-                tags.push(
-                    [ "tier", dTag ]
-                );
-            }
-        }
-    }
-
-    return tags;
+function getEventFromState(state: Studio.State): NDKEvent | undefined {
+    if (state.type === 'article') return (state as Studio.State<"article">).article;
+    if (state.type === 'video') return (state as Studio.State<"video">).video;
 }
 
-export async function publish(
-    event: NDKEvent,
-    preview?: NDKEvent,
-    publishInGroups?: Map<GroupId, Relays>,
-    publishAt?: Date,
-    scope?: Scope,
-    publishInTiers?: Map<string, NDKSubscriptionTier>,
-    mainEventRelaySet?: NDKRelaySet,
-    previewEventRelaySet?: NDKRelaySet
+function getPreviewFromState(state: Studio.State): NDKEvent | undefined {
+    if (state.type === 'article') return (state as Studio.State<"article">).preview;
+    if (state.type === 'video') return (state as Studio.State<"video">).preview;
+}
+
+/**
+ * Marks the relays where the event will be published to
+ */
+function getRelayStore(
+    mainRelaySet: NDKRelaySet,
+    previewRelaySet: NDKRelaySet | undefined,
 ) {
-    const tags = getTags(
-        publishInGroups,
-        scope,
-        publishInTiers
-    );
+    const relays: Record<string, RelayPublishState> = {};
+    
+    for (const relay of mainRelaySet.relays) {
+        if (!relays[relay.url])
+            relays[relay.url] = { mainEvent: false, previewEvent: false };
 
-    const finalEvent = await finalizeEvent(event, tags, publishAt);
-    let finalPreview: NDKEvent | undefined;
+        relays[relay.url].mainEvent = 'publishing';
+    }
 
-    if (preview) {
-        const previewTags = getTags(
-            publishInGroups,
-            scope,
-            publishInTiers,
-            finalEvent
-        );
-        try {
-            finalPreview = await finalizeEvent(preview, previewTags, publishAt);
-        } catch (e) {
-            console.error('Error finalizing preview', e);
+    if (previewRelaySet) {
+        for (const relay of previewRelaySet.relays) {
+            if (!relays[relay.url])
+                relays[relay.url] = { mainEvent: false, previewEvent: false };
+
+            relays[relay.url].previewEvent = 'publishing';
         }
     }
 
-    console.log('main event', finalEvent.rawEvent());
-    console.log('preview event', finalPreview?.rawEvent());
+    console.log({relays})
 
-    return await publishEvents(
-        finalEvent,
-        finalPreview,
-        mainEventRelaySet,
-        previewEventRelaySet
-    )
+    return relays;
+}
+
+/**
+ * Merges the lists of tags, making sure there will be no duplicates
+ */
+function mergeTags(tags1: NDKTag[], tags2: NDKTag[]): NDKTag[] {
+    const tags = new Map<string, NDKTag>();
+    for (const tag of tags1) {
+        tags.set(tag.join(''), tag);
+    }
+    for (const tag of tags2) {
+        tags.set(tag.join(''), tag);
+    }
+    return Array.from(tags.values());
+}
+
+/**
+ * 
+ * @param state State of the studio
+ * @param relays Store where information about the publishing process will be stored
+ * @returns 
+ */
+export async function publish(
+    state: Studio.State,
+    relays: Writable<Record<string, RelayPublishState>>
+) {
+    let mainEvent: NDKEvent = getEventFromState(state)!;
+    let previewEvent: NDKEvent | undefined = getPreviewFromState(state);
+
+    const mainRelaySet = await produceRelaySet(state.audience, mainEvent);
+    let previewEventRelaySet: NDKRelaySet | undefined;
+
+    if (previewEvent) {
+        previewEventRelaySet = await produceRelaySet(state.audience, previewEvent);
+    }
+    
+    const mainEventTags = produceTags(state.audience);
+    mainEvent.tags = mergeTags(mainEvent.tags, mainEventTags);
+    
+    // TODO: Add tags to preview event
+
+    relays.set(getRelayStore(mainRelaySet, previewEventRelaySet));
+
+    return publishEvents(relays, mainEvent, previewEvent, mainRelaySet, previewEventRelaySet);
+
+    // return await publishEvents(
+    //     finalEvent,
+    //     finalPreview,
+    //     mainEventRelaySet,
+    //     previewEventRelaySet
+    // )
 }
 
 export async function finalizeEvent(
@@ -165,30 +176,61 @@ export async function finalizeEvent(
 }
 
 export async function publishEvents(
-    event: NDKEvent,
-    preview?: NDKEvent,
+    relays: Writable<Record<string, RelayPublishState>>,
+    mainEvent: NDKEvent,
+    previewEvent?: NDKEvent,
     mainEventRelaySet?: NDKRelaySet,
     previewEventRelaySet?: NDKRelaySet
 ) {
     const $ndk = get(ndk);
 
-    const rest = await event.publish(mainEventRelaySet, 5000);
+    const updateStatus = (type: keyof RelayPublishState, status: PublishingState, relay: NDKRelay) => {
+        if (!relay?.url) {
+            console.trace('called failed without relay', relay)
+            return;
+        }
+        
+        relays.update($relays => {
+            const relayUrl = relay.url;
+            if (!$relays[relayUrl]) $relays[relayUrl] = { mainEvent: false, previewEvent: false };
+            $relays[relayUrl][type] = status;
+            return $relays;
+        });
+    }
 
-    if (preview) {
-        const previewRest = await preview.publish(previewEventRelaySet);
-        console.log('published preview', previewEventRelaySet?.relayUrls, preview.rawEvent())
-        console.log(previewRest);
+    const onEventPublish = (type: keyof RelayPublishState) => (relay: NDKRelay) => {
+        updateStatus(type, 'published', relay);
+    }
+
+    const onPublishFail = (type: keyof RelayPublishState) => (relay: NDKRelay, error: Error) => {
+        updateStatus(type, error, relay);
+    }
+
+    mainEvent.on("relay:published", onEventPublish('mainEvent'));
+    mainEvent.on("relay:publish:failed", onPublishFail('mainEvent'));
+    
+    const rest = await mainEvent.publish(mainEventRelaySet, 5000);
+
+    if (previewEvent) {
+        throw new Error("Preview not implemented");
+        // const previewRest = await preview.publish(previewEventRelaySet);
+        // console.log('published preview', previewEventRelaySet?.relayUrls, preview.rawEvent())
+        // console.log(previewRest);
     }
 
     return rest;
 }
 
 
-export async function publishThread(
-    thread: Thread,
-    publishAt?: Date,
-) {
-    const $ndk = get(ndk);
+// export async function publishThread(
+//     thread: Thread,
+//     publishInGroups?: Map<GroupId, Relays>,
+//     publishAt?: Date,
+//     publishScope?: Scope,
+//     publishInTiers?: Map<string, NDKSubscriptionTier>,
+//     relaySet?: NDKRelaySet
+// ) {
+//     const $ndk = get(ndk);
 
-    console.log("Publishing thread", thread);
-}
+//     console.log("Publishing thread", $thread);
+// }

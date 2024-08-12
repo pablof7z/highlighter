@@ -6,11 +6,9 @@
 	import { NDKEvent, NDKKind, NDKList, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
 	import { Button } from '$components/ui/button';
 	import { derived, get } from 'svelte/store';
-    import * as Chat from "$components/Chat";
     import * as Groups from "$components/Groups";
 	import { Plus } from 'phosphor-svelte';
 	import { addHistory } from '$stores/history';
-	import { groups } from '$stores/groups';
 
     addHistory({ title: "Communities", url: "/communities" });
 
@@ -46,7 +44,11 @@
     })
 </script>
 
-{#if Object.keys($groups).length > 0}
+<Groups.RootList tags={$unifiedGroupLists} let:group>
+    <Groups.ListItem {group} />
+</Groups.RootList>
+
+<!-- {#if Object.keys($groups).length > 0}
     <Chat.List>
         {#each Object.entries($groups) as [id, groupEntry] (id)}
             {#if groupEntry}
@@ -56,16 +58,15 @@
             {/if}
         {/each}
     </Chat.List>
-{/if}
+{/if} -->
 
-{$unifiedGroupLists.length}
-{#if $unifiedGroupLists}
+<!-- {#if $unifiedGroupLists}
     <Chat.List>
         <Groups.RootList tags={$unifiedGroupLists} let:groupEntry>
             <Chat.Item {groupEntry} />
         </Groups.RootList>
     </Chat.List>
-{/if}
+{/if} -->
 
 <div class="responsive-padding">
     <Button variant="outline" class="w-full mt-12 h-auto rounded-lg p-6 flex flex-col items-center" on:click={() => openModal(NewGroupModal)}>

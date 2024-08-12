@@ -6,6 +6,7 @@
 	import { footerMainView, layout } from '$stores/layout';
 	import type { FooterView } from ".";
 	import { Writable } from "svelte/store";
+	import { slide } from "svelte/transition";
 
     export let collapsed = true;
     export let dragging = false;
@@ -246,33 +247,35 @@
         <div
             class:pt-4={!hideCollapsedView}
             class="flex flex-col gap-2 w-full overflow-y-auto scrollbar-hide transition-all duration-1000"
-            style="max-height: {maxHeight}"
+            style="max-height: {maxHeight};"
         >
-            {#if activeView?.View}
-                <svelte:component
-                    this={activeView.View}
-                    bind:hideCollapsedView
-                    {open}
-                    on:close={() => open(false)}
-                    {...$$props}
-                    {...activeView.props}
-                    stateStore={viewStores[mainView]}
-                />
-            {:else if mainView === 'editor'}
-                <div class="bg-background/50 rounded p-4 text-lg overflow-y-auto flex flex-col">
-                    <ContentEditor
-                        autofocus={true}
-                        bind:content
-                        on:submit={editorPublish}
-                        enableMarkdown={false}
-                        toolbar={false}
-                        class="text-lg min-h-[20vw]"
-                        {placeholder}
+            <div class="flex flex-col">
+                {#if activeView?.View}
+                    <svelte:component
+                        this={activeView.View}
+                        bind:hideCollapsedView
+                        {open}
+                        on:close={() => open(false)}
+                        {...$$props}
+                        {...activeView.props}
+                        stateStore={viewStores[mainView]}
                     />
-                </div>
-            {:else}
-                <slot name="main" {open} />
-            {/if}
+                {:else if mainView === 'editor'}
+                    <div class="bg-background/50 rounded p-4 text-lg overflow-y-auto flex flex-col">
+                        <ContentEditor
+                            autofocus={true}
+                            bind:content
+                            on:submit={editorPublish}
+                            enableMarkdown={false}
+                            toolbar={false}
+                            class="text-lg min-h-[20vw]"
+                            {placeholder}
+                        />
+                    </div>
+                {:else}
+                    <slot name="main" {open} />
+                {/if}
+            </div>
         </div>
     {/if}
 </div>

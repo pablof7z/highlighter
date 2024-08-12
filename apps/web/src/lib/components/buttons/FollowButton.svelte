@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { categorizedUserLists, sortedUserLists, userFollows } from "$stores/session";
+    import { userFollows } from "$stores/session";
 	import { ndk } from "$stores/ndk.js";
     import { NDKUser } from "@nostr-dev-kit/ndk";
 	import { Plus, User, UserMinus, UserPlus } from "phosphor-svelte";

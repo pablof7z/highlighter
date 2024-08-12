@@ -2,6 +2,7 @@ import { NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
 import { State } from "..";
 import { get, Writable } from "svelte/store";
 import { ndk } from "$stores/ndk";
+import { produceRelaySet, produceTags } from "$components/Audience";
 
 export default async function (
     state: Writable<State>,
@@ -11,6 +12,18 @@ export default async function (
     const event = new NDKEvent($ndk);
     event.kind = $state.kind;
     event.content = $state.content?.trim() ?? "";
+
+    if (!event.kind) {
+        if ($state.audience.scope === "public") {
+            event.kind = NDKKind.Text;
+        } else {
+            event.kind = NDKKind.GroupNote;
+        }
+    }
+
+    event.tags = produceTags($state.audience);
+
+    const relaySet = await produceRelaySet($state.audience, event);
 
     // add extra tags
     if ($state.tags && $state.tags.length > 0) {
@@ -39,7 +52,7 @@ export default async function (
 
     await event.sign();
     
-    event.publish($state.relaySet);
+    event.publish(relaySet);
 
     $state.dispatch("publish", event);
 }

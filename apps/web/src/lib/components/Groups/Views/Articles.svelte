@@ -5,15 +5,16 @@
     import { NDKArticle, NDKKind, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 	import { layout } from '$stores/layout';
 	import { ndk } from '$stores/ndk';
+	import { Group } from '..';
 
     $layout.fullWidth = false;
     
-    export let group = getContext('group') as NDKSimpleGroup;
+    export let group = getContext('group') as Readable<Group>;
 
     const groupArticles = $ndk.storeSubscribe([
-        { kinds: [NDKKind.Article], "#h": [ group.groupId ] },
+        { kinds: [NDKKind.Article], "#h": [ $group.id ] },
     ], {
-        relaySet: group.relaySet
+        relaySet: $group.relaySet
     }, NDKArticle)
 </script>
 

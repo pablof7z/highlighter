@@ -5,20 +5,28 @@
 	import NewGroupModal from "$modals/NewGroupModal.svelte";
 	import NewPostItem from "$components/Creator/NewPostItem.svelte";
 	import { NDKSimpleGroup, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
+	import * as Audience from "$components/Audience";
+	import { Readable } from "svelte/store";
+	import { Group } from "$components/Groups";
 
     export let onNewShortPost: (() => void) | undefined = undefined;
-    export let group: NDKSimpleGroup | undefined = undefined;
-    export let groupMetadata: NDKSimpleGroupMetadata | undefined = undefined;
+    export let group: Readable<Group> | undefined = undefined;
 
     const dispatch = createEventDispatcher();
 
     function shortNote() {
-        // if (!!onNewShortPost) {
-        //     onNewShortPost();
-        // } else {
+        let audience: Audience.State = {
+            scope: 'public'
+        };
+
+        if ($group) {
+            audience.scope =  "private";
+            audience.groups = [ $group ];
+            console.log('audience', audience)
+        }
+            
+        openModal(NewPostModal, { audience });
         dispatch("close");
-            openModal(NewPostModal, { group });
-        // }
     }
 
     function newCommunity() {
@@ -33,9 +41,9 @@
     function url(path: string) {
         const uri = new URL(path, window.location.origin);
 
-        if (group) {
-            uri.searchParams.set("group", group.id);
-            for (const relay of group.relayUrls()) {
+        if ($group) {
+            uri.searchParams.set("group", $group.id);
+            for (const relay of $group.relayUrls) {
                 uri.searchParams.append("relay", relay);
             }
         }
@@ -45,15 +53,15 @@
 </script>
 
 <div class="flex flex-col gap-2">
-    {#if groupMetadata}
+    {#if $group?.metadata}
         <div class="bg-background/50 border p-4 rounded font-medium text-muted-foreground flex flex-row items-center gap-2">
-            {#if groupMetadata.picture}
-                <img src={groupMetadata.picture} class="w-12 h-12 rounded-full object-cover" />
+            {#if $group.metadata.picture}
+                <img src={$group.metadata.picture} class="w-12 h-12 rounded-full object-cover" />
             {/if}
 
             New Post on
             
-            <span class="text-foreground font-bold">{groupMetadata.name}</span>
+            <span class="text-foreground font-bold">{$group.metadata.name}</span>
         </div>
     {/if}
     
@@ -66,11 +74,9 @@
     ">
         <NewPostItem icon='🤙' title="Short Note" on:click={shortNote} />
         <NewPostItem icon="🗒️" title="Article" href={url("/studio/article")} on:click={close} />
-        <NewPostItem icon='🎬 ' title="Video" href={url("/videos/new")} on:click={close} />
+        <NewPostItem icon='🎬 ' title="Video" href={url("/studio/video")} on:click={close} />
         <NewPostItem icon='🧵' title="Thread" href={url("/studio/threads/new")} on:click={close} />
-        {#if !group}
-            <NewPostItem icon='⏱️' title="Scheduled Posts" href={url("/schedule")} on:click={close} />
-            <NewPostItem icon='🖋️' title="Drafts" href={url("/drafts")} on:click={close} />
+        {#if !$group}
             <NewPostItem icon='🏰' title="Community" on:click={newCommunity} class="col-span-2" />
         {/if}
         

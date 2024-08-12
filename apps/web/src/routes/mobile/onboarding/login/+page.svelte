@@ -10,8 +10,8 @@
 
 <div class="flex flex-col h-full w-full fixed top-0 bottom-0 left-0 right-0 justify-center items-center">
     {#if mode === "signup"}
-        <SignupScreen on:login={() => mode = "login"} />
+        <SignupScreen on:signed on:login={() => mode = "login"} />
     {:else}
-        <LoginScreen on:signup={() => mode = "signup"} />
+        <LoginScreen on:logged-in={next} on:signup={() => mode = "signup"} />
     {/if}
 </div>

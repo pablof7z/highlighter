@@ -1,12 +1,12 @@
 <script lang="ts">
     import * as Footer from "$components/Footer";
-	import { ndk } from '$stores/ndk';
-    import { NDKSimpleGroup, NDKEvent, NDKTag, NDKKind, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
+    import { NDKEvent, NDKTag, NDKKind, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
 
     import NewItem from "$components/Footer/Views/NewItem";
 	import { Readable } from "svelte/store";
+	import { Group } from "..";
 
-    export let group: NDKSimpleGroup | undefined = undefined;
+    export let group: Readable<Group> | undefined = undefined;
     export let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
     export let event: NDKEvent;
     export let tags: NDKTag[] = [];
@@ -21,7 +21,7 @@
     bind:open
     align="items-start"
     views={[
-        { ...NewItem, props: { group, groupMetadata: $metadata } }
+        { ...NewItem, props: { group } }
     ]}
 >
 </Footer.Shell>

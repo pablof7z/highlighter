@@ -14,6 +14,7 @@
 	import Name from "$components/User/Name.svelte";
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
 	import { ndk } from "$stores/ndk";
+	import Button from "$components/ui/button/button.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -93,20 +94,20 @@
                                 overText=""
                             />
 
-                            <button
+                            <Button
+                                size={!confirmRemove?"icon":"sm"}
+                                variant="secondary"
                                 class="
-                                    rounded p-2 z-50 font-normal text-foreground group-hover:!opacity-100
+                                    rounded z-50 font-normal text-foreground group-hover:!opacity-100
                                     {confirmRemove ? "!bg-error/80" : "btn-neutral"}
                                 "
-                                class:btn-circle={!confirmRemove}
-                                class:opacity-20={!hasFocus && !confirmRemove}
                                 on:click={remove}>
                                 {#if confirmRemove}
                                     Confirm?
                                 {:else}
                                     <X size={16} />
                                 {/if}
-                            </button>
+                            </Button>
                         </div>
                     {/if}
                 </div>

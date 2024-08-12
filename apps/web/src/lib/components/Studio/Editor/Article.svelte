@@ -14,8 +14,13 @@
     import * as Content from "$components/Content";
 	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 	import ContentEditor from '$components/Forms/ContentEditor.svelte';
+    import * as Studio from '$components/Studio';
+	import { Writable } from 'svelte/store';
 
-    export let article: NDKArticle;
+    export let state: Writable<Studio.State<"article">>;
+    export let article: NDKArticle = $state.article;
+
+    $: $state.article = article;
 
     const dispatch = createEventDispatcher();
 

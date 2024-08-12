@@ -27,7 +27,9 @@
     {...option.buttonProps??{}}
     {variant}
     size="sm"
-    on:click
+    on:click={() => {
+        option.fn?.();
+    }}
     class={cn('gap-2', option.buttonProps?.class)}
 >
     {#if option.icon}

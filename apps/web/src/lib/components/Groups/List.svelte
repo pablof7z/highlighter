@@ -2,9 +2,7 @@
 	import { get } from 'svelte/store';
 	import { NDKSimpleGroup, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
     import ListItem from "./ListItem.svelte";
-	import { PublishInTierStore, Scope } from "$components/Studio";
 	import Root from "./Root.svelte";
-	import { groups } from '$stores/groups';
 
     export let selectedGroups: Record<string, boolean>;
     export let publishInTiers: PublishInTierStore;
@@ -27,11 +25,13 @@
     }
 </script>
 
+Groups/List not implemented
+<!-- 
 {#each Object.entries($groups) as [id, group] (id)}
-        <ListItem
-            {group}
-            {scope}
-            bind:selected={selectedGroups[id]}
-            bind:selectedTiers={selectedTiers[id]}
-        />
-{/each}
+    <ListItem
+        {group}
+        {scope}
+        bind:selected={selectedGroups[id]}
+        bind:selectedTiers={selectedTiers[id]}
+    />
+{/each} -->

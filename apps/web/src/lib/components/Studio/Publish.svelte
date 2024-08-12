@@ -1,9 +1,6 @@
 <script lang="ts">
 	import ShareModal from "$modals/ShareModal.svelte";
-	import { DraftItem } from "$stores/drafts";
-	import { Thread } from "$utils/thread";
-    import { Mode, PublishInGroupStore, PublishInTierStore, Scope, Types as StudioItemTypes } from "$components/Studio";
-	import { NDKArticle, NDKEvent, NDKRelay, NDKRelaySet, NDKSimpleGroup, NDKVideo } from "@nostr-dev-kit/ndk";
+	import NDK, { NDKArticle, NDKEvent, NDKRelay, NDKRelaySet, NDKSimpleGroup, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { derived, Readable, writable, Writable } from "svelte/store";
 	import { layout } from "$stores/layout";
 	import BlankState from "$components/PageElements/BlankState.svelte";
@@ -13,173 +10,177 @@
 	import { Button } from "$components/ui/button";
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
-	import { getRelaySet, publish } from "./actions/publish";
+	import { publish, RelayPublishState } from "./actions/publish";
 	import { generatePreviewContent } from "$utils/preview";
 	import { ndk } from "$stores/ndk";
     import * as Collapsible from "$lib/components/ui/collapsible";
     import * as Tooltip from "$lib/components/ui/tooltip";
+    import * as Studio from '$components/Studio';
 
-    export let groups: Readable<Record<string, NDKSimpleGroup>>;
-    export let event: Writable<NDKArticle | NDKVideo | undefined>;
-    export let preview: Writable<NDKArticle | NDKVideo | undefined>;
-    export let thread: Writable<Thread | undefined>;
-    export let withPreview: Writable<boolean>;
-
-    export let mode: Writable<Mode>;
-    export let type: Writable<StudioItemTypes>;
-    
-    export let draft: DraftItem | undefined = undefined;
-    export let publishInGroups: PublishInGroupStore;
-    export let publishInTiers: PublishInTierStore;
-    export let publishAt: Writable<Date | undefined>;
-    export let publishScope: Writable<Scope>;
-
+    export let state: Writable<Studio.State<Studio.Type>>;
     export let authorUrl: string;
-    export let makePublicIn: Writable<Date | undefined>;
 
     $layout.header = undefined;
     $layout.title = "Publishing";
 
     let content: string;
-    const tags = $event instanceof NDKEvent ? $event!.getMatchingTags("t") : [];
-    generateShareModalContent().then(c => content = c ?? "");
+    // const tags = $event instanceof NDKEvent ? $event!.getMatchingTags("t") : [];
+    // generateShareModalContent().then(c => content = c ?? "");
 
-    const relays = writable<Record<WebSocket["url"], { event: true | undefined | Error, preview: true | undefined | Error }>>({});
+    const relays = writable<Record<string, RelayPublishState>>({});
 
     const publishedToRelays = derived(relays, $relays => {
-        const e = Object.values($relays).filter(r => r.event === true).length
-        const p = Object.values($relays).filter(r => r.preview === true).length
+        const e = Object.values($relays).filter(r => r.mainEvent === 'published').length
+        const p = Object.values($relays).filter(r => r.previewEvent === 'published').length
         return e + p;
     });
     const failedToPublish = derived(relays, $relays => {
-        const e = Object.values($relays).filter(r => r.event instanceof Error).length
-        const p = Object.values($relays).filter(r => r.preview instanceof Error).length
+        const e = Object.values($relays).filter(r => r.mainEvent instanceof Error).length
+        const p = Object.values($relays).filter(r => r.previewEvent instanceof Error).length
         return e + p;
     });
     const pendingRelays = derived(relays, $relays => {
-        const e = Object.values($relays).filter(r => r.event === undefined).length
-        const p = Object.values($relays).filter(r => r.preview === undefined).length
+        const e = Object.values($relays).filter(r => r.mainEvent === 'publishing').length
+        const p = Object.values($relays).filter(r => r.previewEvent === 'publishing').length
         return e + p;
     });
 
-    const onEventPublish = (type: 'event' | 'preview') => (relay: NDKRelay) => {
-        console.log('published on relay', relay.url);
-        if (!relay?.url) {
-            console.trace('called without relay', relay)
-            return;
-        }
-        if (!$relays[relay.url]) $relays[relay.url] = { event: undefined, preview: undefined };
-        $relays[relay.url][type] = true;
-    }
-
-    const onPublishFail = (type: 'event' | 'preview') => (relay: NDKRelay, error: Error) => {
-        console.log('failed to publish on relay', relay.url, error);
-        if (!relay?.url) {
-            console.trace('called failed without relay', relay)
-            return;
-        }
-        if (!$relays[relay.url]) $relays[relay.url] = { event: undefined, preview: undefined };
-        $relays[relay.url][type] = error;
-    }
-
     onMount(async () => {
-        if ($event) {
-            if ($withPreview && $publishScope === 'private' && !$preview) {
-                if ($type === "article" && $event instanceof NDKArticle) {
-                    $preview = new NDKArticle($ndk);
-                    $preview.title = $event.title;
-                    $preview.content = generatePreviewContent($event);
-                }
-            }
+        if ($state.type === 'thread') {
+            alert('thread publishing not implemented');
+        } else {
+            publish(
+                $state,
+                relays
+            );
 
-            // Get main event relays
-            const mainRelaySet = await getRelaySet($event, $publishInGroups, $publishScope, false);
-            for (const relay of mainRelaySet.relays) {
-                $relays[relay.url] = { event: undefined, preview: false };
-            }
+            // Studio.publish(
+            //     $state,
 
-            // Get preview event relays
-            let previewRelaySet: NDKRelaySet | undefined;
-            if ($preview) {
-                previewRelaySet = await getRelaySet($preview, $publishInGroups, $publishScope, true);
-                for (const relay of previewRelaySet.relays) {
-                    $relays[relay.url] ??= { event: false, preview: undefined };
-                    $relays[relay.url].preview = undefined;
-                }
-
-                console.table('preview relays', $relays);
-            } else {
-                console.log('no preview');
-            }
-
-            $event.on("relay:published", onEventPublish('event'));
-            $event.on("relay:publish:failed", onPublishFail('event'));
-            
-            if ($preview) {
-                $preview.on("relay:published", onEventPublish('preview'));
-                $preview.on("relay:publish:failed", onPublishFail('preview'));
-            }
-            const relaySet = NDKRelaySet.fromRelayUrls(["ws://localhost:2929"], $ndk)
-
-            try {
-                await publish(
-                    $event,
-                    $preview,
-                    $publishInGroups,
-                    $publishAt,
-                    $publishScope,
-                    $publishInTiers,
-                    mainRelaySet,
-                    previewRelaySet
-                )
-            } finally {
-                console.log('back')
-
-                // go through all $relays and mark any event or preview that is still undefined as new Error("Aborted")
-                relays.update(val => {
-                    for (const [url, status] of Object.entries(val)) {
-                        if (status.event === undefined) status.event = new Error("Aborted");
-                        if ($preview && status.preview === undefined) status.preview = new Error("Aborted");
-                    }
-                    return val;
-                })
-            }
+            // );
         }
+        
+        // if ($event) {
+        //     if ($withPreview && $publishScope === 'private' && !$preview) {
+        //         if ($type === "article" && $event instanceof NDKArticle) {
+        //             $preview = new NDKArticle($ndk);
+        //             $preview.title = $event.title;
+        //             $preview.content = generatePreviewContent($event);
+        //         }
+        //     }
 
-        console.table(relays);
+        //     // Get main event relays
+        //     const mainRelaySet = await getRelaySet($event, $publishInGroups, $publishScope, false);
+        
+
+        //     // Get preview event relays
+        //     let previewRelaySet: NDKRelaySet | undefined;
+        //     if ($preview) {
+        //         previewRelaySet = await getRelaySet($preview, $publishInGroups, $publishScope, true);
+        //         for (const relay of previewRelaySet.relays) {
+        //             $relays[relay.url] ??= { event: false, preview: undefined };
+        //             $relays[relay.url].preview = undefined;
+        //         }
+
+        //         console.table('preview relays', $relays);
+        //     } else {
+        //         console.log('no preview');
+        //     }
+
+        //     $event.on("relay:published", onEventPublish('event'));
+        //     $event.on("relay:publish:failed", onPublishFail('event'));
+            
+        //     if ($preview) {
+        //         $preview.on("relay:published", onEventPublish('preview'));
+        //         $preview.on("relay:publish:failed", onPublishFail('preview'));
+        //     }
+
+        //     try {
+        //         await publish(
+        //             $event,
+        //             $preview,
+        //             $publishInGroups,
+        //             $publishAt,
+        //             $publishScope,
+        //             $publishInTiers,
+        //             mainRelaySet,
+        //             previewRelaySet
+        //         )
+        //     } finally {
+        //         console.log('back')
+
+        //         // go through all $relays and mark any event or preview that is still undefined as new Error("Aborted")
+        //         relays.update(val => {
+        //             for (const [url, status] of Object.entries(val)) {
+        //                 if (status.event === undefined) status.event = new Error("Aborted");
+        //                 if ($preview && status.preview === undefined) status.preview = new Error("Aborted");
+        //             }
+        //             return val;
+        //         })
+        //     }
+        // } else if ($thread) {
+        //     try {
+        //         const relaySet = getRelaySet($thread.items[0].event, $publishInGroups, $publishScope, false);
+                
+        //         await publishThread(
+        //             $thread,
+        //             $publishInGroups,
+        //             $publishAt,
+        //             $publishScope,
+        //             $publishInTiers,
+        //             relaySet
+        //         );
+        //     } finally {
+        //         // go through all $relays and mark any event or preview that is still undefined as new Error("Aborted")
+        //         relays.update(val => {
+        //             for (const [url, status] of Object.entries(val)) {
+        //                 if (status.event === undefined) status.event = new Error("Aborted");
+        //             }
+        //             return val;
+        //         })
+        //     }
+        // }
+
+        // console.table(relays);
     })
 
-    async function generateShareModalContent() {
-        if (!$event) return;
+    // async function generateShareModalContent() {
+    //     if (!$event) return;
         
-        if ($event instanceof NDKArticle) {
-            const parts = [ `I just published a new read on Nostr!`];
-            if ($event.title) parts.push($event.title);
-            if ($event.summary) parts.push($event.summary);
+    //     if ($event instanceof NDKArticle) {
+    //         const parts = [ `I just published a new read on Nostr!`];
+    //         if ($event.title) parts.push($event.title);
+    //         if ($event.summary) parts.push($event.summary);
 
-            const url = urlFromEvent($event, authorUrl, true);
+    //         const url = urlFromEvent($event, authorUrl, true);
 
-            parts.push(`Check it out: ${url}`);
+    //         parts.push(`Check it out: ${url}`);
 
-            return parts.join("\n\n");
-        } else if ($event instanceof NDKVideo) {
-            return `I just published a new video on Nostr! Check it out: ${$event.title}`;
-        } else {
-            return `I just published a new event on Nostr! Check it out: ${$event.encode()}`;
-        }
-    }
+    //         return parts.join("\n\n");
+    //     } else if ($event instanceof NDKVideo) {
+    //         return `I just published a new video on Nostr! Check it out: ${$event.title}`;
+    //     } else {
+    //         return `I just published a new event on Nostr! Check it out: ${$event.encode()}`;
+    //     }
+    // }
 
-    function share() {
-        let e: NDKEvent;
+    // function share() {
+    //     let e: NDKEvent;
 
-        if ($event instanceof NDKEvent) e = $event;
+    //     if ($event instanceof NDKEvent) e = $event;
         
-        openModal(ShareModal, { event: e, content, tags });
-    }
+    //     openModal(ShareModal, { event: e, content, tags });
+    // }
+
+
+	function share(e: ButtonEventHandler<MouseEvent>): void {
+		throw new Error("Function not implemented.");
+	}
 </script>
 
-{#if $type === "thread" && $thread}
-    <BlankState
+
+{#if $state.type === "thread"}
+    <!-- <BlankState
         cta={$publishAt ? "View preview" : "View"}
         on:click={() => {
             if ($publishAt) goto('/schedule');
@@ -197,8 +198,8 @@
                 was published!
             {/if}
         </span>
-    </BlankState>
-{:else if $event}
+    </BlankState> -->
+{:else}
     <BlankState
         cta="Share your work"
         on:click={share}
@@ -206,17 +207,18 @@
         >
         <img src="/images/published.png" class="mx-auto w-3/5 h-3/5 opacity-60 my-8" />
         <div slot="afterCta">
-            {#if $preview && $makePublicIn}
+            <!-- {#if $preview && $makePublicIn}
                 <p class="mt-6 text-sm text-center">
                     <Check class="inline text-green-500 mr-2" />
                     In {$makePublicIn} days, this {$type} will be publicly available.
                 </p>
-            {/if}
+            {/if} -->
 
-            {#if !$publishAt}
+            {#if !$state.publishAt}
                 <div class="flex flex-row items-center gap-4">
-                    <Button variant="secondary" href={urlFromEvent($event)}>
-                        {$event.title}
+                    <Button variant="secondary">
+                        title here
+                        <!-- {$state.event.title} -->
                         <ArrowRight class="w-5 h-5 ml-2" />
                     </Button>
                 </div>
@@ -234,12 +236,12 @@
         </div>
 
         <span class="text-2xl font-medium">
-            {#if $event.title}
+            <!-- {#if $event.title}
                 <div class="font-extrabold text-3xl">{$event.title}</div>
-            {:else}
-                Your {$type}
-            {/if}
-            {#if $publishAt}
+            {:else} -->
+                Your {$state.type}
+            <!-- {/if} -->
+            {#if $state.publishAt}
                 was scheduled!
             {:else}
                 was published!
@@ -286,18 +288,18 @@
                         </span>
 
                         <div class="w-12 flex justify-end">
-                            {#if status.event === true}
+                            {#if status.mainEvent === 'published'}
                                 <Check class="text-green-500" />
-                            {:else if status.event === false}
+                            {:else if status.mainEvent === false}
                                 <!-- False means it's not supposed to be published here -->
-                            {:else if status.event instanceof Error}
+                            {:else if status.mainEvent instanceof Error}
                                 <Tooltip.Root>
                                     <Tooltip.Trigger>
                                         <X class="text-red-500" />
                                     </Tooltip.Trigger>
                                     <Tooltip.Content>
                                         <span class="text-red-500">
-                                            {status.event.message}
+                                            {status.mainEvent.message}
                                         </span>
                                     </Tooltip.Content>
                                 </Tooltip.Root>
@@ -306,13 +308,13 @@
                             {/if}
                         </div>
 
-                        {#if $preview}
+                        <!-- {#if $preview}
                             <div class="w-12 flex justify-end">
                                 {#if status.preview === true}
                                     <Check class="text-green-500" />
                                 {:else if status.preview === false}
                                     <!-- False means it's not supposed to be published here -->
-                                {:else if status.preview instanceof Error}
+                                <!--{:else if status.preview instanceof Error}
                                     <Tooltip.Root>
                                         <Tooltip.Trigger>
                                             <X class="text-red-500" />
@@ -327,7 +329,7 @@
                                     <CircleNotch class="animate-spin text-muted-foreground" />
                                 {/if}
                             </div>
-                        {/if}
+                        {/if} -->
                     </div>
                 {/each}
             </Collapsible.Content>
