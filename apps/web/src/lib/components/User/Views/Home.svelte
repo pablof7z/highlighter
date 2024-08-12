@@ -8,9 +8,6 @@
     import * as Card from '$components/Card';
 	import currentUser from '$stores/currentUser';
 	import { layout } from '$stores/layout';
-	import { openModal } from '$utils/modal';
-	import JoinModal from '$components/Groups/Modals/JoinModal.svelte';
-	import { groupKey } from '$stores/groups';
 
     export let user: NDKUser = getContext('user') as NDKUser;
     export let userProfile: NDKUserProfile | undefined | null = getContext('userProfile') as NDKUserProfile;

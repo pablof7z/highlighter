@@ -1,30 +1,24 @@
 <script lang="ts">
-	import { NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
 	import { getContext } from "svelte";
-	import { Readable } from "svelte/store";
     import * as Groups from "$components/Groups";
 	import { layout } from '$stores/layout';
+	import { Readable } from "svelte/store";
 
-    export let group = getContext('group') as NDKSimpleGroup;
-    export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
-    export let members = getContext("groupMembers") as Readable<NDKSimpleGroupMemberList | undefined>;
-    export let isMember = getContext("isMember") as Readable<boolean>;
+    export let group = getContext('group') as Readable<Groups.Group>;
     
     $layout.footerInMain = true;
-    $layout.title = $metadata.name;
+    $layout.title = $group?.name;
     $layout.event = undefined;
     $layout.fullWidth = false;
-    $: if ($isMember) {
+    $: if ($group.isMember) {
+        console.log('setting footer')
         $layout.footer = {
             component: Groups.Footers.Home,
-            props: { group, metadata }
+            props: { group }
         }
     }
 </script>
 
 <Groups.Header
-    metadata={$metadata}
-    members={$members}
-    isMember={$isMember}
-
+    {group}
 />

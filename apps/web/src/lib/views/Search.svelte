@@ -21,6 +21,7 @@
     export let placeholder: string = "Search";
     export let autofocus = true;
     export let inputClass = "w-full border-none text-xl focus-visible:!outline-none focus-visible:!ring-0 foucs-visible:!outline-offset-0";
+    export let skipInput = false;
 
     const dispatch = createEventDispatcher();
 
@@ -81,8 +82,10 @@
 
         results = results;
     }
-    
-    async function keydown(event: KeyboardEvent) {
+
+    export let keydown: (event: KeyboardEvent) => void;
+
+    async function _keydown(event: KeyboardEvent) {
         if (value.length === 0) {
             searchMode = 'all';
             results = [];
@@ -142,6 +145,8 @@
         }
     }
 
+    keydown = _keydown;
+
     function isUri() {
         try {
             new URL(value);
@@ -162,25 +167,27 @@
     }
 </script>
 
-<div class="
-    flex flex-row gap-2 w-full items-center border-b border-border {$$props.inputContainerClass??""}
-    {$$props.containerClass??""}
-">
-    {#if searching}
-        <span class="loading loading-sm text-accent"></span>
-    {:else}
-        <MagnifyingGlass class="w-6 h-6 text-muted-foreground" />
-    {/if}
-    
-    <input
-        bind:value
-        {placeholder}
-        {autofocus}
-        class={inputClass}
-        on:keyup={keydown}
-        on:focus={() => displayResults = true}
-    />
-</div>
+{#if !skipInput}
+    <div class="
+        flex flex-row gap-2 w-full items-center border-b border-border {$$props.inputContainerClass??""}
+        {$$props.containerClass??""}
+    ">
+        {#if searching}
+            <span class="loading loading-sm text-accent"></span>
+        {:else}
+            <MagnifyingGlass class="w-6 h-6 text-muted-foreground" />
+        {/if}
+        
+        <input
+            bind:value
+            {placeholder}
+            {autofocus}
+            class={inputClass}
+            on:keyup={keydown}
+            on:focus={() => displayResults = true}
+        />
+    </div>
+{/if}
 
 {#if value.length > 0 && displayResults}
     <ul class="flex flex-col items-start grow overflow-y-auto w-full pt-6 {$$props.containerClass??""}">

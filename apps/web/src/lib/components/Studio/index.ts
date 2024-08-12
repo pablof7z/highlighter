@@ -1,30 +1,61 @@
-import { Writable } from "svelte/store";
 import Root from "./Root.svelte";
 import Shell from "./Shell.svelte";
-import { NDKEventId, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
+import { State as Audience } from "$components/Audience";
+import { Article } from "$components/Card";
+import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
+import { Thread } from "$utils/thread";
+import * as Editor from "./Editor/";
+import * as Preview from "./Preview/";
 
-enum Types {
-    Article = "article",
-    Video = "video",
-    Thread = "thread"
-}
+export type Type = "article" | "video" | "thread";
 
 export type Mode = "view" | "edit" | "audience" | "preview" | "publish";
-export type Scope = "public" | "private";
-export type GroupId = string;
-export type Relays = string[];
-export type PublishInGroupStore = Writable<Map<GroupId, Relays>>;
 
-/**
- * A map of SubscriptionTier's d-tags and the event.
- * 
- * We don't care about to which community the subscription is from, since
- * they will all be dumped as [ "tier", "d-tag" ] in the tags anyway.
- */
-export type PublishInTierStore = Writable<Map<string, NDKSubscriptionTier>>;
+type ArticleState = {
+    article: NDKArticle;
+    preview?: NDKArticle;
+}
+
+type VideoState = {
+    video: NDKVideo;
+    preview?: NDKVideo;
+}
+
+type ThreadState = {
+    thread: Thread;
+}
+
+export type StateProperties<T extends Type> =
+    T extends "article" ? ArticleState :
+    T extends "video" ? VideoState :
+    T extends "thread" ? ThreadState :
+    never;
+
+export type State<T extends Type> = {
+    mode: Mode;
+    audience: Audience;
+
+    type: Type;
+
+    // at what time should this be published
+    publishAt?: Date;
+
+    // in how many days should this be made public
+    publicIn?: number;
+
+    // draft properties
+    draftId?: string;
+} & StateProperties<T>;
+
+export type Actions = {
+    saveDraft: (manuallySaved: boolean) => Promise<boolean>;
+    publish: () => void;
+}
 
 export {
     Root,
     Shell,
-    Types
+
+    Editor,
+    Preview
 }

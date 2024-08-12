@@ -19,10 +19,12 @@
     $: $layout.back = { url: authorUrl }
 </script>
 
-<Content.Root {user} dTag={tagId} let:wrappedEvent>
-    {#if wrappedEvent}
-        <Content.Shell {wrappedEvent}>
-            <slot />
-        </Content.Shell>
-    {/if}
-</Content.Root>
+{#key tagId}
+    <Content.Root {user} dTag={tagId} let:wrappedEvent>
+        {#if wrappedEvent}
+            <Content.Shell {wrappedEvent}>
+                <slot />
+            </Content.Shell>
+        {/if}
+    </Content.Root>
+{/key}

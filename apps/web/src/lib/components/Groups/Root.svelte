@@ -1,30 +1,24 @@
 <script lang="ts">
 	import currentUser from '$stores/currentUser';
-	import { NDKArticle, NDKEvent, NDKFilter, NDKKind, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKFilter, NDKKind, NDKRelaySet, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
-	import { deriveListStore, deriveStore } from "$utils/events/derive";
-	import { derived } from "svelte/store";
+	import { deriveStore } from "$utils/events/derive";
+	import { Readable, writable } from "svelte/store";
 	import { onDestroy, onMount } from 'svelte';
-	import { ContentStores } from '.';
-	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
-	import { Readable } from 'svelte/store';
+	import { Group } from '.';
 
-    export let groupId: string | undefined = undefined;
-    export let relays: string[] | undefined = undefined;
+    export let groupId: string;
+    export let relays: string[];
+
     export let skipFooter: boolean = false;
 
-    groupId ??= "";
-
-    const hFilter: NDKFilter = { "#h": [groupId] };
     const dFilter: NDKFilter = { "#d": [groupId] };
 
-    const relaySet = NDKRelaySet.fromRelayUrls(relays||[], $ndk, false);
+    const relaySet = NDKRelaySet.fromRelayUrls(relays, $ndk, true);
 
-    export let group: NDKSimpleGroup | undefined = undefined;
-    group ??= new NDKSimpleGroup($ndk, relaySet, groupId);
-
-    const filters: NDKFilter[] = [
-        { kinds: [ NDKKind.GroupNote, NDKKind.GroupReply ], ...hFilter, limit: 50 },
+    const hFilter: NDKFilter = { "#h": [groupId] };
+    const contentFilters: NDKFilter[] = [
+        { kinds: [ NDKKind.Text, NDKKind.GroupNote, NDKKind.GroupReply ], ...hFilter, limit: 50 },
         { kinds: [ NDKKind.GroupChat ], ...hFilter, limit: 50 },
         { kinds: [ NDKKind.Article ], ...hFilter, limit: 100 },
         { kinds: [ NDKKind.Wiki ], ...hFilter, limit: 100 },
@@ -33,79 +27,79 @@
         { kinds: [ NDKKind.Highlight ], ...hFilter, limit: 100 },
         { kinds: [ NDKKind.TierList, NDKKind.PinList ], ...hFilter },
         { kinds: [ NDKKind.SubscriptionTier ], ...hFilter },
-        { kinds: [ NDKKind.GroupMetadata, NDKKind.GroupAdmins, NDKKind.GroupMembers ], ...dFilter },
     ];
 
-    let events: NDKEventStore<NDKEvent> | undefined = undefined;
+    function onEvent(event: NDKEvent) {
+        group.update($group => {
+            if (event.kind === NDKKind.GroupMetadata) {
+                $group.metadata = NDKSimpleGroupMetadata.from(event);
+                $group.name = $group.metadata.name;
+                $group.picture = $group.metadata.picture;
+                $group.about = $group.metadata.about;
+            } else if (event.kind === NDKKind.GroupAdmins) {
+                $group.admins = NDKSimpleGroupMemberList.from(event);
+                if ($currentUser)
+                    $group.isAdmin = $group.admins.hasMember($currentUser.pubkey);
+                else
+                    $group.isAdmin = false;
+            } else if (event.kind === NDKKind.GroupMembers) {
+                $group.members = NDKSimpleGroupMemberList.from(event);
+                if ($currentUser)
+                    $group.isMember = $group.members.hasMember($currentUser.pubkey);
+                else
+                    $group.isMember = false;
+            }
+
+            return $group;
+        })
+    }
+    
+    export let group = writable<Group>({
+        id: groupId,
+        relayUrls: relays, relaySet,
+        events: $ndk.storeSubscribe([
+            { kinds: [ NDKKind.GroupMetadata, NDKKind.GroupAdmins, NDKKind.GroupMembers ], ...dFilter },
+        ], { subId: 'group-events', relaySet, autoStart: false, onEvent }),
+        content: $ndk.storeSubscribe(contentFilters, { subId: 'group-content', relaySet, autoStart: false }),
+    });
 
     onMount(() => {
+        $group.events.startSubscription();
+        $group.content.startSubscription();
+
         // Subscriptions
-        events = $ndk.storeSubscribe(filters, { subId: 'group-events', groupable: false, relaySet: group.relaySet });
-        metadata = deriveListStore(events, NDKSimpleGroupMetadata);
-        admins = deriveListStore(events, NDKSimpleGroupMemberList, [NDKKind.GroupAdmins]);
-        members = deriveListStore(events, NDKSimpleGroupMemberList);
-        articles = deriveStore(events, NDKArticle);
-        videos = deriveStore(events, NDKVideo);
-        wiki = deriveStore(events, NDKWiki);
-        notes = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupNote, NDKKind.GroupReply, NDKKind.Text ]);
-        chat = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupChat ]);
-        tiers = deriveStore(events, NDKSubscriptionTier);
-        joinRequests = deriveStore<NDKEvent>(events, undefined, [ NDKKind.GroupAdminRequestJoin ]);
-        isAdmin = derived(
-            [ currentUser, admins ], ([ $currentUser, $admins ]) => {
-                if ($currentUser && $admins) {
-                    return $admins.hasMember($currentUser.pubkey);
-                }
-                return false;
-            }
-        );
-        isMember = derived([ currentUser, members, admins ], ([ $currentUser, $members, $admins ]) => {
-            if ($currentUser && $members && $admins) {
-                return $members.hasMember($currentUser.pubkey) || $admins.hasMember($currentUser.pubkey);
-            }
-            return false;
-        });
-
-        stores = {
-            articles,
-            wiki,
-            videos,
-            notes,
-            chat
-        };
+        // const events = $ndk.storeSubscribe(filters, { subId: 'group-events', groupable: false, relaySet: $group.relaySet });
+        // group.events = events;
+        articles = deriveStore($group.content, NDKArticle);
+        videos = deriveStore($group.content, NDKVideo);
+        wiki = deriveStore($group.content, NDKWiki);
+        notes = deriveStore<NDKEvent>($group.content, undefined, [ NDKKind.GroupNote, NDKKind.GroupReply, NDKKind.Text ]);
+        chat = deriveStore<NDKEvent>($group.content, undefined, [ NDKKind.GroupChat ]);
+        tiers = deriveStore($group.content, NDKSubscriptionTier);
     });
 
-    onDestroy(() => {
-        events?.unsubscribe();
-    });
-
-    // Derivations
-    let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
-    let admins: Readable<NDKSimpleGroupMemberList | undefined>;
-    let members: Readable<NDKSimpleGroupMemberList | undefined>;
     let articles: Readable<NDKArticle[]>;
     let videos: Readable<NDKVideo[]>;
     let wiki: Readable<NDKWiki[]>;
     let notes: Readable<NDKEvent[]>;
     let chat: Readable<NDKEvent[]>;
     let tiers: Readable<NDKSubscriptionTier[]>;
-    let joinRequests: Readable<NDKEvent[]>;
-    let isAdmin: Readable<boolean>;
-    let isMember: Readable<boolean>;
 
-    let stores: ContentStores;
+    onDestroy(() => {
+        $group.events?.unsubscribe();
+        $group.content?.unsubscribe();
+    });
 </script>
 
-{#if $metadata}
+{#if $group.metadata}
     <slot
         {group}
-        {metadata}
-        {admins}
-        {members}
-        {isAdmin}
-        {isMember}
-        {joinRequests}
+        {articles}
+        {videos}
+        {wiki}
+        {notes}
+        {chat}
         {tiers}
-        {stores}
     />
+{:else}
 {/if}

@@ -33,7 +33,7 @@
 
 <div class="responsive-padding w-full">
     <Feed.Videos
-        gridSetup="xl:grid-cols-4"
+        gridSetup="sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5"
         store={filteredVideos}
         skipAuthor
     />

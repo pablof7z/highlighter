@@ -1,7 +1,7 @@
 <script lang="ts">
 	import UserProfile from "$components/User/UserProfile.svelte";
     import currentUser from "$stores/currentUser";
-	import { NDKKind, type NDKEvent, NDKArticle, Hexpubkey, NDKFilter, getReplyTag } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKArticle, Hexpubkey, NDKEvent, NDKFilter, getReplyTag, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import type { UserProfileType } from "../../../app";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import Article from "$components/List/Article.svelte";
@@ -23,10 +23,10 @@
     export let skipAvatar = false;
     export let skipName = false;
     export let skipTime = false;
-    
+
     const author = event.author;
 
-    const filter: NDKFilter = { kinds: [9, 11, 12, 7, 5, 9735 ], ...event.filter(), limit: 100 }
+    const filter: NDKFilter = { kinds: [9, 10, 1311, 11, 12, 7, 5, 9735 ], ...event.filter(), limit: 100 }
     const hTag = event.tagValue("h");
 
     markGroupEventSeen(hTag!, event);
@@ -68,7 +68,7 @@
 
     let userProfile: UserProfileType;
     let fetching: boolean;
-    let isGradient = ![NDKKind.Text, NDKKind.GroupChat].includes(event.kind!);
+    let isGradient = ![NDKKind.Text, NDKKind.GroupChat, 10, 1311].includes(event.kind!);
     let authorUrl: string;
 
     let replyTo = event.getMatchingTags("e", "reply")[0];
@@ -86,8 +86,7 @@
     responsive-padding
     {$$props.class??""}
     {isMine ? 'justify-start flex-row-reverse' : 'justify-start flex-row'}
-" on:click class:mb-4={!skipAvatar}
-    on:click>
+" on:click class:mb-4={!skipAvatar}>
     <UserProfile user={author} bind:userProfile bind:fetching bind:authorUrl />
     {#if !skipAvatar}
         <a
@@ -145,7 +144,7 @@
                         {/if}
                     </LoadEvent>
                 {/if}
-                {#if event.kind !== NDKKind.GroupChat}
+                {#if event.kind !== NDKKind.GroupChat && event.kind !== 10}
                     {event.kind}
                 {/if}
                 <EventContent
@@ -155,6 +154,8 @@
                     {event}
                 />
             {/if}
+
+            <slot />
 
             {#if $replyingPubkeys.length > 0}
                 <div class="flex flex-row items-center gap-2 border-t border-white/20 mt-4 -mx-4 p-4 pb-0">

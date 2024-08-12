@@ -33,6 +33,9 @@
             props: { article }
         }
         $layout.footerInMain = true;
+        $layout.fullWidth = false
+
+        onDestroy(() => { $layout.footerInMain = undefined; })
     }
 
     $: if ($layout.footer?.props) $layout.footer!.props.forceMainView = mainView;

@@ -12,6 +12,8 @@
     export let userProfile: NDKUserProfile | undefined = undefined;
     export let authorUrl: string | undefined = undefined;
     export let blossom: any | undefined = undefined;
+
+    export let skipEmptyZaps = false;
     
     export let event: NDKEvent;
 
@@ -30,8 +32,9 @@
         dispatcher("title:inview_change", inView);
 
         if (inView) {
-            $layout.navigation = false;
+            // $layout.navigation = false;
         } else {
+            if (title) $layout.title = title;
             $layout.header = undefined;
             $layout.navigation = navOptions;
         }
@@ -46,6 +49,7 @@
     authorUrl={authorUrl}
     skipSummary={!summary && !$$slots.summary}
     skipImage={image === false}
+
     event={event}
     title={title}
     {blossom}
@@ -76,7 +80,7 @@
         {/if}
     </div>
 
-    <div slot="zaps">
+    <div slot="zaps" class:hidden={skipEmptyZaps && !hasZaps}>
         {#if !isPreview}
             <ItemViewZaps {event} bind:hasZaps class="py-[var(--section-vertical-padding)] responsive-padding border-y border-border" />
         {/if}

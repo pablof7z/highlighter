@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { NDKArticle, NDKFilter, NDKKind, NDKList, NDKRelaySet, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKFilter, NDKKind, NDKList, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import { wotFilteredStore } from "$stores/wot";
 	import { ndk } from "$stores/ndk.js";
-	import { Readable, derived } from "svelte/store";
+	import { Readable } from "svelte/store";
 	import { filterArticles } from "$utils/article-filter";
 	import { page } from "$app/stores";
     import { addHistory } from "$stores/history.js";
@@ -13,9 +13,10 @@
 	import Button from "$components/ui/button/button.svelte";
 	import { BookmarkSimple } from "phosphor-svelte";
 	import { urlFromEvent } from "$utils/url";
+	import Checkbox from "$components/Forms/Checkbox.svelte";
 
     onMount(() => {
-        addHistory({ title: "Articles", url: $page.url.toString() })
+        addHistory({ title: "Reads", url: $page.url.toString() })
     })
 
     const relays = $page.url.searchParams.get('relays')?.split(',');
@@ -33,9 +34,21 @@
         NDKArticle
     );
 
-    const wotF = wotFilteredStore(articles) as Readable<NDKArticle[]>;
+    let wotFilter = true;
 
-    const filteredArticles = filterArticles(wotF);
+    let store: Readable<NDKArticle[]>;
+
+    $: {
+        let s: Readable<NDKArticle[]>;
+
+        if (wotFilter) {
+            s = wotFilteredStore(articles) as Readable<NDKArticle[]>;
+        } else {
+            s = articles;
+        }
+
+        store = filterArticles(s);
+    }
 
     onDestroy(() => {
         articles?.unsubscribe();
@@ -50,6 +63,8 @@
                 savedList = list;
             }
         });
+
+    
 </script>
 
 {#if hasSavedItems}
@@ -59,6 +74,19 @@
     </Button>
 {/if}
 
-<Feed.Articles
-    store={filterArticles(articles)}
-/>
+
+<div class="flex flex-row items-end border rounded p-4 mb-4">
+    <Checkbox
+    type="switch"
+        bind:value={wotFilter}
+    >
+        WOT
+    </Checkbox>
+
+</div>
+
+{#key wotFilter}
+    <Feed.Articles
+        {store}
+    />
+{/key}

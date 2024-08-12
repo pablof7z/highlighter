@@ -15,7 +15,8 @@ function filterList(list: NDKList) {
     // if it doesn't have a title
     if (!list.title || list.title === "undefined") return false;
 
-    
+    // test doesn't say "test"
+    if (list.title.toLowerCase().includes("test")) return false;
 
     return true;
 }

@@ -2,7 +2,7 @@
 // for information about these interfaces
 
 import type { Hexpubkey, NDKUserProfile } from '@nostr-dev-kit/ndk';
-import type { SvelteComponent } from "svelte";
+import type { ComponentType, SvelteComponent } from "svelte";
 
 export type WrappedEvent = NDKArticle | NDKVideo | NDKEvent | NDKHighlight | NDKList;
 
@@ -41,7 +41,7 @@ export type NavigationOption = {
 		fn: () => void;
 	},
     component?: {
-		component: typeof SvelteComponent;
+		component: ComponentType;
 		unstyled?: boolean;
         props?: Record<string, any>;
     }

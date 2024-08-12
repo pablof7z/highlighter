@@ -7,7 +7,7 @@
 	import { NavigationOption } from "../../../app";
 	import InputArray from "$components/ui/input/InputArray.svelte";
 	import { defaultRelays } from "$utils/const";
-	import { Writable } from "svelte/store";
+	import { writable, Writable } from "svelte/store";
 	import { CreateState } from ".";
 
     export let buttonLabel: string;
@@ -33,9 +33,9 @@
     let name: string = $state.name ?? userProfile?.name ?? "";
     let about: string = $state.about ?? userProfile?.about ?? "";
     let picture: string = $state.picture ?? userProfile?.picture ?? "";
-    let relays: string[] = $state.relays ?? defaultRelays;
+    let relays = writable<string[]>(defaultRelays);
 
-    $: state.update(s => ({ ...s, name, about, picture, relays }));
+    $: state.update(s => ({ ...s, name, about, picture, relays: $relays }));
 
     function uploaded(e) {
         picture = e.detail.url;

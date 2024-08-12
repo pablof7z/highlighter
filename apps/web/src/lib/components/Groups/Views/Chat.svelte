@@ -12,17 +12,14 @@
 	import Swipe from "$components/Swipe.svelte";
     import { Keyboard } from '@capacitor/keyboard';
 	import { isMobileBuild } from '$utils/view/mobile';
-	import { Navigation } from "$utils/navigation";
 	import Joined from "$components/Chat/Joined.svelte";
-	import { markGroupEventSeen } from "$stores/notifications";
+	import { Group } from "$components/Groups";
 
-    export let group = getContext('group') as NDKSimpleGroup;
-    export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
-    const isMember = getContext("isMember") as Readable<boolean>;
-    const optionManager = getContext("optionManager") as Navigation;
+    export let group: Readable<Group>;
+    export let optionManager;
     optionManager.options.subscribe(value => $layout.navigation = value);
 
-    addHistory({ category: 'Chat', title: $metadata?.name ?? "Community" });
+    addHistory({ category: 'Chat', title: $group.name ?? "Community" });
 
     if (isMobileBuild()) {
         try {
@@ -31,7 +28,7 @@
     }
     
     $layout.header = undefined;
-    $: if ($isMember) $layout.title = "Chat";
+    $: if ($group.isMember) $layout.title = "Chat";
     $layout.footerInMain = true;
     $layout.fullWidth = false;
     $layout.headerCanBeTransparent = false;
@@ -52,9 +49,9 @@
     }
 
     const chat = $ndk.storeSubscribe([
-        {"#h": [group.groupId]},
-        {"#d": [group.groupId]},
-    ], { groupable: false, subId: 'group-content', relaySet: group.relaySet, onEvent, onEose });
+        {"#h": [$group.id]},
+        {"#d": [$group.id]},
+    ], { groupable: false, subId: 'group-content', relaySet: $group.relaySet, onEvent, onEose });
 
     const sortedChat = derived(chat, ($chat) => {
         return $chat.sort((a, b) => a.created_at! - b.created_at!);
@@ -65,11 +62,11 @@
         $layout.headerCanBeTransparent = undefined;
     })
 
-    let tags: NDKTag[] = [ [ "h", group.groupId ] ];
+    let tags: NDKTag[] = [ [ "h", $group.id ] ];
 
     const replyTo = writable<NDKEvent | undefined>(undefined);
 
-    $: if ($isMember) {
+    $: if ($group.isMember) {
         $layout.footer = {
             component: Groups.Footers.Chat,
             props: {

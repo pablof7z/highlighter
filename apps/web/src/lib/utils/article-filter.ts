@@ -4,14 +4,14 @@ import { Readable, derived, get } from "svelte/store";
 
 export function filterArticle(
     article: NDKArticle,
-    minWordCount: number = 400,
+    minWordCount: number = 1,
     removeTest = true
 ) {
     // If the title starts with "News", we don't want to show it
-    if (article.title?.startsWith('News')) return false;
+    // if (article.title?.startsWith('News')) return false;
 
     // If it doesn't have an image
-    if (!article.image) return false;
+    // if (!article.image) return false;
 
     // if it doesn't have a title
     if (!article.title || article.title === "undefined") return false;
@@ -49,10 +49,12 @@ export function filterArticles(
             return followed ? oneWeek - age : 0 - age;
         }
 
-        const scores: Record<string, number> = {};
-        ret.forEach((article) => {
-            scores[article.id] = articleScore(article);
-        });
+        // const scores: Record<string, number> = {};
+        // ret.forEach((article) => {
+        //     scores[article.id] = articleScore(article);
+        // });
+
+        return ret;
         
         return ret.sort((a, b) => {
             const aScore = scores[a.id];

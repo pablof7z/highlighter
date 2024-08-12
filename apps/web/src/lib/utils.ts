@@ -2,7 +2,6 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
-import { type ClassValue, clsx } from 'clsx';
 
 export function pluralize(n: number, singular: string, plural: string = `${singular}s`) {
 	return n === 1 ? singular : plural;

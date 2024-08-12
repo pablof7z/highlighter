@@ -65,11 +65,11 @@
         <button class="
             rounded-full
             bg-secondary text-foreground
-            max-sm:bg-accent max-sm:text-accent-foreground
+            max-sm:bg-foreground max-sm:text-foreground
             p-2 
             transition-all duration-300
-            hover:!bg-accent
-            hover:ring-8 ring-accent/30
+            hover:!bg-foreground hover:text-background
+            hover:ring-8 ring-foreground/30
         " on:click={() => { $thread.newItem(); $thread.items = $thread.items }}>
             <Plus size={24} weight="bold" />
         </button>

@@ -11,6 +11,9 @@
 	import { fade } from "svelte/transition";
 	import { CaretDown } from "phosphor-svelte";
 	import BackButton from "./Navigation/BackButton.svelte";
+    import * as Groups from "$components/Groups";
+	import { get } from "svelte/store";
+	import PublishedToPills from "$components/Groups/PublishedToPills.svelte";
 
     export let containerClass: string = "";
     export let scrollDir: 'up' | 'down' | undefined;
@@ -50,19 +53,25 @@
                         <img src={$layout.iconUrl} class="w-8 h-8 rounded-full flex-none" />
                     {/if}
 
-                    {#if $layout?.title}
-                        <div class="
-                            flex flex-row
-                            text-foreground
-                            font-medium text-lg
-                            gap-2
-                            col-span-5
-                            text-center
-                            grow truncate
-                        ">
-                            <span class="truncate">{$layout?.title}</span>
-                        </div>
-                    {/if}
+                    <div class="flex flex-col items-start">
+                        {#if $layout?.title}
+                            <div class="
+                                flex flex-row
+                                text-foreground
+                                font-medium text-lg
+                                gap-2
+                                col-span-5
+                                text-center
+                                grow truncate
+                            ">
+                                <span class="truncate">{$layout?.title}</span>
+                            </div>
+                        {/if}
+
+                        {#if $layout.event?.tagValue("h")}
+                            <Groups.PublishedToPills event={$layout.event} />
+                        {/if}
+                    </div>
                 </div>
 
                 <!-- If we explicit options, we show that -->

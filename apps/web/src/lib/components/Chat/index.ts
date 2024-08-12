@@ -1,7 +1,8 @@
+import Shell from "./Shell.svelte";
 import List from "./list.svelte";
-import Item from "./item.svelte";
 
 export {
+    Shell,
+    
     List,
-    Item,
 }

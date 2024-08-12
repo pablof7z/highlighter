@@ -2,8 +2,6 @@
 	import { ArrowLeft } from 'phosphor-svelte';
 	import { page } from "$app/stores";
 	import { NDKEvent, NDKUser, isEventOriginalPost, getEventReplyIds, getRootEventId, NDKKind } from "@nostr-dev-kit/ndk";
-	import WithItem from "$components/Event/ItemView/WithItem.svelte";
-	import ForumFeedItem from "$components/Feed/ForumFeedItem.svelte";
 	import { ndk } from "$stores/ndk";
 	import { goto } from '$app/navigation';
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
@@ -74,36 +72,34 @@
     <div class="w-full">
 
         {#key eventId}
-        <WithItem tagId={eventId} bind:event>
-            {#if event}
-                <div class="flex flex-col discussion-wrapper">
-                    {#if event.tagValue("title")}
-                        <div class="flex flex-col items-start gap-1 p-4">
-                            <button on:click={back} class="font-base text-xs">
-                                <ArrowLeft class="w-5 h-5 inline-block" />
-                                Back to Community posts
-                            </button>
+            <Content.Root bech32={evnetId} bind:event>
+                {#if event}
+                    <div class="flex flex-col discussion-wrapper">
+                        {#if event.tagValue("title")}
+                            <div class="flex flex-col items-start gap-1 p-4">
+                                <button on:click={back} class="font-base text-xs">
+                                    <ArrowLeft class="w-5 h-5 inline-block" />
+                                    Back to Community posts
+                                </button>
 
-                            <button class="text-left truncate text-2xl font-bold text-foreground">{event.tagValue("title")}</button>
-                        </div>
-                    {/if}
+                                <button class="text-left truncate text-2xl font-bold text-foreground">{event.tagValue("title")}</button>
+                            </div>
+                        {/if}
 
-                    {#if event.kind === NDKKind.Text}
-                        <EventWrapper
-                            {event}
-                            creatorUser={creator}
-                            expandReplies={expandReplies(event)}
-                            expandThread={true}
-                            contentClass="text-lg"
-                            threadView={true}
-                            urlPrefix={`/${id}/posts/`}
-                        />
-                    {:else}
-                        <ForumFeedItem creatorUser={creator} {event} skipTitle={true} contentClass="text-xl leading-10" maxContentLength={999999} expandThread={expandThread(event)} expandReplies={expandReplies(event)} bind:showReply />
-                    {/if}
-                </div>
-            {/if}
-        </WithItem>
+                        {#if event.kind === NDKKind.Text}
+                            <EventWrapper
+                                {event}
+                                creatorUser={creator}
+                                expandReplies={expandReplies(event)}
+                                expandThread={true}
+                                contentClass="text-lg"
+                                threadView={true}
+                                urlPrefix={`/${id}/posts/`}
+                            />
+                        {/if}
+                    </div>
+                {/if}
+            </Content.Root>
         {/key}
     </div>
 {/if}

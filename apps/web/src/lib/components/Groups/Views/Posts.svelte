@@ -1,28 +1,27 @@
 <script lang="ts">
 	import { layout, } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
-	import { NDKKind, NDKSimpleGroup, NDKSimpleGroupMetadata, NDKTag } from "@nostr-dev-kit/ndk";
-	import { getContext, onDestroy } from "svelte";
+	import { NDKKind, NDKTag } from "@nostr-dev-kit/ndk";
+	import { onDestroy } from "svelte";
 	import StoreFeed from '$components/Feed/StoreFeed.svelte';
 	import { Readable } from "svelte/store";
     import * as Groups from "$components/Groups";
 
-    const group = getContext('group') as NDKSimpleGroup;
-    const metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
-    const isMember = getContext("isMember") as Readable<boolean>;
+    export let group: Readable<Groups.Group>;
+    export let optionManager;
 
     $layout.footerInMain = true;
         
     const posts = $ndk.storeSubscribe([
-        {kinds: [NDKKind.GroupNote], "#h": [group.groupId]},
-        {kinds: [NDKKind.GroupReply], "#h": [group.groupId]},
-    ], { groupable: false, subId: 'group-content', relaySet: group.relaySet });
+        {kinds: [NDKKind.GroupNote], "#h": [$group.id]},
+        {kinds: [NDKKind.GroupReply], "#h": [$group.id]},
+    ], { groupable: false, subId: 'group-content', relaySet: $group.relaySet });
 
     onDestroy(() => {
         posts.unsubscribe();
     })
 
-    let tags: NDKTag[] = [ [ "h", group.groupId ] ];
+    let tags: NDKTag[] = [ [ "h", $group.id ] ];
 
     $layout.footer = {
         component: Groups.Footers.Post,

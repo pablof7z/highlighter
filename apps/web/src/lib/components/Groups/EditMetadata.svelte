@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Input from "$components/ui/input/input.svelte";
 	import { defaultRelays } from "$utils/const";
-	import { NDKEvent, NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
+	import { NDKRelaySet, NDKSimpleGroup, NDKSimpleGroupMetadata } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
 	import { groupsList } from "$stores/session";
 	import { toast } from "svelte-sonner";
 
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
-	import { Camera, CaretDown, Image, Upload } from "phosphor-svelte";
+	import { Camera } from "phosphor-svelte";
 	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import { createEventDispatcher, getContext } from "svelte";
 	import Checkbox from "$components/Forms/Checkbox.svelte";

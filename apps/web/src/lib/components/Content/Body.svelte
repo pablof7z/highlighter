@@ -3,6 +3,7 @@
     import { getContext } from 'svelte';
     import ArticleBody from "./Article/Body.svelte";
     import CurationBody from "./Curation/Body.svelte";
+    import DVMBody from "./DVM/Body.svelte";
     import VideoBody from "./Video/Body.svelte";
     import NoteBody from "./Note/Body.svelte";
     import ModularArticleBody from "./ModularArticle/Body.svelte";
@@ -18,7 +19,9 @@
 </script>
 
 <div>
-    {#if event.kind === 30040}
+    {#if event.kind >= 6000 & event.kind < 7000}
+        <DVMBody {event} />
+    {:else if event.kind === 30040}
         <ModularArticleBody event={event} />
     {:else if event.kind === 30041}
         <ModularArticleItem article={event} />

@@ -32,7 +32,7 @@
 ">
     <NewPostItem icon='🤙' title="Short Not2e2" on:click={shortNote} />
     <NewPostItem icon="🗒️" title="Article" href="/studio/article" on:click={closeModal} />
-    <NewPostItem icon='🎬 ' title="Video" href="/videos/new" on:click={closeModal} />
+    <NewPostItem icon='🎬 ' title="Video" href="/studio/video" on:click={closeModal} />
     <NewPostItem icon='🧵' title="Thread" href="/studio/threads/new" on:click={closeModal} />
     <NewPostItem icon='⏱️' title="Scheduled Posts" href="/schedule" on:click={closeModal} />
     <NewPostItem icon='🖋️' title="Drafts" href="/drafts" on:click={closeModal} />

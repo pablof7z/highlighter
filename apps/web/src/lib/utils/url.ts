@@ -3,7 +3,7 @@ import type { NDKEvent, NDKSimpleGroup, NDKUser } from '@nostr-dev-kit/ndk';
 import { get } from 'svelte/store';
 import { vanityUrlsByPubkey } from './const';
 import { isMobileBuild } from './view/mobile';
-import { GroupEntry } from "$stores/groups";
+import { Group, GroupData } from "$components/Groups";
 
 export const EVENT_ID_SUFFIX_LENGTH = 999;
 
@@ -55,18 +55,18 @@ export function getEventUrl(event: NDKEvent, authorUrl?: string, extraPath?: str
 	return url.toString();
 }
 
-export function getGroupUrl(groupId: string, relays: string[], extraPath?: string) {
+export function getGroupUrl(group: GroupData, extraPath?: string) {
 	const url = new URL("", window.location.href);
 
 	if (!isMobileBuild())
-		url.pathname = `/communities/${groupId}/${extraPath ?? ""}`;
+		url.pathname = `/communities/${group.id}/${extraPath ?? ""}`;
 	else {
 		url.pathname = "/mobile/community";
-		url.searchParams.set("groupId", groupId);
+		url.searchParams.set("groupId", group.id);
 		if (extraPath) url.searchParams.set("view", extraPath);
 	}
 
-	url.searchParams.set("relays", Array.from(relays).join(","));
+	url.searchParams.set("relays", Array.from(group.relayUrls).join(","));
 	
 	return url.toString();
 }

@@ -28,26 +28,22 @@
     <Groups.Root
         {groupId}
         {relays}
-        let:isMember
-        let:isAdmin
         let:group
-        let:metadata
-        let:members
-        let:stores
-        let:joinRequests
+        let:articles
+        let:videos
+        let:wiki
+        let:notes
+        let:chat
         let:tiers
-        let:admins
     >
         <Groups.Shell
             {group}
-            {isAdmin}
-            {isMember}
+            {articles}
+            {videos}
+            {wiki}
+            {notes}
+            {chat}
             {tiers}
-            {joinRequests}
-            {metadata}
-            {members}
-            {admins}
-            {stores}
         >
             <slot />
         </Groups.Shell>

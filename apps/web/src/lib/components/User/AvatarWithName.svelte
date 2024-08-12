@@ -13,6 +13,7 @@
     export let leadingText = "";
     export let avatarType: 'circle' | 'square' | undefined = "circle";
     export let avatarSize: 'tiny' | 'small' | 'medium' | 'large' | undefined = "medium";
+    export let href: string | undefined = undefined;
 
     function newProfileAfterEose(e: CustomEvent<NDKUserProfile>) {
         userProfile = e.detail;
@@ -21,7 +22,7 @@
 
 {#if !userProfile}
     <UserProfile {user} bind:userProfile let:fetching bind:authorUrl on:newProfileAfterEose={newProfileAfterEose}>
-        <a href={authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
+        <a href={href??authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
             <Avatar {userProfile} {fetching} size={avatarSize} class="flex-none {$$props.avatarClass??""}" type={avatarType} />
 
             <div class="flex flex-col items-start gap-0">
@@ -31,7 +32,7 @@
         </a>
     </UserProfile>
 {:else}
-    <a href={authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
+    <a href={href??authorUrl} class="flex flex-row items-center {spacing} {$$props.class}">
         <Avatar {user} {pubkey} {userProfile} size={avatarSize} class={$$props.avatarClass??""} type={avatarType} />
 
         <div class="flex flex-col items-start gap-0">

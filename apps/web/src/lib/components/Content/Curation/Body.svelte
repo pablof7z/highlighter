@@ -3,6 +3,7 @@
 	import { NDKList } from "@nostr-dev-kit/ndk";
     import * as List from "$components/List";
     import * as Card from "$components/Card";
+    import Footer from './Footer.svelte';
 
     export let list: NDKList;
 
@@ -10,6 +11,12 @@
     $layout.title = list.title;
     $layout.iconUrl = list.image;
     $layout.navigation = false;
+    $layout.fullWidth = false;
+    $layout.footerInMain = true;
+    $layout.footer = {
+        component: Footer,
+        props: { list },
+    }
 
     $layout.sidebar = false;
     

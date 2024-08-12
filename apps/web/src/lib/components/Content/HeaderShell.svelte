@@ -31,7 +31,7 @@
         isInView = inView;
         
         if (inView) {
-            $layout.header = false;
+            // $layout.header = false;
         } else if (title) {
             $layout.header = undefined;
             $layout.title = title;

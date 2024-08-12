@@ -3,6 +3,7 @@ import Editor from './Editor.svelte';
 import Attachments from './Attachments.svelte';
 import { NDKEvent, NDKKind, NDKRelaySet, NDKTag } from '@nostr-dev-kit/ndk';
 import { EventDispatcher } from 'svelte';
+import { State as AudienceState } from "$components/Audience";
 
 export type Actions = {
     publish: () => void;
@@ -25,9 +26,9 @@ export type State = {
     replyTo?: NDKEvent;
     mentionEvent?: NDKEvent;
 
-    relaySet?: NDKRelaySet;
-
     dispatch: EventDispatcher<any>;
+
+    audience: AudienceState;
 };
 
 export {

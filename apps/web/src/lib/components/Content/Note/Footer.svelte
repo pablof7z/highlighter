@@ -10,6 +10,7 @@
 	import currentUser from "$stores/currentUser";
 	import { createEventReply } from "$utils/event";
     import Zap from '$components/Footer/Views/Zap';
+	import Comment from "$components/Footer/Views/Comment/";
 
     export let event: NDKEvent;
     export let mainView: 'zap' | 'tts' | "content" | undefined = undefined;
@@ -45,8 +46,9 @@
     bind:open
     {onPublish}
     {placeholder}
-    buttons={[
-        {...Zap, buttonProps: { zapped }, props: { event, onZapped }}
+    views={[
+        {...Zap, buttonProps: { zapped }, props: { event, onZapped }},
+        {...Comment, props: { event, placeholder }},
     ]}
 >
     <div slot="main">

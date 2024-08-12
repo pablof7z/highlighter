@@ -11,7 +11,6 @@
 	import { Button } from "$components/ui/button";
     import * as Tabs from "$lib/components/ui/tabs/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-	import { groups } from '$stores/groups';
 
 	// import MakePublicAfter from "$components/Editor/Audience/MakePublicAfter.svelte";
     
@@ -23,7 +22,6 @@
 
     export let publishInTiers: PublishInTierStore;
 
-    const event = getContext("event") as Writable<NDKArticle>;
     export let publishScope: Writable<Scope>;
 
     let selectedGroups: Record<string, boolean | NDKSubscriptionTier[]> = {};

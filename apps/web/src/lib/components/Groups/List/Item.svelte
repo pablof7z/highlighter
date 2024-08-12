@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { GroupId } from '..';
+	import * as Groups from "$components/Groups";
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
-	import currentUser from '$stores/currentUser';
 	import { getGroupUrl } from '$utils/url';
-    import { Hexpubkey, NDKArticle, NDKEvent, NDKFilter, NDKKind, NDKSimpleGroup, NDKTag } from '@nostr-dev-kit/ndk';
+    import { Hexpubkey, NDKArticle, NDKEvent, NDKFilter, NDKKind } from '@nostr-dev-kit/ndk';
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { derived, Readable } from 'svelte/store';
 	import { groupsList, userFollows } from '$stores/session';
@@ -11,34 +10,28 @@
 	import AvatarsPill from '$components/Avatars/AvatarsPill.svelte';
 	import Badge from '$components/ui/badge/badge.svelte';
 	import { randomImage } from '$utils/image';
-	import { GroupEntry, groupKey } from '$stores/groups';
-	import { group } from 'console';
 	import pinGroup from '$actions/Groups/pin';
 	import { toast } from 'svelte-sonner';
-	import { NavigationOption } from '../../../app';
 	import { ndk } from '$stores/ndk';
 	import { deriveStore } from '$utils/events/derive';
 	import { goto } from '$app/navigation';
-	import { lastSeenGroupTimestamp, lastSeenTimestamp } from '$stores/notifications';
+	import { lastSeenGroupTimestamp } from '$stores/notifications';
+	import { NavigationOption } from "../../../../app";
 
-    export let groupEntry: GroupEntry;
+    export let group: Readable<Groups.GroupData>;
 
     let recentEvents: NDKEventStore<NDKEvent>;
     let mostRecentEvent: Readable<NDKEvent | undefined>;
 
     function getLastTimeGroupWasChecked(): number | undefined {
-        return $lastSeenGroupTimestamp[groupEntry.groupId];
+        return $lastSeenGroupTimestamp[$group.id];
     }
-
-    let isMember: boolean | undefined;
-    
-    $: isMember = $currentUser ? groupEntry?.members?.has($currentUser?.pubkey) : false;
 
     let pubkeysToFeature: Hexpubkey[] | undefined;
 
-    $: if (groupEntry?.members && !isMember && !pubkeysToFeature) {
+    $: if ($group.members && !$group.isMember && !pubkeysToFeature) {
         pubkeysToFeature = [];
-        for (const member of groupEntry?.members) {
+        for (const member of $group.members.members) {
             if ($userFollows.has(member)) {
                 pubkeysToFeature.push(member);
             }
@@ -49,10 +42,10 @@
     let unseenArticles: Readable<NDKArticle[]>;
     let unseenChats: Readable<NDKEvent[]>;
 
-    $: if (groupEntry && isMember && !recentEvents) {
+    $: if ($group.members && $group.isMember && !recentEvents) {
         const lastSeen = getLastTimeGroupWasChecked();
         const filters: NDKFilter[] = [{
-            "#h": [groupEntry.groupId]
+            "#h": [$group.id]
         }];
 
         if (lastSeen) {
@@ -63,7 +56,7 @@
 
         recentEvents = $ndk.storeSubscribe(
             filters,
-            { subId: 'recent-group-events', groupable: false, relaySet: groupEntry.relaySet },
+            { subId: 'recent-group-events', groupable: false, relaySet: $group.relaySet },
         )
 
         mostRecentEvent = derived(recentEvents, $recentEvents => {
@@ -91,36 +84,36 @@
     }
 
     function pin() {
-        pinGroup(groupEntry.groupId, groupEntry.relayUrls);
+        pinGroup($group.id, $group.relayUrls);
         toast.success('Group pinned');
     }
     
     function unpin() {
-        $groupsList?.removeItemByValue(groupEntry.groupId);
+        $groupsList?.removeItemByValue($group.id);
         $groupsList = $groupsList;
     }
 
     let rightOptions: NavigationOption[] = [];
 
-    $: if (groupEntry) {
+    $: if ($group) {
         rightOptions = [];
-        if ($groupsList?.has(groupEntry.groupId))
+        if ($groupsList?.has($group.id))
             rightOptions.push({ name: 'Unpin', class: 'bg-secondary/50', fn: unpin })
         else
             rightOptions.push({ name: 'Pin', class: 'bg-secondary/50', fn: pin })
-        rightOptions.push({ name: 'Visit', class: 'bg-secondary', fn: () => goto(getGroupUrl(groupEntry.groupId, groupEntry.relayUrls)) })
+        rightOptions.push({ name: 'Visit', class: 'bg-secondary', fn: () => goto(getGroupUrl($group)) })
     }
 </script>
 
 <Swipe {rightOptions}>
-    <a href={getGroupUrl(groupEntry.groupId, groupEntry.relayUrls)} class="py-2 w-full group relative hover:bg-secondary transition-all duration-100 ease-in-out">
+    <a href={getGroupUrl($group)} class="py-1.5 group relative hover:bg-secondary transition-all duration-100 ease-in-out flex overflow-clip">
         <div class="responsive-padding flex flex-row items-stretch px-2 gap-3 w-full">
-            <img src={groupEntry.picture??randomImage(groupEntry.name, 300, 300)} />
+            <img src={$group.picture??randomImage($group.name??"", 300, 300)} />
             
             <div class="flex flex-col grow">
                 <div class="flex flex-row gap-1 grow truncate justify-between items-center">
                     <span class="text-foreground font-medium text-base truncate">
-                        {groupEntry.name??"Unnamed Group"}
+                        {$group.name??"Unnamed Group"}
                     </span>
 
                     <span class="text-xs text-muted-foreground whitespace-nowrap shrink">
@@ -131,19 +124,24 @@
                 </div>
 
                 <div class="flex flex-row gap-1 grow truncate items-center justify-between">
-                    {#if !isMember && pubkeysToFeature}
+                    {#if !$group.isMember && $group.about}
+                        <div class="text-sm lg:text-xs text-muted-foreground truncate">
+                            {$group.about}
+                        </div>
+                    {/if}
+                    {#if !$group.isMember && pubkeysToFeature}
                         <AvatarsPill pubkeys={pubkeysToFeature} />
                     {:else if $mostRecentEvent}
                         <span class="text-sm lg:text-xs text-muted-foreground truncate">
                             {$mostRecentEvent.content}
                         </span>
-                    {:else if groupEntry.about}
+                    {:else if $group.about}
                         <div class="text-sm lg:text-xs text-muted-foreground truncate">
-                            {groupEntry.about}
+                            {$group.about}
                         </div>
                     {:else}
                         <div class="text-sm text-muted-foreground truncate">
-                            {groupEntry.relaySet.relayUrls[0]}
+                            {$group.relaySet.relayUrls[0]}
                         </div>
                     {/if}
 
@@ -166,7 +164,7 @@
             </div>
 
             <div class="hidden lg:group-hover:flex absolute top-0 right-0">
-                {#if $groupsList?.has(groupEntry.groupId)}
+                {#if $groupsList?.has($group.id)}
                     <button on:click|stopPropagation|preventDefault={unpin}>
                         unpin
                     </button>

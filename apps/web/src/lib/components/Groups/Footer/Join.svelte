@@ -14,8 +14,9 @@
 	import { calculateSatAmountFromAmount } from "$utils/currency";
 	import { onDestroy, getContext } from 'svelte';
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
+	import { Group } from "..";
 
-    export let group: NDKSimpleGroup;
+    export let group: Readable<Group>;
     export let metadata: Readable<NDKSimpleGroupMetadata>;
     export let members: Readable<NDKSimpleGroupMemberList>;
     export let admins: Readable<NDKSimpleGroupMemberList>;
@@ -31,11 +32,11 @@
     $: if ($currentUser && $isMember === false && !myJoinRequests) {
         myJoinRequests = $ndk.storeSubscribe({
             kinds: [NDKKind.GroupAdminRequestJoin],
-            "#h": [group.groupId],
+            "#h": [$group.id],
             authors: [$currentUser.pubkey]
-        }, { relaySet: group.relaySet });
+        }, { relaySet: $group.relaySet });
     }
-    $: joinRequested = !!(myJoinRequests && $myJoinRequests.length > 0);
+    $: joinRequested = !!($myJoinRequests && $myJoinRequests.length > 0);
 
     onDestroy(() => {
         myJoinRequests?.unsubscribe();
@@ -58,7 +59,8 @@
 
     async function join() {
         if (!$currentUser) return;
-        group.requestToJoin($currentUser.pubkey)
+        alert('not implemented')
+        // group.requestToJoin($currentUser.pubkey)
     }
 
     async function subscribe() {
@@ -94,7 +96,7 @@
             }
             
             startEvent.publish();
-            startEvent.publish(group.relaySet);
+            startEvent.publish($group.relaySet);
         });
         await res.zap();
     }
@@ -172,28 +174,33 @@
                 {/if}
             </section>
 
-            {#if $metadata.access === "closed" && $tiers.length > 0}
-                <Button
-                    variant="accent"
-                    class="w-full justify-between"
-                    on:click={() => open('subscribe')}
-                >
-                    <div>
-                        Join &mdash;
-                        Starting at
-                        {tierAmountToString($tiers[0].amounts[0])}
-                    </div>
-                    <CaretDown size={16} class="ml-1" />
+            <div class="flex flex-row w-full gap-2">
+                {#if $metadata.access === "closed" && $tiers.length > 0}
+                    <Button
+                        variant="accent"
+                        class="w-full justify-between"
+                        on:click={() => open('subscribe')}
+                    >
+                        <div>
+                            Join &mdash;
+                            Starting at
+                            {tierAmountToString($tiers[0].amounts[0])}
+                        </div>
+                        <CaretDown size={16} class="ml-1" />
+                    </Button>
+                {:else}
+                    <Button
+                        variant="accent"
+                        class="w-full justify-between"
+                        on:click={join}
+                    >
+                        Join
+                    </Button>
+                {/if}
+                <Button variant="ghost" on:click={() => open(false)}>
+                    Close
                 </Button>
-            {:else}
-                <Button
-                    variant="accent"
-                    class="w-full justify-between"
-                    on:click={join}
-                >
-                    Join
-                </Button>
-            {/if}
+            </div>
         {/if}
 
         <section class="w-full flex flex-col gap-2">
