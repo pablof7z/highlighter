@@ -28,9 +28,9 @@ import { cn } from "$utils";
     on:click={copy}
 >
     <div class="flex flex-row items-center gap-2 whitespace-nowrap relative">
-        <Input readonly value={copied ? "Copied!" : strData} class="text-lg p-6 pr-12" />
+        <Input readonly value={copied ? "Copied!" : strData} class="text-lg p-6 !pr-12 {$$props.class??""}" />
         
-        <div class="absolute right-0 top-0 bottom-0 flex flex-row items-center gap-2 p-6 pr-6">
+        <div class="absolute right-0 top-0 bottom-0 flex flex-row items-center gap-2 pr-6">
             {#if copied}
                 <Check class={cn('w-4 max-sm:w-8 h-4 max-sm:h-8', $$props.iconClass)} />
             {:else }

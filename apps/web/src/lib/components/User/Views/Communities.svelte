@@ -12,17 +12,10 @@
     $layout.fullWidth = false;
 </script>
 
-<div class="responsive-padding">
+<div class="responsive-padding divide-y border">
     {#if $userGroupsList}
-        <Groups.RootList tags={$userGroupsList.items} let:groupEntry>
-            <Chat.Item {groupEntry} />
+        <Groups.RootList tags={$userGroupsList.items} let:group>
+            <Groups.ListItem {group} />
         </Groups.RootList>
     {/if}
 </div>
-
-<!-- 
-<div class="responsive-padding">
-    {#each $loadedGroups as group (group.groupId)}
-        <Chat.Item groupEntry={group} />
-    {/each}
-</div> -->

@@ -14,7 +14,11 @@
 {#if orientation === "horizontal"}
     <HorizontalList {title} items={$items} />
 {:else}
-    {#each $wrappedItems as item (item.id)}
-        <slot {item} />
-    {/each}
+    <div class="flex flex-col divide-y divide-border">
+        {#each $wrappedItems as item (item.id)}
+            <div class="w-full py-[var(--section-vertical-padding)]">
+                <slot {item} />
+            </div>
+        {/each}
+    </div>
 {/if}

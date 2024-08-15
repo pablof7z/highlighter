@@ -140,7 +140,7 @@
 <ModalShell
     {title}
     containerClass="relative"
-    class="max-w-md w-full"
+    class="max-w-md w-full max-sm:h-[90vh]"
     {actionButtons}
 >
     <UserProfile user={$currentUser} let:userProfile>

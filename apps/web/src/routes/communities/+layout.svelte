@@ -3,6 +3,8 @@
     import * as Groups from "$components/Groups";
 	import { ndkRelaysWithAuth } from "$stores/auth-relays";
 	import { layout } from "$stores/layout";
+	import { NDKArticle, NDKEvent, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
+	import { get, Readable } from "svelte/store";
 
     let groupId: string;
     let relays: string[];
@@ -22,28 +24,33 @@
         groupId = $page.params.groupId ?? $page.url.searchParams.get('groupId');
         $layout.back = { url: groupId ? '/communities?'+groupId : '/' };
     }
+
+    let group: Readable<Groups.GroupData> | undefined = undefined;
+    let articles: Readable<NDKArticle[]>;
+    let videos: Readable<NDKVideo[]>;
+    let wiki: Readable<NDKWiki[]>;
+    let notes: Readable<NDKEvent[]>;
+    let chat: Readable<NDKEvent[]>;
 </script>
 
 {#if groupId}
     <Groups.Root
         {groupId}
         {relays}
-        let:group
-        let:articles
-        let:videos
-        let:wiki
-        let:notes
-        let:chat
-        let:tiers
+        bind:group
+        bind:articles
+        bind:videos
+        bind:chat
+        bind:notes
+        bind:wiki
     >
         <Groups.Shell
             {group}
             {articles}
             {videos}
-            {wiki}
-            {notes}
             {chat}
-            {tiers}
+            {notes}
+            {wiki}
         >
             <slot />
         </Groups.Shell>

@@ -4,7 +4,7 @@
 	import { Readable } from "svelte/store";
 	import { NavigationOption } from "../../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
-	import { layout } from '$stores/layout';
+	import { headerTouchFns, layout } from '$stores/layout';
 	import { inview } from 'svelte-inview';
 	import BackButton from '$components/App/Navigation/BackButton.svelte';
 	import { Button } from "$components/ui/button";
@@ -12,6 +12,7 @@
 	import AvatarsPill from "$components/Avatars/AvatarsPill.svelte";
 	import { Navigation } from "$utils/navigation";
 	import { Group } from ".";
+    import * as App from "$components/App";
 
     export let group: Readable<Group>;
     export let tiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
@@ -49,10 +50,7 @@
     });
 </script>
 
-<div class="
-    z-20 w-full sm:min-h-[15rem] flex flex-col overflow-clip
-    pt-[var(--safe-area-inset-top)]
-">
+<App.HeaderShell>
     <!-- Banner -->
     <div class="w-full z-0 relative">
         {#if $group.picture}
@@ -97,5 +95,4 @@
     </div>
 
     <HorizontalOptionsList {options} class="py-[var(--section-vertical-padding)] border-y border-border responsive-padding relative" />
-</div>
-
+</App.HeaderShell>

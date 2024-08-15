@@ -94,19 +94,9 @@
                             </span>
 
                             {#if event?.hasTag("full")}
-                                <Badge variant="secondary" class="
-                                    font-regular
-                                ">
-                                    <Star class="w-4 h-4 mr-1.5" weight="fill" />
-                                    Preview
-                                </Badge>
+                                <Event.Badges.Preview />
                             {:else if isPaidOnly}
-                                <Badge variant="gold" class="
-                                    font-regular
-                                ">
-                                    <Star class="w-4 h-4 mr-1.5" weight="fill" />
-                                    Exclusive
-                                </Badge>
+                                <Event.Badges.Exclusive />
                             {/if}
                         {:else if description}
                             <div class="text-sm text-white/80 font-normal truncate max-w-screen">

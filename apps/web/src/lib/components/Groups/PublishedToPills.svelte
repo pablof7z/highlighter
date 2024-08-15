@@ -5,8 +5,10 @@
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
     import * as Groups from "$components/Groups";
 	import { getGroupUrl } from "$utils/url";
+	import { Badge } from "$components/ui/badge";
 
     export let event: NDKEvent;
+    export let size = "xs";
 
     const tags = event.getMatchingTags("h");
 
@@ -20,10 +22,10 @@
 </script>
 
 {#if $groups && Object.keys($groups).length > 0}
-    <a {href} class="flex flex-row gap-2 font-thin text-muted-foreground items-center" size="xs">
+    <Badge variant="gold" {href} class="flex flex-row gap-2 items-center {$$props.class??""}">
         <div class="-space-x-2">
             {#each Object.values($groups) as group}
-                <Groups.Avatar {group} size="xs" />
+                <Groups.Avatar {group} {size} />
             {/each}
         </div>
 
@@ -34,5 +36,5 @@
                 {Object.values($groups)[0].name}
             </div>
         {/if}
-    </a>
+    </Badge>
 {/if}

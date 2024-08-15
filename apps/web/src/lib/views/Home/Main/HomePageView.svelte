@@ -21,6 +21,7 @@
     $layout.fullWidth = true;
     $layout.header = undefined;
     $layout.navigation = undefined;
+    $layout.forceShowNavigation = true;
 
     const videos = $ndk.storeSubscribe([
         { kinds: [NDKKind.HorizontalVideo, NDKKind.HorizontalVideo+1], authors: Array.from($userFollows), limit: 50 },
@@ -50,7 +51,7 @@
         .map(user => { return { user, id: user.pubkey } });
 </script>
 
-<div class="flex flex-col gap-[var(--section-vertical-padding)]">
+<div class="flex flex-col sm:gap-[var(--section-vertical-padding)]">
     <Groups />
 
     <div class="flex flex-row items-start gap-6">

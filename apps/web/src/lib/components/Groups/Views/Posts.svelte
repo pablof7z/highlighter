@@ -6,15 +6,16 @@
 	import StoreFeed from '$components/Feed/StoreFeed.svelte';
 	import { Readable } from "svelte/store";
     import * as Groups from "$components/Groups";
+	import * as Content from "$components/Content";
+	import * as Card from "$components/Card/Note.svelte";
 
-    export let group: Readable<Groups.Group>;
+    export let group: Readable<Groups.GroupData>;
     export let optionManager;
 
     $layout.footerInMain = true;
         
     const posts = $ndk.storeSubscribe([
         {kinds: [NDKKind.GroupNote], "#h": [$group.id]},
-        {kinds: [NDKKind.GroupReply], "#h": [$group.id]},
     ], { groupable: false, subId: 'group-content', relaySet: $group.relaySet });
 
     onDestroy(() => {
@@ -38,4 +39,11 @@
     }
 </script>
 
-<StoreFeed feed={posts} />
+<div class="flex flex-col gap-4">
+    {#each $posts as post (post.id)}
+        <Content.Root event={post} let:wrappedEvent>
+            <Content.Shell {wrappedEvent}>
+            </Content.Shell>
+        </Content.Root>
+    {/each}
+</div>

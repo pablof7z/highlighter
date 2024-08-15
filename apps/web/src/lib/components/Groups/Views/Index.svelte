@@ -9,6 +9,7 @@
     import * as Groups from "$components/Groups";
 	import { Plus } from 'phosphor-svelte';
 	import { addHistory } from '$stores/history';
+	import { defaultRelays } from '$utils/const';
 
     addHistory({ title: "Communities", url: "/communities" });
 
@@ -20,13 +21,27 @@
     $layout.fullWidth = false;
     $layout.event = undefined;
 
+    const relaySet = NDKRelaySet.fromRelayUrls(defaultRelays, $ndk);
+    const allGroups = $ndk.storeSubscribe({ kinds: [NDKKind.GroupMetadata] }, { groupable: false, closeOnEose: true, relaySet });
+
     const groupListsFromFollows = $ndk.storeSubscribe(
         { kinds: [NDKKind.SimpleGroupList], limit: 300 },
         { groupable: false, closeOnEose: true }, NDKList
     )
 
-    const unifiedGroupLists = derived(groupListsFromFollows, $groupListsFromFollows => {
+    const unifiedGroupLists = derived([
+        groupListsFromFollows,
+        allGroups
+    ], ([$groupListsFromFollows, $allGroups]) => {
         const unified: Record<string, number> = {};
+
+        $allGroups.forEach(group => {
+            const tag = ["group", group.tagValue('d'), defaultRelays[0]]
+            const key = JSON.stringify(tag);
+            unified[key] = 1;
+            console.log('pushing', key);
+        });
+        
         for (const list of $groupListsFromFollows) {
             for (const k of list.items) {
                 const key = JSON.stringify(k);
@@ -39,7 +54,7 @@
         return Object.entries(unified)
             .sort((a, b) => b[1] - a[1])
             .map(([k, v]) => k)
-            .slice(0, 10)
+            .slice(0, 50)
             .map(k => JSON.parse(k));
     })
 </script>

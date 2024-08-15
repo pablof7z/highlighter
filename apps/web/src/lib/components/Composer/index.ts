@@ -1,14 +1,16 @@
 import Root from './Root.svelte';
 import Editor from './Editor.svelte';
 import Attachments from './Attachments.svelte';
-import { NDKEvent, NDKKind, NDKRelaySet, NDKTag } from '@nostr-dev-kit/ndk';
+import { NDKEvent, NDKKind, NDKTag } from '@nostr-dev-kit/ndk';
 import { EventDispatcher } from 'svelte';
 import { State as AudienceState } from "$components/Audience";
+export * from './serializer.js'
 
 export type Actions = {
     publish: () => void;
     upload: () => void;
     schedule: () => void;
+    saveDraft: (manuallySaved: boolean) => void;
 };
 
 export type State = {
@@ -29,6 +31,8 @@ export type State = {
     dispatch: EventDispatcher<any>;
 
     audience: AudienceState;
+
+    draftId?: string;
 };
 
 export {

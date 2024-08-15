@@ -12,8 +12,11 @@
 	import { createEventDispatcher, getContext } from "svelte";
 	import Checkbox from "$components/Forms/Checkbox.svelte";
 	import { Readable } from "svelte/store";
+    import * as Groups from "$components/Groups"
+	import { goto } from "$app/navigation";
+	import { getGroupUrl } from "$utils/url";
 
-    export let group: NDKSimpleGroup | undefined = undefined;
+    export let group: Readable<Groups.GroupData>;
     export let forceSave: boolean = false;
     export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata | undefined>;
 
@@ -24,33 +27,34 @@
         save();
     }
 
-    let name: string = $metadata?.name ?? "";
-    let picture: string = $metadata?.picture ?? "";
-    let about: string = $metadata?.about ?? "";
-    let relays: string[] = group?.relayUrls() ?? defaultRelays;
+    let name: string = $group.name ?? "";
+    let picture: string = $group.picture ?? "";
+    let about: string = $group.about ?? "";
+    let relays: string[] = $group.relayUrls ?? [];
 
     async function save() {
-        const relaySet = group?.relaySet ?? NDKRelaySet.fromRelayUrls(relays, $ndk);
+        const relaySet = $group?.relaySet ?? NDKRelaySet.fromRelayUrls(relays, $ndk);
 
         const createGroup = !group;
 
-        group ??= new NDKSimpleGroup($ndk, relaySet);
+        const g = new NDKSimpleGroup($ndk, relaySet, $group?.id);
 
         if (createGroup) {
             const randomNumber = Math.floor(Math.random() * 1000000);
-            group.groupId = 'group-' + randomNumber;
-            const published = await group.createGroup();
+            g.groupId = 'group-' + randomNumber;
+            const published = await g.createGroup();
             if (!published) {
                 toast.error("Failed to create group");
                 return;
             }
         }
         
-        await group.setMetadata({ name, picture, about });
+        await g.setMetadata({ name, picture, about });
 
         if (createGroup) {
-            $groupsList?.addItem([ "group", group.groupId, ...relaySet.relayUrls ])
+            $groupsList?.addItem([ "group", g.groupId, ...relaySet.relayUrls ])
             $groupsList?.publishReplaceable();
+            goto(getGroupUrl({ id: g.groupId, relayUrls: g.relayUrls() } as Groups.GroupData));
         }
 
         dispatch("saved", { group });
@@ -60,7 +64,7 @@
         picture = e.detail.url;
     }
 
-    let privateScope: boolean = group?.metadata?.scope === "private" ?? false;
+    let publicScope: boolean = $group.access === "open" ?? false;
 </script>
 
 <div class="flex flex-col gap-6">
@@ -90,7 +94,7 @@
     />
 
     <div class="border p-4 rounded">
-        <Checkbox bind:value={privateScope}>
+        <Checkbox bind:value={publicScope}>
             Allow non-members to see the content of this community
         </Checkbox>
     </div>

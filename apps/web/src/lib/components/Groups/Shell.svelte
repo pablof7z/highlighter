@@ -10,15 +10,15 @@
     import * as Groups from "$components/Groups";
 	import { Readable } from "svelte/store";
 
-    export let group: Readable<Groups.Group>;
+    export let group: Readable<Groups.GroupData>;
     export let articles: Readable<NDKArticle[]>;
     export let videos: Readable<NDKVideo[]>;
     export let wiki: Readable<NDKWiki[]>;
     export let notes: Readable<NDKEvent[]>;
     export let chat: Readable<NDKEvent[]>;
-    export let tiers: Readable<NDKSubscriptionTier[]>;
 
     setContext('group', group);
+    setContext('groupArticles', articles);
 
     let navigation: NavigationOption[] = [];
     const optionManager = new Navigation();
@@ -28,8 +28,18 @@
 
     optionManager.setOption('home', { id: 'home', icon: House, iconProps: { weight: 'fill' }, href: getGroupUrl($group) }, undefined, true);
 
-    optionManager.setOption('chat', { name: "Chat", badge: roundedItemCount($chat!), href: getGroupUrl($group, "chat") });
-    optionManager.setOption('posts', { name: "Posts", href: getGroupUrl($group, "posts") });
+    optionManager.setOption('chat', {
+        name: "Chat",
+        badge: roundedItemCount($chat!),
+        buttonProps: { disabled: !$group.isMember },
+        href: $group.isMember ? getGroupUrl($group, "chat") : undefined
+    });
+    optionManager.setOption('posts', {
+        name: "Posts",
+        badge: roundedItemCount($notes!),
+        buttonProps: { disabled: !$group.isMember },
+        href: $group.isMember ? getGroupUrl($group, "posts") : undefined
+    });
     if ($group.isAdmin) {
         optionManager.setOption('settings', { name: "Settings", href: getGroupUrl($group, "settings") });
     }
@@ -43,7 +53,6 @@
 
     $: {
         $layout.title = $group.name ?? "Untitled group";
-        $layout.iconUrl = $group.picture;
         $layout.back = { url: '/communities' };
 
         if ($group.isMember === false) {
@@ -54,7 +63,7 @@
                         $footerMainView = 'main'
                     },
                     buttonProps: {
-                        variant: "gold",
+                        variant: "accent",
                         class: "px-6 ml-4"
                     }
                 }
@@ -81,6 +90,8 @@
     $: {
         if ($group.isMember === false) {
             setFooter();
+        } else {
+            
         }
     }
 </script>

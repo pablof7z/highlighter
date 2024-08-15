@@ -44,7 +44,7 @@
     </Tabs.Root>
 {:else}
     <div class="
-        justify-start items-start inline-flex whitespace-nowrap w-full
+        justify-start items-start inline-flex whitespace-nowrap w-full scrollbar-hide
     ">
         <div class="
             lg:justify-stretch lg:items-stretch items-end flex w-full {$$props.class??""}

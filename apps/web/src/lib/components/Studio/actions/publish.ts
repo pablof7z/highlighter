@@ -1,60 +1,9 @@
 import { ndk } from "$stores/ndk";
-import { Thread } from "$utils/thread";
-import { calculateRelaySetFromEvent, getRelayListForUser, NDKEvent, NDKRelay, NDKRelaySet, NDKSubscriptionTier, NDKTag } from "@nostr-dev-kit/ndk";
+import { NDKArticle, NDKEvent, NDKRelay, NDKRelaySet, NDKTag, NDKVideo } from "@nostr-dev-kit/ndk";
 import { get, Writable } from "svelte/store";
-import currentUser from "$stores/currentUser";
-import * as Studio from "./index.js";
-import { produceRelaySet, produceTags } from "$components/Audience";
-
-// function getTags(
-//     publishInGroups?: Map<GroupId, Relays>,
-//     scope?: Scope,
-//     publishInTiers?: Map<string, NDKSubscriptionTier>,
-//     isPreviewForEvent?: NDKEvent
-// ): NDKTag[] {
-//     const tags: NDKTag[] = [];
-//     const isPreview = !!isPreviewForEvent;
-
-//     if (publishInGroups) {
-//         for (const [groupId, relays] of publishInGroups) {
-//             tags.push(
-//                 [ "h", groupId, ...relays ]
-//             );
-//         }
-//     }
-
-//     // non-preview tags
-//     if (!isPreview) {
-//         console.log('adding non-preview tags')
-//         if (scope === "private") {
-//             tags.push(['-']);
-//         }
-
-//         if (publishInTiers) {
-//             for (const [dTag, tier] of publishInTiers) {
-//                 tags.push(
-//                     [ "f", dTag ]
-//                 );
-//             }
-//         }
-//     } else {
-//         console.log('adding preview tags')
-
-//         // add a marker to the full version
-//         tags.push([ "full", isPreviewForEvent?.tagId() ]);
-
-//         // add which tiers are required
-//         if (publishInTiers) {
-//             for (const [dTag, tier] of publishInTiers) {
-//                 tags.push(
-//                     [ "tier", dTag ]
-//                 );
-//             }
-//         }
-//     }
-
-//     return tags;
-// }
+import * as Studio from "../index.js";
+import * as Audience from "$components/Audience";
+import { generatePreviewContent } from "$utils/preview";
 
 export type PublishingState = 'publishing' | 'published' | false | Error;
 
@@ -63,14 +12,43 @@ export type RelayPublishState = {
     previewEvent: PublishingState;
 }
 
-function getEventFromState(state: Studio.State): NDKEvent | undefined {
-    if (state.type === 'article') return (state as Studio.State<"article">).article;
-    if (state.type === 'video') return (state as Studio.State<"video">).video;
+function getOrGeneratePreviewFromState(state: Studio.State<Studio.PreviewableTypes>): NDKEvent {
+    let previewEvent: NDKArticle | NDKVideo | NDKEvent | undefined = Studio.getPreviewFromState(state);
+    previewEvent ??= generatePreviewEventFromState(state);
+    
+    return previewEvent;
 }
 
-function getPreviewFromState(state: Studio.State): NDKEvent | undefined {
-    if (state.type === 'article') return (state as Studio.State<"article">).preview;
-    if (state.type === 'video') return (state as Studio.State<"video">).preview;
+function generatePreviewEventFromState(state: Studio.State<Studio.PreviewableTypes>): NDKArticle | NDKVideo {
+    let preview: NDKArticle | NDKVideo | undefined;
+    const $ndk = get(ndk);
+
+    switch (state.type) {
+        case 'article': {
+            const mainEvent = Studio.getEventFromState(state) as NDKArticle;
+            preview = new NDKArticle($ndk);
+            preview.title = mainEvent.title;
+            preview.image = mainEvent.image;
+            preview.content = generatePreviewContent(mainEvent);
+
+            if (state.previewAppend) {
+                preview.content += '\n' + state.previewAppend;
+            }
+            
+            break;
+        }
+        case 'video': {
+            const mainEvent = Studio.getEventFromState(state) as NDKVideo;
+            preview = new NDKVideo($ndk);
+            preview.title = mainEvent.title;
+            preview.thumbnail = mainEvent.thumbnail;
+            break;
+        }
+        default:
+            throw new Error("Invalid state type" + state.type);
+    } 
+
+    return preview;
 }
 
 /**
@@ -98,8 +76,6 @@ function getRelayStore(
         }
     }
 
-    console.log({relays})
-
     return relays;
 }
 
@@ -124,55 +100,56 @@ function mergeTags(tags1: NDKTag[], tags2: NDKTag[]): NDKTag[] {
  * @returns 
  */
 export async function publish(
-    state: Studio.State,
+    state: Writable<Studio.State<Studio.Type>>,
     relays: Writable<Record<string, RelayPublishState>>
 ) {
-    let mainEvent: NDKEvent = getEventFromState(state)!;
-    let previewEvent: NDKEvent | undefined = getPreviewFromState(state);
+    debugger
+    const $state = get(state);
+    let mainEvent: NDKEvent = Studio.getEventFromState($state)!;
+    let previewEvent: NDKEvent | undefined = getOrGeneratePreviewFromState($state);
+    $state.preview = previewEvent;
 
-    const mainRelaySet = await produceRelaySet(state.audience, mainEvent);
+    if ($state.audience.scope === 'private') {
+        // Magical NIP-70 tag
+        mainEvent.tags.push(['-']);
+
+        // if we were requested to not publish the preview broadly, we also add the NIP-70 tag
+        if ($state.broadPreviewPublish === false && previewEvent) {
+            previewEvent.tags.push(['-']);
+        }
+    }
+    
+    mainEvent.tags = mergeTags(mainEvent.tags, Audience.produceTags($state.audience, 'main'));
+
+    // sign events
+    await mainEvent.sign();
+    
+    if (previewEvent) {
+        previewEvent.tags = mergeTags(previewEvent.tags, Audience.produceTags($state.audience, 'preview'));
+        previewEvent.tags.push(["full", mainEvent.tagId()]);
+        
+        await previewEvent.sign();
+    }
+
+    // Event(s) are signed; get relay sets
+
+    const mainRelaySet = await Audience.produceRelaySet($state.audience, mainEvent);
+
     let previewEventRelaySet: NDKRelaySet | undefined;
 
     if (previewEvent) {
-        previewEventRelaySet = await produceRelaySet(state.audience, previewEvent);
+        let previewAudience: Audience.State = $state.audience;
+
+        // if we are doing broadPreviewPublish, then the scope of the preview is public
+        if ($state.broadPreviewPublish)
+            previewAudience.scope = 'public';
+
+        previewEventRelaySet = await Audience.produceRelaySet(previewAudience, previewEvent);
     }
-    
-    const mainEventTags = produceTags(state.audience);
-    mainEvent.tags = mergeTags(mainEvent.tags, mainEventTags);
-    
-    // TODO: Add tags to preview event
 
     relays.set(getRelayStore(mainRelaySet, previewEventRelaySet));
-
-    return publishEvents(relays, mainEvent, previewEvent, mainRelaySet, previewEventRelaySet);
-
-    // return await publishEvents(
-    //     finalEvent,
-    //     finalPreview,
-    //     mainEventRelaySet,
-    //     previewEventRelaySet
-    // )
-}
-
-export async function finalizeEvent(
-    event: NDKEvent,
-    tags: NDKTag[],
-    publishAt?: Date,
-    scope?: Scope
-): Promise<NDKEvent> {
-    event.created_at = undefined;
-    event.id = "";
-    if (publishAt) {
-        event.created_at = Math.floor(publishAt.getTime() / 1000);
-    }
-
-    const tagsToRemove = new Set([ "h", "tier", "f", "full", "-" ]);
-    event.tags = event.tags.filter(t => tagsToRemove.has(t[0]) === false);
-    event.tags.push(...tags);
     
-    await event.sign();
-
-    return event;
+    return publishEvents(relays, mainEvent, previewEvent, mainRelaySet, previewEventRelaySet);
 }
 
 export async function publishEvents(
@@ -212,10 +189,10 @@ export async function publishEvents(
     const rest = await mainEvent.publish(mainEventRelaySet, 5000);
 
     if (previewEvent) {
-        throw new Error("Preview not implemented");
-        // const previewRest = await preview.publish(previewEventRelaySet);
-        // console.log('published preview', previewEventRelaySet?.relayUrls, preview.rawEvent())
-        // console.log(previewRest);
+        previewEvent.on("relay:published", onEventPublish('previewEvent'));
+        previewEvent.on("relay:publish:failed", onPublishFail('previewEvent'));
+
+        await previewEvent.publish(previewEventRelaySet);
     }
 
     return rest;

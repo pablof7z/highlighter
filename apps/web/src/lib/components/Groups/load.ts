@@ -3,6 +3,7 @@ import currentUser from '$stores/currentUser';
 import { NDKList, NDKTag, NDKEvent, NDKKind, NDKRelaySet, NDKSimpleGroupMetadata, NDKSimpleGroupMemberList, NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
 import { writable, get, type Readable, type Writable } from 'svelte/store';
 import { GroupData } from '.';
+import { group } from 'console';
 
 export function loadGroupDataFromList(
     list: Readable<NDKList>
@@ -74,9 +75,18 @@ export function loadGroupsData(
         }
     }
 
+    function getGroupId(event: NDKEvent) {
+        switch (event.kind) {
+            case NDKKind.GroupMetadata:
+            case NDKKind.GroupAdmins:
+            case NDKKind.GroupMembers: return event.tagValue("d");
+            case NDKKind.SubscriptionTier: return event.tagValue("h");
+        }
+        throw new Error('unknown event kind ' + event.kind);
+    }
+
     function handleEvent(event: NDKEvent) {
-        const groupId = event.tagValue("d") ?? event.tagValue("h") as string;
-        console.log('group data event', { groupId, event: event.rawEvent() });
+        const groupId = getGroupId(event);
         if (!groupId) return;
 
         store.update($groups => {
@@ -93,14 +103,29 @@ export function loadGroupsData(
                 $groups[groupId] = createEmptyGroupData(groupId, groupMap.get(groupId) || []);
             }
 
-            console.log('before update of ', propertyType)
             updateGroupData($groups[groupId], event, propertyType);
-            console.log('after update of ', propertyType, $groups[groupId])
             return $groups;
+        });
+
+        // update isMember and isAdmin for currentUser
+        currentUser.subscribe($currentUser => {
+            store.update($groups => {
+                for (const [groupId, groupData] of Object.entries($groups)) {
+                    if ($currentUser) {
+                        groupData.isAdmin = groupData.admins?.members.includes($currentUser.pubkey);
+                        groupData.isMember = groupData.members?.members.includes($currentUser.pubkey);
+                    } else {
+                        groupData.isAdmin = false;
+                        groupData.isMember = false;
+                    }
+                    $groups[groupId] = groupData;
+                }
+                return $groups;
+            });
         });
     }
 
-    const createEmptyGroupData = (id: string, relays: string[]): GroupData => { return {
+    const createEmptyGroupData = (id: string, relays: string[]): Partial<GroupData> => { return {
         id,
         relayUrls: relays,
         relaySet: NDKRelaySet.fromRelayUrls(relays, $ndk),
@@ -113,6 +138,7 @@ export function loadGroupsData(
                 groupData.name = groupData.metadata.name;
                 groupData.picture = groupData.metadata.picture;
                 groupData.about = groupData.metadata.about;
+                groupData.access = groupData.metadata.access;
                 break;
             case "admins":
                 groupData.admins = NDKSimpleGroupMemberList.from(event);
@@ -145,7 +171,6 @@ export function loadGroupsData(
                 { kinds: [NDKKind.SubscriptionTier], "#h": groupIds }
             ], { groupable: false, subId: 'group-data', closeOnEose: true }, relaySet, false);
             sub.on("event", handleEvent);
-            sub.on("close", () => console.log('closed group data subscription'));
             sub.start();
         }
     }

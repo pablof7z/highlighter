@@ -4,15 +4,9 @@
 
     import NewItem from "$components/Footer/Views/NewItem";
 	import { Readable } from "svelte/store";
-	import { Group } from "..";
+	import { GroupData } from "..";
 
-    export let group: Readable<Group> | undefined = undefined;
-    export let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
-    export let event: NDKEvent;
-    export let tags: NDKTag[] = [];
-    export let kind: NDKKind = NDKKind.GroupChat;
-    export let placeholder: string = "Type a message";
-    export let showReplyingTo: boolean = false;
+    export let group: Readable<GroupData> | undefined = undefined;
 
     let open: (value?: string | false) => void;
 </script>

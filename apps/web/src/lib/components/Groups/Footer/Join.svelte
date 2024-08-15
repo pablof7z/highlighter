@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Hexpubkey, NDKEvent, NDKKind, NDKPaymentConfirmation, NDKSimpleGroup, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKZapConfirmation, NDKZapSplit } from "@nostr-dev-kit/ndk";
+    import { Hexpubkey, NDKEvent, NDKKind, NDKPaymentConfirmation, NDKSubscriptionTier, NDKTag, NDKZapSplit } from "@nostr-dev-kit/ndk";
     import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
 	import { derived, Readable } from "svelte/store";
@@ -14,13 +14,9 @@
 	import { calculateSatAmountFromAmount } from "$utils/currency";
 	import { onDestroy, getContext } from 'svelte';
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
-	import { Group } from "..";
+	import * as Groups from "$components/Groups"
 
-    export let group: Readable<Group>;
-    export let metadata: Readable<NDKSimpleGroupMetadata>;
-    export let members: Readable<NDKSimpleGroupMemberList>;
-    export let admins: Readable<NDKSimpleGroupMemberList>;
-    export let tiers: Readable<NDKSubscriptionTier[]>;
+    export let group: Readable<Groups.GroupData>;
     export let openOnMount: boolean | undefined;
     export let isMember: Readable<boolean>;
 
@@ -42,18 +38,17 @@
         myJoinRequests?.unsubscribe();
     })
 
-
-    const memberCount = derived([members, admins], ([$members, $admins]) => {
-        if (!$members || !$admins) return;
-        const allMembers = $members.memberSet;
-        $admins.members.forEach(admin => allMembers.add(admin));
+    const memberCount = derived(group, $group => {
+        if (!$group.members || !$group.admins) return;
+        const allMembers = $group.members.memberSet;
+        $group.admins.members.forEach(admin => allMembers.add(admin));
         return allMembers.size;
     })
 
-    const nonAdminMembers = derived([members, admins], ([$members, $admins]) => {
-        if (!$members || !$admins) return [];
-        const allMembers = $members.memberSet;
-        $admins.members.forEach(admin => allMembers.delete(admin));
+    const nonAdminMembers = derived(group, $group => {
+        if (!$group.members || !$group.admins) return [];
+        const allMembers = $group.members.memberSet;
+        $group.admins.members.forEach(admin => allMembers.delete(admin));
         return Array.from(allMembers);
     })
 
@@ -85,7 +80,7 @@
             selectedTier.author,
             Math.floor(satAmount * 1000),
             {
-                comment: "Membership in community "+$metadata.name,
+                comment: "Membership in community "+$group.metadata.name,
                 tags: zapTags
         });
         res.on("complete", async (results: Map<NDKZapSplit, NDKPaymentConfirmation | Error | undefined>) => {
@@ -123,11 +118,8 @@
     {:else}
         {#if mainView === "subscribe"}
             <div class="flex flex-row items-center gap-2">
-                {#if $metadata.picture}
-                    <img src={$metadata.picture} class="rounded-full w-8 h-8 object-cover" />
-                {/if}
-            
-                <b>{$metadata.name}</b>
+                <Groups.Avatar group={$group} class="rounded-full w-8 h-8 object-cover" />
+                <b><Groups.Name group={$group} /></b>
             </div>
         {:else}
             <Button variant="accent" class="w-full" on:click={() => open('main')}>
@@ -137,9 +129,9 @@
     {/if}
 
     <div class="flex flex-col gap-3 items-center justify-stretch w-full" slot="main">
-        {#if mainView === 'subscribe'}
+        {#if mainView === 'subscribe' && $group.tiers}
             <PricingTiers
-                {tiers}
+                tiers={$group.tiers}
                 bind:selectedTier
             />
 
@@ -160,22 +152,22 @@
             </Button>
         {:else}
             <section class="w-full flex flex-col gap-2 items-center">
-                {#if $metadata.picture}
-                    <img src={$metadata.picture} class="rounded-full w-24 h-24 object-cover" />
-                    <img src={$metadata.picture} class="object-cover -z-10 absolute top-0 left-0 w-full h-full opacity-10" />
+                {#if $group.picture}
+                    <img src={$group.picture} class="rounded-full w-24 h-24 object-cover" />
+                    <img src={$group.picture} class="object-cover -z-10 absolute top-0 left-0 w-full h-full opacity-10" />
                 {/if}
         
-                <h1>{$metadata.name}</h1>
+                <h1>{$group.name}</h1>
         
-                {#if $metadata.about}
+                {#if $group.about}
                     <div class="text-left text-muted-foreground">
-                        {$metadata.about}
+                        {$group.about}
                     </div>
                 {/if}
             </section>
 
             <div class="flex flex-row w-full gap-2">
-                {#if $metadata.access === "closed" && $tiers.length > 0}
+                {#if $group.access === "closed" && $group.tiers}
                     <Button
                         variant="accent"
                         class="w-full justify-between"
@@ -184,7 +176,7 @@
                         <div>
                             Join &mdash;
                             Starting at
-                            {tierAmountToString($tiers[0].amounts[0])}
+                            {tierAmountToString($group.tiers[0].amounts[0])}
                         </div>
                         <CaretDown size={16} class="ml-1" />
                     </Button>
@@ -213,8 +205,8 @@
             </div>
 
             <div class="flex flex-col rounded w-full bg-background/50">
-                {#if $admins}
-                    {#each $admins.members as admin}
+                {#if $group.admins}
+                    {#each $group.admins.members as admin}
                         <div class="flex flex-row justify-between w-full items-center text-sm font-semibold p-2 px-4">
                             <AvatarWithName pubkey={admin} avatarSize="small" />
 

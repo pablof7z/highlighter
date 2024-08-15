@@ -1,11 +1,11 @@
 <script lang="ts">
     import { NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { inview } from "svelte-inview";
 	import { layout } from "$stores/layout";
 	import BackButton from "$components/App/Navigation/BackButton.svelte";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { Badge } from "$components/ui/badge";
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
+    import * as App from "$components/App";
 
     export let isPreview = false;
     export let userProfile: NDKUserProfile | undefined = undefined;
@@ -24,26 +24,20 @@
 
     let isInView: boolean;
     
-    function inViewChange(e) {
-        if (ignoreHeader) return;
-        const { inView } = e.detail;
-
-        isInView = inView;
-        
-        if (inView) {
-            // $layout.header = false;
-        } else if (title) {
+    $: if (!ignoreHeader && !isPreview) {
+        if (isInView) {
+            $layout.header = false;
+        } else {
             $layout.header = undefined;
-            $layout.title = title;
+            $layout.title = title || "Untitled";
         }
     }
 </script>
 
-
-<div class="
-    flex flex-col gap-4 {(!skipImage) ? '' : ""}
+<App.HeaderShell class="
+    flex flex-col gap-4
     {$$props.class??""}
-" use:inview on:inview_change={inViewChange}>
+" bind:isInView>
     {#if !skipImage}
         <div class="overflow-clip flex relative">
             {#if !ignoreHeader}
@@ -54,7 +48,7 @@
             <slot name="image" />
         </div>
     {/if}
-    <div class="flex flex-col gap-0">
+    <div class="flex flex-col gap-0" data-header-shell-ignore>
         <div class="self-stretch text-foreground max-sm:text-xl text-4xl font-semibold responsive-padding" class:hidden={title === false}>
             <slot name="title" />
         </div>
@@ -89,4 +83,4 @@
             </div>
         {/if}
     </div>
-</div>
+</App.HeaderShell>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LayoutHeader from "./LayoutHeader.svelte";
-	import { layout, scrollPercentage } from "$stores/layout";
+	import { headerTouchFns, layout, scrollPercentage } from "$stores/layout";
 	import Modal from "./Modal.svelte";
 	import { Toaster } from "$components/ui/sonner";
 	import { appMobileView } from "$stores/app";
@@ -16,7 +16,6 @@
     import { Keyboard } from '@capacitor/keyboard';
 	import { isMobileBuild } from '$utils/view/mobile';
 	import { onMount } from "svelte";
-	import { h } from "vidstack/dist/types/vidstack-YccYOULG.js";
 
     onNavigate(() => {
 		mainContainer.scrollTop = 0;
@@ -27,7 +26,8 @@
     $: withSidebar = $layout?.sidebar !== false;
 
     let startTouchY: number | undefined = undefined;
-    let posY: number = 0;
+    let initialPosY = $appMobileView ? 5 : 0;
+    let posY: number = initialPosY;
     let scale: number = 1;
     let containerSaturation = 0;
 
@@ -59,12 +59,24 @@
     }
 
     function headerTouchstart(event: TouchEvent) {
+        // check if the target, or any of its parents, has the attribute data-header-shell-ignore
+        let target = event.target as HTMLElement;
+        while (target) {
+            if (target.hasAttribute("data-header-shell-ignore")) {
+                headerMoveIgnore = true;
+                return;
+            }
+            target = target.parentElement;
+        }
         startTouchY = event.touches[0].clientY;
     }
 
     let degreeOfGoingBackHome = 0;
-    
+    let headerMoveIgnore = false;
+
     function headerTouchmove(event: TouchEvent) {
+        // if it has the attribute data-header-shell-ignore, ignore the touch event
+        if (headerMoveIgnore) return;
         if (startTouchY === undefined) return;
 
         const touchY = event.touches[0].clientY;
@@ -80,7 +92,7 @@
         // disable clicks on main content
         mainContainer.style.pointerEvents = "none";
 
-        // event.preventDefault();
+        event.preventDefault();
         
         const viewportHeight = window.innerHeight * 0.5;
 
@@ -89,15 +101,21 @@
         degreeOfGoingBackHome = Math.min(1, diffAfterHalfOfViewport / viewportHeight);
 
         posY = Math.min(viewportHeight, diff);
-        scale = 1 - Math.min(0.15, Math.abs(diff) / 100);
+        scale = 1;// - Math.min(0.15, Math.abs(diff) / 10000);
         const opacity = 1 - Math.min(0.8, Math.abs(diff) / 200);
         
         appWrapper.style.transform = `translateY(${posY}px)`;
-        // mainContainer.style.transform = `translateY(${posY}px) scale(${scale})`;
+        mainContainer.style.transform = `scale(${scale})`;
         mainContainer.style.opacity = opacity.toString();
 
         containerSaturation = Math.min(33, Math.abs(diff) * 2);
     }
+
+    $headerTouchFns = {
+        start: headerTouchstart,
+        move: headerTouchmove,
+        end: headerTouchend
+    };
 
     function gotoAndReset(url: string) {
         goto(url);
@@ -115,13 +133,17 @@
     function resetView() {
         appWrapper.style.transition = "all";
         appWrapper.style.transitionDuration = "300ms";
+        mainContainer.style.transition = "all";
+        mainContainer.style.transitionDuration = "300ms";
 
         setTimeout(() => {
             appWrapper.style.transition = "";
+            mainContainer.style.transition = "";
         }, 300);
         
-        appWrapper.style.transform = `translateY(0)`;
+        appWrapper.style.transform = `translateY(${initialPosY}px) scale(1)`;
         mainContainer.style.opacity = "1";
+        mainContainer.style.transform = ``;
 
         // renable scrolling in the body
         document.body.style.overflow = "auto";
@@ -129,11 +151,18 @@
         mainContainer.style.pointerEvents = "auto";
 
         startTouchY = undefined;
-        posY = 0;
+        posY = initialPosY;
         scale = 1;
     }
 
     function headerTouchend(e: TouchEvent) {
+        if (headerMoveIgnore) {
+            headerMoveIgnore = false;
+            return;
+        }
+        
+        headerMoveIgnore = false;
+
         if (posY >= 100) {
             if (degreeOfGoingBackHome >= 0.3) {
                 setTimeout(() => goto("/"), 1);
@@ -143,7 +172,7 @@
         }
 
         if (posY < 5) {
-            e.target.dispatchEvent(new MouseEvent('click', {
+            e.target?.dispatchEvent(new MouseEvent('click', {
                 view: window,
                 bubbles: true,
                 cancelable: true
@@ -163,12 +192,14 @@
     let headerBarCount = 1;
 
     $: {
-        if ($layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)) {
-            headerBarCount = 2;
-        } else if ($layout.header === false) {
-            headerBarCount = 0;
+        if ($layout.header !== false) {
+            if ($layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)) {
+                headerBarCount = 2;
+            } else {
+                headerBarCount = 1;
+            }
         } else {
-            headerBarCount = 1;
+            headerBarCount = 0;
         }
     }
 
@@ -229,17 +260,21 @@
 
     $scrollPercentage = 0;
 
+    onMount(() => {
+        updateHeaderSize();
+    })
+
     function onScroll(e: Event) {
         markScrollingDirection(e);
-        updateHeaderSize(e);
+        setTimeout(updateHeaderSize, 50);
     }
 
     function updateHeaderSize() {
-        const headerHeight = headerContainer?.offsetHeight || 0;
-        document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+        const headerHeight = headerContainer?.clientHeight || 0;
+        document?.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
     }
     
-    const mainScroll = throttle(onScroll, 0.1);
+    const mainScroll = throttle(onScroll, 0.2);
 
     let currentY = 0;
     let prevY = 0;
@@ -267,7 +302,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="
-    w-full
+    w-full bg-muted-foreground
     max-sm:h-screen
     max-lg:h-[90vw] z-50
     transition-all duration-300
@@ -276,7 +311,7 @@
 `} on:click={resetView} data-vaul-drawer-wrapper>
     {#if withSidebar}
         <div
-            class="hidden border-r md:block fixed left-0 h-screen w-[360px]"
+            class="hidden border-r md:block fixed left-0 h-screen w-[360px] bg-background"
         >
             <div class="flex h-full max-h-screen flex-col">
                 <div class="flex h-14 items-center border-b px-4 lg:h-[60px]">
@@ -298,19 +333,20 @@
 
     <div
         bind:this={appWrapper}
+        style="transform: translateY({initialPosY}px)"
         class="
-            flex flex-col z-1 mt-0-safe
+            flex flex-col z-1
             translate-y-0
         "
     >
         <div
-            class="w-full items-center flex flex-col-reverse -translate-y-full fixed top-0 p-[var(--safe-area-inset-top)]"
+            class="w-full items-center flex flex-col-reverse -translate-y-full fixed top-0"
             bind:this={historyContainer}
             on:click={resetView}
         >
             {#each $history as history, i}
                 <button
-                    class="bg-foreground/10 w-full flex flex-row items-center rounded-t-2xl text-center text-lg"
+                    class="bg-background/50 w-full flex flex-row items-center rounded-t-2xl text-center text-lg"
                     class:justify-center={!history.category}
                     style={`max-width: ${100 - (i+1) * 10}%; opacity: ${1 - (i+1) * 0.2}`}
                     on:click={() => gotoAndReset(history.url)}
@@ -325,16 +361,16 @@
                 </button>
             {/each}
 
-            <div class="flex flex-col items-center gap-2 py-10"
-                style={`opacity: ${0.1+degreeOfGoingBackHome * 1.2}; transform: scale(${0.25 + degreeOfGoingBackHome})`}
+            <div class="flex flex-col items-center gap-2 py-10 text-background"
+                style={`opacity: ${0.1+degreeOfGoingBackHome * 2}; transform: scale(${0.5 + degreeOfGoingBackHome})`}
             >
-                <House size={48} weight="fill" class="text-muted-foreground" />
+                <House size={48} weight="fill" />
 
                 <div class="text-lg">
                     Swipe down for Home
                 </div>
 
-                <ArrowDown size={24} class="text-muted-foreground" />
+                <ArrowDown size={24} />
             </div>
         </div>
     
@@ -342,29 +378,30 @@
         <div
             bind:this={mainContainer}
             class="
-                flex flex-col bg-background z-50 h-screen overflow-y-auto scrollbar-hide
+                max-sm:rounded-t-3xl
+                flex flex-col bg-background z-50 overflow-y-auto scrollbar-hide
                 pb-[calc(var(--bottom-padding)+var(--footer-height))]
-            "
+            " style="height: calc(100vh - {posY}px)"
             on:scroll={mainScroll}
         >
             {#if headerBarCount > 0}
                 <!-- Header 1 -->
                 <header transition:fly class="
-                    mobile-nav
+                    mobile-nav max-sm:rounded-t-3xl overflow-y-clip
                     flex items-center fixed top-0 w-full
                     z-50
                     flex-col
                 " bind:this={headerContainer}
-                    style={`height: '${60*headerBarCount}px'`}
                     on:click={setForceHeaderOpacity}
                 >
-                    <div class="w-full border-b">
+                    <div class="w-full">
                         <div
                             class="
-                                w-full h-[calc(var(--safe-area-inset-top)+60px)] responsive-padding flex flex-row
+                                w-full responsive-padding flex flex-row items-center
+                                pt-[calc(var(--safe-area-inset-top))] 
                             "
                             on:touchstart|passive={headerTouchstart}
-                            on:touchmove={headerTouchmove}
+                            on:touchmove|passive={headerTouchmove}
                             on:touchend|passive={headerTouchend}
                         >
                             {#if $layout.header || $layout.title}
@@ -379,12 +416,12 @@
                     </div>
                     <!-- Optional Navigation Bar (when there is a header) -->
                     {#if $layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)}
-                        <div class="w-full border-b">
+                        <div class="w-full">
                             <LayoutHeaderNavigation {scrollDir} class={mainClass} />
                         </div>
                     {/if}
                 </header>
-                <div transition:slide class="flex-none mt-[var(--safe-area-inset-top)]" style={`height: ${60*headerBarCount}px`} />
+                <div transition:slide class="flex-none pt-[var(--safe-area-inset-top)] h-[var(--header-height)]" />
             {/if}
 
             <main class="

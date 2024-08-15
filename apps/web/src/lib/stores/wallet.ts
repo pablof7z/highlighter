@@ -1,44 +1,54 @@
-import NDK, { LnPaymentInfo, NDKPaymentConfirmation, NDKPaymentConfirmationCashu, NDKPaymentConfirmationLN, NDKUser, NDKZapConfirmation, NDKZapDetails, NDKZapSplit, NutPaymentInfo } from "@nostr-dev-kit/ndk";
-import NDKWallet, { NDKCashuWallet } from "@nostr-dev-kit/ndk-wallet";
+import NDK, { LnPaymentInfo, NDKPaymentConfirmation, NDKPaymentConfirmationLN, NDKZapDetails, NDKZapSplit } from "@nostr-dev-kit/ndk";
+import NDKWallet, { NDKCashuWallet, NDKWalletBalance } from "@nostr-dev-kit/ndk-wallet";
 import { derived, get, writable } from "svelte/store";
 import createDebug from "debug";
 import { toast } from "svelte-sonner";
-import { ndk } from "./ndk";
+import NDKWalletService, { NDKWebLNWallet } from "@nostr-dev-kit/ndk-wallet";
 
 const d = createDebug("HL:wallet");
 
-export const walletService = writable(new NDKWallet(new NDK()));
-export const wallet = writable<NDKCashuWallet|null>(null);
+export const walletService = writable(new NDKWalletService(new NDK()));
+export const wallet = writable<NDKWallet|null>(null);
 
-export const walletsBalance = writable(new Map<string, number>());
+export const walletsBalance = writable(new Map<string, NDKWalletBalance[]>());
 export const walletBalance = derived([wallet, walletsBalance], ([$wallet, $walletsBalance]) => {
-    if (!$wallet) return 0;
-    return $walletsBalance.get($wallet.walletId) || 0;
+    if (!$wallet) return [];
+    return $walletsBalance.get($wallet.walletId!) || [];
 });
 
-export const wallets = writable<NDKCashuWallet[]>([]);
+export const wallets = writable<NDKWallet[]>([]);
+
+function updateBalance(wallet: NDKWallet) {
+    wallet.balance().then((balance) => {
+        if (balance) {
+            walletsBalance.update((b) => {
+                b.set(wallet.walletId, balance);
+                d("setting balance of wallet %s to %d", wallet.walletId, balance);
+                return b;
+            });
+        }
+    });
+}
 
 export function walletInit(
     ndk: NDK,
-    user: NDKUser
 ) {
+    walletService.set
     const $walletService = get(walletService);
     $walletService.ndk = ndk;
-    $walletService.on("wallet", (w) => wallets.set($walletService.wallets) );
+    $walletService.on("wallet", (w) => {
+        if (get(wallet) === null) wallet.set(w);
+        wallets.set($walletService.wallets)
+        w.on("balance_updated", () => updateBalance(w));
+        updateBalance(w);
+    });
     $walletService.on("wallet:default", (w: NDKCashuWallet) => {
         wallet.set(w);
-        // w.on("insufficient_balance", (data) => {
-        //     console.log("insufficient balance", data);
-        // });
-        ndk.walletConfig.onCashuPay = w.cashuPay.bind(w);
-    });
-    $walletService.on("wallet:balance", (w: NDKCashuWallet) => {
-        walletsBalance.update((b) => {
-            b.set(w.walletId, w.balance || 0);
-            d("setting balance of wallet %s to %d", w.walletId, w.balance);
-            return b;
+        w.on("insufficient_balance", (data) => {
+            alert("insufficient balance" + data);
         });
     });
+    $walletService.on("wallet:balance", updateBalance);
     $walletService.start();
 }
 
@@ -49,6 +59,8 @@ export async function onLnPay(details: NDKZapDetails<LnPaymentInfo>): Promise<ND
     // do we have a NIP-60 wallet?
 
     try {
+        toast.info("wallet balance: "+ $wallet?.balance);
+        
         const preimage = await $wallet?.lnPay({pr});
         if (!preimage) throw new Error("failed to pay");
 

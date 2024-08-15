@@ -1,5 +1,5 @@
 import truncateMarkdown from 'markdown-truncate';
-import { NDKArticle } from "@nostr-dev-kit/ndk";
+import { NDKArticle, NDKEvent } from "@nostr-dev-kit/ndk";
 
 export function generatePreviewContent(
     article: NDKArticle
@@ -13,4 +13,29 @@ export function generatePreviewContent(
     previewContent ??= "";
 
     return previewContent;
+}
+
+export function eventIsPreview(
+    event: NDKEvent
+) {
+    return !!event.tagValue("full")
+}
+
+export function eventIsPaid(
+    event: NDKEvent
+) {
+    let isPaidOnly = false;
+    
+    if (event) {
+        const hasFree = event.getMatchingTags("f").some(t => t[1] === "Free");
+        isPaidOnly = !hasFree && event.hasTag("f");
+    }
+
+    return isPaidOnly;
+}
+
+export function eventIsInGroup(
+    event: NDKEvent
+) {
+    return event.hasTag("h");
 }

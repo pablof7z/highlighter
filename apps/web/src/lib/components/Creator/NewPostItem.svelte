@@ -6,7 +6,7 @@
 
 <a {href} on:click class="
     w-full
-    bg-black bg-opacity-[0.33]
+    bg-secondary
     rounded-2xl justify-center items-center inline-flex
     flex-col
     flex-none
@@ -20,7 +20,7 @@
     <div class="justify-center items-center text-[42px]">
         {icon}
     </div>
-    <div class="text-base font-medium text-white">
+    <div class="text-base font-medium text-secondary-foreground">
         {title}
     </div>
 </a>

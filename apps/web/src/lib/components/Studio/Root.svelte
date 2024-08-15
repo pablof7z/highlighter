@@ -6,12 +6,13 @@
 	import { Thread } from "$utils/thread";
 	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { State, type Type } from ".";
-    import { getDraft } from "./draft.js";
+    import { createStateFromDraftId } from "./draft.js";
 	import { DraftItem } from "$stores/drafts";
 	import LoadingScreen from "$components/LoadingScreen.svelte";
     import { State as AudienceState } from "$components/Audience";
     import * as Studio from "$components/Studio";
 	import { ndk } from "$stores/ndk";
+    import { saveDraft } from "./actions/draft.js";
 
     export let draftId: string | undefined = undefined;
     export let checkpointId: string | undefined = undefined;
@@ -21,7 +22,9 @@
 
     export let type: Type;
     export let actions: Studio.Actions = {
-        saveDraft: () => false,
+        saveDraft: (manuallySaved: boolean) => {
+            return saveDraft(manuallySaved, state);
+        },
         publish: () => $state.mode = 'publish',
     }
 
@@ -30,7 +33,7 @@
             mode: "edit",
             audience,
             type,
-            ...(type === "article" ? { article: new NDKArticle($ndk) } : {}),
+            ...(type === "article" ? { article: new NDKArticle($ndk), withPreview: true, broadPreviewPublish: true } : {}),
             ...(type === "video" ? { video: new NDKVideo($ndk) } : {}),
             ...(type === "thread" ? { thread: {} as Thread } : {}),
         } as State<T>;
@@ -39,19 +42,13 @@
     // Initialize the store with the correctly typed state
     const state = writable(createInitialState(type));
 
-    let draft: DraftItem | undefined;
-
-
     if (draftId) {
-        const res = getDraft(draftId, checkpointId);
-        console.log({getDraft: res})
-        if (res) {
-            draft = res.draft;
-            // if (res.article) $event = res.article as NDKArticle;
+        const newState = createStateFromDraftId(draftId, checkpointId);
+        if (newState) {
+            newState.draftId = draftId;
+            state.set(newState);
         }
     }
-
-    let error: string | undefined = undefined;
 
     let ready = true;
 

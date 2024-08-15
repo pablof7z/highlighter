@@ -19,7 +19,7 @@
         ⏱️ Scheduled Posts
     </Button>
 
-    <Button variant="secondary" class="grow" on:click={go('/schedule')}>
+    <Button variant="secondary" class="grow" on:click={go('/studio/drafts')}>
         🖋️ Drafts
     </Button>
 </div>

@@ -6,6 +6,7 @@
 	import ScrollArea from "$components/ui/scroll-area/scroll-area.svelte";
 	import { NDKSubscriptionTier, NDKSimpleGroup, NDKKind, NDKEvent, NDKSimpleGroupMetadata, NDKSimpleGroupMemberList } from "@nostr-dev-kit/ndk";
     import * as Collapsible from "$lib/components/ui/collapsible";
+    import * as Groups from "$components/Groups";
 
 	import TierEditor from '$components/Creator/TierEditor.svelte';
 	import { Readable } from 'svelte/store';
@@ -13,10 +14,7 @@
 	import { layout } from '$stores/layout';
 	import JoinRequests from './JoinRequests.svelte';
 
-    export let group = getContext("group") as NDKSimpleGroup;
-    export let metadata = getContext("groupMetadata") as Readable<NDKSimpleGroupMetadata>;
-    export let existingTiers = getContext("groupTiers") as Readable<NDKSubscriptionTier[]>;
-    export let members = getContext("groupMembers") as Readable<NDKSimpleGroupMemberList>;
+    export let group = getContext("group") as Readable<Groups.Group>;
 
     $layout.fullWidth = false;
     $layout.sidebar = false;
@@ -69,8 +67,7 @@
     async function saveTiers() {
         console.log(group.relaySet)
         console.log(tiers);
-        console.log($existingTiers);
-        for (const tier of $existingTiers) {
+        for (const tier of $group.tiers) {
             tier.publishReplaceable(group.relaySet);
         }
         
@@ -80,7 +77,7 @@
             tier.publishReplaceable(group.relaySet);
         }
 
-        if ($existingTiers.length + tiers.length > 0) {
+        if ($group.tiers.length + tiers.length > 0) {
             const e = new NDKEvent($ndk)
             e.kind = 9006;
             e.tags.push(["h", group.groupId ]);
@@ -136,12 +133,14 @@
 
             <ScrollArea orientation="horizontal">
                 <div class="w-max flex flex-row gap-6">
-                    {#each $existingTiers as tier}
-                        <div class="w-96">
-                            <TierEditor tier={tier} />
-                        </div>
-                    {/each}
-                    {#each tiers as tier}
+                    <!-- {#if $group.tiers}
+                        {#each $group.tiers as tier}
+                            <div class="w-96">
+                                <TierEditor tier={tier} />
+                            </div>
+                        {/each}
+                    {/if}
+                -->{#each tiers as tier}
                         <div class="w-96">
                             <TierEditor tier={tier} />
                         </div>
@@ -198,8 +197,8 @@
     
     <h1>Members</h1>
     
-    {#if $members}
-        {#each $members.members as member}
+    {#if $group.members}
+        {#each $group.members.members as member}
             <div>{member}</div>
         {/each}
     {/if}

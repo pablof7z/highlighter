@@ -6,7 +6,11 @@
 	
 	$layout.sidebar = undefined;
 	
-	let group = getContext("group") as Readable<Groups.Group>;
+	let group = getContext("group") as Readable<Groups.GroupData>;
 </script>
 
-<Groups.Views.Home {group} />
+{#if $group}
+	<Groups.Views.Home {group} />
+{:else}
+	$group is not ready
+{/if}

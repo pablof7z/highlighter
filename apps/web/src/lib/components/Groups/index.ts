@@ -10,6 +10,7 @@ import * as Footers from './Footer/';
 import * as Sidebars from './Sidebar/index.js';
 
 import Avatar from './Avatar.svelte';
+import Name from './Name.svelte';
 import PublishedToPills from './PublishedToPills.svelte';
 
 import ListItem from './List/Item.svelte';
@@ -37,20 +38,28 @@ export type GroupData = {
     picture?: string;
     about?: string;
 
+    events: NDKEventStore<NDKEvent>;
+
     metadata?: NDKSimpleGroupMetadata;
     admins?: NDKSimpleGroupMemberList;
     members?: NDKSimpleGroupMemberList;
+    tiers?: NDKSubscriptionTier[];
 
+    /**
+     * Is the current user an admin of this group?
+     */
     isAdmin?: boolean;
+
+    /**
+     * Is the current user a member of this group?
+     */
     isMember?: boolean;
 
-    tiers?: NDKSubscriptionTier[];
+    access?: 'open' | 'closed';
 }
 
-export type Group = GroupData & {
+export type GroupContent = {
     events: NDKEventStore<NDKEvent>;
-    content: NDKEventStore<NDKEvent>;
-
     articles?: Readable<NDKArticle[]>;
     videos?: Readable<NDKVideo[]>;
     wiki?: Readable<NDKWiki[]>;
@@ -64,6 +73,7 @@ export {
     Shell,
 
     Avatar,
+    Name,
     PublishedToPills,
 
     Header,

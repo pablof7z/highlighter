@@ -1,16 +1,14 @@
 <script lang="ts">
 	import { ndk } from "$stores/ndk";
 	import { filterArticles } from "$utils/article-filter";
-	import { NDKArticle, NDKFilter, NDKKind, NDKRelaySet } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKFilter, NDKKind, NDKList, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import * as Feed from "$components/Feed";
 	import { CaretRight, MagnifyingGlass } from "phosphor-svelte";
 
-    const relaySet = NDKRelaySet.fromRelayUrls(['wss://relay.highlighter.com'], $ndk);
-
     const articleComments = $ndk.storeSubscribe([
-        { kinds: [NDKKind.Text, NDKKind.Zap, NDKKind.Nutzap ], "#k": ["30023"], limit: 50 },
-        { kinds: [NDKKind.ArticleCurationSet ], limit: 10 },
+        // { kinds: [NDKKind.Text, NDKKind.Zap, NDKKind.Nutzap, NDKKind.GenericRepost ], "#k": ["30023"], limit: 50 },
+        { kinds: [NDKKind.ArticleCurationSet ], limit: 50 },
     ], { closeOnEose: true, onEose: () => {
         loadArticles();
     }})
@@ -34,8 +32,6 @@
             }
         });
 
-        console.log({filter})
-
         if (filter.authors!.length > 0) {
             articles = $ndk.storeSubscribe(
                 filter,
@@ -48,7 +44,9 @@
 
 {#if articles}
     <div class="flex flex-col w-full max-w-[var(--content-focused-width)]">
-        <a href="/reads" class="flex flex-row justify-between max-sm:w-full py-2 responsive-padding z-10 bg-background border-b border-border">
+        <a href="/reads" class="
+            flex flex-row justify-between max-sm:w-full py-2 responsive-padding z-10
+        ">
             <div class="section-title">
                 Nostr Reads
             </div>

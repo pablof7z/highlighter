@@ -37,7 +37,7 @@ export type NavigationOption = {
 	badge?: string | true;
     id?: string;
 	button?: {
-		icon: SvelteComponent;
+		icon: ComponentType;
 		fn: () => void;
 	},
     component?: {

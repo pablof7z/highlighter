@@ -8,7 +8,7 @@
     export let user: NDKUser | undefined = undefined;
     export let userProfile: NDKUserProfile | undefined = undefined;
     export let subOpts: NDKSubscriptionOptions | undefined = undefined;
-    export let size: 'tiny' | 'small' | 'medium' | 'large' | undefined = undefined;
+    export let size: 'xs' | 'tiny' | 'small' | 'medium' | "md" | 'lg' | 'large' | "unconstrained" = "small";
     export let type: 'square' | 'circle' = 'circle';
     export let ring = false;
     /**
@@ -19,19 +19,14 @@
     let sizeClass = '';
     let shapeClass = '';
 
+    let sizePx: number;
+
     switch (size) {
-        case 'tiny':
-            sizeClass = 'w-6 h-6';
-            break;
-        case 'small':
-            sizeClass = 'w-8 h-8';
-            break;
-        case 'medium':
-            sizeClass = 'w-12 h-12';
-            break;
-        case 'large':
-            sizeClass = 'w-16 h-16';
-            break;
+        case 'xs': sizePx = 18; break;
+        case 'tiny': sizePx = 24; break;
+        case 'small': sizePx = 26; break;
+        case 'md': case 'medium': sizePx = 24; break;
+        case 'lg': case 'large': sizePx = 32; break;
     }
 
     switch (type) {
@@ -39,7 +34,7 @@
             shapeClass = 'rounded-full';
             break;
         case 'square':
-            shapeClass = 'rounded';
+            shapeClass = 'rounded-sm';
             break;
     }
 
@@ -67,7 +62,7 @@
             {$$props.loadingClass ? $$props.loadingClass : ""}
             {sizeClass} {shapeClass}
         "
-        style={$$props.loadingStyle??""}
+        style='width: {sizePx}px; height: {sizePx}px; {$$props.loadingStyle??""}'
     />
 {:else if userProfile || user || pubkey || npub}
     <div class="
@@ -80,7 +75,8 @@
             {npub}
             {user}
             {userProfile}
-            class="flex-none object-cover {shapeClass} {sizeClass} {$$props.class??""}"
+            class="flex-none object-cover {shapeClass} {$$props.class??""}"
+            style='width: {sizePx}px; height: {sizePx}px;'
         />
     </div>
 {/if}

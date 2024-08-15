@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { NDKNutzap } from '@nostr-dev-kit/ndk';
-	import { walletBalance, walletService } from "$stores/wallet";
+	import { wallet, walletBalance, walletService } from "$stores/wallet";
     import { nicelyFormattedSatNumber } from "$utils";
     import { Lightning } from "phosphor-svelte";
 	import { onMount } from "svelte";
@@ -8,11 +8,12 @@
 	import { slide } from 'svelte/transition';
 	import Avatar from '$components/User/Avatar.svelte';
 	import currentUser from '$stores/currentUser';
+	import { currencyFormat } from '$utils/currency';
 
     const newZaps = writable<NDKNutzap[]>([]);
 
     let loading = false;
-    $: loading = !!($currentUser && $walletService.state === "loading");
+    $: loading = !!($currentUser && $walletService.state === "loading" && !$wallet);
     $walletService.on("ready", () => {
         console.log('wallet ready');
         loading = false;
@@ -59,8 +60,15 @@
     {:else}
         <div class="flex items-center w-full gap-2  p-2" transition:slide>
             <Lightning class="text-accent w-6 h-6" weight="fill" />
-            <span class="text-foreground text-xl font-semibold grow" class:animate-pulse={loading}>
-                {nicelyFormattedSatNumber($walletBalance)} sats
+            <span class="text-foreground text-xl font-semibold grow">
+                {#if $walletBalance?.[0]}
+                    {currencyFormat(
+                        $walletBalance[0].unit,
+                        $walletBalance[0].amount
+                    )}..
+                {:else}
+                    0 sats!
+                {/if}
             </span>
         </div>
     {/if}

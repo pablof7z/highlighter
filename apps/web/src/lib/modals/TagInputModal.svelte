@@ -1,7 +1,6 @@
 <script lang="ts">
 	import TagInput from "$components/Editor/TagInput.svelte";
     import ModalShell from "$components/ModalShell.svelte";
-	import { Button } from "$components/ui/button";
 	import { closeModal } from "$utils/modal";
     import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../app";
@@ -15,7 +14,7 @@
     }
 
     let actionButtons: NavigationOption[] = [
-        { name: "Save", fn: save, buttonProps: { variant: 'accent', size: 'lg' } }
+        { name: "Save", fn: save, buttonProps: {} }
     ]
 </script>
 

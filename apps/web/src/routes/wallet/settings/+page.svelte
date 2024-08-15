@@ -30,7 +30,7 @@
 
     let wallet: NDKCashuWallet | undefined;
     
-    if (!wallet) wallet = $wallets.find((w) => w.dTag === walletId);
+    if (!wallet) wallet = $wallets.find((w) => w.walletId === walletId);
 
     $: if (!name && wallet) {
         name = wallet.name ?? "Wallet";
@@ -58,8 +58,8 @@
         wallet.relays = $relays;
         console.log('setting relays', $relays);
         wallet.mints = $mints;
-        console.log(wallet.rawEvent());
-        await wallet.publishReplaceable();
+        console.log(wallet.event.rawEvent());
+        await wallet.publish();
         goto("/wallet");
     }
 
@@ -79,7 +79,7 @@
         if (!wallet) return;
         
         wallet.skipPrivateKey = false;
-        await wallet?.toNostrEvent();
+        await wallet?.event.toNostrEvent();
         console.log(wallet?.privkey);
     }
 </script>
@@ -119,7 +119,7 @@
         </div>
 
         <h1>Spending Key</h1>
-        {#if wallet?.p2pkPubkey}
+        {#if wallet?.p2pk}
             Wallet has a spending key
 
             {wallet.privkey}
@@ -131,8 +131,6 @@
                 Generate Spending Key
             </Button>
         {/if}
-
-        <pre>{JSON.stringify(wallet?.rawEvent(), null, 2)}</pre>
 
         <div class="my-10 flex flex-col gap-6">
             <Button variant="accent" class="w-full" on:click={save}>
@@ -147,7 +145,7 @@
                 Force Sync
             </Button>
 
-            <Button variant="destructive" class="w-full" disabled={$defaultWallet?.dTag === wallet?.dTag} on:click={onDelete}>
+            <Button variant="destructive" class="w-full" disabled={$defaultWallet?.walletId === wallet?.walletId} on:click={onDelete}>
                 {#if confirmDelete}
                     Are you sure?
                 {:else}

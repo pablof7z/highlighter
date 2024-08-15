@@ -34,6 +34,7 @@
         }
         $layout.footerInMain = true;
         $layout.fullWidth = false
+        $layout.forceShowNavigation = undefined;
 
         onDestroy(() => { $layout.footerInMain = undefined; })
     }

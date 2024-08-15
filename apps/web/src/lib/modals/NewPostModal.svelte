@@ -6,12 +6,15 @@
 	import EventWrapper from "$components/Feed/EventWrapper.svelte";
 	import { replyKind } from "$utils/event";
 	import { State as AudienceState } from "$components/Audience";
+	import { Writable } from "svelte/store";
 
     export let audience: AudienceState | undefined = undefined;
     
     export let replyTo: NDKEvent | undefined = undefined;
     export let kind: NDKKind | undefined = undefined;
     export let onPublish: ((event: NDKEvent) => void) | undefined = undefined;
+
+    export let state: Writable<Composer.State> | undefined = undefined;
 
     if (replyTo) kind ??= replyKind(replyTo);
 
@@ -22,7 +25,7 @@
     {replyTo}
     {kind}
     {audience}
-    let:state
+    bind:state
     let:actionButtons
     let:secondaryButtons
     on:publish={(e) => {
@@ -35,7 +38,6 @@
         {actionButtons}
         class="max-sm:h-[90dvh]"
     >
-    hi
         {#if replyTo}
             <EventWrapper
                 event={replyTo}

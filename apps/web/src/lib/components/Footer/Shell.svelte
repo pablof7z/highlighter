@@ -134,7 +134,9 @@
 
     // record height of el height as footer-height
     $: if (el && (collapsed || !collapsed)) {
-        document.documentElement.style.setProperty('--footer-height', el.clientHeight + 'px');
+        setTimeout(() => {
+            document?.documentElement.style.setProperty('--footer-height', el.clientHeight + 'px');
+        }, 50)
     }
 
     let activeView: FooterView | undefined;

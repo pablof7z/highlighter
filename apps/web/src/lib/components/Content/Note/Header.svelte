@@ -14,6 +14,7 @@
 	import { goto } from "$app/navigation";
 	import { getEventUrl } from "$utils/url";
 	import Footer from "./Footer.svelte";
+    import * as Card from "$components/ui/card";
 
     export let event: NDKEvent;
     export let userProfile: NDKUserProfile | undefined = undefined;
@@ -41,7 +42,6 @@
     
 </script>
 
-<div class="discussion-wrapper">
 {#if replyTag}
     <LoadEvent tag={replyTag} {event} let:event={f}>
         {#if f}
@@ -55,7 +55,45 @@
     </LoadEvent>
 {/if}
 
-<HeaderShell
+<Card.Root class="bg-secondary p-4 flex flex-col gap-4">
+    <Card.Header class="p-0">
+        <Card.Title>
+            <Event.Header
+                {event}
+                {userProfile}
+                avatarSize="lg"
+                nameClass="text-lg font-normal"
+
+            />
+        </Card.Title>
+    </Card.Header>
+
+    <Card.Content class="p-0">
+        <EventContent
+            ndk={$ndk}
+            {event}
+            class="text-lg"
+            mediaCollectionComponent={MediaCollection}
+            eventCardComponent={EmbeddedEventWrapper}
+        />
+    </Card.Content>
+
+    <Card.Footer class="flex flex-col p-0 {!hasZaps ? 'hidden' : ""}">
+        <ItemViewZaps {event} bind:hasZaps class="py-3 responsive-padding" />
+    </Card.Footer>
+</Card.Root>
+
+<div class="my-2">
+    <ContentToolbar
+        {event}
+        {authorUrl}
+        bind:showToolbar
+    />
+</div>
+
+<div class="discussion-wrapper">
+
+<!-- <HeaderShell
     {userProfile}
     {authorUrl}
     skipSummary={true}
@@ -91,5 +129,5 @@
     </div>
 
     <slot />
-</HeaderShell>
+</HeaderShell> -->
 </div>

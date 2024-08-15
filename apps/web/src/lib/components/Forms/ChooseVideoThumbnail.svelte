@@ -1,9 +1,9 @@
 <script lang="ts">
-	import AiIcon from './../../icons/AiIcon.svelte';
     import { onMount } from "svelte";
-	import Carousel from '$components/Page/Carousel.svelte';
 	import { slide } from 'svelte/transition';
 	import { Image } from 'phosphor-svelte';
+	import { ScrollArea } from '$components/ui/scroll-area';
+	import Button from '$components/ui/button/button.svelte';
 
     export let title: string;
     export let content: string;
@@ -165,7 +165,7 @@
 
 <canvas bind:this={canvas} class="hidden"></canvas>
 
-<div class="grid grid-cols-3 grid-rows-2 overflow-hidden gap-4">
+<div class="flex flex-col overflow-hidden gap-4">
     <div class="relative rounded bg-background col-span-2 row-span-2 flex items-stretch justify-stretch">
         {#if generatingThumbnails}
             <div class="flex w-full flex-row items-center justify-center gap-4">
@@ -179,49 +179,34 @@
         {/if}
     </div>
 
-    <label class="cursor-pointer side-button">
-        <Image class="w-12 h-12" />
-        {#if thumbnails.length > 0}
-            or upload an image
-        {:else}
-            Upload a cover image
-        {/if}
-        <input type="file" bind:this={fileUpload} id="fileUploader" accept="image/*" class="hidden" on:change={handleFileUpload}>
-    </label>
-
-    <button class="side-button brightness-75">
-        <AiIcon class="w-12 h-12" />
-
-        Generate Image
-        <div class="badge">
-            Coming soon
-        </div>
-    </button>
-</div>
-
-{#if thumbnails.length > 1}
-    <div class="settings-like-section-title">
-        Pick from timeline
-    </div>
-    <div class="w-full" transition:slide>
-        <Carousel class="space-x-4" itemCount={thumbnails.length}>
-            {#each thumbnails as thumbnail, index}
-                <div class="carousel-item">
+    {#if thumbnails.length > 1}
+        <div class="w-full" transition:slide>
+            <ScrollArea orientation="horizontal">
+                <div class="w-max flex flex-row gap-6">
+                {#each thumbnails as thumbnail, index}
                     <button
-                        class="object-cover rounded-xl flex-none opacity-50 transition-all duration-300"
+                        class="h-24 object-cover rounded-xl flex-none opacity-50 transition-all duration-300"
                         class:!opacity-100={selectedIndex === index}
                         on:click={() => selectedIndex = index}
                     >
                         <img src={thumbnail.dataUrl} class="w-full h-full object-cover rounded-xl" alt="" />
                     </button>
+                {/each}
                 </div>
-            {/each}
-        </Carousel>
-    </div>
-{/if}
+            </ScrollArea>
+        </div>
+    {/if}
 
-<style lang="postcss">
-    .side-button {
-        @apply py-6 rounded flex flex-col justify-center items-center gap-2 bg-secondary text-secondary-foreground whitespace-nowrap;
-    }
-</style>
+    <label>
+        <Button>
+            <Image class="w-8 h-8 mr-2" />
+            {#if thumbnails.length > 0}
+                or upload an image
+            {:else}
+                Upload a cover image
+            {/if}
+            <input type="file" bind:this={fileUpload} id="fileUploader" accept="image/*" class="hidden" on:change={handleFileUpload}>
+        </Button>
+    </label>
+    
+</div>
