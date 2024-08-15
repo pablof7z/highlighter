@@ -6,8 +6,9 @@
     export let variant = "secondary";
 </script>
 
-<Button class="flex-none" on:click={toggleMode} {variant} size="icon">
-    <Sun class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-    <Moon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+<Button class="flex flex-row items-center gap-2 flex-none {$$props.class??""}" on:click={toggleMode} {variant} size={$$slots.default ? "default" : "icon" }>
+    <Sun class="h-[1.2rem] w-[1.2rem] transition-all dark:hidden" weight="fill" />
+    <Moon class="h-[1.2rem] w-[1.2rem] transition-all hidden dark:block" weight="fill" />
+    <slot />
     <span class="sr-only">Toggle theme</span>
 </Button>

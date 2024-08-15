@@ -5,7 +5,7 @@
     import * as Article from "$components/Content/Article";
     import * as Content from "$components/Content";
     
-    export let state: Writable<Studio.State<"article">>;
+    export let state: Writable<Studio.State<Studio.Type.Article>>;
     const article = $state.article;
 
     if (!article.pubkey && $currentUser) article.pubkey = $currentUser.pubkey;
@@ -17,6 +17,6 @@
 >
 
 </Article.Header>
-<Content.Body event={$state.article} isPreview>
 
+<Content.Body event={$state.article} isPreview>
 </Content.Body>

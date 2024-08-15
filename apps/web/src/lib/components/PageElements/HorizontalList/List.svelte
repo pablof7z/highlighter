@@ -6,6 +6,7 @@
     export let href: string | undefined = undefined;
     export let renderLimit = 3;
     export let renderLimitIncrement = renderLimit;
+    export let idField = 'id'
 
     export let items: any[] = [];
 </script>
@@ -21,7 +22,7 @@
         <div class="flex flex-row flex-nowrap overflow-x-auto scrollbar-hide">
         <!-- <ScrollArea class="whitespace-nowrap scrollbar-hide max-sm:w-screen" orientation="horizontal"> -->
             <div class="flex w-max gap-8">
-                {#each items.slice(0, renderLimit) as item, i (item.id)}
+                {#each items.slice(0, renderLimit) as item, i (item[idField])}
                     <slot {item} />
                 {/each}
 

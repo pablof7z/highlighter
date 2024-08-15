@@ -13,7 +13,7 @@
         { name: "🌟 Top", href: '/reads/top' },
         { name: "🔥 Hot", href: '/reads/hot' },
         { name: "📚 Curations", href: '/reads/curations' },
-        { name: "Feed Marketplace", icon: Plus, buttonProps: { class: 'place-self-end', variant: 'secondary' }, href: '/reads/dvms' },
+        // { name: "Feed Marketplace", icon: Plus, buttonProps: { class: 'place-self-end', variant: 'secondary' }, href: '/reads/dvms' },
     ]
 
     $layout.activeOption = $layout.navigation[0];

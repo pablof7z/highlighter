@@ -21,12 +21,12 @@
                 {#if clickable}
                     <a
                         href="/t/{encodeURIComponent(tag)}"
-                        class="{badgeVariants({variant: "secondary"})}"
+                        class="{badgeVariants({variant: "secondary"})} !font-normal hover:bg-foreground hover:text-background"
                     >
                         <span>{tag}</span>
                     </a>
                 {:else}
-                    <Badge variant="secondary">
+                    <Badge variant="secondary" class="!font-normal">
                         <span>{tag}</span>
                     </Badge>
                 {/if}

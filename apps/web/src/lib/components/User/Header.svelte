@@ -17,6 +17,7 @@
 	import { openModal } from "$utils/modal";
 	import { throttle } from "@sveu/shared";
 	import CreatorProfileModal from "$modals/CreatorProfileModal";
+    import * as App from "$components/App";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | null | undefined = undefined;
@@ -54,7 +55,9 @@
     $layout.navigation = false;
 </script>
 
-<div class="z-20 w-full sm:min-h-[15rem] flex flex-col">
+<App.HeaderShell
+    class="z-20 w-full sm:min-h-[15rem] flex flex-col"
+>
     <!-- Banner -->
     <div class="max-sm:h-[calc(var(--safe-area-inset-top)+6rem)] w-full h-32 relative z-0">
             <div class="z-10 left-2 top-[var(--safe-area-inset-top)] absolute">
@@ -69,7 +72,7 @@
         <div class="flex flex-row items-end grow gap-4">
             <Avatar user={user} {userProfile} {fetching} class="
                 transition-all duration-300 flex-none object-cover w-24 h-24
-            "/>
+            " size="unconstrained"/>
 
             <div class="flex flex-col gap-0" use:inview on:inview_change={inviewchange}>
                 <Name {user} {userProfile} {fetching} class="text-foreground font-bold whitespace-nowrap mb-0 transition-all duration-300 text-xl max-h" />
@@ -104,5 +107,4 @@
     </div>
 
     <HorizontalOptionsList {options} class="py-[var(--section-vertical-padding)] border-y border-border" />
-</div>
-
+</App.HeaderShell>

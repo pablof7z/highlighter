@@ -2,7 +2,6 @@
 	import { NDKArticle, NDKTag } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher, onMount } from "svelte";
     import QuillMarkdown from 'quilljs-markdown';
-    import 'quill-paste-smart';
     import quillEditorMention from "./quill-editor-mention.js";
 	import { getContents } from './quill-editor-contents.js';
 	import { Image } from 'phosphor-svelte';
@@ -12,6 +11,9 @@
 	import Checkbox from "./Checkbox.svelte";
 	import { ndk } from "$stores/ndk.js";
 	import { toast } from "svelte-sonner";
+	import { isMobileBuild } from "$utils/view/mobile.js";
+    import * as Tooltip from "$lib/components/ui/tooltip";
+    import { EmbedBlot } from 'parchment';
 
     export let content: string = "";
     export let placeholder = "Write your heart out...";
@@ -30,14 +32,43 @@
 
     let uploadBlob: Blob;
 
+    class SoftBreak extends EmbedBlot {
+        static create(value) {
+            let node = super.create(value);
+            return node;
+        }
+
+        length() {
+            return 2;
+        }
+
+        value() {
+            return '\n\n';
+        }
+
+        static value(node) {
+            return '\n\n';
+        }
+
+        static blotName = 'softbreak';
+        static tagName = 'BR';
+    }
+
     async function enableEditor() {
+        console.log("calling to enable editor", editorEl)
         const {default: Quill} = await import('quill');
-        const {Mention} = await import('quill-mention');
+        const {Mention, MentionBlot} = await import('quill-mention');
         const { default: QuillImageDropAndPaste } = await import ('quill-image-drop-and-paste');
 
+        console.log(Mention)
+        console.log(Mention.blotName)
+
+        Quill.register({ "blots/mention": MentionBlot, "modules/mention": Mention });
         // check if Quill already has modules/mention
-        if (!Quill.imports['modules/mention']) Quill.register('modules/mention', Mention);
+        if (!isMobileBuild()) await import('quill-paste-smart');
         if (!Quill.imports['modules/imageDropAndPaste']) Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste);
+
+        Quill.register(SoftBreak);
 
         const options: any = {
             theme: 'snow',
@@ -54,22 +85,23 @@
                 toolbar: toolbar ? { container: toolbarEl } : false,
                 keyboard: {
                     bindings: {
+                        linebreak: { 
+                            key: 'Enter',
+                            shiftKey: true,
+                            handler: function(range, context) {
+                                const quill = this.quill;
+                                const currentLength = quill.getLength();
+        
+                                quill.insertEmbed(range.index, 'softbreak', '');
+                                quill.setSelection(Math.min(range.index + 2, currentLength), Quill.sources.SILENT);
+                            }
+                        },
                         justEnter: {
                             key: 'Enter',
                             handler: () => {
                                 if (enterSubmits) {
                                     dispatch("submit");
                                 } else {
-                                    const range = quill.getSelection();
-                                    if (range) quill.insertText(range.index, "\n");
-                                }
-                            }
-                        },
-                        shiftEnter: {
-                            key: 'Enter',
-                            shiftKey: true,
-                            handler: () => {
-                                if (enterSubmits) {
                                     const range = quill.getSelection();
                                     if (range) quill.insertText(range.index, "\n");
                                 }
@@ -133,7 +165,7 @@
             }
         };
 
-        if (!allowMarkdown) options.formats = ['mention'];
+        // if (!allowMarkdown) options.formats = ['modules/mention'];
 
         
         quill = new Quill(editorEl, options);
@@ -150,9 +182,13 @@
         if (autofocus) quill.focus();
     }
 
-    onMount(async () => {
-        if ($wysiwygEditor || forceWywsiwyg) enableEditor();
-    })
+    $: if (!quill && editorEl && ($wysiwygEditor || forceWywsiwyg)) {
+        enableEditor();
+    }
+    
+    // onMount(async () => {
+    //     if ($wysiwygEditor || forceWywsiwyg) enableEditor();
+    // })
 
     function fileUploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {
         const {url, tags} = e.detail;
@@ -185,12 +221,12 @@
             quill.insertText(index, "\n");
             quill.insertEmbed(index, "image", url);
         } else {
-            toast.error("Failed to upload image", "error");
+            toast.error("Failed to upload image");
         }
     }
 
     function toggleEditor() {
-        if ($wysiwygEditor) {
+        if ($wysiwygEditor && editorEl) {
             enableEditor();
         } else {
         }
@@ -199,36 +235,45 @@
 
 <div class="flex flex-col border-none sm:rounded-xl border grow">
     {#if toolbar}
-        <div class="flex flex-row items-start justify-between font-sans">
-        <div bind:this={toolbarEl} class="-mt-4 toolbar sticky z-40 top-[var(--navbar-height)] bg-background/80  !backdrop-blur-[50px] toolbar-container w-full">
-            {#if $wysiwygEditor || forceWywsiwyg}
-                <span class="ql-formats">
-                    <select class="ql-header"></select>
-                </span>
-                <span class="ql-formats">
-                    <button class="ql-bold"></button>
-                    <button class="ql-italic"></button>
-                    <button class="ql-link"></button>
-                    <button>
-                        <BlossomUpload class="!p-0" on:uploaded={fileUploaded} bind:blob={uploadBlob}>
-                            <Image class="w-full" />
-                        </BlossomUpload>
-                    </button>
-                </span>
-                <span class="ql-formats">
-                    <button class="ql-formula"></button>
-                </span>
-            {/if}
-        </div>
+        <div class="flex flex-row justify-between font-sans gap-6 toolbar sticky z-40 top-[var(--header-height)] border-y border-border mobile-nav items-center mb-4">
+            <div bind:this={toolbarEl} class="toolbar-container w-full">
+                {#if $wysiwygEditor || forceWywsiwyg}
+                    <span class="ql-formats">
+                        <select class="ql-header"></select>
+                    </span>
+                    <span class="ql-formats flex flex-row flex-none">
+                        <button class="ql-list" value="ordered" />
+                        <button class="ql-list" value="bullet" />
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-link"></button>
+                        <button>
+                            <BlossomUpload class="!p-0" on:uploaded={fileUploaded} bind:blob={uploadBlob}>
+                                <Image class="w-full" />
+                            </BlossomUpload>
+                        </button>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-formula"></button>
+                    </span>
+                {/if}
+            </div>
 
-            <Checkbox
-                class="border-none text-muted-foreground text-sm"
-                type="switch"
-                bind:value={$wysiwygEditor}
-                on:change={toggleEditor}
-            >
-                WYSIWYG
-            </Checkbox>
+            <Tooltip.Root>
+                <Tooltip.Trigger>
+                    <Checkbox
+                        class="border-none text-muted-foreground text-sm max-sm:hidden py-4"
+                        type="switch"
+                        bind:value={$wysiwygEditor}
+                        on:change={toggleEditor}
+                    >
+                        WYSIWYG
+                    </Checkbox>
+                </Tooltip.Trigger>
+                <Tooltip.Content>
+                    Toggle the WYSIWYG editor
+                </Tooltip.Content>
+            </Tooltip.Root>
         </div>
     {/if}
     {#if $$slots.belowToolbar}
@@ -264,7 +309,7 @@
     .toolbar-container {
         @apply p-2;
         @apply !border-t-0 !border-l-0 !border-r-0;
-        @apply flex flex-row items-center gap-1 mb-4;
+        @apply flex flex-row items-center gap-1;
     }
 
     :global(.ql-editor.ql-blank::before) {
@@ -277,6 +322,10 @@
     }
 
     :global(.ql-container) {
+    }
+
+    :global(.toolbar) {
+        @apply flex-none;
     }
 
     .toolbar button {
@@ -322,6 +371,10 @@
     
     :global(.ql-editor .mention) {
         @apply text-foreground font-medium;
+    }
+    
+    :global(.ql-snow.ql-toolbar button, .ql-snow .ql-toolbar button) {
+        float: none !important;
     }
 
     :global(.ql-mention-list) {

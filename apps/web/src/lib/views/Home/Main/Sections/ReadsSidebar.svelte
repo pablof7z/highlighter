@@ -1,8 +1,7 @@
 <script lang="ts">
     import { ndk } from "$stores/ndk.js";
-    import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+    import { NDKKind, NDKList, NDKRelaySet } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
-    import * as Feed from "$components/Feed";
 	import { filterLists } from "$utils/curation-filter";
 	import { CaretRight } from "phosphor-svelte";
 	import { Badge } from "$components/ui/badge";
@@ -13,9 +12,16 @@
         curations.unsubscribe();
     })
 
+    const fourWeeksAgo = Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 28;
+
+    const relaySet = NDKRelaySet.fromRelayUrls([
+        'wss://relay.primal.net',
+        'wss://relay.highlighter.com',
+        'wss://relay.f7z.io'
+    ], $ndk);
     const curations = $ndk.storeSubscribe([
-        { kinds: [NDKKind.ArticleCurationSet], limit: 10 }
-    ], undefined, NDKList);
+        { kinds: [NDKKind.ArticleCurationSet], limit: 50, since: fourWeeksAgo }
+    ], {relaySet, closeOnEose: true}, NDKList);
 
     const filteredCurations = filterLists(curations);
 </script>

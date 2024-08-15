@@ -43,7 +43,7 @@
 
 <Tooltip.Root>
     <Tooltip.Trigger>
-        <Button size="icon" variant="outline" class="{state === 'saved' && manuallySaved ? "bg-green-500/50" : ""} transition-all duration-500" on:click={click}>
+        <Button size="icon" variant="outline" class="{state === 'saved' && manuallySaved ? "bg-green-500/50" : ""} transition-all duration-500 {$$props.class??""}" on:click={click}>
             {#if state === "idle"}
                 <PencilRuler size={24} />
             {:else}

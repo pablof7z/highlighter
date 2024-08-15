@@ -188,7 +188,8 @@
                 placeholder="Comment"
                 allowMarkdown={false}
                 class="
-                    w-full min-h-[10rem]
+                w-full max-w-xl
+                    min-h-[10rem]
                     text-lg
                     {$$props.class??""}
                 "

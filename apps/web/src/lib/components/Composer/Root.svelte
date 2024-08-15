@@ -8,6 +8,8 @@
 	import { createEventDispatcher, setContext } from "svelte";
 	import * as Audience from "$components/Audience";
 	import { NavigationOption } from "../../../app";
+	import saveDraft from "./actions/save-draft.js";
+    import * as Draft from "$components/Draft";
 
     export let audience: Audience.State = { scope: 'public' };
 
@@ -53,6 +55,7 @@
     export let actions: Actions = {
         publish: publish.bind(null, state),
         upload: upload.bind(null, state),
+        saveDraft: saveDraft.bind(null, state),
         schedule: () => {},
     }
 
@@ -69,6 +72,7 @@
     
     $: secondaryButtons = [
         { id: 'audience', component: { component: Audience.Button, props: { state: audienceStore } } },
+        { id: 'draft', component: { component: Draft.Button, props: { save: actions.saveDraft} } },
         // { name: 'Drafts', fn: actions.upload, buttonProps: { variant: 'link' } },
         { id: 'image', icon: Image, fn: actions.upload, buttonProps: { class: 'rounded-full', variant: 'ghost', size: 'icon' } },
         // { id: 'gif', icon: Gif, fn: actions.upload, buttonProps: { class: 'rounded-full', variant: 'ghost', size: 'icon' } },

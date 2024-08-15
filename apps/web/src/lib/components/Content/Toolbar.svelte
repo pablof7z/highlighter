@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { inview } from 'svelte-inview';
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
 	import { layout } from "$stores/layout";
 	import { getEventUrl } from "$utils/url";
@@ -61,7 +62,7 @@
                 //     fn: () => dispatch("zap"),
                 //     iconProps: { weight: 'fill' }
                 // }
-             });
+            });
         }
 
         showToolbar = navigation.length > 0;
@@ -72,11 +73,17 @@
             $layout.navigation = false;
         }
     }
+
+    function inviewChange(e: CustomEvent<{ inview: boolean }>) {
+        pinToolbar = !e.detail.inview;
+    }
 </script>
 
 {#if showToolbar}
-    <HorizontalOptionsList
-        options={navigation}
-        class="responsive-padding"
-    />
+    <div use:inview on:inview_change={inviewChange}>
+        <HorizontalOptionsList
+            options={navigation}
+            class="responsive-padding"
+        />
+    </div>
 {/if}

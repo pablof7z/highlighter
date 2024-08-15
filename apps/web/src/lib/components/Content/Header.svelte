@@ -1,8 +1,6 @@
 <script lang="ts">
 	import ItemViewZaps from "$components/Event/ItemView/ItemViewZaps.svelte";
 	import { NDKArticle, NDKEvent, NDKHighlight, NDKUserProfile } from "@nostr-dev-kit/ndk";
-	import { createEventDispatcher, getContext, onMount } from "svelte";
-	import { inview } from "svelte-inview";
 	import { NavigationOption } from "../../../app";
 	import HeaderShell from "./HeaderShell.svelte";
     import ContentToolbar from "./Toolbar.svelte";
@@ -23,22 +21,7 @@
 
     export let navOptions: NavigationOption[] = [];
 
-    const dispatcher = createEventDispatcher();
-
     $layout.activeOption = navOptions[0];
-    
-    function titleViewChange(e) {
-        const { inView } = e.detail;
-        dispatcher("title:inview_change", inView);
-
-        if (inView) {
-            // $layout.navigation = false;
-        } else {
-            if (title) $layout.title = title;
-            $layout.header = undefined;
-            $layout.navigation = navOptions;
-        }
-    }
 
     let hasZaps: boolean;
 </script>
@@ -65,7 +48,7 @@
         {/if}
     </svelte:fragment>
 
-    <div slot="title" use:inview on:inview_change={titleViewChange}>
+    <div slot="title">
         {title??"Untitled"}
     </div>
 

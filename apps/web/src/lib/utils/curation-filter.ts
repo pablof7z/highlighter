@@ -2,7 +2,7 @@ import { userFollows } from "$stores/session";
 import { NDKList } from "@nostr-dev-kit/ndk";
 import { derived, Readable } from "svelte/store";
 
-function filterList(list: NDKList) {
+const filterList = (removeNoDescription: boolean) => (list: NDKList) => {
     // if it doesn't have items
     if (!list.items || list.items.length === 0) return false;
     
@@ -18,16 +18,20 @@ function filterList(list: NDKList) {
     // test doesn't say "test"
     if (list.title.toLowerCase().includes("test")) return false;
 
+    if (removeNoDescription) {
+        if (!list.description) return false;
+    }
+
     return true;
 }
 
 export function filterLists(
     list: Readable<NDKList[]>,
     minWordCount: number = 400,
-    removeTest = true
+    removeNoDescription = true
 ): Readable<NDKList[]> {
     return derived([list, userFollows], ([$list, $userFollows]) => {
-        let ret = $list.filter(filterList);
+        let ret = $list.filter(filterList(removeNoDescription));
 
         // strongly prefer to show list from the user's follows
         // but lower the preference the older the published_at is

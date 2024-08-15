@@ -3,6 +3,7 @@
 	import { NDKList } from "@nostr-dev-kit/ndk";
     import * as List from "$components/List";
     import * as Card from "$components/Card";
+    import * as Feed from "$components/Feed";
     import Footer from './Footer.svelte';
 
     export let list: NDKList;
@@ -28,9 +29,6 @@
 
 <List.Root {list} let:items>
     <List.Shell orientation="vertical" {items} let:item>
-        <div class="px-2 flex flex-col gap-2 pb-6">
-            <Card.FeaturedArticle article={item} />
-            <!-- <List.Item {item} /> -->
-        </div>
+        <Feed.Items.Article article={item} />
     </List.Shell>
 </List.Root>

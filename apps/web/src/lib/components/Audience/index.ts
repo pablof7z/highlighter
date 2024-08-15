@@ -17,13 +17,23 @@ export {
     Button
 }
 
-export function produceTags(state: State): NDKTag[] {
+export function produceTags(state: State, eventType: 'main' | 'preview'): NDKTag[] {
     const tags: NDKTag[] = [];
 
     if (!state.groups) return tags;
     
     for (const group of state.groups) {
         tags.push(["h", group.id, ...group.relayUrls]);
+
+        if (group.tiers) {
+            for (const tier of group.tiers) {
+                if (eventType === 'main') {
+                    tags.push(["f", tier.dTag??"", group.id ]);
+                } else {
+                    tags.push(["tier", tier.dTag??"", group.id ]);
+                }
+            }
+        }
     }
     
     return tags;
@@ -36,7 +46,6 @@ export async function produceRelaySet(state: State, event: NDKEvent): Promise<ND
     // if we have groups, add their relays
     if (state.groups) {
         for (const group of state.groups) {
-            console.log('group', group);
             for (const url of group.relayUrls) {
                 const relay = $ndk.pool.getRelay(url, true);
                 relaySet.addRelay(relay);

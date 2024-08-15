@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { NDKTag } from '@nostr-dev-kit/ndk';
-    import { Group, Root} from '$components/Groups';
+    import { GroupData, Root} from '$components/Groups';
 	import { Writable } from 'svelte/store';
 
     export let tags: NDKTag[];
     export let skipFooter: boolean = false;
 
-    export let groups: Record<string, Writable<Group>> = {};
+    export let groups: Record<string, Writable<GroupData>> = {};
 </script>
 
 {#each tags as tag}

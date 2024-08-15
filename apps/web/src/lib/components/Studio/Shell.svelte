@@ -5,6 +5,9 @@
     import Header from "./Header.svelte";
     import * as Studio from '$components/Studio';
     import Publish from './Publish.svelte';
+	import { Star } from 'phosphor-svelte';
+	import { Button } from '$components/ui/button';
+	import ManagePreview from './ManagePreview.svelte';
 
     export let state: Writable<Studio.State<Studio.Type>>;
     export let actions: Studio.Actions;
@@ -15,25 +18,6 @@
         props: {
             state,
             actions,
-            // onSaveDraft: async (manuallySaved: boolean) => {
-            //     if ($event) {
-            //         const res = addDraftCheckpoint(
-            //             manuallySaved,
-            //             draft,
-            //             { event: JSON.stringify($event!.rawEvent()) },
-            //             "article",
-            //             $event!
-            //         )
-
-            //         if (res) {
-            //             draft = res;
-            //             return true;
-            //         }
-            //     }
-            // },
-            // onPublish: async () => {
-            //     $state.mode = 'publish';
-            // }
         }
     }
 
@@ -56,17 +40,32 @@
 </script>
 
 <div class="flex flex-col w-full">
-    <div class:hidden={$state.mode !== 'audience'}>
-        <!-- <Audience
-            {preview}
-            {type}
-            {withPreview}
-            {publishInGroups}
-            {publishInTiers}
-            {publishScope}
-        /> -->
+    <div class:hidden={$state.mode !== 'manage-preview'}>
+        <ManagePreview {state} />
     </div>
+
     <div class:hidden={$state.mode !== 'edit'}>
+        {#if $state.audience.scope === 'private'}
+            <div class="border px-4 py-2 bg-secondary flex flex-row justify-between gap-4 my-2 rounded">
+                <div class="flex flex-row" class:items-center={!$state.withPreview}>
+                    <Star class="w-4 h-4 mr-2 text-gold" weight="fill" />
+                    <div class="text-sm text-muted-foreground flex flex-col items-start">
+                        For community members only.
+                        {#if $state.withPreview}
+                            <span class="text-xs opacity-50">Non-members will see a preview.</span>
+                        {/if}
+                    </div>
+                </div>
+
+                <div class="flex flex-row items-center">
+                    <Button variant="outline" size="sm" on:click={() => $state.mode = 'manage-preview'}>
+                        Manage preview
+                    </Button>
+                </div>
+            </div>
+        {/if}
+        
+        
         {#if editorComponent}
             <svelte:component this={editorComponent} {state} />
         {:else}

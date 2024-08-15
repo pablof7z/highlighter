@@ -12,7 +12,7 @@
     export let spacing = "gap-2";
     export let leadingText = "";
     export let avatarType: 'circle' | 'square' | undefined = "circle";
-    export let avatarSize: 'tiny' | 'small' | 'medium' | 'large' | undefined = "medium";
+    export let avatarSize: 'tiny' | 'small' | 'medium' | 'large' | undefined = "small";
     export let href: string | undefined = undefined;
 
     function newProfileAfterEose(e: CustomEvent<NDKUserProfile>) {

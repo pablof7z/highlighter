@@ -8,13 +8,18 @@
 	import { slide } from "svelte/transition";
 
     export let state: Writable<State>;
-    export let uploadedFiles: string[] = [];
+    export let uploadedFiles: string[] = $state?.attachments ?? [];
 
     function uploaded(e: CustomEvent<{url: string, tags: NDKTag[]}>) {
         const {url, tags} = e.detail;
         if (url) {
             uploadedFiles.push(url);
             uploadedFiles = uploadedFiles;
+            state.update(s => {
+                s.attachments ??= [];
+                s.attachments.push(url)
+                return s;
+            });
         } else {
             console.error("Failed to upload file");
         }

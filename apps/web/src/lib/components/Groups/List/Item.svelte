@@ -108,12 +108,12 @@
 <Swipe {rightOptions}>
     <a href={getGroupUrl($group)} class="py-1.5 group relative hover:bg-secondary transition-all duration-100 ease-in-out flex overflow-clip">
         <div class="responsive-padding flex flex-row items-stretch px-2 gap-3 w-full">
-            <img src={$group.picture??randomImage($group.name??"", 300, 300)} />
+            <Groups.Avatar group={$group} size="small" />
             
             <div class="flex flex-col grow">
                 <div class="flex flex-row gap-1 grow truncate justify-between items-center">
                     <span class="text-foreground font-medium text-base truncate">
-                        {$group.name??"Unnamed Group"}
+                        <Groups.Name group={$group} />
                     </span>
 
                     <span class="text-xs text-muted-foreground whitespace-nowrap shrink">

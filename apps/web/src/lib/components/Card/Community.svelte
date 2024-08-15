@@ -3,32 +3,31 @@
 	import ContentCard from "./ContentCard.svelte";
 	import { Readable } from "svelte/store";
 	import { Button } from "$components/ui/button";
+    import * as Groups from "$components/Groups";
+	import { getGroupUrl } from "$utils/url";
 
-    export let group: NDKSimpleGroup | undefined = undefined;
-    export let groupId: string = group?.groupId!;
-    export let relays: string[] = group?.relayUrls()!;
-    export let metadata: Readable<NDKSimpleGroupMetadata | undefined>;
-    export let isAdmin: Readable<boolean> | undefined = undefined;
+    export let group: Readable<Groups.GroupData>;
 </script>
 
-    <ContentCard
-        title={$metadata?.name??groupId}
-        image={$metadata?.picture}
-        description={$metadata?.about??relays.join(', ')}
-        {...$$props}
-        class="cursor-pointer"
-        event={$metadata}
-        alwaysShowPinButton={isAdmin && $isAdmin}
-        on:click
-    >
-        <div class="flex flex-row gap-2">
-            {#if $metadata?.access}
-                <Button variant="secondary" size="xs">
-                    Info
-                </Button>
-            {/if}
-            <Button variant="accent" size="xs">
-                Visit
+<ContentCard
+    title={$group.name}
+    href={getGroupUrl($group)}
+    image={$group.picture}
+    description={$group.about??$group.relayUrls.join(', ')}
+    {...$$props}
+    class="cursor-pointer"
+    event={$group.metadata}
+    alwaysShowPinButton={$group.isAdmin}
+    on:click
+>
+    <div class="flex flex-row gap-2">
+        <!-- {#if $metadata?.access}
+            <Button variant="secondary" size="xs">
+                Info
             </Button>
-        </div>
-    </ContentCard>
+        {/if} -->
+        <Button variant="accent" size="xs">
+            Visit
+        </Button>
+    </div>
+</ContentCard>

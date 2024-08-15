@@ -29,35 +29,21 @@
     <Groups.Root
         {groupId}
         {relays}
-        let:isMember
-        let:isAdmin
         let:group
-        let:metadata
-        let:members
-        let:stores
-        let:tiers
-        let:admins
     >
         <Groups.Shell
             {group}
-            {isAdmin}
-            {isMember}
-            {tiers}
-            {metadata}
-            {members}
-            {admins}
-            {stores}
         >
             {#if view === 'chat'}
-                <Groups.Views.Chat {group} {metadata} />
+                <Groups.Views.Chat {group} />
             {:else if view === 'posts'}
-                <Groups.Views.Posts {group} {metadata} />
+                <Groups.Views.Posts {group} />
             {:else if view === 'articles'}
-                <Groups.Views.Articles {group} {metadata} />
+                <Groups.Views.Articles {group} />
             {:else if view === 'settings'}
-                <Groups.Views.Settings {group} {metadata} existingTiers={tiers} {members} />
+                <Groups.Views.Settings {group} existingTiers={tiers} {members} />
             {:else}
-                <Groups.Views.Home {group} {metadata} {isAdmin} {isMember} />
+                <Groups.Views.Home {group} />
             {/if}
         </Groups.Shell>
     </Groups.Root>

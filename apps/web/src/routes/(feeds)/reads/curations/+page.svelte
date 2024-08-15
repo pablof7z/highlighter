@@ -11,7 +11,7 @@
     })
 
     const curations = $ndk.storeSubscribe([
-        { kinds: [NDKKind.ArticleCurationSet], limit: 10 }
+        { kinds: [NDKKind.ArticleCurationSet], limit: 50 }
     ], undefined, NDKList);
 </script>
 

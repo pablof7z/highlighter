@@ -8,11 +8,11 @@
 	import { Writable } from "svelte/store";
     import ThreadItem from "$components/Editor/Thread/Item.svelte";
 	import { Plus } from 'phosphor-svelte';
-    import { Types as StudioItemTypes } from "$components/Studio";
+    import { Type as StudioItemType } from "$components/Studio";
 
     const thread = getContext("thread") as Writable<Thread | undefined>;
-    const type = getContext("type") as Writable<StudioItemTypes>;
-    $type = StudioItemTypes.Thread;
+    const type = getContext("type") as Writable<StudioItemType>;
+    $type = StudioItemType.Thread;
 
 	$thread ??= new Thread(NDKKind.Text, $currentUser!, $ndk);
     

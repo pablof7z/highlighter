@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKArticle, NDKFilter, NDKKind, NDKList, NDKRelaySet } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKFilter, NDKKind, NDKList, NDKRelaySet, NDKSubscriptionCacheUsage, NDKSubscriptionOptions } from "@nostr-dev-kit/ndk";
 	import { onDestroy, onMount } from "svelte";
 	import { wotFilteredStore } from "$stores/wot";
 	import { ndk } from "$stores/ndk.js";
@@ -10,10 +10,6 @@
     import * as Feed from "$components/Feed";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 	import { getSaveForLaterListForEvent } from "$actions/Events/save-for-later";
-	import Button from "$components/ui/button/button.svelte";
-	import { BookmarkSimple } from "phosphor-svelte";
-	import { urlFromEvent } from "$utils/url";
-	import Checkbox from "$components/Forms/Checkbox.svelte";
 
     onMount(() => {
         addHistory({ title: "Reads", url: $page.url.toString() })
@@ -28,13 +24,12 @@
         filters.push({ limit: 500 })
     }
 
+    let subOpts: NDKSubscriptionOptions = { subId: 'home-articles' };
     let articles: NDKEventStore<NDKArticle> = $ndk.storeSubscribe(
-        filters,
-        { subId: 'home-articles', relaySet },
-        NDKArticle
+        filters, { ...subOpts }, NDKArticle
     );
 
-    let wotFilter = true;
+    let wotFilter = false;
 
     let store: Readable<NDKArticle[]>;
 
@@ -46,6 +41,8 @@
         } else {
             s = articles;
         }
+
+        // store = s;
 
         store = filterArticles(s);
     }
@@ -67,15 +64,15 @@
     
 </script>
 
-{#if hasSavedItems}
+<!-- {#if hasSavedItems}
     <Button variant="outline" href={urlFromEvent(savedList)}>
         <BookmarkSimple size={24} />
         You have saved items
     </Button>
-{/if}
+{/if} -->
 
 
-<div class="flex flex-row items-end border rounded p-4 mb-4">
+<!-- <div class="flex flex-row items-end border rounded p-4 mb-4">
     <Checkbox
     type="switch"
         bind:value={wotFilter}
@@ -83,7 +80,7 @@
         WOT
     </Checkbox>
 
-</div>
+</div> -->
 
 {#key wotFilter}
     <Feed.Articles

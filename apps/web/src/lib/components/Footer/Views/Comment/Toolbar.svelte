@@ -6,6 +6,7 @@
 	import { State } from ".";
 	import { NDKEvent } from '@nostr-dev-kit/ndk';
 	import { toast } from 'svelte-sonner';
+	import { Image } from 'phosphor-svelte';
 
     export let open: OpenFn;
     export let stateStore: Writable<State>;
@@ -29,7 +30,13 @@
         Cancel
     </Button>
 
-    <Button on:click={publish}>
-        Publish
-    </Button>
+    <div class="flex flex-row gap-4">
+        <Button variant="secondary" size="icon" on:click={() => $stateStore.actions?.upload() }>
+            <Image size={16} />
+        </Button>
+
+        <Button on:click={publish}>
+            Publish
+        </Button>
+    </div>
 </div>

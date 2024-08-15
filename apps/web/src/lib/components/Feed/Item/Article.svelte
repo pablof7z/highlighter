@@ -7,15 +7,18 @@
 	import { getSummary, readTime } from "$utils/article";
 	import Swipe from "$components/Swipe.svelte";
 	import { NavigationOption } from "../../../../app";
-	import { BookmarkSimple } from "phosphor-svelte";
+	import { BookBookmark, BookmarkSimple } from "phosphor-svelte";
 	import { toast } from "svelte-sonner";
     import { saveForLater } from "$lib/actions/Events/save-for-later.js";
-	import { appMobileView } from "$stores/app";
+	import PublishedToPills from "$components/Groups/PublishedToPills.svelte";
+	import { eventIsInGroup } from "$utils/preview";
+	import EventTags from "$components/Events/EventTags.svelte";
 
     export let article: NDKArticle;
     export let skipAuthor = false;
     export let href: string | undefined = undefined;
     export let index: number | undefined = undefined;
+    export let skipCommunity = false;
 
     const summary = getSummary(article, true);
 
@@ -43,38 +46,44 @@
     preview={index === 0}
 >
 <a {href} class="flex flex-col gap-2 min-h-[5rem] lg:min-h-[10rem] {$$props.class??""}">
-    <div class="flex flex-row gap-4 ">
-        <div class="w-1/3 flex-none">
-            {#if article.image}
-                <img src={article.image} alt={article.title} class="w-full h-full object-cover rounded-sm" />
-            {/if}
+    <div class="grid grid-cols-3 items-start gap-y-1 gap-x-4">
+        <div class="col-span-2">
+            <div class="flex flex-row gap-4 text-muted-foreground lg:text-xs text-sm w-full items-center justify-between mb-2">
+                {#if !skipCommunity && eventIsInGroup(article)}
+                    <PublishedToPills event={article} />
+                {:else if !skipAuthor}
+                    <AvatarWithName user={article.author} avatarSize="small" class="font-light !text-xs truncate" />
+                {/if}
+            </div>
         </div>
 
-        <div class="w-2/3 flex flex-col">
-            <h2 class="text-lg font-bold mb-0 max-sm:max-h-[3.5rem] overflow-y-clip">{article.title}</h2>
-            <div class="flex flex-row gap-4 text-muted-foreground lg:text-xs text-sm w-full items-center">
-                {#if !skipAuthor}
-                    <AvatarWithName user={article.author} avatarSize="tiny" />
-                {/if}
+        <div class="flex flex-row items-center gap-2 justify-end">
+            <Badge variant="secondary" class="font-light text-muted-foreground">
+                <RelativeTime event={article} />
+            </Badge>
 
-                <Badge variant="secondary" class="font-normal text-muted-foreground">
-                    <RelativeTime event={article} />
-                </Badge>
+            <Badge variant="secondary" class="font-light text-muted-foreground whitespace-nowrap">
+                {time}
+            </Badge>
+        </div>
 
-                <Badge variant="secondary" class="font-normal text-muted-foreground whitespace-nowrap">
-                    {time}
-                </Badge>
+        <div class="col-span-2 flex flex-col">
+            <div class="flex flex-col gap-0">
+                <h2 class="text-xl md:text-2xl font-semibold mb-0 max-sm:max-h-[3.5rem] overflow-y-clip">{article.title}</h2>
+                <p class="text-base md:text-lg text-muted-foreground max-h-[3.5rem] sm:font-light overflow-clip">{summary}</p>
             </div>
-            <p class="lg:text-sm text-muted-foreground mt-2 max-sm:max-h-[5rem] overflow-clip">{summary}</p>
+        </div>
 
-            {#if !$appMobileView}
-                <RelatedEvents event={article} class="mt-4" />
+        <div class="flex-none">
+            {#if article.image}
+                <img src={article.image} alt={article.title} class="w-full h-full object-cover sm:rounded-sm" />
             {/if}
+        </div>
+        
+        <div class="col-span-2 mt-1">
+            <RelatedEvents event={article} />
+            <EventTags event={article} />
         </div>
     </div>
-
-    {#if $appMobileView}
-        <RelatedEvents event={article} />
-    {/if}
 </a>
 </Swipe>

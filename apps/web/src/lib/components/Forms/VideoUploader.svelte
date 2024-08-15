@@ -119,7 +119,6 @@
                 </button>
             {:else}
                 <Input
-                    color="black"
                     autofocus={true}
                     class="text-xs w-[20rem]"
                     placeholder="Enter existing URL"

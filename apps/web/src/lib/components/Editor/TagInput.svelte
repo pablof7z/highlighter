@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Badge from "$components/ui/badge/badge.svelte";
+	import Button from "$components/ui/button/button.svelte";
 	import { Textarea } from "$components/ui/textarea";
 	import { ndk } from "$stores/ndk";
 	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
@@ -79,17 +81,17 @@
         on:focus={() => hasFocus = true}
         on:blur={() => hasFocus = false}
         on:submit
-        class="focus-visible:ring-0 focus-visible:outline-0"
+        class="focus-visible:ring-0 focus-visible:outline-0 {$$props.class??""} h-auto min-h-0"
         {autofocus}
     />
-    <div class="text-xs text-neutral-500">
+    <div class="text-xs text-muted-foreground">
         Separate tags with commas
     </div>
-    <div class="flex flex-row gap-1 w-full flex-wrap" class:hiddsen={!lastWord}>
+    <div class="flex flex-row gap-1 w-full flex-wrap mt-6 max-h-[10rem] overflow-y-auto" class:hiddsen={!lastWord}>
         {#each $tags.filter(t => t.includes(lastWord)) as tag}
-            <button class="badge bg-white/10 !p-4" on:click={() => addTag(tag)}>
+            <Button variant="secondary" size="xs" on:click={() => addTag(tag)}>
                 {tag}
-            </button>
+            </Button>
         {/each}
     </div>
 </div>

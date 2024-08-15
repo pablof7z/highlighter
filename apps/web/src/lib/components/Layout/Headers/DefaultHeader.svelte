@@ -5,7 +5,7 @@
 	import currentUser from "$stores/currentUser";
 </script>
 
-<div class="flex flex-row items-center rounded-full grow gap-4 pt-[var(--safe-area-inset-top)]">
+<div class="flex flex-row items-center rounded-full grow gap-4">
     <CurrentUser class="rounded-full flex flex-row items-center" />
     <WalletState />
     {#if $currentUser}

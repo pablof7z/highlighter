@@ -62,13 +62,16 @@
 </script>
 
 {#if !paid}
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 justify-stretch items-center w-full">
         <QRCode content={`lightning:${pr}`} color="#444444" size={size.toString()} />
-        <CopyButton label={pr} data={pr} class="truncate max-w-[350px] border border-border rounded-full p-3 font-mono" />
+        <div class="w-full">
+            <CopyButton data={pr} class="!text-sm !text-muted-foreground !font-light truncate !font-mono w-full m-1" />
+        </div>
 
         <Button on:click={pay}>
             Pay
             {nicelyFormattedSatNumber(satAmount)}
+            sats
         </Button>
     </div>
 {:else}

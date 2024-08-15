@@ -1,6 +1,30 @@
 <script lang="ts">
     import * as Groups from "$components/Groups";
 	import { groupsList } from "$stores/session";
+    import currentUser from '$stores/currentUser';
+	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
+	import { NDKKind, NDKRelaySet, NDKSimpleGroupMemberList, NDKTag } from "@nostr-dev-kit/ndk";
+	import { ndk } from "$stores/ndk";
+	import { derived, Readable } from "svelte/store";
+
+    // let groupsUserAdmins: NDKEventStore<NDKSimpleGroupMemberList>;
+    // let groupsTags: Readable<NDKTag[]>;
+        
+    // $: if (!groupsUserAdmins && $currentUser) {
+    //     groupsUserAdmins = $ndk.storeSubscribe([
+    //         { kinds: [ NDKKind.GroupMembers], "#p": [$currentUser.pubkey] }
+    //     ], { relaySet: NDKRelaySet.fromRelayUrls([
+    //         "wss://devrelay.highlighter.com",
+    //         "wss://relay.0xchat.com",
+    //         "wss://groups.fiatjaf.com",
+    //     ], $ndk)})
+
+    //     groupsTags = derived(groupsUserAdmins, $groupsUserAdmins => {
+    //         console.log($groupsUserAdmins)
+            
+    //         return $groupsUserAdmins.map(list => [ "group", list.dTag!, list.relay?.url ])
+    //     })
+    // }
 </script>
 
 {#if $groupsList && $groupsList.items.length > 0}
@@ -10,3 +34,10 @@
         </Groups.RootList>
     </div>
 {/if}
+<!-- 
+{#if $groupsUserAdmins}
+    {$groupsUserAdmins.length}
+    <Groups.RootList tags={$groupsTags} let:group>
+        <Groups.ListItem {group} />
+    </Groups.RootList>
+{/if} -->

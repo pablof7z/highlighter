@@ -3,11 +3,14 @@
 	import { derived, Readable } from "svelte/store";
     import * as Item from './Item';
     import * as Card from '$components/Card';
-	import { filterArticles } from "$utils/article-filter";
+	import { filterPreviewArticles } from "$utils/article-filter";
 
     export let store: Readable<NDKArticle[]>;
-    export let featuredItems = derived(store, $store => {
-        return $store.slice(0, 1);
+
+    let filteredStore = filterPreviewArticles(store);
+    
+    export let featuredItems = derived(filteredStore, $filteredStore => {
+        return $filteredStore.slice(0, 1);
     });
 
     export let skipAuthor = false;
@@ -16,16 +19,16 @@
         return $featuredItems.map(item => item.id);
     });
 
-    const articlesWithoutFeatured = derived([store, featuredItemIds], ([$store, $featuredItemIds]) => {
-        return $store.filter(article => !$featuredItemIds.includes(article.id));
+    const articlesWithoutFeatured = derived([filteredStore, featuredItemIds], ([$filteredStore, $featuredItemIds]) => {
+        return $filteredStore.filter(article => !$featuredItemIds.includes(article.id));
     });
 
 </script>
 
 {#if $featuredItems.length > 0}
     <div class="flex flex-col gap-6 border-b border-border pb-[var(--section-vertical-padding)]">
-        {#each $featuredItems as article}
-            <Card.FeaturedArticle {article} {skipAuthor} />
+        {#each $featuredItems as article (article.id)}
+            <Card.FeaturedArticle {article} {skipAuthor} {...$$props.itemProps??{}} />
         {/each}
     </div>
 {/if}
@@ -37,8 +40,10 @@
                 {index}
                 {article}
                 {skipAuthor}
+                {...$$props.itemProps??{}}
                 class="responsive-padding"
-            />
+            >
+            </Item.Article>
         </div>
     {/each}
 </div>

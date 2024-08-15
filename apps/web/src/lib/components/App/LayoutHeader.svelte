@@ -12,15 +12,13 @@
 	import { CaretDown } from "phosphor-svelte";
 	import BackButton from "./Navigation/BackButton.svelte";
     import * as Groups from "$components/Groups";
-	import { get } from "svelte/store";
-	import PublishedToPills from "$components/Groups/PublishedToPills.svelte";
 
     export let containerClass: string = "";
     export let scrollDir: 'up' | 'down' | undefined;
     export let scrollPercentage: number;
 </script>
 
-<div class="flex flex-row justify-between items-center h-full w-full gap-2 pt-[var(--safe-area-inset-top)]">
+<div class="flex flex-row justify-between items-center h-full w-full gap-2">
     {#if $layout.header?.component}
         <div class="w-full h-full flex flex-col">
             <svelte:component

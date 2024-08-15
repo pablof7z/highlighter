@@ -7,8 +7,13 @@
 	import * as Groups from "$components/Groups";
 	import { groupsList } from "$stores/session.js";
 	import { NDKList } from "@nostr-dev-kit/ndk";
+	import BlankState from "$components/PageElements/BlankState.svelte";
+	import { openModal } from "$utils/modal.js";
+	import NewGroupModal from "$modals/NewGroupModal.svelte";
+	import Badge from "$components/ui/badge/badge.svelte";
 
     export let state: Writable<State>;
+    export let variant = "outline";
 
     let groups: Writable<Record<string, Groups.GroupData>> | undefined;
 
@@ -69,14 +74,12 @@
             return $state;
         });
     }
-
-
 </script>
 
 <DropdownMenu.Root closeOnItemClick={false}>
     <DropdownMenu.Trigger>
 
-        <Button class="flex flex-row gap-2" variant="outline">
+        <Button class="flex flex-row gap-2" {variant}>
             {#if $state.scope === 'public'}
                 <UsersThree class="" size={20} />
                 Public
@@ -133,14 +136,35 @@
 
                         <DropdownMenu.Label>Select Communities</DropdownMenu.Label>
                         
-                        {#each Object.entries($allPossibleGroups) as [groupId, groupEntry] (groupId)}
-                            <DropdownMenu.CheckboxItem bind:checked={selectedGroups[groupId]}>
-                                <img src={groupEntry?.metadata?.picture} class="w-6 h-6 rounded-full mr-2" />
-                                {groupEntry?.metadata?.name}
-                            </DropdownMenu.CheckboxItem>
+                        {#each Object.entries($allPossibleGroups) as [groupId, group] (groupId)}
+                            {#if group.metadata}
+                                <DropdownMenu.CheckboxItem bind:checked={selectedGroups[groupId]} class="flex flex-row justify-between items-center w-full">
+                                    <div class="flex flex-row items-center gap-1">
+                                        <Groups.Avatar {group} size="sm" />
+                                        <Groups.Name {group} />
+                                    </div>
+
+                                    {#if group.access === 'open'}
+                                        <Badge>Open</Badge>
+                                    {:else}
+                                        <Badge>Exclusive</Badge>
+                                    {/if}
+                                </DropdownMenu.CheckboxItem>
+                            {/if}
                         {/each} 
                     </div>
                 {/if}
+            {:else if $state.scope === 'private'}
+                <DropdownMenu.Label>
+                    Communities
+                </DropdownMenu.Label>
+
+                <DropdownMenu.Label class="bg-secondary rounded border p-4 m-4">
+                    <BlankState cta="Create a community" on:click={() => openModal(NewGroupModal)}>
+                        You are not a member of any communities.
+                    </BlankState>
+                </DropdownMenu.Label>
+                
             {/if}
         </DropdownMenu.Group>
     </DropdownMenu.Content>

@@ -5,7 +5,7 @@
 	import { layout } from "$stores/layout";
 	import BlankState from "$components/PageElements/BlankState.svelte";
 	import { openModal } from "$utils/modal";
-	import { urlFromEvent } from "$utils/url";
+	import { getEventUrl, urlFromEvent } from "$utils/url";
 	import { CaretDown, ArrowRight, Check, X, CircleNotch } from "phosphor-svelte";
 	import { Button } from "$components/ui/button";
 	import { goto } from "$app/navigation";
@@ -45,14 +45,18 @@
         return e + p;
     });
 
+    let publishedEvent: NDKArticle | NDKVideo | NDKEvent | undefined;
+
     onMount(async () => {
         if ($state.type === 'thread') {
             alert('thread publishing not implemented');
         } else {
             publish(
-                $state,
+                state,
                 relays
-            );
+            ).then(() => {
+                publishedEvent = Studio.getEventFromState($state);
+            });
 
             // Studio.publish(
             //     $state,
@@ -144,38 +148,35 @@
         // console.table(relays);
     })
 
-    // async function generateShareModalContent() {
-    //     if (!$event) return;
+    function generateShareModalContent(event: NDKArticle | NDKVideo | NDKEvent) {
+        if (event instanceof NDKArticle) {
+            const parts = [ `I just published a new read on Nostr!`];
+            if (event.title) parts.push(event.title);
+            if (event.summary) parts.push(event.summary);
+
+            const url = urlFromEvent(event, authorUrl, true);
+
+            parts.push(`Check it out: ${url}`);
+
+            return parts.join("\n\n");
+        } else if (event instanceof NDKVideo) {
+            return `I just published a new video on Nostr! Check it out: ${event.title}`;
+        } else {
+            return `I just published a new event on Nostr! Check it out: ${event.encode()}`;
+        }
+    }
+
+    function share() {
+        let e: NDKEvent | undefined;
+
+        e = Studio.getShareableEvent($state);
+        if (!e) return;
+
+        const content = generateShareModalContent(e);
+        const tags = e.getMatchingTags("t");
         
-    //     if ($event instanceof NDKArticle) {
-    //         const parts = [ `I just published a new read on Nostr!`];
-    //         if ($event.title) parts.push($event.title);
-    //         if ($event.summary) parts.push($event.summary);
-
-    //         const url = urlFromEvent($event, authorUrl, true);
-
-    //         parts.push(`Check it out: ${url}`);
-
-    //         return parts.join("\n\n");
-    //     } else if ($event instanceof NDKVideo) {
-    //         return `I just published a new video on Nostr! Check it out: ${$event.title}`;
-    //     } else {
-    //         return `I just published a new event on Nostr! Check it out: ${$event.encode()}`;
-    //     }
-    // }
-
-    // function share() {
-    //     let e: NDKEvent;
-
-    //     if ($event instanceof NDKEvent) e = $event;
-        
-    //     openModal(ShareModal, { event: e, content, tags });
-    // }
-
-
-	function share(e: ButtonEventHandler<MouseEvent>): void {
-		throw new Error("Function not implemented.");
-	}
+        openModal(ShareModal, { event: e, content, tags });
+    }
 </script>
 
 
@@ -214,11 +215,10 @@
                 </p>
             {/if} -->
 
-            {#if !$state.publishAt}
+            {#if !$state.publishAt && publishedEvent?.title}
                 <div class="flex flex-row items-center gap-4">
-                    <Button variant="secondary">
-                        title here
-                        <!-- {$state.event.title} -->
+                    <Button variant="secondary" href={getEventUrl(publishedEvent)}>
+                        {publishedEvent.title}
                         <ArrowRight class="w-5 h-5 ml-2" />
                     </Button>
                 </div>
@@ -308,20 +308,20 @@
                             {/if}
                         </div>
 
-                        <!-- {#if $preview}
+                        {#if $state.preview}
                             <div class="w-12 flex justify-end">
-                                {#if status.preview === true}
+                                {#if status.previewEvent === 'published'}
                                     <Check class="text-green-500" />
-                                {:else if status.preview === false}
+                                {:else if status.previewEvent === false}
                                     <!-- False means it's not supposed to be published here -->
-                                <!--{:else if status.preview instanceof Error}
+                                {:else if status.previewEvent instanceof Error}
                                     <Tooltip.Root>
                                         <Tooltip.Trigger>
                                             <X class="text-red-500" />
                                         </Tooltip.Trigger>
                                         <Tooltip.Content>
                                             <span class="text-red-500">
-                                                {status.preview.message}
+                                                {status.previewEvent.message}
                                             </span>
                                         </Tooltip.Content>
                                     </Tooltip.Root>
@@ -329,7 +329,7 @@
                                     <CircleNotch class="animate-spin text-muted-foreground" />
                                 {/if}
                             </div>
-                        {/if} -->
+                        {/if}
                     </div>
                 {/each}
             </Collapsible.Content>

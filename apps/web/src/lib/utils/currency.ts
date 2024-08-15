@@ -1,4 +1,4 @@
-import { nicelyFormattedMilliSatNumber } from '$utils';
+import { nicelyFormattedMilliSatNumber, nicelyFormattedSatNumber } from '$utils';
 import type { NDKSubscriptionAmount, NDKTag } from '@nostr-dev-kit/ndk';
 
 export const possibleCurrencies = ['USD', 'EUR', 'msat'];
@@ -55,6 +55,11 @@ export function currencyFormat(currency: string, amount: number) {
 			if (amount > 0) amount /= 100;
 			retval = `${amount.toFixed(2)}€`;
 			break;
+		case 'sat': case 'sats': {
+			let formatted = nicelyFormattedSatNumber(amount);
+			if (typeof formatted === "number") formatted = formatted.toString();
+			return formatted.toLowerCase().endsWith('btc') ? formatted : `${formatted} sats`
+		}
 		case 'msat':
 			let formatted = nicelyFormattedMilliSatNumber(amount);
 			if (typeof formatted === "number") formatted = formatted.toString();

@@ -33,8 +33,6 @@
 		--mobile-body-px: 0.5rem;
 		--tw-prose-quote-borders: #ff0000;
 
-		--layout-header-height: 48px;
-
 		/* Navbar */
 		--navbar-width: 80px;
 
@@ -214,6 +212,10 @@
 		@apply hover:bg-foreground/20;
 	}
 
+	.ql-editor p + p {
+		@apply !my-0;
+	}
+
 	.article h1 {
 		@apply !mb-0 mt-8 text-4xl text-foreground font-bold;
 	}
@@ -224,6 +226,10 @@
 
 	.article h3 {
 		@apply mb-1 mt-8 text-xl font-semibold;
+	}
+
+	.article h2 + h3 {
+		@apply -mt-2 text-muted-foreground font-medium;
 	}
 
 	.article p {
@@ -432,8 +438,9 @@ section.settings .field {
 }
 
 .event-content a.hashtag, .event-content a.mention,
+.ql-editor .mention[data-id],
 .article button.hashtag, .article button.mention {
-	@apply text-gold;
+	@apply !text-gold;
 }
 
 .event-content .event-card {
@@ -490,7 +497,7 @@ blockquote.app-quote .author {
 }
 
 .section-title {
-	@apply font-bold text-xl text-foreground;
+	@apply font-medium text-xl text-foreground;
 	@apply flex flex-row items-center gap-2 px-4 mb-1 max-sm:text-2xl;
 }
 

@@ -120,10 +120,8 @@ export async function prepareSession(): Promise<void> {
 		const alreadyKnowFollows = getStore(userFollows).size > 0;
 		const $sessionUpdatedAt = alreadyKnowFollows ? get(sessionUpdatedAt) : undefined;
 
-		$ndk.walletConfig = {
-			onLnPay,
-			onPaymentComplete
-		};
+		$ndk.walletConfig ??= {onPaymentComplete};
+		$ndk.walletConfig.onPaymentComplete = onPaymentComplete;
 
 		fetchData('user', $ndk, [$currentUser.pubkey], {
 			profileStore: userProfile,

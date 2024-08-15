@@ -1,6 +1,7 @@
 import { writable, type Writable } from 'svelte/store';
 import { NavigationOption } from '../../app';
 import { NDKEvent } from '@nostr-dev-kit/ndk';
+import { E } from 'vitest/dist/reporters-O4LBziQ_.js';
 
 export interface Component {
 	component: ConstructorOfATypedSvelteComponent;
@@ -53,3 +54,9 @@ export type Layout = {
 export const layout = writable<Layout>({});
 
 export const scrollPercentage = writable<number>(0);
+
+export const headerTouchFns = writable({} as {
+	start?: (e: TouchEvent) => void,
+	move?: (e: TouchEvent) => void,
+	end?: (e: TouchEvent) => void,
+})

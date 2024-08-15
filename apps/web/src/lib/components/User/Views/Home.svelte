@@ -4,10 +4,11 @@
 	import { derived, writable, type Readable } from "svelte/store";
 	import { getContext, onDestroy, onMount } from "svelte";
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-    import * as Group from "$components/Groups";
+    import * as Groups from "$components/Groups";
     import * as Card from '$components/Card';
 	import currentUser from '$stores/currentUser';
 	import { layout } from '$stores/layout';
+	import RootList from '$components/Groups/RootList.svelte';
 
     export let user: NDKUser = getContext('user') as NDKUser;
     export let userProfile: NDKUserProfile | undefined | null = getContext('userProfile') as NDKUserProfile;
@@ -144,23 +145,11 @@
     {/if}
 
     {#if $userGroupsList}
-        <HorizontalList renderLimit={7} class="py-[var(--section-vertical-padding)]" title="Communities" items={$userGroupsList.items.map(tag => { return {tag, id: groupKey(tag[1], tag.slice(2))} })} let:item>
-            <Group.Root
-                groupId={item.tag[1]}
-                relays={item.tag.slice(2)}
-                let:group
-                let:metadata
-                let:tiers
-                let:isAdmin
-            >
-                <Card.Community
-                    {group}
-                    {metadata}
-                    {tiers}
-                    {isAdmin}
-                />
-            </Group.Root>
-        </HorizontalList>
+        <Groups.RootList tags={$userGroupsList.items} let:group>
+            <Card.Community
+                {group}
+            />
+        </Groups.RootList>
     {/if}
 
     {#each priorityBlocks as block}

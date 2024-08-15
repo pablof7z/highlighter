@@ -1,18 +1,16 @@
 <script lang="ts">
-	import { Button } from '$components/ui/button';
 	import { tierAmountToString } from '$lib/events/tiers';
 	import { NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
 	import { Check } from 'phosphor-svelte';
-	import { Readable } from 'svelte/store';
 
-    export let tiers: Readable<NDKSubscriptionTier[]>;
+    export let tiers: NDKSubscriptionTier[];
     export let selectedTier: NDKSubscriptionTier | undefined;
 
     let selectedIndex: number | undefined;
     
-    selectedIndex ??= $tiers.length > 1 ? Math.floor($tiers.length / 2) : 0;
+    selectedIndex ??= tiers.length > 1 ? Math.floor(tiers.length / 2) : 0;
 
-    $: selectedTier = (selectedIndex !== undefined ? $tiers[selectedIndex] : undefined);
+    $: selectedTier = (selectedIndex !== undefined ? tiers[selectedIndex] : undefined);
 
     function select(index: number) {
         if (selectedIndex === index) {
@@ -21,12 +19,10 @@
             selectedIndex = index;
         }
     }
-
-    $: console.log(selectedTier?.rawEvent())
 </script>
 
 <div class="flex flex-col items-stretch justify-center gap-2 w-full">
-    {#each $tiers as tier, i (tier.id)}
+    {#each tiers as tier, i (tier.id)}
         <button class="
             {selectedIndex === i ?
                 'bg-background/80 border-accent'
