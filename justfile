@@ -39,6 +39,7 @@ deploy-old:
 
 dev-deploy:
 	rsync -avP -l -t --exclude .env --exclude ios --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./apps/web/ kind0:/home/pablo/projects/dev-highlighter/apps/web
+	rsync -avP -l -t --exclude .env --exclude db --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./apps/communities-relay/ kind0:/home/pablo/projects/dev-highlighter/apps/communities-relay
 	rsync -avP -l -t --exclude .env --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./packages/ kind0:/home/pablo/projects/dev-highlighter/packages
 
 

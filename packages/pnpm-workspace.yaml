@@ -1,0 +1,9 @@
+packages:
+  - 'konsta/package'
+  - 'ndk/ndk'
+  - 'ndk/ndk-cache-redis'
+  - 'ndk/ndk-cache-dexie'
+  - 'ndk/ndk-cache-nostr'
+  - 'ndk/ndk-svelte'
+  - 'ndk/ndk-svelte-components'
+  - 'ndk/packages/*'
