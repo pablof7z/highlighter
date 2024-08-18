@@ -4,6 +4,7 @@
 	import Button from "$components/ui/button/button.svelte";
 	import { closeModal } from "$utils/modal";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
+	import { NavigationOption } from "../../app";
 
     export let article: NDKArticle;
     export let onSave: ((article: NDKArticle) => void) | undefined = undefined;
@@ -18,17 +19,17 @@
         article.image = undefined;
         save();
     }
+
+    const actionButtons: NavigationOption[] = [
+        { name: "No image", fn: noImage, buttonProps: { variant: 'secondary' } },
+        { name: "Save", fn: save, buttonProps: { variant: 'default'} },
+    ]
 </script>
 
-<ModalShell class="max-w-3xl w-full" title="Cover Image">
+<ModalShell
+    class="max-w-3xl w-full"
+    title="Cover Image"
+    {actionButtons}
+>
     <ArticleCover bind:article={article} />
-
-    <svelte:fragment slot="footer">
-        <Button variant="secondary" on:click={noImage}>
-            No image
-        </Button>
-        <Button on:click={save}>
-            Save
-        </Button>
-    </svelte:fragment>
 </ModalShell>

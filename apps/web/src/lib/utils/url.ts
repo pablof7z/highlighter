@@ -107,7 +107,8 @@ export async function getAuthorUrl(user: NDKUser) {
 export function urlFromEvent(
 	event: NDKEvent,
 	authorUrl?: string,
-	fullUrl = false
+	fullUrl = false,
+	maxRelayCount = 1
 ): string {
 	const url: string[] = [];
 
@@ -136,11 +137,11 @@ export function urlFromEvent(
 			url.push(dTag)
 		} else {
 			url.push("a")
-			url.push(event.encode());
+			url.push(event.encode(maxRelayCount));
 		}
 	} else {
 		url.push("a");
-		url.push(event.encode());
+		url.push(event.encode(maxRelayCount));
 	}
 
 	let u = url.join("/");

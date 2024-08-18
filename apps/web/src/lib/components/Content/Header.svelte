@@ -42,7 +42,7 @@
         {#if image !== false}
             <svelte:element
                 this={image ? 'img' : 'div'}
-                class="w-full object-cover bg-secondary max-h-[40vh]"
+                class="w-full object-cover bg-secondary max-h-[40vh] {$$props.imageClass??""}"
                 {...(image ? { src: image } : {})}
             />
         {/if}

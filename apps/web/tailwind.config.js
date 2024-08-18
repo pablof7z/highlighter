@@ -14,7 +14,7 @@ const config = {
 			}
 		},
 		fontFamily: {
-			serif: ["Lora"]
+			serif: ["Spectra"]
 		},
 		extend: {
 			backgroundImage: {

@@ -26,7 +26,7 @@
     </p>
 
     <RadioButton bind:currentValue={communityType} value="personal" class="h-auto w-full">
-        <b class="text-lg">Personal Community</b>
+        <div class="text-lg">Personal Community</div>
 
         <div slot="description" class="text-muted-foreground lg:text-xs text-sm flex flex-col gap-2">
             <p>Create a community centered around your personal brand.</p>
@@ -38,13 +38,13 @@
     </RadioButton>
 
     <RadioButton bind:currentValue={communityType} value="theme" class="h-auto w-full">
-        <b class="text-lg">Topic-based Community</b>
+        <div class="text-lg">Topic-based Community</div>
 
         <div slot="description" class="text-muted-foreground lg:text-xs text-sm flex flex-col gap-2">
             <p>Community centered around a specific topic or theme.</p>
 
             <div class="text-xs">
-                E.g. Journaling Afficionados
+                E.g. Journaling Aficionados
             </div>
         </div>
     </RadioButton>

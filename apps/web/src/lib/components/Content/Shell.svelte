@@ -9,8 +9,8 @@
      * 
      * 👉 Sends the wrapped event and the stores to the <slot />
      */
-	import { curationKinds, eventToKind } from "$utils/event";
-	import { NDKArticle, NDKEvent, NDKHighlight, NDKKind, NDKList, NDKRelaySet, NDKUserProfile, NDKVideo } from "@nostr-dev-kit/ndk";
+	import { curationKinds } from "$utils/event";
+	import { NDKArticle, NDKHighlight, NDKKind, NDKList, NDKUserProfile, NDKVideo } from "@nostr-dev-kit/ndk";
     import * as Article from "$components/Content/Article";
     import * as Video from "$components/Content/Video";
     import * as Note from "$components/Content/Note";
@@ -20,10 +20,9 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { setContext } from "svelte";
 	import { ndk } from "$stores/ndk";
-	import { derived, Readable } from "svelte/store";
+	import { derived } from "svelte/store";
 	import { deriveStore } from "$utils/events/derive";
 	import { WrappedEvent } from "../../../app";
-	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 
     export let isPreview = false;
 

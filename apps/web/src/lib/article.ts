@@ -18,6 +18,9 @@ export async function fetchArticle(
 	// Extract the main content using Readability
 	const reader = new Readability(doc);
 	const article: NDKArticle | null = reader.parse() as NDKArticle | null;
+	article.summary = article.excerpt;
+
+	console.log(article)
 
 	if (!article) return null;
 

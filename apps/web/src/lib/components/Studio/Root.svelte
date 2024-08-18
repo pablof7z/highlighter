@@ -13,6 +13,7 @@
     import * as Studio from "$components/Studio";
 	import { ndk } from "$stores/ndk";
     import { saveDraft } from "./actions/draft.js";
+	import { wrapEvent } from "$utils/event";
 
     export let draftId: string | undefined = undefined;
     export let checkpointId: string | undefined = undefined;
@@ -52,15 +53,28 @@
 
     let ready = true;
 
-    // if (eventId) {
-    //     ready = false;
-    //     $ndk.fetchEvent(eventId).then((e) => {
-    //         if (e) {
-    //             $event = wrapEvent(e) as NDKArticle | NDKVideo;
-    //             ready = true;
-    //         }
-    //     });
-    // }
+    if (eventId) {
+        ready = false;
+        $ndk.fetchEvent(eventId).then((e) => {
+            if (e) {
+                const event = wrapEvent(e) as NDKArticle | NDKVideo;
+
+                state.update((s) => {
+                    s.mode = "edit";
+                    if (event instanceof NDKArticle) {
+                        s.article = event;
+                        s.type = "article";
+                    } else if (event instanceof NDKVideo) {
+                        s.video = event;
+                        s.type = "video";
+                    }
+                    return s;
+                });
+                
+                ready = true;
+            }
+        });
+    }
 
     setContext('state', state);
 </script>

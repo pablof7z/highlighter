@@ -5,7 +5,7 @@
 @layer base {
 	:root {
 		--background: 0 0% 100%;
-		--foreground: 240 10% 3.9%;
+		--foreground: 240 1% 21.6%;
 		--card: 0 0% 100%;
 		--card-foreground: 240 10% 3.9%;
 		--popover: 0 0% 100%;;
@@ -68,7 +68,7 @@
 
 	.light {
 		--background: 240 10% 3.9%;
-		--foreground: 0 0% 98%;
+		--foreground: 240 10% 3.9%;
 		--card: 240 10% 3.9%;
 		--card-foreground: 0 0% 98%;
 		--popover: 240 10% 3.9%;
@@ -122,10 +122,6 @@
 	.rounded {
 		border-radius: var(--radius) !important;
 	}
-
-	@font-face { font-family: "Filosofia"; src: url("/fonts/filosofia/filosofiaot-regular-webfont.woff2") format("woff2"); font-style: normal; font-weight: normal; font-display: swap; }
-	@font-face { font-family: "Filosofia"; src: url("/fonts/filosofia/filosofiaot-italic-webfont.woff2") format("woff2"); font-style: italic; font-weight: normal; font-display: swap; }
-	@font-face { font-family: "Filosofia"; src: url("/fonts/filosofia/filosofiaot-bold-webfont.woff2") format("woff2"); font-style: normal; font-weight: bold; font-display: swap; }
 
   body {
     @apply bg-background text-foreground;
@@ -200,7 +196,7 @@
 	}
 
 	.article {
-		@apply text-foreground font-serif text-xl leading-10;
+		@apply text-foreground font-serif !text-[19px] leading-10;
 	}
 
 	mark {
@@ -233,7 +229,7 @@
 	}
 
 	.article p {
-		@apply mt-0 mb-6 leading-8 text-lg;
+		@apply mt-0 mb-6 leading-8 !text-[19px];
 	}
 
 	.article ul {
@@ -241,7 +237,7 @@
 	}
 
 	.article ol {
-		@apply list-decimal pl-6;
+		@apply list-decimal pl-0;
 	}
 
 	.article li {
@@ -503,4 +499,30 @@ blockquote.app-quote .author {
 
 .article-kind--30818 {
 	@apply font-sans;
+}
+
+.tiptap {
+	@apply focus:outline-none grow;
+	/* @apply h-full w-full; */
+}
+
+.tiptap p {
+	font-size: 19px !important;
+	font-weight: 300 !important;
+}
+
+.tiptap ol {
+	@apply list-decimal pl-6;
+}
+
+.tiptap li p {
+	@apply mb-0;
+}
+
+.tiptap img.ProseMirror-selectednode {
+	@apply ring-4 ring-accent ring-offset-4;
+}
+
+.tiptap img[src^="data:image"] {
+	@apply grayscale;
 }

@@ -69,8 +69,8 @@
 
         <div class="col-span-2 flex flex-col">
             <div class="flex flex-col gap-0">
-                <h2 class="text-xl md:text-2xl font-semibold mb-0 max-sm:max-h-[3.5rem] overflow-y-clip">{article.title}</h2>
-                <p class="text-base md:text-lg text-muted-foreground max-h-[3.5rem] sm:font-light overflow-clip">{summary}</p>
+                <h2 class="text-xl md:text-xl font-medium mb-0 max-sm:max-h-[3.5rem] overflow-y-clip">{article.title}</h2>
+                <p class="text-base text-muted-foreground max-h-[3.5rem] sm:font-light overflow-clip">{summary}</p>
             </div>
         </div>
 
@@ -80,7 +80,7 @@
             {/if}
         </div>
         
-        <div class="col-span-2 mt-1">
+        <div class="col-span-3 mt-1 flex flex-col gap-1">
             <RelatedEvents event={article} />
             <EventTags event={article} />
         </div>

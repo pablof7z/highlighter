@@ -2,7 +2,8 @@
 	import type { HTMLTextareaAttributes } from "svelte/elements";
 	import type { TextareaEvents } from "./index.js";
 	import { cn } from "$lib/utils.js";
-	import { createEventDispatcher } from "svelte";
+	import { createEventDispatcher, onDestroy, onMount } from "svelte";
+	import { attach } from "@frsource/autoresize-textarea";
 
 	type $$Props = HTMLTextareaAttributes;
 	type $$Events = TextareaEvents;
@@ -24,11 +25,25 @@
 			dispatch("keydown", event);
 		}
 	}
+
+	let el: HTMLTextAreaElement;
+	let detach: () => void;
+
+	onMount(() => {
+		if (el) {
+			detach = attach(el).detach;
+		}
+	})
+
+	onDestroy(() => {
+		detach?.();
+	})
 </script>
 
 <textarea
+	bind:this={el}
 	class={cn(
-		"flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+		"flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
 		className
 	)}
 	bind:value

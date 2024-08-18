@@ -13,9 +13,9 @@
     import { Keyboard } from '@capacitor/keyboard';
 	import { isMobileBuild } from '$utils/view/mobile';
 	import Joined from "$components/Chat/Joined.svelte";
-	import { Group } from "$components/Groups";
+    import { GroupData } from "$components/Groups";
 
-    export let group: Readable<Group>;
+    export let group: Readable<GroupData>;
     export let optionManager;
     optionManager.options.subscribe(value => $layout.navigation = value);
 
@@ -30,7 +30,7 @@
     $layout.header = undefined;
     $: if ($group.isMember) $layout.title = "Chat";
     $layout.footerInMain = true;
-    $layout.fullWidth = false;
+    $layout.fullWidth = true;
     $layout.headerCanBeTransparent = false;
 
     function scrollToBottom() {
@@ -112,7 +112,7 @@
 </script>
 
 <ScrollArea>
-    <div class="flex flex-col py-2">
+    <div class="flex flex-col py-2 lg:px-6">
         {#each $sortedChat as event, i (event.id)}
             {#if event.kind === NDKKind.GroupAdminRequestJoin}
                 <!-- <JoinRequest {event} /> -->

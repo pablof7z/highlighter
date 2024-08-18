@@ -11,10 +11,10 @@
 	import { throttle } from "@sveu/shared";
 	import AvatarsPill from "$components/Avatars/AvatarsPill.svelte";
 	import { Navigation } from "$utils/navigation";
-	import { Group } from ".";
+	import { GroupData } from ".";
     import * as App from "$components/App";
 
-    export let group: Readable<Group>;
+    export let group: Readable<GroupData>;
     export let tiers: Readable<NDKSubscriptionTier[]> | undefined = undefined;
     export let options: NavigationOption[] = [];
 

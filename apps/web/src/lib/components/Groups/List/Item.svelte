@@ -154,7 +154,7 @@
                             {/if}
     
                             {#if $unseenEvents && $unseenEvents.length > 0}
-                                <Badge class="whitespace-nowrap" variant="accent">
+                                <Badge class="whitespace-nowrap" variant="default">
                                     {$unseenEvents.length}
                                 </Badge>
                             {/if}

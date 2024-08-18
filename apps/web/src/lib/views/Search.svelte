@@ -12,7 +12,7 @@
     import { ndk } from "$stores/ndk.js";
 	import { NDKArticle, NDKKind } from "@nostr-dev-kit/ndk";
 	import { ArrowRight, Check, CheckCircle, MagnifyingGlass, UserCircleCheck } from "phosphor-svelte";
-	import { SvelteComponent, createEventDispatcher } from "svelte";
+	import { ComponentType, SvelteComponent, createEventDispatcher } from "svelte";
 	import { page } from '$app/stores';
 
     export let value: string = "";
@@ -29,7 +29,7 @@
     type SearchResultWithExt = SearchResult &
         { url: string } & // url
         { hashtag: string };// hash
-    type SearchOption = { searchMode?: SearchMode, id: string, icon: SvelteComponent, label: string, fn: () => Promise<void> };
+    type SearchOption = { searchMode?: SearchMode, id: string, icon: ComponentType, label: string, fn: () => Promise<void> };
 
     let results: (SearchResultWithExt | SearchOption)[] = [];
     let selectedItem = 0;
@@ -150,7 +150,7 @@
     function isUri() {
         try {
             new URL(value);
-            results.push({ id: 'highlight-url', icon: ArrowRight, label: `Highlight '${value}'`, fn: highlightUrl });
+            results.push({ id: 'highlight-url', icon: ArrowRight, label: `Highlight URL`, fn: highlightUrl });
             return true;
         } catch {
             return false;
@@ -167,10 +167,13 @@
     }
 </script>
 
+<div class="flex flex-col items-start">
+
 {#if !skipInput}
     <div class="
         flex flex-row gap-2 w-full items-center border-b border-border {$$props.inputContainerClass??""}
         {$$props.containerClass??""}
+        !h-16
     ">
         {#if searching}
             <span class="loading loading-sm text-accent"></span>
@@ -190,7 +193,7 @@
 {/if}
 
 {#if value.length > 0 && displayResults}
-    <ul class="flex flex-col items-start grow overflow-y-auto w-full pt-6 {$$props.containerClass??""}">
+    <ul class="flex flex-col items-start grow overflow-y-auto w-full {$$props.containerClass??""}">
         {#each renderedResults as {type, icon, label, result, id, fn}, i (id + i)}
             {#if type === "user"}
                 <li class:selected={i === selectedItem}>
@@ -218,13 +221,14 @@
         {/each}
     </ul>
 {/if}
+</div>
 
 <style lang="postcss">
     li {
-        @apply p-2 px-4 w-full rounded-lg;
+        @apply p-2 px-4 w-full;
     }
     
     li.selected, li:hover {
-        @apply bg-foreground/10;
+        @apply bg-secondary;
     }
 </style>

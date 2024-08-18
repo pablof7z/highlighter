@@ -28,7 +28,7 @@
             />
         </div>
     {:else}
-        <div class="flex flex-row items-stretch w-full">
+        <div class="flex flex-row items-stretch w-full py-2">
             {#if $layout.sidebar === false}
                 {#if $page.url.pathname !== "/"}
                     <div class="fixed max-sm:hidden ml-2">

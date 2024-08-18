@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from "$components/ui/button/button.svelte";
-	import { CaretLeft, DotsThreeVertical, Eye, Moon, PaperPlaneTilt, PencilRuler, Star, Timer, UsersThree, X } from "phosphor-svelte";
+	import { ArrowLeft, ArrowRight, CaretLeft, DotsThreeVertical, Eye, Moon, PaperPlaneTilt, PencilRuler, Star, Timer, UsersThree, X } from "phosphor-svelte";
 	import { derived, writable, Writable } from "svelte/store";
     import * as Tooltip from "$lib/components/ui/tooltip";
 	import { closeModal, openModal } from "$utils/modal";
@@ -17,15 +17,12 @@
     export let state: Writable<Studio.State<Studio.Type>>;
     export let actions: Studio.Actions;
 
-    let closing: any;
+    function cont() {
+        openModal(Studio.PrepublishModal, { state, actions })
+    }
+    
     function closeClicked() {
-        if (closing) {
-            goto("/");
-        } else {
-            closing = setTimeout(() => {
-                closing = false;
-            }, 2000);
-        }
+        goto("/studio");
     }
 
     function setMode(m: Studio.Mode) {
@@ -65,13 +62,24 @@
     $: $state.audience = $audienceState;
 </script>
 
-<div class="flex flex-row items-center w-full py-3">
 <div class="
     {$$props.class??""}
     flex flex-row items-center justify-between
-    w-full
+    w-full px-4 py-3
 ">
-    <div class="flex flex-row flex-nowrap gap-2">
+    <div class="flex flex-row items-center gap-4">
+        <Button on:click={closeClicked} variant="secondary" class="flex-none flex-col hidden md:flex h-10 w-10">
+            <ArrowLeft size={20} />
+        </Button>
+
+        {#if !$appMobileView}
+            <ToggleDark variant="secondary" />
+        {/if}
+
+        <Draft.Button timer={30} save={actions.saveDraft} class="max-sm:hidden" />
+    </div>
+
+    <div class="flex flex-row flex-nowrap gap-2 grow lg:max-w-[var(--content-focused-width)] mx-auto lg:px-0">
         {#if $state.mode !== 'edit'}
             <Tooltip.Root>
                 <Tooltip.Trigger asChild let:builder>
@@ -84,9 +92,7 @@
                     Back to edit
                 </Tooltip.Content>
             </Tooltip.Root>
-        {/if}
-
-        {#if $state.mode === 'edit'}
+        {:else}
             <Audience.Button variant={$appMobileView ? "secondary" : "outline"} state={audienceState} />
 
             {#if !$appMobileView}
@@ -103,16 +109,14 @@
                 </Tooltip.Root>
             {/if}
         {/if}
-
-        {#if !$appMobileView}
-            <ToggleDark variant="outline" />
-        {/if}
     </div>
 
     <div class="flex flex-row flex-nowrap gap-2">
-        <Draft.Button timer={30} save={actions.saveDraft} class="max-sm:hidden" />
-        
         {#if !$appMobileView}
+            {#if $state.mode === 'edit'}
+                
+            {/if}
+        
             <Tooltip.Root>
                 <Tooltip.Trigger>
                     <Button size="icon" variant="outline" on:click={() => schedule()}>
@@ -146,26 +150,9 @@
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
         {/if}
-        <Button on:click={actions.publish}>
-            {#if $state.publishAt}
-                <Timer weight="fill" />
-                Schedule
-            {:else}
-                <PaperPlaneTilt size={24} weight="fill" />
-                <span class="hidden md:block ml-2">
-                    Publish
-                </span>
-            {/if}
+        <Button on:click={cont}>
+            Continue
+            <ArrowRight size={20} />
         </Button>
     </div>
-</div>
-
-<Button on:click={closeClicked} variant="secondary" class="rounded-full flex-none flex-col hidden md:flex absolute right-2">
-    {#if !closing}
-        <X size={20} />
-    {:else}
-        Confirm
-    {/if}
-</Button>
-
 </div>

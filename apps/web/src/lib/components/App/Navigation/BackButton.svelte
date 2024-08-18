@@ -18,6 +18,6 @@
     }
 </script>
 
-<Button {href} variant="secondary" on:click={click} class="rounded-full flex-none w-11 h-11 p-0">
-    <CaretLeft size={24} />
+<Button {href} variant="secondary" on:click={click} class="rounded-full flex-none w-10 h-10 p-0">
+    <CaretLeft size={22} />
 </Button>

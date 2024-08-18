@@ -37,6 +37,7 @@
 <ContentHeader
     event={list}
     image={list.image}
+    imageClass="!max-h-[15rem]"
     summary={list.description}
     title={list.title}
     {userProfile}

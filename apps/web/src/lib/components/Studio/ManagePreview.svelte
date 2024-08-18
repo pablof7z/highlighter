@@ -6,8 +6,8 @@
     import * as Studio from "$components/Studio";
     import * as Card from "$lib/components/ui/card/index.js";
     import * as Collapsible from "$lib/components/ui/collapsible/index.js";
-	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import currentUser from '$stores/currentUser';
+	import { Textarea } from '$components/ui/textarea';
 
     export let state: Writable<Studio.State<Studio.PreviewableTypes>>;
 
@@ -79,9 +79,8 @@
             <Collapsible.Content>
                 <Card.Content>
                     {#key update}
-                        <ContentEditor
-                            bind:content={$state.previewAppend}
-                            toolbar={false}
+                        <Textarea
+                            bind:value={$state.previewAppend}
                             class="bg-secondary p-4 rounded h-32"
                             placeholder="Join our community to access the full post..."
                         />

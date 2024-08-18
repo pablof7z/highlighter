@@ -64,9 +64,11 @@
                     </a>
                 </Badge>
 
-                <Badge variant="secondary">
-                    <RelativeTime {event} />
-                </Badge>
+                {#if !isPreview}
+                    <Badge variant="secondary">
+                        <RelativeTime {event} />
+                    </Badge>
+                {/if}
             </div>
         {/if}
 

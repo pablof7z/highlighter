@@ -1,5 +1,6 @@
 import Root from "./Root.svelte";
 import Shell from "./Shell.svelte";
+import PrepublishModal from "./PrepublishModal.svelte";
 import { State as Audience } from "$components/Audience";
 import { NDKArticle, NDKEvent, NDKVideo } from "@nostr-dev-kit/ndk";
 import { Thread } from "$utils/thread";
@@ -73,6 +74,8 @@ export type Actions = {
 export {
     Root,
     Shell,
+
+    PrepublishModal,
 
     Editor,
     Preview,

@@ -269,9 +269,14 @@
         setTimeout(updateHeaderSize, 50);
     }
 
+    onMount(() => {
+        setTimeout(updateHeaderSize, 50);
+    });
+
     function updateHeaderSize() {
         const headerHeight = headerContainer?.clientHeight || 0;
-        document?.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+        document?.documentElement.style.setProperty('--header-height', `${headerHeight+1}px`);
+        document?.documentElement.style.setProperty('--header-height', `${headerHeight+1}px`);
     }
     
     const mainScroll = throttle(onScroll, 0.2);
@@ -320,11 +325,6 @@
                 <div class="flex-1 overflow-x-auto scrollbar-hide">
                     {#if $layout?.sidebar}
                         <svelte:component this={$layout.sidebar.component} {...$layout.sidebar.props} />
-                    {/if}
-                </div>
-                <div class="mt-auto narrow-footer-container">
-                    {#if $layout?.footer && !$layout.footerInMain}
-                        <svelte:component this={$layout.footer.component} {...$layout.footer.props} />
                     {/if}
                 </div>
             </div>
@@ -389,6 +389,7 @@
                 <header transition:fly class="
                     mobile-nav max-sm:rounded-t-3xl overflow-y-clip
                     flex items-center fixed top-0 w-full
+                    border-b border-border
                     z-50
                     flex-col
                 " bind:this={headerContainer}

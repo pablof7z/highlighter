@@ -5,13 +5,17 @@
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import * as Feed from "$components/Feed";
 	import { CaretRight, MagnifyingGlass } from "phosphor-svelte";
+	import { NavigationOption } from "../../../../../app";
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
+
+    
 
     const articleComments = $ndk.storeSubscribe([
         // { kinds: [NDKKind.Text, NDKKind.Zap, NDKKind.Nutzap, NDKKind.GenericRepost ], "#k": ["30023"], limit: 50 },
         { kinds: [NDKKind.ArticleCurationSet ], limit: 50 },
     ], { closeOnEose: true, onEose: () => {
         loadArticles();
-    }})
+    }}, NDKList)
 
     let articles: NDKEventStore<NDKArticle>;
 
@@ -44,7 +48,10 @@
 
 {#if articles}
     <div class="flex flex-col w-full max-w-[var(--content-focused-width)]">
-        <a href="/reads" class="
+        
+    </div>
+        <div class="flex flex-col w-full max-w-[var(--content-focused-width)]">
+        <!-- <a href="/reads" class="
             flex flex-row justify-between max-sm:w-full py-2 responsive-padding z-10
         ">
             <div class="section-title">
@@ -53,7 +60,7 @@
 
             <CaretRight size={24} />
         </a>
-
+ -->
         <Feed.Articles
             store={filterArticles(articles)}
         />

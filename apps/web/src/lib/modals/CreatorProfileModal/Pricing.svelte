@@ -14,8 +14,8 @@
 
     export let nextStep;
     export let extraButtons: NavigationOption[];
-    nextStep = "profile";
-    extraButtons = [ { id: "Pricing Option", icon: Plus, fn: add } ];
+    nextStep = "create";
+    // extraButtons = [ { id: "Pricing Option", icon: Plus, fn: add } ];
 
     function add() {
         amounts.push({ amount: 0, currency: "USD", term: "monthly" });

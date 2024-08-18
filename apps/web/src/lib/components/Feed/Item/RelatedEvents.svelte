@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { ndk } from "$stores/ndk";
 	import { wotFilteredStore } from "$stores/wot";
-	import { deriveListStore, deriveStore } from "$utils/events/derive";
-	import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+	import { deriveStore } from "$utils/events/derive";
+	import { NDKEvent, NDKHighlight, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 	import { derived } from "svelte/store";
 	import AvatarsPill from "$components/Avatars/AvatarsPill.svelte";
 	import { BookmarkSimple, ChatTeardrop, Lightning } from "phosphor-svelte";
 	import { Badge } from "$components/ui/badge";
 	import Avatar from "$components/User/Avatar.svelte";
-	import Button from "$components/ui/button/button.svelte";
+	import HighlightIcon from "$icons/HighlightIcon.svelte";
 
     export let event: NDKEvent;
     export let kinds: NDKKind[] = [
@@ -32,6 +32,9 @@
     const curations = deriveStore(events, NDKList, [NDKKind.ArticleCurationSet]);
     const nonSavedCurations = derived(curations, $curations => $curations.filter(c => c.dTag !== 'saved'));
 
+    const highlights = deriveStore(events, NDKHighlight);
+    const highlightPubkeys = derived(highlights, $highlights => Array.from(new Set($highlights.map(h => h.pubkey))));
+
     const zapPubkeys = derived(events, $events => {
         const z = new Set<string>();
 
@@ -50,6 +53,13 @@
 
 {#if $wotEvents.length > 0}
     <div class="flex flex-row items-start justify-start gap-6 {$$props.class??""}">
+        {#if $highlightPubkeys.length}
+            <Badge variant="secondary" class="p-1 gap-2">
+                <HighlightIcon weight="fill" size={16} class="text-foreground ml-2 w-4 h-4" />
+                <AvatarsPill pubkeys={$highlightPubkeys} size="xs" />
+            </Badge>
+        {/if}
+        
         {#if $commentPubkeys.length}
             <Badge variant="secondary" class="p-1 gap-2">
                 <ChatTeardrop weight="fill" size={16} class="text-foreground ml-2" />

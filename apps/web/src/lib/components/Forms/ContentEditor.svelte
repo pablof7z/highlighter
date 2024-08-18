@@ -23,6 +23,8 @@
     export let enterSubmits = false;
     export let forceWywsiwyg = !toolbar;
 
+    console.trace('content-editor')
+
     const dispatch = createEventDispatcher();
 
     let editorEl: HTMLElement;
@@ -55,13 +57,9 @@
     }
 
     async function enableEditor() {
-        console.log("calling to enable editor", editorEl)
         const {default: Quill} = await import('quill');
         const {Mention, MentionBlot} = await import('quill-mention');
         const { default: QuillImageDropAndPaste } = await import ('quill-image-drop-and-paste');
-
-        console.log(Mention)
-        console.log(Mention.blotName)
 
         Quill.register({ "blots/mention": MentionBlot, "modules/mention": Mention });
         // check if Quill already has modules/mention
@@ -259,7 +257,7 @@
                 {/if}
             </div>
 
-            <Tooltip.Root>
+            <!-- <Tooltip.Root>
                 <Tooltip.Trigger>
                     <Checkbox
                         class="border-none text-muted-foreground text-sm max-sm:hidden py-4"
@@ -273,7 +271,7 @@
                 <Tooltip.Content>
                     Toggle the WYSIWYG editor
                 </Tooltip.Content>
-            </Tooltip.Root>
+            </Tooltip.Root> -->
         </div>
     {/if}
     {#if $$slots.belowToolbar}

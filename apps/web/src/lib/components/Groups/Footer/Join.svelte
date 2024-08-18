@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Hexpubkey, NDKEvent, NDKKind, NDKPaymentConfirmation, NDKSubscriptionTier, NDKTag, NDKZapSplit } from "@nostr-dev-kit/ndk";
+    import { Hexpubkey, NDKEvent, NDKKind, NDKPaymentConfirmation, NDKSimpleGroup, NDKSubscriptionTier, NDKTag, NDKZapSplit } from "@nostr-dev-kit/ndk";
     import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
 	import { derived, Readable } from "svelte/store";
@@ -54,8 +54,9 @@
 
     async function join() {
         if (!$currentUser) return;
-        alert('not implemented')
-        // group.requestToJoin($currentUser.pubkey)
+
+        const g = new NDKSimpleGroup($ndk, $group.relaySet, $group.id);
+        g.requestToJoin($currentUser.pubkey)
     }
 
     async function subscribe() {
