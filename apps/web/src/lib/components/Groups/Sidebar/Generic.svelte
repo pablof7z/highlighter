@@ -4,8 +4,12 @@
     import currentUser from '$stores/currentUser';
 	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 	import { NDKKind, NDKRelaySet, NDKSimpleGroupMemberList, NDKTag } from "@nostr-dev-kit/ndk";
-	import { ndk } from "$stores/ndk";
-	import { derived, Readable } from "svelte/store";
+	import { Tray } from "phosphor-svelte";
+	import { Button } from "$components/ui/button";
+
+    const defaultGroups: NDKTag[] = [
+        [ "group", "group55869", "wss://relay.highlighter.com/"]
+    ]
 
     // let groupsUserAdmins: NDKEventStore<NDKSimpleGroupMemberList>;
     // let groupsTags: Readable<NDKTag[]>;
@@ -33,6 +37,32 @@
             <Groups.ListItem {group} />
         </Groups.RootList>
     </div>
+{:else}
+    <Groups.RootList tags={defaultGroups} let:group>
+        <Groups.ListItem {group} />
+    </Groups.RootList>
+
+    <div class="divide-y divide-border flex flex-col border-b">
+    </div>
+
+    <div class="flex flex-col items-center gap-6 h-full justify-center">
+        <Tray class="text-muted-foreground" size={48} />
+
+        
+        <div class="text-muted-foreground text-sm">
+            You are not following any publications
+        </div>
+
+        <div class="text-muted-foreground font-light text-sm">
+            Once you follow a publication, it will appear here.p
+        </div>
+
+        <Button variant="secondary" href="/groups">
+            Explore Publications
+        </Button>
+        
+    </div>
+
 {/if}
 <!-- 
 {#if $groupsUserAdmins}

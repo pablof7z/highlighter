@@ -35,7 +35,7 @@
     bind:collapsed
     align="items-center"
 >
-    <div class="flex flex-row items-end w-full">
+    <div class="flex flex-row items-end w-full lg:px-6">
     <div class="w-full flex flex-col overflow-clip" class:hidden={recordingActive}>
         <ChatInput
             {group} {event} {tags} {kind} {placeholder} {showReplyingTo} bind:replyTo={$replyTo}

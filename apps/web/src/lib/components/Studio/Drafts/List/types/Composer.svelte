@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DraftItem } from "$stores/drafts";
     import * as Composer from "$components/Composer";
-    import * as Card from "$components/ui/Card";
+    import * as Card from "$components/ui/card";
 	import { getStateFromDraft } from "$components/Studio/draft";
 	import { NDKEvent } from "@nostr-dev-kit/ndk";
 	import { generateEventFromState } from "$components/Composer/actions/publish";

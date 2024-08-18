@@ -150,13 +150,21 @@
 
     function generateShareModalContent(event: NDKArticle | NDKVideo | NDKEvent) {
         if (event instanceof NDKArticle) {
-            const parts = [ `I just published a new read on Nostr!`];
+            const parts = [ `I just published a new read on Nostr!\n`];
             if (event.title) parts.push(event.title);
-            if (event.summary) parts.push(event.summary);
+            if (event.summary) parts.push(event.summary + "\n");
 
-            const url = urlFromEvent(event, authorUrl, true);
+            const url = urlFromEvent(event, authorUrl, true, 0);
 
             parts.push(`Check it out: ${url}`);
+
+            event.tags.forEach(([key, value]) => {
+                const tags = [];
+                if (key === "t") {
+                    tags.push(`#${value}`);
+                }
+                if (tags.length) parts.push(tags.join(" "));
+            });
 
             return parts.join("\n\n");
         } else if (event instanceof NDKVideo) {

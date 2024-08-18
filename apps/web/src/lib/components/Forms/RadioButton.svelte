@@ -23,7 +23,7 @@
     border-2 rounded p-2 px-4
     flex flex-row gap-2 items-center justify-between w-full {$$props.class??""}
     hover:bg-{color}/10 hover:text-{color}-foreground
-    { selected ? `border-${color}` : "border-muted-foreground opacity-50 hover:opacity-100"}
+    { selected ? `border-${color}` : "border-muted-foreground/10"}
 " on:click={onClick}>
     <div class="flex flex-row items-start w-full">
         <div class="flex flex-row gap-10 justify-stretch items-center w-full">

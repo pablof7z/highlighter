@@ -12,7 +12,10 @@ export type RelayPublishState = {
     previewEvent: PublishingState;
 }
 
-function getOrGeneratePreviewFromState(state: Studio.State<Studio.PreviewableTypes>): NDKEvent {
+function getOrGeneratePreviewFromState(state: Studio.State<Studio.PreviewableTypes>): NDKEvent | undefined {
+    if (state.withPreview === false) return undefined;
+    if (state.audience.scope === 'public') return undefined;
+    
     let previewEvent: NDKArticle | NDKVideo | NDKEvent | undefined = Studio.getPreviewFromState(state);
     previewEvent ??= generatePreviewEventFromState(state);
     
@@ -103,7 +106,6 @@ export async function publish(
     state: Writable<Studio.State<Studio.Type>>,
     relays: Writable<Record<string, RelayPublishState>>
 ) {
-    debugger
     const $state = get(state);
     let mainEvent: NDKEvent = Studio.getEventFromState($state)!;
     let previewEvent: NDKEvent | undefined = getOrGeneratePreviewFromState($state);
@@ -148,7 +150,9 @@ export async function publish(
     }
 
     relays.set(getRelayStore(mainRelaySet, previewEventRelaySet));
-    
+
+    console.log("Publishing event", mainEvent.rawEvent(), mainRelaySet.relayUrls, previewEventRelaySet?.relayUrls);
+
     return publishEvents(relays, mainEvent, previewEvent, mainRelaySet, previewEventRelaySet);
 }
 
@@ -159,8 +163,6 @@ export async function publishEvents(
     mainEventRelaySet?: NDKRelaySet,
     previewEventRelaySet?: NDKRelaySet
 ) {
-    const $ndk = get(ndk);
-
     const updateStatus = (type: keyof RelayPublishState, status: PublishingState, relay: NDKRelay) => {
         if (!relay?.url) {
             console.trace('called failed without relay', relay)
@@ -186,13 +188,13 @@ export async function publishEvents(
     mainEvent.on("relay:published", onEventPublish('mainEvent'));
     mainEvent.on("relay:publish:failed", onPublishFail('mainEvent'));
     
-    const rest = await mainEvent.publish(mainEventRelaySet, 5000);
+    const rest = await mainEvent.publishReplaceable(mainEventRelaySet, 5000);
 
     if (previewEvent) {
         previewEvent.on("relay:published", onEventPublish('previewEvent'));
         previewEvent.on("relay:publish:failed", onPublishFail('previewEvent'));
 
-        await previewEvent.publish(previewEventRelaySet);
+        await previewEvent.publishReplaceable(previewEventRelaySet);
     }
 
     return rest;

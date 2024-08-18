@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Badge from "$components/ui/badge/badge.svelte";
 	import Button from "$components/ui/button/button.svelte";
+	import Input from "$components/ui/input/input.svelte";
 	import { Textarea } from "$components/ui/textarea";
 	import { ndk } from "$stores/ndk";
 	import { NDKSubscriptionCacheUsage, type NDKEvent } from "@nostr-dev-kit/ndk";
@@ -76,7 +76,7 @@
 </script>
 
 <div class="field w-full">
-    <Textarea
+    <Input
         bind:value={tagString}
         on:focus={() => hasFocus = true}
         on:blur={() => hasFocus = false}

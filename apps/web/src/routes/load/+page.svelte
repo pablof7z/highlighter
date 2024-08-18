@@ -2,7 +2,12 @@
     import { page } from '$app/stores';
 	import UrlView from '$components/UrlView.svelte';
     import { fetchArticle } from '$lib/article';
+	import { layout } from '$stores/layout.js';
     import { NDKUser, type Hexpubkey } from '@nostr-dev-kit/ndk';
+
+    $layout.fullWidth = false;
+    $layout.sidebar = false;
+    $layout.navigation = false;
 
     export let data;
     const { text, contentType } = data;
@@ -64,9 +69,7 @@
             </div>
         {:then article}
             {#if article}
-                <div class="max-w-prose prose mx-auto">
-                    <UrlView {article} />
-                </div>
+                <UrlView {article} />
                 <!-- <Reader
                     renderAsHtml={true}
                     {article}

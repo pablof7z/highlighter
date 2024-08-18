@@ -17,6 +17,7 @@
     export let mentionEvent: NDKEvent | undefined = undefined;
     export let kind: NDKKind | undefined = undefined;
     export let tags: NDKTag[] = [];
+    let secondaryButtons: NavigationOption[] | undefined = undefined;
 
     /**
      * RelaySet where to publish the event
@@ -60,7 +61,6 @@
     }
 
     let actionButtons: NavigationOption[];
-    let secondaryButtons: NavigationOption[];
 
     const audienceStore = writable<Audience.State>(audience);
     $: $state.audience = $audienceStore;
@@ -72,9 +72,8 @@
     
     $: secondaryButtons = [
         { id: 'audience', component: { component: Audience.Button, props: { state: audienceStore } } },
-        { id: 'draft', component: { component: Draft.Button, props: { save: actions.saveDraft} } },
-        // { name: 'Drafts', fn: actions.upload, buttonProps: { variant: 'link' } },
         { id: 'image', icon: Image, fn: actions.upload, buttonProps: { class: 'rounded-full', variant: 'ghost', size: 'icon' } },
+        { id: 'draft', component: { component: Draft.Button, props: { save: actions.saveDraft, label: false } } },
         // { id: 'gif', icon: Gif, fn: actions.upload, buttonProps: { class: 'rounded-full', variant: 'ghost', size: 'icon' } },
     ]
 </script>

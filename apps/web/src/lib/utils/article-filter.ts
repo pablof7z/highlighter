@@ -1,6 +1,7 @@
 import { userFollows } from "$stores/session";
 import { NDKArticle } from "@nostr-dev-kit/ndk";
 import { Readable, derived, get } from "svelte/store";
+import { blacklistedPubkeys, blacklistedPubkeysSet } from "./const";
 
 export function filterArticle(
     article: NDKArticle,
@@ -62,8 +63,10 @@ export function filterArticles(
 ): Readable<NDKArticle[]> {
     return derived([articles, userFollows], ([$articles, $userFollows]) => {
         let ret = $articles.filter((article) => {
+            return true;
             // if it's followed by the user, we want to show it
-            if ($userFollows.has(article.pubkey)) return true;
+            // if ($userFollows.has(article.pubkey)) return true;
+            if (blacklistedPubkeysSet.has(article.pubkey)) return false;
 
             return filterArticle(article, minWordCount, removeTest);
         });

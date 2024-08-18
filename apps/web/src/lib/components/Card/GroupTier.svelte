@@ -3,7 +3,6 @@
 	import { currencyFormat } from "$utils/currency";
 	import { termToShort } from "$utils/term";
     import { NDKSubscriptionAmount, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
-	import { Description } from "formsnap";
 
     export let tier: NDKSubscriptionTier;
     export let currency: string | undefined;

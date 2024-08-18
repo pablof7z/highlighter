@@ -21,7 +21,7 @@ import currentUser from './currentUser';
 import { writable } from 'svelte/store';
 import { creatorRelayPubkey } from '$utils/const';
 import { notificationsSubscribe } from './notifications';
-import { onLnPay, onPaymentComplete, walletInit } from './wallet.js';
+import { onPaymentComplete, walletInit } from './wallet.js';
 
 const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
@@ -151,7 +151,7 @@ export async function prepareSession(): Promise<void> {
 			resolve();
 
 			notificationsSubscribe($ndk, $currentUser);
-			walletInit($ndk, $currentUser);
+			walletInit($ndk);
 
 			const $userFollows = get(userFollows);
 			const $networkFollows = get(networkFollows);

@@ -4,8 +4,6 @@
 	import { getContext } from "svelte";
 	import { Readable } from "svelte/store";
 	
-	$layout.sidebar = undefined;
-	
 	let group = getContext("group") as Readable<Groups.GroupData>;
 </script>
 

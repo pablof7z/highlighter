@@ -13,7 +13,7 @@
 {#if hasTags}
     <div class="overflow-x-auto scrollbar-hide flex-nowrap w-full {$$props.class??""}">
         <div class="
-            flex flex-row gap-4 flex-nowrap
+            flex flex-row gap-2 flex-nowrap
             snap snap-x snap-start snap-mandatory
             whitespace-nowrap
         ">

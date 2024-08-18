@@ -3,6 +3,8 @@
 	import { Image, Shuffle } from 'phosphor-svelte';
 	import Button from '$components/ui/button/button.svelte';
 	import BlossomUpload from '$components/buttons/BlossomUpload.svelte';
+	import { activeBlossomServer } from '$stores/session';
+	import { randomImage } from '$utils/image';
 
     export let article: NDKArticle | undefined = undefined;
     export let video: NDKVideo | undefined = undefined;
@@ -25,14 +27,9 @@
         setUrl(url);
     }
 
-    async function randomImage() {
-        const k = title || "Nature";
-        const image = await fetch(`https://picsum.photos/800/600?random=${k}`);
-        const finalUrl = image.url;
-
-        if (finalUrl) {
-            setUrl(finalUrl);
-        }
+    async function setImage() {
+        const k = title || "Nature" + Math.random();
+        setUrl(randomImage(k, 800, 400));
     }
     
 </script>
@@ -51,6 +48,7 @@
                     class="w-full"
                     on:uploaded={uploaded}
                 >
+                    {$activeBlossomServer}
                     <Button variant="secondary" class="py-4 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit">
                         <Image class="w-12 h-12" />
                         Upload a cover image
@@ -58,7 +56,7 @@
                 </BlossomUpload>
             </div>
 
-            <Button variant="secondary" class="py-4 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit" on:click={randomImage}>
+            <Button variant="secondary" class="py-4 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit" on:click={setImage}>
                 <Shuffle class="w-12 h-12" />
 
                 Random Image

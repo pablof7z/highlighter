@@ -13,6 +13,7 @@
     export let actions: Studio.Actions;
     export let authorUrl: string;
 
+    $layout.fullWidth = true;
     $layout.header = {
         component: Header,
         props: {
@@ -39,7 +40,7 @@
     }
 </script>
 
-<div class="flex flex-col w-full">
+<div class="flex flex-col w-full lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0">
     <div class:hidden={$state.mode !== 'manage-preview'}>
         <ManagePreview {state} />
     </div>

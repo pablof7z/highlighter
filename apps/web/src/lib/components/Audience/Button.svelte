@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { derived, Readable, writable, Writable } from "svelte/store";
-    import { State } from "./index.js";
 	import { Button } from "$components/ui/button";
 	import { Star, UsersThree } from "phosphor-svelte";
     import * as DropdownMenu from "$components/ui/dropdown-menu";
@@ -11,8 +10,9 @@
 	import { openModal } from "$utils/modal.js";
 	import NewGroupModal from "$modals/NewGroupModal.svelte";
 	import Badge from "$components/ui/badge/badge.svelte";
+	import * as Audience from "$components/Audience/";
 
-    export let state: Writable<State>;
+    export let state: Writable<Audience.State>;
     export let variant = "outline";
 
     let groups: Writable<Record<string, Groups.GroupData>> | undefined;
@@ -110,14 +110,14 @@
     <DropdownMenu.Content>
         <DropdownMenu.Group>
             <DropdownMenu.Label>Visibility</DropdownMenu.Label>
-            <DropdownMenu.RadioGroup bind:value={$state.scope}>
-                <DropdownMenu.RadioItem value='public' on:click={e => e.stopPropagation()} class="flex flex-col items-start text-left">
+            <DropdownMenu.RadioGroup value={$state.scope} on:change={console.log}>
+                <DropdownMenu.RadioItem value='public' on:click={e => { $state.scope = 'public'; e.stopPropagation() }} class="flex flex-col items-start text-left">
                     Public
                     <div class="text-xs text-muted-foreground">
                         Everyone can see this post.
                     </div>
                 </DropdownMenu.RadioItem>
-                <DropdownMenu.RadioItem value='private' on:click={e => e.stopPropagation()} class="flex flex-col items-start text-left">
+                <DropdownMenu.RadioItem value='private' on:click={e => {$state.scope = 'private'; e.stopPropagation()}} class="flex flex-col items-start text-left">
                     <div>
                         <Star class="w-4 h-4 text-gold mr-1 inline" size={20} weight="fill" />
                         Private
@@ -134,7 +134,7 @@
                     <div class:hidden={$state.scope !== 'private'}>
                         <DropdownMenu.Separator />
 
-                        <DropdownMenu.Label>Select Communities</DropdownMenu.Label>
+                        <DropdownMenu.Label>Publications</DropdownMenu.Label>
                         
                         {#each Object.entries($allPossibleGroups) as [groupId, group] (groupId)}
                             {#if group.metadata}
@@ -156,12 +156,12 @@
                 {/if}
             {:else if $state.scope === 'private'}
                 <DropdownMenu.Label>
-                    Communities
+                    Publications
                 </DropdownMenu.Label>
 
                 <DropdownMenu.Label class="bg-secondary rounded border p-4 m-4">
-                    <BlankState cta="Create a community" on:click={() => openModal(NewGroupModal)}>
-                        You are not a member of any communities.
+                    <BlankState cta="Create a publication" on:click={() => openModal(NewGroupModal)}>
+                        You are not a member of any publications.
                     </BlankState>
                 </DropdownMenu.Label>
                 

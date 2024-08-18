@@ -17,7 +17,7 @@
 
     const relays = $page.url.searchParams.get('relays')?.split(',');
     let relaySet: NDKRelaySet | undefined;
-    let filters: NDKFilter[] = [{ kinds: [NDKKind.Article], limit: 200 }];
+    let filters: NDKFilter[] = [{ kinds: [NDKKind.Article], limit: 300 }];
 
     if (relays && relays.length > 0) {
         relaySet = NDKRelaySet.fromRelayUrls(relays, $ndk);

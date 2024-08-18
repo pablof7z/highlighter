@@ -6,11 +6,12 @@
 	import { filterPreviewArticles } from "$utils/article-filter";
 
     export let store: Readable<NDKArticle[]>;
+    export let featuredCount = 1;
 
     let filteredStore = filterPreviewArticles(store);
     
     export let featuredItems = derived(filteredStore, $filteredStore => {
-        return $filteredStore.slice(0, 1);
+        return $filteredStore.slice(0, featuredCount);
     });
 
     export let skipAuthor = false;

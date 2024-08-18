@@ -4,6 +4,8 @@ import { derived, get, writable } from "svelte/store";
 import createDebug from "debug";
 import { toast } from "svelte-sonner";
 import NDKWalletService, { NDKWebLNWallet } from "@nostr-dev-kit/ndk-wallet";
+import { openModal } from "$utils/modal";
+import LnQrModal from "$modals/LnQrModal.svelte";
 
 const d = createDebug("HL:wallet");
 
@@ -33,7 +35,8 @@ function updateBalance(wallet: NDKWallet) {
 export function walletInit(
     ndk: NDK,
 ) {
-    walletService.set
+    walletService.set(new NDKWalletService(ndk));
+    console.log('walletConfig', ndk.walletConfig)
     const $walletService = get(walletService);
     $walletService.ndk = ndk;
     $walletService.on("wallet", (w) => {
@@ -45,7 +48,11 @@ export function walletInit(
     $walletService.on("wallet:default", (w: NDKCashuWallet) => {
         wallet.set(w);
         w.on("insufficient_balance", (data) => {
-            alert("insufficient balance" + data);
+            if (data.pr) {
+                openModal(LnQrModal, { pr: data.pr });
+            } else {
+                toast.error("insufficient balance" + JSON.stringify(data));
+            }
         });
     });
     $walletService.on("wallet:balance", updateBalance);

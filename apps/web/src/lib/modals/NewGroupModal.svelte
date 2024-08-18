@@ -70,7 +70,7 @@
 
 <ModalShell
     class="responsive-padding"
-    title="New Community"
+    title="New Publication"
     {actionButtons}
 >
     <div class="flex flex-col gap-6">
@@ -85,7 +85,7 @@
             </BlossomUpload>
 
             <div class="flex flex-col w-full">
-                <Input bind:value={name} placeholder="Community Name" class="text-xl py-6" autofocus />
+                <Input bind:value={name} placeholder="Publication Name" class="text-xl py-6" autofocus />
             </div>
         </div>
 
@@ -96,7 +96,7 @@
             class="
                 text-lg border border-border p-4 rounded
             "
-            placeholder="Community Description"
+            placeholder="Publication Description"
         />
     </div>
 

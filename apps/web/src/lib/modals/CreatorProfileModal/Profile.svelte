@@ -23,14 +23,14 @@
     const toggleAdvanced = () => showAdvanced = !showAdvanced;
 
     extraButtons = [
-        { name: "Advanced", fn: toggleAdvanced }
+        { name: "Advanced", buttonProps: { variant: 'outline', size: 'xs' }, fn: toggleAdvanced }
     ];
 
     buttonLabel = "Create";
-    title = "Community Profile";
-    nextStep = "create";
+    title = "Profile";
+    nextStep = "monetization";
 
-    let name: string = $state.name ?? userProfile?.name ?? "";
+    let name: string = $state.name ?? userProfile?.name ? `${userProfile?.name}'s Publication` ?? "" : "";
     let about: string = $state.about ?? userProfile?.about ?? "";
     let picture: string = $state.picture ?? userProfile?.picture ?? "";
     let relays = writable<string[]>(defaultRelays);
@@ -54,7 +54,7 @@
         </BlossomUpload>
 
         <div class="flex flex-col w-full">
-            <Input bind:value={name} placeholder="Community Name" class="text-xl py-6" />
+            <Input bind:value={name} placeholder="Name" class="text-xl py-6" />
         </div>
     </div>
 
@@ -65,7 +65,7 @@
         class="
             text-lg border border-border p-4 rounded
         "
-        placeholder="Community Description"
+        placeholder="Description"
     />
 
     {#if showAdvanced}

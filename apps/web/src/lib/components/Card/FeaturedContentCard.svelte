@@ -60,7 +60,7 @@
             {/if}
 
             <div class="flex flex-row justify-between w-full">
-                {#if !skipAuthor && author}
+                {#if !isInGroup && !skipAuthor && author}
                     <div class="text-sm text-foreground font-normal truncate">
                         {#if author instanceof NDKUser}
                             <AvatarWithName user={author} avatarSize="xs" avatarType="square" bind:userProfile />

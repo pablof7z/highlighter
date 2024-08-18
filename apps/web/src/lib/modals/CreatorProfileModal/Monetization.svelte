@@ -6,7 +6,7 @@
 	import { CreateState } from ".";
 
     export let state: Writable<CreateState>;
-    export let nextStep = "profile";
+    export let nextStep = "pricing";
     
     export let title: string;
     export let buttonLabel: string;
@@ -19,7 +19,7 @@
 
     $: if (monetizationType === "v4v") {
         buttonLabel = "Next: Community details";
-        nextStep = "profile";
+        nextStep = "create";
     } else {
         buttonLabel = "Next: Pricing";
         nextStep = "pricing";
@@ -33,7 +33,7 @@
     </p>
     
     <RadioButton color="gold" bind:currentValue={monetizationType} value="v4v" class="h-auto w-full">
-        <b class="text-lg">Value-for-value</b>
+        <div class="text-lg">Value-for-value</div>
 
         <div slot="description" class="text-muted-foreground lg:text-xs text-sm flex flex-col gap-2">
             <p>Provide all your content for free and let your community support you with tips.</p>
@@ -45,10 +45,10 @@
     </RadioButton>
 
     <RadioButton color="gold" bind:currentValue={monetizationType} value="subscription" class="h-auto w-full">
-        <b class="text-lg text-gold flex flex-row items-start gap-1">
+        <div class="text-lg text-gold flex flex-row items-start gap-1">
             <Star size={24} class="text-gold inline" weight="fill" />
             <span class="">Subscription</span>
-        </b>
+        </div>
 
         <div slot="description" class="text-muted-foreground lg:text-xs text-sm">
             <p>

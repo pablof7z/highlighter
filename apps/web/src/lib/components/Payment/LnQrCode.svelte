@@ -68,10 +68,12 @@
             <CopyButton data={pr} class="!text-sm !text-muted-foreground !font-light truncate !font-mono w-full m-1" />
         </div>
 
-        <Button on:click={pay}>
+        <Button class="w-full" on:click={pay}>
             Pay
-            {nicelyFormattedSatNumber(satAmount)}
-            sats
+            {#if satAmount}
+                {nicelyFormattedSatNumber(satAmount)}
+                sats
+            {/if}
         </Button>
     </div>
 {:else}

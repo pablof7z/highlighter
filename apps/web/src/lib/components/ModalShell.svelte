@@ -65,7 +65,7 @@
                     <div class="w-full flex flex-row gap-4 items-center justify-between flex-none mt-4">
                         {#if secondaryButtons}
                             <div>
-                                <HorizontalOptionsList options={secondaryButtons} activeOption={false} />
+                                <HorizontalOptionsList options={secondaryButtons} activeOption={false} class="!items-center" />
                             </div>
                         {:else if $$slots.footerExtra}
                             <slot name="footerExtra" />

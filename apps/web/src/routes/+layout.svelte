@@ -4,9 +4,10 @@
 	import { prepareSession } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
 	// import { pwaInfo } from 'virtual:pwa-info';
-	import "@fontsource/lora";
-	import "@fontsource/lora/600.css";
-	import "@fontsource/lora/600-italic.css";
+	import "@fontsource/spectral";
+	import "@fontsource/spectral/300.css";
+	import "@fontsource/spectral/600.css";
+	import "@fontsource/spectral/600-italic.css";
 	import { browser } from '$app/environment';
 	import { browserSetup } from './browser-session-setup.js';
 	import createDebug from 'debug';

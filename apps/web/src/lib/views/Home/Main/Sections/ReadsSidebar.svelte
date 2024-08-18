@@ -7,6 +7,7 @@
 	import { Badge } from "$components/ui/badge";
 	import { pluralize } from "$utils";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
+	import Name from "$components/User/Name.svelte";
 
     onDestroy(() => {
         curations.unsubscribe();
@@ -26,41 +27,29 @@
     const filteredCurations = filterLists(curations);
 </script>
 
-<a href="/reads" class="flex flex-row justify-between max-sm:w-full py-2 responsive-padding z-10 bg-background border-b border-border">
-    <div class="section-title">
-        Collections
-    </div>
-
-    <CaretRight size={24} />
-</a>
-
 <div class="flex flex-col divide-y divide-border">
-    <div class="py-[var(--section-vertical-padding)] w-full">
-        <div class="flex flex-col">
-            {#each $filteredCurations as list, index (list.id)}
-                <div class="py-[var(--section-vertical-padding)] w-full">
-                    <a href="/a/{list.encode()}" class="flex flex-col gap-2 group {$$props.class??""}">
-                        {#if list.image}
-                            <div class="relative px-4 py-3 flex flex-col items-start justify-end text-center overflow-clip rounded">
-                                <img src={list.image} alt={list.title} class="w-full object-cover rounded-sm top-0 absolute left-0 grayscale right-0 bottom-0 opacity-40 group-hover:opacity-60 transition-all duration-300 ease-in-out" />
-                                <h2 class="text-lg font-bold mb-0 max-sm:max-h-[3.5rem] overflow-y-clip relative">{list.title}</h2>
+    <div class="flex flex-col">
+        {#each $filteredCurations as list, index (list.id)}
+            <div class="py-[var(--section-vertical-padding)] w-full">
+                <a href="/a/{list.encode()}" class="flex flex-col gap-2 group {$$props.class??""}">
+                    {#if list.image}
+                        <div class="relative px-4 py-3 flex flex-col items-start justify-end text-center overflow-clip rounded">
+                            <img src={list.image} class="w-full object-cover rounded-sm top-0 absolute left-0 right-0 bottom-0 opacity-40 group-hover:opacity-60 transition-all duration-300 ease-in-out" />
 
-                                <div class="relative text-muted-foreground text-sm text-left pb-10">
-                                    {list.description}
-                                </div>
-
-                                <div class="flex flex-row w-full justify-between relative text-muted-foreground">
-                                    <AvatarWithName user={list.author} avatarSize="tiny" class="!text-[10px]" />
-
-                                    <Badge variant="secondary" class="font-normal text-muted-foreground whitespace-nowrap">
-                                        {list.items.length} {pluralize(list.items.length, "read")}
-                                    </Badge>
-                                </div>
+                            <div class="flex flex-row justify-between w-full">
+                                <h2 class="text-base font-medium mb-0 max-sm:max-h-[3.5rem] truncate overflow-y-clip relative text-left grow">{list.title}</h2>
+                                <Badge variant="secondary" class="font-normal text-muted-foreground whitespace-nowrap h-fit shrink">
+                                    {list.items.length} {pluralize(list.items.length, "read")}
+                                </Badge>
                             </div>
-                        {/if}
-                    </a>
-                </div>
-            {/each}
-        </div>
+
+                            <div class="relative text-muted-foreground font-light text-xs text-left">
+                                {list.description}
+                            </div>
+                        </div>
+                    {/if}
+                </a>
+            </div>
+        {/each}
     </div>
 </div>

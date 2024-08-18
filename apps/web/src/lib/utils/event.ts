@@ -35,6 +35,20 @@ export const mainContentKinds = [
 	NDKKind.Wiki,
 ];
 
+export function eventKindToText(kind: NDKKind) {
+	switch (kind) {
+		case NDKKind.Article: return "Article";
+		case NDKKind.Wiki: return "Wiki";
+		case NDKKind.ModularArticle: return "Modular Article";
+		case NDKKind.HorizontalVideo: return "Video";
+		case NDKKind.ArticleCurationSet: return "Article List";
+		case NDKKind.VideoCurationSet: return "Video List";
+		case NDKKind.Highlight: return "Highlight";
+		default:
+			return "Event";
+	}
+}
+
 export function encodeTag(tag: NDKTag) {
 	const relay = tag[2];
 	

@@ -33,6 +33,7 @@
     let chat: Readable<NDKEvent[]>;
 </script>
 
+{#key groupId}
 {#if groupId}
     <Groups.Root
         {groupId}
@@ -58,3 +59,4 @@
 {:else}
     <slot />
 {/if}
+{/key}
