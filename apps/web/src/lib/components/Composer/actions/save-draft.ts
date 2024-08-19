@@ -7,7 +7,11 @@ export default function (
     manuallySaved: boolean
 ) {
     const $state = get(state);
-    if ($state.draftId) {}
+
+    if (!shouldSaveDraft($state)) {
+        console.log('no need to save')
+        return false;
+    }
 
     const draftId = addDraftCheckpoint(
         $state.draftId,
@@ -16,4 +20,14 @@ export default function (
         'composer'
     )
     state.update(s => ({ ...s, draftId }));
+}
+
+function shouldSaveDraft(state: State) {
+    // should have content
+    if (!state.content || state.content.length === 0) return false;
+
+    const draftId = state.draftId;
+    if (!draftId) return true;
+
+
 }

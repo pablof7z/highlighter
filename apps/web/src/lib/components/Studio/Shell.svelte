@@ -34,10 +34,6 @@
         editorComponent = Studio.Editor[componentName] as ComponentType;
         previewComponent = Studio.Preview[componentName] as ComponentType;
     }
-
-    $: {
-        const componentName = $state.type.charAt(0).toUpperCase() + $state.type.slice(1) as keyof typeof Studio.Editor;
-    }
 </script>
 
 <div class="flex flex-col w-full lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0">

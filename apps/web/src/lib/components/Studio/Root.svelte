@@ -7,12 +7,11 @@
 	import { NDKArticle, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { State, type Type } from ".";
     import { createStateFromDraftId } from "./draft.js";
-	import { DraftItem } from "$stores/drafts";
 	import LoadingScreen from "$components/LoadingScreen.svelte";
     import { State as AudienceState } from "$components/Audience";
     import * as Studio from "$components/Studio";
 	import { ndk } from "$stores/ndk";
-    import { saveDraft } from "./actions/draft.js";
+    import { saveDraft, shouldSave } from "./actions/draft.js";
 	import { wrapEvent } from "$utils/event";
 
     export let draftId: string | undefined = undefined;
@@ -26,6 +25,7 @@
         saveDraft: (manuallySaved: boolean) => {
             return saveDraft(manuallySaved, state);
         },
+        shouldDraft: async () => shouldSave($state),
         publish: () => $state.mode = 'publish',
     }
 
@@ -43,14 +43,21 @@
     // Initialize the store with the correctly typed state
     const state = writable(createInitialState(type));
 
-    if (draftId) {
-        const newState = createStateFromDraftId(draftId, checkpointId);
+    $: if (draftId) {
+        console.log('creating state from draftId', draftId, checkpointId);
+        const newState = createStateFromDraftId(draftId, checkpointId) as State<Type>;
         if (newState) {
             newState.draftId = draftId;
+            console.log('setting state', newState?.article?.content);
             state.set(newState);
+            forceReloadAt = Date.now();
         }
     }
 
+    let forceReloadAt = 0;
+
+    $: console.log('state', $state?.article?.content);
+    
     let ready = true;
 
     if (eventId) {
@@ -85,11 +92,13 @@
             user={$currentUser}
             let:authorUrl
         >
-            <slot
-                {state}
-                {actions}
-                {authorUrl}
-            />
+            {#key forceReloadAt}
+                <slot
+                    {state}
+                    {actions}
+                    {authorUrl}
+                />
+            {/key}
         </User.Root>
     </LoadingScreen>
 {/if}

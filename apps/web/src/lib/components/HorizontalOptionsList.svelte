@@ -3,6 +3,7 @@
 	import HorizontalOptionsListItem from "./HorizontalOptionsListItem.svelte";
 	import { NavigationOption } from "../../app";
     import * as Tabs from "$lib/components/ui/tabs";
+	import { goto } from "$app/navigation";
 
     const dispatch = createEventDispatcher();
 
@@ -18,6 +19,7 @@
     $: if (value === undefined && options.length > 0) {
         if (value !== false) value = optionId(options[0], 0);
     }
+
 </script>
 
 {#if options}
@@ -29,6 +31,7 @@
                 <Tabs.Trigger
                     value={option.value ?? option.name ?? option.href ?? i.toString()}
                     class="gap-2"
+                    on:click={(e) => { if (option.href) goto(option.href); }}
                 >
                     {#if option.icon}
                         <svelte:component this={option.icon} class="w-6 lg:w-5 h-6 lg:h-5 inline" {...option.iconProps??{}} />

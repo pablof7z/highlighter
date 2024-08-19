@@ -5,10 +5,6 @@
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import * as Feed from "$components/Feed";
 	import { CaretRight, MagnifyingGlass } from "phosphor-svelte";
-	import { NavigationOption } from "../../../../../app";
-	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
-
-    
 
     const articleComments = $ndk.storeSubscribe([
         // { kinds: [NDKKind.Text, NDKKind.Zap, NDKKind.Nutzap, NDKKind.GenericRepost ], "#k": ["30023"], limit: 50 },

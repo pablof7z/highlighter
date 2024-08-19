@@ -6,8 +6,6 @@
 	import { CaretRight } from "phosphor-svelte";
 	import { Badge } from "$components/ui/badge";
 	import { pluralize } from "$utils";
-	import AvatarWithName from "$components/User/AvatarWithName.svelte";
-	import Name from "$components/User/Name.svelte";
 
     onDestroy(() => {
         curations.unsubscribe();
@@ -30,20 +28,20 @@
 <div class="flex flex-col divide-y divide-border">
     <div class="flex flex-col">
         {#each $filteredCurations as list, index (list.id)}
-            <div class="py-[var(--section-vertical-padding)] w-full">
+        <div class="py-[var(--section-vertical-padding)] w-full">
                 <a href="/a/{list.encode()}" class="flex flex-col gap-2 group {$$props.class??""}">
                     {#if list.image}
-                        <div class="relative px-4 py-3 flex flex-col items-start justify-end text-center overflow-clip rounded">
+                        <div class="relative px-4 py-3 flex flex-col items-start justify-end text-center overflow-clip rounded bg-black">
                             <img src={list.image} class="w-full object-cover rounded-sm top-0 absolute left-0 right-0 bottom-0 opacity-40 group-hover:opacity-60 transition-all duration-300 ease-in-out" />
 
                             <div class="flex flex-row justify-between w-full">
-                                <h2 class="text-base font-medium mb-0 max-sm:max-h-[3.5rem] truncate overflow-y-clip relative text-left grow">{list.title}</h2>
-                                <Badge variant="secondary" class="font-normal text-muted-foreground whitespace-nowrap h-fit shrink">
+                                <h2 class="text-base font-medium mb-0 max-sm:max-h-[3.5rem] truncate overflow-y-clip relative text-left grow text-white">{list.title}</h2>
+                                <Badge variant="secondary" class="font-normal whitespace-nowrap h-fit shrink text-white/80">
                                     {list.items.length} {pluralize(list.items.length, "read")}
                                 </Badge>
                             </div>
 
-                            <div class="relative text-muted-foreground font-light text-xs text-left">
+                            <div class="relative text-white/50 font-light text-xs text-left">
                                 {list.description}
                             </div>
                         </div>

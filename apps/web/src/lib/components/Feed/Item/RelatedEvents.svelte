@@ -2,10 +2,10 @@
 	import { ndk } from "$stores/ndk";
 	import { wotFilteredStore } from "$stores/wot";
 	import { deriveStore } from "$utils/events/derive";
-	import { NDKEvent, NDKHighlight, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+	import { Hexpubkey, NDKEvent, NDKHighlight, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 	import { derived } from "svelte/store";
 	import AvatarsPill from "$components/Avatars/AvatarsPill.svelte";
-	import { BookmarkSimple, ChatTeardrop, Lightning } from "phosphor-svelte";
+	import { BookmarkSimple, ChatTeardrop, Lightning, Recycle, Repeat, Share } from "phosphor-svelte";
 	import { Badge } from "$components/ui/badge";
 	import Avatar from "$components/User/Avatar.svelte";
 	import HighlightIcon from "$icons/HighlightIcon.svelte";
@@ -26,56 +26,79 @@
     ], { subId: 'related-events', groupable: true, groupableDelay: 500 })
     const wotEvents = wotFilteredStore(events);
 
-    const comments = deriveStore<NDKEvent>(wotEvents, undefined, [NDKKind.Text, NDKKind.GroupNote, NDKKind.GroupReply]);
-    const commentPubkeys = derived(comments, $comments => Array.from(new Set($comments.map(c => c.pubkey))));
-
     const curations = deriveStore(events, NDKList, [NDKKind.ArticleCurationSet]);
     const nonSavedCurations = derived(curations, $curations => $curations.filter(c => c.dTag !== 'saved'));
 
-    const highlights = deriveStore(events, NDKHighlight);
-    const highlightPubkeys = derived(highlights, $highlights => Array.from(new Set($highlights.map(h => h.pubkey))));
+    type Actions = 'comment' | 'highlight' | 'zap' | 'curation' | "repost";
+    
+    const actions = derived(wotEvents, $wotEvents => {
+        const actions = new Set<Actions>();
+        const pubkeys = new Set<Hexpubkey>();
 
-    const zapPubkeys = derived(events, $events => {
-        const z = new Set<string>();
+        for (const event of $wotEvents) {
+            let action: Actions | undefined;
+            let pubkey: Hexpubkey | undefined = event.pubkey;
 
-        $events.forEach(e => {
-            if (e.kind === NDKKind.Nutzap) {
-                z.add(e.pubkey);
-            } else if (e.kind === NDKKind.Zap) {
-                const pTag = e.tagValue("P");
-                if (pTag) z.add(pTag);
+            switch (event.kind) {
+                case NDKKind.Zap: {
+                    const pTag = event.tagValue("P");
+                    if (pTag) {
+                        action = 'zap';
+                        pubkey = pTag;
+                    } else {
+                        action = undefined;
+                        pubkey = undefined;
+                    }
+                    break;
+                }
+                case NDKKind.Nutzap: action = 'zap'; break;
+                case NDKKind.Text: case NDKKind.GroupNote: case NDKKind.GroupReply: action = 'comment'; break;
+                case NDKKind.Highlight: action = 'highlight'; break;
+                case NDKKind.Repost: case NDKKind.GenericRepost: action = 'repost'; break;
             }
-        })
-        
-        return Array.from(z);
+
+            if (action && pubkey) {
+                actions.add(action);
+                pubkeys.add(pubkey);
+            }
+        }
+
+        return { types: Array.from(actions), pubkeys: Array.from(pubkeys) };
+    });
+
+    const byPubkeys = derived(wotEvents, $events => {
+        const byPubkey = new Set<Hexpubkey>();
+        $events.forEach(e => {
+            if (e.kind === NDKKind.Zap) {
+                const pTag = e.tagValue("P");
+                if (pTag) byPubkey.add(pTag);
+            } else {
+                byPubkey.add(e.pubkey);
+            }
+        });
+        return Array.from(byPubkey);
     });
 </script>
 
-{#if $wotEvents.length > 0}
-    <div class="flex flex-row items-start justify-start gap-6 {$$props.class??""}">
-        {#if $highlightPubkeys.length}
-            <Badge variant="secondary" class="p-1 gap-2">
-                <HighlightIcon weight="fill" size={16} class="text-foreground ml-2 w-4 h-4" />
-                <AvatarsPill pubkeys={$highlightPubkeys} size="xs" />
-            </Badge>
-        {/if}
+{#if $actions.types.length > 0}
+    <Badge variant="secondary" class="p-1 gap-4 items-center w-fit">
+        <div class="flex flex-row space-x-2 pl-2">
+            {#each $actions.types as action}
+                {#if action === 'comment'}
+                    <ChatTeardrop weight="fill" size={16} class="text-foreground" />
+                {:else if action === 'repost'}
+                    <Repeat size={16} class="text-foreground" />
+                {:else if action === 'highlight'}
+                    <HighlightIcon weight="fill" size={16} class="text-foreground w-4 h-4" />
+                {:else if action === 'zap'}
+                    <Lightning weight="fill" size={16} class="text-foreground" />
+                {:else if action === 'curation'}
+                    <BookmarkSimple weight="fill" size={16} class="text-foreground" />
+                {/if}
+            {/each}
+        </div>
         
-        {#if $commentPubkeys.length}
-            <Badge variant="secondary" class="p-1 gap-2">
-                <ChatTeardrop weight="fill" size={16} class="text-foreground ml-2" />
-                <div class="flex auto">
-                    <AvatarsPill pubkeys={$commentPubkeys} size="xs" />
-
-                </div>
-            </Badge>
-        {/if}
-
-        {#if $zapPubkeys.length}
-            <Badge variant="secondary" class="p-1 gap-2">
-                <Lightning weight="fill" size={16} class="text-foreground ml-2" />
-                <AvatarsPill pubkeys={$zapPubkeys} size="xs" />
-            </Badge>
-        {/if}
+        <AvatarsPill pubkeys={$actions.pubkeys} size="xs" />
 
         {#if $nonSavedCurations.length > 0}
             {#if $nonSavedCurations.length > 1}
@@ -97,5 +120,5 @@
                 {/each}
             {/if}
         {/if}
-    </div>
+    </Badge>
 {/if}

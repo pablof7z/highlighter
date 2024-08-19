@@ -1,6 +1,5 @@
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import { writable } from 'svelte/store';
-import { NDKEventSerialized } from '@nostr-dev-kit/ndk';
 
 export type DraftCheckpoint = {
 	/**

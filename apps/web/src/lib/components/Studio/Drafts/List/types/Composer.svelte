@@ -24,6 +24,7 @@
             if ($currentUser) event.pubkey = $currentUser.pubkey;
         }
     } catch (e) {
+        console.error(e)
         toast.success("Draft is not supported", { description: e.message });
     }
 

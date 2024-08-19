@@ -64,10 +64,14 @@ export type State<T extends Type> = {
 
     // draft properties
     draftId?: string;
+
+    // validation errors
+
 } & StateProperties<T>;
 
 export type Actions = {
     saveDraft: (manuallySaved: boolean) => Promise<boolean>;
+    shouldDraft: () => Promise<boolean>;
     publish: () => void;
 }
 

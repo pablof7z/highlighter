@@ -1,9 +1,9 @@
 <script lang="ts">
-	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import { Writable } from "svelte/store";
 	import { State } from ".";
 	import Avatar from "$components/User/Avatar.svelte";
 	import currentUser from "$stores/currentUser";
+    import * as Editor from "$components/Editor";
 
     export let state: Writable<State>;
     export let placeholder: string | undefined = undefined;
@@ -14,20 +14,11 @@
     <div class="flex flex-row gap-4">
         <Avatar user={$currentUser} size="small" />
         
-        <ContentEditor
+        <Editor.Root
             bind:content={$state.content}
-            allowMarkdown={false}
-            autofocus={true}
-            toolbar={false}
             {placeholder}
-
-            class="
-                text-lg
-                {$$props.class??""}
-            "
-            style="
-                min-height: {minHeight};
-            "
-        />
+        >
+            <Editor.Shell />
+        </Editor.Root>
     </div>
 {/if}

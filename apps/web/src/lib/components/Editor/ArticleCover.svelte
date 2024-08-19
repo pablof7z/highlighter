@@ -48,7 +48,6 @@
                     class="w-full"
                     on:uploaded={uploaded}
                 >
-                    {$activeBlossomServer}
                     <Button variant="secondary" class="py-4 w-full flex sm:flex-col max-sm:justify-start justify-center items-center gap-2 whitespace-nowrap !h-fit">
                         <Image class="w-12 h-12" />
                         Upload a cover image

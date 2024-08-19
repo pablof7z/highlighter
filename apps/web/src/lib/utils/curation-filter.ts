@@ -1,8 +1,11 @@
 import { userFollows } from "$stores/session";
 import { NDKList } from "@nostr-dev-kit/ndk";
 import { derived, Readable } from "svelte/store";
+import { blacklistedPubkeysSet } from "./const";
 
 const filterList = (removeNoDescription: boolean) => (list: NDKList) => {
+    if (blacklistedPubkeysSet.has(list.pubkey)) return false;
+    
     // if it doesn't have items
     if (!list.items || list.items.length === 0) return false;
     
@@ -14,6 +17,7 @@ const filterList = (removeNoDescription: boolean) => (list: NDKList) => {
 
     // if it doesn't have a title
     if (!list.title || list.title === "undefined") return false;
+    if (list.title === 'To read') return false;
 
     // test doesn't say "test"
     if (list.title.toLowerCase().includes("test")) return false;

@@ -76,7 +76,12 @@
             <ToggleDark variant="secondary" />
         {/if}
 
-        <Draft.Button timer={30} save={actions.saveDraft} class="max-sm:hidden" />
+        <Draft.Button
+            timer={30}
+            save={actions.saveDraft}
+            shouldSave={actions.shouldDraft}
+            class="max-sm:hidden"
+        />
     </div>
 
     <div class="flex flex-row flex-nowrap gap-2 grow lg:max-w-[var(--content-focused-width)] mx-auto lg:px-0">

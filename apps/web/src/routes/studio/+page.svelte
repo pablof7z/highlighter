@@ -1,33 +1,60 @@
 <script lang="ts">
 	import currentUser from "$stores/currentUser";
 	import { drafts } from "$stores/drafts";
-	import { layout } from "$stores/layout";
+	import { l, layout } from "$stores/layout";
 	import { ndk } from "$stores/ndk";
 	import { eventKindToText, mainContentKinds, wrapEvent } from "$utils/event";
     import * as Card from '$components/ui/card';
     import * as DropdownMenu from '$components/ui/dropdown-menu';
+    import * as Event from '$components/Event';
 	import { Button } from "$components/ui/button";
 	import { ArrowRight, CurrencyDollarSimple, DotsThreeVertical, Lightning, Pen, Timer, TrashSimple, Users } from "phosphor-svelte";
-	import { derived } from "svelte/store";
+	import { derived, writable } from "svelte/store";
 	import { eventIsPreview } from "$utils/preview";
 	import { nicelyFormattedSatNumber } from "$utils";
 	import PublishedToPills from "$components/Groups/PublishedToPills.svelte";
 	import NewItemButton from "$views/Home/Main/NewItemButton.svelte";
-	import { toast } from "svelte-sonner";
+	import { onDestroy } from "svelte";
 
-    $layout.title = "Studio";
-    $layout.fullWidth = false;
-    $layout.sidebar = false;
-    $layout.header = undefined;
-    $layout.back = { url: '/' };
-    $layout.navigation = false;
+    l({
+        title: "Studio",
+        header: undefined,
+        fullWidth: false,
+        sidebar: false,
+        back: { url: '/' },
+        navigation: false
+    });
+
+    const deletedItems = writable(new Set<string>());
 
     const content = $ndk.storeSubscribe({
         kinds: mainContentKinds,
-        authors: [$currentUser.pubkey]
-    }, { closeOnEose: true })
+        authors: [$currentUser!.pubkey]
+    })
 
-    const wrappedContent = derived(content, $content => $content.map(wrapEvent));
+    onDestroy(() => content.unsubscribe());
+
+    const withoutDeletes = derived([content, deletedItems], ([$content, $deletedItems]) => {
+        return $content
+            .filter(c => !c.hasTag("deleted"))
+            .filter(c => !$deletedItems.has(c.id));
+    });
+
+    const wrappedContent = derived(withoutDeletes, $content => $content.map(wrapEvent));
+
+    // async function deleteEvent(event: NDKEvent) {
+    //     toast.info(`${eventKindToText(event.kind)} deleted`, {
+    //         action: {
+    //             label: "Undo",
+    //             onClick: () => {
+    //                 clearTimeout(deleteTimeout);
+    //                 dispatch('delete:cancel', event)
+    //                 goto(eventUrl);
+    //                 toast.success("Post restored!");
+    //             }
+    //         }
+    //     }
+    // }
 </script>
 
 <div class="flex flex-row items-start justify-between my-10">
@@ -111,7 +138,9 @@
 
 <div class="flex flex-col gap-4">
     {#each $wrappedContent as c (c.id)}
-        <div class="flex flex-row gap-4 items-center w-full hover:bg-secondary/20 transition-all duration-200 rounded">
+        <div
+            class="flex flex-row gap-4 items-center w-full hover:bg-secondary/20 transition-all duration-200 rounded"
+        >
             <div class="flex-none w-1/12">
                 {#if c.image || c.thumbnail}
                     <img src={c.image || c.thumbnail} class="w-16 h-16 rounded-sm object-cover flex-none" />
@@ -120,9 +149,9 @@
                 {/if}
             </div>
 
-            <div class="w-4/12 flex flex-col gap-1 col-span-4 overflow-clip justify-center">
+            <div class="grow flex flex-col gap-1 col-span-4 overflow-clip justify-center">
                 <a href="/a/{c.encode()}">
-                    {c.title}
+                    {c.title??c.dTag}
                     {#if eventIsPreview(c)}
                         <div class="text-muted-foreground text-xs">(Preview version)</div>
                     {/if}
@@ -139,7 +168,7 @@
             <div class="w-1/12 flex flex-col items-center justify-center">
                 <!-- Views -->
                 <div class="text-lg font-bold">{Math.floor(Math.random() * 1000)}</div>
-                <div class="text-xs font-light text-muted-foreground">Reads</div>
+                <div class="text-xs font-light text-muted-foreground">Views</div>
             </div>
 
             <div class="w-1/12 flex flex-col items-center justify-center">
@@ -151,26 +180,12 @@
                 <div class="text-xs font-light text-muted-foreground">Zaps</div>
             </div>
 
-            <div class="w-2/12 flex flex-row justify-end gap-2">
-                <DropdownMenu.Root>
-                    <DropdownMenu.Trigger>
-                        <Button size="icon" variant="secondary" class="rounded-full">
-                            <DotsThreeVertical size={20} />
-                        </Button>
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content>
-                        <DropdownMenu.Group>
-                            <DropdownMenu.Item href="/studio/article?eventId={c.encode()}" class="flex flex-row gap-2">
-                                <Pen size={20} />
-                                Edit
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item on:click={() => toast.info("Not implemented just yet!")} class="text-red-500 flex flex-row gap-2">
-                                <TrashSimple size={20} />
-                                Delete
-                            </DropdownMenu.Item>
-                        </DropdownMenu.Group>
-                    </DropdownMenu.Content>
-                </DropdownMenu.Root>
+            <div class="w-1/12 flex flex-row justify-end gap-2">
+                <Event.Dropdown
+                    event={c}
+                    on:delete={() => deletedItems.update(set => set.add(c.id))}
+                    on:delete:cancel={() => deletedItems.update(set => {set.delete(c.id); return set})}
+                />
             </div>
         </div>
     {/each}

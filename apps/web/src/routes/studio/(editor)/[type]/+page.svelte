@@ -4,7 +4,9 @@
 	import { layout } from "$stores/layout";
 
     const draftId = $page.url.searchParams.get("draft") || undefined;
-    const checkpointId = $page.url.searchParams.get("checkpoint") || undefined;
+    let checkpointId: string | undefined;
+    
+    $: checkpointId = $page.url.searchParams.get("checkpoint") || undefined;
 
     const eventId = $page.url.searchParams.get("eventId") || undefined;
 
@@ -29,7 +31,7 @@
 </script>
 
 <Studio.Root
-    {draftId} {checkpointId}
+    {draftId} bind:checkpointId
     {eventId}
     {type}
     let:state
