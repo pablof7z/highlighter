@@ -1,26 +1,49 @@
 <script lang="ts">
+	import { beforeNavigate } from "$app/navigation";
     import * as Tooltip from "$lib/components/ui/tooltip";
+	import { onDestroy } from "svelte";
     
+    export let shouldSave: (() => Promise<boolean>) | undefined = undefined;
     export let save: (manuallySaved: boolean) => Promise<boolean>;
     export let timer: number | undefined = undefined;
 
+    let timeout: NodeJS.Timeout | number | undefined = undefined;
+
     let manuallySaved = false;
     enum State {
-        Unsaved = 'Draft',
+        Unsaved = '',
         Saving = 'Saving Changes',
         Saved = 'Draft',
-        RecentlySaved = 'Draft - Changes saved',
+        // RecentlySaved = 'Saved',
         Failed = 'Failed to save'
     }
     let state: State = State.Unsaved;
 
     const saved = () => {
-        state = State.RecentlySaved;
-        setTimeout(() => { state = State.Saved; }, 2000);
+        state = State.Saved;
+        // setTimeout(() => { state = State.Saved; }, 1000);
     }
+
+    beforeNavigate(({cancel}) => {
+        autoSave();
+        if (state === State.Saving) {
+            cancel();
+        }
+    });
+    
+    onDestroy(() => {
+        if (timeout) {
+            clearTimeout(timeout as number);
+        }
+    });
 
     const autoSave = async () => {
         if (state === State.Saving) return;
+
+        if (shouldSave && await shouldSave() === false) {
+            timeout = setTimeout(autoSave, timer! * 1000);
+            return;
+        }
 
         manuallySaved = false;
         state = State.Saving;
@@ -36,37 +59,33 @@
             state = State.Failed;
         }
 
-        setTimeout(autoSave, timer! * 1000);
+        timeout = setTimeout(autoSave, timer! * 1000);
     }
 
     if (timer) {
-        setTimeout(autoSave, timer * 1000);
+        timeout = setTimeout(autoSave, timer * 1000);
     }
 
     async function click() {
         manuallySaved = true;
         state = State.Saving;
 
-        if (await save(manuallySaved)) {
-            saved();
-        } else {
-            console.error("Failed to save");
+        try {
+            if (await save(manuallySaved)) {
+                saved();
+            } else {
+                console.error("Failed to save");
+                state = State.Failed;
+            }
+        } catch (e) {
+            console.error(e);
+            state = State.Failed;
         }
     }
-
-    export let lastSave: number | undefined = undefined;
-    let saveAgo: number | undefined = undefined;
-
-    setInterval(() => {
-        if (lastSave) {
-            saveAgo = Math.floor((Date.now() - lastSave) / 1000);
-        }
-    }, 1000);
 
     let indicatorClass: 'success' | 'failed' | 'unknown' = 'unknown';
 
     $: switch (state) {
-        case State.RecentlySaved:
         case State.Saved:
             indicatorClass = 'success';
             break;
@@ -84,7 +103,9 @@
         <button class="text-muted-foreground/80 text-xs transition-all duration-500 flex flex-row items-center gap-2  {$$props.class??""}" on:click={click}>
             <div class="rounded-full w-2 h-2 {indicatorClass}"></div>
 
-            {state}
+            <span class="w-24 text-left">
+                {state}
+            </span>
         </button>
     </Tooltip.Trigger>
     <Tooltip.Content>

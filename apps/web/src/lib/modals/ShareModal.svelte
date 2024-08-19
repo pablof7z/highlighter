@@ -11,7 +11,6 @@
 	import { NavigationOption } from "../../app";
     import { Export } from "phosphor-svelte";
     import { Share } from '@capacitor/share';
-	import ShareImage from "$components/Event/ShareImage.svelte";
 	import { EventTemplate } from "nostr-tools";
 	import { activeBlossomServer } from '$stores/session';
     import * as Tabs from "$lib/components/ui/tabs";

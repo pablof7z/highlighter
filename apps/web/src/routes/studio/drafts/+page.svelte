@@ -13,7 +13,6 @@
 	import { mainContentKinds } from '$utils/event';
 	import { onDestroy } from 'svelte';
 	import { getDefaultRelaySet } from '$utils/ndk';
-    import { toast } from "svelte-sonner";
 	import { layout } from '$stores/layout';
 
     import * as Studio from '$components/Studio';

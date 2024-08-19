@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { onMount, onDestroy, setContext } from 'svelte';
-    import { createEditor, Editor, EditorContent } from 'svelte-tiptap'
-    import UploadImage from 'tiptap-extension-upload-image';
+    import { onDestroy, setContext } from 'svelte';
+    import { Editor } from 'svelte-tiptap'
+    import UploadImage from './extensions/upload-image'
     import Link from '@tiptap/extension-link';
     import { Markdown } from 'tiptap-markdown';
     import StarterKit from '@tiptap/starter-kit';
@@ -16,7 +16,7 @@
 	import { Uploader } from '$utils/upload.js';
 	import { addImageBlob } from './add-image.js';
     
-    export let content: string;
+    export let content: string = "";
     export let editor: Editor | undefined = undefined;
     export let placeholder: string = 'Write...';
 
@@ -42,7 +42,7 @@
     }
 
     $: if (!editor && $editorElement) {
-        console.log('creating editor');
+        console.log('creating editor', content);
 		editor = new Editor({
 			element: $editorElement,
 			extensions: [
@@ -52,35 +52,35 @@
                     
                 }),
                 Dropcursor,
-                BulletList,
-                TipTapImage.configure({
-                    allowBase64: true,
-                }),
-                Placeholder.configure({
-					placeholder
-				}),
-                UploadImage.configure({
-                    uploadFn: (blob) => {
-                        return new Promise((resolve, reject) => {
-                            const uploader = new Uploader(blob, $activeBlossomServer);
-                            uploader.onUploaded = (url: string) => {
-                                resolve(url);
-                            };
-                            uploader.onError = (error: Error) => {
-                                reject(error.message);
-                            };
-                            uploader.start();
-                        });
-                    }
-                }),
-                Link.configure({
-                    openOnClick: false,
-                    autolink: true,
-                    defaultProtocol: 'https',
-                }),
-                Mention.configure({
-                    suggestion: suggestion(),
-                }),
+                // BulletList,
+                // TipTapImage.configure({
+                //     allowBase64: true,
+                // }),
+                // Placeholder.configure({
+				// 	placeholder
+				// }),
+                // UploadImage.configure({
+                //     uploadFn: (blob) => {
+                //         return new Promise((resolve, reject) => {
+                //             const uploader = new Uploader(blob, $activeBlossomServer);
+                //             uploader.onUploaded = (url: string) => {
+                //                 resolve(url);
+                //             };
+                //             uploader.onError = (error: Error) => {
+                //                 reject(error.message);
+                //             };
+                //             uploader.start();
+                //         });
+                //     }
+                // }),
+                // Link.configure({
+                //     openOnClick: false,
+                //     autolink: true,
+                //     defaultProtocol: 'https',
+                // }),
+                // Mention.configure({
+                //     suggestion: suggestion(),
+                // }),
             ],
 			content,
 			onTransaction: () => {

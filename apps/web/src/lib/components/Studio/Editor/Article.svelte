@@ -5,18 +5,24 @@
 	import { openModal } from "$utils/modal";
 	import CoverImageModal from "$modals/CoverImageModal.svelte";
 	import TagInputModal from "$modals/TagInputModal.svelte";
-	import { CaretRight, Info, Shuffle, X } from "phosphor-svelte";
+	import { CaretRight, ClockCounterClockwise, Info, Shuffle, X } from "phosphor-svelte";
 	import { Button } from '$components/ui/button';
     import * as Studio from '$components/Studio';
 	import { Writable } from 'svelte/store';
 	import * as Editor from '$components/Editor/';
 	import Textarea from '$components/ui/textarea/textarea.svelte';
+	import Versions from '../Drafts/Item/Versions.svelte';
+	import { DraftItem } from '$stores/drafts';
+	import { getDraftById } from '$utils/drafts';
 
     export let state: Writable<Studio.State<Studio.Type.Article>>;
     export let article: NDKArticle = $state.article;
 
+    let draftItem: DraftItem | undefined;
+
     $: {
         $state.article = article;
+        if ($state.draftId) draftItem = getDraftById($state.draftId);
     }
 
     const dispatch = createEventDispatcher();
@@ -96,4 +102,10 @@
 
         <Editor.Shell class="article grow pb-[20vh] min-h-screen" />
     </Editor.Root>
+</div>
+
+<div class="fixed bottom-4 left-4">
+    {#if draftItem}
+        <Versions item={draftItem} />
+    {/if}
 </div>

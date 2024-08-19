@@ -63,7 +63,6 @@ export function filterArticles(
 ): Readable<NDKArticle[]> {
     return derived([articles, userFollows], ([$articles, $userFollows]) => {
         let ret = $articles.filter((article) => {
-            return true;
             // if it's followed by the user, we want to show it
             // if ($userFollows.has(article.pubkey)) return true;
             if (blacklistedPubkeysSet.has(article.pubkey)) return false;

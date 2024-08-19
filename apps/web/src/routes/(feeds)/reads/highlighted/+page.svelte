@@ -15,7 +15,7 @@
     const articles = writable<Map<string, { article: NDKArticle | null | undefined, count: number}>>(new Map());
 
     const highlights = $ndk.storeSubscribe(
-        { kinds: [9802], limit: 50 },
+        { kinds: [9802], limit: 300 },
         { relaySet, onEvent: (event: NDKEvent) => {
             if (seenIds.has(event.id)) return;
             seenIds.add(event.id);

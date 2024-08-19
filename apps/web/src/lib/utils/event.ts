@@ -45,7 +45,7 @@ export function eventKindToText(kind: NDKKind) {
 		case NDKKind.VideoCurationSet: return "Video List";
 		case NDKKind.Highlight: return "Highlight";
 		default:
-			return "Event";
+			return "Post";
 	}
 }
 

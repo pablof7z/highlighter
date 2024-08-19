@@ -144,9 +144,6 @@
                         {/if}
                     </LoadEvent>
                 {/if}
-                {#if event.kind !== NDKKind.GroupChat && event.kind !== 10}
-                    {event.kind}
-                {/if}
                 <EventContent
                     ndk={$ndk}
                     mediaCollectionComponent={MediaCollection}

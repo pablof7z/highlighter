@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ArticleCover from "$components/Editor/ArticleCover.svelte";
     import ModalShell from "$components/ModalShell.svelte";
-	import Button from "$components/ui/button/button.svelte";
 	import { closeModal } from "$utils/modal";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../app";

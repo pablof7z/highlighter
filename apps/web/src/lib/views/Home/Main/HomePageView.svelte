@@ -56,9 +56,10 @@
         .map(user => { return { user, id: user.pubkey } });
 
     const readOptions: NavigationOption[] = [
-        { value: "", name: "Featured", href: '/' },
+        { id: "featured", name: "Featured", href: '/' },
+        { value: "newest", name: "👋 Newest", href: '/reads' },
         { name: "🌟 Top", href: '/reads/top' },
-        { name: "🔥 Hot", href: '/reads/hot' },
+        // { name: "🔥 Hot", href: '/reads/hot' },
         { name: "🖊️ Highlighted", href: '/reads/highlighted' },
         { name: "📚 Curations", href: '/reads/curations' },
         // { name: "Feed Marketplace", icon: Plus, buttonProps: { class: 'place-self-end', variant: 'secondary' }, href: '/reads/dvms' },
@@ -68,7 +69,7 @@
 <div class="flex flex-col sm:gap-[var(--section-vertical-padding)] mx-auto w-fit px-6">
     <!-- <Groups /> -->
 
-    <HorizontalOptionsList options={readOptions} />
+    <HorizontalOptionsList tabs options={readOptions} value="Featured"  />
     
     <div class="flex flex-row items-start gap-6 w-full">
         <div class="w-full lg:w-[var(--content-focused-width)]">

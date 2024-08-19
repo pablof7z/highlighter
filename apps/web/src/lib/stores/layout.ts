@@ -1,7 +1,6 @@
 import { writable, type Writable } from 'svelte/store';
 import { NavigationOption } from '../../app';
 import { NDKEvent } from '@nostr-dev-kit/ndk';
-import { E } from 'vitest/dist/reporters-O4LBziQ_.js';
 
 export interface Component {
 	component: ConstructorOfATypedSvelteComponent;
@@ -50,6 +49,10 @@ export type Layout = {
 
 	options?: NavigationOption[];
 };
+
+export function l(layoutOpts: Layout) {
+	layout.set(layoutOpts);
+}
 
 export const layout = writable<Layout>({});
 

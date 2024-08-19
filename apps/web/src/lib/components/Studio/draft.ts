@@ -35,7 +35,6 @@ export function loadDraft(
             );
 
             throw new Error("Not implemented");
-            return { draft, thread };
         case "article":
             const { event } = payload as unknown as { event: string };
             const article = NDKArticle.from(JSON.parse(event));
@@ -92,6 +91,7 @@ function getCheckpoint(
 ) {
     if (checkpointId) {
         const c = checkpoints.find(c => c.id === checkpointId || c.time.toString() === checkpointId.toString());
+        console.log("state fetched from checkpoint", c);
         if (c) return c;
     }
 

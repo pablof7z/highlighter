@@ -59,6 +59,7 @@ export function addDraftCheckpoint(
     state: States,
     type: "studio" | "composer"
 ): string {
+    console.trace('addDraftCheckpoint');
     d('addDraftCheckpoint', { draftId, manuallySaved, type });
     const payload = getSerializedPayload(type, state);
     
