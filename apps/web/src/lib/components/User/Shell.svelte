@@ -56,7 +56,7 @@
     optionManager.options.subscribe(value => options = value);
 
     $: if (authorUrl) optionManager.setOption('home', { id: 'home', icon: House, iconProps: { weight: 'fill' }, href: authorUrl }, undefined, true);
-    $: if (authorUrl) optionManager.setOption('posts', { id: 'posts', name: "Posts", href: getUserUrl(authorUrl, user, "notes") }, eosed);
+    // $: if (authorUrl) optionManager.setOption('posts', { id: 'posts', name: "Posts", href: getUserUrl(authorUrl, user, "notes") }, eosed);
     $: if (authorUrl && $articles.length > 0) optionManager.setOption('articles', { id: 'articles', name: "Articles", badge: roundedItemCount($articles!), href: getUserUrl(authorUrl, user, "articles") }, eosed);
     $: if (authorUrl && $videos.length > 0) optionManager.setOption('videos', { id: 'videos', name: "Videos", badge: roundedItemCount($videos!), href: getUserUrl(authorUrl, user, "videos") }, eosed);
     $: if (authorUrl && $curations.length > 0) optionManager.setOption('curations', { id: 'curations', name: "Curations", badge: roundedItemCount($videos!), href: getUserUrl(authorUrl, user, "curations") }, eosed);
@@ -64,7 +64,6 @@
     $: if (authorUrl && $groupsList && $groupsList.items.length > 0) {
         optionManager.setOption('communities', { id: 'communities', name: "Communities", badge: roundedItemCount($groupsList!.items), href: getUserUrl(authorUrl, user, "communities") }, eosed);
     }
-    $: if (authorUrl && $wiki.length > 0) optionManager.setOption('wiki', { id: 'wiki', name: "Wiki", badge: roundedItemCount($wiki!), href: getUserUrl(authorUrl, user, "wiki") }, eosed);
 
     $layout = {
         title: "Profile",
@@ -73,11 +72,6 @@
 
     $: {
         $layout.title = userProfile?.displayName ?? user.pubkey;
-    }
-    $: $layout.iconUrl = userProfile?.image;
-    $: $layout.footer = {
-        component: Footer,
-        props: { user, userProfile, fetching, authorUrl }
     }
 </script>
 

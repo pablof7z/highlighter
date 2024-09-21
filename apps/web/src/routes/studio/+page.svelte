@@ -5,16 +5,13 @@
 	import { ndk } from "$stores/ndk";
 	import { eventKindToText, mainContentKinds, wrapEvent } from "$utils/event";
     import * as Card from '$components/ui/card';
-    import * as DropdownMenu from '$components/ui/dropdown-menu';
-    import * as Event from '$components/Event';
 	import { Button } from "$components/ui/button";
 	import { ArrowRight, CurrencyDollarSimple, DotsThreeVertical, Lightning, Pen, Timer, TrashSimple, Users } from "phosphor-svelte";
-	import { derived, writable } from "svelte/store";
-	import { eventIsPreview } from "$utils/preview";
-	import { nicelyFormattedSatNumber } from "$utils";
-	import PublishedToPills from "$components/Groups/PublishedToPills.svelte";
+    import * as Studio from '$components/Studio';
+	
 	import NewItemButton from "$views/Home/Main/NewItemButton.svelte";
 	import { onDestroy } from "svelte";
+	import { NDKKind } from "@nostr-dev-kit/ndk";
 
     l({
         title: "Studio",
@@ -25,22 +22,12 @@
         navigation: false
     });
 
-    const deletedItems = writable(new Set<string>());
-
     const content = $ndk.storeSubscribe({
-        kinds: mainContentKinds,
+        kinds: [ NDKKind.Article, NDKKind.HorizontalVideo ],
         authors: [$currentUser!.pubkey]
     })
 
     onDestroy(() => content.unsubscribe());
-
-    const withoutDeletes = derived([content, deletedItems], ([$content, $deletedItems]) => {
-        return $content
-            .filter(c => !c.hasTag("deleted"))
-            .filter(c => !$deletedItems.has(c.id));
-    });
-
-    const wrappedContent = derived(withoutDeletes, $content => $content.map(wrapEvent));
 
     // async function deleteEvent(event: NDKEvent) {
     //     toast.info(`${eventKindToText(event.kind)} deleted`, {
@@ -70,7 +57,7 @@
     <NewItemButton />
 </div>
 
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <Card.Root class="row-span-2 col-span-2 bg-secondary">
         <Card.Header>
             <Card.Title>
@@ -89,7 +76,7 @@
         </Card.Content>
     
         <Card.Footer>
-            <Button>
+            <Button href="/publication/new">
                 Create Your Publication
                 <ArrowRight class="ml-2" />
             </Button>
@@ -136,57 +123,4 @@
     </Card.Root>
 </div>
 
-<div class="flex flex-col gap-4">
-    {#each $wrappedContent as c (c.id)}
-        <div
-            class="flex flex-row gap-4 items-center w-full hover:bg-secondary/20 transition-all duration-200 rounded"
-        >
-            <div class="flex-none w-1/12">
-                {#if c.image || c.thumbnail}
-                    <img src={c.image || c.thumbnail} class="w-16 h-16 rounded-sm object-cover flex-none" />
-                {:else}
-                    <div class="w-16 h-16 bg-secondary rounded-sm flex-none" />
-                {/if}
-            </div>
-
-            <div class="grow flex flex-col gap-1 col-span-4 overflow-clip justify-center">
-                <a href="/a/{c.encode()}">
-                    {c.title??c.dTag}
-                    {#if eventIsPreview(c)}
-                        <div class="text-muted-foreground text-xs">(Preview version)</div>
-                    {/if}
-                </a>
-            </div>
-
-            <div class="w-2/12 text-muted-foreground text-xs flex flex-col justify-center col-span-2">
-                {eventKindToText(c.kind)}
-                <div class="w-fit">
-                    <PublishedToPills event={c} />
-                </div>
-            </div>
-
-            <div class="w-1/12 flex flex-col items-center justify-center">
-                <!-- Views -->
-                <div class="text-lg font-bold">{Math.floor(Math.random() * 1000)}</div>
-                <div class="text-xs font-light text-muted-foreground">Views</div>
-            </div>
-
-            <div class="w-1/12 flex flex-col items-center justify-center">
-                <!-- Zaps -->
-                <div class="text-lg font-bold flex flex-row items-center gap-1">
-                    <Lightning class="text-gold" size={20} weight="fill" />
-                    {nicelyFormattedSatNumber(Math.floor(Math.random() * 100000))}
-                </div>
-                <div class="text-xs font-light text-muted-foreground">Zaps</div>
-            </div>
-
-            <div class="w-1/12 flex flex-row justify-end gap-2">
-                <Event.Dropdown
-                    event={c}
-                    on:delete={() => deletedItems.update(set => set.add(c.id))}
-                    on:delete:cancel={() => deletedItems.update(set => {set.delete(c.id); return set})}
-                />
-            </div>
-        </div>
-    {/each}
-</div>
+<Studio.ContentList.Root {content} />

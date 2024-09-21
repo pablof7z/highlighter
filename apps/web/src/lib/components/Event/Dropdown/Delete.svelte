@@ -26,10 +26,10 @@
         if (event.isParamReplaceable()) {
             // overwrite with no content and add deleted tag
             const dTag = event.dTag;
-            event.content = "";
+            event.content = "This event has been deleted; your client is ignoring the delete request.";
             event.tags = [ [ "deleted" ]];
             if (dTag) event.tags.push(["d", dTag]);
-            event.publishReplaceable();
+            await event.publishReplaceable();
         }
         
         const r = await event.delete();

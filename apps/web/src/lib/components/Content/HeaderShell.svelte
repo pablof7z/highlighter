@@ -1,7 +1,6 @@
 <script lang="ts">
     import { NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { layout } from "$stores/layout";
-	import BackButton from "$components/App/Navigation/BackButton.svelte";
 	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 	import { Badge } from "$components/ui/badge";
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
@@ -24,14 +23,10 @@
 
     let isInView: boolean;
     
-    $: if (!ignoreHeader && !isPreview) {
-        if (isInView) {
-            $layout.header = false;
-        } else {
-            $layout.header = undefined;
-            $layout.title = title || "Untitled";
-        }
-    }
+    // $: if (!ignoreHeader && !isPreview) {
+    //     $layout.header = undefined;
+    //     $layout.title = title || "Untitled";
+    // }
 </script>
 
 <App.HeaderShell class="
@@ -40,11 +35,6 @@
 " bind:isInView>
     {#if !skipImage}
         <div class="overflow-clip flex relative">
-            {#if !ignoreHeader}
-                <div class="z-10 left-2 top-[var(--safe-area-inset-top)] absolute">
-                    <BackButton href="/" />
-                </div>
-            {/if}
             <slot name="image" />
         </div>
     {/if}

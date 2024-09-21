@@ -4,7 +4,6 @@
 -->
 <script lang="ts">
 	import { onDestroy, onMount } from "svelte";
-	import { footerMainView } from '$stores/layout';
 	import { activeSelection } from '$stores/highlight-tool';
 
     export let contentContainer: HTMLElement;
@@ -15,8 +14,6 @@
         const text = selection.toString().trim();
         if (!text || text.length < 5) { return; }
 
-        $footerMainView = 'highlight-tool';
-
         activeHighlightId = null;
     }
 
@@ -24,18 +21,15 @@
         const selection = window.getSelection();
         if (!selection || selection.rangeCount === 0) {
             $activeSelection = null;
-            $footerMainView = false;
             return;
         }
         const text = selection.toString().trim();
         if (!text || text.length < 5) {
             $activeSelection = null;
-            $footerMainView = false;
             return;
         }
 
         $activeSelection = selection;
-        $footerMainView = 'highlight-tool';
     }
 
     let activeHighlightId: string | null = null;
@@ -53,7 +47,6 @@
         // update the selection
 
         $activeSelection = selection;
-        $footerMainView = 'highlight-tool';
     }
 
     onMount(() => {

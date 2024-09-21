@@ -8,7 +8,6 @@
     import * as Card from '$components/Card';
 	import currentUser from '$stores/currentUser';
 	import { layout } from '$stores/layout';
-	import RootList from '$components/Groups/RootList.svelte';
 
     export let user: NDKUser = getContext('user') as NDKUser;
     export let userProfile: NDKUserProfile | undefined | null = getContext('userProfile') as NDKUserProfile;
@@ -23,8 +22,6 @@
     const userGroupsList = getContext('userGroupsList') as Readable<NDKList>;
     const userPinList = getContext('userPinList') as Readable<NDKList>;
     const userTiers = getContext('userTiers') as Readable<NDKSubscriptionTier[]>;
-
-    $layout.footerInMain = true;
 
     let isCurrentUser: boolean | undefined;
     $: isCurrentUser = $currentUser?.pubkey === user.pubkey;
@@ -48,9 +45,9 @@
         return event.getMatchingTags("e").length === 0;
     }
 
-    const highQualityNotes = derived(userNotes, $userNotes => {
-        return $userNotes.filter(isOp);
-    });
+    // const highQualityNotes = derived(userNotes, $userNotes => {
+    //     return $userNotes.filter(isOp);
+    // });
 
     $: {
         if ($userArticles.length > 0 && !priorityBlocksSet.has("articles")) {
@@ -68,10 +65,10 @@
             blocks = [...blocks, "highlights"]
         }
 
-        if ($highQualityNotes.length > 0 && !blockSet.has("notes")) {
-            blockSet.add("notes");
-            blocks = [...blocks, "notes"]
-        }
+        // if ($highQualityNotes.length > 0 && !blockSet.has("notes")) {
+        //     blockSet.add("notes");
+        //     blocks = [...blocks, "notes"]
+        // }
     }
 
     let featuredItems: Readable<(NDKArticle | NDKVideo)[]> | undefined;
@@ -169,10 +166,10 @@
             <HorizontalList class="py-[var(--section-vertical-padding)]" title="Highlights" items={$userHighlights} let:item>
                 <Card.Highlight highlight={item} />
             </HorizontalList>
-        {:else if block === "notes" && $highQualityNotes}
+        <!-- {:else if block === "notes" && $highQualityNotes}
             <HorizontalList class="py-[var(--section-vertical-padding)]" title="Notes" items={$highQualityNotes} let:item>
                 <Card.Note event={item} />
-            </HorizontalList>
+            </HorizontalList> -->
         {:else if block === "groups" && $userGroupsList}
             <!-- <Chat.List>
                 {#each $userGroupsList.items as item (item)}

@@ -1,6 +1,19 @@
-import { writable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 import { NavigationOption } from '../../app';
 import { NDKEvent } from '@nostr-dev-kit/ndk';
+import { onDestroy, onMount } from 'svelte';
+
+export function setLayout(layoutOpts: Layout) {
+	const currentLayout = get(layout);
+
+	onMount(() => {
+		layout.set(layoutOpts);
+	});
+
+	onDestroy(() => {
+		layout.set(currentLayout);
+	});
+}
 
 export interface Component {
 	component: ConstructorOfATypedSvelteComponent;
@@ -13,8 +26,6 @@ export const modals = writable<Component[]>([]);
 export const searching: Writable<boolean> = writable(false);
 
 export const modalState: Writable<"open" | "closing" | "closed"> = writable("closed");
-
-export const footerMainView = writable<string | undefined | false>(undefined);
 
 export type Layout = {
 	/**
@@ -32,6 +43,8 @@ export type Layout = {
 	forceShowNavigation?: boolean;
 	sidebar?: Component | false;
 	footer?: Component;
+
+	navSidebar?: boolean;
 
 	footerInMain?: boolean;
 

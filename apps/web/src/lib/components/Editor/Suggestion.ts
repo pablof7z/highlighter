@@ -7,8 +7,6 @@ import { ndk } from '$stores/ndk';
 import { userFollows } from '$stores/session';
 import { searchUser } from '$utils/search/user';
 
-const dummyData = ['test', 'mention', 'hashtag'];
-
 export default function () {
   return {
     items: async ({ query }) => {
@@ -16,13 +14,7 @@ export default function () {
         const $userFollows = get(userFollows);
         const result = await searchUser(query, $ndk, $userFollows);
 
-        console.log('result', result);
-
         return result.slice(0, 5)
-        
-    //   return dummyData
-    //     .filter((item) => item.toLowerCase().startsWith(query.toLowerCase()))
-    //     .slice(0, 5);
     },
     render: () => {
       let wrapper;
@@ -35,6 +27,7 @@ export default function () {
           const { editor } = props;
 
           wrapper = document.createElement('div');
+          wrapper.classList.add('suggestion-wrapper');
           editor.view.dom.parentNode?.appendChild(wrapper);
 
           component = new List({
@@ -42,7 +35,7 @@ export default function () {
             props: {
               items: props.items,
               callback: (item) => {
-                props.command({ id: item.pubkey + "a", label: "nostr:"+item.npub });
+                props.command({ id: item.pubkey, label: "nostr:"+item.npub });
               },
             },
           });

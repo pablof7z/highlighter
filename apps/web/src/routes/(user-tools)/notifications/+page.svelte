@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { NDKNutzap } from '@nostr-dev-kit/ndk';
-	import { deriveStore } from '$utils/events/derive';
 	import { derived, Readable } from 'svelte/store';
 	import { NavigationOption } from './../../../app.d.js';
 	import { NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
@@ -48,6 +46,7 @@
     optionManager.setOption('zaps', { name: "Zaps", badge: roundedItemCount($zaps!), fn: () => selectedStore = zaps }, true);
 </script>
 
+{$notifications.length}
 {#if notifications && $notifications}
 {#key selectedStore}
     <StoreFeed

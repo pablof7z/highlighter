@@ -30,7 +30,7 @@
 
 <DropdownMenu.Root>
     <DropdownMenu.Trigger>
-            <Image size={18} />
+        <Image size={18} />
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
         <DropdownMenu.Group>

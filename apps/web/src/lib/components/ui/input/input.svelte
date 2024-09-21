@@ -2,6 +2,7 @@
 	import type { HTMLInputAttributes } from "svelte/elements";
 	import type { InputEvents } from "./index.js";
 	import { cn } from "$lib/utils.js";
+	import { createEventDispatcher } from "svelte";
 
 	type $$Props = HTMLInputAttributes;
 	type $$Events = InputEvents;
@@ -13,6 +14,15 @@
 	// Workaround for https://github.com/sveltejs/svelte/issues/9305
 	// Fixed in Svelte 5, but not backported to 4.x.
 	export let readonly: $$Props["readonly"] = undefined;
+
+	const dispatch = createEventDispatcher();
+	
+	function keydown(event: KeyboardEvent) {
+		if (event.key === "Enter") {
+			event.preventDefault();
+			dispatch("submit");
+		}
+	}
 </script>
 
 <input
@@ -28,7 +38,7 @@
 	on:focus
 	on:focusin
 	on:focusout
-	on:keydown
+	on:keydown={keydown}
 	on:keypress
 	on:keyup
 	on:mouseover

@@ -44,11 +44,9 @@
     const state = writable(createInitialState(type));
 
     $: if (draftId) {
-        console.log('creating state from draftId', draftId, checkpointId);
         const newState = createStateFromDraftId(draftId, checkpointId) as State<Type>;
         if (newState) {
             newState.draftId = draftId;
-            console.log('setting state', newState?.article?.content);
             state.set(newState);
             forceReloadAt = Date.now();
         }
@@ -56,8 +54,6 @@
 
     let forceReloadAt = 0;
 
-    $: console.log('state', $state?.article?.content);
-    
     let ready = true;
 
     if (eventId) {

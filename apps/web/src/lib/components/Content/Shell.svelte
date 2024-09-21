@@ -17,48 +17,20 @@
     import * as Highlight from "$components/Content/Highlight";
     import * as Wiki from "$components/Content/Wiki";
     import * as Curation from "$components/Content/Curation";
+    import * as Feed from "$components/Feed";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { setContext } from "svelte";
 	import { ndk } from "$stores/ndk";
 	import { derived } from "svelte/store";
 	import { deriveStore } from "$utils/events/derive";
 	import { WrappedEvent } from "../../../app";
+	import { Button } from "$components/ui/button";
+	import { getEventUrl } from "$utils/url";
+	import { ArrowLeft } from "phosphor-svelte";
 
     export let isPreview = false;
-
     export let wrappedEvent: WrappedEvent;
-    let chapters: NDKArticle[];
-
-    // if (wrappedEvent.kind === 30040) {
-    //     try {
-    //         const stupidJsonBody = JSON.parse(wrappedEvent.content)
-    //         if (stupidJsonBody.title)
-    //             (wrappedEvent as NDKArticle).title = stupidJsonBody.title;
-    //     } catch {}
-
-    //     const eventIds = wrappedEvent.getMatchingTags("e")
-    //     console.log({eventIds})
-        
-    //     const relaySet = new NDKRelaySet(new Set([wrappedEvent.relay!]), $ndk);
-    //     console.log({eventIds, relaySet})
-    //     $ndk.fetchEvents(eventIds, undefined, relaySet)
-    //         .then(events => {
-    //             for (const e of eventIds) {
-    //                 for (const event of events) {
-    //                     if (event.id === e[1]) {
-    //                         chapters.push(NDKArticle.from(event));
-    //                     }
-    //                 }
-    //             }
-
-    //             $layout.sidebar = {
-    //                 component: Book.Sidebar,
-    //                 props: {
-    //                     chapters
-    //                 }
-    //             }
-    //         });
-    // }
+    export let itemView = false;
 
     let userProfile: NDKUserProfile;
     let authorUrl: string;
@@ -110,6 +82,8 @@
     setContext('replies', replies);
     setContext('shares', shares);
     setContext('zaps', zaps);
+    
+    console.log('wrappedEvent', wrappedEvent?.rawEvent());
 </script>
 
 <UserProfile user={wrappedEvent.author} bind:userProfile bind:authorUrl />
@@ -127,12 +101,20 @@
     </div>  
 {:else if wrappedEvent instanceof NDKArticle}
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
-        <Article.Header
-            article={wrappedEvent}
-            {isPreview}
-            {userProfile}
-            {authorUrl}
-        />
+        {#if itemView}
+            <Article.Header
+                article={wrappedEvent}
+                {isPreview}
+                {userProfile}
+                {authorUrl}
+            />
+        {:else}
+            <div class="flex flex-col py-6 items-start">
+                <Button size="sm" variant="secondary" href={getEventUrl(wrappedEvent, authorUrl)} class="w-fit text-xs">
+                    <ArrowLeft size={24} class="mr-2" /> Back to article
+                </Button>
+            </div>
+        {/if}
 
         <slot />
     </div>

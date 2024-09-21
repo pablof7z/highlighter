@@ -67,11 +67,11 @@
 
         showToolbar = navigation.length > 0;
 
-        if (pinToolbar && showToolbar) {
-            $layout.navigation = navigation;
-        } else {
-            $layout.navigation = false;
-        }
+        // if (pinToolbar && showToolbar) {
+        //     $layout.navigation = navigation;
+        // } else {
+        //     $layout.navigation = false;
+        // }
     }
 
     function inviewChange(e: CustomEvent<{ inview: boolean }>) {

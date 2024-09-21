@@ -10,9 +10,11 @@
     let event: NDKEvent;
     let article: NDKArticle;
     let video: NDKVideo;
+    let itemView: boolean;
 
     $: user = $page.data.user;
     $: tagId = $page.params.tagId;
+    $: itemView = !$page.params.view;
 
     let authorUrl: string;
 
@@ -22,7 +24,7 @@
 {#key tagId}
     <Content.Root {user} dTag={tagId} let:wrappedEvent>
         {#if wrappedEvent}
-            <Content.Shell {wrappedEvent}>
+            <Content.Shell {itemView} {wrappedEvent}>
                 <slot />
             </Content.Shell>
         {/if}

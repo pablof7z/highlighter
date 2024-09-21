@@ -5,4 +5,4 @@
     const editorElement = getContext('editorElement') as Writable<HTMLDivElement | null>;
 </script>
 
-<div class="h-full w-full min-h-[10rem] flex items-stretch {$$props.class??""}" bind:this={$editorElement} />
+<div class="h-full w-full min-h-[10rem] flex items-stretch break-words overflow-x-auto {$$props.class??""}" bind:this={$editorElement} />

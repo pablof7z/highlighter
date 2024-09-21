@@ -9,15 +9,14 @@
 	import { layout } from '$stores/layout';
 	import { userFollows } from '$stores/session';
 	import currentUser from '$stores/currentUser';
-	import Npub from '$components/User/Npub.svelte';
 	import { inview } from 'svelte-inview';
-	import BackButton from '$components/App/Navigation/BackButton.svelte';
 	import FollowButton from "$components/buttons/FollowButton.svelte";
 	import { Button } from "$components/ui/button";
-	import { openModal } from "$utils/modal";
 	import { throttle } from "@sveu/shared";
-	import CreatorProfileModal from "$modals/CreatorProfileModal";
     import * as App from "$components/App";
+	import { Nip05 } from "@nostr-dev-kit/ndk-svelte-components";
+	import { ndk } from "$stores/ndk";
+	import { CheckCircle } from "phosphor-svelte";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | null | undefined = undefined;
@@ -48,6 +47,7 @@
     }
 
     onMount(() => {
+        $layout.header = false;
         headerCache = $layout.header;
         $layout.navigation = false;
     })
@@ -60,9 +60,6 @@
 >
     <!-- Banner -->
     <div class="max-sm:h-[calc(var(--safe-area-inset-top)+6rem)] w-full h-32 relative z-0">
-            <div class="z-10 left-2 top-[var(--safe-area-inset-top)] absolute">
-                <BackButton href="/" />
-            </div>
         {#if userProfile?.banner}
             <img src={userProfile?.banner} class="absolute w-full h-full object-cover object-top z-1 transition-all duration-300" alt={userProfile?.name}>
         {/if}
@@ -76,7 +73,17 @@
 
             <div class="flex flex-col gap-0" use:inview on:inview_change={inviewchange}>
                 <Name {user} {userProfile} {fetching} class="text-foreground font-bold whitespace-nowrap mb-0 transition-all duration-300 text-xl max-h" />
-                <Npub {user} />
+                <div class="text-muted-foreground text-sm">
+                    <Nip05 ndk={$ndk} {user} {userProfile}>
+                        <svelte:fragment slot="badge" let:nip05Valid>
+                            {#if nip05Valid}
+                                <CheckCircle class="text-accent inline" weight="fill" size={16} />
+                            {:else}
+                                {nip05Valid}
+                            {/if}
+                        </svelte:fragment>
+                    </Nip05>
+                </div>
             </div>
         </div>
 
@@ -87,7 +94,7 @@
                     <FollowButton {user} />
                 {/if}
             {:else}
-                <Button variant="accent" on:click={() => openModal(CreatorProfileModal)}>
+                <Button variant="accent" href="/publication/new">
                     Setup creator profile
                 </Button>
             {/if}

@@ -16,6 +16,9 @@
     import { Keyboard } from '@capacitor/keyboard';
 	import { isMobileBuild } from '$utils/view/mobile';
 	import { onMount } from "svelte";
+	import DesktopColumnNavigation from "./DesktopColumnNavigation.svelte";
+	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
+	import { ScrollArea } from "$components/ui/scroll-area";
 
     onNavigate(() => {
 		mainContainer.scrollTop = 0;
@@ -23,7 +26,7 @@
 
     let withSidebar: boolean;
 
-    $: withSidebar = $layout?.sidebar !== false;
+    $: withSidebar = false //$layout?.sidebar !== false;
 
     let startTouchY: number | undefined = undefined;
     let initialPosY = $appMobileView ? 5 : 0;
@@ -32,7 +35,7 @@
     let containerSaturation = 0;
 
     let appWrapper: HTMLDivElement;
-    let mainContainer: HTMLDivElement;
+    let mainContainer: HTMLElement;
     let historyContainer: HTMLDivElement;
     let headerContainer: HTMLElement;
 
@@ -242,18 +245,18 @@
             if (isMobileBuild()) try { Keyboard.hide(); } catch {}
         }
 
-        if (headerContainer) {
-            let opacity = 1;
-            if (!forceHeaderOpacity && $layout.event && $layout.headerCanBeTransparent !== false) {
-                if (scrollDir === "down") {
-                    if ($scrollPercentage > 10) {
-                        opacity = 1 - ($scrollPercentage - 10) / 10;
-                    }
-                    if (opacity < 0.25) opacity = 0.25;
-                }
-            }
-            headerContainer.style.opacity = opacity.toString();
-        }
+        // if (headerContainer) {
+        //     let opacity = 1;
+        //     if (!forceHeaderOpacity && $layout.event && $layout.headerCanBeTransparent !== false) {
+        //         if (scrollDir === "down") {
+        //             if ($scrollPercentage > 10) {
+        //                 opacity = 1 - ($scrollPercentage - 10) / 10;
+        //             }
+        //             if (opacity < 0.25) opacity = 0.25;
+        //         }
+        //     }
+        //     headerContainer.style.opacity = opacity.toString();
+        // }
 
         prevY = currentY;
     }
@@ -291,6 +294,12 @@
         bottomPadding = document.documentElement.style.getPropertyValue('--footer-height');
     }, 1000)
 
+    let hasNavSidebar: boolean;
+
+    $: hasNavSidebar = $layout.navSidebar !== false;
+    
+    let collapseNavOptions = false;
+    let mainLeftPadding = 0;
 </script>
 
 <!-- <div class="fixed top-52 left-2 bg-red-500 p-4 z-[9999999]">
@@ -303,151 +312,65 @@
             <PromptForNotifications on:done={() => showPromptForNotificiations = false} />
         {:else} -->
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="
-    w-full bg-muted-foreground
-    max-sm:h-screen
-    max-lg:h-[90vw] z-50
-    transition-all duration-300
-    {withSidebar ? "md:pl-[360px]" : ""}
-" style={`
-`} on:click={resetView} data-vaul-drawer-wrapper>
-    {#if withSidebar}
-        <div
-            class="hidden border-r md:block fixed left-0 h-screen w-[360px] bg-background"
-        >
-            <div class="flex h-full max-h-screen flex-col">
-                <div class="flex h-14 items-center border-b px-4 lg:h-[60px]">
-                    <DefaultHeader />
-                </div>
-                <div class="flex-1 overflow-x-auto scrollbar-hide">
-                    {#if $layout?.sidebar}
-                        <svelte:component this={$layout.sidebar.component} {...$layout.sidebar.props} />
-                    {/if}
-                </div>
-            </div>
+<div data-vaul-drawer-wrapper>
+    {#if hasNavSidebar}
+        <div class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-[var(--app-shell-left-nav-width)] lg:overflow-y-auto border-r border-border lg:pb-4" transition:fly>
+            <DesktopColumnNavigation />
         </div>
     {/if}
 
-    <div
-        bind:this={appWrapper}
-        style="transform: translateY({initialPosY}px)"
-        class="
-            flex flex-col z-1
-            translate-y-0
-        "
-    >
-        <div
-            class="w-full items-center flex flex-col-reverse -translate-y-full fixed top-0"
-            bind:this={historyContainer}
-            on:click={resetView}
-        >
-            {#each $history as history, i}
-                <button
-                    class="bg-background/50 w-full flex flex-row items-center rounded-t-2xl text-center text-lg"
-                    class:justify-center={!history.category}
-                    style={`max-width: ${100 - (i+1) * 10}%; opacity: ${1 - (i+1) * 0.2}`}
-                    on:click={() => gotoAndReset(history.url)}
-                >
-                    <div class="p-4 truncate">
-                        {#if history.category}
-                            <span class="text-muted-foreground mr-2">{history.category}</span>
-                        {/if}
-                        {history.title}
-                    </div>
-                    
-                </button>
-            {/each}
-
-            <div class="flex flex-col items-center gap-2 py-10 text-background"
-                style={`opacity: ${0.1+degreeOfGoingBackHome * 2}; transform: scale(${0.5 + degreeOfGoingBackHome})`}
-            >
-                <House size={48} weight="fill" />
-
-                <div class="text-lg">
-                    Swipe down for Home
+    <div class="{hasNavSidebar ? 'lg:pl-[var(--app-shell-left-nav-width)]' : ''}">
+        <div class="sticky top-0 max-sm:top-0-safe z-40 flex flex-col mobile-nav">
+            {#if $layout.title && $layout.header !== false}
+                <div class=" flex h-16 shrink-0 items-center gap-x-4 border-b shadow-sm sm:gap-x-6">
+                    <LayoutHeader bind:collapseNavOptions scrollPercentage={$scrollPercentage} {scrollDir} />
                 </div>
-
-                <ArrowDown size={24} />
-            </div>
-        </div>
-    
-        <!-- Main content -->
-        <div
-            bind:this={mainContainer}
-            class="
-                max-sm:rounded-t-3xl
-                flex flex-col bg-background z-50 overflow-y-auto scrollbar-hide
-                pb-[calc(var(--bottom-padding)+var(--footer-height))]
-            " style="height: calc(100vh - {posY}px)"
-            on:scroll={mainScroll}
-        >
-            {#if headerBarCount > 0}
-                <!-- Header 1 -->
-                <header transition:fly class="
-                    mobile-nav max-sm:rounded-t-3xl overflow-y-clip
-                    flex items-center fixed top-0 w-full
-                    border-b border-border
-                    z-50
-                    flex-col
-                " bind:this={headerContainer}
-                    on:click={setForceHeaderOpacity}
-                >
-                    <div class="w-full">
-                        <div
-                            class="
-                                w-full responsive-padding flex flex-row items-center
-                                pt-[calc(var(--safe-area-inset-top))] 
-                            "
-                            on:touchstart|passive={headerTouchstart}
-                            on:touchmove|passive={headerTouchmove}
-                            on:touchend|passive={headerTouchend}
-                        >
-                            {#if $layout.header || $layout.title}
-                                <LayoutHeader scrollPercentage={$scrollPercentage} {scrollDir} containerClass={$layout.sidebar === false ? mainClass : ""} />
-                            {:else if $appMobileView}
-                                <DefaultHeader />
-                            {:else if $layout.navigation !== false}
-                                <!-- If we are not showing a header, show the navigation bar -->
-                                <LayoutHeaderNavigation {scrollDir} class={mainClass} />
-                            {/if}
-                        </div>
-                    </div>
-                    <!-- Optional Navigation Bar (when there is a header) -->
-                    {#if $layout.navigation !== false && ($layout.header || $layout.title || $appMobileView)}
-                        <div class="w-full">
-                            <LayoutHeaderNavigation {scrollDir} class={mainClass} />
-                        </div>
-                    {/if}
-                </header>
-                <div transition:slide class="flex-none pt-[var(--safe-area-inset-top)] h-[var(--header-height)]" />
             {/if}
 
-            <main class="
-                flex flex-1 flex-col lg:gap-6
-                overflow-x-clip
-                pb-[var(--footer-height)]
+            {#if $layout.navigation}
+                <div class="flex h-auto shrink-0 items-center gap-x-4 border-b shadow-sm sm:gap-x-6">
+                    <ScrollArea class="py-1 lg:py-1.5 lg:px-4 whitespace-nowrap {$$props.class??""}" orientation="horizontal">
+                        <HorizontalOptionsList
+                            options={$layout.navigation}
+                            bind:activeOption={$layout.activeOption}
+                            on:changed={() => {
+                                $layout.forceShowNavigation = false;
+                            }}
+                        />
+                    </ScrollArea>
+                </div>
+            {/if}
+        </div>
+
+        <main
+            bind:this={mainContainer}
+        >
+            <div class="
                 {mainClass}
             ">
                 <slot />
-                <div class="mt-8-safe" style={`height: ${footerHeight}px`} />
-                {#if $appMobileView || $layout.footerInMain}
-                    {#if $layout.footer}
-                        <footer
-                            class="mobile-nav fixed bottom-0 left-0 border-t border-border right-0 max-sm:bottom-0-safe w-full z-20
-                            transition-all duration-300
-                            "
-                        >
-                            <svelte:component this={$layout.footer.component} {...$layout.footer.props} />
-                        </footer>
-                    {/if}
+            </div>
+
+            <div class="h-24 w-full"></div>
+
+            <footer
+                class="fixed bottom-0 max-sm:bottom-0-safe left-0 lg:pl-[var(--app-shell-left-nav-width)] right-0 z-20 w-full border-t border-border mobile-nav"
+                bind:this={footerContainer}
+            >
+                {#if $layout.footer}
+                    <svelte:component this={$layout.footer.component} {...$layout.footer.props} />
                 {/if}
-            </main>
-        </div>
+            </footer>
+            
+        </main>
     </div>
 </div>
+        
+
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+
 
 <Modal />
 

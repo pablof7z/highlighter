@@ -82,7 +82,7 @@
         <Button class="flex flex-row gap-2" {variant}>
             {#if $state.scope === 'public'}
                 <UsersThree class="" size={20} />
-                Public
+                Everyone
                 {#if $imagesOfGroupsToPublish.length > 0}
                     <span class="hidden md:block">
                         +
@@ -91,7 +91,7 @@
             {:else}
                 <span>
                     <Star class="w-4 h-4 text-gold md:mr-1 inline" size={20} weight="fill" />
-                    Private
+                    Subscribers
                 </span>
             {/if}
         
@@ -112,7 +112,7 @@
             <DropdownMenu.Label>Visibility</DropdownMenu.Label>
             <DropdownMenu.RadioGroup value={$state.scope} on:change={console.log}>
                 <DropdownMenu.RadioItem value='public' on:click={e => { $state.scope = 'public'; e.stopPropagation() }} class="flex flex-col items-start text-left">
-                    Public
+                    Everyone
                     <div class="text-xs text-muted-foreground">
                         Everyone can see this post.
                     </div>
@@ -120,11 +120,11 @@
                 <DropdownMenu.RadioItem value='private' on:click={e => {$state.scope = 'private'; e.stopPropagation()}} class="flex flex-col items-start text-left">
                     <div>
                         <Star class="w-4 h-4 text-gold mr-1 inline" size={20} weight="fill" />
-                        Private
+                        Subscribers
                     </div>
 
                     <div class="text-xs text-muted-foreground">
-                        Only community members will see this post.
+                        Only subscribers will see this post.
                     </div>
                 </DropdownMenu.RadioItem>
             </DropdownMenu.RadioGroup>

@@ -2,7 +2,11 @@
 	import { Check, Lightning } from 'phosphor-svelte';
 	import { Button } from "$components/ui/button";
 	import { countWords } from '$utils/article';
+	import ButtonWithCount from '$components/buttons/ButtonWithCount.svelte';
+	import SmallZapButton from '$components/buttons/SmallZapButton.svelte';
+	import { NDKEvent } from '@nostr-dev-kit/ndk';
 
+    export let event: NDKEvent;
     export let zapped = false;
     let _zapped = zapped;
 
@@ -13,17 +17,11 @@
     }
 </script>
 
-<Button
-    variant={zapped ? undefined : "transparent"}
-    class="
-        flex-none w-10 h-10 p-2
-        {zapped ? 'bg-green-500' : ''}
-    "
-    on:click
+<SmallZapButton {event} />
+
+<ButtonWithCount
+    count={"1.1k"}
+    class="gap-3"
 >
-    {#if !zapped}
-        <Lightning class="w-full h-full text-gold" weight="fill" />
-    {:else}
-        <Check class="w-full h-full" weight="bold" />
-    {/if}
-</Button>
+    <Lightning class="w-4 h-4 text-gold" weight="fill" />
+</ButtonWithCount>

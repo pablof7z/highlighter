@@ -1,6 +1,6 @@
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import { derived, get, writable, type Readable } from 'svelte/store';
-import type { NDKEvent, NDKFilter, NDKUser } from '@nostr-dev-kit/ndk';
+import { NDKEvent, NDKFilter, NDKRelaySet, NDKUser } from '@nostr-dev-kit/ndk';
 import NDKSvelte, { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 import NDK, { NDKKind } from '@nostr-dev-kit/ndk';
 import currentUser, { isGuest } from './currentUser';
@@ -100,7 +100,8 @@ export function notificationsSubscribe(ndk: NDKSvelte, currentUser: NDKUser) {
 	notifications = ndk.storeSubscribe(filters, {
 		subId: 'notifications',
 		onEvent: processEvent,
-		onEose: () => { eosed = true }
+		onEose: () => { eosed = true },
+		groupable: false,
 	});
 
 	const filteredNotifications = derived(notifications, $notifications => {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import StoreFeed from "$components/Feed/StoreFeed.svelte";
-import { ndk } from "$stores/ndk";
+    import { ndk } from "$stores/ndk";
 	import { NDKEvent, NDKHighlight, NDKKind } from "@nostr-dev-kit/ndk";
 	import { getContext, onDestroy } from "svelte";
 
@@ -13,6 +13,10 @@ import { ndk } from "$stores/ndk";
         highlights.unsubscribe();
     })
 </script>
+
+<div class="flex flex-row justify-between items-center border-y border-border px-2 py-4 w-full">
+    <h2 class="grow mb-0">Highlights</h2>
+</div>
 
 <StoreFeed
     feed={highlights}

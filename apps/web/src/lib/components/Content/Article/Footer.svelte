@@ -1,9 +1,10 @@
 <script lang="ts">
+	import Highlight from './../../Highlight.svelte';
 	import * as Footer from "$components/Footer";
 	import { Button } from "$components/ui/button";
     import { NDKArticle } from "@nostr-dev-kit/ndk";
 	import { BookmarkSimple, CardsThree, Check, Lightning, Pen, Plus, Repeat } from "phosphor-svelte";
-    import Zap from '$components/Footer/Views/Zap';
+    import Zap from "$components/Footer/Buttons/Zap.svelte";
     import Curate from '$components/Footer/Views/Curate';
 	import { goto } from '$app/navigation';
 	import currentUser from '$stores/currentUser';
@@ -12,9 +13,13 @@
 	import HighlightTool from '$components/Footer/Views/HighlightTool';
 	import { FooterView } from '$components/Footer';
 	import HighlightViewer from '$components/Footer/Views/HighlightViewer';
-	import Share from '$components/Footer/Views/Share';
 	import ZapPrompt from '$components/Footer/Views/ZapPrompt';
 	import Comment from '$components/Footer/Views/Comment';
+	import Bookmark from "$components/Footer/Buttons/Bookmark.svelte";
+	import Comments from "$components/Footer/Buttons/Comments.svelte";
+	import Highlights from "$components/Footer/Buttons/Highlights.svelte";
+	import Share from "$components/Footer/Buttons/Share.svelte";
+	import { activeSelection } from '$stores/highlight-tool';
 
     export let article: NDKArticle;
     export let placeholder = "Reply";
@@ -27,11 +32,10 @@
 
     function edit() {
         goto(`/studio/article?eventId=${article.encode()}`)
-        open(false)
     }
 
     const defaultViews: FooterView[] = [
-        {...Zap, buttonProps: { zapped }, props: { event: article, onZapped }},
+        {...Curate, buttonProps: { zapped }, props: { event: article, onZapped }},
         {...HighlightTool, props: { event: article }},
         {...HighlightViewer, props: { article }},
         {...Curate, props: { article }},
@@ -44,33 +48,21 @@
         defaultViews.push({...ZapPrompt, buttonProps: { zapped }, props: { article }});
     }
 
-    let open: Footer.OpenFn;
     let views: FooterView[] | undefined = defaultViews;
 </script>
 
 <Footer.Shell
-    bind:open
-    {views}
 >
-    <div class="absolute top-0 left-0 h-1 right-0">
+    <!-- <div class="absolute top-0 left-0 h-1 right-0">
         <Progress value={$scrollPercentage} class="rounded-sm h-1" barClass="dark:bg-gold light:bg-foreground" />
-    </div>
-
-    <div slot="main">
-        <div class="grid grid-cols-3 lg:grid-cols-5 gap-2">
-
-            <Share.LargeButton {open} event={article} />
-            <Zap.LargeButton {open} />
-            <Curate.LargeButton {open} />
-
-            {#if $currentUser?.pubkey === article.pubkey}
-                <Button variant="outline" class="footer-button flex flex-col items-center gap-2 h-auto text-lg text-foreground bg-opacity-50 p-4"
-                    on:click={edit}
-                >
-                    <Pen size={40} />
-                    Edit
-                </Button>
-            {/if}
-        </div>
-    </div>
+    </div> -->
+    {#if $activeSelection}
+        <HighlightTool.Toolbar event={article} />
+    {:else}
+        <div class="flex flex-row justify-center w-1/5"><Zap event={article} /></div>
+        <div class="flex flex-row justify-center w-1/5"><Comments event={article} /></div>
+        <div class="flex flex-row justify-center w-1/5"><Highlights event={article} /></div>
+        <div class="flex flex-row justify-center w-1/5"><Share event={article} /></div>
+        <div class="flex flex-row justify-center w-1/5"><Bookmark event={article} /></div>
+    {/if}
 </Footer.Shell>

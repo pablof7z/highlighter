@@ -6,7 +6,7 @@
 	import { attach } from "@frsource/autoresize-textarea";
 
 	type $$Props = HTMLTextareaAttributes;
-	type $$Events = TextareaEvents;
+	type $$Events = TextareaEvents 
 
 	let className: $$Props["class"] = undefined;
 	export let value: $$Props["value"] = undefined;
@@ -15,6 +15,7 @@
 	// Workaround for https://github.com/sveltejs/svelte/issues/9305
 	// Fixed in Svelte 5, but not backported to 4.x.
 	export let readonly: $$Props["readonly"] = undefined;
+	export let element: HTMLTextAreaElement | undefined = undefined;
 
 	const dispatch = createEventDispatcher();
 	
@@ -24,14 +25,14 @@
 		} else {
 			dispatch("keydown", event);
 		}
+
 	}
 
-	let el: HTMLTextAreaElement;
 	let detach: () => void;
 
 	onMount(() => {
-		if (el) {
-			detach = attach(el).detach;
+		if (element) {
+			detach = attach(element).detach;
 		}
 	})
 
@@ -41,7 +42,7 @@
 </script>
 
 <textarea
-	bind:this={el}
+	bind:this={element}
 	class={cn(
 		"flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
 		className

@@ -20,6 +20,7 @@ export type InputEvents = {
 	paste: FormInputEvent<ClipboardEvent>;
 	input: FormInputEvent<InputEvent>;
 	wheel: FormInputEvent<WheelEvent>;
+	submit: FormInputEvent<Event>;
 };
 
 export {

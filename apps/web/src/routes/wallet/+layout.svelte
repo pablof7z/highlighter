@@ -5,12 +5,6 @@
         title: "Wallet",
         sidebar: false,
         fullWidth: false,
-
-        navigation: [
-            { name: "Overview", href: "/wallet" },
-            { name: "Tokens", href: "/wallet/tokens" },
-            { name: "History", href: "/wallet/history" },
-        ],
     }
 </script>
 

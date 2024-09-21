@@ -7,6 +7,7 @@ import { Thread } from "$utils/thread";
 import * as Editor from "./Editor/";
 import * as Preview from "./Preview/";
 import * as Drafts from "./Drafts/";
+import * as ContentList from "./ContentList/";
 
 export * from './serializer.js';
 
@@ -16,7 +17,7 @@ export enum Type {
     Thread = "thread"
 }
 
-export type Mode = "view" | "edit" | "audience" | "manage-preview" | "preview" | "publish";
+export type Mode = "view" | "edit" | "audience" | "manage-preview" | "preview" | "publish" | "publishing";
 
 export type PreviewableTypes = Type.Article | Type.Video;
 
@@ -83,7 +84,8 @@ export {
 
     Editor,
     Preview,
-    Drafts
+    Drafts,
+    ContentList
 }
 
 /**

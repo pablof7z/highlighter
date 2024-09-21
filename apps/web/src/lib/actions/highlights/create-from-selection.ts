@@ -14,7 +14,7 @@ const DEFAULT_ALT = "This is a highlight"
  */
 export default async function createHighlightFromSelection(
     selection: Selection,
-    event: NDKEvent | NDKArticle | NDKVideo,
+    event: NDKEvent | NDKArticle | NDKVideo | undefined,
     tags: NDKTag[] = []
 ) {
     const $ndk = get(ndk);
@@ -31,10 +31,15 @@ export default async function createHighlightFromSelection(
     
     highlight.kind = NDKKind.Highlight;
     highlight.content = getTextFromSelection(selection);
-    highlight.tags = [
-        ...event.referenceTags(),
-        ...tags
-    ]
+
+    if (event instanceof NDKEvent) {
+        highlight.tags = event.referenceTags();
+    } else if (typeof event?.url === 'string') {
+        highlight.tags = [ [ "r", event.url ] ];
+    } else {
+        highlight.tags = [];
+    }
+    highlight.tags = [ ...highlight.tags, ...tags ];
 
     if (!highlight.alt) {
         let alt: string = "This is a highlight";
@@ -43,9 +48,13 @@ export default async function createHighlightFromSelection(
             alt += " of '" + (event as NDKArticle).title + "'.";
         }
 
-        alt += `\n\nhttps://highlighter.com/a/${event.encode()}`;
+        if (event instanceof NDKEvent) {
+            alt += `\n\nhttps://highlighter.com/a/${event.encode()}`;
+        }
         highlight.alt = alt;
     }
+
+    debugger
 
     if (context) highlight.tags.push([ "context", context ]);
 

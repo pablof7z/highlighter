@@ -16,6 +16,7 @@
     export let target: NDKEvent | NDKUser;
     export let forceZap: boolean = false;
     export let skipButton: boolean = false;
+    export let skipSplits: boolean = false;
 
     const dispatch = createEventDispatcher();
 
@@ -122,25 +123,26 @@
         </div>
     {:else}
         <div class="flex flex-col gap-8 m-2">
-            <div class="flex flex-col gap-4">
-                <div
-                    class="text-base-300-content text-sm font-semibold tracking-widest"
-                    class:hidden={zapSplits.length === 1}
-                >SPLITS</div>
-                {#if zapSplits}
-                    {#each zapSplits as zapSplit}
-                        <ZapUserSplit
-                            pubkey={zapSplit[0]}
-                            bind:split={zapSplit[1]}
-                            bind:satSplit={zapSplit[2]}
-                            {totalSplitValue}
-                            totalSatsAvailable={amount}
-                            hideRange={zapSplits.length === 1}
-                        />
-                    {/each}
-                {/if}
-                <!-- TODO add other people involved in the highlight? -->
-            </div>
+            {#if !skipSplits}
+                <div class="flex flex-col gap-4">
+                    <div
+                        class="text-base-300-content text-sm font-semibold tracking-widest"
+                        class:hidden={zapSplits.length === 1}
+                    >SPLITS</div>
+                    {#if zapSplits}
+                        {#each zapSplits as zapSplit}
+                            <ZapUserSplit
+                                pubkey={zapSplit[0]}
+                                bind:split={zapSplit[1]}
+                                bind:satSplit={zapSplit[2]}
+                                {totalSplitValue}
+                                totalSatsAvailable={amount}
+                                hideRange={zapSplits.length === 1}
+                            />
+                        {/each}
+                    {/if}
+                </div>
+            {/if}
 
             {#if prs.length > 0}
                 <div class="flex flex-row gap-2 flex-nowrap overflow-x-auto no-scrollbar">

@@ -1,15 +1,25 @@
 <script lang="ts">
     import { ndk } from "$stores/ndk.js";
-    import { NDKKind, NDKList, NDKRelaySet } from "@nostr-dev-kit/ndk";
+    import { NDKKind, NDKList, NDKRelaySet, NDKSubscriptionCacheUsage } from "@nostr-dev-kit/ndk";
 	import { onDestroy } from "svelte";
 	import { filterLists } from "$utils/curation-filter";
 	import { CaretRight } from "phosphor-svelte";
 	import { Badge } from "$components/ui/badge";
 	import { pluralize } from "$utils";
+	import { userFollows } from "$stores/session";
+	import { derived } from "svelte/store";
+	import AvatarWithName from "$components/User/AvatarWithName.svelte";
 
     onDestroy(() => {
         curations.unsubscribe();
     })
+
+    // const followsWithArticles = $ndk.storeSubscribe({
+    //     kinds: [NDKKind.Article], authors: Array.from($userFollows), limit: 10
+    // }, { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY })
+    // const followedAuthors = derived(followsWithArticles, $followsWithArticles =>
+    //     Array.from(new Set($followsWithArticles.map(article => article.pubkey)))
+    // )
 
     const fourWeeksAgo = Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 28;
 
@@ -50,4 +60,15 @@
             </div>
         {/each}
     </div>
+
+    <!-- <div class="flex flex-col">
+        <h1>Authors</h1>
+
+        {#each $followedAuthors as pubkey}
+            <div class="flex flex-row items-center gap-2">
+                <AvatarWithName {pubkey} />
+            </div>
+        {/each}
+    </div> -->
+    
 </div>

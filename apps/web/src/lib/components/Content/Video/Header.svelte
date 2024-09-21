@@ -8,7 +8,6 @@
 	import { page } from '$app/stores';
 	import { addHistory } from '$stores/history';
 	import { layout } from '$stores/layout';
-	import { title } from 'process';
 	import { onMount } from 'svelte';
 	import { Footer } from '../Article';
 	import { getEventUrl } from '$utils/url';

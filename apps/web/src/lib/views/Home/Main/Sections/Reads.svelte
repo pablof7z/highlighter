@@ -5,6 +5,14 @@
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import * as Feed from "$components/Feed";
 	import { CaretRight, MagnifyingGlass } from "phosphor-svelte";
+	import { userFollows } from "$stores/session";
+
+    const oneWeekAgo = Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 7;
+
+    const recentArticlesFromFollows = $ndk.storeSubscribe([
+        { kinds: [NDKKind.Article], authors: Array.from($userFollows), since: oneWeekAgo },
+        { kinds: [NDKKind.GenericRepost], "#k": [NDKKind.Article.toString()], authors: Array.from($userFollows), since: oneWeekAgo },
+    ], { closeOnEose: true }, NDKArticle);
 
     const articleComments = $ndk.storeSubscribe([
         // { kinds: [NDKKind.Text, NDKKind.Zap, NDKKind.Nutzap, NDKKind.GenericRepost ], "#k": ["30023"], limit: 50 },
@@ -42,11 +50,13 @@
     }
 </script>
 
+<div class="flex flex-col w-full max-w-[var(--content-focused-width)]">
+    <Feed.Articles
+        store={filterArticles(recentArticlesFromFollows)}
+    />
+</div>
 {#if articles}
     <div class="flex flex-col w-full max-w-[var(--content-focused-width)]">
-        
-    </div>
-        <div class="flex flex-col w-full max-w-[var(--content-focused-width)]">
         <!-- <a href="/reads" class="
             flex flex-row justify-between max-sm:w-full py-2 responsive-padding z-10
         ">
@@ -58,7 +68,7 @@
         </a>
  -->
         <Feed.Articles
-            store={filterArticles(articles)}
+            store={articles}
         />
         <a href="/reads" class="bg-secondary flex flex-row justify-between max-sm:w-full py-4 responsive-padding">
             <div>

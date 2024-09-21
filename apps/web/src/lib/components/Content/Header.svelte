@@ -24,6 +24,10 @@
     $layout.activeOption = navOptions[0];
 
     let hasZaps: boolean;
+
+    let showNavOptions: boolean;
+
+    $: showNavOptions = !isPreview && navOptions.length > 1;
 </script>
 
 <HeaderShell
@@ -65,12 +69,12 @@
 
     <div slot="zaps" class:hidden={skipEmptyZaps && !hasZaps}>
         {#if !isPreview}
-            <ItemViewZaps {event} bind:hasZaps class="py-[var(--section-vertical-padding)] responsive-padding border-y border-border" />
+            <ItemViewZaps {event} bind:hasZaps class="py-[var(--section-vertical-padding)] responsive-padding border-t border-border" />
         {/if}
     </div>
 
-    <div slot="toolbar" class="py-[var(--section-vertical-padding)] border-b border-border mb-[var(--section-vertical-padding)]" class:hidden={isPreview}>
-        {#if !isPreview}
+    <div slot="toolbar" class="py-[var(--section-vertical-padding)] border-b border-border mb-[var(--section-vertical-padding)]" class:hidden={!showNavOptions}>
+        {#if showNavOptions}
             <ContentToolbar
                 {event}
                 {navOptions}

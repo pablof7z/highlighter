@@ -1,6 +1,5 @@
 <script lang="ts">
 	import BlossomUpload from "$components/buttons/BlossomUpload.svelte";
-	import ContentEditor from "$components/Forms/ContentEditor.svelte";
 	import { Input } from "$components/ui/input";
 	import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { Camera, Plus } from "phosphor-svelte";
@@ -58,7 +57,7 @@
         </div>
     </div>
 
-    <ContentEditor
+    <!-- <ContentEditor
         bind:content={about}
         allowMarkdown={false}
         toolbar={false}
@@ -66,7 +65,7 @@
             text-lg border border-border p-4 rounded
         "
         placeholder="Description"
-    />
+    /> -->
 
     {#if showAdvanced}
         <div class="flex flex-col gap-1">

@@ -48,6 +48,6 @@
     buttonClass="hover:bg-yellow-400/20"
     bgClass="bg-yellow-500"
     iconClass={active ? "text-yellow-500" : "text-yellow-400/30 group-hover:text-yellow-500"}
-    on:click={defaultZap}
+    on:click={() => openModal(ZapModal, { event })}
     on:longpress={() => openModal(ZapModal, { event })}
 />

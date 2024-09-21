@@ -38,14 +38,13 @@
         {actionButtons}
         class="max-sm:h-[90dvh]"
     >
-        {#if replyTo}
             <EventWrapper
                 event={replyTo}
                 compact
                 skipFooter
                 class="bg-secondary rounded max-h-[15dvh] overflow-y-auto"
             />
-        {/if}
+        
         <Composer.Editor {state} />
         <Composer.Attachments {state} />
     </ModalShell>

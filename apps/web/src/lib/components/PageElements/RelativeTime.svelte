@@ -80,7 +80,7 @@
             live={true}
             {timestamp}
             class={$$props.class || ``}
-            format="M/d/YY"
+            format="M/D/YY"
         />
     {/if}
 {/if}

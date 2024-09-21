@@ -12,7 +12,7 @@ const buttonVariants = tv({
 			outline:
 				"border border-input bg-background",
 			secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-			ghost: "hover:bg-primary hover:text-primary-foreground",
+			ghost: "hover:bg-secondary hover:text-secondary-foreground",
 			link: "text-primary underline-offset-4 hover:underline",
 			gold: "border border-gold bg-gold/90 hover:bg-background text-black hover:text-foreground",
 			"gold-outline": "border border-gold bg-background/10 hover:bg-background hover:text-foreground text-gold",

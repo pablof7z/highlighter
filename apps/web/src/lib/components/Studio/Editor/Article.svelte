@@ -3,6 +3,7 @@
 	import { NDKArticle } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
 	import { openModal } from "$utils/modal";
+    import { Editor as EditorType } from 'svelte-tiptap'
 	import CoverImageModal from "$modals/CoverImageModal.svelte";
 	import TagInputModal from "$modals/TagInputModal.svelte";
 	import { CaretRight, ClockCounterClockwise, Info, Shuffle, X } from "phosphor-svelte";
@@ -19,6 +20,7 @@
     export let article: NDKArticle = $state.article;
 
     let draftItem: DraftItem | undefined;
+    let editorElement: EditorType;
 
     $: {
         $state.article = article;
@@ -27,14 +29,10 @@
 
     const dispatch = createEventDispatcher();
 
-    let contentAreaElement: HTMLElement;
+    let contentAreaElement: HTMLTextAreaElement;
 
     function onTitleKeyDown(e: KeyboardEvent) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            // move focus to content
-            if (contentAreaElement) contentAreaElement.focus();
-        }
+        if (contentAreaElement) contentAreaElement.focus();
     }
 
     function titleChanged() {
@@ -47,11 +45,22 @@
         }
         openModal(CoverImageModal, { article, onSave: onSaveCover });
     }
+
+	function summaryKeydown(e: KeyboardEvent): void {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            if (editorElement) {
+                editorElement.view.dom.focus();
+            }
+        }
+	}
 </script>
 
 <div class="flex flex-col w-full relative responsive-padding gap-4">
     <Editor.Root
         bind:content={article.content}
+        bind:editor={editorElement}
         placeholder="Start writing..."
     >
         <div class="
@@ -85,17 +94,19 @@
                 bind:value={article.title}
                 class="!bg-transparent rounded-none !text-4xl font-['InterDisplay'] font-bold focus-visible:!ring-none focus-visible:!ring-offset-0 focus-visible:!border-none focus-visible:!outline-none !border-none focus:!border-none !p-0 focus:!ring-0 !text-foreground placeholder:text-muted-foreground/50"
                 placeholder="Title"
-                on:keydown={onTitleKeyDown}
+                on:submit={onTitleKeyDown}
                 on:change={titleChanged}
                 style="field-sizing: normal;"
             />
 
             <Textarea
                 bind:value={article.summary}
+                bind:element={contentAreaElement}
                 placeholder="Add a subtitle"
+                on:keypress={summaryKeydown}
                 class="
                     !bg-transparent font-light !text-lg text-muted-foreground placeholder:!font-light focus-visible:!ring-none focus-visible:!ring-offset-0 focus-visible:!border-none focus-visible:!outline-none !border-none focus:!border-none !p-0 rounded-none focus:!ring-0 font-['InterDisplay'] placeholder:text-muted-foreground/30
-                    grow
+                    grow resize-none
                 "
             />
         </div>

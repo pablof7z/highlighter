@@ -17,9 +17,8 @@
     $ndk.outboxTracker!.track(user);
 
     const events = $ndk.storeSubscribe([
-        { kinds: [ NDKKind.Text, NDKKind.GroupNote, NDKKind.GroupReply ], authors: [user.pubkey], limit: 50 },
+        { kinds: [ NDKKind.GroupNote, NDKKind.GroupReply ], authors: [user.pubkey], limit: 50 },
         { kinds: [ NDKKind.Article ], authors: [user.pubkey], limit: 100 },
-        { kinds: [ NDKKind.Wiki ], authors: [user.pubkey], limit: 100 },
         { kinds: [ NDKKind.HorizontalVideo, NDKKind.VerticalVideo ], authors: [user.pubkey], limit: 100 },
         { kinds: [ NDKKind.Media ], "#m": [ "video/mp4"], authors: [user.pubkey], limit: 10 },
         { kinds: [ NDKKind.Highlight ], authors: [user.pubkey], limit: 100 },

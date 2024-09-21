@@ -18,7 +18,7 @@
 		--highlight-foreground: 240 10% 3.9%;
 		--muted: 240 4.8% 95.9%;
 		--muted-foreground: 240 3.8% 46.1%;
-		--accent: 228 78.4% 61.6%;
+		--accent: 17 100% 50%;
 		--accent-foreground: 0 0 100;
 		--destructive: 0 72.22% 50.59%;
 		--destructive-foreground: 0 0% 98%;
@@ -29,7 +29,6 @@
 
 		--boost-button: var(--green-500);
 
-		--mobile-nav-bar: 63px;
 		--mobile-body-px: 0.5rem;
 		--tw-prose-quote-borders: #ff0000;
 
@@ -40,13 +39,7 @@
 		--content-focused-wrapper-width: 80rem;
 		--content-focused-width: 48rem;
 
-		--editor-width: 48rem;
-
-		/* max-w-3xl */
-		--feed-width: 48rem;
-
-		/* max-w-4xl */
-		--home-layout-feed-width: 56rem;
+		--app-shell-left-nav-width: 80px;
 
 		--navbar-icon-size: 32px;
 		@media (min-width: 640px) {
@@ -68,7 +61,8 @@
 
 	.light {
 		--background: 240 10% 3.9%;
-		--foreground: 240 10% 3.9%;
+		/* --foreground: 240 10% 3.9%; */
+		--foreground: 10 0.9% 21.4%;
 		--card: 240 10% 3.9%;
 		--card-foreground: 0 0% 98%;
 		--popover: 240 10% 3.9%;
@@ -102,7 +96,7 @@
 		--primary-foreground: 240 5.9% 10%;
 		--secondary: 0 0% 12%;
 		--secondary-foreground: 0 0% 98%;
-		--highlight: 240 3.7% 25.9%;
+		--highlight: 240 9.7% 35.9%;
 		--highlight-foreground: 0 0% 98%;
 		--muted: 240 3.7% 15.9%;
 		--muted-foreground: 240 5% 80%;
@@ -199,13 +193,16 @@
 		@apply text-foreground font-serif !text-[19px] leading-10;
 	}
 
+	* + mark {
+		@apply p-1;
+	}
+
 	mark {
-		@apply cursor-pointer bg-highlight text-highlight-foreground font-bold text-lg p-1;
+		@apply cursor-pointer bg-highlight text-highlight-foreground font-medium text-lg py-1;
 		@apply transition-all duration-200;
 	}
 
 	mark[data-highlight-id] {
-		@apply hover:bg-foreground/20;
 	}
 
 	.ql-editor p + p {
@@ -229,7 +226,11 @@
 	}
 
 	.article p {
-		@apply mt-0 mb-6 leading-8 !text-[19px];
+		@apply mt-0 leading-8 !text-[19px];
+	}
+
+	.article p:not(:last-child) {
+		@apply mb-6;
 	}
 
 	.article ul {
@@ -525,4 +526,29 @@ blockquote.app-quote .author {
 
 .tiptap img[src^="data:image"] {
 	@apply grayscale;
+}
+
+.article blockquote {
+	@apply border-l-4 bg-secondary/30 border-border pl-4 py-1 mb-6;
+}
+
+.editor-toolbar button {
+	@apply p-2 flex items-center justify-center w-10 h-10 cursor-pointer hover:bg-secondary hover:text-secondary-foreground rounded-sm;
+}
+
+.editor-toolbar button[disabled] {
+	cursor: not-allowed;
+	opacity: 0.2;
+}
+
+.editor-toolbar .button-group {
+	@apply px-2 flex flex-row items-center;
+}
+
+.editor-toolbar .active {
+	@apply bg-secondary text-secondary-foreground;
+}
+
+.suggestion-wrapper {
+	@apply bg-secondary/50 rounded-sm shadow-md overflow-x-clip overflow-y-auto;
 }

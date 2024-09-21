@@ -1,17 +1,23 @@
 <script lang="ts">
 	import { goto, pushState } from '$app/navigation';
 	import { ndk } from "$stores/ndk.js";
-	import { NDKEvent, NDKEventId } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKEventId, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { Readable } from "svelte/store";
     import currentUser from '$stores/currentUser';
     import sanitizeHtml from 'sanitize-html';
 	import { onDestroy, onMount } from 'svelte';
 	import HighlightMarks from './HighlightMarks.svelte';
-	import { openModal } from '$utils/modal';
-	import HighlightModal from '$modals/HighlightModal.svelte';
 	import { browser } from '$app/environment';
-	import { footerMainView, layout } from '$stores/layout';
+	import { layout } from '$stores/layout';
+	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
+    import {Drawer} from 'vaul-svelte';
+	import Highlight from '$components/Highlight.svelte';
+    import * as Card from '$components/Card';
+	import Zap from '$components/Footer/Buttons/Zap.svelte';
+	import Comments from '$components/Footer/Buttons/Comments.svelte';
+	import Share from '$components/Footer/Buttons/Share.svelte';
+	import Bookmark from '$components/Footer/Buttons/Bookmark.svelte';
 
     export let event: NDKEvent | undefined = undefined;
     export let highlights: Readable<NDKEvent[]>;
@@ -26,6 +32,8 @@
         isMobile = window.innerWidth < 768;
     });
 
+    let openHighlight: NDKHighlight | undefined;
+
     function onClickOpenSidebar(event: MouseEvent) {
         const target = (event.target as HTMLElement).closest('mark');
         if (target?.tagName !== 'MARK') return;
@@ -33,14 +41,8 @@
         if (highlightId) {
             const highlight = $highlights.find(h => h.id === highlightId);
             if (highlight) {
-                if ($layout.footer?.props) {
-                    $footerMainView = 'highlight-viewer';
-                    $layout.footer.props.highlight = highlight;
-                }
-                // $layout.footer.
-                // pushState(`/e/${highlight.encode()}`, {
-                // });
-                // openModal(HighlightModal, { highlight });
+                openHighlight = NDKHighlight.from(highlight);
+                open = true;
             }
         }
     }
@@ -86,7 +88,36 @@
             }
         }
     }
+
+    let open = true;
 </script>
+
+{#if openHighlight}
+    <Drawer.Root onClose={() => setTimeout(() => {openHighlight = undefined}, 300)} bind:open direction="right">
+        <Drawer.Portal>
+            <Drawer.Overlay class="fixed inset-0 bg-black/40" />
+            <Drawer.Content
+                class="
+                    fixed flex flex-col p-6
+                    bottom-0 right-0 top-0 w-[50%] flex-row rounded-l-[10px]
+                    bg-background z-50
+                    translate-x-1/2
+                "
+            >
+                <div class="shrink">
+                    <Highlight
+                        highlight={openHighlight}
+                        skipArticle
+                    />
+
+                </div>
+
+                
+                
+            </Drawer.Content>
+        </Drawer.Portal>
+    </Drawer.Root>
+{/if}
 
 {#if event}
     {#key content}
@@ -101,6 +132,7 @@
             bind:content
             class="prose-lg leading-8 article-kind--{event.kind} {$$props.class??""}"
             on:click={handleClick}
+            eventCardComponent={EmbeddedEventWrapper}
             sanitizeHtmlOptions={{
                 allowedAttributes: {
                     'mark': [ 'data-highlight-id' ],
