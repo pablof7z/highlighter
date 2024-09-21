@@ -42,3 +42,4 @@ _local_/
 .vercel
 
 **/prisma/generated
+justfile

@@ -31,7 +31,7 @@ compile-ndk:
     ./ndk_compile.sh
 
 deploy:
-	rsync -avP -l -t --exclude .env --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./apps/web/ kind0:/home/pablo/projects/highlighter/apps/web
+	rsync -avP -l -t --exclude ios --exclude android --exclude .env --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./apps/web/ kind0:/home/pablo/projects/highlighter/apps/web
 	rsync -avP -l -t --exclude .env --exclude build --exclude node_modules --exclude .svelte-kit --exclude highlighter.db ./packages/ kind0:/home/pablo/projects/highlighter/packages
 
 deploy-old:
