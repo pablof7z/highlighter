@@ -118,7 +118,7 @@ export async function configureFeNDK() {
 	
 	debug("ndk connect on frontend")
 
-	await $ndk.connect(1000);
+	await $ndk.connect(10000);
 }
 
 export async function configureBeNDK(privateKey: string, nodeFetch: typeof fetch) {

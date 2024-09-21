@@ -8,8 +8,10 @@
 
     let id: string;
     let event: NDKEvent | undefined;
+    let itemView: boolean;
 
     $: id = $page.params.id;
+    $: itemView = !$page.params.view;
     
     if ($page.data.event) {
         try {
@@ -30,7 +32,7 @@
 {#key id}
     <Content.Root bech32={id} {event} let:wrappedEvent>
         {#if wrappedEvent}
-            <Content.Shell {wrappedEvent}>
+            <Content.Shell {itemView} {wrappedEvent}>
                 <slot />
             </Content.Shell>
         {/if}

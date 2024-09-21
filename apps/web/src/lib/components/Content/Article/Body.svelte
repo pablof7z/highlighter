@@ -7,8 +7,6 @@
 	import HighlightingArea from "../HighlightingArea.svelte";
 	import { getContext, onMount } from "svelte";
 	import { Readable } from "svelte/store";
-	import { Button } from "$components/ui/button";
-	import { footerMainView } from "$stores/layout";
 	import * as Content from "$components/Content";
 
     export let article: NDKEvent;
@@ -20,11 +18,6 @@
     const highlights = getContext('highlights') as Readable<NDKHighlight[]>;
 
     let el: HTMLDivElement;
-
-    onMount(() => {
-        const rect = el.getBoundingClientRect();
-        console.log(rect);
-    })
 </script>
 
 <div class="break-inside max-sm:ml-4 max-sm:mr-12 relative" bind:this={el}>
@@ -48,15 +41,7 @@
 </div>
 
 {#if !isPreview}
-    <div class="flex flex-row w-full items-center justify-between border-y border-border py-2">
-        <h2 class="mb-0 grow">Comments</h2>
-
-        <Button on:click={() => $footerMainView = 'comment'}>
-            Write a comment
-        </Button>
-    </div>
-
-    <div class=" min-h-[20rem]">
+    <div class=" min-h-[20rem]" id="comments-container">
         <Content.Views.Comments wrappedEvent={article} />
     </div>
 {/if}

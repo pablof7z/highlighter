@@ -1,24 +1,23 @@
 <script lang="ts">
 	import { OpenFn } from '$components/Footer';
-	import { Input } from '$components/ui/input';
 	import { get, Writable } from 'svelte/store';
 	import { State } from '.';
+	import CommentsButton from '$components/buttons/CommentsButton.svelte';
+	import { NDKEvent } from '@nostr-dev-kit/ndk';
+	import { openModal } from '$utils/modal';
+	import NewPostModal from '$modals/NewPostModal.svelte';
 
     export let open: OpenFn;
     export let placeholder = "Reply...";
     export let stateStore: Writable<State> | undefined;
+    export let event: NDKEvent;
 
-    function onEditorFocused() {
-        open('comment');
+    function reply() {
+        openModal(NewPostModal, { replyTo: event });
     }
 
     let content: string | undefined;
     $: content = ($stateStore?.state) && get($stateStore?.state).content;
 </script>
 
-<Input
-    {placeholder}
-    class="text-lg bg-background/50 rounded px-4 w-full text-muted-foreground"
-    on:focus={onEditorFocused}
-    value={content??""}
-/>
+<CommentsButton {event} on:click={reply} />

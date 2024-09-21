@@ -34,7 +34,7 @@
 
 
 
-    export let title: string;
+    export let title: string | undefined = undefined;
 </script>
 
 <HorizontalList {title} items={$taggedItems} let:item>

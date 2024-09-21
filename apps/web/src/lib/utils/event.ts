@@ -35,6 +35,17 @@ export const mainContentKinds = [
 	NDKKind.Wiki,
 ];
 
+export function getCurationKind(event: NDKEvent) {
+	switch (event.kind) {
+		case NDKKind.Article: return NDKKind.ArticleCurationSet;
+		case NDKKind.HorizontalVideo: return NDKKind.VideoCurationSet;
+		case NDKKind.VerticalVideo: return NDKKind.VideoCurationSet;
+		case NDKKind.Highlight: return NDKKind.HighlightSet;
+		default:
+			return NDKKind.BookmarkSet;
+	}
+}
+
 export function eventKindToText(kind: NDKKind) {
 	switch (kind) {
 		case NDKKind.Article: return "Article";
@@ -217,4 +228,24 @@ export function replyKind(event: NDKEvent): NDKKind {
 		default:
 			return NDKKind.Text;
 	}
+}
+
+/**
+ * Determines whether this event is a share of an event
+ * (as opposed ot a reply to the event)
+ */
+export function isEventShare(event: NDKEvent, op: NDKEvent) {
+	const opRef = op.tagReference();
+
+	for (const tag of event.tags) {
+		if (event.id === '353bb3d5052719cacb2d50c742ab8d12fe1216d7207480f64a4eeaed9ce94dd7') {
+			console.log('comparing', { tag, opRef})
+		}
+		if (tag[0] === opRef[0] && tag[1] === opRef[1]) {
+			// this is a mention, so count it as a share
+			if (tag[3] === 'mention') return true;
+		}
+	}
+
+	return false;
 }

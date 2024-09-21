@@ -1,9 +1,6 @@
 <script lang="ts">
-    import { Plus } from "phosphor-svelte";
+    import { Article, CaretDown, Plus, Video } from "phosphor-svelte";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-	import { openModal } from "$utils/modal";
-	import NewPostModal from "$modals/NewPostModal.svelte";
-    import CreatorProfileModal from '$modals/CreatorProfileModal';
 	import { groupsList } from "$stores/session";
 	import { Button } from "$components/ui/button";
 	import currentUser from "$stores/currentUser";
@@ -19,19 +16,30 @@
 
 <DropdownMenu.Root>
     <DropdownMenu.Trigger>
-        <Button>
-            <Plus size={20} />
-        </Button>
+        {#if $$slots.default}
+            <slot />
+        {:else}
+            <Button>
+                New Post
+                <CaretDown size={20} class="ml-2" />
+            </Button>
+        {/if}
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
         <DropdownMenu.Group>
-            <DropdownMenu.Label>New Post</DropdownMenu.Label>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item on:click={() => openModal(NewPostModal)}>Short Note</DropdownMenu.Item>
-            <DropdownMenu.Item href="/studio/article">Long-form</DropdownMenu.Item>
-            <DropdownMenu.Item href="/studio/video">Video</DropdownMenu.Item>
+            <!-- <DropdownMenu.Item on:click={() => openModal(NewPostModal)}>Short Note</DropdownMenu.Item> -->
+            <DropdownMenu.Item href="/studio/article">
+                <Article size={24} class="mr-2" />
+                
+                Long-form
+            </DropdownMenu.Item>
+            <DropdownMenu.Item href="/studio/video">
+                <Video size={24} class="mr-2" />
+                
+                Video
+            </DropdownMenu.Item>
         </DropdownMenu.Group>
-        <DropdownMenu.Group>
+        <!-- <DropdownMenu.Group>
             <DropdownMenu.Label>Monetize</DropdownMenu.Label>
             <DropdownMenu.Separator />
             {#if ownsGroups}
@@ -43,6 +51,6 @@
                     Create a monetizable publication
                 </DropdownMenu.Item>
             {/if}
-        </DropdownMenu.Group>
+        </DropdownMenu.Group> -->
     </DropdownMenu.Content>
 </DropdownMenu.Root>

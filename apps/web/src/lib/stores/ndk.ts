@@ -23,12 +23,12 @@ if (relays) {
 
 export const explicitRelayUrls = [
     'wss://nos.lol/',
-    // 'wss://relay.noswhere.com/',
-    'wss://relay.primal.net/',
-    'wss://relay.damus.io/',
+    // 'wss://relay.primal.net/',
+    // 'wss://relay.damus.io/',
     // "wss://relay.highlighter.com/",
-    'wss://relay.nostr.band/',
+    // 'wss://relay.nostr.band/',
     'wss://purplepag.es/',
+    // "ws://localhost:2929"
 ];
 
 const _ndk: NDKSvelte = new NDKSvelte({

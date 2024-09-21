@@ -8,7 +8,6 @@
 	import ToggleDark from "$components/buttons/ToggleDark.svelte";
 	import { goto } from "$app/navigation";
     import * as Draft from "$components/Draft";
-    import * as Audience from "$components/Audience";
 	import * as Studio from '$components/Studio';
     import * as DropdownMenu from "$components/ui/dropdown-menu";
 	import { appMobileView } from "$stores/app";
@@ -17,10 +16,6 @@
     export let state: Writable<Studio.State<Studio.Type>>;
     export let actions: Studio.Actions;
 
-    function cont() {
-        openModal(Studio.PrepublishModal, { state, actions })
-    }
-    
     function closeClicked() {
         goto("/studio");
     }
@@ -57,9 +52,6 @@
             }
         });
     }
-
-    const audienceState = writable<Audience.State>($state.audience);
-    $: $state.audience = $audienceState;
 </script>
 
 <div class="
@@ -86,21 +78,13 @@
 
     <div class="flex flex-row flex-nowrap gap-2 grow lg:max-w-[var(--content-focused-width)] mx-auto lg:px-0">
         {#if $state.mode !== 'edit'}
-            <Tooltip.Root>
-                <Tooltip.Trigger asChild let:builder>
-                    <Button variant="outline" on:click={setMode('edit')}>
-                        <CaretLeft class="mr-2" size={20} />
-                        Edit
-                    </Button>
-                </Tooltip.Trigger>
-                <Tooltip.Content>
-                    Back to edit
-                </Tooltip.Content>
-            </Tooltip.Root>
-        {:else}
-            <Audience.Button variant={$appMobileView ? "secondary" : "outline"} state={audienceState} />
+            
+        {/if}
+    </div>
 
-            {#if !$appMobileView}
+    <div class="flex flex-row flex-nowrap gap-2">
+        {#if !$appMobileView}
+            {#if $state.mode === 'edit'}
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild let:builder>
                         <Button variant="outline" on:click={setMode('preview')}>
@@ -112,14 +96,18 @@
                         Preview
                     </Tooltip.Content>
                 </Tooltip.Root>
-            {/if}
-        {/if}
-    </div>
-
-    <div class="flex flex-row flex-nowrap gap-2">
-        {#if !$appMobileView}
-            {#if $state.mode === 'edit'}
-                
+            {:else}
+                <Tooltip.Root>
+                    <Tooltip.Trigger asChild let:builder>
+                        <Button variant="outline" on:click={setMode('edit')}>
+                            <CaretLeft class="mr-2" size={20} />
+                            Edit
+                        </Button>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                        Back to edit
+                    </Tooltip.Content>
+                </Tooltip.Root>
             {/if}
         
             <Tooltip.Root>
@@ -155,7 +143,7 @@
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
         {/if}
-        <Button on:click={cont}>
+        <Button on:click={setMode("publish")}>
             Continue
             <ArrowRight size={20} />
         </Button>

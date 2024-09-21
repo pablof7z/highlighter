@@ -176,12 +176,13 @@
             <div class="field self-stretch flex-col justify-start items-stretch w-full gap-2 flex">
                 {#each amounts as amount, i}
                     <div class="w-full" in:slide>
-                        <TierAmountLine
+                        <pre>{JSON.stringify(amount)}</pre>
+                        <!-- <TierAmountLine
                             bind:value={amount}
                             on:delete={() => {
                                 amounts = amounts.filter((a) => a !== amount);
                             }}
-                        />
+                        /> -->
                     </div>
                 {/each}
             </div>

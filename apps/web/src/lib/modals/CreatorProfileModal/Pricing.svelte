@@ -5,7 +5,6 @@
 	import { NDKSubscriptionAmount, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
 	import { slide } from "svelte/transition";
 	import { NavigationOption } from "../../../app";
-	import { Plus } from "phosphor-svelte";
 	import RadioButton from "$components/Forms/RadioButton.svelte";
     import { Writable } from "svelte/store";
 	import { CreateState } from ".";

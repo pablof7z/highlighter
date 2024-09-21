@@ -5,25 +5,35 @@
     import Header from "./Header.svelte";
     import * as Studio from '$components/Studio';
     import Publish from './Publish.svelte';
-	import { Star } from 'phosphor-svelte';
-	import { Button } from '$components/ui/button';
 	import ManagePreview from './ManagePreview.svelte';
+	import Publishing from './Publishing.svelte';
 
     export let state: Writable<Studio.State<Studio.Type>>;
     export let actions: Studio.Actions;
     export let authorUrl: string;
 
+    $layout.navSidebar = false;
     $layout.fullWidth = true;
-    $layout.header = {
-        component: Header,
-        props: {
-            state,
-            actions,
+    $layout.footer = undefined;
+    $: if ($state.mode === 'publish' || $state.mode === 'publishing') {
+        $layout.header = undefined;
+        $layout.title = "Publish";
+        $layout.fullWidth = false;
+        $layout.back = { fn: () => $state.mode = "edit" }
+    } else {
+        $layout.fullWidth = true;
+        $layout.header = {
+            component: Header,
+            props: {
+                state,
+                actions,
+            }
         }
     }
 
     onDestroy(() => {
         $layout.header = undefined;
+        $layout.navSidebar = undefined;
     });
 
     let editorComponent: ComponentType;
@@ -42,7 +52,7 @@
     </div>
 
     <div class:hidden={$state.mode !== 'edit'}>
-        {#if $state.audience.scope === 'private'}
+        <!-- {#if $state.audience.scope === 'private'}
             <div class="border px-4 py-2 bg-secondary flex flex-row justify-between gap-4 my-2 rounded">
                 <div class="flex flex-row" class:items-center={!$state.withPreview}>
                     <Star class="w-4 h-4 mr-2 text-gold" weight="fill" />
@@ -60,7 +70,7 @@
                     </Button>
                 </div>
             </div>
-        {/if}
+        {/if} -->
         
         
         {#if editorComponent}
@@ -78,6 +88,11 @@
         {/if}
     {:else if $state.mode === 'publish'}
         <Publish
+            {state}
+            {authorUrl}
+        />
+    {:else if $state.mode === 'publishing'}
+        <Publishing
             {state}
             {authorUrl}
         />

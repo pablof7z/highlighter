@@ -22,7 +22,7 @@
     let sizePx: number;
 
     switch (size) {
-        case 'xs': sizePx = 18; break;
+        case 'xs': sizePx = 16; break;
         case 'tiny': sizePx = 24; break;
         case 'small': sizePx = 26; break;
         case 'md': case 'medium': sizePx = 24; break;

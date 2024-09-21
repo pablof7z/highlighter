@@ -133,6 +133,34 @@ const mostRecentZapsStore = (
         .slice(0, count);
 })
 
+export function getTotalZapAmount(
+    eventOrUser: NDKEvent | NDKUser,
+    filter?: NDKFilter,
+    opts?: NDKSubscriptionOptions
+) {
+    const zaps = zapsStore(eventOrUser, undefined, filter, opts);
+
+    let store: Readable<number> & {
+        events: Readable<NDKEvent[]>,
+        unsubscribe: () => void
+    };
+    
+    store = {
+        events: zaps,
+        
+        unsubscribe: () => zaps.unsubscribe(),
+
+        ...derived(zaps, $zaps => {
+            return $zaps.reduce((acc, zap) => {
+                const receipt = zapInvoiceFromEvent(zap);
+                if (receipt && receipt.amount) acc += receipt.amount;
+                return acc;
+            }, 0);
+    })};
+
+    return store;
+}
+
 
 /**
  * Gets the top zaps, sorted by individual amount

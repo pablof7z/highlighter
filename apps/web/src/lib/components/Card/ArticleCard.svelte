@@ -5,8 +5,6 @@
 	import { urlFromEvent, urlSuffixFromEvent } from "$utils/url";
 	import { getSummary, readTime } from "$utils/article";
 	import { Badge } from "$components/ui/badge";
-	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
-	import RelatedEvents from "$components/Feed/Item/RelatedEvents.svelte";
 
     export let article: NDKArticle | undefined = undefined;
     export let tag: NDKTag | undefined = undefined;

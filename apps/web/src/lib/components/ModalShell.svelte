@@ -13,6 +13,7 @@
     export let title: string | undefined = undefined;
     export let open = true;
     export let padding = "responsive-padding";
+    export let closeOnOutsideClick: boolean | undefined = undefined;
 
     export let secondaryButtons: NavigationOption[] | undefined = undefined;
     
@@ -46,7 +47,7 @@
 </div> -->
 
 {#if !$appMobileView}
-    <Dialog.Root bind:open>
+    <Dialog.Root bind:open {closeOnOutsideClick}>
         <Dialog.Content class="{$$props.class??""}">
             {#if title}
                 <Dialog.Header>

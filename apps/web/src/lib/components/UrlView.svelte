@@ -20,7 +20,6 @@
         component: UrlViewFooter,
         props: { article }
     }
-    $layout.footerInMain = true;
     $layout.fullWidth = false
     $layout.forceShowNavigation = undefined;
 
@@ -31,6 +30,7 @@
 
     onDestroy(() => {
         highlights?.unsubscribe();
+        $layout.footer = undefined;
     });
 
     $layout.title = article.title;

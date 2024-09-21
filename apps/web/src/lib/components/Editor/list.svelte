@@ -41,20 +41,21 @@
 
 <ul>
     {#each items as item, i}
-        <li>
-            <span class:active={i === activeIdx} on:click={() => callback(items[i])}>
+        <li class:active={i === activeIdx}>
+            <span on:click={() => callback(items[i])}>
                 <AvatarWithName pubkey={item.pubkey} avatarSize="xs" />
             </span>
         </li>
     {/each}
 </ul>
 
-<style>
-.active {
-    color: red;
-}
+<style lang="postcss">
+    .active {
+        @apply bg-secondary text-foreground;
+    }
 
-li {
-    cursor: pointer;
-}
+    li {
+        cursor: pointer;
+        @apply p-2 text-muted-foreground;
+    }
 </style>

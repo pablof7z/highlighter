@@ -30,6 +30,8 @@
 	{...$$restProps}
 	on:click
 	on:keydown
+	on:mouseenter
+	on:mouseleave
 >
 	<slot />
 </ButtonPrimitive.Root>

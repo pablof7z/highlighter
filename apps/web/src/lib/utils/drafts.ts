@@ -21,16 +21,12 @@ export async function publishDraft(
 ) {
     if (!event) return;
 
-    console.log('going to publish draft', event.rawEvent());
-        
     const $ndk = get(ndk);
     const draft = new NDKDraft($ndk);
     draft.identifier = draftItem.id;
     draft.event = event;
-    console.log('draft', draft.rawEvent());
     const relaySet = getDefaultRelaySet();
     await draft.save({relaySet});
-    console.log('draft saved');
 }
 
 type States = Studio.State<Studio.Type> | Composer.State;

@@ -58,9 +58,11 @@
         </div>
 
         <div class="flex flex-row items-center gap-2 justify-end">
-            <Badge variant="secondary" class="font-light text-muted-foreground">
-                <RelativeTime event={article} />
-            </Badge>
+            {#if article.created_at}
+                <Badge variant="secondary" class="font-light text-muted-foreground">
+                    <RelativeTime event={article} />
+                </Badge>
+            {/if}
 
             <Badge variant="secondary" class="font-light text-muted-foreground whitespace-nowrap">
                 {time}

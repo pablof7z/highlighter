@@ -26,9 +26,9 @@
 
     beforeNavigate(({cancel}) => {
         autoSave();
-        if (state === State.Saving) {
-            cancel();
-        }
+        // if (state === State.Saving) {
+        //     cancel();
+        // }   
     });
     
     onDestroy(() => {

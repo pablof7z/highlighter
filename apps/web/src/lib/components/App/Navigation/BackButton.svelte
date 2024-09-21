@@ -7,7 +7,10 @@
     export let href: string | undefined = undefined;
     export let fn: (() => void) | undefined = undefined;
 
-    $: href ??= $layout.back?.url;
+    $: {
+        href ??= $layout.back?.url;
+        fn ??= $layout.back?.fn;
+    }
 
     function click(e: MouseEvent) {
         console.log("click", href);
@@ -18,6 +21,6 @@
     }
 </script>
 
-<Button {href} variant="secondary" on:click={click} class="rounded-full flex-none w-10 h-10 p-0">
+<Button {href} variant="secondary" on:click={click} class="flex-none w-10 h-10 p-0">
     <CaretLeft size={22} />
 </Button>

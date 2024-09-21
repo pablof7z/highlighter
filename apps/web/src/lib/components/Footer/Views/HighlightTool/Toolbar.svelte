@@ -14,10 +14,6 @@
 	import { toast } from "svelte-sonner";
 
     export let event: NDKEvent;
-    export let hideCollapsedView: boolean;
-    export let open: OpenFn;
-
-    hideCollapsedView = true;
 
     async function createHighlight() {
         const text = getTextFromSelection($activeSelection);
@@ -32,8 +28,6 @@
         const hl = await createHighlight();
         if (!hl) return;
         hl.publish();
-
-        open(false);
 
         toast.success("Highlight saved", {
             action: {

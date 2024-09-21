@@ -70,12 +70,17 @@
         { name: "Publish", fn: actions.publish, buttonProps: { class: 'px-6', variant: 'default', disabled: !canPublish } }
     ]
     
-    $: secondaryButtons = [
-        { id: 'audience', component: { component: Audience.Button, props: { state: audienceStore } } },
-        { id: 'image', icon: Image, fn: actions.upload, buttonProps: { class: 'rounded-full', variant: 'ghost', size: 'icon' } },
-        { id: 'draft', component: { component: Draft.Button, props: { save: actions.saveDraft, label: false } } },
-        // { id: 'gif', icon: Gif, fn: actions.upload, buttonProps: { class: 'rounded-full', variant: 'ghost', size: 'icon' } },
-    ]
+    $: {
+        secondaryButtons = [
+            { id: 'image', icon: Image, fn: actions.upload, buttonProps: { class: 'rounded-full', variant: 'ghost', size: 'icon' } },
+            { id: 'draft', component: { component: Draft.Button, props: { save: actions.saveDraft, label: false } } },
+            // { id: 'gif', icon: Gif, fn: actions.upload, buttonProps: { class: 'rounded-full', variant: 'ghost', size: 'icon' } },
+        ]
+
+        if (!replyTo) {
+            secondaryButtons.unshift({ id: 'audience', component: { component: Audience.Button, props: { state: audienceStore } } })
+        }
+    }
 </script>
 
 {#if state}

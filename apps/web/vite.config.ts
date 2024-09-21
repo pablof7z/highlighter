@@ -11,6 +11,9 @@ let pwa: any[] = mobileBuild ? [] : [SvelteKitPWA({
     srcDir: 'src',
     registerType: 'autoUpdate',
     injectRegister: "inline",
+    workbox: {
+        maximumFileSizeToCacheInBytes: 3000000,
+    },
     manifest: {
         short_name: 'Highlighter',
         name: 'Highlighter',
@@ -63,6 +66,8 @@ export default defineConfig({
     optimizeDeps: {
 		exclude: [
             "phosphor-svelte",
+	    "svelte-asciidoc",
+	    "asciidoctor.js"
             // '@sqlite.org/sqlite-wasm',
             // '@nostr-dev-kit/ndk-cache-sqlite-wasm',
         ],

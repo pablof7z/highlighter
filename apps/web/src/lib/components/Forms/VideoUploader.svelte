@@ -11,7 +11,6 @@
     export let videoUrl: string | undefined = undefined;
     export let thumbnail: string | undefined = undefined;
     export let videoFile: File | undefined = undefined;
-    export let provider = "satellite";
 
     const dispatch = createEventDispatcher();
     let uploadProgress: number | undefined;

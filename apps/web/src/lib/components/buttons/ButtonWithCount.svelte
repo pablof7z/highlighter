@@ -1,11 +1,18 @@
 <script lang="ts">
+	import Button from "$components/ui/button/button.svelte";
 	import { pluralize } from "$utils";
+	import { Builder } from "bits-ui";
 
-    export let count: number;
+    export let count: number | string | undefined = undefined;
     export let href: string | undefined = undefined;
     export let label: string | undefined = undefined;
     export let active: boolean = false;
     export let badge = false;
+    export let builders: Builder[] = [];
+
+    let showCount = false;
+
+    $: showCount = count !== undefined && (typeof count === 'number' && count > 0 || typeof count === 'string' && count !== '');
 </script>
 
 {#if href}
@@ -15,33 +22,43 @@
             {#if label}
                 {label}
             {/if}
-            {#if count > 0}
+            {#if showCount}
                 <span class="badge">{count}</span>
             {/if}
-        {:else if count > 0}
+        {:else if showCount}
             <span>{count}</span>
-            {#if label}
+            {#if label && typeof count === 'number'}
                 <span>{pluralize(count, label)}</span>
             {/if}
         {/if}
     </a>
 {:else}
-    <button class={$$props.class??""} class:active on:click>
+    <Button
+        {builders}
+        variant="ghost"
+        class="bg-opacity-50 text-xs text-muted-foreground font-regular p-2 {$$props.class??""}"
+        on:click
+        on:mouseenter
+        on:mouseleave
+    >
         <slot />
         {#if badge}
             {#if label}
                 {label}
             {/if}
-            {#if count > 0}
+            {#if showCount}
                 <span class="badge bg-foreground/20 text-foreground">{count}</span>
             {/if}
-        {:else if count > 0}
+        {:else if showCount}
             <span>{count}</span>
-            {#if label}
+            {#if label && typeof count === 'number'}
                 <span>{pluralize(count, label)}</span>
             {/if}
         {/if}
-    </button>
+        {#if $$slots.after}
+            <slot name="after" />
+        {/if}
+    </Button>
 {/if}
 
 <style lang="postcss">

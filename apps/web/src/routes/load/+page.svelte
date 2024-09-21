@@ -15,8 +15,6 @@
 
     const { feed, text, contentType } = data;
 
-    console.log({data, feed});
-
     let url: string;
     let author: string;
 

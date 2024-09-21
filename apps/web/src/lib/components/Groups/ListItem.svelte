@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Checkbox from "$components/Forms/Checkbox.svelte";
 	import { ndk } from "$stores/ndk";
-	import { NDKKind, NDKSimpleGroup, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKSubscriptionTier } from "@nostr-dev-kit/ndk";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
 	import { onDestroy } from "svelte";
-	import { Group } from ".";
+	import { GroupData } from ".";
 
-    export let group: Group;
+    export let group: GroupData;
     export let selected: boolean;
     export let selectedTiers: NDKSubscriptionTier[];
 

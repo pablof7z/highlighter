@@ -5,7 +5,6 @@
 	import { ndk } from "$stores/ndk";
 	import { groupsList, userFollows } from "$stores/session";
 	import { derived, Readable } from "svelte/store";
-	import { filterArticles } from '$utils/article-filter';
     import * as Card from '$components/Card';
     import Footer from "./Footer.svelte";
 	import HorizontalListOfTaggedItems from '$components/PageElements/Sections/HorizontalListOfTaggedItems.svelte';
@@ -19,12 +18,19 @@
 	import { NavigationOption } from '../../../../app';
 	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 
+    $layout.navigation = [
+        { value: "", name: "👋 Newest", href: '/reads' },
+        { name: "🌟 Top", href: '/reads/top' },
+        // { name: "🔥 Hot", href: '/reads/hot' },
+        { name: "🖊️ Highlighted", href: '/reads/highlighted' },
+        { name: "📚 Curations", href: '/reads/curations' },
+        // { name: "Feed Marketplace", icon: Plus, buttonProps: { class: 'place-self-end', variant: 'secondary' }, href: '/reads/dvms' },
+    ]
+
+    $layout.activeOption = $layout.navigation[0];
+
     $layout.title = undefined;
     $layout.fullWidth = true;
-    $layout.header = {
-        component: Header
-    };
-    $layout.navigation = false;
     // $: $layout.sidebar = $groupsList && $groupsList.items.length > 0 ? { component: Generic } : false;
     $layout.sidebar = false;
     $layout.forceShowNavigation = true;
@@ -47,29 +53,14 @@
         return $highlights.filter(highlight => $userFollows.has(highlight.pubkey));
     });
 
-    $layout.footer = { component: Footer, props: {} };
-    $layout.footerInMain = false;
-
     const featuredUsers = Array.from(
             new Set(Object.values(vanityUrls))
         ).map(pubkey => $ndk.getUser({ pubkey }))
         .map(user => { return { user, id: user.pubkey } });
-
-    const readOptions: NavigationOption[] = [
-        { id: "featured", name: "Featured", href: '/' },
-        { value: "newest", name: "👋 Newest", href: '/reads' },
-        { name: "🌟 Top", href: '/reads/top' },
-        // { name: "🔥 Hot", href: '/reads/hot' },
-        { name: "🖊️ Highlighted", href: '/reads/highlighted' },
-        { name: "📚 Curations", href: '/reads/curations' },
-        // { name: "Feed Marketplace", icon: Plus, buttonProps: { class: 'place-self-end', variant: 'secondary' }, href: '/reads/dvms' },
-    ]
 </script>
 
-<div class="flex flex-col sm:gap-[var(--section-vertical-padding)] mx-auto w-fit px-6">
+<div class="flex flex-col sm:gap-[var(--section-vertical-padding)] mx-auto w-fit lg:px-6">
     <!-- <Groups /> -->
-
-    <HorizontalOptionsList tabs options={readOptions} value="Featured"  />
     
     <div class="flex flex-row items-start gap-6 w-full">
         <div class="w-full lg:w-[var(--content-focused-width)]">
@@ -80,21 +71,5 @@
             <ReadsSidebar />
         </div>
     </div>
-
-    <!-- <HorizontalList title="Articles" items={$filteredArticles} let:item>
-        <Card.Article article={item} />
-    </HorizontalList> -->
-
-    <!-- <HorizontalList title="Featured Creators" items={featuredUsers} let:item>
-        <Card.User user={item.user} />
-    </HorizontalList>
--->
-    {#if highlightsEosed}
-        <HorizontalListOfTaggedItems title="Reads" highlights={followHighlights} />
-    {/if}
-<!--
-    <HorizontalList title="Highlights" items={$highlights} let:item>
-        <Card.Highlight highlight={item} />
-    </HorizontalList> -->
 
 </div>

@@ -41,7 +41,7 @@
 </script>
 
 <ButtonWithCount
-    class="rounded-full p-2 flex hover:bg-zinc-400/20"
+    class="rounded-full flex gap-3 text-muted-foreground"
     count={$replies.length}
     {label}
     active={commentedByUser}
@@ -49,7 +49,7 @@
 >
     {#if !label || $replies.length === 0}
         <ChatCircle
-            class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5 {commentedByUser ? 'text-accent!' : 'text-zinc-400/30 group-hover:text-zinc-500'}}"
+            class="max-sm:w-3.5 w-5 max-sm:h-3.5 h-5"
             weight={commentedByUser ? "fill" : "regular"}
         />
     {/if}

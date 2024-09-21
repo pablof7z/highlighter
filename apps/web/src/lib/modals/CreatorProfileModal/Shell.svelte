@@ -11,6 +11,7 @@
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import currentUser from "$stores/currentUser";
 	import { writable } from "svelte/store";
+    import _createGroup from "$utils/groups/create.js";
 	import { CreateState } from ".";
 	import { NDKEvent, NDKKind, NDKList, NDKRelaySet, NDKSimpleGroup, NDKSubscription, NDKSubscriptionTier, NDKTag, NostrEvent } from "@nostr-dev-kit/ndk";
 	import { ndk } from "$stores/ndk";
@@ -76,34 +77,18 @@
     let groupData: GroupData | undefined;
 
     async function createGroup(state: CreateState) {
-        const relaySet = NDKRelaySet.fromRelayUrls(state.relays!, $ndk);
-        const group = new NDKSimpleGroup($ndk, relaySet);
         const randomNumber = Math.floor(Math.random() * 1000000);
-        group.groupId = 'group' + randomNumber;
-        const published = await group.createGroup();
-        if (!published) throw new Error("Failed to create group");
+        const groupId = 'group' + randomNumber;
+        return await _createGroup(
+            groupId,
+            state.relays!,
+            state.name,
+            state.picture,
+            state.about,
 
-        await group.setMetadata({ name: state.name, picture: state.picture, about: state.about });
-
-        // TODO: This should come from the relay
-        const creatorRelayPubkey = import.meta.env.VITE_CREATOR_RELAY_PUBKEY;
-        if (creatorRelayPubkey) {
-            let event = new NDKEvent($ndk);
-            event.kind = NDKKind.GroupAdminAddUser;
-            event.tags.push(["h", group.groupId]);
-            event.tags.push(["p", creatorRelayPubkey]);
-            await event.publish(group.relaySet);
-
-            event = new NDKEvent($ndk);
-            event.kind = 9003;
-            event.tags.push(["h", group.groupId]);
-            event.tags.push(["p", creatorRelayPubkey]);
-            event.tags.push(["permission", "add-user"]);
-            event.tags.push(["permission", "remove-user"]);
-            await event.publish(group.relaySet);
-        }
-
-        return group;
+            // TODO: This should come from the relay
+            [import.meta.env.VITE_CREATOR_RELAY_PUBKEY],
+        )
     }
 
     async function createMonetization(state: CreateState, group: NDKSimpleGroup) {

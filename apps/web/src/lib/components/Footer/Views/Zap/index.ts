@@ -4,9 +4,5 @@ import View from "./View.svelte";
 
 const name = 'zap';
 
-export default {
-    name,
-    Button,
-    LargeButton,
-    View
-}
+export default 
+    Button;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import LayoutHeader from './LayoutHeader.svelte';
 	import { getSummary } from "$utils/article";
 	import { NDKArticle, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import ContentHeader from "$components/Content/Header.svelte";
@@ -32,11 +33,9 @@
             component: Footer,
             props: { article }
         }
-        $layout.footerInMain = true;
+        $layout.navigation = false;
         $layout.fullWidth = false
         $layout.forceShowNavigation = undefined;
-
-        onDestroy(() => { $layout.footerInMain = undefined; })
     }
 
     $: if ($layout.footer?.props) $layout.footer!.props.forceMainView = mainView;
@@ -46,12 +45,18 @@
 
     $: if (!isPreview) {
         if (article.title) $layout.title = article.title;
-        $layout.event = article;
-        $layout.header = undefined;
+        $layout.header = {
+            component: LayoutHeader,
+            props: {
+                event: article,
+                title: article.title,
+            }
+        }
     }
 
     onDestroy(() => {
         $layout.event = undefined;
+        $layout.footer = undefined;
     })
 </script>
 

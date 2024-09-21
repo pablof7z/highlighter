@@ -2,8 +2,11 @@
 	import { Writable } from 'svelte/store';
 	import { getContext } from "svelte";
 	import { Editor } from "svelte-tiptap";
-	import { ArrowArcLeft, ArrowArcRight, ListBullets, ListNumbers, TextB, TextItalic } from 'phosphor-svelte';
+	import { ArrowArcLeft, ArrowArcRight, Link, ListBullets, ListNumbers, Quotes, TextB, TextItalic } from 'phosphor-svelte';
 	import Image from './Toolbar/Image.svelte';
+	import Heading from './Toolbar/Heading.svelte';
+	import { openModal } from '$utils/modal';
+	import LinkModal from './Toolbar/LinkModal.svelte';
 
     const editor = getContext('editorStore') as Writable<Editor>;
     
@@ -13,6 +16,10 @@
     let redo = false;
     let bold = false;
     let italic = false;
+    let blockquote = false;
+    let bulletList = false;
+    let orderedList = false;
+    let link: string | boolean = false;
     
     $: if ($editor && !listening) {
         listening = true;
@@ -21,20 +28,22 @@
             redo = $editor.can().redo();
             bold = $editor.isActive('bold');
             italic = $editor.isActive('italic');
+            blockquote = $editor.isActive('blockquote');
+            bulletList = $editor.isActive('bulletList');
+            orderedList = $editor.isActive('orderedList');
+            link = $editor.getAttributes('link').href;
         }
         $editor.on("transaction", update);
         $editor.on("update", update);
     }
 
-    function addImage() {
-        const url = prompt('Enter the URL of the image:');
-        if (!url) return;
-        $editor.chain().focus().setImage({ src: url }).run();
+    function linkClick() {
+        openModal(LinkModal, { editor: $editor, url: link });
     }
 </script>
 
 {#if $editor}
-    <div class="flex flex-row items-center divide-x divide-border">
+    <div class="flex flex-row items-center divide-x divide-border editor-toolbar">
         <div class="button-group">
             <button on:click={() => $editor.chain().focus().undo().run()} disabled={!undo}>
                 <ArrowArcLeft size={18} weight="bold" />
@@ -45,23 +54,33 @@
         </div>
 
         <div class="button-group">
+            <Heading editor={$editor} />
+        </div>
+
+        <div class="button-group">
             <button on:click={() => $editor.chain().focus().toggleBold().run()} class:active={bold}>
                 <TextB size={18} weight="bold" />
             </button>
             <button on:click={() => $editor.chain().focus().toggleItalic().run()} class:active={italic}>
                 <TextItalic size={18} weight="bold" />
             </button>
+            <button on:click={() => $editor.chain().focus().toggleBlockquote().run()} class:active={blockquote}>
+                <Quotes size={18} weight="bold" />
+            </button>
         </div>
 
         <div class="button-group">
             <Image editor={$editor} />
+            <button on:click={linkClick} class:active={link}>
+                <Link size={18} weight="bold" />
+            </button>
         </div>
 
         <div class="button-group">
-            <button on:click={() => $editor.chain().focus().toggleBulletList().run()} class:active={bold}>
+            <button on:click={() => $editor.chain().focus().toggleBulletList().run()} class:active={bulletList}>
                 <ListBullets size={18} weight="bold" />
             </button>
-            <button on:click={() => $editor.chain().focus().toggleOrderedList().run()} class:active={bold}>
+            <button on:click={() => $editor.chain().focus().toggleOrderedList().run()} class:active={orderedList}>
                 <ListNumbers size={18} weight="bold" />
             </button>
         </div>
@@ -71,22 +90,3 @@
 {:else}
     no toolar
 {/if}
-
-<style lang="postcss">
-    button {
-        @apply p-2 flex items-center justify-center w-10 h-10 cursor-pointer hover:bg-secondary hover:text-secondary-foreground rounded-sm;
-    }
-    
-    button[disabled] {
-        cursor: not-allowed;
-        opacity: 0.2;
-    }
-
-    .button-group {
-        @apply px-2 flex flex-row items-center;
-    }
-
-    .active {
-        @apply bg-secondary text-secondary-foreground;
-    }
-</style>

@@ -13,7 +13,7 @@ import {
 	NDKFilter,
 } from '@nostr-dev-kit/ndk';
 import type NDKSvelte from '@nostr-dev-kit/ndk-svelte';
-import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
+import { persist, createLocalStorage, createNoopStorage, createIndexedDBStorage } from '@macfja/svelte-persistent-store';
 import createDebug from 'debug';
 import type { UserProfileType } from '../../app';
 import { filterValidPTags } from '$utils/event';
@@ -52,11 +52,15 @@ export const activeBlossomServer = persist(
 	'active-blossom-server'
 );
 
-export const userFollows = persist(
-	writable(new Set<Hexpubkey>()),
-	createLocalStorage(),
-	'user-follows-set'
-);
+export const userFollows = writable(new Set<Hexpubkey>());
+
+// export const userFollows = persist(
+// 	writable(new Set<Hexpubkey>()),
+// 	createLocalStorage(),
+// 	'user-follows-set'
+// );
+
+
 
 export const muteList = persist(
 	writable(new Set<Hexpubkey>()),
@@ -64,9 +68,12 @@ export const muteList = persist(
 	'user-mute-list'
 );
 
+// This is an in-memory store that is persisted once the compute finishes
+const _networkFollows = writable(new Map<Hexpubkey, number>());
+
 export const networkFollows = persist(
 	writable(new Map<Hexpubkey, number>()),
-	createLocalStorage(),
+	createIndexedDBStorage(),
 	'network-follows-map'
 );
 
@@ -86,6 +93,7 @@ export const userActiveSubscriptions = writable<Map<Hexpubkey, string>>(new Map(
  * Current user's lists
  */
 export const userArticleCurations = writable<Map<string, NDKList>>(new Map());
+export const userHighlightCurations = writable<Map<string, NDKList>>(new Map());
 export const userVideoCurations = writable<Map<string, NDKList>>(new Map());
 export const userGenericCuration = writable<NDKList>(new NDKList($ndk, { kind: NDKKind.BookmarkList, created_at: 0 } as NostrEvent));
 
@@ -129,6 +137,7 @@ export async function prepareSession(): Promise<void> {
 			mutesStore: muteList,
 			blossomStore: userBlossom,
 			userArticleCurationsStore: userArticleCurations,
+			userHighlightCurationsStore: userHighlightCurations,
 			userVideoCurationsStore: userVideoCurations,
 			userGenericCurationStore: userGenericCuration,
 			categorizedUserListsStore: categorizedUserLists,
@@ -139,9 +148,10 @@ export async function prepareSession(): Promise<void> {
 			listsKinds: [
 				NDKKind.ArticleCurationSet,
 				NDKKind.VideoCurationSet,
-				NDKKind.CategorizedHighlightList,
+				NDKKind.HighlightSet,
 				NDKKind.BookmarkList,
 				NDKKind.CategorizedPeopleList,
+				NDKKind.TierList
 			],
 
 			since: $sessionUpdatedAt,
@@ -151,7 +161,7 @@ export async function prepareSession(): Promise<void> {
 			resolve();
 
 			notificationsSubscribe($ndk, $currentUser);
-			walletInit($ndk);
+			// walletInit($ndk);
 
 			const $userFollows = get(userFollows);
 			const $networkFollows = get(networkFollows);
@@ -164,11 +174,16 @@ export async function prepareSession(): Promise<void> {
 				const kind3RelaySet = NDKRelaySet.fromRelayUrls(["wss://purplepag.es/"], $ndk);
 
 				fetchData('wot', $ndk, Array.from($currentUserFollows), {
-					followsStore: networkFollows,
+					followsStore: _networkFollows,
 					groupsCountStore: networkGroupsList,
 					closeOnEose: true,
 					since: $sessionUpdatedAt,
 				}, kind3RelaySet).then(() => {
+					const start = Date.now();
+					networkFollows.set(get(_networkFollows));
+					const end = Date.now();
+					const diff = end - start;
+					console.log(`networkFollows.set took ${diff}ms`);
 					sessionUpdatedAt.set(Math.floor(Date.now() / 1000));
 				})
 			}
@@ -203,6 +218,7 @@ interface IFetchDataOptions {
 	blossomStore?: Writable<NDKEvent | null>;
 	activeSubscriptionsStore?: Writable<Map<Hexpubkey, string>>;
 	userArticleCurationsStore?: Writable<Map<string, NDKList>>;
+	userHighlightCurationsStore?: Writable<Map<string, NDKList>>;
 	userVideoCurationsStore?: Writable<Map<string, NDKList>>;
 	userGenericCurationStore?: Writable<NDKList>;
 	categorizedUserListsStore?: Writable<Map<string, NDKList>>;
@@ -369,6 +385,12 @@ async function fetchData(
 					return lists;
 				});
 				break;
+			case NDKKind.HighlightSet:
+					opts.userHighlightCurationsStore!.update((lists) => {
+						lists.set(list.tagId(), list);
+						return lists;
+					});
+					break;
 			case NDKKind.VideoCurationSet:
 				opts.userVideoCurationsStore!.update((lists) => {
 					lists.set(list.tagId(), list);

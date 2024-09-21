@@ -44,20 +44,14 @@
     </div>
 
     <div class="flex flex-row gap-2 items-center">
-        <Button on:click={search} variant="secondary">
+        <Button on:click={search} variant="outline">
             <MagnifyingGlass size={24} />
         </Button>
         
         {#if $currentUser}
-            {#if !ownsGroups}
-                <Button variant="accent" href="/studio">
-                    Create Publication
-                </Button>
-            {:else}
-                <Button variant="secondary" href="/studio">
-                    Dashboard
-                </Button>
-            {/if}
+            <Button variant="secondary" href="/studio">
+                Studio
+            </Button>
             <NewItemButton />
         {:else}
             <Button href="/signup">

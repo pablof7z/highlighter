@@ -1,4 +1,6 @@
 import Button from "./Button.svelte";
+import List from "./List.svelte";
+import GroupTiers from "./GroupTiers.svelte";
 import { calculateRelaySetFromEvent, NDKEvent, NDKRelaySet, NDKTag } from "@nostr-dev-kit/ndk";
 import { get } from "svelte/store";
 import { ndk } from "$stores/ndk";
@@ -6,15 +8,24 @@ import { GroupData } from "$components/Groups";
 
 export type Scope = 'public' | 'private';
 
+export type GroupTierEntry = {
+    tierId: string;
+    groupId: string;
+    relayUrls: string[];
+}
+
 export type State = {
     scope?: Scope;
     groups?: GroupData[];
+    tiers?: GroupTierEntry[];
 
     relaySet?: NDKRelaySet;
 }
 
 export {
-    Button
+    Button,
+    List,
+    GroupTiers
 }
 
 export function produceTags(state: State, eventType: 'main' | 'preview'): NDKTag[] {

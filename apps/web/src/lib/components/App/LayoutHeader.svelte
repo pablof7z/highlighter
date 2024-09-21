@@ -12,14 +12,29 @@
 	import { CaretDown } from "phosphor-svelte";
 	import BackButton from "./Navigation/BackButton.svelte";
     import * as Groups from "$components/Groups";
+	import { throttle } from "@sveu/shared";
 
     export let containerClass: string = "";
     export let scrollDir: 'up' | 'down' | undefined;
     export let scrollPercentage: number;
+
+    export let collapseNavOptions = true;
+
+    const changeShowNavOptions = throttle((value: boolean) => {
+        collapseNavOptions = value;
+    }, 10);
+
+    $: {
+        if ($layout.navigation && $layout.navigation.length > 1 && (scrollDir === 'down' && !$layout.forceShowNavigation)) {
+            changeShowNavOptions(false);
+        } else {
+            changeShowNavOptions(true);
+        }
+    }
 </script>
 
 <div class="flex flex-row justify-between items-center h-full w-full gap-2">
-    {#if $layout.header?.component}
+    {#if $layout.header && $layout.header.component}
         <div class="w-full h-full flex flex-col">
             <svelte:component
                 this={$layout.header.component}
@@ -29,22 +44,23 @@
         </div>
     {:else}
         <div class="flex flex-row items-stretch w-full py-2">
-            {#if $layout.sidebar === false}
+            <!-- {#if $layout.sidebar === false}
                 {#if $page.url.pathname !== "/"}
                     <div class="fixed max-sm:hidden ml-2">
                         <HomeButton />
                     </div>
                 {/if}
-            {/if}
+            {/if} -->
             
             <div
                 class="
                     flex items-center justify-between px-2 mx-auto w-full {containerClass}
-                    { !$layout.sidebar && !$layout.fullWidth ? "max-w-[var(--content-focused-width)] mx-auto" : "" }
                 "
             >
                 <div class="flex flex-row gap-2 items-center w-full truncate">
-                    <BackButton />
+                    {#if $layout.back !== undefined}
+                        <BackButton />
+                    {/if}
 
                     {#if $layout?.iconUrl}
                         <!-- svelte-ignore a11y-missing-attribute -->
@@ -75,8 +91,8 @@
                 <!-- If we explicit options, we show that -->
                 {#if $layout?.options}
                     <HeaderRightButton />
-                {:else if $layout.navigation && $layout.navigation.length > 1 && (scrollDir === 'down' && !$layout.forceShowNavigation)}
-                    <div in:fade>
+                {:else if $layout.navigation && collapseNavOptions}
+                    <!-- <div in:fade>
                         <Button variant="accent" size="sm" class="rounded-full" on:click={(e) => $layout.forceShowNavigation = true }>
                             {#if ($layout.activeOption||$layout.navigation[0]).icon}
                                 <svelte:component
@@ -90,7 +106,7 @@
                             {/if}
                             <CaretDown size={16} class="ml-2" />
                         </Button>
-                    </div>
+                    </div> -->
                 {:else if $layout.event}
                     <RelativeTime event={$layout.event} class="text-muted-foreground !text-sm ml-4 whitespace-nowrap mr-2" />
                     <Event.Dropdown
