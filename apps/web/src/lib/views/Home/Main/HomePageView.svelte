@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { wotFilteredStore } from '$stores/wot';
-	import { NDKArticle, NDKHighlight, NDKKind, NDKVideo } from '@nostr-dev-kit/ndk';
+	import { NDKHighlight, NDKKind, NDKRelaySet, NDKVideo, NDKSimpleGroupMetadata } from '@nostr-dev-kit/ndk';
 	
 	import { ndk } from "$stores/ndk";
-	import { groupsList, userFollows } from "$stores/session";
+	import { userFollows } from "$stores/session";
 	import { derived, Readable } from "svelte/store";
     import * as Card from '$components/Card';
     import Footer from "./Footer.svelte";
@@ -13,10 +14,6 @@
 	import Groups from '../Sections/Groups.svelte';
 	import Reads from './Sections/Reads.svelte';
 	import ReadsSidebar from './Sections/ReadsSidebar.svelte';
-	import Generic from '$components/Groups/Sidebar/Generic.svelte';
-	import Header from './Header.svelte';
-	import { NavigationOption } from '../../../../app';
-	import HorizontalOptionsList from '$components/HorizontalOptionsList.svelte';
 
     $layout.navigation = [
         { value: "", name: "👋 Newest", href: '/reads' },
@@ -35,11 +32,8 @@
     $layout.sidebar = false;
     $layout.forceShowNavigation = true;
 
-    const videos = $ndk.storeSubscribe([
-        { kinds: [NDKKind.HorizontalVideo, NDKKind.HorizontalVideo+1], authors: Array.from($userFollows), limit: 50 },
-        { kinds: [NDKKind.HorizontalVideo], authors: Array.from($userFollows), limit: 50 },
-    ], undefined, NDKVideo);
-    const filteredVideos = wotFilteredStore(videos) as Readable<NDKVideo[]>;
+    const relaySet = NDKRelaySet.fromRelayUrls([ "ws://localhost:2929" ], $ndk);
+    const groups = $ndk.storeSubscribe({ kinds: [NDKKind.GroupMetadata] }, { relaySet }, NDKSimpleGroupMetadata);
 
     let highlightsEosed = false;
     const highlights = $ndk.storeSubscribe([
@@ -57,12 +51,29 @@
             new Set(Object.values(vanityUrls))
         ).map(pubkey => $ndk.getUser({ pubkey }))
         .map(user => { return { user, id: user.pubkey } });
+    
+    onDestroy(() => {
+        groups.unsubscribe();
+        highlights.unsubscribe();
+
+    })
 </script>
 
-<div class="flex flex-col sm:gap-[var(--section-vertical-padding)] mx-auto w-fit lg:px-6">
+<div class="flex flex-col sm:gap-[var(--section-vertical-padding)] mx-auto w-full">
+    <ul class="w-1/3 border-x overflow-clip flex flex-col divide-y">
+        {#each $groups as group}
+            <li
+                class="h-40 rounded"
+            >
+                <img src={group.picture} />
+                <div class="text-lg font-medium">{group.name}</div>
+                {group.about}
+            </li>
+        {/each}
+    </ul>
     <!-- <Groups /> -->
     
-    <div class="flex flex-row items-start gap-6 w-full">
+    <div class="flex flex-row items-start gap-6 w-2/3">
         <div class="w-full lg:w-[var(--content-focused-width)]">
             <Reads />
         </div>

@@ -2,6 +2,12 @@ import { getDefaultRelaySet } from '$utils/ndk';
 import { persist, createLocalStorage } from '@macfja/svelte-persistent-store';
 import { writable } from 'svelte/store';
 
+export const walletType = persist(
+	writable<'webln' | 'nip-60' | null>(null),
+	createLocalStorage(),
+	'wallet-type'
+);
+
 export const hasSwiped = persist(
 	writable<boolean>(false),
 	createLocalStorage(),

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { NDKPrivateKeySigner, NDKUser, NDKNip46Signer, NDKEvent } from "@nostr-dev-kit/ndk";
-	import { loginState } from '$stores/session';
 	import type { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
     import { createEventDispatcher, onMount } from 'svelte';
 	import currentUser, { loginMethod, nip46LocalKey, userPubkey } from "$stores/currentUser";
@@ -114,7 +113,6 @@
             $ndk.signer = remoteSigner;
             loginMethod.set('nip46');
             userPubkey.set($currentUser.pubkey);
-            $loginState = "logged-in";
             popup?.close();
             dispatch("signed-up");
         } catch (e) {

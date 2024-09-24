@@ -118,19 +118,7 @@
         await e.publish(group.relaySet);
     }
 
-    async function pinGroup(group: NDKSimpleGroup) {
-        $groupsList ??= new NDKList($ndk);
-        $groupsList.kind = NDKKind.SimpleGroupList;
-
-        groupData = {
-            id: group.groupId,
-            relayUrls: group.relayUrls(),
-        }
-
-        $groupsList.addItem([ "group", group.groupId, ...group.relayUrls() ]);
-        await $groupsList.publishReplaceable();
-
-    }
+    
 
     async function create(state: CreateState) {
         const group = await createGroup(state);

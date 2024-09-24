@@ -12,7 +12,7 @@ import {
 	NDKRelayList
 } from '@nostr-dev-kit/ndk';
 import { get } from 'svelte/store';
-import { loginState, userFollows, userProfile } from '$stores/session';
+import { userFollows, userProfile } from '$stores/session';
 import createDebug from 'debug';
 import currentUser, { loginMethod, nip46LocalKey, privateKey, userPubkey } from '$stores/currentUser';
 import { ndk, bunkerNDK } from '$stores/ndk';
@@ -68,7 +68,6 @@ export async function nip46Login(remotePubkey?: Hexpubkey) {
 	currentUser.set(remoteUser);
 	const connected = async () => {
 		d('bunker relay ready');
-		loginState.set('contacting-remote-signer');
 
 		await nip46SignIn(existingPrivateKey, remoteUser!);
 	}
@@ -111,7 +110,6 @@ export async function login(payload: string | undefined) {
 
 	switch (method) {
 		case 'none': {
-			loginState.set(null);
 			return null;
 		}
 		case 'guest':
@@ -125,7 +123,6 @@ export async function login(payload: string | undefined) {
 		}
 		case 'nip07':
 			u = await nip07SignIn($ndk);
-			loginState.set('logged-in');
 			d(`nip07 login ${u}`);
 			break;
 		case 'nip46': {
@@ -226,7 +223,6 @@ export function loggedIn(signer: NDKSigner, u: NDKUser, method: LoginMethod) {
 	$ndk.signer = signer;
     u.ndk = $ndk;
     currentUser.set(u)
-    loginState.set("logged-in");
 
 	loginMethod.set(method);
 	userPubkey.set(u.pubkey);
@@ -237,7 +233,6 @@ export function logout(): void {
 	$ndk.signer = undefined;
 	localStorage.clear();
 	currentUser.set(undefined);
-	loginState.set('logged-out');
 	userFollows.set(new Set());
 	userFollows.delete();
 	userPubkey.reset();

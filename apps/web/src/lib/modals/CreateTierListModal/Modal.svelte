@@ -14,6 +14,8 @@
 	import { defaultRelays } from "$utils/const";
 	import { Input } from "$components/ui/input";
 	import { CaretDoubleRight, CaretRight } from "phosphor-svelte";
+    import Option from "$lib/components/Publication/Pricing/Option.svelte";
+	import { presets } from "$components/Publication/Pricing";
 
     export let tier: NDKSubscriptionTier;
     export let onSave: () => void;
@@ -23,25 +25,7 @@
 
     let selection: string;
 
-    const presets: NDKSubscriptionAmount[][] = [
-        [
-            { amount: 200, currency: "USD", term: "monthly" },
-            { amount: 2000, currency: "USD", term: "yearly" },
-            { amount: 4000, currency: "sats", term: "monthly" }
-        ], [
-            { amount: 500, currency: "USD", term: "monthly" },
-            { amount: 3000, currency: "USD", term: "yearly" },
-            { amount: 5000, currency: "sats", term: "monthly" }
-        ], [
-            { amount: 1000, currency: "USD", term: "monthly" },
-            { amount: 10000, currency: "USD", term: "yearly" },
-            { amount: 10000, currency: "sats", term: "monthly" }
-        ], [
-            { amount: 2500, currency: "USD", term: "monthly" },
-            { amount: 25000, currency: "USD", term: "yearly" },
-            { amount: 50000, currency: "sats", term: "monthly" }
-        ]
-    ];
+    
 
     async function createTiers(groupId: string, relays: string[]) {
         const selectedPreset = presets[parseInt(selection)];
@@ -150,37 +134,8 @@
 
     <div class="grid grid-cols-2 gap-2">
         {#each presets as preset, i}
-            <RadioButton color="gold" skipCheck bind:currentValue={selection} value={i.toString()}>
-                {#each preset as amount, j}
-                    {#if j === 0}
-                        <div class="text-4xl font-bold">
-                            {tierAmountToString(amount)}
-                        </div>
-                    {:else}
-                        <div class="text-muted-foreground text-xs whitespace-nowrap">
-                            {tierAmountToString(amount)}
-                        </div>
-                    {/if}
-                {/each}
-            </RadioButton>
+            <Option amounts={preset} bind:selection {i} />
         {/each}
-        <!-- <RadioButton color="gold" skipCheck bind:currentValue={selection} value="custom" class="col-span-3">
-            Custom
-
-            {#if selection === "custom"}
-                {#each amounts as amount, i}
-                    <div class="w-full" in:slide>
-                        <TierAmountLine
-                            bind:amount={amount}
-                            forceOpen={i === amounts.length - 1}
-                            on:delete={() => {
-                                amounts = amounts.filter((_, index) => index !== i);
-                            }}
-                        />
-                    </div>
-                {/each}
-            {/if}
-        </RadioButton> -->
     </div>
 
     <div class="text-xs text-muted-foreground w-full">

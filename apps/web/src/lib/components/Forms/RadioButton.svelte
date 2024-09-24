@@ -27,11 +27,13 @@
 " on:click={onClick}>
     <div class="flex flex-row items-start w-full">
         <div class="flex flex-row gap-10 justify-stretch items-center w-full">
-            <div class="flex flex-col items-start grow w-full">
-                <span><slot /></span>
-                <div>
-                    <slot name="description" />
-                </div>
+            <div class="flex flex-col items-start grow w-full gap-1">
+                <span class="font-medium"><slot /></span>
+                {#if $$slots.description}
+                    <div class="text-muted-foreground text-xs">
+                        <slot name="description" />
+                    </div>
+                {/if}
             </div>
 
             {#if !$$props.skipCheck}

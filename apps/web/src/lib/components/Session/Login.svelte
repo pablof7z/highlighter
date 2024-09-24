@@ -5,7 +5,6 @@
 	import { closeModal } from '$utils/modal';
 	import { nip19 } from "nostr-tools";
 	import currentUser, { loginMethod, nip46LocalKey, privateKey, userPubkey } from '$stores/currentUser';
-	import { loginState } from '$stores/session';
 	import { bunkerNDK, ndk } from '$stores/ndk';
 	import { Input } from '$components/ui/input';
 	import { Key, MagnifyingGlass } from 'phosphor-svelte';
@@ -45,7 +44,6 @@
         $currentUser = $ndk.getUser({npub});
         $currentUser = $currentUser;
         userPubkey.set($currentUser.pubkey);
-        loginState.set('logged-in');
         closeModal();
     }
 
@@ -171,7 +169,6 @@
         $ndk.signer = signer;
         $currentUser.ndk = $ndk;
         userPubkey.set($currentUser.pubkey);
-        loginState.set('logged-in');
         privateKey.set(signer.privateKey);
         loginMethod.set('pk');
         dispatch('logged-in')

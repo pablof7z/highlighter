@@ -1,6 +1,5 @@
 import currentUser, { loginMethod, nip46LocalKey, userPubkey } from '$stores/currentUser';
 import { ndk } from '$stores/ndk';
-import { loginState } from '$stores/session';
 import { loggedIn, login, nip46Login, nip46SignIn } from '$utils/login';
 import { createGuestAccount } from '$utils/user/guest';
 import { NDKNip07Signer, NDKUser } from '@nostr-dev-kit/ndk';
@@ -24,7 +23,6 @@ export async function browserSetup(useGuest = true) {
 
     if (pubkey) {
         const u = $ndk.getUser({pubkey});
-        loginState.set("logging-in");
     }
 
     const method = get(loginMethod);

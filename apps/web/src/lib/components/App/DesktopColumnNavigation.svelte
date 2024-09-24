@@ -1,8 +1,10 @@
 <script lang="ts">
+	import WalletConnect from '$modals/WalletConnect';
+    import { Inbox, Bell, Highlighter } from 'lucide-svelte';
 	import { Button } from "$components/ui/button";
 	import LogoSmall from "$icons/LogoSmall.svelte";
     import { toggleMode } from "mode-watcher";
-	import { Gear, Bell, House, Plus, PresentationChart, BookmarkSimple, Wallet, Moon } from "phosphor-svelte";
+	import { Gear, Plus, PresentationChart, BookmarkSimple, Wallet, Moon, Tray, House } from "phosphor-svelte";
     import * as Tooltip from "$lib/components/ui/tooltip";
 	import CurrentUser from "$components/CurrentUser.svelte";
 	import ToggleDark from "$components/buttons/ToggleDark.svelte";
@@ -13,6 +15,7 @@
 	import { derived } from "svelte/store";
 	import { userArticleCurations } from "$stores/session";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+	import { openModal } from '$utils/modal';
 
     let activeHighlights: boolean;
 
@@ -43,7 +46,6 @@
                 <Button variant={activeItem === '/' ? "secondary" : "ghost"} class="w-12 h-12 p-2" href="/">
                     <House
                         size={32}
-                        weight={activeItem === '/' ? 'fill' : 'regular'}
                     />
                 </Button>
             </Tooltip.Trigger>
@@ -62,10 +64,23 @@
                 Highlights
             </Tooltip.Content>
         </Tooltip.Root>
+        
+        <Tooltip.Root openDelay={0}>
+            <Tooltip.Trigger>
+                <Button variant={activeItem === '/inbox' ? "secondary" : "ghost"} class="w-12 h-12 p-2" href="/inbox">
+                    <Inbox
+                        size={32}
+                    />
+                </Button>
+            </Tooltip.Trigger>
+            <Tooltip.Content side="right">
+                Inbox
+            </Tooltip.Content>
+        </Tooltip.Root>
 
         <Tooltip.Root openDelay={0}>
             <Tooltip.Trigger>
-                <Button variant={activeItem === '/' ? "notifications" : "ghost"} class="w-12 h-12 p-2" href="/notifications">
+                <Button variant={activeItem === '/notifications' ? "secondary" : "ghost"} class="w-12 h-12 p-2" href="/notifications">
                     <Bell
                         size={32}
                         weight={activeItem === '/notifications' ? 'fill' : 'regular'}
@@ -130,7 +145,7 @@
                     <Gear size={20} weight="bold" class="mr-3" />
                     Settings
                 </DropdownMenu.Item>
-                <DropdownMenu.Item href="/settings">
+                <DropdownMenu.Item on:click={() => openModal(WalletConnect)}>
                     <Wallet size={20} weight="bold" class="mr-3" />
                     Connect Wallet
                 </DropdownMenu.Item>

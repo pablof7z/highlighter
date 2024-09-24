@@ -22,6 +22,7 @@ import { writable } from 'svelte/store';
 import { creatorRelayPubkey } from '$utils/const';
 import { notificationsSubscribe } from './notifications';
 import { onPaymentComplete, walletInit } from './wallet.js';
+import { initGroups } from './groups';
 
 const d = createDebug('HL:session');
 const $ndk = getStore(ndk);
@@ -38,10 +39,6 @@ export const userProfile = persist(
 	createLocalStorage(),
 	'user-profile'
 );
-
-export type LoginState = 'logging-in' | 'logged-in' | 'contacting-remote-signer' | 'logged-out';
-
-export const loginState = writable<LoginState | null>(null);
 
 export const debugMode = writable<boolean>(false);
 
@@ -162,6 +159,13 @@ export async function prepareSession(): Promise<void> {
 
 			notificationsSubscribe($ndk, $currentUser);
 			// walletInit($ndk);
+
+			const $groupsList = get(groupsList);
+			if ($groupsList) {
+				initGroups($groupsList);
+			} else {
+				console.log('here')
+			}
 
 			const $userFollows = get(userFollows);
 			const $networkFollows = get(networkFollows);
@@ -479,11 +483,6 @@ async function fetchData(
 			});
 		}
 
-		if (opts.supportStore) {
-			filters.push({ authors, kinds: [7001 as number] });
-		}
-
-		console.log("Starting subscription for", name);
 		const userDataSubscription = $ndk.subscribe(filters, {
 			closeOnEose: opts.closeOnEose!,
 			groupable: false,

@@ -11,6 +11,8 @@
 	import { slide } from "svelte/transition";
 	import { openModal } from '$utils/modal';
 	import { Button } from '$components/ui/button';
+	import { TimerIcon } from 'lucide-svelte';
+    import * as Select from "$components/ui/select";
 
     export let state: Writable<Studio.State<Studio.Type>>;
         
@@ -19,6 +21,15 @@
 
     let event = Studio.getEventFromState($state);
     let summary = event?.summary;
+
+    const timeOptions = [
+        { label: "1 day", value: 60 * 60 * 24 },
+        { label: "1 week", value: 60 * 60 * 24 * 7 },
+        { label: "2 weeks", value: 60 * 60 * 24 * 14 },
+        { label: "1 month", value: 60 * 60 * 24 * 30 },
+    ]
+
+    let earlyAccess = false;
 </script>
 
 <div class="my-10 flex flex-col">
@@ -41,15 +52,16 @@
                 <div class="flex flex-row gap-2 items-center">
                     
                     <div class="flex flex-col items-start gap-0 5">
-                        <b class="text-lg">Public preview</b>
-                        <div class="text-muted-foreground text-sm">
-                            {#if $state.withPreview}
-                                Non-members will see a preview of this post.
-                            {:else}
-                                Non-members will not know this post exists.
-                            {/if}
-                        </div>
+                        Public preview
                     </div>
+                </div>
+
+                <div slot="description">
+                    {#if $state.withPreview}
+                        Non-members will see a preview of this post.
+                    {:else}
+                        Non-members will not know this post exists.
+                    {/if}
                 </div>
 
                 <!-- <Button
@@ -60,6 +72,45 @@
                     Edit Preview
                 </Button> -->
             </Checkbox>
+        </div>
+
+        <div transition:slide class="my-5">
+            <div class="p-3 border rounded flex flex-row items-center gap-2">
+                <TimerIcon class="w-10 h-10" />
+
+                <div class="flex flex-col gap-1 grow">
+                    Early-access mode
+    
+                    <div class="text-xs text-muted-foreground">
+                        {#if $state.publicIn}
+                            This post will be made public after this time
+                        {:else}
+                            This post will not be made public.
+                        {/if}
+                    </div>
+
+                </div>
+
+
+
+                    <Select.Root portal={null} onSelectedChange={(e) => {
+                        if (e?.value) $state.publicIn = e.value;
+                        else $state.publicIn = undefined;
+                    }}>
+                        <Select.Trigger class="w-[180px]" on:click={(e) => e.stopImmediatePropagation()}>
+                            <Select.Value placeholder="Disabled" />
+                        </Select.Trigger>
+                        <Select.Content>
+                            <Select.Group>
+                                <Select.Item value={null} label={"Disabled"}>Disabled</Select.Item>
+                                {#each timeOptions as opt}
+                                    <Select.Item value={opt.value} label={opt.label}>{opt.label}</Select.Item>
+                                {/each}
+                            </Select.Group>
+                        </Select.Content>
+                        <Select.Input name="favoriteFruit" />
+                    </Select.Root>
+            </div>
         </div>
     {/if}
 
@@ -105,8 +156,8 @@
                 Publish
                 <PaperPlaneRight size={20} class="ml-2" weight="fill" />
             {:else}
+                <Timer size={20} class="mr-2" />
                 Schedule
-                <Timer size={20} class="ml-2" weight="fill" />
             {/if}
         </Button>
     </div>

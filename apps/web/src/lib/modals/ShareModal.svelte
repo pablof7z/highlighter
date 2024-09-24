@@ -246,12 +246,12 @@
 
     <svelte:fragment slot="footerExtra">
         {#if selectedView === "nostr"}
-            <Checkbox class="text-sm ml-8" bind:checked={repost}>
+            <!-- <Checkbox class="text-sm ml-8" bind:checked={repost}>
                 Repost in 8 hours
                 <span class="text-xs font-light" slot="description">
                     Reach followers in other timezones
                 </span>
-            </Checkbox>
+            </Checkbox> -->
         {/if}
     </svelte:fragment>
 </ModalShell>

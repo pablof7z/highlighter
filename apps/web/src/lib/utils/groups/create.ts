@@ -1,6 +1,7 @@
 import { get } from "svelte/store";
 import { ndk } from "../../stores/ndk";
 import { NDKEvent, NDKKind, NDKRelaySet, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
+import currentUser from "$stores/currentUser";
 
 async function createGroup(
     groupId: string,
@@ -19,7 +20,10 @@ async function createGroup(
 
     await group.setMetadata({ name, picture, about });
 
+    const $currentUser = get(currentUser);
+
     for (const adminPubkey of adminPubkeys) {
+        if (adminPubkey === $currentUser?.pubkey) continue;
         let event = new NDKEvent($ndk);
         event.kind = NDKKind.GroupAdminAddUser;
         event.tags.push(["h", group.groupId]);

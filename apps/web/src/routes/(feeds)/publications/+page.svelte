@@ -1,10 +1,9 @@
 <script lang="ts">
-	import FeaturedCommunityCard from './../../../lib/components/Card/FeaturedCommunityCard.svelte';
-	import { NDKTag } from '@nostr-dev-kit/ndk';
+	import FeaturedCommunityCard from '$components/Card/FeaturedCommunityCard.svelte';
+	import { NDKSimpleGroupMetadata, NDKTag } from '@nostr-dev-kit/ndk';
 	import { mainContentKinds } from '$utils/event';
 	import { derived } from 'svelte/store';
 	import { NDKRelaySet } from '@nostr-dev-kit/ndk';
-	import { NDKRelay } from '@nostr-dev-kit/ndk';
 	import { NDKKind } from '@nostr-dev-kit/ndk';
 	import { ndk } from '$stores/ndk';
 	import { layout } from "$stores/layout";
@@ -12,7 +11,6 @@
 	import { Button } from "$components/ui/button";
 	import { ArrowRight } from "phosphor-svelte";
     import * as Groups from "$components/Groups";
-    import CommunityCard from "$components/Card/Community.svelte";
 
     $layout.sidebar = false;
     $layout.fullWidth = false;
@@ -21,6 +19,7 @@
         "wss://relay.highlighter.com",
         "wss://relay.0xchat.com",
         "wss://groups.fiatjaf.com",
+        "ws://localhost:2929"
     ], $ndk)
 
     const articles = $ndk.storeSubscribe({kinds: mainContentKinds}, { relaySet, closeOnEose: true})
@@ -40,7 +39,7 @@
     
     const communities = $ndk.storeSubscribe({
         kinds: [NDKKind.GroupMetadata]
-    }, { relaySet, closeOnEose: true})
+    }, { relaySet, closeOnEose: true}, NDKSimpleGroupMetadata);
     const tags = derived(communities, $communities => {
         return $communities.map(community => {
             return [ "group", community.dTag!, community.relay?.url ]
@@ -69,6 +68,10 @@
         </Button>
     </Card.Footer>
 </Card.Root>
+
+{#each $communities as community (community.id)}
+    <p>{community.name}</p>
+{/each}
 
 <Groups.RootList tags={$groupTags} let:group>
     <FeaturedCommunityCard {group} />

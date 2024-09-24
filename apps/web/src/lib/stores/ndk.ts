@@ -28,7 +28,7 @@ export const explicitRelayUrls = [
     // "wss://relay.highlighter.com/",
     // 'wss://relay.nostr.band/',
     'wss://purplepag.es/',
-    // "ws://localhost:2929"
+    "ws://localhost:2929"
 ];
 
 const _ndk: NDKSvelte = new NDKSvelte({

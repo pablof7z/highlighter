@@ -3,7 +3,6 @@ import currentUser from '$stores/currentUser';
 import { NDKList, NDKTag, NDKEvent, NDKKind, NDKRelaySet, NDKSimpleGroupMetadata, NDKSimpleGroupMemberList, NDKSubscriptionTier } from '@nostr-dev-kit/ndk';
 import { writable, get, type Readable, type Writable } from 'svelte/store';
 import { GroupData } from '.';
-import { group } from 'console';
 
 export function loadGroupDataFromList(
     list: Readable<NDKList>
@@ -51,7 +50,6 @@ export function loadGroupsData(
     const $currentUser = get(currentUser);
 
     function createRelayToGroupMap(tags: NDKTag[]): Map<string, string[]> {
-
         tags.forEach(([type, id, ...relays]) => {
             groupMap.set(id, relays);
 
