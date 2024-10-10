@@ -141,13 +141,13 @@
         </div>
     {/if}
 
-    {#if $userGroupsList}
+    <!-- {#if $userGroupsList}
         <Groups.RootList tags={$userGroupsList.items} let:group>
             <Card.Community
                 {group}
             />
         </Groups.RootList>
-    {/if}
+    {/if} -->
 
     {#each priorityBlocks as block}
         {#if block === "videos"}

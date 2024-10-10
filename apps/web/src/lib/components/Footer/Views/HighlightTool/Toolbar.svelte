@@ -30,13 +30,12 @@
         hl.publish();
 
         toast.success("Highlight saved", {
-            action: {
-                label: "Open",
-                onClick: () => {
-                    open('highlight-viewer');
-                    $layout.footer!.props!.highlight = hl;
-                }
-            }
+            // action: {
+            //     label: "Open",
+            //     onClick: () => {
+            //         $layout.footer!.props!.highlight = hl;
+            //     }
+            // }
         })
     }
 

@@ -32,8 +32,8 @@
     $layout.sidebar = false;
     $layout.forceShowNavigation = true;
 
-    const relaySet = NDKRelaySet.fromRelayUrls([ "ws://localhost:2929" ], $ndk);
-    const groups = $ndk.storeSubscribe({ kinds: [NDKKind.GroupMetadata] }, { relaySet }, NDKSimpleGroupMetadata);
+    // const relaySet = NDKRelaySet.fromRelayUrls([ "ws://localhost:2929" ], $ndk);
+    // const groups = $ndk.storeSubscribe({ kinds: [NDKKind.GroupMetadata] }, { relaySet }, NDKSimpleGroupMetadata);
 
     let highlightsEosed = false;
     const highlights = $ndk.storeSubscribe([
@@ -53,14 +53,14 @@
         .map(user => { return { user, id: user.pubkey } });
     
     onDestroy(() => {
-        groups.unsubscribe();
+        // groups.unsubscribe();
         highlights.unsubscribe();
 
     })
 </script>
 
 <div class="flex flex-col sm:gap-[var(--section-vertical-padding)] mx-auto w-full">
-    <ul class="w-1/3 border-x overflow-clip flex flex-col divide-y">
+    <!-- <ul class="w-1/3 border-x overflow-clip flex flex-col divide-y">
         {#each $groups as group}
             <li
                 class="h-40 rounded"
@@ -70,17 +70,17 @@
                 {group.about}
             </li>
         {/each}
-    </ul>
+    </ul> -->
     <!-- <Groups /> -->
     
-    <div class="flex flex-row items-start gap-6 w-2/3">
-        <div class="w-full lg:w-[var(--content-focused-width)]">
+    <div class="flex flex-col-reverse items-start gap-6">
+        <div class="w-full lg:w-[var(--content-focused-width)] mx-auto">
             <Reads />
         </div>
 
-        <div class="hidden md:flex flex-col w-[260px] h-full">
+        <!-- <div class="hidden md:flex flex-row h-full gap-4">
             <ReadsSidebar />
-        </div>
+        </div> -->
     </div>
 
 </div>

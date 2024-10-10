@@ -26,9 +26,9 @@
 
     $: if (userProfile) {
 		const n = userProfile.displayName ?? userProfile.name
-		if (n) name = `${n}'s Highlighter`
-		picture = userProfile.image;
-		about = userProfile.about;
+		if (n) name ??= `${n}'s Highlighter`
+		picture ??= userProfile.image;
+		about ??= userProfile.about;
 	}
 
     $: state.update(s => ({ ...s, name, about, picture, relays: $relays }));

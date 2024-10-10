@@ -17,7 +17,7 @@
         <div class="text-lg">Value-for-value</div>
 
         <div slot="description" class="text-muted-foreground lg:text-xs text-sm flex flex-col gap-2">
-            <p>Provide all your content for free and let your community support you with tips.</p>
+            <p>Provide all your content for free and let your community support you.</p>
 
             <Badge class="bg-gold text-black w-fit">
                 Maximizes distribution

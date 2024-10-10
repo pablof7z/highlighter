@@ -7,7 +7,6 @@
 	import { Gear, Plus, PresentationChart, BookmarkSimple, Wallet, Moon, Tray, House } from "phosphor-svelte";
     import * as Tooltip from "$lib/components/ui/tooltip";
 	import CurrentUser from "$components/CurrentUser.svelte";
-	import ToggleDark from "$components/buttons/ToggleDark.svelte";
 	import NewItemButton from "$views/Home/Main/NewItemButton.svelte";
 	import { page } from "$app/stores";
 	import Separator from "$components/ui/separator/separator.svelte";
@@ -65,7 +64,7 @@
             </Tooltip.Content>
         </Tooltip.Root>
         
-        <Tooltip.Root openDelay={0}>
+        <!-- <Tooltip.Root openDelay={0}>
             <Tooltip.Trigger>
                 <Button variant={activeItem === '/inbox' ? "secondary" : "ghost"} class="w-12 h-12 p-2" href="/inbox">
                     <Inbox
@@ -76,7 +75,7 @@
             <Tooltip.Content side="right">
                 Inbox
             </Tooltip.Content>
-        </Tooltip.Root>
+        </Tooltip.Root> -->
 
         <Tooltip.Root openDelay={0}>
             <Tooltip.Trigger>

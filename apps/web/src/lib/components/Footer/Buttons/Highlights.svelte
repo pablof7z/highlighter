@@ -3,7 +3,6 @@
 	import { getEventUrl } from '$utils/url';
 	import LogoSmall from './../../../icons/LogoSmall.svelte';
 	import { ndk } from '$stores/ndk.js';
-	import { ChatCircle } from 'phosphor-svelte';
 	import ButtonWithCount from '$components/buttons/ButtonWithCount.svelte';
 	import { NDKEvent, NDKKind } from '@nostr-dev-kit/ndk';
 	import { onDestroy } from 'svelte';
