@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onDestroy, setContext } from 'svelte';
+    import { onDestroy, onMount, setContext } from 'svelte';
     import { Editor, SvelteNodeViewRenderer } from 'svelte-tiptap'
     import UploadImage from './extensions/upload-image'
     import Link from '@tiptap/extension-link';
@@ -21,7 +21,12 @@
 	import NeventExtension from './extensions/nevent.svelte';
 	import NaddrExtension from './extensions/naddr.svelte';
 	import PubkeyExtension from './extensions/pubkey.svelte';
-    
+    import Table from '@tiptap/extension-table'
+    import TableCell from '@tiptap/extension-table-cell'
+    import TableHeader from '@tiptap/extension-table-header'
+    import TableRow from '@tiptap/extension-table-row'
+	import { EditorView } from '.';
+
     export let content: string = "";
     export let editor: Editor | undefined = undefined;
     export let placeholder: string = 'Write...';
@@ -29,24 +34,34 @@
 
     const editorStore = writable<Editor | null>(null);
     const editorElement = writable<HTMLDivElement | null>(null);
+    const editorView = writable<EditorView>("wysiwyg");
 
     setContext('editorElement', editorElement);
     setContext('editorStore', editorStore);
+    setContext('editorView', editorView);
 
     $: element = $editorElement;
 
     function getHandlePaste() {
-        return (view, event, slice) => {
-            const item = event.clipboardData?.items[0]
-
-            if (item?.type.indexOf("image") !== 0) {
-                return false;
-            }
-
-            const file = item.getAsFile()
-            addImageBlob($editorStore, file)
+        return (view: any, event: ClipboardEvent, slice: any) => {
+            if (!$editorStore) return false;
             
-            return true
+            for (const item of event.clipboardData?.items ?? []) {
+                switch (item.type) {
+                    case 'image':
+                        const file = item.getAsFile()
+                        if (!file) return false;
+
+                        addImageBlob($editorStore, file)
+                        break;
+                    default:
+                        item.getAsString((data) => $editorStore.commands.insertContent(data, {parseOptions: {
+                            preserveWhitespace: false,
+                        }}));
+                }
+            }
+            
+            return true;
         }
     }
 
@@ -102,6 +117,10 @@
                 Mention.configure({
                     suggestion: suggestion(),
                 }),
+                Table,
+                TableRow,
+                TableHeader,
+                TableCell,
             ],
 			content,
 			onTransaction: () => {
@@ -112,7 +131,7 @@
                 content = editor.storage.markdown.getMarkdown();
             },
             editorProps: {
-				handlePaste: getHandlePaste(editor)
+				handlePaste: getHandlePaste()
 			},
 		});
         editorStore.set(editor);

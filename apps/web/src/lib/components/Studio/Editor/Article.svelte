@@ -111,7 +111,7 @@
             />
         </div>
 
-        <Editor.Shell class="article grow pb-[20vh] min-h-screen" />
+        <Editor.Shell class="article grow pb-[20vh] min-h-screen" content={article.content} />
     </Editor.Root>
 </div>
 
