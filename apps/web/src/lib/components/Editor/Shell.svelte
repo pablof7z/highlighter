@@ -18,6 +18,7 @@
 		if (!$editor) return;
 		const textarea = event.target as HTMLTextAreaElement;
 		$editor.commands.setContent(textarea.value);
+		content = textarea.value;
 	}
 </script>
 

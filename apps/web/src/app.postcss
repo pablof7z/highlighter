@@ -6,6 +6,7 @@
 	:root {
 		--background: 0 0% 100%;
 		--foreground: 240 1% 21.6%;
+		--article-foreground: 240 0% 40%;
 		--card: 0 0% 100%;
 		--card-foreground: 240 10% 3.9%;
 		--popover: 0 0% 100%;;
@@ -88,6 +89,7 @@
 	.dark {
 		--background: 240 10% 3.9%;
 		--foreground: 0 0% 100%;
+		--article-foreground: 0 0% 70%;
 		--card: 240 10% 3.9%;
 		--card-foreground: 0 0% 98%;
 		--popover: 240 10% 3.9%;
@@ -226,7 +228,7 @@
 	}
 
 	.article p {
-		@apply mt-0 leading-8 !text-[19px];
+		@apply mt-0 leading-8 !text-[19px] text-article-foreground;
 	}
 
 	.article p:not(:last-child) {
@@ -238,7 +240,7 @@
 	}
 
 	.article ol {
-		@apply list-decimal pl-0;
+		@apply list-decimal pl-6;
 	}
 
 	.article li {

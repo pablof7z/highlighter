@@ -70,9 +70,3 @@ export function l(layoutOpts: Layout) {
 export const layout = writable<Layout>({});
 
 export const scrollPercentage = writable<number>(0);
-
-export const headerTouchFns = writable({} as {
-	start?: (e: TouchEvent) => void,
-	move?: (e: TouchEvent) => void,
-	end?: (e: TouchEvent) => void,
-})

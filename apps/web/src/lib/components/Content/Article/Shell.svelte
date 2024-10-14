@@ -1,37 +1,79 @@
 <script lang="ts">
-	import UpgradeButton from "$components/buttons/UpgradeButton.svelte";
-	import { NDKEvent } from "@nostr-dev-kit/ndk";
-	import { NavigationOption } from "../../../app";
+	import { NDKArticle, NDKHighlight, NDKUserProfile } from "@nostr-dev-kit/ndk";
+	import { Readable, writable } from "svelte/store";
+    import LayoutHeader from "./LayoutHeader.svelte";
 	import Header from "./Header.svelte";
+	import { layout } from "$stores/layout";
+	import { ArticleSettings, Footer } from ".";
+	import { onDestroy, setContext } from "svelte";
+	import { getEventUrl } from "$utils/url";
+	import { Button } from "$components/ui/button";
+	import { ArrowLeft } from "phosphor-svelte";
 
-    export let event: NDKEvent | undefined = undefined;
-    export let isFullVersion: boolean;
+    export let article: NDKArticle;
     export let isPreview = false;
-    export let skipImage = false;
-    export let navigationOptions: NavigationOption[] | undefined = undefined;
+    export let isItemView = true;
+    export let userProfile: NDKUserProfile | undefined = undefined;
+    export let authorUrl: string | undefined = undefined;
+    export let highlights: Readable<NDKHighlight[]>;
+
+    const settings = writable<ArticleSettings>({
+        highlights: {
+            byUser: true,
+            byNetwork: true,
+            outOfNetwork: false,
+        }
+    });
+
+    setContext('settings', settings);
+
+    if (!isPreview) {
+        $layout.sidebar = false;
+
+        $layout.footer = {
+            component: Footer,
+            props: { article, highlights, settings }
+        }
+        $layout.navigation = false;
+        $layout.fullWidth = false
+        $layout.forceShowNavigation = undefined;
+    }
+
+    $: image = article.image
+    if (!image && !isPreview) image ??= userProfile?.image;
+
+    onDestroy(() => {
+        $layout.event = undefined;
+        $layout.footer = undefined;
+    })
+
+    $: if (!isPreview) {
+        if (article.title) $layout.title = article.title;
+        $layout.header = {
+            component: LayoutHeader,
+            props: {
+                event: article,
+                title: article.title,
+            }
+        }
+    }
 </script>
 
-<div dir="auto" class="w-full flex flex-col max-sm:max-w-screen overflow-x-clip">
-    <Header {...$$props} {...$$slots} />
+<div class="max-w-[var(--content-focused-width)] mx-auto w-full">
+    {#if isItemView}
+        <Header 
+            article={article}
+            {isPreview}
+            {userProfile}
+            {authorUrl}
+        />
+    {:else}
+        <div class="flex flex-col py-6 items-start">
+            <Button size="sm" variant="secondary" href={getEventUrl(article, authorUrl)} class="w-fit text-xs">
+                <ArrowLeft size={24} class="mr-2" /> Back to article
+            </Button>
+        </div>
+    {/if}
 
-    <div class="
-        flex-col justify-start items-center gap-10 flex w-full max-sm:px-4 relative font-serif !text-3xl
-        border-border border-t
-    ">
-        {#if !isPreview}
-            <div class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative">
-                <slot name="content" />
-
-                {#if !isFullVersion && event}
-                    <div class="absolute bottom-0 right-0 bg-gradient-to-t from-background to-transparent via-background/70 w-full h-2/3 flex flex-col items-center justify-center">
-                        <UpgradeButton {event} />
-                    </div>
-                {/if}
-            </div>
-        {:else}
-            <div class="flex-col justify-start items-start gap-6 flex text-lg font-medium leading-8 w-full relative">
-                <slot name="content" />
-            </div>
-        {/if}
-    </div>
+    <slot />
 </div>

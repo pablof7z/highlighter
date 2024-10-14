@@ -40,7 +40,6 @@ const zapsStore = (
         filter(eventOrUser, extraFilter),
         { subId: 'zaps', closeOnEose: true, ...subOpts}
     );
-    console.log({filter: filter(eventOrUser, extraFilter), subOpts, store})
 
     // if (!zapperPubkey) return store;
 

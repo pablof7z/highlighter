@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { wotFilteredStore } from '$stores/wot';
 	import { NDKHighlight, NDKKind, NDKRelaySet, NDKVideo, NDKSimpleGroupMetadata } from '@nostr-dev-kit/ndk';
 	
 	import { ndk } from "$stores/ndk";
@@ -36,25 +35,26 @@
     // const groups = $ndk.storeSubscribe({ kinds: [NDKKind.GroupMetadata] }, { relaySet }, NDKSimpleGroupMetadata);
 
     let highlightsEosed = false;
-    const highlights = $ndk.storeSubscribe([
-        {kinds: [NDKKind.Highlight], limit: 50},
-        {kinds: [NDKKind.Highlight], authors: Array.from($userFollows), limit: 150},
-    ], {
-        onEose: () => { highlightsEosed = true; }
-    }, NDKHighlight);
+    // const highlights = $ndk.storeSubscribe([
+    //     {kinds: [NDKKind.Highlight], limit: 50},
+    //     {kinds: [NDKKind.Highlight], authors: Array.from($userFollows), limit: 150},
+    // ], {
+    //     onEose: () => { highlightsEosed = true; }
+    // }, NDKHighlight);
 
-    const followHighlights = derived(highlights, $highlights => {
-        return $highlights.filter(highlight => $userFollows.has(highlight.pubkey));
-    });
+    // const followHighlights = derived(highlights, $highlights => {
+    //     return $highlights.filter(highlight => $userFollows.has(highlight.pubkey));
+    // });
 
-    const featuredUsers = Array.from(
-            new Set(Object.values(vanityUrls))
-        ).map(pubkey => $ndk.getUser({ pubkey }))
-        .map(user => { return { user, id: user.pubkey } });
+    // const featuredUsers = Array.from(
+    //         new Set(Object.values(vanityUrls))
+    //     ).map(pubkey => $ndk.getUser({ pubkey }))
+    //     .map(user => { return { user, id: user.pubkey } });
     
     onDestroy(() => {
         // groups.unsubscribe();
-        highlights.unsubscribe();
+        // groups.unsubscribe();
+        // highlights.unsubscribe();
 
     })
 </script>
@@ -64,6 +64,7 @@
         {#each $groups as group}
             <li
                 class="h-40 rounded"
+                href={`/communities/${group.id}`}
             >
                 <img src={group.picture} />
                 <div class="text-lg font-medium">{group.name}</div>

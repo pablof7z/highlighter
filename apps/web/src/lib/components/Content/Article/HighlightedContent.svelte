@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto, pushState } from '$app/navigation';
 	import { ndk } from "$stores/ndk.js";
-	import { NDKEvent, NDKEventId, NDKHighlight } from "@nostr-dev-kit/ndk";
+	import { Hexpubkey, NDKEvent, NDKEventId, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
-	import { Readable } from "svelte/store";
+	import { derived, Readable, writable } from "svelte/store";
     import currentUser from '$stores/currentUser';
     import sanitizeHtml from 'sanitize-html';
 	import { onDestroy, onMount } from 'svelte';
@@ -13,23 +13,75 @@
 	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
     import {Drawer} from 'vaul-svelte';
 	import Highlight from '$components/Highlight.svelte';
-    import * as Card from '$components/Card';
-	import Zap from '$components/Footer/Buttons/Zap.svelte';
-	import Comments from '$components/Footer/Buttons/Comments.svelte';
-	import Share from '$components/Footer/Buttons/Share.svelte';
-	import Bookmark from '$components/Footer/Buttons/Bookmark.svelte';
+	import Mention from '$components/Embeds/Mention.svelte';
+	import EmbeddedHighlight from './EmbeddedHighlight.svelte';
+	import { CaretDown } from 'phosphor-svelte';
+	import { pluralize } from '$utils';
+	import ReplyAvatars from '$components/Feed/ReplyAvatars.svelte';
 
     export let event: NDKEvent | undefined = undefined;
     export let highlights: Readable<NDKEvent[]>;
     export let content: string = event?.content || '';
 
-    const appliedHighlightIds = new Set<NDKEventId>();
-    let highlightsToMark: NDKEvent[] = [];
+    const originalContent = content;
 
+    /**
+     * This store tracks the highlight Ids that have been marked in the content
+     */
+    const processedHighlightIds = writable<Set<NDKEventId>>(new Set());
+
+    /**
+     * This store tracks the highlights that have not been marked in the content
+     */
+    const highlightsToMark = derived([highlights, processedHighlightIds], ([$highlights, $processedHighlightIds]) => {
+        return $highlights.filter(h => !$processedHighlightIds.has(h.id));
+    });
+    
     let isMobile = false;
+
+    export function resetView() {
+        content = originalContent;
+        $processedHighlightIds.clear();
+        processedHighlights = 0;
+
+        countHighlightsOutsideViewport();
+    }
+
+    let highlightsOutsideViewport = 0;
+    let highlightsOutsideViewportPubkeys = new Set<Hexpubkey>();
+
+    function countHighlightsOutsideViewport() {
+        const highlightElements = document.querySelectorAll('mark[data-highlight-id]');
+        const viewportHeight = window.innerHeight;
+        highlightsOutsideViewportPubkeys.clear();
+        highlightsOutsideViewport = Array.from(highlightElements).filter(el => {
+            const rect = el.getBoundingClientRect();
+            return rect.top > viewportHeight;
+        }).map(el => {
+            const highlightId = el.getAttribute('data-highlight-id');
+            if (highlightId) {
+                const highlight = $highlights.find(h => h.id === highlightId);
+                if (highlight) {
+                    highlightsOutsideViewportPubkeys.add(highlight.pubkey);
+                }
+            }
+        }).length;
+    }
 
     onMount(() => {
         isMobile = window.innerWidth < 768;
+        if (browser) {
+            window.addEventListener('scroll', countHighlightsOutsideViewport);
+            window.addEventListener('resize', countHighlightsOutsideViewport);
+            countHighlightsOutsideViewport();
+        }
+    });
+
+    onDestroy(() => {
+        if (browser) {
+            window.removeEventListener('scroll', countHighlightsOutsideViewport);
+            window.removeEventListener('resize', countHighlightsOutsideViewport);
+        }
     });
 
     let openHighlight: NDKHighlight | undefined;
@@ -54,27 +106,33 @@
         if (browser) document.removeEventListener('click', onClickOpenSidebar);
     });
 
-    $: for (const highlight of $highlights) {
-        if (appliedHighlightIds.has(highlight.id)) continue;
+    function a() {
+        for (const highlight of $highlightsToMark) {
+            const highlightContent = highlight.content.trim();
+            // discard low quality highlights
+            if (highlightContent.length < 10) continue;
 
-        const highlightContent = highlight.content.trim();
+            if (highlightContent.length < 5 && highlight.pubkey !== $currentUser?.pubkey) {
+                $processedHighlightIds.add(highlight.id);
+                continue;
+            }
 
-        // discard low quality highlights
-        if (highlightContent === '') continue;
-        if (highlightContent.length < 5 && highlight.pubkey !== $currentUser?.pubkey) {
-            appliedHighlightIds.add(highlight.id);
-            continue;
+            const words = highlightContent.split(/\W+/).map(word => {
+                return word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape special characters in the word
+            });
+
+            let regexpTemplate = words.map(word => word).join('.*?');
+            // add matching of symbols at the beginning and end of the regexp but not of spaces or punctuation  
+            regexpTemplate = `[^\\w\\s\\]]*${regexpTemplate}[^\\w\\s\\[]*`;
+            const regexp = new RegExp(regexpTemplate);
+
+            content = content.replace(regexp, (match) => {
+                $processedHighlightIds.add(highlight.id);
+                return `[mark ${highlight.id}]${match}[/mark ${highlight.id}]`;
+            })
         }
 
-        // create regexp from highlight content (escape special characters)
-        const regexp = new RegExp(highlightContent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
-
-        content = content.replace(regexp, (match) => {
-            appliedHighlightIds.add(highlight.id);
-            highlightsToMark.push(highlight)
-            highlightsToMark = highlightsToMark;
-            return `<mark data-highlight-id="${highlight.id}">${match}</mark>`;
-        })
+        console.log('content after marking highlights', content)
     }
 
     function handleClick(event: CustomEvent<{type: string}>) {
@@ -90,6 +148,24 @@
     }
 
     let open = true;
+
+    $: if ($highlightsToMark.length > 0) {
+        a();
+        countHighlightsOutsideViewport();
+    }
+
+    function scrollToFirstHighlight() {
+        const highlightElements = document.querySelectorAll('mark[data-highlight-id]');
+        const viewportHeight = window.innerHeight;
+
+        for (const el of highlightElements) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top > viewportHeight) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                break;
+            }
+        }
+    }
 </script>
 
 {#if openHighlight}
@@ -98,7 +174,7 @@
             <Drawer.Overlay class="fixed inset-0 bg-black/40" />
             <Drawer.Content
                 class="
-                    fixed flex flex-col p-6
+                    fixed flex p-6
                     bottom-0 right-0 top-0 w-[50%] flex-row rounded-l-[10px]
                     bg-background z-50
                     translate-x-1/2
@@ -109,23 +185,17 @@
                         highlight={openHighlight}
                         skipArticle
                     />
-
                 </div>
-
-                
-                
             </Drawer.Content>
         </Drawer.Portal>
     </Drawer.Root>
 {/if}
 
 {#if event}
-    {#key content}
-        <HighlightMarks
-            {event}
-            highlights={highlightsToMark}
-        />
-        
+    {#key $highlights.length}
+        <!-- <HighlightMarks
+            highlights={_highlightsToMark}
+        /> -->
         <EventContent
             ndk={$ndk}
             {event}
@@ -135,9 +205,108 @@
             eventCardComponent={EmbeddedEventWrapper}
             sanitizeHtmlOptions={{
                 allowedAttributes: {
+                    'del': {},
                     'mark': [ 'data-highlight-id' ],
+                    "img": ["src", "alt", "title"],
                     ...sanitizeHtml.defaults.allowedAttributes
                 }
+            }}
+            markedExtensions={[{
+                hooks: {
+                    preprocess: (src) => {
+                        console.log('HL preprocess', src)
+                        return src;
+                    },
+                    postprocess: (src) => {
+                        console.log('HL postprocess', src)
+                        return src;
+                    }
+                },
+            }, {
+                extensions: [{
+                    name: 'highlight',
+                    level: 'inline',
+                    start(src) {
+                        return src.match(/^\[mark/)?.index;
+                    },
+                    tokenizer(src) {
+                        const markIndex = src.indexOf('[mark');
+                        if (markIndex === -1) return;
+                        const id = src.slice(markIndex + 6, src.indexOf(']', markIndex));
+
+                        // start of the text
+                        const start = src.indexOf(']', markIndex) + 1;
+
+                        // end of the text
+                        const end = src.indexOf('[/mark ' + id + ']', start);
+                        const endOfMark = src.indexOf(']', end);
+                        if (start === -1 || end === -1) return;
+
+                        // trim out the [mark] and [/mark]
+                        const text = src.slice(start, end);
+
+                        const highlight = $highlights.find(h => h.id === id);
+                        if (!highlight) return;
+
+                        const token = {
+                            type: 'paragraph',
+                            raw: src,
+                            tokens: [],
+                        }
+
+                        // // get the text before the highlight
+                        // if (markIndex > 0) {
+                        //     const textBefore = src.slice(0, markIndex);
+                        //     const t = {
+                        //         type: 'text',
+                        //         raw: textBefore,
+                        //         text: textBefore,
+                        //         tokens: [],
+                        //     };
+
+                        //     this.lexer.inlineTokens(textBefore, t.tokens);
+                        //     token.tokens.push(t);
+                        // }
+
+                        console.log("HL tokenizer", {markIndex, end, endOfMark, start, text, id, highlight, src})
+
+                        const t = { 
+                            type: 'highlight',
+                            raw: src.slice(markIndex, endOfMark+1),
+                            text: text,
+                            highlightId: id,
+                            pubkeys: [highlight.pubkey],
+                            highlight,
+                            tokens: [],
+                        };
+
+                        this.lexer.inlineTokens(text, t.tokens);
+                        token.tokens.push(t);
+
+                        // get the text after the highlight
+                        // const textAfter = src.slice(endOfMark + 1);
+                        // if (textAfter.length > 0) {
+                        //     token.tokens.push({
+                        //         type: 'text',
+                        //         raw: textAfter,
+                        //         text: textAfter,
+                        //     });
+                        // }
+
+                        return {
+                            type: 'paragraph',
+                            raw: src,
+                            tokens: token.tokens,
+                        };
+                    },
+                }]
+            }]}
+            renderers={{
+                highlight: EmbeddedHighlight,
+            }}
+            components={{
+                mention: Mention,
+                event: EmbeddedEventWrapper,
             }}
         />
     {/key}
@@ -146,3 +315,26 @@
         {@html content}
     </div>
 {/if}
+
+{#if highlightsOutsideViewport > 0}
+    <button
+        class="highlight-indicator"
+        on:click={scrollToFirstHighlight}
+    >
+        {highlightsOutsideViewport}
+        {pluralize(highlightsOutsideViewport, 'highlight')}
+
+        {#key highlightsOutsideViewport}
+            <ReplyAvatars users={Array.from(highlightsOutsideViewportPubkeys)} size="xs" />
+        {/key}
+        
+        <CaretDown size={16} class="inline" weight="bold" />
+    </button>
+{/if}
+
+<style>
+    .highlight-indicator {
+        @apply fixed bottom-16 left-1/2 transform -translate-x-1/2 bg-foreground text-xs text-background px-3 py-1.5 rounded-full z-50 flex items-center gap-1;
+    }
+</style>
+

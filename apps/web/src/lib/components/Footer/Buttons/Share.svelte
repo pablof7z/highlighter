@@ -1,18 +1,12 @@
 <script lang="ts">
 	import { Eye } from 'phosphor-svelte';
-	import { DotsThree } from 'phosphor-svelte';
 	import { Export } from 'phosphor-svelte';
-	import { Repeat } from 'phosphor-svelte';
-	import { Recycle } from 'phosphor-svelte';
 	import { getEventUrl } from '$utils/url';
-	import { Plus } from 'phosphor-svelte';
 	import { BookmarkSimple, ArrowsClockwise } from 'phosphor-svelte';
-    import { userArticleCurations } from '$stores/session.js';
 	import { ndk } from '$stores/ndk.js';
 	import ButtonWithCount from '$components/buttons/ButtonWithCount.svelte';
 	import { NDKEvent, NDKKind } from '@nostr-dev-kit/ndk';
 	import { onDestroy } from 'svelte';
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { derived } from 'svelte/store';
 	import ReplyAvatars from '../../Feed/ReplyAvatars.svelte';
     import * as HoverCard from "$lib/components/ui/hover-card";

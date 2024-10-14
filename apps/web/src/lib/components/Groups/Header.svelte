@@ -4,7 +4,7 @@
 	import { Readable } from "svelte/store";
 	import { NavigationOption } from "../../../app";
 	import HorizontalOptionsList from "$components/HorizontalOptionsList.svelte";
-	import { headerTouchFns, layout } from '$stores/layout';
+	import { layout } from '$stores/layout';
 	import { inview } from 'svelte-inview';
 	import BackButton from '$components/App/Navigation/BackButton.svelte';
 	import { Button } from "$components/ui/button";

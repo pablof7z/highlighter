@@ -6,6 +6,7 @@
     import { Markdown } from 'tiptap-markdown';
     import StarterKit from '@tiptap/starter-kit';
     import BulletList from '@tiptap/extension-bullet-list';
+    import Strike from '@tiptap/extension-strike';
     import Dropcursor from '@tiptap/extension-dropcursor';
     import Placeholder from '@tiptap/extension-placeholder';
     import Blockquote from '@tiptap/extension-blockquote';
@@ -72,9 +73,9 @@
                 StarterKit,
                 Markdown.configure({
                     tightLists: true,
-                    
                 }),
                 Dropcursor,
+                Strike,
                 BulletList,
                 TipTapImage.configure({
                     allowBase64: true,
@@ -129,6 +130,7 @@
 			},
             onUpdate: ({ editor }) => {
                 content = editor.storage.markdown.getMarkdown();
+                console.log(content);
             },
             editorProps: {
 				handlePaste: getHandlePaste()

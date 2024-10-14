@@ -12,9 +12,9 @@
         const selection = window.getSelection();
         if (!selection || selection.rangeCount === 0) { return; }
         const text = selection.toString().trim();
-        if (!text || text.length < 5) { return; }
-
-        activeHighlightId = null;
+        if (!text || text.length < 5) {
+            return;
+        }
     }
 
     function updateSelection() {
@@ -32,19 +32,19 @@
         $activeSelection = selection;
     }
 
-    let activeHighlightId: string | null = null;
-
     function selectClickedElement(event: MouseEvent) {
-        // select the clicked element
+        if ($activeSelection) return; // Prevent triggering if actively selecting
+
         const target = event.target as HTMLElement;
-        // create selection
+        const paragraph = target.closest('p'); // Find the closest paragraph element
+        if (!paragraph) return; // Exit if no paragraph was clicked
+
         const selection = window.getSelection();
         const range = document.createRange();
-        range.selectNode(target);
+        range.selectNode(paragraph);
         if (!selection) return;
         selection.removeAllRanges();
         selection.addRange(range);
-        // update the selection
 
         $activeSelection = selection;
     }
@@ -53,17 +53,15 @@
         contentContainer.addEventListener("selectionchange", positionToolFromSelection, { passive: true });
         contentContainer.addEventListener("touchend", updateSelection, { passive: true });
         contentContainer.addEventListener("mouseup", updateSelection, { passive: true });
-        // contentContainer.addEventListener("mouseover", positionToolFromHighlightHover);
 
-        // find all the p tags in the contentContainer and add a click event listener to them
-        // const pTags = contentContainer.querySelectorAll("p");
-        // pTags.forEach(p => {
-        //     p.addEventListener("click", selectClickedElement);
-        // });
+        // contentContainer.addEventListener("click", selectClickedElement);
     })
 
     onDestroy(() => {
         contentContainer.removeEventListener("selectionchange", positionToolFromSelection);
         contentContainer.removeEventListener("touchend", updateSelection);
+        contentContainer.removeEventListener("mouseup", updateSelection);
+
+        // contentContainer.removeEventListener("click", selectClickedElement);
     })
 </script>

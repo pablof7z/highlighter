@@ -5,8 +5,7 @@
 	import { openModal } from "$utils/modal";
     import { Editor as EditorType } from 'svelte-tiptap'
 	import CoverImageModal from "$modals/CoverImageModal.svelte";
-	import TagInputModal from "$modals/TagInputModal.svelte";
-	import { CaretRight, ClockCounterClockwise, Info, Shuffle, X } from "phosphor-svelte";
+	import { CaretRight, X } from "phosphor-svelte";
 	import { Button } from '$components/ui/button';
     import * as Studio from '$components/Studio';
 	import { Writable } from 'svelte/store';
@@ -63,6 +62,7 @@
         bind:editor={editorElement}
         placeholder="Start writing..."
     >
+    <pre>{article.content}</pre>
         <div class="
             sticky top-[var(--header-height)] z-50 bg-background
             py-2
@@ -111,7 +111,7 @@
             />
         </div>
 
-        <Editor.Shell class="article grow pb-[20vh] min-h-screen" content={article.content} />
+        <Editor.Shell class="article grow pb-[20vh] min-h-screen" bind:content={article.content} />
     </Editor.Root>
 </div>
 

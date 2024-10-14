@@ -17,16 +17,12 @@
     import * as Highlight from "$components/Content/Highlight";
     import * as Wiki from "$components/Content/Wiki";
     import * as Curation from "$components/Content/Curation";
-    import * as Feed from "$components/Feed";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { setContext } from "svelte";
 	import { ndk } from "$stores/ndk";
 	import { derived } from "svelte/store";
 	import { deriveStore } from "$utils/events/derive";
 	import { WrappedEvent } from "../../../app";
-	import { Button } from "$components/ui/button";
-	import { getEventUrl } from "$utils/url";
-	import { ArrowLeft } from "phosphor-svelte";
 
     export let isPreview = false;
     export let wrappedEvent: WrappedEvent;
@@ -36,7 +32,8 @@
     let authorUrl: string;
 
     const events = $ndk.storeSubscribe([
-        { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.Zap, NDKKind.Nutzap, NDKKind.Highlight, ], ...wrappedEvent.filter() },
+        // { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.Zap, NDKKind.Nutzap, ], ...wrappedEvent.filter() },
+        { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.Zap, NDKKind.Nutzap, NDKKind.Highlight ], ...wrappedEvent.filter() },
         { kinds: [ NDKKind.Text, NDKKind.GroupReply, NDKKind.GenericRepost, NDKKind.Repost ], "#q": [wrappedEvent.tagId() ] },
         { kinds: [ NDKKind.ArticleCurationSet ], ...wrappedEvent.filter() },
     ], { groupable: false, subId: 'related-events' });
@@ -82,8 +79,6 @@
     setContext('replies', replies);
     setContext('shares', shares);
     setContext('zaps', zaps);
-    
-    console.log('wrappedEvent', wrappedEvent?.rawEvent());
 </script>
 
 <UserProfile user={wrappedEvent.author} bind:userProfile bind:authorUrl />
@@ -100,24 +95,14 @@
         <slot />
     </div>  
 {:else if wrappedEvent instanceof NDKArticle}
-    <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
-        {#if itemView}
-            <Article.Header
-                article={wrappedEvent}
-                {isPreview}
-                {userProfile}
-                {authorUrl}
-            />
-        {:else}
-            <div class="flex flex-col py-6 items-start">
-                <Button size="sm" variant="secondary" href={getEventUrl(wrappedEvent, authorUrl)} class="w-fit text-xs">
-                    <ArrowLeft size={24} class="mr-2" /> Back to article
-                </Button>
-            </div>
-        {/if}
-
+    <Article.Shell
+        isItemView={itemView}
+        {isPreview}
+        article={wrappedEvent}
+        {highlights}
+    >
         <slot />
-    </div>
+    </Article.Shell>
 {:else if wrappedEvent instanceof NDKVideo}
     <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
         <Video.Header

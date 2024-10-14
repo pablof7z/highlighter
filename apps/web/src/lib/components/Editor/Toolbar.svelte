@@ -2,7 +2,7 @@
 	import { Writable } from 'svelte/store';
 	import { getContext } from "svelte";
 	import { Editor } from "svelte-tiptap";
-	import { DotsThreeVertical, ArrowArcLeft, ArrowArcRight, Link, ListBullets, ListNumbers, Quotes, TextB, TextItalic } from 'phosphor-svelte';
+	import { DotsThreeVertical, ArrowArcLeft, ArrowArcRight, Link, ListBullets, ListNumbers, Quotes, TextB, TextItalic, TextStrikethrough } from 'phosphor-svelte';
 	import Image from './Toolbar/Image.svelte';
 	import Heading from './Toolbar/Heading.svelte';
 	import { openModal } from '$utils/modal';
@@ -29,6 +29,7 @@
     let redo = false;
     let bold = false;
     let italic = false;
+    let strike = false;
     let blockquote = false;
     let bulletList = false;
     let orderedList = false;
@@ -41,6 +42,7 @@
             redo = $editor.can().redo();
             bold = $editor.isActive('bold');
             italic = $editor.isActive('italic');
+            strike = $editor.isActive('strike');
             blockquote = $editor.isActive('blockquote');
             bulletList = $editor.isActive('bulletList');
             orderedList = $editor.isActive('orderedList');
@@ -81,6 +83,9 @@
                 <button on:click={() => $editor.chain().focus().toggleBlockquote().run()} class:active={blockquote}>
                     <Quotes size={18} weight="bold" />
                 </button>
+                <button on:click={() => $editor.chain().focus().toggleStrike().run()} class:active={strike}>
+                    <TextStrikethrough size={18} weight="bold" />
+                </button>
             </div>
 
             <div class="button-group">
@@ -109,7 +114,7 @@
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
                     <DropdownMenu.Item on:click={toggleEditorView}>
-                        <Code size={20} weight="bold" class="mr-3" />
+                        <Code size={20} class="mr-3" />
                         {#if $editorView === "wysiwyg"}
                             Raw Editor
                         {:else}

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { NDKTag } from '@nostr-dev-kit/ndk';
 	import HighlightTool from '$components/HighlightArea/HighlightTool.svelte';
 
     let container: HTMLElement;

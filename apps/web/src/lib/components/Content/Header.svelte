@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ItemViewZaps from "$components/Event/ItemView/ItemViewZaps.svelte";
-	import { NDKArticle, NDKEvent, NDKHighlight, NDKUserProfile } from "@nostr-dev-kit/ndk";
+	import { NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../../app";
 	import HeaderShell from "./HeaderShell.svelte";
     import ContentToolbar from "./Toolbar.svelte";

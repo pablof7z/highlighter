@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Footer from "$components/Footer";
-    import { NDKArticle } from "@nostr-dev-kit/ndk";
+    import { NDKArticle, NDKHighlight } from "@nostr-dev-kit/ndk";
     import Zap from "$components/Footer/Buttons/Zap.svelte";
 	import HighlightTool from '$components/Footer/Views/HighlightTool';
 	import Bookmark from "$components/Footer/Buttons/Bookmark.svelte";
@@ -8,9 +8,14 @@
 	import Highlights from "$components/Footer/Buttons/Highlights.svelte";
 	import Share from "$components/Footer/Buttons/Share.svelte";
 	import { activeSelection } from '$stores/highlight-tool';
+	import { Readable, Writable } from "svelte/store";
+	import { ArticleSettings } from ".";
 
     export let article: NDKArticle;
-    export let placeholder = "Reply";
+    export let highlights: Readable<NDKHighlight[]>;
+    export let settings: Writable<ArticleSettings>;
+
+    console.log('settings', settings, $settings);
 </script>
 
 <Footer.Shell
@@ -23,7 +28,7 @@
     {:else}
         <div class="flex flex-row justify-center w-1/5"><Zap event={article} /></div>
         <div class="flex flex-row justify-center w-1/5"><Comments event={article} /></div>
-        <div class="flex flex-row justify-center w-1/5"><Highlights event={article} /></div>
+        <div class="flex flex-row justify-center w-1/5"><Highlights event={article} {settings} {highlights} /></div>
         <div class="flex flex-row justify-center w-1/5"><Share event={article} /></div>
         <div class="flex flex-row justify-center w-1/5"><Bookmark event={article} /></div>
     {/if}

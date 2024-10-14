@@ -1,7 +1,7 @@
 <script lang="ts">
     import { NDKEvent, NDKUserProfile } from "@nostr-dev-kit/ndk";
 	import { layout } from "$stores/layout";
-	import AvatarWithName from "$components/User/AvatarWithName.svelte";
+	import Name from "$components/User/Name.svelte";
 	import { Badge } from "$components/ui/badge";
 	import RelativeTime from "$components/PageElements/RelativeTime.svelte";
     import * as App from "$components/App";
@@ -47,17 +47,13 @@
         </div>
 
         {#if event && !ignoreHeader}
-            <div class="flex flex-row gap-6 my-2">
-                <Badge variant="secondary">
+            <div class="flex flex-row gap-6 my-2 text-xs text-muted-foreground font-light">
                     <a href={authorUrl}>
-                        <AvatarWithName {userProfile} user={event.author} avatarSize="tiny" class="text-sm text-muted-foreground" />
+                        by <Name {userProfile} user={event.author} class="uppercase" />
                     </a>
-                </Badge>
 
                 {#if !isPreview}
-                    <Badge variant="secondary">
                         <RelativeTime {event} />
-                    </Badge>
                 {/if}
             </div>
         {/if}

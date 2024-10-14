@@ -129,21 +129,6 @@
     }
 
     let avatar: string;
-    let usernameHasFocus = false;
-
-    async function checkUsername() {
-        const domain = nsecBunker?.domain;
-        if (username.length === 0 || !domain) return;
-        const nip05 = await NDKUser.fromNip05([ username, domain ].join("@"), $ndk);
-
-        if (nip05) {
-            usernameTaken = true;
-        } else {
-            usernameTaken = false;
-        }
-    }
-
-    let providerOpen = false;
 
     $: username = username.toLowerCase().replace(/[^a-z0-9_]/g, "");
 

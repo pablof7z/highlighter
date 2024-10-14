@@ -9,9 +9,21 @@
     export let featuredCount = 1;
 
     let filteredStore = filterPreviewArticles(store);
-    
-    export let featuredItems = derived(filteredStore, $filteredStore => {
-        return $filteredStore.slice(0, featuredCount);
+
+    const sortedStore = derived(filteredStore, $filteredStore => {
+        return $filteredStore.sort((a, b) => {
+            let saDate = a.tagValue('published_at');
+            let sbDate = b.tagValue('published_at');
+
+            const aDate = saDate ? parseInt(saDate) : a.created_at!;
+            const bDate = sbDate ? parseInt(sbDate) : b.created_at!;
+
+            return bDate - aDate;
+        })
+    });
+
+    let featuredItems = derived(sortedStore, $sortedStore => {
+        return $sortedStore.slice(0, featuredCount);
     });
 
     export let skipAuthor = false;
@@ -20,7 +32,7 @@
         return $featuredItems.map(item => item.id);
     });
 
-    const articlesWithoutFeatured = derived([filteredStore, featuredItemIds], ([$filteredStore, $featuredItemIds]) => {
+    const articlesWithoutFeatured = derived([sortedStore, featuredItemIds], ([$sortedStore, $featuredItemIds]) => {
         return $filteredStore.filter(article => !$featuredItemIds.includes(article.id));
     });
 
