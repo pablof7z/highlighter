@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto, pushState } from '$app/navigation';
 	import { ndk } from "$stores/ndk.js";
-	import { Hexpubkey, NDKEvent, NDKEventId, NDKHighlight } from "@nostr-dev-kit/ndk";
+	import { Hexpubkey, NDKEvent, type NDKEventId, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { derived, Readable, writable } from "svelte/store";
     import currentUser from '$stores/currentUser';
@@ -42,7 +42,6 @@
     export function resetView() {
         content = originalContent;
         $processedHighlightIds.clear();
-        processedHighlights = 0;
 
         countHighlightsOutsideViewport();
     }
@@ -106,25 +105,27 @@
         if (browser) document.removeEventListener('click', onClickOpenSidebar);
     });
 
-    function a() {
+    function createHighlightRegexp(highlight: NDKEvent) {
+        const highlightContent = highlight.content.trim();
+        // discard low quality highlights
+        if (highlightContent.length < 10) return;
+
+        const words = highlightContent.split(/\W+/).map(word => {
+            return word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape special characters in the word
+        });
+
+        let regexpTemplate = words.map(word => word).join('.*?');
+        // add matching of symbols at the beginning and end of the regexp but not of spaces or punctuation  
+        regexpTemplate = `[^\\w\\s\\]]*${regexpTemplate}[^\\w\\s\\[]*`;
+        return new RegExp(regexpTemplate);
+    }
+
+
+    function annotateContentForMarkdown() {
         for (const highlight of $highlightsToMark) {
-            const highlightContent = highlight.content.trim();
-            // discard low quality highlights
-            if (highlightContent.length < 10) continue;
-
-            if (highlightContent.length < 5 && highlight.pubkey !== $currentUser?.pubkey) {
-                $processedHighlightIds.add(highlight.id);
-                continue;
-            }
-
-            const words = highlightContent.split(/\W+/).map(word => {
-                return word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape special characters in the word
-            });
-
-            let regexpTemplate = words.map(word => word).join('.*?');
-            // add matching of symbols at the beginning and end of the regexp but not of spaces or punctuation  
-            regexpTemplate = `[^\\w\\s\\]]*${regexpTemplate}[^\\w\\s\\[]*`;
-            const regexp = new RegExp(regexpTemplate);
+            const regexp = createHighlightRegexp(highlight);
+            console.log("Regexp", regexp);
+            if (!regexp) continue;
 
             content = content.replace(regexp, (match) => {
                 $processedHighlightIds.add(highlight.id);
@@ -132,7 +133,19 @@
             })
         }
 
-        console.log('content after marking highlights', content)
+        console.log("Annotated content for markdown", content);
+    }
+
+    function annotateContentForHTML() {
+        for (const highlight of $highlightsToMark) {
+            const regexp = createHighlightRegexp(highlight);
+            if (!regexp) continue;
+
+            content = content.replace(regexp, (match) => {
+                $processedHighlightIds.add(highlight.id);
+                return `<mark data-highlight-id="${highlight.id}">${match}</mark>`;
+            })
+        }
     }
 
     function handleClick(event: CustomEvent<{type: string}>) {
@@ -150,7 +163,8 @@
     let open = true;
 
     $: if ($highlightsToMark.length > 0) {
-        a();
+        if (event) annotateContentForMarkdown();
+        else annotateContentForHTML();
         countHighlightsOutsideViewport();
     }
 
@@ -166,6 +180,8 @@
             }
         }
     }
+
+    // let inHighlights: [NDKEventId, number][] = [];
 </script>
 
 {#if openHighlight}
@@ -193,9 +209,6 @@
 
 {#if event}
     {#key $highlights.length}
-        <!-- <HighlightMarks
-            highlights={_highlightsToMark}
-        /> -->
         <EventContent
             ndk={$ndk}
             {event}
@@ -212,17 +225,6 @@
                 }
             }}
             markedExtensions={[{
-                hooks: {
-                    preprocess: (src) => {
-                        console.log('HL preprocess', src)
-                        return src;
-                    },
-                    postprocess: (src) => {
-                        console.log('HL postprocess', src)
-                        return src;
-                    }
-                },
-            }, {
                 extensions: [{
                     name: 'highlight',
                     level: 'inline',
@@ -240,6 +242,7 @@
                         // end of the text
                         const end = src.indexOf('[/mark ' + id + ']', start);
                         const endOfMark = src.indexOf(']', end);
+                        
                         if (start === -1 || end === -1) return;
 
                         // trim out the [mark] and [/mark]
@@ -255,18 +258,18 @@
                         }
 
                         // // get the text before the highlight
-                        // if (markIndex > 0) {
-                        //     const textBefore = src.slice(0, markIndex);
-                        //     const t = {
-                        //         type: 'text',
-                        //         raw: textBefore,
-                        //         text: textBefore,
-                        //         tokens: [],
-                        //     };
+                        if (markIndex > 0) {
+                            const textBefore = src.slice(0, markIndex);
+                            const t = {
+                                type: 'text',
+                                raw: textBefore,
+                                text: textBefore,
+                                tokens: [],
+                            };
 
-                        //     this.lexer.inlineTokens(textBefore, t.tokens);
-                        //     token.tokens.push(t);
-                        // }
+                            this.lexer.inlineTokens(textBefore, t.tokens);
+                            token.tokens.push(t);
+                        }
 
                         console.log("HL tokenizer", {markIndex, end, endOfMark, start, text, id, highlight, src})
 
@@ -284,14 +287,14 @@
                         token.tokens.push(t);
 
                         // get the text after the highlight
-                        // const textAfter = src.slice(endOfMark + 1);
-                        // if (textAfter.length > 0) {
-                        //     token.tokens.push({
-                        //         type: 'text',
-                        //         raw: textAfter,
-                        //         text: textAfter,
-                        //     });
-                        // }
+                        const textAfter = src.slice(endOfMark + 1);
+                        if (textAfter.length > 0) {
+                            token.tokens.push({
+                                type: 'text',
+                                raw: textAfter,
+                                text: textAfter,
+                            });
+                        }
 
                         return {
                             type: 'paragraph',
