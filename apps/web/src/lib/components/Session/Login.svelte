@@ -95,35 +95,7 @@
     }
 
     async function loginWithBunker() {
-        let token: string;
-
-        try {
-            const uri = new URL(value);
-            let remotePubkey = uri.hostname;
-            if (remotePubkey.length === 0)
-                remotePubkey = uri.pathname.slice(2);
-            const relay = uri.searchParams.get("relay");
-            const secret = uri.searchParams.get("secret");
-
-            if (relay) $bunkerNDK.pool.getRelay(relay);
-
-            // await $bunkerNDK.connect(2500);
-
-            token = remotePubkey;
-            if (secret) token += "#" + secret;
-        } catch (e) {
-            token = value;
-            // console.error(e);
-            // error = "Invalid bunker URI";
-            // return;
-        }
-
-        // if (!token) {
-        //     error = "Invalid user";
-        //     return;
-        // }
-
-        loginNip46(token);
+        loginNip46(value);
     }
 
     async function login() {

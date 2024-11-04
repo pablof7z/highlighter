@@ -5,19 +5,18 @@ import { get } from "svelte/store";
 
 export async function pinGroup(group: NDKSimpleGroup) {
     const $ndk = get(ndk);
-    const $groupsList = get(groupsList);
+    const list = get(groupsList) ?? new NDKList($ndk);
     
-    if (!$groupsList) groupsList.set(new NDKList($ndk));
-
-    if (!$groupsList) return;
-
-    $groupsList.kind = NDKKind.SimpleGroupList;
+    list.kind = NDKKind.SimpleGroupList;
 
     const groupData = {
         id: group.groupId,
         relayUrls: group.relayUrls(),
     }
 
-    $groupsList.addItem([ "group", group.groupId, ...group.relayUrls() ]);
-    await $groupsList.publishReplaceable();
+    list.addItem([ "group", group.groupId, ...group.relayUrls() ]);
+
+    debugger
+
+    await list.publishReplaceable();
 }

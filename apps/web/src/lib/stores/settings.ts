@@ -8,6 +8,12 @@ export const walletType = persist(
 	'wallet-type'
 );
 
+export const showHighlightsIndicator = persist(
+	writable<boolean>(true),
+	createLocalStorage(),
+	'show-highlights-indicator'
+);
+
 export const hasSwiped = persist(
 	writable<boolean>(false),
 	createLocalStorage(),

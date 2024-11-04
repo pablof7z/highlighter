@@ -10,7 +10,7 @@
 <div class="{$$props.class??""}">
     {#if $currentUser}
         <UserProfile user={$currentUser} let:userProfile let:authorUrl let:fetching>
-            <a href="/settings" class="flex-none" on:click={() => console.log('navigate again')}>
+            <a href={authorUrl} class="flex-none" on:click={() => console.log('navigate again')}>
                 <Avatar user={$currentUser} {userProfile} {fetching} size="large" class="object-cover flex-none {$$props.avatarClass??""}" />
             </a>
         </UserProfile>

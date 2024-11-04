@@ -196,7 +196,7 @@
 	}
 
 	* + mark {
-		@apply p-1;
+		/* @apply p-1; */
 	}
 
 	mark {
@@ -438,8 +438,8 @@ section.settings .field {
 
 .event-content a.hashtag, .event-content a.mention,
 .ql-editor .mention[data-id],
-.article button.hashtag, .article button.mention {
-	@apply !text-gold;
+.article button.hashtag, button.mention {
+	@apply !text-primary !font-semibold;
 }
 
 .event-content .event-card {
@@ -531,7 +531,16 @@ blockquote.app-quote .author {
 }
 
 .article blockquote {
-	@apply border-l-4 bg-secondary/30 border-border pl-4 py-1 mb-6;
+	@apply border-l-4 bg-secondary text-secondary-foreground border-accent p-4 pt-8 pl-14 mb-6 italic;
+
+	&::after {
+		content: '❝' !important;
+		@apply text-accent font-bold text-5xl absolute top-2 left-2 z-50 block p-0 font-["Times_New_Roman"];
+	}
+
+	& > p {
+		@apply !text-xl;
+	}
 }
 
 .editor-toolbar button {

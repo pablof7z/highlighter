@@ -14,7 +14,7 @@ export type RelayPublishState = {
 
 function getOrGeneratePreviewFromState(state: Studio.State<Studio.PreviewableTypes>): NDKEvent | undefined {
     if (state.withPreview === false) return undefined;
-    if (state.audience.scope === 'public') return undefined;
+    if (state.audience.scope !== 'private') return undefined;
     
     let previewEvent: NDKArticle | NDKVideo | NDKEvent | undefined = Studio.getPreviewFromState(state);
     previewEvent ??= generatePreviewEventFromState(state);
@@ -152,6 +152,7 @@ export async function publish(
     relays.set(getRelayStore(mainRelaySet, previewEventRelaySet));
 
     console.log("Publishing event", mainEvent.rawEvent(), mainRelaySet.relayUrls, previewEventRelaySet?.relayUrls);
+    console.log("Preview event", previewEvent?.rawEvent(), previewEventRelaySet?.relayUrls);
 
     return publishEvents(relays, mainEvent, previewEvent, mainRelaySet, previewEventRelaySet);
 }
@@ -187,7 +188,7 @@ export async function publishEvents(
 
     mainEvent.on("relay:published", onEventPublish('mainEvent'));
     mainEvent.on("relay:publish:failed", onPublishFail('mainEvent'));
-    
+
     const rest = await mainEvent.publishReplaceable(mainEventRelaySet, 5000);
 
     if (previewEvent) {

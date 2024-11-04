@@ -6,7 +6,7 @@ import { get } from "svelte/store";
 import { ndk } from "$stores/ndk";
 import { GroupData } from "$components/Groups";
 
-export type Scope = 'public' | 'private';
+export type Scope = 'public' | 'communities' | 'private';
 
 export type GroupTierEntry = {
     tierId: string;

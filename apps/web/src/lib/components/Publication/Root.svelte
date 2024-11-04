@@ -12,7 +12,7 @@
     export let state = writable<CreateState>();
     export let create = async function create(state: CreateState) {
         // randomg 16 char group id
-        const groupId = crypto.randomUUID().substring(0, 16);
+        const groupId = Math.random().toString(36).substring(2, 18);
         const $user = get(currentUser);
         if (!$user) throw new Error("No user found");
         const group = await createGroup(

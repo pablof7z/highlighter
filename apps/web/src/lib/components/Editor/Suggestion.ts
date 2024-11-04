@@ -8,11 +8,14 @@ import { userFollows } from '$stores/session';
 import { searchUser } from '$utils/search/user';
 
 export default function () {
+  let q: string;
+  
   return {
     items: async ({ query }) => {
         const $ndk = get(ndk);
         const $userFollows = get(userFollows);
         const result = await searchUser(query, $ndk, $userFollows);
+        q = query;
 
         return result.slice(0, 5)
     },
@@ -35,7 +38,17 @@ export default function () {
             props: {
               items: props.items,
               callback: (item) => {
-                props.command({ id: item.pubkey, label: "nostr:"+item.npub });
+                const user = get(ndk).getUser({pubkey: item.pubkey})
+                const queryLength = q.length + 1;
+
+                const range = {
+                  from: props.editor.state.selection.from - queryLength,
+                  to: props.editor.state.selection.from,
+                };
+                props.editor.commands.setTextSelection(range);
+                props.editor.commands.deleteSelection();
+                
+                editor.commands.insertNProfile({nprofile: "nostr:"+user.nprofile })
               },
             },
           });
@@ -66,12 +79,13 @@ export default function () {
           return component.onKeyDown(props.event);
         },
         onExit: (props) => {
-          const range = {
-            from: props.editor.state.selection.from,
-            to: props.editor.state.selection.from + props.query.length,
-          };
-          props.editor.commands.setTextSelection(range);
-          props.editor.commands.deleteSelection();
+          console.log('on exit', {props})
+          // const range = {
+          //   from: props.editor.state.selection.from,
+          //   to: props.editor.state.selection.from + props.query.length,
+          // };
+          // props.editor.commands.setTextSelection(range);
+          // props.editor.commands.deleteSelection();
           popup[0].destroy();
           renderer.destroy();
           wrapper.remove();

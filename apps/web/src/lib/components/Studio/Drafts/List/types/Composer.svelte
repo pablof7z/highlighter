@@ -19,6 +19,7 @@
 
     try {
         state = getStateFromDraft(item);
+        console.log('state', state)
         if (state) {
             event = generateEventFromState(state);
             if ($currentUser) event.pubkey = $currentUser.pubkey;

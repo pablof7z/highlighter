@@ -42,7 +42,7 @@
     const cashuMintList = deriveListStore<NDKCashuMintList>(events, NDKCashuMintList);
     const allTiers = deriveStore<NDKSubscriptionTier>(events, NDKSubscriptionTier);
 
-    const articles = filterArticles(articlesAll);
+    const articles = articlesAll; // filterArticles(articlesAll);
 
     const tiers = derived([tierList, allTiers], ([$tierList, $userAllTiers]) => {
         if (!$tierList) return [];

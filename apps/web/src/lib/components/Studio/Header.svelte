@@ -85,7 +85,7 @@
     <div class="flex flex-row flex-nowrap gap-2">
         {#if !$appMobileView}
             {#if $state.mode === 'edit'}
-                <Tooltip.Root>
+                <!-- <Tooltip.Root>
                     <Tooltip.Trigger asChild let:builder>
                         <Button variant="outline" on:click={setMode('preview')}>
                             <Eye class="mr-2" size={20} />
@@ -95,7 +95,7 @@
                     <Tooltip.Content>
                         Preview
                     </Tooltip.Content>
-                </Tooltip.Root>
+                </Tooltip.Root> -->
             {:else}
                 <Tooltip.Root>
                     <Tooltip.Trigger asChild let:builder>

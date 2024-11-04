@@ -62,7 +62,6 @@
         bind:editor={editorElement}
         placeholder="Start writing..."
     >
-    <pre>{article.content}</pre>
         <div class="
             sticky top-[var(--header-height)] z-50 bg-background
             py-2
@@ -112,6 +111,7 @@
         </div>
 
         <Editor.Shell class="article grow pb-[20vh] min-h-screen" bind:content={article.content} />
+
     </Editor.Root>
 </div>
 

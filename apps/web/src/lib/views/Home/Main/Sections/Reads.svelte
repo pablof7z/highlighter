@@ -7,7 +7,7 @@
 	import { CaretRight, MagnifyingGlass } from "phosphor-svelte";
 	import { userFollows } from "$stores/session";
 
-    const oneWeekAgo = Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 7;
+    const oneWeekAgo = Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 30;
 
     const recentArticlesFromFollows = $ndk.storeSubscribe([
         { kinds: [NDKKind.Article], authors: Array.from($userFollows), since: oneWeekAgo },

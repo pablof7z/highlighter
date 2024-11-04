@@ -4,11 +4,8 @@
 	import { NDKHighlight } from '@nostr-dev-kit/ndk';
 
     export let highlightId: string;
-    export let text: string;
     export let pubkeys: string[];
     export let highlight: NDKHighlight;
-
-    text = text.replace(/\[mark data-highlight-id="[^"]+"\]/g, '').replace(/\[\/mark\]/g, '');
 
     let opened = false;
     

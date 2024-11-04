@@ -6,6 +6,7 @@
 	// import { pwaInfo } from 'virtual:pwa-info';
 	import "@fontsource/spectral";
 	import "@fontsource/spectral/300.css";
+	import "@fontsource/spectral/300-italic.css";
 	import "@fontsource/spectral/600.css";
 	import "@fontsource/spectral/600-italic.css";
 	import { browser } from '$app/environment';

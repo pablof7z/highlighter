@@ -70,9 +70,9 @@
         if ($layout.fullWidth === true) {
             mainClass = "";
         } else if (withSidebar) {
-            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full"
+            mainClass = "sm:max-w-[var(--content-focused-width)] mx-auto sm:w-full sm:px-0 max-sm:w-screen w-full"
         } else if ($layout.fullWidth === false) {
-            mainClass = "lg:max-w-[var(--content-focused-width)] mx-auto lg:w-full lg:px-0 max-sm:w-screen w-full"
+            mainClass = "sm:max-w-[var(--content-focused-width)] mx-auto sm:w-full sm:px-0 max-sm:w-screen w-full"
         }
     }
 
@@ -151,12 +151,12 @@
 
 <div data-vaul-drawer-wrapper>
     {#if hasNavSidebar}
-        <div class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-[var(--app-shell-left-nav-width)] lg:overflow-y-auto border-r border-border lg:pb-4" transition:fly>
+        <div class="hidden sm:fixed sm:inset-y-0 sm:left-0 sm:z-50 sm:block sm:w-[var(--app-shell-left-nav-width)] sm:overflow-y-auto border-r border-border sm:pb-4" transition:fly>
             <DesktopColumnNavigation />
         </div>
     {/if}
 
-    <div class="{hasNavSidebar ? 'lg:pl-[var(--app-shell-left-nav-width)]' : ''}">
+    <div class="{hasNavSidebar ? 'sm:pl-[var(--app-shell-left-nav-width)]' : ''}">
         <div class="sticky top-0 max-sm:top-0-safe z-40 flex flex-col mobile-nav">
             {#if $layout.title && $layout.header !== false}
                 <div class=" flex h-16 shrink-0 items-center gap-x-4 border-b shadow-sm sm:gap-x-6">
@@ -166,7 +166,7 @@
 
             {#if $layout.navigation}
                 <div class="flex h-auto shrink-0 items-center gap-x-4 border-b shadow-sm sm:gap-x-6">
-                    <ScrollArea class="py-1 lg:py-1.5 lg:px-4 whitespace-nowrap {$$props.class??""}" orientation="horizontal">
+                    <ScrollArea class="py-1 sm:py-1.5 sm:px-4 whitespace-nowrap {$$props.class??""}" orientation="horizontal">
                         <HorizontalOptionsList
                             options={$layout.navigation}
                             bind:activeOption={$layout.activeOption}
@@ -187,7 +187,7 @@
             <div class="h-24 w-full"></div>
 
             <footer
-                class="fixed bottom-0 max-sm:bottom-0-safe left-0 lg:pl-[var(--app-shell-left-nav-width)] right-0 z-20 w-full border-t border-border mobile-nav"
+                class="fixed bottom-0 max-sm:bottom-0-safe left-0 sm:pl-[var(--app-shell-left-nav-width)] right-0 z-20 w-full border-t border-border mobile-nav"
                 bind:this={footerContainer}
             >
                 {#if $layout.footer}

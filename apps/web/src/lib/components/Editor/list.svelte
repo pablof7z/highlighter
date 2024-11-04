@@ -43,7 +43,7 @@
     {#each items as item, i}
         <li class:active={i === activeIdx}>
             <span on:click={() => callback(items[i])}>
-                <AvatarWithName pubkey={item.pubkey} avatarSize="xs" />
+                <AvatarWithName href='#' pubkey={item.pubkey} avatarSize="xs" />
             </span>
         </li>
     {/each}

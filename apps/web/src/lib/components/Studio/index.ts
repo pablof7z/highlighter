@@ -112,7 +112,7 @@ export function getPreviewFromState(state: State<PreviewableTypes>): NDKEvent | 
  * Gets the event that should be publicly shared
  */
 export function getShareableEvent(state: State<Type>): NDKArticle | NDKVideo | NDKEvent | undefined {
-    if (state.audience.scope === 'public') {
+    if (state.audience.scope !== 'private') {
         return getEventFromState(state);
     }
 

@@ -5,17 +5,26 @@ import { NDKEvent, type Hexpubkey } from "@nostr-dev-kit/ndk";
 // derived store where all user follows are present and network follows present in at least 3 follow lists
 export const minimumScore = writable<number>(3);
 
-export const wot = derived([networkFollows, minimumScore], ([$networkFollows, $minimumScore]) => {
-    const pubkeys = new Set<Hexpubkey>();
+export let wot: Readable<Set<string>> | undefined;
 
-    $networkFollows.forEach((score: number, follow: Hexpubkey) => {
-        if (score >= $minimumScore) pubkeys.add(follow);
+function initWot() {
+    if (!networkFollows || !minimumScore) return;
+    
+    wot ??= derived([networkFollows, minimumScore], ([$networkFollows, $minimumScore]) => {
+        const pubkeys = new Set<Hexpubkey>();
+    
+        $networkFollows.forEach((score: number, follow: Hexpubkey) => {
+            if (score >= $minimumScore) pubkeys.add(follow);
+        });
+    
+        return pubkeys;
     });
-
-    return pubkeys;
-});
+}
 
 export function wotFilteredStore<T>(event: Readable<T[]>) {
+    initWot();
+    if (!wot) return event;
+    
     return derived([event, wot], ([$event, $wot]) => {
         if ($wot.size < 1000) {
             
@@ -33,6 +42,9 @@ export function wotFilteredStore<T>(event: Readable<T[]>) {
 }
 
 export function wotFiltered(events: NDKEvent[]) {
+    initWot();
+    if (!wot) return events;
+
     const $wot = get(wot);
 
     if ($wot.size < 1000) return events;
@@ -47,9 +59,14 @@ export function wotFiltered(events: NDKEvent[]) {
 }
 
 export const wotFilter = () => {
+    const noop = (events: NDKEvent[]) => events;
+    
+    initWot();
+    if (!wot) return noop;
+
     const $wot = get(wot);
 
-    if ($wot.size < 1000) return (events: NDKEvent[]) => events;
+    if ($wot.size < 1000) return noop;
 
     return (events: NDKEvent[]) => events.filter((e) => $wot.has(e.pubkey));
 }

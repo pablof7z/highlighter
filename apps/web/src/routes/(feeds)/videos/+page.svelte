@@ -2,7 +2,7 @@
 	import { NDKArticle, NDKKind, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { layout } from "$stores/layout";
 	import { onDestroy } from "svelte";
-	import { wot, wotFiltered, wotFilteredStore } from "$stores/wot";
+	import { wotFilteredStore } from "$stores/wot";
 	import { Readable, derived } from "svelte/store";
     import * as Feed from "$components/Feed";
 	import { ndk } from "$stores/ndk";

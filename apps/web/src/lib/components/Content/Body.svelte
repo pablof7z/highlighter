@@ -25,7 +25,7 @@
         <ModularArticleBody event={event} />
     {:else if event.kind === 30041}
         <ModularArticleItem article={event} />
-    {:else if (event instanceof NDKArticle) || (event instanceof NDKWiki)}
+    {:else if (event instanceof NDKArticle)}
         <ArticleBody
             article={event}
             {isPreview}

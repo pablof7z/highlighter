@@ -27,14 +27,18 @@
             $state.scope = 'private';
         }
     }
+
+    $: console.log('groups', $state.groups);
 </script>
 
-<div class="flex flex-col">
-    <RadioButton bind:currentValue={$state.scope} value="public" color="default" class="!rounded-b-none !border-b-none">
-        Everyone
+<div class="flex flex-col border rounded-lg">
+    <RadioButton bind:currentValue={$state.scope} value="public" color="default" class="!border-none">
+        <span class:text-muted-foreground={$state.scope !== "public"}>
+            Everyone
+        </span>
     </RadioButton>
 
-    <RadioButton bind:currentValue={$state.scope} value="private" color="default" class='!rounded-t-none !border-t-none'>
+    <RadioButton bind:currentValue={$state.scope} value="private" color="default" class='!border-none'>
         <span class:opacity-30={!hasTierList}>
             Paid subscribers
         </span>
@@ -46,7 +50,7 @@
         {/if}
     </RadioButton>
 
-    {#if $state.scope === 'private' && $tierList && $tierList.items.length > 1}
+    {#if $state.scope === 'private' && $tierList && $tierList.items.length > 0}
         <div class="flex flex-col border bg-secondary/30 rounded p-2 px-4 w-full text-sm mt-4">
             <Groups.RootList tags={$groupsList.items} let:group>
                 <Audience.GroupTiers {group} {state} />

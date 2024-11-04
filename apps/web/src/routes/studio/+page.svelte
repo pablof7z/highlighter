@@ -67,11 +67,9 @@
     
         <Card.Content class="text-muted-foreground text-sm flex flex-col gap-3">
             <p>
-                A place for your long-forms, notes, videos and podcasts.
-            </p>
-
-            <p>
-                A place for your audience to discover, discuss and turbocharge your content's distribution organically.
+                Group and monetize your content,
+                providing your audience a place to find and interact with your work
+                and with other members of your audience.
             </p>
         </Card.Content>
     

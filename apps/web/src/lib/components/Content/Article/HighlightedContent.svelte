@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto, pushState } from '$app/navigation';
 	import { ndk } from "$stores/ndk.js";
+    import type { Token as MarkedToken } from 'marked';
 	import { Hexpubkey, NDKEvent, type NDKEventId, NDKHighlight } from "@nostr-dev-kit/ndk";
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 	import { derived, Readable, writable } from "svelte/store";
@@ -15,9 +16,11 @@
 	import Highlight from '$components/Highlight.svelte';
 	import Mention from '$components/Embeds/Mention.svelte';
 	import EmbeddedHighlight from './EmbeddedHighlight.svelte';
-	import { CaretDown } from 'phosphor-svelte';
+	import { PushPin, CaretDown } from 'phosphor-svelte';
 	import { pluralize } from '$utils';
 	import ReplyAvatars from '$components/Feed/ReplyAvatars.svelte';
+	import Hashtag from '$components/Embeds/Hashtag.svelte';
+	import { showHighlightsIndicator } from '$stores/settings';
 
     export let event: NDKEvent | undefined = undefined;
     export let highlights: Readable<NDKEvent[]>;
@@ -28,20 +31,25 @@
     /**
      * This store tracks the highlight Ids that have been marked in the content
      */
-    const processedHighlightIds = writable<Set<NDKEventId>>(new Set());
+     type Range = {
+        start: number;
+        end: number;
+        highlight: NDKHighlight;
+    }
+    const highlightedRanges = writable<Map<NDKEventId, Range>>(new Map());
 
     /**
      * This store tracks the highlights that have not been marked in the content
      */
-    const highlightsToMark = derived([highlights, processedHighlightIds], ([$highlights, $processedHighlightIds]) => {
-        return $highlights.filter(h => !$processedHighlightIds.has(h.id));
+    const highlightsToMark = derived([highlights, highlightedRanges], ([$highlights, $highlightedRanges]) => {
+        return $highlights.filter(h => !$highlightedRanges.has(h.id));
     });
     
     let isMobile = false;
 
     export function resetView() {
         content = originalContent;
-        $processedHighlightIds.clear();
+        highlightedRanges.set(new Map());
 
         countHighlightsOutsideViewport();
     }
@@ -120,21 +128,33 @@
         return new RegExp(regexpTemplate);
     }
 
+    let perf = 0;
 
     function annotateContentForMarkdown() {
+        const start = performance.now();
+        // go through the content and find the highlights
         for (const highlight of $highlightsToMark) {
             const regexp = createHighlightRegexp(highlight);
-            console.log("Regexp", regexp);
             if (!regexp) continue;
 
-            content = content.replace(regexp, (match) => {
-                $processedHighlightIds.add(highlight.id);
-                return `[mark ${highlight.id}]${match}[/mark ${highlight.id}]`;
-            })
+            // find the first match
+            const firstMatch = regexp.exec(content);
+            if (!firstMatch) continue;  
+
+            $highlightedRanges.set(highlight.id, {
+                start: firstMatch.index,
+                end: firstMatch.index + firstMatch[0].length,
+                highlight: NDKHighlight.from(highlight)
+            });
         }
 
-        console.log("Annotated content for markdown", content);
+        perf += performance.now() - start;
+        console.log('perf', perf, $highlightsToMark.length);
+
+        // console.log("Highlighted ranges", highlightedRanges);
     }
+
+    const markedHighlightIds = new Set<NDKEventId>();
 
     function annotateContentForHTML() {
         for (const highlight of $highlightsToMark) {
@@ -142,21 +162,13 @@
             if (!regexp) continue;
 
             content = content.replace(regexp, (match) => {
-                $processedHighlightIds.add(highlight.id);
+                $highlightedRanges.set(highlight.id, {
+                    start: content.indexOf(match),
+                    end: content.indexOf(match) + match.length,
+                    highlight: NDKHighlight.from(highlight)
+                });
                 return `<mark data-highlight-id="${highlight.id}">${match}</mark>`;
-            })
-        }
-    }
-
-    function handleClick(event: CustomEvent<{type: string}>) {
-        switch (event.detail.type) {
-            case "profile": {
-                const { npub, nip05 } = event.detail;
-
-                if (nip05) goto(`/${nip05}`)
-                else goto(`/${npub}`)
-                break;
-            }
+            });
         }
     }
 
@@ -180,8 +192,6 @@
             }
         }
     }
-
-    // let inHighlights: [NDKEventId, number][] = [];
 </script>
 
 {#if openHighlight}
@@ -212,9 +222,8 @@
         <EventContent
             ndk={$ndk}
             {event}
-            bind:content
+            {content}
             class="prose-lg leading-8 article-kind--{event.kind} {$$props.class??""}"
-            on:click={handleClick}
             eventCardComponent={EmbeddedEventWrapper}
             sanitizeHtmlOptions={{
                 allowedAttributes: {
@@ -223,93 +232,6 @@
                     "img": ["src", "alt", "title"],
                     ...sanitizeHtml.defaults.allowedAttributes
                 }
-            }}
-            markedExtensions={[{
-                extensions: [{
-                    name: 'highlight',
-                    level: 'inline',
-                    start(src) {
-                        return src.match(/^\[mark/)?.index;
-                    },
-                    tokenizer(src) {
-                        const markIndex = src.indexOf('[mark');
-                        if (markIndex === -1) return;
-                        const id = src.slice(markIndex + 6, src.indexOf(']', markIndex));
-
-                        // start of the text
-                        const start = src.indexOf(']', markIndex) + 1;
-
-                        // end of the text
-                        const end = src.indexOf('[/mark ' + id + ']', start);
-                        const endOfMark = src.indexOf(']', end);
-                        
-                        if (start === -1 || end === -1) return;
-
-                        // trim out the [mark] and [/mark]
-                        const text = src.slice(start, end);
-
-                        const highlight = $highlights.find(h => h.id === id);
-                        if (!highlight) return;
-
-                        const token = {
-                            type: 'paragraph',
-                            raw: src,
-                            tokens: [],
-                        }
-
-                        // // get the text before the highlight
-                        if (markIndex > 0) {
-                            const textBefore = src.slice(0, markIndex);
-                            const t = {
-                                type: 'text',
-                                raw: textBefore,
-                                text: textBefore,
-                                tokens: [],
-                            };
-
-                            this.lexer.inlineTokens(textBefore, t.tokens);
-                            token.tokens.push(t);
-                        }
-
-                        console.log("HL tokenizer", {markIndex, end, endOfMark, start, text, id, highlight, src})
-
-                        const t = { 
-                            type: 'highlight',
-                            raw: src.slice(markIndex, endOfMark+1),
-                            text: text,
-                            highlightId: id,
-                            pubkeys: [highlight.pubkey],
-                            highlight,
-                            tokens: [],
-                        };
-
-                        this.lexer.inlineTokens(text, t.tokens);
-                        token.tokens.push(t);
-
-                        // get the text after the highlight
-                        const textAfter = src.slice(endOfMark + 1);
-                        if (textAfter.length > 0) {
-                            token.tokens.push({
-                                type: 'text',
-                                raw: textAfter,
-                                text: textAfter,
-                            });
-                        }
-
-                        return {
-                            type: 'paragraph',
-                            raw: src,
-                            tokens: token.tokens,
-                        };
-                    },
-                }]
-            }]}
-            renderers={{
-                highlight: EmbeddedHighlight,
-            }}
-            components={{
-                mention: Mention,
-                event: EmbeddedEventWrapper,
             }}
         />
     {/key}
@@ -320,24 +242,41 @@
 {/if}
 
 {#if highlightsOutsideViewport > 0}
-    <button
-        class="highlight-indicator"
-        on:click={scrollToFirstHighlight}
+    <div
+        class="
+            flex flex-row group highlight-indicator-container rounded-full overflow-hidden items-center
+            transition-all duration-300 hover:opacity-100
+        "
+        class:opacity-20={!$showHighlightsIndicator}
     >
-        {highlightsOutsideViewport}
-        {pluralize(highlightsOutsideViewport, 'highlight')}
+        <div class="w-6 group-hover:bg-secondary group-hover:text-accent-foreground px-1">
+            <button on:click={(e) => {$showHighlightsIndicator = !$showHighlightsIndicator; e.stopPropagation();}} class="opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <PushPin size={16} class="inline" weight="bold" />
+            </button>
+        </div>
+        <button
+            class="highlight-indicator"
+            on:click={scrollToFirstHighlight}
+        >
+            {highlightsOutsideViewport}
+            {pluralize(highlightsOutsideViewport, 'highlight')}
 
-        {#key highlightsOutsideViewport}
-            <ReplyAvatars users={Array.from(highlightsOutsideViewportPubkeys)} size="xs" />
-        {/key}
-        
-        <CaretDown size={16} class="inline" weight="bold" />
-    </button>
+            {#key highlightsOutsideViewport}
+                <ReplyAvatars users={Array.from(highlightsOutsideViewportPubkeys)} size="xs" />
+            {/key}
+            
+            <CaretDown size={16} class="inline" weight="bold" />
+        </button>
+    </div>
 {/if}
 
 <style>
+    .highlight-indicator-container {
+        @apply fixed bottom-16 left-1/2 transform -translate-x-1/2;
+    }
+
     .highlight-indicator {
-        @apply fixed bottom-16 left-1/2 transform -translate-x-1/2 bg-foreground text-xs text-background px-3 py-1.5 rounded-full z-50 flex items-center gap-1;
+        @apply transform bg-foreground text-xs text-background px-3 py-1.5 rounded-full z-50 flex items-center gap-1;
     }
 </style>
 

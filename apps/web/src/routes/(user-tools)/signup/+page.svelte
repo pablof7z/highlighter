@@ -4,8 +4,6 @@
 	import { onDestroy, onMount } from "svelte";
 	import { goto } from "$app/navigation";
 	import currentUser from "$stores/currentUser";
-    import Illustration from "$lib/illustrations/schedule.svelte";
-	import { Button } from "$components/ui/button";
 
     let title = "Welcome!"
 
@@ -41,7 +39,7 @@
 </script>
 
 <div
-	class="container relative hidden h-[calc(100dvh-80px)] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
+	class="container relative h-[calc(100dvh-80px)] flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0"
 >
 	<div class="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r">
 		<div
@@ -53,9 +51,6 @@
 		<div class="relative z-20 mt-auto">
 			<blockquote class="space-y-2">
 				<p class="text-lg">
-					&ldquo;This library has saved me countless hours of work and helped me deliver
-					stunning designs to my clients faster than ever before. Highly
-					recommended!&rdquo;
 				</p>
 				<footer class="text-sm">Sofia Davis</footer>
 			</blockquote>

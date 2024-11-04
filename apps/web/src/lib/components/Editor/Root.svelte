@@ -27,6 +27,8 @@
     import TableHeader from '@tiptap/extension-table-header'
     import TableRow from '@tiptap/extension-table-row'
 	import { EditorView } from '.';
+	import { NDKEvent, NostrEvent } from '@nostr-dev-kit/ndk';
+	import { ndk } from '$stores/ndk';
 
     export let content: string = "";
     export let editor: Editor | undefined = undefined;
@@ -42,6 +44,11 @@
     setContext('editorView', editorView);
 
     $: element = $editorElement;
+
+    const event = new NDKEvent($ndk, {
+        kind: 1,
+        content: 'Hello nostr:npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft',
+    } as NostrEvent);
 
     function getHandlePaste() {
         return (view: any, event: ClipboardEvent, slice: any) => {
@@ -91,6 +98,7 @@
                         nprofile: { addNodeView: () => SvelteNodeViewRenderer(PubkeyExtension) },
                         nevent: { addNodeView: () => SvelteNodeViewRenderer(NeventExtension) },
                         naddr: { addNodeView: () => SvelteNodeViewRenderer(NaddrExtension) },
+                        link: { autolink: true }
                     },
                 }),
                 Heading.configure({
@@ -130,10 +138,9 @@
 			},
             onUpdate: ({ editor }) => {
                 content = editor.storage.markdown.getMarkdown();
-                console.log(content);
             },
             editorProps: {
-				handlePaste: getHandlePaste()
+				handlePaste: getHandlePaste(),
 			},
 		});
         editorStore.set(editor);

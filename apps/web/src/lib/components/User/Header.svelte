@@ -93,10 +93,6 @@
                 {:else}
                     <FollowButton {user} />
                 {/if}
-            {:else}
-                <Button variant="accent" href="/publication/new">
-                    Setup creator profile
-                </Button>
             {/if}
         </div>
     </div>

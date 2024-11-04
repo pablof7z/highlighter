@@ -97,32 +97,13 @@
 </script>
 
 {#if $state.type === "thread"}
-    <!-- <BlankState
-        cta={$publishAt ? "View preview" : "View"}
-        on:click={() => {
-            if ($publishAt) goto('/schedule');
-            else goto(`/a/${$thread.items[0].event.encode()}`);
-        }}
-        class="md:fixed md:top-1/2 md:-translate-y-1/2 md:left-1/2 md:-translate-x-1/2"
-    >
-        <img src="/images/published.png" class="mx-auto w-3/5 h-3/5 opacity-60 my-8" />
-
-        <span class="text-2xl font-medium">
-            Your thread
-            {#if $publishAt}
-                was scheduled!
-            {:else}
-                was published!
-            {/if}
-        </span>
-    </BlankState> -->
+    Noop
 {:else}
     <BlankState
         cta="Share your work"
         on:click={share}
         class="md:fixed md:top-1/2 md:-translate-y-1/2 md:left-1/2 md:-translate-x-1/2"
         >
-        <img src="/images/published.png" class="mx-auto w-3/5 h-3/5 opacity-60 my-8" />
         <div slot="afterCta">
             <!-- {#if $preview && $makePublicIn}
                 <p class="mt-6 text-sm text-center">
@@ -151,11 +132,11 @@
             </blockquote> -->
         </div>
 
-        <span class="text-2xl font-medium">
+        <span class="text-4xl font-medium">
             <!-- {#if $event.title}
                 <div class="font-extrabold text-3xl">{$event.title}</div>
             {:else} -->
-                Your {$state.type}
+                The {$state.type}
             <!-- {/if} -->
             {#if $state.publishAt}
                 was scheduled!

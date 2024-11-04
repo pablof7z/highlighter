@@ -15,6 +15,8 @@
     }
 
     let href = `/studio/drafts/${item.id}`;
+
+    console.log('state.article', state?.article?.content)
 </script>
 
 {#if state?.type === "article"}

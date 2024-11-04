@@ -70,6 +70,7 @@ export async function configureDefaultNDK(nodeFetch: typeof fetch) {
 		debug('event publish failed', event.rawEvent(), error);
 		let msg = error?.relayErrors ?? error.message
 		toast.error(`Failed to publish event: ${msg}`);
+		console.error(error);
 	});
 }
 

@@ -32,6 +32,7 @@
 
     const highlightsOutOfNetwork = derived([highlights, currentUser], ([$highlights, $currentUser]) => {
         return $highlights.filter((hl) => {
+            if (!$wot) return true;
             return hl.pubkey !== $currentUser?.pubkey && !$wot.has(hl.pubkey);
         });
     });

@@ -53,8 +53,9 @@
     {$group.name}
 
     <svelte:fragment slot="button">
-        <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild let:builder>
+        {#if $group.tiers}
+            <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild let:builder>
                 <Button builders={[builder]} variant="outline" on:click={tiersClicked}>
                     Tiers
                 </Button>
@@ -69,6 +70,7 @@
                     {/each}
                 </DropdownMenu.Group>
             </DropdownMenu.Content>
-        </DropdownMenu.Root>
+            </DropdownMenu.Root>
+        {/if}
     </svelte:fragment>
 </Checkbox>

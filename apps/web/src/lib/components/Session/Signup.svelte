@@ -19,118 +19,7 @@
 
     title = 'Welcome!'
 
-    const signer = NDKPrivateKeySigner.generate();
-
-    function login() {
-        mode = "login";
-    }
-
-    const dispatch = createEventDispatcher();
-
-    let email: string;
-    let username: string = "";
-    let nsecBunker: NsecBunkerProvider = {
-        pubkey: "73c6bb92440a9344279f7a36aa3de1710c9198b1e9e8a394cd13e0dd5c994c63",
-        domain: "highlighter.com"
-    };
-
-    let creating: boolean;
-    let usernameTaken = false;
-    let popupNotOpened = false;
-    let authUrl: string;
-    let allNsecBunkerProviders: NDKEventStore<NDKEvent>;
-
-    function redirectToAuthUrlWithCallback(url: string) {
-        const redirectUrl = new URL(url);
-        const callbackPath = "/auth/callback";
-        const returnUrl = "https://highlighter.com" || window.location.origin;
-        const callbackUrl = new URL(callbackPath, returnUrl);
-        console.log('callbackUrl is', callbackUrl.toString());
-        redirectUrl.searchParams.set("callbackUrl", callbackUrl.toString());
-        localStorage.setItem("intended-url", window.location.href);
-        window.location.href = redirectUrl.toString();
-    }
-
-    async function signup() {
-        creating = true;
-        // See if this username resolves to an existing NIP-05
-        const domain = nsecBunker.domain;
-        const nip05 = await NDKUser.fromNip05([ username, domain ].join("@"), $ndk);
-
-        if (nip05) {
-            usernameTaken = true;
-            return;
-        }
-
-        await $bunkerNDK.connect(2500);
-
-        // Create local key
-        const existingPrivateKey = localStorage.getItem('nostr-nsecbunker-key');
-        let localSigner: NDKPrivateKeySigner | undefined;
-
-        if (existingPrivateKey) {
-            try {
-                localSigner = new NDKPrivateKeySigner(existingPrivateKey);
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        if (!localSigner) {
-            localSigner = NDKPrivateKeySigner.generate();
-            $nip46LocalKey = localSigner.privateKey!;
-        }
-
-        // Generate event
-        const signer = new NDKNip46Signer($bunkerNDK, nsecBunker.pubkey, localSigner);
-
-        let popup: Window | null = null;
-        signer.rpc.on("authUrl", (url: string) => {
-            popup = window.open(url, "_blank", "width=400,height=600");
-
-            if (!popup) {
-                popupNotOpened = true;
-                redirectToAuthUrlWithCallback(url);
-            }
-
-            authUrl = url;
-            let checkPopup = setInterval(() => {
-                if (!popup) {
-                    popupNotOpened = true;
-                }
-                if (popup?.closed) {
-                    clearInterval(checkPopup);
-                    creating = false;
-                }
-            }, 500); // Check every 500ms
-        });
-
-        try {
-            const createdPubkey = await signer.createAccount(username, domain, email);
-            const remoteSigner = new NDKNip46Signer($bunkerNDK, createdPubkey, localSigner);
-            const u = await remoteSigner.blockUntilReady();
-            $currentUser = u;
-            $ndk.signer = remoteSigner;
-            loginMethod.set('nip46');
-            userPubkey.set($currentUser.pubkey);
-            popup?.close();
-            dispatch("signed-up");
-        } catch (e) {
-            console.error(e);
-            alert(e);
-            creating = false;
-        }
-    }
-
-    function continueAsGuest() {
-        createGuestAccount().then(() => {
-            dispatch("signed-up");
-        });
-    }
-
     let avatar: string;
-
-    $: username = username.toLowerCase().replace(/[^a-z0-9_]/g, "");
 
     let name: string;
 
@@ -191,7 +80,7 @@
             variant="outline"
             on:click={() => mode = 'login'}
         >
-            Already on Highlighter or Nostr?
+            Already on Nostr?
         </Button>
     </div>
         
