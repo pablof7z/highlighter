@@ -7,7 +7,7 @@
 	import { pluralize } from "$utils";
 	import { goto } from "$app/navigation";
 	import VideoLink from "$components/Events/VideoLink.svelte";
-	import Article from "$components/Grid/Article.svelte";
+    import * as Feed from "$components/Feed";
 	import { isMobileBuild } from "$utils/view/mobile";
 	import { ndk } from "$stores/ndk";
 	import { Recycle } from "phosphor-svelte";
@@ -124,11 +124,8 @@
                     {...($$props.eventProps||{})}
                 />
             {:else if event.kind === NDKKind.Article}
-                <div class="flex flex-col">
-                    <Article
-                        article={NDKArticle.from(event)}
-                        wideView
-                    />
+                <div class="p-4">
+                    <Feed.Items.Article article={NDKArticle.from(event)} />
                 </div>
             {:else if event.kind === NDKKind.HorizontalVideo}
                 <VideoLink

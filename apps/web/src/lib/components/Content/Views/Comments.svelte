@@ -46,7 +46,7 @@
             .filter(e => !isEventShare(e, wrappedEvent))
     )
 
-    let showComment = true;
+    let showComment = false;
 </script>
 
 <div class="flex flex-row justify-between items-center border-y border-border px-2 py-4 w-full">
@@ -84,7 +84,7 @@
 <div class="flex flex-col gap-4">
     {#each $onlyOps as event (event.id)}
         <Card.Root>
-            <EventWrapper {event} compact />
+            <EventWrapper {event} compact skipRoot />
         </Card.Root>
     {/each}
 </div>

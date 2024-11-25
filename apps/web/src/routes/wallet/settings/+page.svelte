@@ -6,7 +6,7 @@
 	import InputArray from "$components/ui/input/InputArray.svelte";
 	import CashuMintSelectorModal from "$modals/CashuMintSelectorModal.svelte";
 	import { layout } from "$stores/layout";
-	import { walletService, wallet as defaultWallet, wallets } from "$stores/wallet";
+	import { walletService, wallet } from "$stores/wallet";
 	import { openModal } from "$utils/modal";
 	import { NDKCashuWallet } from "@nostr-dev-kit/ndk-wallet";
 	import { Key } from "phosphor-svelte";
@@ -14,7 +14,7 @@
 	import { toast } from "svelte-sonner";
 	import { derived, writable } from "svelte/store";
 
-    $layout.back = { url: "/wallet" }
+    $layout.back = { url: "/$wallet" }
     $layout.options = [
         { name: "Save", fn: save }
     ]
@@ -23,50 +23,43 @@
         $layout.options = [];
     })
 
+    const cashuWallet = $wallet as NDKCashuWallet;
+
     const walletId = $page.url.searchParams.get("id");
-    let name: string;
-    const relays = writable<string[]>([]);
-    const mints = writable<string[]>([]);
-
-    let wallet: NDKCashuWallet | undefined;
-    
-    if (!wallet) wallet = $wallets.find((w) => w.walletId === walletId);
-
-    $: if (!name && wallet) {
-        name = wallet.name ?? "Wallet";
-        $relays = wallet.relays;
-        $mints = wallet.mints;
-    }
+    let name: string = cashuWallet?.name ?? "Wallet";
+    const relays = writable<string[]>(cashuWallet?.relays ?? []);
+    console.log('relays', cashuWallet?.relays);
+    const mints = writable<string[]>(cashuWallet?.mints ?? []);
 
     async function makeDefault() {
-        if (!wallet) return;
-        await $walletService.setMintList(wallet);
+        if (!cashuWallet) return;
+        await $walletService.setMintList(cashuWallet);
 
         toast.success("Wallet set as default");
     }
 
     async function checkProofs() {
-        console.log("Checking proofs", wallet);
-        if (!wallet) return;
-        await wallet.checkProofs();
+        if (!cashuWallet) return;
+        await cashuWallet.checkProofs();
     }
 
-    async function save() {
-        if (!wallet) return;
+    console.log('event', cashuWallet?.event.rawEvent());
 
-        wallet.name = name ?? "Wallet";
-        wallet.relays = $relays;
-        console.log('setting relays', $relays);
-        wallet.mints = $mints;
-        console.log(wallet.event.rawEvent());
-        await wallet.publish();
+    async function save() {
+        if (!cashuWallet) return;
+
+        cashuWallet.name = name ?? "Wallet";
+        cashuWallet.relays = $relays;
+        cashuWallet.mints = $mints;
+        console.log(cashuWallet.event.rawEvent());
+        await cashuWallet.publish();
         goto("/wallet");
     }
 
     let confirmDelete = false;
     async function onDelete() {
-        if (confirmDelete && wallet) {
-            await wallet.delete();
+        if (confirmDelete && $wallet) {
+            await cashuWallet.delete();
             goto("/wallet");
             toast("Wallet deleted");
         } else {
@@ -76,15 +69,15 @@
     }
 
     async function generateSpendingKey() {
-        if (!wallet) return;
+        if (!$wallet) return;
         
-        wallet.skipPrivateKey = false;
-        await wallet?.event.toNostrEvent();
-        console.log(wallet?.privkey);
+        $wallet.skipPrivateKey = false;
+        await $wallet?.event.toNostrEvent();
+        console.log($wallet?.privkey);
     }
 </script>
 
-{#if wallet}
+{#if $wallet}
         <div class="flex flex-col gap-6 w-full items-start">
             <div class="w-full">
                 <h1>Name</h1>
@@ -111,19 +104,15 @@
             <div class="w-full">
                 <h2 class="mb-0">Relays</h2>
                 <div class="text-sm text-muted-foreground mb-4">
-                    These are the relays where the wallet information will be stored.
+                    These are the relays where the $wallet information will be stored.
                 </div>
                 <InputArray values={relays} />
                 {JSON.stringify($relays)}
             </div>
         </div>
 
-        <h1>Spending Key</h1>
-        {#if wallet?.p2pk}
-            Wallet has a spending key
-
-            {wallet.privkey}
-        {:else}
+        {#if !cashuWallet?.privkey}
+            <h1>Spending Key</h1>
             <p>Wallet doesn't have a spending key</p>
 
             <Button variant="accent" class="w-full" on:click={generateSpendingKey}>
@@ -145,12 +134,12 @@
                 Force Sync
             </Button>
 
-            <Button variant="destructive" class="w-full" disabled={$defaultWallet?.walletId === wallet?.walletId} on:click={onDelete}>
+            <!-- <Button variant="destructive" class="w-full" disabled={$defaultWallet?.walletId === $wallet?.walletId} on:click={onDelete}>
                 {#if confirmDelete}
                     Are you sure?
                 {:else}
                     Delete Wallet
                 {/if}
-            </Button>
+            </Button> -->
         </div>
 {/if}

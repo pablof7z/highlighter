@@ -11,8 +11,9 @@
 	import { toast } from "svelte-sonner";
     import { saveForLater } from "$lib/actions/Events/save-for-later.js";
 	import PublishedToPills from "$components/Groups/PublishedToPills.svelte";
-	import { eventIsInGroup } from "$utils/preview";
-	import EventTags from "$components/Events/EventTags.svelte";
+	import { eventIsInGroup, eventIsPaid, eventIsPreview } from "$utils/preview";
+	import Name from "$components/User/Name.svelte";
+    import * as Event from '$components/Event';
 
     export let article: NDKArticle;
     export let skipAuthor = false;
@@ -39,6 +40,9 @@
             fn: addToReadLater
         }
     ]
+
+    export let isPreview = article ? eventIsPreview(article) : undefined;
+    export let isPaid = article ? eventIsPaid(article) : undefined;
 </script>
 
 <Swipe
@@ -52,7 +56,7 @@
                 {#if !skipCommunity && eventIsInGroup(article)}
                     <PublishedToPills event={article} />
                 {:else if !skipAuthor}
-                    <AvatarWithName user={article.author} avatarSize="small" class="font-light !text-xs truncate" />
+                    <Name user={article.author} class="font-light !text-xs truncate" />
                 {/if}
             </div>
         </div>
@@ -63,28 +67,36 @@
                     <RelativeTime event={article} />
                 </Badge>
             {/if}
-
-            <Badge variant="secondary" class="font-light text-muted-foreground whitespace-nowrap">
-                {time}
-            </Badge>
         </div>
 
         <div class="col-span-2 flex flex-col">
             <div class="flex flex-col gap-0">
-                <h2 class="text-xl md:text-xl font-medium mb-0 max-sm:max-h-[3.5rem] overflow-y-clip">{article.title}</h2>
-                <p class="text-base text-muted-foreground max-h-[3.5rem] sm:font-light overflow-clip">{summary}</p>
+                <h2 class="text-lg md:text-lg font-medium mb-0 max-sm:max-h-[3.5rem] overflow-y-clip">{article.title}</h2>
+
+                <div class="col-span-3 mt-1 flex flex-row gap-1 mb-2 grow">
+                    <RelatedEvents event={article} />
+        
+                    <Badge variant="secondary" class="font-light text-muted-foreground whitespace-nowrap w-fit">
+                        {time} read
+                    </Badge>
+
+                    {#if isPreview}
+                        <Event.Badges.Preview />
+                    {:else if isPaid}
+                        <Event.Badges.Exclusive />
+                    {/if}
+                </div>
+                
+                <p class="text-sm text-muted-foreground max-h-[2.5rem] sm:font-light overflow-clip">{summary}</p>
             </div>
         </div>
 
         <div class="flex-none">
             {#if article.image}
-                <img src={article.image} alt={article.title} class="w-full h-full object-cover sm:rounded-sm" />
+                <img src={article.image} alt={article.title} class="w-full h-full object-cover sm:rounded-sm !h-[140px]" />
+            {:else}
+                <div class="bg-secondary w-full h-full object-cover sm:rounded-sm !h-[140px]" />
             {/if}
-        </div>
-        
-        <div class="col-span-3 mt-1 flex flex-col gap-1">
-            <RelatedEvents event={article} />
-            <EventTags event={article} />
         </div>
     </div>
 </a>

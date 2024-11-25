@@ -57,8 +57,6 @@ export const userFollows = writable(new Set<Hexpubkey>());
 // 	'user-follows-set'
 // );
 
-
-
 export const muteList = persist(
 	writable(new Set<Hexpubkey>()),
 	createLocalStorage(),
@@ -95,6 +93,18 @@ export const userVideoCurations = writable<Map<string, NDKList>>(new Map());
 export const userGenericCuration = writable<NDKList>(new NDKList($ndk, { kind: NDKKind.BookmarkList, created_at: 0 } as NostrEvent));
 
 export const categorizedUserLists = writable<Map<string, NDKList>>(new Map());
+
+export const INBOX_KINDS = [ NDKKind.Article, NDKKind.HorizontalVideo ].map(i => i.toString());
+export const inboxLists = derived(categorizedUserLists, $categorizedUserLists => {
+	const map = new Map<string, NDKList>();
+	for (const [key, list] of $categorizedUserLists.entries()) {
+		if (INBOX_KINDS.includes(key))
+			map.set(key, list);
+	}
+	
+	return map;
+});
+export const inboxPubkeys = derived(inboxLists, $inboxLists => new Set(Array.from($inboxLists.values()).map(list => list.items).flat()))
 
 /**
  * Current user's supported people

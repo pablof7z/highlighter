@@ -7,7 +7,7 @@
     
     export let filters: NDKFilter[];
     export let opts: NDKSubscriptionOptions;
-    export let type: EventWithFrom | undefined;
+    export let type: EventWithFrom | undefined = undefined;
 
     const sub = $ndk.storeSubscribe(filters, opts, type);
     let filteredStore = sub;

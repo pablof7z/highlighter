@@ -5,54 +5,50 @@
 	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import * as Feed from "$components/Feed";
 	import { CaretRight, MagnifyingGlass } from "phosphor-svelte";
-	import { userFollows } from "$stores/session";
 
-    const oneWeekAgo = Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 30;
-
-    const recentArticlesFromFollows = $ndk.storeSubscribe([
-        { kinds: [NDKKind.Article], authors: Array.from($userFollows), since: oneWeekAgo },
-        { kinds: [NDKKind.GenericRepost], "#k": [NDKKind.Article.toString()], authors: Array.from($userFollows), since: oneWeekAgo },
+    const recentArticles = $ndk.storeSubscribe([
+        { kinds: [NDKKind.Article], limit: 50 },
     ], { closeOnEose: true }, NDKArticle);
 
-    const articleComments = $ndk.storeSubscribe([
-        // { kinds: [NDKKind.Text, NDKKind.Zap, NDKKind.Nutzap, NDKKind.GenericRepost ], "#k": ["30023"], limit: 50 },
-        { kinds: [NDKKind.ArticleCurationSet ], limit: 50 },
-    ], { closeOnEose: true, onEose: () => {
-        loadArticles();
-    }}, NDKList)
+    // const articleComments = $ndk.storeSubscribe([
+    //     // { kinds: [NDKKind.Text, NDKKind.Zap, NDKKind.Nutzap, NDKKind.GenericRepost ], "#k": ["30023"], limit: 50 },
+    //     { kinds: [NDKKind.ArticleCurationSet ], limit: 50 },
+    // ], { closeOnEose: true, onEose: () => {
+    //     loadArticles();
+    // }}, NDKList)
 
     let articles: NDKEventStore<NDKArticle>;
 
-    function loadArticles() {
-        const filter: NDKFilter = {kinds:[NDKKind.Article], authors:[], "#d": [], limit: 200};
+    // function loadArticles() {
+    //     const filter: NDKFilter = {kinds:[NDKKind.Article], authors:[], "#d": [], limit: 200};
 
-        $articleComments.forEach(comment => {
-            const aTag = comment.getMatchingTags("a")
-                .filter(tag => tag[1].startsWith("30023:"))
-                ?.[0]?.[1];
+    //     $articleComments.forEach(comment => {
+    //         const aTag = comment.getMatchingTags("a")
+    //             .filter(tag => tag[1].startsWith("30023:"))
+    //             ?.[0]?.[1];
             
-            if (aTag) {
-                const [kind, pubkey, dTag] = aTag.split(":");
-                if (dTag.length > 0) {
-                    filter.authors!.push(pubkey);
-                    filter["#d"]!.push(dTag);
-                }
-            }
-        });
+    //         if (aTag) {
+    //             const [kind, pubkey, dTag] = aTag.split(":");
+    //             if (dTag.length > 0) {
+    //                 filter.authors!.push(pubkey);
+    //                 filter["#d"]!.push(dTag);
+    //             }
+    //         }
+    //     });
 
-        if (filter.authors!.length > 0) {
-            articles = $ndk.storeSubscribe(
-                filter,
-                { subId: 'articles' },
-                NDKArticle
-            );
-        }
-    }
+    //     if (filter.authors!.length > 0) {
+    //         articles = $ndk.storeSubscribe(
+    //             filter,
+    //             { subId: 'articles' },
+    //             NDKArticle
+    //         );
+    //     }
+    // }
 </script>
 
 <div class="flex flex-col w-full max-w-[var(--content-focused-width)]">
     <Feed.Articles
-        store={filterArticles(recentArticlesFromFollows)}
+        store={filterArticles(recentArticles)}
     />
 </div>
 {#if articles}

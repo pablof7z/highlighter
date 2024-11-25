@@ -2,6 +2,7 @@ import Root from './Root.svelte';
 import RootList from './RootList.svelte';
 import Shell from './Shell.svelte';
 
+import MoreFrom from './MoreFrom.svelte';
 import Header from './Header.svelte';
 
 import * as Views from './Views';
@@ -17,14 +18,13 @@ import ListItem from './List/Item.svelte';
 
 import List from './List.svelte';
 import { Readable } from 'svelte/store';
-import { NDKArticle, NDKEvent, NDKRelaySet, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo, NDKWiki } from '@nostr-dev-kit/ndk';
+import { NDKArticle, NDKEvent, NDKRelaySet, NDKSimpleGroupMemberList, NDKSimpleGroupMetadata, NDKSubscriptionTier, NDKTag, NDKVideo } from '@nostr-dev-kit/ndk';
 import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 export * from './load.js';
 
 export type ContentStores = {
     articles: Readable<NDKArticle[]>;
     videos: Readable<NDKVideo[]>;
-    wiki: Readable<NDKWiki[]>;
     notes: Readable<NDKEvent[]>;
     chat: Readable<NDKEvent[]>;
 }
@@ -62,7 +62,6 @@ export type GroupContent = {
     events: NDKEventStore<NDKEvent>;
     articles?: Readable<NDKArticle[]>;
     videos?: Readable<NDKVideo[]>;
-    wiki?: Readable<NDKWiki[]>;
     notes?: Readable<NDKEvent[]>;
     chat?: Readable<NDKEvent[]>;
 }
@@ -75,6 +74,8 @@ export {
     Avatar,
     Name,
     PublishedToPills,
+
+    MoreFrom,
 
     Header,
 

@@ -2,15 +2,16 @@
 	import FeaturedCommunityCard from '$components/Card/FeaturedCommunityCard.svelte';
 	import { NDKSimpleGroupMetadata, NDKTag } from '@nostr-dev-kit/ndk';
 	import { mainContentKinds } from '$utils/event';
-	import { derived } from 'svelte/store';
+	import { derived, get } from 'svelte/store';
 	import { NDKRelaySet } from '@nostr-dev-kit/ndk';
 	import { NDKKind } from '@nostr-dev-kit/ndk';
 	import { ndk } from '$stores/ndk';
 	import { layout } from "$stores/layout";
-    import * as Card from "$components/ui/card";
+    import * as Card from "$components/Card";
 	import { Button } from "$components/ui/button";
 	import { ArrowRight } from "phosphor-svelte";
     import * as Groups from "$components/Groups";
+	import StoreFeed from '$components/Feed/StoreFeed.svelte';
 
     $layout.sidebar = false;
     $layout.fullWidth = false;
@@ -47,32 +48,19 @@
     })
 </script>
 
-<Card.Root class="w-72 bg-secondary">
-    <Card.Header>
-        <Card.Title>
-            Introducing Publications
-        </Card.Title>
-    </Card.Header>
+<div class="flex flex-row gap-4 w-full overflow-x-auto">
+    <Groups.RootList tags={$groupTags} let:group let:articles>
+        {#if articles && get(articles).length > 0}
+            <Card.Community {group} />
+        {/if}
+    </Groups.RootList>
+</div>
 
-    <Card.Content class="text-muted-foreground text-sm">
-        <p>Publications are communities that
-            encompass a specific topic.</p>
-        
-        <p></p>
-    </Card.Content>
+<StoreFeed feed={articlesWithHTag} />
 
-    <Card.Footer>
-        <Button>
-            Create Your Publication
-            <ArrowRight class="ml-2" />
-        </Button>
-    </Card.Footer>
-</Card.Root>
-
-{#each $communities as community (community.id)}
-    <p>{community.name}</p>
-{/each}
-
-<Groups.RootList tags={$groupTags} let:group>
-    <FeaturedCommunityCard {group} />
-</Groups.RootList>
+<!-- 
+<Groups.RootList tags={$groupTags} let:group let:articles>
+    {#if articles && get(articles).length > 0}
+        <Groups.MoreFrom {group} {articles} />
+    {/if}
+</Groups.RootList> -->

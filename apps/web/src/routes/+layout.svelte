@@ -21,6 +21,8 @@
 	import AppShell from '$components/App/Shell.svelte';
 	import { layout } from '$stores/layout';
 	import { initialize } from '@capacitor-community/safe-area';
+	import { activeWallet } from '$stores/settings';
+	import { walletInit } from '$stores/wallet';
 
 	initialize();
 
@@ -64,6 +66,10 @@
 		configureFeNDK().then(async () => {
 			await browserSetupPromise;
 		});
+	}
+
+	$: if ($activeWallet) {
+		walletInit($ndk, $activeWallet);
 	}
 
 	onMount(async () => {

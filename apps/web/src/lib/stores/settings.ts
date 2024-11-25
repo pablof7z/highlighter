@@ -8,6 +8,19 @@ export const walletType = persist(
 	'wallet-type'
 );
 
+export type WalletType = 'webln' | 'nip-60' | null;
+export type WalletId = string | null;
+export type WalletConfig = {
+    type: WalletType;
+    id: WalletId;
+}
+
+export const activeWallet = persist(
+	writable<WalletConfig | null>(null),
+	createLocalStorage(),
+	'active-wallet'
+);
+
 export const showHighlightsIndicator = persist(
 	writable<boolean>(true),
 	createLocalStorage(),

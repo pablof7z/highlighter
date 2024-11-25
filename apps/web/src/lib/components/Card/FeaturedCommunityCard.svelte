@@ -7,7 +7,6 @@
 	import { GroupData } from "$components/Groups";
 
     export let group: Readable<GroupData>;
-    export let tag: NDKTag | undefined = undefined;
 </script>
 {#if $group}
     <FeaturedContentCard

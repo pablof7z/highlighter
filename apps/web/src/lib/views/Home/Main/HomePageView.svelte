@@ -1,87 +1,81 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
-	import { NDKHighlight, NDKKind, NDKRelaySet, NDKVideo, NDKSimpleGroupMetadata } from '@nostr-dev-kit/ndk';
-	
-	import { ndk } from "$stores/ndk";
-	import { userFollows } from "$stores/session";
-	import { derived, Readable } from "svelte/store";
-    import * as Card from '$components/Card';
-    import Footer from "./Footer.svelte";
-	import HorizontalListOfTaggedItems from '$components/PageElements/Sections/HorizontalListOfTaggedItems.svelte';
-	import { layout } from '$stores/layout';
-	import { vanityUrls } from '$utils/const';
-	import Groups from '../Sections/Groups.svelte';
-	import Reads from './Sections/Reads.svelte';
-	import ReadsSidebar from './Sections/ReadsSidebar.svelte';
+	import FeaturedCommunityCard from '$components/Card/FeaturedCommunityCard.svelte';
+	import { NDKArticle, NDKSimpleGroupMetadata, NDKTag } from '@nostr-dev-kit/ndk';
+	import { chronologically, mainContentKinds } from '$utils/event';
+	import { derived, get, Readable, writable, Writable } from 'svelte/store';
+	import { NDKRelaySet } from '@nostr-dev-kit/ndk';
+	import { NDKKind } from '@nostr-dev-kit/ndk';
+	import { ndk } from '$stores/ndk';
+	import { setLayout } from "$stores/layout";
+    import * as Card from "$components/Card";
+    import * as Groups from "$components/Groups";
+	import StoreFeed from '$components/Feed/StoreFeed.svelte';
+	import { userFollows } from '$stores/session';
+	import { NDKEventStore } from '@nostr-dev-kit/ndk-svelte';
 
-    $layout.navigation = [
-        { value: "", name: "👋 Newest", href: '/reads' },
-        { name: "🌟 Top", href: '/reads/top' },
-        // { name: "🔥 Hot", href: '/reads/hot' },
-        { name: "🖊️ Highlighted", href: '/reads/highlighted' },
-        { name: "📚 Curations", href: '/reads/curations' },
-        // { name: "Feed Marketplace", icon: Plus, buttonProps: { class: 'place-self-end', variant: 'secondary' }, href: '/reads/dvms' },
-    ]
+    setLayout({
+        fullWidth: true
+    });
 
-    $layout.activeOption = $layout.navigation[0];
+    const relaySet = NDKRelaySet.fromRelayUrls([
+        "wss://relay.highlighter.com",
+        "wss://relay.0xchat.com",
+        "wss://groups.fiatjaf.com",
+        "ws://localhost:2929"
+    ], $ndk)
 
-    $layout.title = undefined;
-    $layout.fullWidth = true;
-    // $: $layout.sidebar = $groupsList && $groupsList.items.length > 0 ? { component: Generic } : false;
-    $layout.sidebar = false;
-    $layout.forceShowNavigation = true;
+    const articles = $ndk.storeSubscribe({kinds: [
+        NDKKind.Article
+    ]}, { relaySet, closeOnEose: true}, NDKArticle)
+    const articlesWithHTag = derived(articles, $articles => $articles.filter(a => a.hasTag("h")))
 
-    // const relaySet = NDKRelaySet.fromRelayUrls([ "ws://localhost:2929" ], $ndk);
-    // const groups = $ndk.storeSubscribe({ kinds: [NDKKind.GroupMetadata] }, { relaySet }, NDKSimpleGroupMetadata);
-
-    let highlightsEosed = false;
-    // const highlights = $ndk.storeSubscribe([
-    //     {kinds: [NDKKind.Highlight], limit: 50},
-    //     {kinds: [NDKKind.Highlight], authors: Array.from($userFollows), limit: 150},
-    // ], {
-    //     onEose: () => { highlightsEosed = true; }
-    // }, NDKHighlight);
-
-    // const followHighlights = derived(highlights, $highlights => {
-    //     return $highlights.filter(highlight => $userFollows.has(highlight.pubkey));
-    // });
-
-    // const featuredUsers = Array.from(
-    //         new Set(Object.values(vanityUrls))
-    //     ).map(pubkey => $ndk.getUser({ pubkey }))
-    //     .map(user => { return { user, id: user.pubkey } });
+    let articlesByFollows: Writable<NDKArticle[]> | NDKEventStore<NDKArticle> = writable([]);
     
-    onDestroy(() => {
-        // groups.unsubscribe();
-        // groups.unsubscribe();
-        // highlights.unsubscribe();
+    $: if ($userFollows.size > 0) {
+        articlesByFollows = $ndk.storeSubscribe([
+            { kinds: [ NDKKind.Article ], authors: Array.from($userFollows) },
+        ], { closeOnEose: true, groupable: false }, NDKArticle);
+    }
 
+    const groupTags = derived(articlesWithHTag, $articles => {
+        const tags = new Map<string, NDKTag>()
+        $articles.map(article => {
+            const hTag = article.tagValue("h")!
+            const relayUrl = article.relay?.url
+            if (!hTag || !relayUrl) return;
+            tags.set(hTag, [ "group", hTag, relayUrl ])
+        });
+
+        return Array.from(tags.values());
     })
+    
+    const articlesToRender = derived([articlesWithHTag, articlesByFollows], ([$articlesWithHTag, $articlesByFollows]) => {
+        const articles = new Map<string, NDKArticle>();
+
+        $articlesWithHTag.forEach(a => articles.set(a.tagId(), a))
+        $articlesByFollows.forEach(a => articles.set(a.tagId(), a))
+
+        return Array.from(articles.values())
+            .sort(chronologically)
+    })
+    
 </script>
 
-<div class="flex flex-col sm:gap-[var(--section-vertical-padding)] mx-auto w-full">
-    <!-- <ul class="w-1/3 border-x overflow-clip flex flex-col divide-y">
-        {#each $groups as group}
-            <li
-                class="h-40 rounded"
-                href={`/communities/${group.id}`}
-            >
-                <img src={group.picture} />
-                <div class="text-lg font-medium">{group.name}</div>
-                {group.about}
-            </li>
-        {/each}
-    </ul> -->
-    <!-- <Groups /> -->
-    
-    <div class="flex flex-col-reverse items-start gap-6">
-        <div class="w-full lg:w-[var(--content-focused-width)] mx-auto">
-            <Reads />
-        </div>
-
-        <!-- <div class="hidden md:flex flex-row h-full gap-4">
-            <ReadsSidebar />
-        </div> -->
-    </div>
-
+<div class="flex flex-row gap-4 w-full overflow-x-auto">
+    <Groups.RootList tags={$groupTags} let:group let:articles>
+        {#if articles && get(articles).length > 0}
+            <Card.Community {group} />
+        {/if}
+    </Groups.RootList>
 </div>
+
+<div class="max-w-[var(--content-focused-width)] mx-auto">
+    <StoreFeed feed={articlesToRender} />
+</div>
+
+<!-- 
+<Groups.RootList tags={$groupTags} let:group let:articles>
+    {#if articles && get(articles).length > 0}
+        <Groups.MoreFrom {group} {articles} />
+    {/if}
+</Groups.RootList> -->

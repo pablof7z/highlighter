@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NDKKind, NDKUser, NDKList, NDKHighlight, NDKEvent, NDKArticle, NDKVideo, NDKWiki, NDKUserProfile, NDKSubscriptionTier, NDKSimpleGroup, NDKRelaySet, NDKTag, NDKSimpleGroupMetadata, NDKCashuMintList } from "@nostr-dev-kit/ndk";
+	import { NDKKind, NDKUser, NDKList, NDKHighlight, NDKEvent, NDKArticle, NDKVideo, NDKUserProfile, NDKSubscriptionTier, NDKSimpleGroup, NDKRelaySet, NDKTag, NDKSimpleGroupMetadata, NDKCashuMintList } from "@nostr-dev-kit/ndk";
 	import { derived, get, Readable, writable } from "svelte/store";
 	import { setContext } from "svelte";
 	import { layout } from '$stores/layout';
@@ -11,7 +11,6 @@
     import UserHeader from "./Header.svelte";
 	import { House } from "phosphor-svelte";
 	import { roundedItemCount } from "$utils/numbers";
-	import Footer from "./Footer.svelte";
 
     export let user: NDKUser;
     export let userProfile: NDKUserProfile | undefined | null;
@@ -23,7 +22,6 @@
     export let articles: Readable<NDKArticle[]>;
     export let cashuMintList: Readable<NDKCashuMintList | undefined>;
     export let videos: Readable<NDKVideo[]>;
-    export let wiki: Readable<NDKWiki[]>;
     export let groupsList: Readable<NDKList | undefined>;
     export let pinList: Readable<NDKList | undefined>;
     export let tierList: Readable<NDKList | undefined>;
@@ -39,7 +37,6 @@
     setContext('userArticles', articles);
     setContext('userVideos', videos);
     setContext('cashuMintList', cashuMintList);
-    setContext('userWiki', wiki);
     setContext('userGroupsList', groupsList);
     setContext('userPinList', pinList);
     setContext('userTierList', tierList);
@@ -86,7 +83,6 @@
     {notes}
     {articles}
     {videos}
-    {wiki}
     {groupsList}
     {pinList}
     {tierList}

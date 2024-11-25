@@ -13,6 +13,7 @@
 	import Avatar from '$components/User/Avatar.svelte';
 	import Name from '$components/User/Name.svelte';
 	import { newSessionTryNip07 } from '../../../routes/browser-session-setup';
+	import { Textarea } from '$components/ui/textarea';
 
     export let title: string;
 
@@ -202,27 +203,15 @@
     {#if !user}
         <div class="w-full">
             <div class="field mx-2 w-full">
-                <label for="">What profile do you want to use?</label>
-                <Input
+                <label for="">Login</label>
+                <Textarea
                     bind:value={value}
-                    class="text-lg p-6"
-                    placeholder="nsec1..., jack@cashapp.com"
-                    on:submit={findProfile}
+                    class="text-lg p-4 min-h-[100px] resize-none text-sm !font-mono"
+                    placeholder={"nsec1...,\nbunker://...."}
                     on:paste={attemptToProcess}
                     on:change={attemptToProcess}
                     on:keyup={attemptToProcess}
                 />
-                <div class="flex flex-col items-start text-sm text-muted-foreground">
-                    Enter something to get started:
-                    <div class="flex flex-row items-center gap-2">
-                        <span>🤙</span>
-                        Nostr address (NIP-05)
-                    </div>
-                    <div class="flex flex-row items-center gap-2">
-                        <span>🔑</span>
-                        An nsec private key
-                    </div>
-                </div>
             </div>
         </div>
 

@@ -4,8 +4,6 @@
 	import { Paperclip, Pinwheel, PushPin, Star } from 'phosphor-svelte';
 	import PinButton from './Elements/PinButton.svelte';
 	import currentUser from '$stores/currentUser';
-	import { Badge } from '$components/ui/badge';
-	import RelatedEvents from '$components/Feed/Item/RelatedEvents.svelte';
 	import RelativeTime from '$components/PageElements/RelativeTime.svelte';
     import * as Event from '$components/Event';
 
@@ -55,6 +53,7 @@
                 src={image ?? userProfile?.image}
                 class="
                     w-full object-cover z-[1] h-full
+                    {$$props.imgClass}
                 "
             />
 
@@ -104,12 +103,6 @@
                             </div>
                         {/if}
                     </div>
-
-                    {#if event}
-                        <div class="flex flex-row w-full justify-between items-end">
-                            <RelatedEvents {event} />
-                        </div>
-                    {/if}
                 </div>
                 
                 <slot />

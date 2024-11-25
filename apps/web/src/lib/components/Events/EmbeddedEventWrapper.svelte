@@ -2,7 +2,7 @@
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 	import { ndk } from "$stores/ndk";
 	import { NDKArticle, NDKEvent, NDKKind, NDKRelaySet } from "@nostr-dev-kit/ndk";
-	import { eventToKind, mainContentKinds } from '$utils/event';
+	import { eventToKind, mainContentKinds, wrapEvent } from '$utils/event';
 	import ItemLink from './ItemLink.svelte';
 	import { Button } from '$components/ui/button';
     import * as Card from '$components/Card';
@@ -14,14 +14,9 @@
 
     const relaySet = (relays && relays.length > 0) ? NDKRelaySet.fromRelayUrls(relays, $ndk) : undefined;
 
-    function clicked(e) {
-        e.stopPropagation();
-        console.log('clicked', e.detail);
-    }
-
     $ndk.fetchEvent(id, { groupable: true, groupableDelay: 250, groupableDelayType: 'at-least', subId: 'embedded-event-wrapper'}, relaySet)
         .then((e) => {
-            event = e ? eventToKind(e) : null;
+            event = e ? wrapEvent(e) : null;
         })
 
     let showMore = false;

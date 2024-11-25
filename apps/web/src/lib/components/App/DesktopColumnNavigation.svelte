@@ -1,10 +1,10 @@
 <script lang="ts">
 	import WalletConnect from '$modals/WalletConnect';
-    import { Inbox, Bell, Highlighter } from 'lucide-svelte';
+    import { Inbox, Bell, Highlighter, LucideCloudLightning } from 'lucide-svelte';
 	import { Button } from "$components/ui/button";
 	import LogoSmall from "$icons/LogoSmall.svelte";
     import { toggleMode } from "mode-watcher";
-	import { Gear, Plus, PresentationChart, BookmarkSimple, Wallet, Moon, Tray, House } from "phosphor-svelte";
+	import { Gear, Plus, PresentationChart, BookmarkSimple, Wallet, Moon, Tray, House, Lightning } from "phosphor-svelte";
     import * as Tooltip from "$lib/components/ui/tooltip";
 	import CurrentUser from "$components/CurrentUser.svelte";
 	import NewItemButton from "$views/Home/Main/NewItemButton.svelte";
@@ -12,9 +12,13 @@
 	import Separator from "$components/ui/separator/separator.svelte";
 	import { getEventUrl } from "$utils/url";
 	import { derived } from "svelte/store";
-	import { userArticleCurations } from "$stores/session";
+	import { categorizedUserLists, inboxLists, userArticleCurations } from "$stores/session";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 	import { openModal } from '$utils/modal';
+	import { activeWallet } from '$stores/settings';
+	import { wallet, walletBalances, walletUnit } from '$stores/wallet';
+	import { currencyFormat } from '$utils/currency';
+	import Badge from '$components/ui/badge/badge.svelte';
 
     let activeHighlights: boolean;
 
@@ -25,6 +29,11 @@
     });
 
     let activeItem: string;
+
+    function disconnectWallet() {
+        walletUnit();
+        $activeWallet = null;
+    }
 
     $: {
         const url = $page.url.pathname;
@@ -64,18 +73,20 @@
             </Tooltip.Content>
         </Tooltip.Root>
         
-        <!-- <Tooltip.Root openDelay={0}>
-            <Tooltip.Trigger>
-                <Button variant={activeItem === '/inbox' ? "secondary" : "ghost"} class="w-12 h-12 p-2" href="/inbox">
-                    <Inbox
-                        size={32}
-                    />
-                </Button>
-            </Tooltip.Trigger>
-            <Tooltip.Content side="right">
-                Inbox
-            </Tooltip.Content>
-        </Tooltip.Root> -->
+        {#if $inboxLists.size > 0}
+            <Tooltip.Root openDelay={0}>
+                <Tooltip.Trigger>
+                    <Button variant={activeItem === '/inbox' ? "secondary" : "ghost"} class="w-12 h-12 p-2" href="/inbox">
+                        <Inbox
+                            size={32}
+                        />
+                    </Button>
+                </Tooltip.Trigger>
+                <Tooltip.Content side="right">
+                    Inbox
+                </Tooltip.Content>
+            </Tooltip.Root>
+        {/if}
 
         <Tooltip.Root openDelay={0}>
             <Tooltip.Trigger>
@@ -133,6 +144,28 @@
 
 
     <div class="flex flex-col items-center gap-4">
+        {#if $wallet}
+            <Tooltip.Root openDelay={0}>
+                <Tooltip.Trigger class="flex flex-col items-center">
+                    <Button variant={activeItem === '/wallet' ? "secondary" : "ghost"} class="w-12 h-12 p-2" href="/wallet">
+                        <Lightning size={32} weight="fill" />
+                    </Button>
+                    {#if $walletBalances.length > 0}
+                            {#each $walletBalances as {amount, unit}}
+                                <Badge variant="secondary" class="p-1 py-0">
+                                    <span class="!text-xs font-extralight">
+                                        {currencyFormat(unit, amount)}
+                                    </span>
+                                </Badge>
+                            {/each}
+                        {/if}
+                </Tooltip.Trigger>
+                <Tooltip.Content side="right">
+                    Wallet
+                </Tooltip.Content>
+            </Tooltip.Root>
+        {/if}
+        
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
                 <Button variant="ghost" class="w-12 h-12 p-2">
@@ -144,10 +177,17 @@
                     <Gear size={20} weight="bold" class="mr-3" />
                     Settings
                 </DropdownMenu.Item>
-                <DropdownMenu.Item on:click={() => openModal(WalletConnect)}>
-                    <Wallet size={20} weight="bold" class="mr-3" />
-                    Connect Wallet
-                </DropdownMenu.Item>
+                {#if $wallet}
+                    <DropdownMenu.Item on:click={disconnectWallet}>
+                        <Wallet size={20} weight="bold" class="mr-3" />
+                        Disconnect Wallet
+                    </DropdownMenu.Item>
+                {:else}
+                    <DropdownMenu.Item on:click={() => openModal(WalletConnect)}>
+                        <Wallet size={20} weight="bold" class="mr-3" />
+                        Connect Wallet
+                    </DropdownMenu.Item>
+                {/if}
 
                 <DropdownMenu.Separator />
 

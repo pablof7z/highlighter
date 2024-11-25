@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Component, layout } from "$stores/layout";
 	import { getGroupUrl } from "$utils/url";
-	import { NDKArticle, NDKEvent, NDKVideo, NDKWiki } from "@nostr-dev-kit/ndk";
+	import { NDKArticle, NDKEvent, NDKVideo } from "@nostr-dev-kit/ndk";
 	import { NavigationOption } from "../../../app";
 	import { setContext } from "svelte";
 	import { Navigation } from "$utils/navigation";
@@ -13,7 +13,6 @@
     export let group: Readable<Groups.GroupData>;
     export let articles: Readable<NDKArticle[]>;
     export let videos: Readable<NDKVideo[]>;
-    export let wiki: Readable<NDKWiki[]>;
     export let notes: Readable<NDKEvent[]>;
     export let chat: Readable<NDKEvent[]>;
 
@@ -99,9 +98,7 @@
     {group}
     {articles}
     {videos}
-    {wiki}
     {notes}
     {chat}
-    {tiers}
     {navigation}
 />

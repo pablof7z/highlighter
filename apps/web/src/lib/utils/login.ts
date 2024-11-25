@@ -234,9 +234,8 @@ export function logout(): void {
 	localStorage.clear();
 	currentUser.set(undefined);
 	userFollows.set(new Set());
-	userFollows.delete();
-	userPubkey.reset();
-	privateKey.reset();
+	userPubkey.set(null);
+	privateKey.set(undefined);
 	userProfile.set(undefined);
 
 	// explicitly prevent auto-login with NIP-07

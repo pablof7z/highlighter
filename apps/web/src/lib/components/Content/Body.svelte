@@ -6,8 +6,6 @@
     import DVMBody from "./DVM/Body.svelte";
     import VideoBody from "./Video/Body.svelte";
     import NoteBody from "./Note/Body.svelte";
-    import ModularArticleBody from "./ModularArticle/Body.svelte";
-    import ModularArticleItem from "./ModularArticle/Item.svelte";
 	import EventWrapper from '$components/Feed/EventWrapper.svelte';
 	import { curationKinds } from '$utils/event';
 	import { layout } from '$stores/layout';
@@ -21,10 +19,6 @@
 <div>
     {#if event.kind >= 6000 & event.kind < 7000}
         <DVMBody {event} />
-    {:else if event.kind === 30040}
-        <ModularArticleBody event={event} />
-    {:else if event.kind === 30041}
-        <ModularArticleItem article={event} />
     {:else if (event instanceof NDKArticle)}
         <ArticleBody
             article={event}

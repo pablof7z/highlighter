@@ -16,7 +16,6 @@ export async function pinGroup(group: NDKSimpleGroup) {
 
     list.addItem([ "group", group.groupId, ...group.relayUrls() ]);
 
-    debugger
-
-    await list.publishReplaceable();
+    const push = await list.publishReplaceable();
+    console.log(push);
 }

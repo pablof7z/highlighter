@@ -100,12 +100,14 @@ export function getPreviewFromState(state: State<PreviewableTypes>): NDKEvent | 
     let previewEvent: NDKArticle | NDKVideo | undefined;
 
     if (
-        state.withPreview === false ||
-        state.audience.scope === 'public'
+        !('withPreview' in state) ||
+        state.withPreview === false
     ) return undefined;
     
     if (state.type === 'article') previewEvent = (state as State<Type.Article>).preview;
     if (state.type === 'video') previewEvent = (state as State<Type.Video>).preview;
+
+    return previewEvent;
 }
 
 /**

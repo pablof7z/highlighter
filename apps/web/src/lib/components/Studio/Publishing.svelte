@@ -83,11 +83,10 @@
         }
     }
 
+    const isShareable = Studio.getShareableEvent($state)
+
     function share() {
         let e: NDKEvent | undefined;
-
-        e = Studio.getShareableEvent($state);
-        if (!e) return;
 
         const content = generateShareModalContent(e);
         const tags = e.getMatchingTags("t");
@@ -100,7 +99,7 @@
     Noop
 {:else}
     <BlankState
-        cta="Share your work"
+        cta={isShareable ? "Share your work" : undefined}
         on:click={share}
         class="md:fixed md:top-1/2 md:-translate-y-1/2 md:left-1/2 md:-translate-x-1/2"
         >
@@ -145,10 +144,12 @@
             {/if}
         </span>
 
-        <br>
-        <span class="font-light opacity-80">
-            Announce it to get the word out.
-        </span>
+        {#if isShareable}
+            <br>
+            <span class="font-light opacity-80">
+                Announce it to get the word out.
+            </span>
+        {/if}
 
         <Collapsible.Root class="my-6">
             <Collapsible.Trigger asChild let:builder>
@@ -158,7 +159,7 @@
                     </div>
 
                     <div class="flex flex-row gap-2 text-sm items-center text-muted-foreground font-normal divide-x divide-muted-foreground mr-2">
-                        <span class="px-2">
+                        <span class="px-2 flex flex-row gap-2 items-center">
                             {$publishedToRelays} <Check class="text-green-500 inline" />
 
                         </span>
@@ -177,7 +178,7 @@
                     <span class="sr-only">Toggle</span>
                 </Button>
             </Collapsible.Trigger>
-            <Collapsible.Content class="px-4 flex flex-col gap-1">
+            <Collapsible.Content class="p-4 flex flex-col gap-1">
                 {#each Object.entries($relays) as [ relayUrl, status ] (relayUrl)}
                     <div class="flex flex-row justify-between items-stretch gap-2 w-full text-sm">
                         <span class="text-foreground grow text-left">

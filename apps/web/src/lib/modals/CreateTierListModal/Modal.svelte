@@ -12,14 +12,25 @@
     import _createGroup from "$utils/groups/create.js";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { defaultRelays } from "$utils/const";
+    import type { CreateState } from "$components/Publication";
+    import * as Publication from "$components/Publication";
 	import { Input } from "$components/ui/input";
 	import { CaretDoubleRight, CaretRight } from "phosphor-svelte";
     import Option from "$lib/components/Publication/Pricing/Option.svelte";
 	import { presets } from "$components/Publication/Pricing";
+	import { get, writable } from "svelte/store";
+	import { NavigationOption } from "../../../app";
 
     export let tier: NDKSubscriptionTier;
     export let onSave: () => void;
     tier = new NDKSubscriptionTier($ndk);
+
+    let state = writable<CreateState>({
+		monetization: 'v4v',
+		name: undefined,
+		about: undefined,
+		picture: undefined
+	});
 
     tier.title = "Subscribers";
 
@@ -101,44 +112,82 @@
         closeModal();
     }
 
+    let actionButtons: NavigationOption[] = [];
+    let title: string = "Going Paid";
+
+    let step = 0;
+
+    let create: (state: CreateState) => Promise<void>;
+
+    $: switch (step) {
+        case 0:
+            title = "Going Paid";
+            actionButtons = [
+                { name: "Cancel", fn: closeModal, buttonProps: { variant: 'secondary' } },
+                { name: "Next", fn: () => {step++}, buttonProps: { variant: 'default', class: 'px-10' } }
+            ];
+            break;
+        case 1:
+            title = "Publication Details";
+            actionButtons = [
+                { name: "Cancel", fn: closeModal, buttonProps: { variant: 'secondary' } },
+                { name: "Next", fn: () => {step++}, buttonProps: { variant: 'default', class: 'px-10' } }
+            ];
+            break;
+        case 2:
+            title = "Set your pricing";
+            state.update((s) => {
+                console.log({s});
+                s.monetization = 'subscription';
+                return s;
+            });
+            actionButtons = [
+                { name: "Cancel", fn: closeModal, buttonProps: { variant: 'link' } },
+                { name: "Back", fn: () => {step--}, buttonProps: { variant: 'secondary' } },
+                { name: "Create Publication", fn: async () => {
+                    await create($state);
+                    closeModal();
+                }, buttonProps: { variant: 'default', class: 'px-10' } }
+            ]
+            break;
+    }
+
 </script>
 
 <UserProfile bind:userProfile user={$currentUser} />
 
 <ModalShell
     closeOnOutsideClick={false}
-    title="Going Paid"
-    actionButtons={[
-        { name: "Cancel", fn: closeModal, buttonProps: { variant: 'secondary' } },
-        { name: "Save", fn: save, buttonProps: { variant: 'default', class: 'px-10' } }
-    ]}
+    {title}
+    {actionButtons}
     class="!max-md w-full"
 >
-    <div class="flex flex-row p-2 border rounded-sm items-start text-foreground text-xs gap-2">
-        <CaretDoubleRight class="text-gold" size={20} />
-        <div class="flex flex-col items-start gap-1 grow">
-            <span class="font-bold text-foreground text-sm">
-                Let's create your paid publication
-            </span>
-            <div class="text-xs text-muted-foreground">
-                This is where you'll be able to charge for access to some of your content.
+    <Publication.Root bind:state bind:create>
+        {#if step === 0}
+            <div class="flex flex-row p-2 border rounded-sm items-start text-foreground text-xs gap-2">
+                <CaretDoubleRight class="text-gold" size={20} />
+                <div class="flex flex-col items-start gap-1 grow">
+                    <span class="font-bold text-foreground text-sm">
+                        Let's create your paid publication
+                    </span>
+                    <div class="text-xs text-muted-foreground">
+                        This is where you'll be able to charge for access to some of your content.
+                    </div>
+                </div>
+
             </div>
-        </div>
+        {:else if step === 1}
+            <div class="flex flex-col items-start gap-1">
+                <Publication.Profile {state} />
+            </div>
+        {:else if step === 2}
+            <div class="grid grid-cols-2 gap-2">
+                <Publication.Pricing {state} />
+            </div>
 
-    </div>
-
-    <div class="flex flex-col items-start gap-1">
-        <div class="text-semibold">Publication Name</div>
-        <Input bind:value={name} />
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
-        {#each presets as preset, i}
-            <Option amounts={preset} bind:selection {i} />
-        {/each}
-    </div>
-
-    <div class="text-xs text-muted-foreground w-full">
-        Don't fret; you can change this later.
-    </div>
+            <div class="text-xs text-muted-foreground w-full">
+                Don't fret; you can change this later.
+            </div>
+        {/if}
+    </Publication.Root>
 </ModalShell>

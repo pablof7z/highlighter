@@ -18,8 +18,6 @@
     export let skipButton: boolean = false;
     export let skipSplits: boolean = false;
 
-    const dispatch = createEventDispatcher();
-
     let zapSent = false;
 
     export let amount = 1000;
@@ -203,13 +201,13 @@
                     </div>
                 </div>
 
-                {#if !skipButton}
+                <!-- {#if !skipButton} -->
                     <Button variant="gold" on:click={zap} class="{$$props.buttonClass??""}" disabled={!zapButtonEnabled}>
                         Zap
                         {nicelyFormattedSatNumber(amount)}
                         sats
                     </Button>
-                {/if}
+                <!-- {/if} -->
             {/if}
         </div>
     {/if}

@@ -9,8 +9,8 @@
     export let event: NDKEvent;
     export let urlPrefix: string = "/a/";
     export let isNoop: boolean | undefined = false;
+    export let skipRoot = false;
 
-    let rootEvent: NDKEvent | undefined | null | "not-fetched" = "not-fetched";
     let replyToEvent: NDKEvent | undefined | null | "not-fetched" = "not-fetched";
 
     const dispatch = createEventDispatcher();
@@ -27,8 +27,8 @@
     const replyTag = getReplyTag(event);
     if (!rootEncode) rootEncode = replyTag ? encodeTag(replyTag) : "";
 
-    if (rootTag ?? replyTag) {
-        $ndk.fetchEventFromTag((replyTag ?? rootTag)!, event, subOpts).then((e: NDKEvent | null) => {
+    if (replyTag) {
+        $ndk.fetchEventFromTag((rootTag)!, event, subOpts).then((e: NDKEvent | null) => {
             replyToEvent = e;
         });
     }
@@ -48,7 +48,7 @@
         </a>
     {/if}
     
-    {#if rootEncode && ((rootTag && rootTag?.[1] !== replyTag?.[1]) || !(replyToEvent instanceof NDKEvent))}
+    {#if !skipRoot && rootEncode && ((rootTag && rootTag?.[1] !== replyTag?.[1]) || !(replyToEvent instanceof NDKEvent))}
         <a href="{urlPrefix}{rootEncode}">
             View conversation
         </a>

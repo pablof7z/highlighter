@@ -8,7 +8,7 @@
     export let user: NDKUser | undefined = undefined;
     export let userProfile: NDKUserProfile | undefined = undefined;
     export let subOpts: NDKSubscriptionOptions | undefined = undefined;
-    export let size: 'xs' | 'tiny' | 'small' | 'medium' | "md" | 'lg' | 'large' | "unconstrained" = "small";
+    export let size: 'xs' | 'tiny' | 'small' | 'medium' | "md" | 'lg' | 'large' | "4xl" | "unconstrained" = "small";
     export let type: 'square' | 'circle' = 'circle';
     export let ring = false;
     /**
@@ -27,6 +27,7 @@
         case 'small': sizePx = 26; break;
         case 'md': case 'medium': sizePx = 24; break;
         case 'lg': case 'large': sizePx = 32; break;
+        case '4xl': case 'large': sizePx = 128; break;
     }
 
     switch (type) {

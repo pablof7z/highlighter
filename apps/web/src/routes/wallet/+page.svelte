@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import { Button } from "$components/ui/button";
+    import * as Alert from "$lib/components/ui/alert";
 	import * as Card from "$components/ui/card";
 	import { addHistory } from "$stores/history";
     import { layout } from "$stores/layout";
@@ -12,9 +13,13 @@
 
     import { createNewWallet } from "$lib/actions/wallet/new.js";
 	import { goto } from "$app/navigation";
+	import { wallets, wallet } from "$stores/wallet";
+	import { NDKCashuWallet } from "@nostr-dev-kit/ndk-wallet";
+	import { NDKCashuMintList, NDKEvent, NDKKind, NDKList, NostrEvent } from "@nostr-dev-kit/ndk";
+	import currentUser from "$stores/currentUser";
 	import { ndk } from "$stores/ndk";
-	import { zap } from "$utils/zap";
-	import { wallets, walletBalance, walletsBalance } from "$stores/wallet";
+	import { activeWallet } from "$stores/settings";
+	import { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
 
     $layout.title = "Wallet";
     $layout.back = {url: "/"};
@@ -28,18 +33,21 @@
         goto(`/wallet/settings?id=${wallet.dTag}`);
     }
 
-    async function send() {
-        const pablo = $ndk.getUser({npub: "npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft"});
-        zap(1, pablo, "test")
-        // const pr = await $ndk.zap(pablo, 1000, "nut zap");
-        // if (!pr) {
-        //     console.error("Failed to create proof request");
-        //     return;
-        // }
-        // const ret = await payWithProofs(pr, 1000, undefined, pablo);
+    let mintList: NDKEventStore<NDKEvent> | undefined;
+
+    $: if ($currentUser && !mintList) {
+        mintList = $ndk.storeSubscribe({ kinds: [NDKKind.CashuMintList], authors: [$currentUser?.pubkey!]})
     }
 
-    $: console.log ('wallets from $wallets', $wallets.map(w => w.balance))
+    async function addMintList() {
+        const mintList = new NDKCashuMintList($ndk);
+
+        const cashuWallet = $wallet as NDKCashuWallet;
+        mintList.mints = cashuWallet.mints;
+        mintList.relays = cashuWallet.relays;
+        mintList.p2pk = cashuWallet.p2pk;
+        await mintList.publish();
+    }
 </script>
 
 
@@ -55,12 +63,21 @@
     </Button>
 </div> -->
 
-{#if $wallets.length > 0}
-    <HorizontalList idField="walletId" title="Wallets" items={$wallets} let:item={wallet}>
-        {#if wallet}
-            <WalletCard {wallet} />
-        {/if}
-    </HorizontalList>
+{#if $wallet &&$activeWallet?.type === 'nip-60' && $mintList?.length === 0}
+    <Alert.Root>
+        <Alert.Title>Heads up!</Alert.Title>
+        <Alert.Description class="flex flex-row w-full justify-between items-center">
+            You are not setup to receive payments yet!
+            <Button on:click={addMintList}>
+                Fix
+            </Button>
+        </Alert.Description>
+        
+    </Alert.Root>
+{/if}
+
+{#if $wallet}
+    <WalletCard wallet={$wallet} />
 {:else}
     <Card.Root class="w-64 bg-secondary/20 text-secondary-foreground">
         <Card.Header class="p-4 flex flex-col gap-4">

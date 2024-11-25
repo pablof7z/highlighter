@@ -52,6 +52,7 @@
     export let positionInThread = 0;
     export let expandReplies = false;
     export let nestedMaxLevel = 2;
+    export let skipRoot = false;
     export let showReply: boolean | undefined = undefined;
     export let urlPrefix: string | undefined = undefined;
     export let willShowReply: boolean | undefined = false;
@@ -311,7 +312,7 @@
                     <div class="flex flex-col items-stretch justify-stretch basis-0 shrink overflow-x-clip w-full">
                         {#if topLevel && !skipViewConversationKinds.includes(event.kind)}
                             <div class="flex flex-row" class:hidden={noRepliesToShow}>
-                                <ViewConversation {event} {urlPrefix} bind:isNoop={noRepliesToShow} on:click={viewConversationClicked} />
+                                <ViewConversation {event} {urlPrefix} {skipRoot} bind:isNoop={noRepliesToShow} on:click={viewConversationClicked} />
                             </div>
                         {/if}
                         <!-- Content -->

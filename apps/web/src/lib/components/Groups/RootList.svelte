@@ -13,7 +13,19 @@
     <Root
         groupId={tag[1]} relays={tag.slice(2)}
         bind:group={groups[tag[1]]}
+        let:articles
+        let:videos
+        let:notes
+        let:chat
+        let:tiers
     >
-        <slot group={groups[tag[1]]} />
+        <slot
+            group={groups[tag[1]]}
+            {articles}
+            {videos}
+            {notes}
+            {chat}
+            {tiers}
+        />
     </Root>
 {/each}

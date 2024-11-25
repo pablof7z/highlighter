@@ -15,7 +15,13 @@
     }
 </script>
 
-<label class="items-top space-x-2 text-foreground text-base flex flex-row gap-2 items-center justify-between {$$props.class??""}">
+<button class="
+    text-left
+    border-2 rounded p-2 px-4
+    bg-secondary/30
+    flex flex-row gap-2 items-center justify-between w-full {$$props.class??""}
+">
+
     <div class="flex flex-row-reverse md:flex-row items-start md:items-center  w-full space-x-2">
         {#if type === 'check'}
             <Checkbox bind:checked={value} on:click={toggle} />
@@ -51,4 +57,5 @@
             {/if}
         </button>
     </div>
-</label>
+
+</button>

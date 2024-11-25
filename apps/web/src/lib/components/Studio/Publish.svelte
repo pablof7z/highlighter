@@ -32,7 +32,7 @@
     let earlyAccess = false;
 </script>
 
-<div class="my-10 flex flex-col">
+<div class="my-10 flex flex-col max-w-prose mx-auto">
     <Card.Root class="my-5">
         <Card.Header>
             <Card.Title>

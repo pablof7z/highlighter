@@ -74,7 +74,7 @@
                     <p>You can change these settings later.</p>
                 </div>
             </div>
-            <div class="flex flex-col gap-10 grow">
+            <div class="flex flex-col gap-10 grow border">
                 <Publication.Profile {state} />
             </div>
         </div>

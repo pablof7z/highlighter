@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { currencyFormat } from '$utils/currency';
     import * as Card from "$components/ui/card";
-	import { walletsBalance } from "$stores/wallet";
+	import { walletBalances, walletsBalance } from "$stores/wallet";
 	import { nicelyFormattedSatNumber, pluralize } from "$utils";
-	import { NDKCashuWallet, NDKWallet } from "@nostr-dev-kit/ndk-wallet";
+	import { NDKCashuWallet, NDKWallet, NDKWalletBalance } from "@nostr-dev-kit/ndk-wallet";
 	import { DotsThree, Lightning } from "phosphor-svelte";
 	import Topup from "./Topup.svelte";
 	import { Button } from "$components/ui/button";
@@ -11,24 +11,16 @@
 
     export let wallet: NDKWallet;
 
-    let balance: number | undefined;
-
-    $: balance = $walletsBalance.get(wallet.walletId);
-
     let isDefault: boolean = false;
 
     $: isDefault = ($defaultWallet?.walletId === wallet.walletId)
 
-    try {
-        wallet.balance().then(balances => {
-            console.log(balances);
-        }).catch(err => {
-            console.error(err);
-        })
-    } catch (e) {
+    let balances: NDKWalletBalance[] | undefined;
+    wallet.on("balance_updated", () => {
+        balances = wallet.balance;
+    })
 
-    }
-    
+    balances = wallet.balance() ?? [];
 </script>
 
 <Card.Root class="w-64 bg-secondary/20 text-secondary-foreground">

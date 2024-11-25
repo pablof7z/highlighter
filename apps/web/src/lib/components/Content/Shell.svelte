@@ -15,7 +15,6 @@
     import * as Video from "$components/Content/Video";
     import * as Note from "$components/Content/Note";
     import * as Highlight from "$components/Content/Highlight";
-    import * as Wiki from "$components/Content/Wiki";
     import * as Curation from "$components/Content/Curation";
 	import UserProfile from "$components/User/UserProfile.svelte";
 	import { setContext } from "svelte";
@@ -83,18 +82,7 @@
 
 <UserProfile user={wrappedEvent.author} bind:userProfile bind:authorUrl />
 
-{#if wrappedEvent.kind === NDKKind.Wiki}
-    <div class="max-w-[var(--content-focused-width)] mx-auto w-full">
-        <Wiki.Header
-            article={wrappedEvent}
-            {isPreview}
-            {userProfile}
-            {authorUrl}
-        />
-
-        <slot />
-    </div>  
-{:else if wrappedEvent instanceof NDKArticle}
+{#if wrappedEvent instanceof NDKArticle}
     <Article.Shell
         isItemView={itemView}
         {isPreview}

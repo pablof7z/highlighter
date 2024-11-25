@@ -18,8 +18,8 @@
 
 {#if user}
     {#key userId}
-        <User.Root {user} let:user let:notes let:highlights let:articles let:videos let:wiki let:groupsList let:curations let:cashuMintList let:pinList let:tierList let:tiers let:groups let:groupsMetadata let:eosed let:userProfile let:fetching let:authorUrl>
-            <User.Shell {user} {notes} {highlights} {articles} {videos} {wiki} {groupsList} {curations} {cashuMintList} {pinList} {tierList} {tiers} {groups} {groupsMetadata} {eosed} {userProfile} {fetching} {authorUrl}>
+        <User.Root {user} let:user let:notes let:highlights let:articles let:videos let:groupsList let:curations let:cashuMintList let:pinList let:tierList let:tiers let:groups let:groupsMetadata let:eosed let:userProfile let:fetching let:authorUrl>
+            <User.Shell {user} {notes} {highlights} {articles} {videos} {groupsList} {curations} {cashuMintList} {pinList} {tierList} {tiers} {groups} {groupsMetadata} {eosed} {userProfile} {fetching} {authorUrl}>
                 {#if view === "profile"}
                     <User.Views.Home {user} {userProfile} {authorUrl} {groupsList} />
                 {:else if view === 'notes'}
