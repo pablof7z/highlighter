@@ -8,7 +8,7 @@ export const walletType = persist(
 	'wallet-type'
 );
 
-export type WalletType = 'webln' | 'nip-60' | null;
+export type WalletType = 'webln' | 'nip-60' | 'nwc' | null;
 export type WalletId = string | null;
 export type WalletConfig = {
     type: WalletType;

@@ -9,7 +9,7 @@
 		--article-foreground: 240 0% 40%;
 		--card: 0 0% 100%;
 		--card-foreground: 240 10% 3.9%;
-		--popover: 0 0% 100%;;
+		--popover: 0 0% 100%;
 		--popover-foreground: 240 10% 3.9%;
 		--primary: 240 5.9% 10%;
 		--primary-foreground: 0 0% 98%;
@@ -55,7 +55,7 @@
 
 		--user-card-width: 230px;
 		--user-card-height: 327px;
-		
+
 		--content-card-width: 326px;
 		--content-card-height: 277px;
 	}
@@ -85,7 +85,7 @@
 
 		--gold: 36 100% 60%;
 	}
-	
+
 	.dark {
 		--background: 240 10% 3.9%;
 		--foreground: 0 0% 100%;
@@ -119,28 +119,32 @@
 		border-radius: var(--radius) !important;
 	}
 
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings:
-		"rlig" 1,
-		"calt" 1;
+	body {
+		@apply bg-background text-foreground;
+		font-feature-settings:
+			'rlig' 1,
+			'calt' 1;
 	}
 
-  .text-foreground {
-    color: hsl(var(--foreground));
-  }
+	.text-foreground {
+		color: hsl(var(--foreground));
+	}
 
-  .border-border, .border-border, .border-border {
-    border-color: hsl(var(--border));
-  }
+	.border-border,
+	.border-border,
+	.border-border {
+		border-color: hsl(var(--border));
+	}
 
-  .bg-background { background-color: hsl(var(--background)); }
+	.bg-background {
+		background-color: hsl(var(--background));
+	}
 
-  .rounded {
-    border-radius: var(--radius);
-  }
+	.rounded {
+		border-radius: var(--radius);
+	}
 
-  @font-face {
+	@font-face {
 		font-family: 'Inter';
 	}
 
@@ -173,10 +177,12 @@
 	}
 
 	.bg-gradient {
-		background: radial-gradient(100.21% 187.14% at 0% 0.15%, #BD9488ee 0%, #7092A0ee 100%);
+		background: radial-gradient(100.21% 187.14% at 0% 0.15%, #bd9488ee 0%, #7092a0ee 100%);
 	}
 
-	h1, h2, h3 {
+	h1,
+	h2,
+	h3 {
 		font-family: InterDisplay;
 		@apply text-foreground;
 	}
@@ -192,7 +198,7 @@
 	}
 
 	.article {
-		@apply text-foreground font-serif !text-[19px] leading-10;
+		@apply font-serif !text-[19px] leading-10 text-foreground;
 	}
 
 	* + mark {
@@ -200,7 +206,7 @@
 	}
 
 	mark {
-		@apply cursor-pointer bg-highlight text-highlight-foreground font-medium text-lg py-1;
+		@apply cursor-pointer bg-highlight py-1 text-lg font-medium text-highlight-foreground;
 		@apply transition-all duration-200;
 	}
 
@@ -212,7 +218,7 @@
 	}
 
 	.article h1 {
-		@apply !mb-0 mt-8 text-4xl text-foreground font-bold;
+		@apply !mb-0 mt-8 text-4xl font-bold text-foreground;
 	}
 
 	.article h2 {
@@ -224,11 +230,11 @@
 	}
 
 	.article h2 + h3 {
-		@apply -mt-2 text-muted-foreground font-medium;
+		@apply -mt-2 font-medium text-muted-foreground;
 	}
 
 	.article p {
-		@apply mt-0 leading-8 !text-[19px] text-article-foreground;
+		@apply mt-0 !text-[19px] leading-8 text-article-foreground;
 	}
 
 	.article p:not(:last-child) {
@@ -244,7 +250,7 @@
 	}
 
 	.article li {
-		@apply mt-0 mb-2 leading-8 text-lg text-article-foreground;
+		@apply mb-2 mt-0 text-lg leading-8 text-article-foreground;
 	}
 
 	.toast {
@@ -264,7 +270,7 @@
 	}
 
 	.article a {
-		@apply text-primary underline-offset-4 underline;
+		@apply text-primary underline underline-offset-4;
 	}
 
 	.highlight .highlight--blockquote {
@@ -272,18 +278,30 @@
 	}
 
 	.discussion-wrapper {
-		@apply sm:border border-border text-muted-foreground text-lg;
+		@apply text-lg text-muted-foreground;
 	}
 
-	.discussion-wrapper > button, .discussion-wrapper > a, .discussion-wrapper > .discussion-item, .discussion-wrapper > * {
-		@apply !border-b border-border;
+	.discussion-wrapper .discussion-item {
+		@apply rounded-md border border-border p-4;
 	}
 
-	.discussion-wrapper > button, .discussion-wrapper > a {
-		@apply hover:bg-[#ffffff05] transition-all duration-100;
+	.discussion-item {
 	}
 
-	.discussion-wrapper .event-content video, .discussion-wrapper .event-content img {
+	.discussion-wrapper > button,
+	.discussion-wrapper > a,
+	.discussion-wrapper > .discussion-item,
+	.discussion-wrapper > * {
+		@apply mb-4;
+	}
+
+	.discussion-wrapper > button,
+	.discussion-wrapper > a {
+		@apply transition-all duration-100 hover:bg-[#ffffff05];
+	}
+
+	.discussion-wrapper .event-content video,
+	.discussion-wrapper .event-content img {
 		@apply xl:max-h-[40vh];
 	}
 }
@@ -319,11 +337,11 @@
 
 section.settings {
 	@apply flex flex-col gap-10;
-	@apply border border-border rounded p-2 sm:p-6;
+	@apply rounded border border-border p-2 sm:p-6;
 }
 
 section.settings > .title {
-	@apply text-2xl font-semibold text-foreground w-full flex flex-col sm:flex-row justify-between;
+	@apply flex w-full flex-col justify-between text-2xl font-semibold text-foreground sm:flex-row;
 }
 
 section.settings > .title .right {
@@ -331,21 +349,22 @@ section.settings > .title .right {
 }
 
 section.settings > .description {
-	@apply text-base text-neutral-200 -mt-8;
+	@apply -mt-8 text-base text-neutral-200;
 }
 
-section.settings .field .title, .settings-like-section-title {
-	@apply text-neutral-400 uppercase;
+section.settings .field .title,
+.settings-like-section-title {
+	@apply uppercase text-neutral-400;
 	letter-spacing: 3px;
 	font-family: InterDisplay;
 }
 
 section.settings .field .description {
-	@apply text-muted-foreground text-sm -mt-1;
+	@apply -mt-1 text-sm text-muted-foreground;
 }
 
 section.settings .field {
-	@apply flex flex-col gap-1 items-stretch;
+	@apply flex flex-col items-stretch gap-1;
 }
 
 .input-background {
@@ -353,7 +372,7 @@ section.settings .field {
 }
 
 .gradient-text {
-	@apply bg-clip-text bg-gradient-to-r text-transparent from-[#BD9488] to-[#7092A0];
+	@apply bg-gradient-to-r from-[#BD9488] to-[#7092A0] bg-clip-text text-transparent;
 }
 
 .tier-container {
@@ -367,7 +386,7 @@ section.settings .field {
 }
 
 .tier {
-	@apply self-stretch !rounded justify-between items-start flex-col max-sm:w-full sm:w-[400px] inline-flex h-full bg-secondary;
+	@apply inline-flex h-full flex-col items-start justify-between self-stretch !rounded bg-secondary max-sm:w-full sm:w-[400px];
 	@apply flex flex-col text-secondary-foreground;
 }
 
@@ -376,21 +395,23 @@ section.settings .field {
 }
 
 .tier > div {
-	@apply py-4 px-6;
+	@apply px-6 py-4;
 }
 
 .tier > div:not(:last-child) {
 	@apply border-b border-neutral-500;
 }
 
-.tier .title { @apply flex flex-col items-start w-full; }
+.tier .title {
+	@apply flex w-full flex-col items-start;
+}
 
 .tier .title {
-	@apply text-2xl font-medium w-full items-start text-left;
+	@apply w-full items-start text-left text-2xl font-medium;
 }
 
 .tier > .price {
-	@apply flex flex-row justify-between items-center w-full;
+	@apply flex w-full flex-row items-center justify-between;
 }
 
 .tier > .price .price {
@@ -408,11 +429,19 @@ section.settings .field {
 	@apply text-secondary-foreground;
 }
 
-.tier .description { @apply text-base text-left; }
+.tier .description {
+	@apply text-left text-base;
+}
 
-.tier .perk { @apply text-sm flex flex-row items-start gap-2; }
-.tier .perk i { @apply text-muted-foreground; }
-.tier .perk span { @apply flex flex-row gap-2 items-start text-left; }
+.tier .perk {
+	@apply flex flex-row items-start gap-2 text-sm;
+}
+.tier .perk i {
+	@apply text-muted-foreground;
+}
+.tier .perk span {
+	@apply flex flex-row items-start gap-2 text-left;
+}
 
 .scrollbar-hide {
 	scrollbar-width: none;
@@ -420,26 +449,28 @@ section.settings .field {
 }
 
 .event-card {
-	@apply !bg-white/10  rounded;
+	@apply rounded !bg-white/10;
 }
 
 .note-media--wrapper {
-	@apply flex grid-flow-col gap-6 overflow-x-auto h-auto justify-start flex-nowrap w-full pb-4 items-center overflow-y-hidden snap-x snap-mandatory;
+	@apply flex h-auto w-full snap-x snap-mandatory grid-flow-col flex-nowrap items-center justify-start gap-6 overflow-x-auto overflow-y-hidden pb-4;
 }
 
 .note-media--wrapper > * {
-	@apply !w-96 h-full object-cover object-left-top rounded-lg;
-	@apply snap-center
+	@apply h-full !w-96 rounded-lg object-cover object-left-top;
+	@apply snap-center;
 }
 
 .event-content a:not(.event-wrapper--content) {
-	@apply text-primary font-medium underline truncate;
+	@apply truncate font-medium text-primary underline;
 }
 
-.event-content a.hashtag, .event-content a.mention,
+.event-content a.hashtag,
+.event-content a.mention,
 .ql-editor .mention[data-id],
-.article button.hashtag, button.mention {
-	@apply !text-primary !font-semibold;
+.article button.hashtag,
+button.mention {
+	@apply !font-semibold !text-primary;
 }
 
 .event-content .event-card {
@@ -451,15 +482,16 @@ strong {
 }
 
 .backstage-box-container {
-	@apply border text-muted-foreground flex flex-col gap-6 p-6 grow rounded;
+	@apply flex grow flex-col gap-6 rounded border p-6 text-muted-foreground;
 }
 
 .backstage-box-container > .title {
-	@apply flex flex-row justify-between items-center border-b -mx-6 -mt-2 px-6 pb-4 text-foreground font-medium;
+	@apply -mx-6 -mt-2 flex flex-row items-center justify-between border-b px-6 pb-4 font-medium text-foreground;
 	@apply text-sm;
 }
 
-.article pre, .article code {
+.article pre,
+.article code {
 	@apply bg-secondary p-0.5 px-1;
 	@apply whitespace-pre-wrap;
 }
@@ -469,7 +501,7 @@ strong {
 }
 
 blockquote.app-quote p {
-	@apply text-foreground/60 text-lg prose;
+	@apply prose text-lg text-foreground/60;
 }
 
 blockquote.app-quote .author {
@@ -496,8 +528,8 @@ blockquote.app-quote .author {
 }
 
 .section-title {
-	@apply font-medium text-xl text-foreground;
-	@apply flex flex-row items-center gap-2 px-4 mb-1 max-sm:text-2xl;
+	@apply text-xl font-medium text-foreground;
+	@apply mb-1 flex flex-row items-center gap-2 px-4 max-sm:text-2xl;
 }
 
 .article-kind--30818 {
@@ -505,7 +537,7 @@ blockquote.app-quote .author {
 }
 
 .tiptap {
-	@apply focus:outline-none grow;
+	@apply grow focus:outline-none;
 	/* @apply h-full w-full; */
 }
 
@@ -526,16 +558,16 @@ blockquote.app-quote .author {
 	@apply ring-4 ring-accent ring-offset-4;
 }
 
-.tiptap img[src^="data:image"] {
+.tiptap img[src^='data:image'] {
 	@apply grayscale;
 }
 
 .article blockquote {
-	@apply border-l-4 bg-secondary text-secondary-foreground border-accent p-4 pt-8 pl-14 mb-6 italic;
+	@apply mb-6 border-l-4 border-accent bg-secondary p-4 pl-14 pt-8 italic text-secondary-foreground;
 
 	&::after {
 		content: '❝' !important;
-		@apply text-accent font-bold text-5xl absolute top-2 left-2 z-50 block p-0 font-["Times_New_Roman"];
+		@apply absolute left-2 top-2 z-50 block p-0 font-["Times_New_Roman"] text-5xl font-bold text-accent;
 	}
 
 	& > p {
@@ -544,7 +576,7 @@ blockquote.app-quote .author {
 }
 
 .editor-toolbar button {
-	@apply p-2 flex items-center justify-center w-10 h-10 cursor-pointer hover:bg-secondary hover:text-secondary-foreground rounded-sm;
+	@apply flex h-10 w-10 cursor-pointer items-center justify-center rounded-sm p-2 hover:bg-secondary hover:text-secondary-foreground;
 }
 
 .editor-toolbar button[disabled] {
@@ -553,7 +585,7 @@ blockquote.app-quote .author {
 }
 
 .editor-toolbar .button-group {
-	@apply px-2 flex flex-row items-center;
+	@apply flex flex-row items-center px-2;
 }
 
 .editor-toolbar .active {
@@ -561,5 +593,5 @@ blockquote.app-quote .author {
 }
 
 .suggestion-wrapper {
-	@apply bg-secondary/50 rounded-sm shadow-md overflow-x-clip overflow-y-auto;
+	@apply overflow-y-auto overflow-x-clip rounded-sm bg-secondary/50 shadow-md;
 }

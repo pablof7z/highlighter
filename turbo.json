@@ -1,14 +1,29 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "tasks": {
     "build": {
-      "dependsOn": ["^build", "^build:ndk-svelte-components"],
+      "dependsOn": ["^build", "^build:ndk-wallet", "^build:ndk-cache-dexie", "^build:ndk-svelte", "^build:ndk-svelte-components"],
       "outputs": [".svelte-kit/**", ".vercel/**"]
     },
     "build:ndk": {
       "dependsOn": [],
       "inputs": ["packages/ndk/ndk/**"],
       "outputs": ["packages/ndk/ndk/dist/**"]
+    },
+    "build:ndk-wallet": {
+      "dependsOn": ["^build:ndk"],
+      "inputs": ["packages/ndk/ndk-wallet/**"],
+      "outputs": ["packages/ndk/ndk-wallet/dist/**"]
+    },
+    "build:ndk-cache-dexie": {
+      "dependsOn": ["^build:ndk"],
+      "inputs": ["packages/ndk/ndk-cache-dexie/**"],
+      "outputs": ["packages/ndk/ndk-cache-dexie/dist/**"]
+    },
+    "build:ndk-svelte": {
+      "dependsOn": ["^build:ndk"],
+      "inputs": ["packages/ndk/ndk-svelte/**"],
+      "outputs": ["packages/ndk/ndk-svelte/dist/**"]
     },
     "build:ndk-svelte-components": {
       "dependsOn": ["^build:ndk"],

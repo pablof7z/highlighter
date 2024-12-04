@@ -1,6 +1,5 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - 'apps/web'
   - 'packages/ndk/ndk'
   - 'packages/ndk/ndk-cache-redis'
   - 'packages/ndk/ndk-cache-dexie'

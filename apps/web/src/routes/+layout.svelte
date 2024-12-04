@@ -4,11 +4,11 @@
 	import { prepareSession } from '$stores/session';
 	import { configureFeNDK } from '$utils/ndk';
 	// import { pwaInfo } from 'virtual:pwa-info';
-	import "@fontsource/spectral";
-	import "@fontsource/spectral/300.css";
-	import "@fontsource/spectral/300-italic.css";
-	import "@fontsource/spectral/600.css";
-	import "@fontsource/spectral/600-italic.css";
+	import '@fontsource/spectral';
+	import '@fontsource/spectral/300.css';
+	import '@fontsource/spectral/300-italic.css';
+	import '@fontsource/spectral/600.css';
+	import '@fontsource/spectral/600-italic.css';
 	import { browser } from '$app/environment';
 	import { browserSetup } from './browser-session-setup.js';
 	import createDebug from 'debug';
@@ -16,7 +16,7 @@
 	import { appMobileView } from '$stores/app';
 	import { isMobileBuild, isPhone } from '$utils/view/mobile';
 	import { initStoreEvent } from '$stores/events';
-	import { ModeWatcher } from "mode-watcher";
+	import { ModeWatcher } from 'mode-watcher';
 	import { ndk } from '$stores/ndk';
 	import AppShell from '$components/App/Shell.svelte';
 	import { layout } from '$stores/layout';
@@ -47,10 +47,10 @@
 	// registerNotifications().catch(console.error);
 
 	const d = createDebug('HL:layout');
-	
+
 	/** Mobile concerns */
 	$appMobileView = isMobileBuild() || isPhone();
-	
+
 	// $: if ($appMobileView && browser) {
 	// 	setupIonicSvelte();
 	// 	defineCustomElements(window);
@@ -68,8 +68,8 @@
 		});
 	}
 
-	$: if ($activeWallet) {
-		walletInit($ndk, $activeWallet);
+	$: if ($currentUser && $activeWallet) {
+		walletInit($ndk, $currentUser, $activeWallet);
 	}
 
 	onMount(async () => {
@@ -78,12 +78,12 @@
 
 		if ($ndk.cacheAdapter?.onReady && !$ndk.cacheAdapter?.ready) {
 			$ndk.cacheAdapter.onReady(() => {
-				mounted = true
+				mounted = true;
 			});
 		} else {
 			mounted = true;
 		}
-    });
+	});
 
 	let sessionPreparationStarted = false;
 
@@ -119,6 +119,6 @@
 
 <ModeWatcher />
 
-	<AppShell>
-		<slot />
-	</AppShell>
+<AppShell>
+	<slot />
+</AppShell>

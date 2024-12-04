@@ -22,6 +22,9 @@ const filter = (
         filter['#e'] = [eventOrUser.id];
         if (eventOrUser.isParamReplaceable()) filter['#a'] = [eventOrUser.tagId()!];
     }
+
+    console.log('zap filter', filter);
+    
     return filter;
 }
 

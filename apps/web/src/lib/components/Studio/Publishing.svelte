@@ -13,6 +13,7 @@
     import * as Tooltip from "$lib/components/ui/tooltip";
     import * as Studio from '$components/Studio';
 	import { onMount } from "svelte";
+	import { toast } from "svelte-sonner";
 
     export let state: Writable<Studio.State<Studio.Type>>;
     export let authorUrl: string;
@@ -53,6 +54,8 @@
                 relays
             ).then(() => {
                 publishedEvent = Studio.getEventFromState($state);
+            }).catch(e => {
+                toast.error(e.message);
             });
         }
     })

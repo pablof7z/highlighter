@@ -24,7 +24,7 @@
     const articleKinds = [ 30023, 30040, 30041 ];
 </script>
 
-<div class="w-full my-2 bg-secondary rounded no-underline">
+<div class="w-full my-2 bg-secondary rounded no-underline {$$props.class}">
     {#if event === undefined || event === null}
         <div
             class="bg-secondary text-secondary-foreground transition-all duration-300 rounded-lg p-4 border"

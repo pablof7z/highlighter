@@ -124,7 +124,7 @@
                     {...($$props.eventProps||{})}
                 />
             {:else if event.kind === NDKKind.Article}
-                <div class="p-4">
+                <div class="p-4 discussion-item discussion-item--article">
                     <Feed.Items.Article article={NDKArticle.from(event)} />
                 </div>
             {:else if event.kind === NDKKind.HorizontalVideo}

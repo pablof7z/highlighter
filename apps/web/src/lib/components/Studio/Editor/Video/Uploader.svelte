@@ -11,9 +11,11 @@
 	import { Progress } from '$components/ui/progress';
 	import TagInput from '$components/Editor/TagInput.svelte';
 
-    export let state: Writable<Studio.State<"video">>;
+    export let state: Writable<Studio.State<Studio.Type.Video>>;
     let video: NDKVideo = $state.video;
     $: $state.video = video;
+
+    $: video.content ??= "";
     
     export let videoFile: File | undefined;
 

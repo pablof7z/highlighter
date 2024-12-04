@@ -2,7 +2,7 @@
 	import { Writable } from 'svelte/store';
 	import { getContext } from "svelte";
 	import { Editor } from "svelte-tiptap";
-	import { DotsThreeVertical, ArrowArcLeft, ArrowArcRight, Link, ListBullets, ListNumbers, Quotes, TextB, TextItalic, TextStrikethrough } from 'phosphor-svelte';
+	import { DotsThreeVertical, ArrowArcLeft, ArrowArcRight, Link, ListBullets, ListNumbers, Quotes, TextB, TextItalic, TextStrikethrough, At } from 'phosphor-svelte';
 	import Image from './Toolbar/Image.svelte';
 	import Heading from './Toolbar/Heading.svelte';
 	import { openModal } from '$utils/modal';
@@ -11,6 +11,8 @@
 	import { Code } from 'lucide-svelte';
     import * as DropdownMenu from '$components/ui/dropdown-menu';
 	import {Button} from '$components/ui/button';
+	import UserSelectorModal from '$modals/UserSelectorModal.svelte';
+	import { NDKUser } from '@nostr-dev-kit/ndk';
 
     const editor = getContext('editorStore') as Writable<Editor>;
     const editorView = getContext('editorView') as Writable<EditorView>;
@@ -55,6 +57,12 @@
     function linkClick() {
         openModal(LinkModal, { editor: $editor, url: link });
     }
+
+    function mentionPicker() {
+        openModal(UserSelectorModal, { onSelect: (user: NDKUser) => {
+            $editor.commands.insertContentAt($editor.state.selection, user.pubkey);
+        }})
+    }
 </script>
 
 {#if $editor}
@@ -85,6 +93,9 @@
                 </button>
                 <button on:click={() => $editor.chain().focus().toggleStrike().run()} class:active={strike}>
                     <TextStrikethrough size={18} weight="bold" />
+                </button>
+                <button on:click={mentionPicker}>
+                    <At size={18} weight="bold" />
                 </button>
             </div>
 

@@ -3,13 +3,15 @@ import { ndk } from "../../stores/ndk";
 import { NDKEvent, NDKKind, NDKRelaySet, NDKSimpleGroup } from "@nostr-dev-kit/ndk";
 import currentUser from "$stores/currentUser";
 
+type Roles = string[];
+
 async function createGroup(
     groupId: string,
     relays: string[],
     name: string,
     picture: string,
     about: string,
-    adminPubkeys: string[] = []
+    adminPubkeys: Record<string, Roles> = {}
 ) {
     const $ndk = get(ndk);
     const relaySet = NDKRelaySet.fromRelayUrls(relays, $ndk);
@@ -22,7 +24,7 @@ async function createGroup(
 
     const $currentUser = get(currentUser);
 
-    for (const adminPubkey of adminPubkeys) {
+    for (const adminPubkey of Object.keys(adminPubkeys)) {
         if (adminPubkey === $currentUser?.pubkey) continue;
         let event = new NDKEvent($ndk);
         event.kind = NDKKind.GroupAdminAddUser;
@@ -31,11 +33,9 @@ async function createGroup(
         await event.publish(group.relaySet);
 
         event = new NDKEvent($ndk);
-        event.kind = 9003;
+        event.kind = 9000;
         event.tags.push(["h", group.groupId]);
-        event.tags.push(["p", adminPubkey]);
-        event.tags.push(["permission", "add-user"]);
-        event.tags.push(["permission", "remove-user"]);
+        event.tags.push(["p", adminPubkey, ...adminPubkeys[adminPubkey]]);
         await event.publish(group.relaySet);
     }
 

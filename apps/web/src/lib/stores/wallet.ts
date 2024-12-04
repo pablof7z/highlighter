@@ -1,5 +1,5 @@
-import NDK, { LnPaymentInfo, NDKKind, NDKPaymentConfirmation, NDKPaymentConfirmationLN, NDKZapDetails, NDKZapSplit } from "@nostr-dev-kit/ndk";
-import { NDKWallet, NDKCashuWallet, NDKWalletBalance } from "@nostr-dev-kit/ndk-wallet";
+import NDK, { LnPaymentInfo, NDKKind, NDKPaymentConfirmation, NDKPaymentConfirmationLN, NDKUser, NDKZapDetails, NDKZapSplit } from "@nostr-dev-kit/ndk";
+import { NDKWallet, NDKCashuWallet, NDKWalletBalance, NDKNWCWallet, NDKNutzapMonitor } from "@nostr-dev-kit/ndk-wallet";
 import { get, writable } from "svelte/store";
 import createDebug from "debug";
 import { toast } from "svelte-sonner";
@@ -11,6 +11,7 @@ const d = createDebug("HL:wallet");
 export const walletService = writable(new NDKWalletService(new NDK()));
 export const wallet = writable<NDKWallet|null>(null);
 export const walletBalances = writable<NDKWalletBalance[]>([]);
+export const nutzapMonitor = writable<NDKNutzapMonitor|null>(null);
 
 export const wallets = writable<NDKWallet[]>([]);
 
@@ -34,8 +35,23 @@ export async function walletUnit() {
 
 export async function walletInit(
     ndk: NDK,
+    user: NDKUser,
     walletConfig?: WalletConfig
 ) {
+    let $monitor = get(nutzapMonitor);
+    if (!$monitor) {
+        $monitor = new NDKNutzapMonitor(ndk, user);
+        $monitor.on("redeem", (data) => {
+            console.log('redeemed', data);
+            alert('nutzap redeemed: '+JSON.stringify(data));
+        });
+        nutzapMonitor.set($monitor);
+    }
+    
+    $monitor.on("redeem", (data) => {
+        console.log('redeemed', data);
+    });
+    
     if (walletConfig?.type === 'nip-60') {
         console.log({walletConfig})
         const walletEvent = await ndk.fetchEvent([{ kinds: [NDKKind.CashuWallet], "#d": [walletConfig.id!] }]);
@@ -51,11 +67,27 @@ export async function walletInit(
         w.start();
         wallet.set(w);
 
-        ndk.walletConfig!.onCashuPay = w.cashuPay.bind(w);
-        
+        ndk.wallet = w;
+
         w.on("balance_updated", () => walletBalances.set(w.balance() ?? []));
         w.on("balance_updated", () => console.log("balance updated", w.balance()));
+
+        $monitor.addWallet(w);
+        
+    } else if (walletConfig?.type === 'nwc') {
+        const wallet = new NDKNWCWallet(ndk);
+        wallet.on("balance_updated", () => walletBalances.set(wallet.balance() ?? []));
+        wallet.on("balance_updated", () => console.log("balance updated", wallet.balance()));
+        console.log('walletConfig.id', walletConfig.id);
+        await wallet.initWithPairingCode(walletConfig.id!);
+        console.log('wallet lnPay', wallet.lnPay);
+        ndk.wallet = wallet;
+        console.log('wallet', wallet);
     }
+
+    console.log('ndk.activeUser', ndk.activeUser);
+    
+    $monitor.start();
     
     // walletService.set(new NDKWalletService(ndk));
     // console.log('walletConfig', ndk.walletConfig)

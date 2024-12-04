@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { Button } from "$components/ui/button";
     import * as HoverCard from "$lib/components/ui/hover-card/index.js";
-    import * as DrawerPrimitive from "$lib/components/ui/drawer/index.js";
-	import { Inbox, ArrowRight } from "lucide-svelte";
+	import { Inbox } from "lucide-svelte";
 
     export let skipText = false;
 </script>

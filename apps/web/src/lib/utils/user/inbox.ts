@@ -1,6 +1,6 @@
 import { inboxLists } from "$stores/session";
 import { ndk } from "$stores/ndk";
-import { NDKKind, NDKList, NDKUser, NostrEvent } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKKind, NDKList, NDKUser, NostrEvent } from "@nostr-dev-kit/ndk";
 import { get } from "svelte/store";
 
 export function getInboxListForKind(kind: NDKKind) {
@@ -19,8 +19,20 @@ export function getInboxListForKind(kind: NDKKind) {
 }
 
 export async function addToInbox(user: NDKUser, kind: NDKKind) {
+    const $ndk = get(ndk);
     const list = getInboxListForKind(kind);
 
     await list.addItem(user.referenceTags()[0]);
     await list.publishReplaceable();
+
+    const followEvent = new NDKEvent($ndk, {
+        kind: 967,
+        tags: [
+            [ "p", user.pubkey ],
+            [ "k", kind.toString() ],
+        ]
+    } as NostrEvent);
+    followEvent.alt = "This is a follow event for kind " + kind.toString();
+
+    await followEvent.publish();
 }

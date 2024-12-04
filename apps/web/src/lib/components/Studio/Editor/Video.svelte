@@ -6,7 +6,7 @@
     import VideoUploader from "./Video/Uploader.svelte";
     import VideoThumbnail from "./Video/Thumbnail.svelte";
 
-    export let state: Writable<Studio.State<"video">>;
+    export let state: Writable<Studio.State<Studio.Type.Video>>;
     export let video: NDKVideo = $state.video;
     export let videoFile: File | undefined;
 
@@ -17,15 +17,13 @@
     //     const haveVideo = !!videoFile || !!videoUrl;
     //     const haveTitle = !!video.title && video.title.length > 0;
     // }
-
-    const st = "Uploading video";
 </script>
 
 <VideoUploader
     {state}
     bind:videoFile
     bind:done={done[0]}
-    />
+/>
 <VideoThumbnail
     {state}
     bind:videoFile

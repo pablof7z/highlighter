@@ -1,4 +1,5 @@
 import { SvelteRenderer } from 'svelte-tiptap';
+import UserSelectorModal from '$lib/modals/UserSelectorModal.svelte';
 import tippy from 'tippy.js';
 
 import List from './list.svelte';
@@ -6,6 +7,9 @@ import { get } from 'svelte/store';
 import { ndk } from '$stores/ndk';
 import { userFollows } from '$stores/session';
 import { searchUser } from '$utils/search/user';
+import { openModal } from '$utils/modal';
+import { NDKUser } from '@nostr-dev-kit/ndk';
+import { nip19 } from 'nostr-tools';
 
 export default function () {
   let q: string;
@@ -27,6 +31,35 @@ export default function () {
 
       return {
         onStart: (props) => {
+          // remove the previous @ that triggers the suggestion
+          const queryLength = q.length + 1;
+          const range = {
+            from: props.editor.state.selection.from - queryLength,
+            to: props.editor.state.selection.from,
+          };
+          props.editor.commands.setTextSelection(range);
+          props.editor.commands.deleteSelection();
+
+          openModal(UserSelectorModal, {
+            onSelect: (nip19encoding: string) => {
+              try {
+                const res = nip19.decode(nip19encoding);
+                if (res.type === 'npub' || res.type === 'nprofile') {
+                  props.editor.commands.insertNProfile({ nprofile: nip19encoding });
+                } else if (['note', 'nevent'].includes(res.type)) {
+                  props.editor.commands.insertNEvent({ nevent: nip19encoding });
+                } else if (res.type === 'naddr') {
+                  props.editor.commands.insertNAddr({ naddr: nip19encoding });
+                }
+
+                // make the editor get focus
+                props.editor.commands.focus();
+              } catch (e) {
+                console.error(e);
+              }
+            }
+          })
+          
           const { editor } = props;
 
           wrapper = document.createElement('div');

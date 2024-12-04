@@ -43,12 +43,13 @@ export async function searchUser(
 
         const res = await ndk.fetchEvents({
             cache: [ "user_search", {query: searchTerm, limit: 10} ]
-        }, { closeOnEose: true }, relaySet);
+        }, { groupable: false, closeOnEose: true }, relaySet);
 
         Array.from(res).map((event: NDKEvent) => {
             const p = profileFromEvent(event);
             result.push({
                 id: event.author.npub,
+                pubkey: event.author.pubkey,
                 avatar: p.image,
                 value: p.displayName || p.name,
                 nip05: p.nip05,

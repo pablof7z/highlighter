@@ -317,7 +317,7 @@
                         {/if}
                         <!-- Content -->
 
-                        <a href="{urlPrefix}{eventEncoded}" class="mt-2 event-wrapper--content" on:click={noteClicked}>
+                        <a href="{urlPrefix}{eventEncoded}" class="mt-2 event-wrapper--content no-underline" on:click={noteClicked}>
                             {#if $$slots.default}
                                 <slot />
                             {:else if event.kind === NDKKind.Highlight}

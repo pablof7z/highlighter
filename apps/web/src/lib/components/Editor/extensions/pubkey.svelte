@@ -6,6 +6,7 @@
 	import Name from '$components/User/Name.svelte';
 
     export let node: NodeViewProps['node']
+    export let selected: boolean = false;
     export let updateAttributes: NodeViewProps['updateAttributes']
   // export let deleteNode: NodeViewRendererProps['deleteNode']
 
@@ -26,7 +27,7 @@
 
 <NodeViewWrapper data-type="pubkey" as="span">
     {#if pubkey}
-        <button class="mention">
+        <button class="mention {selected ? 'bg-secondary border-b border-primary' : ''}">
             <Name {pubkey} class="mention" />
         </button>
     {:else}

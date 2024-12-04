@@ -62,18 +62,14 @@
         </div>
 
         <div class="flex flex-row items-center gap-2 justify-end">
-            {#if article.created_at}
-                <Badge variant="secondary" class="font-light text-muted-foreground">
-                    <RelativeTime event={article} />
-                </Badge>
-            {/if}
+            
         </div>
 
-        <div class="col-span-2 flex flex-col">
-            <div class="flex flex-col gap-0">
+        <div class="col-span-2 flex flex-col h-full">
+            <div class="flex flex-col gap-0 grow">
                 <h2 class="text-lg md:text-lg font-medium mb-0 max-sm:max-h-[3.5rem] overflow-y-clip">{article.title}</h2>
 
-                <div class="col-span-3 mt-1 flex flex-row gap-1 mb-2 grow">
+                <div class="mt-1 flex flex-row gap-1 mb-2">
                     <RelatedEvents event={article} />
         
                     <Badge variant="secondary" class="font-light text-muted-foreground whitespace-nowrap w-fit">
@@ -87,7 +83,15 @@
                     {/if}
                 </div>
                 
-                <p class="text-sm text-muted-foreground max-h-[2.5rem] sm:font-light overflow-clip">{summary}</p>
+                <p class="text-sm text-muted-foreground max-h-[2.5rem] sm:font-light overflow-clip grow">{summary}</p>
+
+                <div class="flex flex-row gap-2 items-center mt-4">
+                    {#if article.created_at}
+                        <span class="font-light text-muted-foreground text-xs">
+                            <RelativeTime event={article} />
+                        </span>
+                    {/if}
+                </div>
             </div>
         </div>
 

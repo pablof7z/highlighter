@@ -137,6 +137,10 @@ export async function publish(
 
     const mainRelaySet = await Audience.produceRelaySet($state.audience, mainEvent);
 
+    if (mainRelaySet.relays.size === 0) {
+        throw new Error("No relays to publish to. This seems to be an internal error!");
+    }
+
     let previewEventRelaySet: NDKRelaySet | undefined;
 
     if (previewEvent) {

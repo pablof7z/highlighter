@@ -1,46 +1,48 @@
 <script lang="ts">
-	import { Check, CheckFat } from "phosphor-svelte";
-    import { createEventDispatcher } from "svelte";
-	import Checkbox from "./Checkbox.svelte";
+	import { Check, CheckFat } from 'phosphor-svelte';
+	import { createEventDispatcher } from 'svelte';
+	import Checkbox from './Checkbox.svelte';
 
-    export let currentValue: string | undefined = undefined;
-    export let value: string | undefined = undefined;
-    export let color = "accent";
+	export let currentValue: string | undefined = undefined;
+	export let value: string | undefined = undefined;
+	export let color = 'accent';
 
-    const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
-    let selected: boolean;
+	let selected: boolean;
 
-    $: selected = currentValue === value;
+	$: selected = currentValue === value;
 
-    function onClick() {
-        currentValue = value;
-        dispatch("click", value);
-    }
+	function onClick() {
+		currentValue = value;
+		dispatch('click', value);
+	}
 </script>
 
-<button class="
-    text-left
-    border-2 rounded p-2 px-4
+<button
+	class="
     bg-secondary/30
-    flex flex-row gap-2 items-center justify-between w-full {$$props.class??""}
-    hover:bg-{color}/10 hover:text-{color}-foreground
-    { selected ? "border-gold" : ""}
-" on:click={onClick}>
-    <div class="flex flex-row items-start w-full">
-        <div class="flex flex-row gap-10 justify-stretch items-center w-full">
-            <div class="flex flex-col items-start grow w-full gap-1">
-                <span class="font-medium text-base { selected ? "text-gold" : ""}"><slot /></span>
-                {#if $$slots.description}
-                    <div class="text-muted-foreground text-sm">
-                        <slot name="description" />
-                    </div>
-                {/if}
-            </div>
+    flex w-full flex-row items-center
+    justify-between
+    gap-2 rounded border-2 p-2 px-4 text-left {$$props.class ?? ''}
+    {selected ? 'border-gold' : ''}
+"
+	on:click={onClick}
+>
+	<div class="flex w-full flex-row items-start">
+		<div class="flex w-full flex-row items-center justify-stretch gap-10">
+			<div class="flex w-full grow flex-col items-start gap-1">
+				<span class="text-base font-medium {selected ? 'text-gold' : ''}"><slot /></span>
+				{#if $$slots.description}
+					<div class="text-muted-foreground text-sm">
+						<slot name="description" />
+					</div>
+				{/if}
+			</div>
 
-            {#if $$slots.icon}
-                <slot name="icon" />
-            {/if}
-        </div>
-    </div>
+			{#if $$slots.icon}
+				<slot name="icon" />
+			{/if}
+		</div>
+	</div>
 </button>

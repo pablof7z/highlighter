@@ -2,7 +2,7 @@
 	import { get, writable } from "svelte/store";
     import { CreateState } from "./index.js";
 	import createGroup from "$utils/groups/create.js";
-	import { creatorRelayPubkey, defaultRelays } from "$utils/const.js";
+	import { defaultRelays } from "$utils/const.js";
 	import currentUser from "$stores/currentUser.js";
 	import { NDKEvent, NDKKind, NDKList, NDKSimpleGroup, NDKSubscriptionTier, NostrEvent } from "@nostr-dev-kit/ndk";
 	import {pinGroup} from "$utils/groups/pin-group.js";
@@ -21,10 +21,13 @@
             state.name ?? "Untitled",
             state.picture ?? "",
             state.about ?? "",
-            [$user.pubkey, creatorRelayPubkey]
         );
+
+        console.log("state", state);
+        console.log("state", state.monetization);
         
         if (state.monetization === 'subscription') {
+            console.log("creating monetization");
             await createMonetization(state, group);
             await setGroupState(group, "closed");
         }
@@ -49,6 +52,7 @@
 
         $tierList.addItem([ "e", tier.id, group.relayUrls()[0]??"", group.groupId ])
         await $tierList.publishReplaceable();
+        $tierList.publish(group.relaySet);
     }
 
     async function setGroupState(group: NDKSimpleGroup, state: string) {

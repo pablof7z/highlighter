@@ -55,7 +55,7 @@ export async function produceRelaySet(state: State, event: NDKEvent): Promise<ND
     const relaySet = state.relaySet || new NDKRelaySet(new Set(), $ndk);
 
     // if we have groups, add their relays
-    if (state.groups) {
+    if (state.groups && Object.keys(state.groups).length > 0) {
         for (const group of state.groups) {
             for (const url of group.relayUrls) {
                 const relay = $ndk.pool.getRelay(url, true);

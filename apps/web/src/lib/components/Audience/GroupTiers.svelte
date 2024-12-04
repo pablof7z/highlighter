@@ -10,7 +10,8 @@
     export let state: Writable<Audience.State>;
 
     let value: boolean;
-    value = !!($state.groups && $state.groups.find(g => g.id === $group.id))
+    $state.groups ??= [];
+    value = !!($state.groups && ($state.groups.find(g => g.id === $group.id) || Object.keys($state.groups).length === 0))
 
     let selectedTiers: Audience.GroupTierEntry[];
 
@@ -31,7 +32,8 @@
 
             if (value) {
                 $state.groups?.push($group)
-                $state
+                $state.tiers ??= [];
+                $state.tiers.push(...selectedTiers);
             } else {
                 $state.groups = $state.groups?.filter(g => g.id !== $group.id)
             }

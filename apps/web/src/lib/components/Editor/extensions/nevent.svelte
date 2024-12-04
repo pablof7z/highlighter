@@ -5,6 +5,7 @@
     import { NodeViewWrapper } from 'svelte-tiptap';
 	import EmbeddedEventWrapper from '$components/Events/EmbeddedEventWrapper.svelte';
 
+    export let selected: boolean = false;
     export let node: NodeViewProps['node']
     export let updateAttributes: NodeViewProps['updateAttributes']
   // export let deleteNode: NodeViewRendererProps['deleteNode']
@@ -26,7 +27,7 @@
 
 <NodeViewWrapper data-type="nevent" as="span">
     {#if nevent}
-        <EmbeddedEventWrapper id={nevent} />
+        <EmbeddedEventWrapper id={nevent} class="border-2 {selected ? 'border border-primary' : 'border-transparent'}" />
     {:else}
         Nevent
         {attrs.nevent}

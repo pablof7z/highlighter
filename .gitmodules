@@ -2,23 +2,9 @@
 	path = packages
 	url = https://github.com/kind-0/packages
 	branch = master
-[submodule "apps/nsecbunkerd"]
-	path = apps/nsecbunkerd
-	url = https://github.com/kind-0/nsecbunkerd
-	branch = master
-[submodule "apps/nostdress"]
-	path = apps/nostdress
-	url = https://github.com/believethehype/nostdress
-	branch = master
-[submodule "apps/relay/go-nostr"]
-	path = apps/relay/go-nostr
-	url = https://github.com/pablof7z/go-nostr
 [submodule "packages/ndk"]
 	path = packages/ndk
 	url = git@github.com:nostr-dev-kit/ndk.git
-[submodule "packages/konsta"]
-	path = packages/konsta
-	url = https://github.com/konstaui/konsta
 [submodule "apps/communities-relay"]
 	path = apps/communities-relay
 	url = git@github.com:pablof7z/communities-relay.git
