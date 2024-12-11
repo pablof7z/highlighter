@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { NDKArticle, type NDKEvent } from '@nostr-dev-kit/ndk';
 	import { ndk } from '@/state/ndk';
 	import Editor from './Editor/index.svelte';
-	import { wrapEvent } from '@highlighter/common';
 	import { EditorState } from './state.svelte';
 
 	/**
@@ -20,6 +18,7 @@
 	} else {
 		ndk.fetchEvent(id).then((e) => {
 			if (e) {
+				console.log('loaded', JSON.stringify(e.rawEvent()));
 				EditorState.from(e).then((state) => (editorState = state));
 			}
 		});

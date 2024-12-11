@@ -1,31 +1,38 @@
 <script lang="ts">
 	import { Home, Timer, Link1 } from 'svelte-radix';
-	import RelayList from '../ui/RelayList.svelte';
-	import type { EditorState } from './state.svelte';
 	import * as Sidebar from '@components/ui/sidebar';
-	import Relay from './Settings/Relay.svelte';
+	import Relay from './Relay.svelte';
+	import DollarSign from 'lucide-svelte/icons/dollar-sign';
+	import { Image } from 'lucide-svelte';
+	import Metadata from './Metadata.svelte';
+	import Schedule from './Schedule.svelte';
+	import { Button } from '@/components/ui/button';
 
-	let { editorState = $bindable() } = $props();
+	let { editorState = $bindable(), selectedSetting = $bindable() } = $props();
 
 	const data = {
 		nav: [
+			{ name: 'Metadata', icon: Image },
 			{ name: 'Relays', icon: Home },
 			{ name: 'Schedule', icon: Timer },
-			{ name: 'Announce', icon: Link1 }
+			{ name: 'Announce', icon: Link1 },
+			{ name: 'Monetization', icon: DollarSign }
 		]
 	};
-	let selectedSetting = $state('Relays');
 </script>
 
-<Sidebar.Provider class="items-start">
-	<Sidebar.Root collapsible="none" class="hidden md:flex">
+<Sidebar.Provider
+	class="items-start"
+	style="--sidebar-width: 10rem; --sidebar-width-mobile: 10rem;"
+>
+	<Sidebar.Root collapsible="icon" class="hidden md:flex">
 		<Sidebar.Content>
 			<Sidebar.Group>
 				<Sidebar.GroupContent>
 					<Sidebar.Menu>
 						{#each data.nav as item (item.name)}
 							<Sidebar.MenuItem>
-								<Sidebar.MenuButton isActive={item.name === 'Messages & media'}>
+								<Sidebar.MenuButton isActive={item.name === selectedSetting}>
 									{#snippet child({ props })}
 										<button onclick={() => (selectedSetting = item.name)} {...props}>
 											<item.icon />
@@ -46,7 +53,12 @@
 
 			{#if selectedSetting === 'Relays'}
 				<Relay bind:editorState />
+			{:else if selectedSetting === 'Metadata'}
+				<Metadata bind:editorState />
+			{:else if selectedSetting === 'Schedule'}
+				<Schedule bind:editorState />
 			{/if}
 		</div>
 	</main>
 </Sidebar.Provider>
+

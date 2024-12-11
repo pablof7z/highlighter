@@ -35,11 +35,13 @@
 		WithElementRef<HTMLAnchorAttributes> & {
 			variant?: ButtonVariant;
 			size?: ButtonSize;
+			loading?: boolean;
 		};
 </script>
 
 <script lang="ts">
 	import { cn } from "$lib/utils.js";
+	import { Loader2 } from "lucide-svelte";
 
 	let {
 		class: className,
@@ -48,9 +50,25 @@
 		ref = $bindable(null),
 		href = undefined,
 		type = "button",
+		loading = false,
 		children,
 		...restProps
 	}: ButtonProps = $props();
+
+	let forceWidth = $state<number | undefined | null>(null);
+	let width = $state<number | undefined | null>(null);
+
+	$effect(() => {
+		if (!loading) {
+			width = ref?.getBoundingClientRect().width;
+		}
+
+		if (loading && !forceWidth) {
+			forceWidth = width;
+		} else if (!loading && forceWidth) {
+			forceWidth = null;
+		}
+	})
 </script>
 
 {#if href}
@@ -67,8 +85,13 @@
 		bind:this={ref}
 		class={cn(buttonVariants({ variant, size, className }))}
 		{type}
+		style={forceWidth ? `width: ${forceWidth}px` : undefined}
 		{...restProps}
 	>
-		{@render children?.()}
+		{#if loading}
+			<Loader2 class="h-4 w-4 animate-spin" />
+		{:else}
+			{@render children?.()}
+		{/if}
 	</button>
 {/if}

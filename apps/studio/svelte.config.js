@@ -18,6 +18,10 @@ const config = {
 			"@components/*": "./src/lib/components/*",
 		}
 	},
+
+	compatibility: {
+		componentApi: 4
+	}
 };
 
 export default config;

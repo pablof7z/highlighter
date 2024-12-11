@@ -11,4 +11,9 @@
 	const editUrl = `/editor/${type}/${wrappedEvent.encode()}`;
 </script>
 
-<Item title={wrappedEvent.title} image={wrappedEvent.image} {editUrl} />
+<Item
+	title={wrappedEvent.title}
+	image={wrappedEvent.image}
+	{editUrl}
+	eventId={wrappedEvent.encode()}
+/>

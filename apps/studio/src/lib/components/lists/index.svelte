@@ -1,17 +1,27 @@
 <script lang="ts">
-	import { NDKDraft } from '@nostr-dev-kit/ndk';
+	import { NDKDraft, NDKDVMRequest, NDKEvent } from '@nostr-dev-kit/ndk';
 	import Post from './post.svelte';
 	import Draft from './Draft.svelte';
+	import Scheduled from './Scheduled.svelte';
 
-	const { events } = $props();
+	type Props = {
+		events: NDKEvent[];
+		onItemClick?: () => void;
+	};
+	
+	const { events, onItemClick } = $props();
 </script>
 
 <div>
 	{#each events as event (event.id)}
-		{#if event instanceof NDKDraft}
-			<Draft draft={event} />
-		{:else}
-			<Post {event} />
-		{/if}
+		<button onclick={() => onItemClick?.(event)} class="w-full text-left">
+			{#if event instanceof NDKDraft}
+				<Draft draft={event} />
+			{:else if event instanceof NDKDVMRequest}
+				<Scheduled schedule={event} />
+			{:else}
+				<Post {event} />
+			{/if}
+		</button>
 	{/each}
 </div>

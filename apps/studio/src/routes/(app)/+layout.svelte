@@ -7,23 +7,45 @@
 	import '@fontsource/spectral/600.css';
 	import '@fontsource/spectral/600-italic.css';
 
-	import { ndk } from '@/state/ndk';
-	import { NDKNip07Signer } from '@nostr-dev-kit/ndk';
-	import { onMount } from 'svelte';
 	import { currentUser } from '@/state/current-user.svelte';
+	import Signup from '@components/auth/signup.svelte';
+	import AccountSwitcher from '@components/layout/AccountSwitcher.svelte';
+	import CurrentUser from '@components/layout/CurrentUser.svelte';
+	import DashboardLight from '@/img/dashboard-light.png?enhanced';
+	import DashboardDark from '@/img/dashboard-dark.png?enhanced';
+	import MainNav from '@/dashboard/main-nav.svelte';
+	import Logo from '@/components/Logo.svelte';
+	
 	let { children } = $props();
-
-	onMount(() => {
-		if (window.nostr && !ndk.signer) {
-			ndk.signer = new NDKNip07Signer();
-		}
-	});
 </script>
 
 {#if currentUser() !== null}
-	{@render children()}
-{:else}
-	<div class="flex h-screen flex-col items-center justify-center">
-		<h1 class="text-2xl font-bold">Please sign in</h1>
+	<div class="md:hidden">
+		<enhanced:img src={DashboardLight} alt="Dashboard" class="block dark:hidden" />
+		<enhanced:img src={DashboardDark} alt="Dashboard" class="hidden dark:block" />
 	</div>
+	<div class="hidden flex-col md:flex">
+		<div class="border-b">
+			<div class="flex h-16 items-center px-4">
+				<a href="/" class="mr-4">
+					<Logo />
+				</a>
+				
+				<AccountSwitcher />
+
+				<MainNav />
+				
+				<div class="ml-auto flex items-center space-x-4">
+					<!-- <Search /> -->
+					<CurrentUser />
+				</div>
+			</div>
+		</div>
+
+		<div class="flex-1 space-y-4 p-8 pt-6">
+			{@render children()}
+		</div>
+	</div>
+{:else}
+	<Signup />
 {/if}

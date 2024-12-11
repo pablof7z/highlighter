@@ -9,8 +9,11 @@
 	import '@fontsource/spectral/600-italic.css';
 	import { ndk } from '@/state/ndk';
 	import { ModeWatcher } from 'mode-watcher';
-	import { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
+	import { NDKNip07Signer, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
 	import { browser } from '$app/environment';
+	import { Toaster } from '@/components/ui/sonner';
+	import { onMount } from 'svelte';
+	import { appState } from '@/state/app.svelte';
 
 	let { children } = $props();
 
@@ -27,10 +30,17 @@
 		}
 	}
 
-	ndk.explicitRelayUrls = ['wss://relay.primal.net'];
+	onMount(() => {
+		if (window.nostr && !ndk.signer) {
+			ndk.signer = new NDKNip07Signer();
+		}
+	});
+
+	ndk.explicitRelayUrls = ['wss://relay.primal.net', 'wss://relay.damus.io'];
 	ndk.connect();
 </script>
 
+<Toaster />
 <ModeWatcher />
 
 {@render children()}
