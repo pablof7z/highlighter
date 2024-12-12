@@ -8,12 +8,14 @@
 	import Name from '@/components/user/Name.svelte';
 	import CoverImage from '../buttons/CoverImage.svelte';
 	import Checks from './Checks.svelte';
-	import { fade, slide } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
+	import type { ButtonStatus } from '@/components/ui/button/button.svelte';
+	import type { NDKEvent } from '@nostr-dev-kit/ndk';
 
 	interface Props {
 		editorState: EditorState;
 		open: boolean;
-		onSuccess: () => void;
+		onSuccess: (event: NDKEvent) => void;
 	}
 
 	let {
@@ -25,20 +27,23 @@
 	let showSettings = $state(false);
 	let error = $state(null);
 
+	let status = $state<ButtonStatus>('initial');
+
 	function _publish() {
-		acting = true;
+		status = 'loading';
 		error = null;
 		publish(editorState)
 			.then((event) => {
-				open = false;
-				onSuccess?.(event);
+				status = 'success';
+				setTimeout(() => {
+					open = false;
+					onSuccess?.(event)
+				}, 1500);
 			})
 			.catch((e) => {
 				error = e;
+				status = 'error';
 			})
-			.finally(() => {
-				acting = false;
-			});
 	}
 
 	let allGood = $state(false);
@@ -60,7 +65,7 @@
 
 			<Dialog.Footer>
 				<Button variant="link" onclick={() => (showSettings = true)}>Advanced</Button>
-				<Button variant="default" onclick={_publish}>
+				<Button variant="default" onclick={_publish} {status}>
 					Send proposal to
 					<Name of={editorState.proposalRecipient} />
 					<ArrowRightIcon class="h-4 w-4" />
@@ -110,8 +115,8 @@
 				<Button
 					variant="default"
 					onclick={_publish}
-					disabled={!publishButtonEnabled}
-					loading={acting}
+					disabled={!publishButtonEnabled || status === 'loading'}
+					{status}
 				>
 					Publish
 				</Button>

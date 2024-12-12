@@ -5,11 +5,11 @@
 
 	export type Size = 'small' | 'medium' | 'large';
 	interface Props {
-		profile?: NDKUserProfile;
+		profile?: NDKUserProfile | null;
 		of?: string | NDKUser;
 		size?: Size;
 	}
-	
+
 	let { profile = undefined, of = undefined, size = 'medium' }: Props = $props();
 
 	if (of) {

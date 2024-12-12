@@ -89,8 +89,6 @@
 			return;
 		}
 
-		console.log('saving', { manual, draftExisted, isPrimaryDraft, kind: draftEvent.kind });
-
 		const event = editorState.generateEvent();
 		draftEvent.event = event;
 		status = 'Saving';
@@ -138,12 +136,6 @@
 			{#if editorState.draft}
 				Last saved <span class="text-[10px] font-light leading-tight text-muted-foreground/70"><RelativeTime event={editorState.draft} /> ago</span>
 			{/if}
-		</div>
-	{/if}
-
-	{#if contentChanges > 0}
-		<div class="text-[10px] font-light leading-tight text-muted-foreground/70">
-			{contentChanges} changes
 		</div>
 	{/if}
 </button>

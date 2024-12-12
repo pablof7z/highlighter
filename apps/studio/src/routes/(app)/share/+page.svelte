@@ -36,27 +36,25 @@
                 kind: NDKKind.Text,
                 content: content,
                 tags: [
-                    [ "q", ...appState.activeEvent!.tagId() ]
+                    [ "q", appState.activeEvent!.tagId() ]
                 ]
             } as NostrEvent);
             await e.publish();
             status = "success";
 
             toast.success("Post published", {
-                description: "Your post has been published to the Nostr network.",
+                description: "Your post has been published",
                 duration: 10000,
                 action: {
-                    label: "View on Nostr",
+                    label: "View",
                     onClick: () => {
-                        window.open(`https://njump.me/${e.encode()}`, '_blank');
+                        window.open(`https://primal.net/e/${e.encode()}`, '_blank');
                     }
                 }
             });
         } catch (e: any) {
             status = "error";
             toast.error(e.message);
-        } finally {
-            status = "initial";
         }
     }
 </script>

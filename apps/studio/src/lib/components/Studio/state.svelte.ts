@@ -1,9 +1,12 @@
+import { currentUser } from "@/state/current-user.svelte";
 import { ndk } from "@/state/ndk";
 import { dvmSchedule, NDKArticle, NDKDraft, NDKEvent, NDKKind, NDKRelaySet, type Hexpubkey, type NostrEvent } from "@nostr-dev-kit/ndk";
 import type { Editor } from "svelte-tiptap";
 
+export type EditorType = 'article' | 'thread';
+
 export class EditorState {
-    type = $state<'article'>("article");
+    type = $state<EditorType>('article');
     
     image = $state('');
     title = $state('');
@@ -26,6 +29,8 @@ export class EditorState {
 
     static async from(event: NDKEvent): Promise<EditorState> {
         let state = new EditorState();
+
+        const user = $derived.by(currentUser);
         
         if (event.kind === NDKKind.Article) {
             const article = NDKArticle.from(event);
@@ -40,6 +45,11 @@ export class EditorState {
             if (e) {
                 state = await EditorState.from(e);
                 state.draft = draft;
+            }
+
+            const pTag = draft.tagValue('p');
+            if (pTag && pTag !== user?.pubkey) {
+                state.proposalRecipient = pTag;
             }
         }
 
@@ -61,8 +71,6 @@ export class EditorState {
 
         event.dTag = this.dTag;
 
-        console.log(event.rawEvent());
-
         return event;
     }
 
@@ -75,8 +83,11 @@ export class EditorState {
         // if we already have a p-tag in a draft, we assume that's the recipient
         recipient ??= this.draft.tagValue('p');
         
-        const recipientUser = recipient ? ndk.getUser({pubkey: recipient}) : undefined;
-		return this.draft.save({ publish: true, recipient: recipientUser })
+        const recipientUser = recipient ? ndk.getUser({ pubkey: recipient }) : undefined;
+
+        console.log('saving draft for recipient', recipient);
+        
+		this.draft.save({ publish: true, recipient: recipientUser })
     }
 }
 
@@ -84,7 +95,7 @@ export class EditorState {
  * Publishes the event and deletes the draft(s) if they exist
  * @param state 
  */
-export async function publish(state: EditorState) {
+export async function publish(state: EditorState): Promise<NDKEvent | NDKDraft> {
     const event = state.generateEvent();
     const relaySet = NDKRelaySet.fromRelayUrls(state.relays, ndk);
 
@@ -96,13 +107,12 @@ export async function publish(state: EditorState) {
 
     if (state.proposalRecipient) {
         await state.generateDraft(state.proposalRecipient);
+        return state.draft!;
     } else if (state.publishAt) {
         const dvmUser = ndk.getUser({npub: 'npub1shpq6dmqaa8pjas8rftflvmr7nlssm9fqanflw23vlxu2vzexngslu90nm'});
         event.created_at = Math.floor(new Date(state.publishAt).getTime() / 1000);
         await event.sign();
-        console.log(event.rawEvent());
         const confirm = await dvmSchedule(event, dvmUser, undefined, true, 3000);
-        console.log(confirm)
         if (confirm) {
             deleteDrafts(state);
         }
@@ -125,8 +135,6 @@ async function deleteDrafts(state: EditorState) {
         authors: [state.draft.pubkey]
     });
 
-    console.log('found checkpoints', checkpoints.size);
-
     state.draft.content = "This event has been deleted; your client is ignoring the delete request.";
     state.draft.tags = [["deleted"]];
     await state.draft.publishReplaceable();
@@ -141,8 +149,6 @@ async function deleteDrafts(state: EditorState) {
     } as NostrEvent);
 
     await deleteEvent.sign();
-
-    console.log('delete event', deleteEvent.rawEvent());
 
     await deleteEvent.publish();
 }

@@ -1,25 +1,29 @@
 <script lang="ts">
-	import { DotsHorizontal, Image } from 'svelte-radix';
+	import { DotsHorizontal, ExternalLink, Image } from 'svelte-radix';
 	import Button from '@components/ui/button/button.svelte';
 	import * as DropdownMenu from '@components/ui/dropdown-menu';
-	import type { NDKUser } from '@nostr-dev-kit/ndk';
+	import type { NDKEvent, NDKUser } from '@nostr-dev-kit/ndk';
 	import Avatar from '@components/user/Avatar.svelte';
 	import Name from '@components/user/Name.svelte';
 	import { Profile } from '../user/profile.svelte';
-	import { Copy, Pencil, Share, Trash } from 'lucide-svelte';
+	import { Copy, FileJson2, Pencil, Share, Trash } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
+	import { currentUser } from '@/state/current-user.svelte';
+
+	const user = $derived.by(currentUser);
 
 	type Props = {
 		author?: NDKUser | null;
 		title: string;
 		image: string;
 		timestamp: number;
+		event?: NDKEvent;
 		editUrl: string;
-		eventId?: string;
 		byline?: string;
 		onShare?: () => void;
 		onDelete: () => void;
 		stats: Record<string, number>;
+		viewLink?: string;
 	};
 
 	const {
@@ -28,11 +32,12 @@
 		image,
 		editUrl,
 		byline,
+		event,
 		onDelete,
-		eventId,
 		timestamp,
 		onShare,
-		stats
+		stats,
+		viewLink
 	}: Props = $props();
 
 	let imageLoaded = $state(false);
@@ -84,41 +89,57 @@
 			{/each}
 		{/if}
 
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger>
-				<Button variant="ghost" size="icon">
-					<DotsHorizontal />
+		<div class="flex flex-row gap-2 items-center">
+			{#if viewLink}
+				<Button variant="secondary" size="icon" onclick={() => window.open(viewLink, '_blank')}>
+					<ExternalLink class="w-4 h-4" />
 				</Button>
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content>
-				<DropdownMenu.Group>
-					<DropdownMenu.Item onclick={() => goto(editUrl)}>
-						<Pencil class="w-4 h-4 mr-2" />
-						Edit
-					</DropdownMenu.Item>
-					{#if eventId}
-						<DropdownMenu.Item onclick={() => navigator.clipboard.writeText(eventId)}>
-							<Copy class="w-4 h-4 mr-2" />
-							Copy Event ID
+			{/if}
+
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					<Button variant="ghost" size="icon">
+						<DotsHorizontal />
+					</Button>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content>
+					<DropdownMenu.Group>
+						<DropdownMenu.Item onclick={() => goto(editUrl)}>
+							<Pencil class="w-4 h-4 mr-2" />
+							Edit
 						</DropdownMenu.Item>
-					{/if}
 
-					{#if onShare}
-						<DropdownMenu.Item onclick={onShare}>
-							<Share class="w-4 h-4 mr-2" />
-							Share
-					</DropdownMenu.Item>
-					{/if}
+						{#if event}
+							<DropdownMenu.Item onclick={() => navigator.clipboard.writeText(event.encode())}>
+								<Copy class="w-4 h-4 mr-2" />
+								Copy Event ID
+							</DropdownMenu.Item>
 
-					<DropdownMenu.Separator />
-					
-					<DropdownMenu.Item class="text-red-500" onclick={onDelete}>
-						<Trash class="w-4 h-4 mr-2" />
-						Delete
-					</DropdownMenu.Item>
-				</DropdownMenu.Group>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+							<DropdownMenu.Item onclick={() => navigator.clipboard.writeText(JSON.stringify(event.rawEvent(), null, 4))}>
+								<FileJson2 class="w-4 h-4 mr-2" />
+								Copy Raw Event
+							</DropdownMenu.Item>
+						{/if}
+
+						{#if onShare}
+							<DropdownMenu.Item onclick={onShare}>
+								<Share class="w-4 h-4 mr-2" />
+								Share
+							</DropdownMenu.Item>
+						{/if}
+
+						{#if event?.pubkey === user?.pubkey}
+							<DropdownMenu.Separator />
+							
+							<DropdownMenu.Item class="text-red-500" onclick={onDelete}>
+								<Trash class="w-4 h-4 mr-2" />
+								Delete
+							</DropdownMenu.Item>
+						{/if}
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
 	</div>
 </div>
 

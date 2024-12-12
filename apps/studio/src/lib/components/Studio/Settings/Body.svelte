@@ -6,17 +6,23 @@
 	import { Image } from 'lucide-svelte';
 	import Metadata from './Metadata.svelte';
 	import Schedule from './Schedule.svelte';
-	import { Button } from '@/components/ui/button';
+	import { onMount } from 'svelte';
 
 	let { editorState = $bindable(), selectedSetting = $bindable() } = $props();
+
+	onMount(() => {
+		if (!selectedSetting || selectedSetting === '') {
+			selectedSetting = 'Metadata';
+		}
+	})
 
 	const data = {
 		nav: [
 			{ name: 'Metadata', icon: Image },
 			{ name: 'Relays', icon: Home },
 			{ name: 'Schedule', icon: Timer },
-			{ name: 'Announce', icon: Link1 },
-			{ name: 'Monetization', icon: DollarSign }
+			// { name: 'Announce', icon: Link1 },
+			// { name: 'Monetization', icon: DollarSign }
 		]
 	};
 </script>

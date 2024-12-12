@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Article from './Article/index.svelte';
+	import Thread from './Thread/index.svelte';
 	import Toolbar from './Toolbar.svelte';
 	import BottomToolbar from './BottomToolbar.svelte';
 	import FinalizeModal from './Finalize/Modal.svelte';
@@ -8,16 +9,36 @@
 	import { appState } from '@/state/app.svelte';
 	import type { NDKDraft, NDKEvent } from '@nostr-dev-kit/ndk';
 	import { goto, replaceState } from '$app/navigation';
+	import type { EditorState } from '../state.svelte';
+	import { toast } from 'svelte-sonner';
 
-	let { editorState = $bindable() } = $props();
+	type Props = {
+		editorState: EditorState;
+	}
+	
+	let { editorState = $bindable() }: Props = $props();
 
 	let settingsOpen = $state(false);
 	let finalizeOpen = $state(false);
 	let historyOpen = $state(false);
 
 	function onPublish(event: NDKEvent) {
-		appState.activeEvent = event;
-		goto('/share');
+		if (editorState.proposalRecipient) {
+			toast.success('Proposal sent!', {
+				description: 'You can share the link',
+				duration: 20000,
+				action: {
+					label: 'Copy Link',
+					onClick: () => {
+						navigator.clipboard.writeText('https://studio.highlighter.com/editor/article/' + event.encode());
+					}
+				}
+			});
+			goto('/');
+		} else {
+			appState.activeEvent = event;
+			goto('/share');
+		}
 	}
 
 	let hasDraft = $state(false);
@@ -33,7 +54,7 @@
 <div class="flex-col">
 	<div class="w-full px-4 py-2 sticky top-0 bg-background z-40">
 		<Toolbar
-			{editorState}
+			bind:editorState
 			onContinue={() => (finalizeOpen = true)}
 			onSaveDraft={onSaveDraft}
 		/>
@@ -41,6 +62,8 @@
 
 	{#if editorState.type === 'article'}
 		<Article bind:editorState />
+	{:else if editorState.type === 'thread'}
+		<Thread bind:editorState />
 	{:else}
 		Unhandled event type
 	{/if}
@@ -58,4 +81,4 @@
 	onSuccess={onPublish}
 />
 
-<HistoryModal {editorState} bind:open={historyOpen} />
+<HistoryModal bind:editorState bind:open={historyOpen} />

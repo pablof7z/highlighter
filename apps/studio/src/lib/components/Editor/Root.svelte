@@ -61,8 +61,9 @@
 
 		if (markdown) {
 			extensions.push(Markdown.configure({ tightLists: true }));
+		} else {
 			extensions.push(HardBreak.configure({
-				keepMarks: false,
+				keepMarks: true,
 				keepAttributes: false,
 			}));
 		}
@@ -121,12 +122,23 @@
 			],
 			editable: !readonly,
 			onUpdate: () => {
-				if (markdown) { 	
+				if (markdown) {
 					content = editor?.storage.markdown.getMarkdown();
+					console.log('setting content cache', content);
+					contentCache = content;
 				} else {
 					// get as simple text
 					// need to hack this because tiptap is adding two newlines for some reason
-					content = editor?.getText().replace(/\n\n/g, "\n") ?? "";
+					let text = editor?.getText();
+					console.log('text', JSON.stringify(text));
+					if (text?.match(/\n\n/)) {
+						console.log('replacing newlines', text);
+						content = text.replace(/\n\n/g, "\n");
+					} else {
+						content = text ?? "";
+					}
+					console.log('setting content cache', content);
+					contentCache = content;
 				}
 			},
 			editorProps: {
@@ -142,22 +154,25 @@
 				}
 			}
 		});
-
-		// editor.commands.focus('end');
 	});
+
+	let contentCache = $state("");
 
 	$effect(() => {
 		if (!editor) return;
-		if (newline || !content.match(/\n/)) return;
-		console.log('running effect', JSON.stringify(content), {newline});
+		if (!newline && content.match(/\n/)) {
+			content = content.replace(/\n/g, '');
+		}
 
-		content = content.replace(/\n/g, '');
-
-		editor.commands.setEventContent({
-			content: content,
-			kind: markdown ? 30023 : 1,
-			tags: [],
-		})
+		if (contentCache !== content) {
+			contentCache = content;
+			
+			editor.commands.setEventContent({
+				content: content,
+				kind: markdown ? 30023 : 1,
+				tags: [],
+			})
+		}
 	})
 </script>
 

@@ -48,15 +48,19 @@
 			title={event.title}
 			image={event.image}
 			timestamp={draft.created_at}
-			eventId={draft.id}
+			event={draft}
 			{editUrl}
 			{stats}
 			onDelete={() => draft.delete()}
 		/>
 	</a>
 {:else}
-	<div>
-		{error}
-		{draft.tagValue('k')}
-	</div>
+	<Item
+		{author}
+		byline={"from "}
+		title={error + " " + draft.tagValue('k')}
+		timestamp={draft.created_at}
+		event={draft}
+		onDelete={() => draft.delete()}
+	/>
 {/if}

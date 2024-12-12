@@ -4,7 +4,7 @@
 	import ImportModal from '@/components/Import/Modal.svelte';
 	import { ndk } from '@/state/ndk';
 	import { currentUser } from '@/state/current-user.svelte';
-	import { NDKArticle, NDKDraft, NDKDVMRequest, NDKEvent, NDKKind, NDKUser } from '@nostr-dev-kit/ndk';
+	import { NDKArticle, NDKDraft, NDKDVMRequest, NDKEvent, NDKKind, NDKSubscriptionCacheUsage, NDKUser } from '@nostr-dev-kit/ndk';
 	import NewPost from '@/components/buttons/new-post.svelte';
 	import List from '@/components/lists/index.svelte';
 	import { Badge } from '@/components/ui/badge/index.js';
@@ -15,17 +15,28 @@
 
 	const posts = ndk.$subscribe([{ kinds: [NDKKind.Article], authors: [user.pubkey] }]);
 
-	const drafts = ndk.$subscribe(
+	const allDrafts = ndk.$subscribe(
 		[{ kinds: [NDKKind.Draft], '#k': [NDKKind.Article.toString()], authors: [user.pubkey] }],
-		undefined,
+		{ groupable: false, subId: 'drafts' },
 		NDKDraft
 	);
 
-	const proposals = ndk.$subscribe(
+	const draftIsMine = (d: NDKDraft) => {
+		const pTag = d.tagValue('p');
+		return (!pTag || pTag === user.pubkey);
+	}
+	
+	const drafts = $derived.by(() => allDrafts.filter(draftIsMine));
+
+	const inboundProposals = ndk.$subscribe(
 		[{ kinds: [NDKKind.Draft], '#k': [NDKKind.Article.toString()], '#p': [user.pubkey] }],
 		undefined,
 		NDKDraft
 	);
+
+	const outboundProposals = $derived.by(() => allDrafts.filter((d) => !draftIsMine(d)));
+
+	const allProposals = $derived.by(() => [...inboundProposals, ...outboundProposals]);
 
 	const deletes = ndk.$subscribe([
 		{
@@ -71,7 +82,7 @@
 				</Tabs.Trigger>
 				<Tabs.Trigger value="proposals">
 					Proposed
-					<Badge class="ml-2" variant="secondary">{proposals.length}</Badge>
+					<Badge class="ml-2" variant="secondary">{allProposals.length}</Badge>
 				</Tabs.Trigger>
 				<Tabs.Trigger value="scheduled">
 					Scheduled
@@ -102,7 +113,7 @@
 			</Tabs.Content>
 
 			<Tabs.Content value="proposals" class="space-y-4">
-				<List events={proposals} />
+				<List events={allProposals} />
 			</Tabs.Content>
 
 			<Tabs.Content value="scheduled">

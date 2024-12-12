@@ -3,9 +3,10 @@
 	import { Button } from '@components/ui/button/index.js';
 	import Avatar from '@components/user/Avatar.svelte';
 	import Name from '@components/user/Name.svelte';
-	import { currentUserProfile } from '@/state/current-user.svelte';
+	import { currentUserProfile, logout } from '@/state/current-user.svelte';
 	import { prettifyNip05 } from '@nostr-dev-kit/ndk-svelte-components';
 	import { goto } from '$app/navigation';
+	import { LogOut, Settings } from 'lucide-svelte';
 
 	const profile = currentUserProfile();
 </script>
@@ -28,12 +29,14 @@
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>
 			<DropdownMenu.Item onclick={() => goto('/settings')}>
+				<Settings size={16} />
 				Settings
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Item>
-			Log out
-		</DropdownMenu.Item>
+		<DropdownMenu.Item onclick={logout}>
+			<LogOut size={16} />
+			Log out</DropdownMenu.Item
+		>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

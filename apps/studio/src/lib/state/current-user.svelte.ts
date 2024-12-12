@@ -2,6 +2,7 @@ import type { NDKEvent, NDKFilter, NDKUser } from "@nostr-dev-kit/ndk";
 import { ndk } from "./ndk";
 import { NDKKind, profileFromEvent, type Hexpubkey, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { Profile } from "@/components/user/profile.svelte";
+import { appState } from "./app.svelte";
 
 let user = $state<NDKUser | null>(null);
 
@@ -21,18 +22,20 @@ const blossomServers = $derived.by(() => {
 })
 
 ndk.on('signer:ready', async (signer) => {
-	console.log("signer:ready");
+	console.log("signer:ready", !!signer);
 	if (signer) {
+		console.log("asking for user");
 		user = await signer.user();
+		console.log("got user", user);
 		userProfile = new Profile(user);
 
 		const filters: NDKFilter[] = [
-			{ kinds: [NDKKind.Contacts, NDKKind.BlossomList ], authors: [user.pubkey] }
+			{ kinds: [NDKKind.Contacts, NDKKind.BlossomList, NDKKind.Draft ], authors: [user.pubkey] }
 		]
 
 		console.log(filters);
 
-		const sub = ndk.subscribe(filters, { groupable: false }, undefined, false);
+	const sub = ndk.subscribe(filters, { groupable: false }, undefined, false);
 		sub.on('event', (event) => {
 			switch (event.kind) {
 				case NDKKind.Contacts:
@@ -56,3 +59,14 @@ export const currentUser = (): NDKUser | null => user;
 export const currentUserProfile = (): Profile | null => userProfile;
 export const currentUserFollows = (): Set<Hexpubkey> => userFollows;
 export const currentUserBlossomServers = (): string[] => blossomServers;
+
+export function logout() {
+	user = null;
+	userProfile = null;
+	userFollowsEvent = null;
+	blossomListEvent = null;
+
+	appState.activeEvent = null;
+	localStorage.clear();
+	ndk.signer = undefined;
+}

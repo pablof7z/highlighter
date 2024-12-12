@@ -57,6 +57,7 @@
 	timestamp={wrappedEvent.published_at}
 	{editUrl}
 	{onShare}
-	eventId={wrappedEvent.encode()}
+	event={wrappedEvent}
 	stats={stats}
+	viewLink={`https://highlighter.com/${wrappedEvent.encode()}`}
 />

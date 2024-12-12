@@ -9,8 +9,14 @@
 	import AvatarWithName from '@/components/user/AvatarWithName.svelte';
 	import Name from '@/components/user/Name.svelte';
 	import { ArrowRight, PaperPlane } from 'svelte-radix';
+	import type { EditorState } from '../state.svelte';
 
-	let { open = $bindable(), editorState = $bindable() } = $props();
+	type Props = {
+		open: boolean;
+		editorState: EditorState;
+	}
+
+	let { open = $bindable(), editorState = $bindable() }: Props = $props();
 
 	// $: {
 	// 	actionButtons = [];
@@ -74,7 +80,7 @@
 		}
 	}
 
-	let enabled = $state(editorState.proposalMode || !!recipient);
+	let enabled = $state(!!editorState.proposalRecipient || !!recipient);
 </script>
 
 <Dialog.Root bind:open>
@@ -85,7 +91,7 @@
 
 		{#if !enabled}
 			<div class="flex flex-col items-center p-4">
-				<Users2 size="120" />
+				<Users2 size="120" class="text-muted-foreground" strokeWidth={1} />
 				<h1 class="text-2xl font-bold">Proposal Mode</h1>
 				<p class="text-center text-muted-foreground">
 					Prepare a post and propose it to someone else to publish it under their name.
@@ -139,7 +145,7 @@
 						<Button variant="outline" onclick={() => { open = false; }}>Done</Button>
 					</div>
 				{:else}
-					<Button variant="default" onclick={() => { open = false; }} disabled={recipient.length === 0}>
+					<Button variant="default" onclick={setUser} disabled={recipient.length === 0}>
 						<Search />
 						Search
 					</Button>

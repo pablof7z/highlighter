@@ -9,7 +9,6 @@
 	import { Import, Send, User2 } from 'lucide-svelte';
 	import { Profile } from '@/components/user/profile.svelte';
 	import Avatar from '@components/user/Avatar.svelte';
-	import CollaboratorsModal from './CollaboratorsModal.svelte';
 	import type { EditorState } from '../state.svelte';
 	import type { NDKDraft } from '@nostr-dev-kit/ndk';
 
@@ -19,15 +18,10 @@
 		onSaveDraft?: (event: NDKDraft) => void;
 	}
 
-	let { onContinue, editorState, onSaveDraft }: Props = $props();
+	let { onContinue, editorState = $bindable(), onSaveDraft }: Props = $props();
 
 	let proposalModal = $state<boolean>(false);
 	let importModal = $state<boolean>(false);
-
-	let collaboratorsModal = $state<boolean>(false);
-
-	$inspect(editorState);
-	$inspect(editorState.title);
 
 	let proposalRecipient = $derived(editorState.proposalRecipient ? new Profile(editorState.proposalRecipient) : null);
 </script>
@@ -78,8 +72,8 @@
 	</div>
 </div>
 
-<ProposalMode bind:open={proposalModal} editorState />
+<ProposalMode bind:open={proposalModal} bind:editorState />
 <!-- <CollaboratorsModal bind:open={collaboratorsModal} bind:editorState /> -->
 
-<ImportModal bind:open={importModal} editorState />
+<ImportModal bind:open={importModal} bind:editorState />
 

@@ -16,10 +16,9 @@
 	interface Props {
 		editorState: EditorState;
 		open: boolean;
-		onSuccess: () => void;
 	}
 
-    let { editorState, open = $bindable() }: Props = $props();
+    let { editorState = $bindable(), open = $bindable() }: Props = $props();
 
     let drafts = $state<NDKDraft[] | null>(null);
 
