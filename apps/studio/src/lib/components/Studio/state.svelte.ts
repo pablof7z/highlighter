@@ -1,5 +1,6 @@
 import { ndk } from "@/state/ndk";
 import { dvmSchedule, NDKArticle, NDKDraft, NDKEvent, NDKKind, NDKRelaySet, type Hexpubkey, type NostrEvent } from "@nostr-dev-kit/ndk";
+import type { Editor } from "svelte-tiptap";
 
 export class EditorState {
     type = $state<'article'>("article");
@@ -20,6 +21,8 @@ export class EditorState {
     publishAt = $state<Date | null>(null);
 
     proposalRecipient = $state<Hexpubkey | undefined>(undefined);
+
+    editor = $state<Editor | null>(null);
 
     static async from(event: NDKEvent): Promise<EditorState> {
         let state = new EditorState();
@@ -85,11 +88,11 @@ export async function publish(state: EditorState) {
     const event = state.generateEvent();
     const relaySet = NDKRelaySet.fromRelayUrls(state.relays, ndk);
 
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            reject("Test")
-        }, 1000);
-    });
+    // return new Promise((resolve, reject) => {
+    //     setTimeout(() => {
+    //         reject("Test")
+    //     }, 1000);
+    // });
 
     if (state.proposalRecipient) {
         await state.generateDraft(state.proposalRecipient);
@@ -107,6 +110,8 @@ export async function publish(state: EditorState) {
         await event.publish(relaySet);
         deleteDrafts(state);
     }
+
+    return event;
 }
 
 async function deleteDrafts(state: EditorState) {

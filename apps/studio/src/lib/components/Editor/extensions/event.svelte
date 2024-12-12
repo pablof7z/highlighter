@@ -22,8 +22,6 @@
 
     $: bech32 = attrs.naddr || attrs.nevent;
 
-    $: console.log('bech32', bech32);
-
 	// $: try {
 	// 	if (attrs.nprofile) {
 	// 		if (attrs.nprofile.match(/:/)) {

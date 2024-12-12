@@ -9,10 +9,17 @@
 	import { Import, Send, User2 } from 'lucide-svelte';
 	import { Profile } from '@/components/user/profile.svelte';
 	import Avatar from '@components/user/Avatar.svelte';
-	import Separator from '@/components/ui/separator/separator.svelte';
 	import CollaboratorsModal from './CollaboratorsModal.svelte';
+	import type { EditorState } from '../state.svelte';
+	import type { NDKDraft } from '@nostr-dev-kit/ndk';
 
-	let { onContinue, editorState = $bindable() } = $props();
+	type Props = {
+		onContinue: () => void;
+		editorState: EditorState;
+		onSaveDraft?: (event: NDKDraft) => void;
+	}
+
+	let { onContinue, editorState, onSaveDraft }: Props = $props();
 
 	let proposalModal = $state<boolean>(false);
 	let importModal = $state<boolean>(false);
@@ -31,7 +38,7 @@
 			<ArrowLeft size="18" weight="bold" />
 		</Button>
 
-		<DraftButton bind:editorState />
+		<DraftButton {editorState} onSave={onSaveDraft} />
 	</div>
 
 	<div class="flex flex-row items-center gap-2">
@@ -71,8 +78,8 @@
 	</div>
 </div>
 
-<ProposalMode bind:open={proposalModal} bind:editorState />
-<CollaboratorsModal bind:open={collaboratorsModal} bind:editorState />
+<ProposalMode bind:open={proposalModal} editorState />
+<!-- <CollaboratorsModal bind:open={collaboratorsModal} bind:editorState /> -->
 
-<ImportModal bind:open={importModal} bind:editorState />
+<ImportModal bind:open={importModal} editorState />
 

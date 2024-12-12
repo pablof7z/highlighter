@@ -6,10 +6,10 @@
 
 	type Props = {
 		events: NDKEvent[];
-		onItemClick?: () => void;
+		onItemClick?: (event: NDKEvent) => void;
 	};
 	
-	const { events, onItemClick } = $props();
+	const { events, onItemClick }: Props = $props();
 </script>
 
 <div>

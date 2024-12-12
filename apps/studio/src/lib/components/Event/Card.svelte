@@ -5,21 +5,32 @@
 	import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
     import { ndk } from "@/state/ndk";
 	import RelativeTime from "../RelativeTime.svelte";
+    import { readingTime } from "@highlighter/common";
 
     let { event } = $props();
 </script>
 
 {#if event instanceof NDKArticle}
-    <Card.Root class="col-span-2">
-        <Card.Content class="flex flex-row items-stretch gap-4">
-            <div class="flex-none w-32 h-32 rounded-lg overflow-hidden bg-muted">
+    <Card.Root>
+        <Card.Content class="flex flex-row p-0 w-full">
+            <div class="flex-none w-32 h-32 rounded-l-lg overflow-hidden bg-muted">
                 {#if event.image}
                     <img src={event.image} alt={event.title} class="w-full h-full object-cover" />
                 {/if}
             </div>
-            <div class="flex flex-col gap-2 grow">
-                <h4 class="text-base font-semibold text-foreground">{event.title}</h4>
-                <div class="text-xs whitespace-nowrap truncate text-muted-foreground">{event.summary}</div>
+            <div class="flex flex-col gap-0 p-2 px-4 w-[calc(100%-128px)]">
+                <div class="flex flex-col gap-1 grow">
+                    <h4 class="text-base font-semibold text-foreground overflow-clip truncate">{event.title}</h4>
+                    <div class="text-[12px] leading-[20px] max-h-[40px] overflow-clip text-muted-foreground">{event.summary}</div>
+                </div>
+
+                <div class="flex flex-row justify-between items-center">
+                    <AvatarWithName of={event.pubkey} avatarSize="small" nameClass="text-muted-foreground text-xs" />
+                    
+                    <span class="text-xs text-muted-foreground">
+                        {readingTime(event.content)}m read
+                    </span>
+                </div>
             </div>
         </Card.Content>
     </Card.Root>

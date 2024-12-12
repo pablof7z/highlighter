@@ -4,7 +4,7 @@
 	import { Button } from '@/components/ui/button';
 	import SettingsModal from '../../Settings/Modal.svelte';
 	import { publish } from '../../state.svelte';
-	import { ArrowRightIcon, Loader2, MessageCircleWarning, Plane } from 'lucide-svelte';
+	import { ArrowRightIcon, Clock, Loader2, MessageCircleWarning, Plane } from 'lucide-svelte';
 	import Name from '@/components/user/Name.svelte';
 	import CoverImage from '../buttons/CoverImage.svelte';
 	import { fade, slide } from 'svelte/transition';
@@ -46,25 +46,36 @@
 	let acting = $state(false);
 
 	const publishButtonEnabled = $derived(allGood && !acting);
+
+    const readingTime = $derived(Math.ceil(editorState.content.split(' ').length / 200));
 </script>
 
 <Dialog.Root bind:open>
-    <Dialog.Content>
-        <Dialog.Title>Success!</Dialog.Title>
-        <Dialog.Description class="sr-only">Publish your content here.</Dialog.Description>
+    <Dialog.Content class="max-w-md">
+		<h1 class="text-2xl font-medium text-center mt-6">
+			Your article is live. Well done.
+		</h1>
 
-        <div class="flex flex-row items-start gap-4">
-            <CoverImage
-                {editorState}
-                class="w-32 h-32 flex-none"
-                imgProps={{ class: "p-0 h-32 w-32 rounded-lg object-cover" }}
-            />
+		<div class="text-base text-muted-foreground text-center">
+			You've done the work. Now it's time to reap the rewards. Share it. Far and wide.
+		</div>
 
-            <div class="flex flex-col gap-1">
-                <h2 class="text-base font-medium">{editorState.title}</h2>
-                <h3 class="text-muted-foreground/70 text-sm">{editorState.summary}</h3>
+		
+        <!-- <div class="w-[260px] h-[320px] relative rounded-2xl overflow-clip">
+            <img src={editorState.image} class="absolute top-0 left-0 h-[320px] object-cover" />
+
+            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-background/0 to-background" transition:fade></div>
+            
+            <div class="absolute bottom-0 left-0 w-full h-1/2 p-4 flex flex-col justify-end gap-4">
+                <h1 class="text-lg font-medium text-white">
+                    {editorState.title}
+                </h1>
+
+				<div class="flex flex-row gap-2 items-center text-muted-foreground text-xs">	
+					{readingTime}m read
+				</div>
             </div>
-        </div>
+        </div> -->
 
         <Dialog.Footer>
             {#if error}

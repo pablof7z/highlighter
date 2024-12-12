@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { NDKEvent } from "@nostr-dev-kit/ndk";
-	import AvatarWithName from "../user/AvatarWithName.svelte";
 	import { ndk } from "@/state/ndk";
 	import { wrapEvent } from "@highlighter/common";
 
@@ -13,13 +12,15 @@
 
     let { eventId, loading = $bindable(false), children, event = $bindable() }: Props = $props();
 
+    const sanitizedEventId = $derived(eventId.replace(/^nostr:/, ''));
+
     let prevEventId = $state<string | null>(null);
 
     $effect(() => {
-        if (eventId && prevEventId !== eventId) {
+        if (sanitizedEventId && prevEventId !== sanitizedEventId) {
             loading = true;
             event = null;
-            ndk.fetchEvent(eventId).then((e) => {
+            ndk.fetchEvent(sanitizedEventId).then((e) => {
                 if (e) event = wrapEvent(e, true);
             })
             .finally(() => {
@@ -34,5 +35,5 @@
 {#if event}
     {@render children()}
 {:else}
-    Loading event {eventId}...
+    Loading event {sanitizedEventId}...
 {/if}

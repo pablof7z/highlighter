@@ -9,8 +9,15 @@
 	import {Button} from '@components/ui/button';
 	import { NDKUser } from '@nostr-dev-kit/ndk';
 	import { ListBullet } from 'svelte-radix';
+	import type { Editor } from 'svelte-tiptap';
 
-    const { editor, class: className = "" } = $props();
+    type Props = {
+        editor: Editor;
+        class: string;
+        onMention?: () => void;
+    }
+    
+    const { editor, class: className = "", onMention }: Props = $props();
 
     let listening = false;
         
@@ -42,13 +49,11 @@
     }
 
     function linkClick() {
-        openModal(LinkModal, { editor: editor, url: link });
+        // openModal(LinkModal, { editor: editor, url: link });
     }
 
     function mentionPicker() {
-        // openModal(UserSelectorModal, { onSelect: (user: NDKUser) => {
-        //     editor.commands.insertContentAt(editor.state.selection, user.pubkey);
-        // }})
+        onMention?.();
     }
 </script>
 

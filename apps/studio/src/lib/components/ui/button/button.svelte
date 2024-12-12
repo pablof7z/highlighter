@@ -31,42 +31,53 @@
 	export type ButtonVariant = VariantProps<typeof buttonVariants>["variant"];
 	export type ButtonSize = VariantProps<typeof buttonVariants>["size"];
 
+	export type ButtonStatus = "initial" | "loading" | "success" | "error";
+
 	export type ButtonProps = WithElementRef<HTMLButtonAttributes> &
 		WithElementRef<HTMLAnchorAttributes> & {
 			variant?: ButtonVariant;
 			size?: ButtonSize;
-			loading?: boolean;
+			status?: ButtonStatus;
 		};
 </script>
 
 <script lang="ts">
 	import { cn } from "$lib/utils.js";
-	import { Loader2 } from "lucide-svelte";
+	import { CircleCheck, Loader2, OctagonX } from "lucide-svelte";
+	import { slide } from 'svelte/transition';
 
 	let {
 		class: className,
 		variant = "default",
 		size = "default",
 		ref = $bindable(null),
-		href = undefined,
-		type = "button",
-		loading = false,
-		children,
-		...restProps
+			href = undefined,
+			type = "button",
+			status = "initial",
+			children,
+			...restProps
 	}: ButtonProps = $props();
 
 	let forceWidth = $state<number | undefined | null>(null);
 	let width = $state<number | undefined | null>(null);
 
 	$effect(() => {
-		if (!loading) {
+		if (status === 'initial') {
 			width = ref?.getBoundingClientRect().width;
 		}
 
-		if (loading && !forceWidth) {
+		if (status !== 'initial' && !forceWidth) {
 			forceWidth = width;
-		} else if (!loading && forceWidth) {
+		} else if (status === 'initial' && forceWidth) {
 			forceWidth = null;
+		}
+	})
+
+	$effect(() => {
+		if (status === 'success' || status === 'error') {
+			setTimeout(() => {
+				status = 'initial'
+			}, 5000)
 		}
 	})
 </script>
@@ -86,12 +97,28 @@
 		class={cn(buttonVariants({ variant, size, className }))}
 		{type}
 		style={forceWidth ? `width: ${forceWidth}px` : undefined}
+		disabled={status === 'loading'}
 		{...restProps}
 	>
-		{#if loading}
-			<Loader2 class="h-4 w-4 animate-spin" />
-		{:else}
+		{#if status === 'initial'}
 			{@render children?.()}
+		{:else}
+			<div class="flex flex-col items-center w-full">
+				{#if status === 'loading'}
+					<span transition:slide>
+						<Loader2 class="h-4 col-4 animate-spin" />
+					</span>
+				{:else if status === 'success'}
+					<span transition:slide>
+						<CircleCheck class="h-8 w-8" strokeWidth={3} />
+					</span>
+				{:else if status === 'error'}
+					<span transition:slide>
+						<OctagonX class="h-8 w-8" strokeWidth={3} />
+					</span>
+				{/if}
+			</div>
 		{/if}
+	
 	</button>
 {/if}

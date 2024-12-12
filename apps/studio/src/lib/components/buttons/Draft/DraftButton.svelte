@@ -2,8 +2,14 @@
 	import { ndk } from '@/state/ndk';
 	import { NDKDraft, NDKKind } from '@nostr-dev-kit/ndk';
 	import RelativeTime from '@/components/RelativeTime.svelte';
+	import type { EditorState } from '@/components/Studio/state.svelte';
 
-	let { editorState = $bindable() } = $props();
+	type Props = {
+		editorState: EditorState;
+		onSave?: (event: NDKDraft) => void;
+	}
+
+	const { editorState, onSave }: Props = $props();
 
 	let status = $state<'Unsaved' | 'Saving' | 'Saved' | 'Error'>('Unsaved');
 
@@ -98,6 +104,7 @@
 				if (isPrimaryDraft) {
 					editorState.draft = draftEvent;
 				}
+				onSave?.(draftEvent);
 			})
 			.catch((e: any) => {
 				console.error(e);

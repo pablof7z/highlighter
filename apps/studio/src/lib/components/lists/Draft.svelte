@@ -4,7 +4,11 @@
 	import Item from './Item.svelte';
 	import { currentUser } from '@/state/current-user.svelte';
 
-	let { draft } = $props();
+	type Props = {
+		draft: NDKDraft;
+	};
+
+	let { draft }: Props = $props();
 	let event = $state<NDKEvent | null>(null);
 	let editUrl = $state<string | null>(null);
 	let error = $state<string | null>(null);
@@ -26,7 +30,14 @@
 			error = e.message;
 		});
 	
-	const author = $derived(draft.pubkey !== user.pubkey ? draft.author : null);
+	const author = $derived(draft.pubkey !== user?.pubkey ? draft.author : null);
+
+	const stats = $derived.by(() => {
+		if (!event) return {};
+		return {
+			"Words": event.content.split(' ').length,
+		}
+	})
 </script>
 
 {#if event}
@@ -36,8 +47,10 @@
 			byline={"from "}
 			title={event.title}
 			image={event.image}
+			timestamp={draft.created_at}
 			eventId={draft.id}
 			{editUrl}
+			{stats}
 			onDelete={() => draft.delete()}
 		/>
 	</a>

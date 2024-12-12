@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Editor, SvelteNodeViewRenderer } from 'svelte-tiptap';
 	import { Markdown } from 'tiptap-markdown';
+	import HardBreak from '@tiptap/extension-hard-break'
 	import StarterKit from '@tiptap/starter-kit';
 	import PubkeyExtension from './extensions/pubkey.svelte';
 	import EventExtension from './extensions/event.svelte';
@@ -20,29 +21,57 @@
 	import { onMount } from 'svelte';
 	import NostrEntitySearchModal from '../Studio/NostrEntitySearchModal.svelte';
 	import Toolbar from './Toolbar.svelte';
+	import type { Extension } from '@tiptap/core';
 
+	type Props = {
+		content: string;
+		placeholder?: string;
+		skipToolbar?: boolean;
+		editor?: Editor;
+		toolbarClass?: string;
+		className?: string;
+		showMentions?: boolean;
+		markdown?: boolean;
+		readonly?: boolean;
+		newline?: boolean;
+
+		onEnter?: () => void;
+	}
+	
 	let {
 		content = $bindable(),
 		placeholder = 'Write...',
-		editorState = $bindable(),
 		skipToolbar = false,
 		editor = $bindable(),
-		toolbarClass = ''
-	} = $props();
+		toolbarClass = '',
+		className = '',
+		markdown = true,
+		showMentions = $bindable(false),
+		readonly = false,
+		newline = true,
+		onEnter
+	}: Props = $props();
 
 	let editorElement = $state<HTMLDivElement | null>(null);
-	let showMentions = $state(false);
 
 	onMount(() => {
 		if (!editorElement || editor) return;
+
+		const extensions: Extension[] = [];
+
+		if (markdown) {
+			extensions.push(Markdown.configure({ tightLists: true }));
+			extensions.push(HardBreak.configure({
+				keepMarks: false,
+				keepAttributes: false,
+			}));
+		}
 
 		editor = new Editor({
 			element: editorElement,
 			extensions: [
 				StarterKit,
-				Markdown.configure({
-					tightLists: true
-				}),
+				...extensions,
 				Dropcursor,
 				Strike,
 				BulletList,
@@ -85,21 +114,28 @@
 				//     autolink: true,
 				//     defaultProtocol: 'https',
 				// }),
-				// Mention.configure({
-				// 	suggestion: suggestion()
-				// }),
 				Table,
 				TableRow,
 				TableHeader,
 				TableCell
 			],
-			content,
+			editable: !readonly,
 			onUpdate: () => {
-				content = editor?.storage.markdown.getMarkdown();
+				if (markdown) { 	
+					content = editor?.storage.markdown.getMarkdown();
+				} else {
+					// get as simple text
+					// need to hack this because tiptap is adding two newlines for some reason
+					content = editor?.getText().replace(/\n\n/g, "\n") ?? "";
+				}
 			},
 			editorProps: {
 				handleKeyDown: (_, event) => {
-					if (event.key === '@') {
+					if (!markdown && event.key === 'Enter') {
+						event.preventDefault();
+						onEnter?.();
+						// editor?.commands.setHardBreak();
+					} else if (event.key === '@') {
 						event.preventDefault();
 						setTimeout(() => (showMentions = true), 0);
 					}
@@ -107,15 +143,29 @@
 			}
 		});
 
-		editor.commands.focus('end');
+		// editor.commands.focus('end');
 	});
+
+	$effect(() => {
+		if (!editor) return;
+		if (newline || !content.match(/\n/)) return;
+		console.log('running effect', JSON.stringify(content), {newline});
+
+		content = content.replace(/\n/g, '');
+
+		editor.commands.setEventContent({
+			content: content,
+			kind: markdown ? 30023 : 1,
+			tags: [],
+		})
+	})
 </script>
 
-{#if !skipToolbar}
+{#if editor && !skipToolbar}
 	<Toolbar {editor} class={toolbarClass} />
 {/if}
 
-<div class="flex h-full w-full grow" bind:this={editorElement}></div>
+<div class="flex h-full w-full grow {className}" bind:this={editorElement}></div>
 
 <NostrEntitySearchModal
 	bind:open={showMentions}

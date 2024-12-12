@@ -29,9 +29,9 @@
 		acting = true;
 		error = null;
 		publish(editorState)
-			.then(() => {
+			.then((event) => {
 				open = false;
-				onSuccess?.();
+				onSuccess?.(event);
 			})
 			.catch((e) => {
 				error = e;

@@ -14,8 +14,6 @@
 		loadingStyle = undefined
 	} = $props();
 
-	$inspect({ of });
-
 	if (of) {
 		profile ??= new Profile(of);
 	}
