@@ -1,10 +1,12 @@
 packages:
-  - 'apps/web'
-  - 'packages/ndk/ndk'
-  - 'packages/ndk/ndk-cache-redis'
-  - 'packages/ndk/ndk-cache-dexie'
-  - 'packages/ndk/ndk-cache-nostr'
-  - 'packages/ndk/ndk-wallet'
-  - 'packages/ndk/ndk-svelte'
-  - 'packages/ndk/ndk-svelte-components'
-  - 'packages/ndk/packages/*'
+  - "apps/web"
+  - "apps/studio"
+  - "packages/common"
+  - "packages/ndk/ndk"
+  - "packages/ndk/ndk-cache-redis"
+  - "packages/ndk/ndk-cache-dexie"
+  - "packages/ndk/ndk-cache-nostr"
+  - "packages/ndk/ndk-wallet"
+  - "packages/ndk/ndk-svelte"
+  - "packages/ndk/ndk-svelte-components"
+  - "packages/ndk/packages/*"
