@@ -67,12 +67,14 @@
 
 .article h1,
 .article h2,
-.article h3 {
+.article h3,
+.article--title {
 	@apply font-sans text-foreground;
 }
 
-.article h1 {
-	@apply !mb-0 mt-8 text-4xl font-semibold;
+.article h1,
+.article--title {
+	@apply !mb-0 mt-8 !text-4xl font-semibold !leading-tight;
 }
 
 .article h2 {
@@ -113,11 +115,11 @@
 }
 
 .article blockquote {
-	@apply mb-6 border-l-4 border-accent bg-secondary p-6 italic text-secondary-foreground;
+	@apply relative mb-6 mt-5 rounded-md border-foreground/50 bg-muted/50 p-6 pl-12 italic text-secondary-foreground;
 
 	&::after {
 		content: '❝' !important;
-		@apply absolute left-2 top-2 z-50 block p-0 font-["Times_New_Roman"] text-5xl font-bold text-accent;
+		@apply absolute -left-2 -top-2 z-10 block p-0 font-["Times_New_Roman"] text-4xl font-bold text-foreground;
 	}
 
 	& > p {

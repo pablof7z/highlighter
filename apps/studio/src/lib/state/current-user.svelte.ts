@@ -22,11 +22,8 @@ const blossomServers = $derived.by(() => {
 })
 
 ndk.on('signer:ready', async (signer) => {
-	console.log("signer:ready", !!signer);
 	if (signer) {
-		console.log("asking for user");
 		user = await signer.user();
-		console.log("got user", user);
 		userProfile = new Profile(user);
 
 		const filters: NDKFilter[] = [

@@ -80,7 +80,7 @@
                 <Italic size={18} weight="bold" />
             </button>
             <button onclick={() => editor.chain().focus().toggleBlockquote().run()} class:active={blockquote}>
-                <Quote size={18} weight="bold" />
+                <Quote size={18} />
             </button>
             <button onclick={() => editor.chain().focus().toggleStrike().run()} class:active={strike}>
                 <Strikethrough size={18} weight="bold" />
@@ -112,7 +112,7 @@
 
 <style lang="postcss">
     .editor-toolbar button {
-        @apply flex h-10 w-10 cursor-pointer items-center justify-center rounded-sm p-2 hover:bg-secondary hover:text-secondary-foreground;
+        @apply flex h-10 w-10 cursor-pointer items-center justify-center rounded-sm p-2 hover:bg-secondary hover:text-secondary-foreground text-muted-foreground;
     }
 
     .editor-toolbar button[disabled] {

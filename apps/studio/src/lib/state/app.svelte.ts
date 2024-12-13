@@ -1,5 +1,6 @@
 import type { NDKEvent } from "@nostr-dev-kit/ndk";
-import { ndk } from "./ndk";
+import type { ArticleState } from "@/components/Post/state/article.svelte";
+import type { ThreadState } from "@/components/Post/state/thread.svelte";
 
 class AppState {
     relays = $state<string[]>([
@@ -12,6 +13,8 @@ class AppState {
     ]);
 
     activeEvent = $state<NDKEvent | null>(null);
+
+    postState = $state<ArticleState | ThreadState | null>(null);
 }
 
 export const appState = new AppState();

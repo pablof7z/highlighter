@@ -3,6 +3,9 @@
 	import type { NDKDraft, NDKEvent } from '@nostr-dev-kit/ndk';
 	import Item from './Item.svelte';
 	import { currentUser } from '@/state/current-user.svelte';
+	import { ArticleState } from '../Post/state/article.svelte';
+	import { appState } from '@/state/app.svelte';
+	import { goto } from '$app/navigation';
 
 	type Props = {
 		draft: NDKDraft;
@@ -20,7 +23,7 @@
 		.then((e) => {
 			if (e) {
 				event = wrapEvent(e);
-				editUrl = `/editor/article/${draft.encode()}`;
+				editUrl = `/article/${draft.encode()}`;
 			}
 		})
 		.catch((e) => {
@@ -37,10 +40,19 @@
 			"Words": event.content.split(' ').length,
 		}
 	})
+
+	async function openDraft(e: MouseEvent) {
+		e.preventDefault();
+		console.log('opening draft', appState.postState);
+		appState.postState = await ArticleState.from(draft);
+		if (editUrl) {
+			goto(editUrl);
+		}
+	}
 </script>
 
 {#if event}
-	<a href={editUrl} class="hover:bg-secondary/20 block w-full">
+	<a href={editUrl} onclick={openDraft} class="hover:bg-secondary/20 block w-full">
 		<Item
 			{author}
 			byline={"from "}
@@ -49,7 +61,6 @@
 			timestamp={draft.created_at}
 			tags={event.tags.filter(t => t[0] === 't').map(t => t[1])}
 			event={draft}
-			{editUrl}
 			{stats}
 			onDelete={() => draft.delete()}
 		/>

@@ -7,7 +7,6 @@
 	import { ndk } from '@/state/ndk';
 	import { goto } from '$app/navigation';
 	import TurndownService from 'turndown';
-	import type { PostState } from '../Studio/state.svelte';
 	import { toast } from 'svelte-sonner';
 
 	type Props = {
@@ -64,7 +63,7 @@
 					draft.event = article;
 					await draft.sign();
 					await draft.save({});
-					goto(`/editor/articles/${draft.encode()}`);
+					goto(`/articles/${draft.encode()}`);
 				} else {
 					toast.error("Unable to fetch any content. Try again later or try a different URL.")
 				}
@@ -104,12 +103,8 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button onclick={fetchContent} disabled={fetching || !url}>
-				{#if fetching}
-					<span class="mr-2 animate-spin">⌛</span>
-				{:else}
-					Import
-				{/if}
+			<Button onclick={fetchContent} status={fetching ? 'loading' : 'initial'}>
+				Import
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

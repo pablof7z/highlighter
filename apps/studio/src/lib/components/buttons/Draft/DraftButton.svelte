@@ -108,6 +108,4 @@
 			{/if}
 		</div>
 	{/if}
-
-	{stateChanges}
 </button>

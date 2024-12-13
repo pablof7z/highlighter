@@ -1,10 +1,6 @@
 <script lang="ts">
-    import * as Sidebar from '@/components/ui/sidebar';
 	import { Bell, DollarSign, Home } from 'lucide-svelte';
-	import { Relay } from 'nostr-tools';
-	import { Metadata } from 'nostr-tools/kinds';
 	import { Image, Link1, Timer } from 'svelte-radix';
-	import Schedule from '../Studio/Settings/Schedule.svelte';
 	import { cubicInOut } from 'svelte/easing';
 	import { crossfade } from 'svelte/transition';
 	import { Button } from '../ui/button';

@@ -2,8 +2,6 @@
     import * as Editor from "@/components/Editor";
 	import { currentUser } from "@/state/current-user.svelte";
 	import { Button } from "@/components/ui/button";
-	import { CaretDown } from "svelte-radix";
-	import Avatar from "@/components/user/Avatar.svelte";
 	import { appState } from "@/state/app.svelte";
 	import { wrapEvent } from "@highlighter/common";
     import { Checkbox } from "@components/ui/checkbox/index.js";

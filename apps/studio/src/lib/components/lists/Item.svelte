@@ -151,6 +151,14 @@
 								Delete
 							</DropdownMenu.Item>
 						{/if}
+
+						{#if event}
+							<DropdownMenu.Item onclick={() => event.delete()}>
+								{#each event.onRelays as relay}
+									{relay.url}
+								{/each}
+							</DropdownMenu.Item>
+						{/if}
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>

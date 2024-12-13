@@ -1,7 +1,6 @@
 <script lang="ts">
 	import RelayList from '@/components/ui/RelayList.svelte';
     import { appState } from '@/state/app.svelte';
-    import * as Card from '@/components/ui/card';
 </script>
 
 <main>

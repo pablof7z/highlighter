@@ -19,7 +19,7 @@
 	import TableHeader from '@tiptap/extension-table-header';
 	import TableRow from '@tiptap/extension-table-row';
 	import { onMount } from 'svelte';
-	import NostrEntitySearchModal from '../Studio/NostrEntitySearchModal.svelte';
+	import NostrEntitySearchModal from '@components/NostrEntitySearchModal.svelte';
 	import Toolbar from './Toolbar.svelte';
 	import type { Extension } from '@tiptap/core';
 

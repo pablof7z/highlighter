@@ -97,7 +97,7 @@
 						You don't have any published posts yet!
 
 						<div class="flex flex-row gap-2">
-							<Button variant="outline" onclick={() => goto('/editor/article/new')}>New Post</Button>
+							<Button variant="outline" onclick={() => goto('/article/new')}>New Post</Button>
 							<Button variant="outline" onclick={() => (importModal = true)}>
 								Import your content
 							</Button>
