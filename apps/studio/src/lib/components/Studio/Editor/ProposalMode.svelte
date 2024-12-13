@@ -9,14 +9,14 @@
 	import AvatarWithName from '@/components/user/AvatarWithName.svelte';
 	import Name from '@/components/user/Name.svelte';
 	import { ArrowRight, PaperPlane } from 'svelte-radix';
-	import type { EditorState } from '../state.svelte';
+	import type { PostState } from '../state.svelte';
 
 	type Props = {
 		open: boolean;
-		editorState: EditorState;
+		postState: PostState;
 	}
 
-	let { open = $bindable(), editorState = $bindable() }: Props = $props();
+	let { open = $bindable(), postState = $bindable() }: Props = $props();
 
 	// $: {
 	// 	actionButtons = [];
@@ -52,7 +52,7 @@
 	// }
 
 	function disableProposalMode() {
-		editorState.proposalRecipient = undefined;
+		postState.proposalRecipient = undefined;
 	}
 
 	let recipient: string = $state('');
@@ -61,14 +61,14 @@
 		try {
 			const data = nip19.decode(recipient);
 			if (data.type === 'npub') {
-				editorState.proposalRecipient = data.data as Hexpubkey;
+				postState.proposalRecipient = data.data as Hexpubkey;
 			} else if (data.type === 'nprofile') {
-				editorState.proposalRecipient = data.data.pubkey;
+				postState.proposalRecipient = data.data.pubkey;
 			}
 		} catch (e) {
 			const user = await NDKUser.fromNip05(recipient, ndk);
 			if (user) {
-				editorState.proposalRecipient = user.pubkey;
+				postState.proposalRecipient = user.pubkey;
 			}
 		}
 	}
@@ -80,7 +80,7 @@
 		}
 	}
 
-	let enabled = $state(!!editorState.proposalRecipient || !!recipient);
+	let enabled = $state(!!postState.proposalRecipient || !!recipient);
 </script>
 
 <Dialog.Root bind:open>
@@ -105,11 +105,11 @@
 				</Button>
 			</Dialog.Footer>
 		{:else}
-			{#if editorState.proposalRecipient}
+			{#if postState.proposalRecipient}
 				<p class="text-foreground font-medium">Recipient</p>
 
 				<div class="bg-secondary flex flex-row items-center justify-between gap-2 rounded-md p-4">
-					<AvatarWithName of={editorState.proposalRecipient} avatarSize="large" />
+					<AvatarWithName of={postState.proposalRecipient} avatarSize="large" />
 
 					<div class="flex flex-col gap-1">
 						<button
@@ -123,7 +123,7 @@
 
 				<p class="text-muted-foreground text-sm">
 					Once you are ready to send the proposal, go ahead with publishing;
-					<Name of={editorState.proposalRecipient} />
+					<Name of={postState.proposalRecipient} />
 					will receive a message inviting
 					him to review and publish the post in their Highlighter Studio.
 				</p>
@@ -137,7 +137,7 @@
 			{/if}
 
 			<Dialog.Footer>
-				{#if editorState.proposalRecipient}
+				{#if postState.proposalRecipient}
 					<div class="flex flex-row justify-between w-full">
 						<Button variant="outline" class="text-red-500" onclick={disableProposalMode}>
 							Disable Proposal Mode

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Dialog from '@/components/ui/dialog';
-	import type { EditorState } from '../../state.svelte';
+	import type { PostState } from '../../state.svelte';
 	import { Button } from '@/components/ui/button';
 	import SettingsModal from '../../Settings/Modal.svelte';
 	import { publish } from '../../state.svelte';
@@ -10,13 +10,13 @@
 	import { fade, slide } from 'svelte/transition';
 
 	interface Props {
-		editorState: EditorState;
+		postState: PostState;
 		open: boolean;
 		onSuccess: () => void;
 	}
 
 	let {
-		editorState = $bindable(),
+		postState = $bindable(),
 		open = $bindable(),
 		onSuccess
 	}: Props = $props();
@@ -27,7 +27,7 @@
 	function _publish() {
 		acting = true;
 		error = null;
-		publish(editorState)
+		publish(postState)
 			.then(() => {
 				open = false;
 				onSuccess?.();
@@ -47,7 +47,7 @@
 
 	const publishButtonEnabled = $derived(allGood && !acting);
 
-    const readingTime = $derived(Math.ceil(editorState.content.split(' ').length / 200));
+    const readingTime = $derived(Math.ceil(postState.content.split(' ').length / 200));
 </script>
 
 <Dialog.Root bind:open>
@@ -62,13 +62,13 @@
 
 		
         <!-- <div class="w-[260px] h-[320px] relative rounded-2xl overflow-clip">
-            <img src={editorState.image} class="absolute top-0 left-0 h-[320px] object-cover" />
+            <img src={postState.image} class="absolute top-0 left-0 h-[320px] object-cover" />
 
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-background/0 to-background" transition:fade></div>
             
             <div class="absolute bottom-0 left-0 w-full h-1/2 p-4 flex flex-col justify-end gap-4">
                 <h1 class="text-lg font-medium text-white">
-                    {editorState.title}
+                    {postState.title}
                 </h1>
 
 				<div class="flex flex-row gap-2 items-center text-muted-foreground text-xs">	

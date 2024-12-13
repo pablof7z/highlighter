@@ -7,15 +7,15 @@
 	import { ndk } from '@/state/ndk';
 	import { goto } from '$app/navigation';
 	import TurndownService from 'turndown';
-	import type { EditorState } from '../Studio/state.svelte';
+	import type { PostState } from '../Studio/state.svelte';
 	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		open: boolean;
-		editorState?: EditorState;
+		postState?: PostState;
 	};
 
-	let { open = $bindable(false), editorState = $bindable() } = $props();
+	let { open = $bindable(false), postState = $bindable() } = $props();
 
 	let url = $state<string>('');
 	let fetching = $state<boolean>(false);
@@ -51,10 +51,10 @@
 					article.summary = parsed.excerpt;
 					article.url = url;
 
-					if (editorState) {
-						editorState.title = parsed.title;
-						editorState.summary = parsed.excerpt;
-						editorState.content = markdownContent;
+					if (postState) {
+						postState.title = parsed.title;
+						postState.summary = parsed.excerpt;
+						postState.content = markdownContent;
 						open = false;
 						return;
 					}

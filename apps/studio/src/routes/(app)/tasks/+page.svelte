@@ -19,7 +19,7 @@
 	}
 
 	const tasks = ndk.subscribe(
-		[{ '#t': ['olasbugs', 'olastodo', 'bugs'] }],
+		[{ '#t': ['olasbugs', 'olastodo'] }],
 		undefined,
 		undefined,
 		false

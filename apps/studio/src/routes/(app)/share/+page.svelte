@@ -59,7 +59,7 @@
     }
 </script>
 
-<div class="hidden space-y-6 pb-16 md:block">
+<div class="space-y-6 pb-16 block">
 	<div class="container py-6">
 		<h2 class="text-4xl font-medium tracking-tight text-center">
             Your article is live. Well done!

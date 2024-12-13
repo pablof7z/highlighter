@@ -36,6 +36,8 @@
 		newline?: boolean;
 
 		onEnter?: () => void;
+		onFocus?: () => void;
+		onKeyDown?: (editor: Editor, event: KeyboardEvent) => void;
 	}
 	
 	let {
@@ -49,7 +51,9 @@
 		showMentions = $bindable(false),
 		readonly = false,
 		newline = true,
-		onEnter
+		onEnter,
+		onKeyDown,
+		onFocus
 	}: Props = $props();
 
 	let editorElement = $state<HTMLDivElement | null>(null);
@@ -141,8 +145,10 @@
 					contentCache = content;
 				}
 			},
+			onFocus: () => onFocus?.(),
 			editorProps: {
 				handleKeyDown: (_, event) => {
+					onKeyDown?.(_, event);
 					if (!markdown && event.key === 'Enter') {
 						event.preventDefault();
 						onEnter?.();

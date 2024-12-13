@@ -1,20 +1,20 @@
 <script lang="ts">
 	import RelayList from '@/components/ui/RelayList.svelte';
 	import * as Alert from '@components/ui/alert';
-	import { EditorState } from '../state.svelte';
+	import { PostState } from '../state.svelte';
 	import { Button } from '@/components/ui/button';
 	import { DEFAULT_RELAYS } from '@/const';
 
-	let { editorState = $bindable() } = $props() as {
-		editorState: EditorState;
+	let { postState = $bindable() } = $props() as {
+		postState: PostState;
 	};
 
 	function setDefault() {
-		editorState.relays = [...DEFAULT_RELAYS];
+		postState.relays = [...DEFAULT_RELAYS];
 	}
 </script>
 
-{#if editorState.relays.length === 0}
+{#if postState.relays.length === 0}
 	<Alert.Root>
 		<Alert.Title>No relays</Alert.Title>
 		<Alert.Description>
@@ -31,4 +31,4 @@
 	</Alert.Root>
 {/if}
 
-<RelayList bind:relays={editorState.relays} />
+<RelayList bind:relays={postState.relays} />

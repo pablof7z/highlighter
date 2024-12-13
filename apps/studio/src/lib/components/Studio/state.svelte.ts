@@ -5,30 +5,96 @@ import type { Editor } from "svelte-tiptap";
 
 export type EditorType = 'article' | 'thread';
 
-export class EditorState {
-    type = $state<EditorType>('article');
+export type ValidationError = 'missing-relays' | 'missing-title' | 'missing-image' | 'missing-summary' | 'missing-content' | 'missing-notes';
+
+export class PostState {
+    relays = $state<string[]>([]);
+    draft = $state<NDKDraft | null>(null);
+    publishAt = $state<Date | null>(null);
+    proposalRecipient = $state<Hexpubkey | undefined>(undefined);
+    changesSinceLastSave = $state(0);
+
+    /**
+     * This is some kind of signature that allows observers to detect changes
+     * without knowing the internal structure of what the state looks like.
+     * (mostly for the draft button)
+     */
+    stateSignature = $state('');
+
+    constructor(props?: Partial<PostState>) {
+        this.relays = props?.relays ?? ndk.pool.connectedRelays().map((r) => r.url);
+    }
+
+    validate(): ValidationError[] {
+        console.log('validating', this);
+        if (this.relays.length === 0) {
+            return ['missing-relays'];
+        }
+
+        return [];
+    }
+
+    generateEvents(): NDKEvent[] {
+        throw new Error('Not implemented');
+    }
+
+    generateDraft() {
+        debugger
+        this.draft ??= new NDKDraft(ndk);
+
+		const event = this.generateEvents()[0];
+        this.draft.event = event;
+        
+        console.log('generated event for draft', event.rawEvent())
+
+        // always generate the recipient tagx
+        let recipient = this.proposalRecipient;
+        // this.draft.tagValue('p');
+
+        // TODO: or if we are no the author of the draft, perhaps we should tag them?
+        
+        const recipientUser = recipient ? ndk.getUser({ pubkey: recipient }) : undefined;
+        
+		this.draft.save({ publish: true, recipient: recipientUser })
+    }
+
+    get shouldSaveDraft(): boolean {
+        throw new Error('Not implemented');
+    }
+
+    async saveDraft(manual: boolean = false) {
+        throw new Error('Not implemented');
+    }
+}
+
+export class ArticleState extends PostState {
+    type = 'article';
     
     image = $state('');
     title = $state('');
     summary = $state('');
     content = $state('');
-
     tags = $state<string[]>([]);
-
     dTag = $state('');
-
-    draft = $state<NDKDraft | null>(null);
-
-    relays = $state<string[]>([]);
-
-    publishAt = $state<Date | null>(null);
-
-    proposalRecipient = $state<Hexpubkey | undefined>(undefined);
-
     editor = $state<Editor | null>(null);
 
-    static async from(event: NDKEvent): Promise<EditorState> {
-        let state = new EditorState();
+    stateSignature = $derived(this.content);
+    
+    constructor(props?: Partial<ArticleState>) {
+        super(props);
+    }
+
+    validate() {
+        const errors = super.validate();
+        if (this.title.length === 0) errors.push('missing-title');
+        if (this.summary.length === 0) errors.push('missing-summary');
+        if (this.content.length === 0) errors.push('missing-content');
+        if (!this.image) errors.push('missing-image');
+        return errors;
+    }
+
+    static async from(event: NDKEvent): Promise<ArticleState> {
+        let state = new ArticleState();
 
         const user = $derived.by(currentUser);
         
@@ -43,8 +109,9 @@ export class EditorState {
             const draft = NDKDraft.from(event);
             const e = await draft.getEvent();
             if (e) {
-                state = await EditorState.from(e);
+                state = await ArticleState.from(e);
                 state.draft = draft;
+                console.log('draft', draft.tags);
             }
 
             const pTag = draft.tagValue('p');
@@ -56,75 +123,101 @@ export class EditorState {
         return state;
     }
 
-    generateEvent() {
+    generateEvents() {
         let event: NDKArticle | undefined;
         
-        if (this.type === 'article') {
-            event = new NDKArticle(ndk);
-            event.title = this.title;
-            event.image = this.image;
-            event.summary = this.summary;
-            event.content = this.content;
-        }
-
-        if (!event) throw new Error('Event not created' + this.type);
-
+        event = new NDKArticle(ndk);
+        event.title = this.title;
+        event.image = this.image;
+        event.summary = this.summary;
+        event.tags.push(...this.tags.map(t => ['t', t]));
+        event.content = this.content;
         event.dTag = this.dTag;
 
-        return event;
+        console.log('generating events', event.rawEvent());
+
+        return [event];
     }
 
-    generateDraft(recipient?: Hexpubkey) {
-        this.draft ??= new NDKDraft(ndk);
+    get shouldSaveDraft(): boolean {
+        if (!this.content) return false;
+        return true;
+    }
 
-		const event = this.generateEvent();
-		this.draft.event = event;
-
-        // if we already have a p-tag in a draft, we assume that's the recipient
-        recipient ??= this.draft.tagValue('p');
+    async saveDraft(manual: boolean = false) {
+        const draftExisted = !!this.draft;
+        let isPrimaryDraft = false;
+        let draftEvent: NDKDraft;
         
-        const recipientUser = recipient ? ndk.getUser({ pubkey: recipient }) : undefined;
+        // save as the primary draft when
+        // - we are saving manually
+        // - this is the first time we're saving
+        if (manual || !draftExisted) {
+            isPrimaryDraft = true;
+            draftEvent = new NDKDraft(ndk);
+        } else {
+            draftEvent = this.draft!;
+        }
 
-        console.log('saving draft for recipient', recipient);
+        const event = this.generateEvents()[0];
+        draftEvent.event = event;
         
-		this.draft.save({ publish: true, recipient: recipientUser })
+        console.log('saving draft', { isPrimaryDraft, draftExisted, event: event.rawEvent(), draft: draftEvent.rawEvent() });
+
+        await draftEvent.save({ publish: true });
+        this.changesSinceLastSave = 0;
+        if (isPrimaryDraft) this.draft = draftEvent;
     }
 }
+
+export class ThreadState extends PostState {
+    type = 'thread';
+    notes = $state<string[]>([]);
+    
+    constructor() {
+        super();
+    }
+
+    validate() {
+        const errors = super.validate();
+        if (this.notes.length === 0) errors.push('missing-content');
+        return errors;
+    }
+}
+
 
 /**
  * Publishes the event and deletes the draft(s) if they exist
  * @param state 
  */
-export async function publish(state: EditorState): Promise<NDKEvent | NDKDraft> {
-    const event = state.generateEvent();
+export async function publish(state: PostState): Promise<NDKEvent | NDKDraft> {
+    const events = state.generateEvents();
     const relaySet = NDKRelaySet.fromRelayUrls(state.relays, ndk);
 
-    // return new Promise((resolve, reject) => {
-    //     setTimeout(() => {
-    //         reject("Test")
-    //     }, 1000);
-    // });
-
     if (state.proposalRecipient) {
-        await state.generateDraft(state.proposalRecipient);
+        await state.generateDraft();
         return state.draft!;
     } else if (state.publishAt) {
-        const dvmUser = ndk.getUser({npub: 'npub1shpq6dmqaa8pjas8rftflvmr7nlssm9fqanflw23vlxu2vzexngslu90nm'});
-        event.created_at = Math.floor(new Date(state.publishAt).getTime() / 1000);
-        await event.sign();
-        const confirm = await dvmSchedule(event, dvmUser, undefined, true, 3000);
-        if (confirm) {
-            deleteDrafts(state);
+        for (const event of events) {   
+            const dvmUser = ndk.getUser({npub: 'npub1shpq6dmqaa8pjas8rftflvmr7nlssm9fqanflw23vlxu2vzexngslu90nm'});
+            event.created_at = Math.floor(new Date(state.publishAt).getTime() / 1000);
+            await event.sign();
+            const confirm = await dvmSchedule(event, dvmUser, undefined, true, 3000);
+            if (confirm) {
+                deleteDrafts(state);
+            }
         }
     } else {
-        await event.publish(relaySet);
+        for (const event of events) {
+            await event.publish(relaySet);
+        }
         deleteDrafts(state);
     }
 
-    return event;
+    return events[0];
 }
 
-async function deleteDrafts(state: EditorState) {
+async function deleteDrafts(state: PostState) {
     if (!state.draft) return;
 
     // Get checkpoints
@@ -135,20 +228,16 @@ async function deleteDrafts(state: EditorState) {
         authors: [state.draft.pubkey]
     });
 
-    state.draft.content = "This event has been deleted; your client is ignoring the delete request.";
-    state.draft.tags = [["deleted"]];
-    await state.draft.publishReplaceable();
-    
-    const deleteEvent = new NDKEvent(ndk, {
-        kind: NDKKind.EventDeletion,
-        tags: [
-            state.draft.tagReference(),
-            ["e", state.draft.id],
-            ...Array.from(checkpoints).map(c => c.tagReference())
-        ]
-    } as NostrEvent);
+    await state.draft.delete();
 
-    await deleteEvent.sign();
+    if (checkpoints.size > 0) {
+        const deleteEvent = new NDKEvent(ndk, {
+            kind: NDKKind.EventDeletion,
+            tags: Array.from(checkpoints).map(c => c.tagReference())
+        } as NostrEvent);
 
-    await deleteEvent.publish();
+        await deleteEvent.sign();
+
+        await deleteEvent.publish();
+    }
 }

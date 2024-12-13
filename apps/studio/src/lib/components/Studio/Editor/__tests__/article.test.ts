@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { EditorState } from '../../state.svelte.ts';
+import { PostState } from '../../state.svelte.ts';
 import { NDKEvent, NDKKind } from '@nostr-dev-kit/ndk';
 import { NDKArticle, NDKDraft } from '@nostr-dev-kit/ndk';
 
@@ -10,7 +10,7 @@ describe('Article publishing', () => {
         mockDraft.delete = vi.fn().mockResolvedValue(true);
         
         // Create editor state with a draft
-        const state = new EditorState();
+        const state = new PostState();
         state.draft = mockDraft;
         state.type = 'article';
         state.title = 'Test Article';

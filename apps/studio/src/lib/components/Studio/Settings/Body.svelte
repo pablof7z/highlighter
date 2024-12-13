@@ -8,7 +8,7 @@
 	import Schedule from './Schedule.svelte';
 	import { onMount } from 'svelte';
 
-	let { editorState = $bindable(), selectedSetting = $bindable() } = $props();
+	let { postState = $bindable(), selectedSetting = $bindable() } = $props();
 
 	onMount(() => {
 		if (!selectedSetting || selectedSetting === '') {
@@ -58,11 +58,11 @@
 			<h1 class="text-2xl font-bold">{selectedSetting}</h1>
 
 			{#if selectedSetting === 'Relays'}
-				<Relay bind:editorState />
+				<Relay bind:postState />
 			{:else if selectedSetting === 'Metadata'}
-				<Metadata bind:editorState />
+				<Metadata bind:postState />
 			{:else if selectedSetting === 'Schedule'}
-				<Schedule bind:editorState />
+				<Schedule bind:postState />
 			{/if}
 		</div>
 	</main>

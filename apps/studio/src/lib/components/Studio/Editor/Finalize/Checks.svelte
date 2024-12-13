@@ -1,28 +1,32 @@
 <script lang="ts">
     import { MessageCircleWarning } from "lucide-svelte";
-    import { EditorState } from "../../state.svelte";
+    import { type PostState, type ValidationError } from "../../state.svelte";
 	import { Button } from "@/components/ui/button";
     import SettingsModal from "../../Settings/Modal.svelte";
 	import CoverImage from "../buttons/CoverImage.svelte";
 
     type Props = {
-        editorState: EditorState;
+        postState: PostState;
         allGood: boolean;
     }
 
-    let { editorState, allGood = $bindable() }: Props = $props();
+    let { postState, allGood = $bindable() }: Props = $props();
 
-    const hasRelays = $derived(editorState.relays.length > 0)
-    const hasImage = $derived(!!editorState.image)
-    const hasContent = $derived(!!editorState.content)
+    const errors = $derived.by(postState.validate.bind(postState));
 
     let settingsOpen = $state(false);
     let activePage = $state("");
 
+    const criticalErrors: ValidationError[] = [
+        'missing-relays',
+        'missing-title',
+        'missing-summary',
+        'missing-content',
+        'missing-notes',
+    ];
+
     $effect(() => {
-        allGood = (
-            hasRelays && hasContent
-        )
+        allGood = !errors.some(error => criticalErrors.includes(error))
     })
 
     function open(page: string) {
@@ -31,40 +35,73 @@
     }
 </script>
 
-{#if !hasRelays}
-    <div class="text-sm text-red-500 flex flex-row gap-6 items-center rounded-lg p-4">
-        <div class="flex flex-row  items-center gap-2 grow">
-            <MessageCircleWarning class="h-4 w-4" />
-            You must have at least one relay to publish.
+{#each errors as error}
+    {#if error === 'missing-relays'}
+        <div class="text-sm text-red-500 flex flex-row gap-6 items-center rounded-lg p-4">
+            <div class="flex flex-row  items-center gap-2 grow">
+                <MessageCircleWarning class="h-4 w-4" />
+                You must have at least one relay to publish.
+            </div>
+
+            <div class="self-end">
+                <Button variant="secondary" size="sm" class="px-6" onclick={() => { open("Relays") }}> 
+                    Fix
+                </Button>
+            </div>
         </div>
-
-        <div class="self-end">
-            <Button variant="secondary" size="sm" class="px-6" onclick={() => { open("Relays") }}> 
-                Fix
-            </Button>
+    {:else if error === 'missing-title'}
+        <div class="text-sm text-red-500 flex flex-row gap-6 items-center rounded-lg p-4">
+            <div class="flex flex-row  items-center gap-2 grow">
+                <MessageCircleWarning class="h-4 w-4" />
+                You must have a title.
+            </div>
         </div>
-    </div>
-{/if}
-
-{#if !hasImage}
-    <div class="text-sm text-orange-500 flex flex-row gap-6 items-center rounded-lg p-4">
-        <div class="flex flex-row  items-center gap-2 grow">
-            <MessageCircleWarning class="h-4 w-4" />
-            Consider adding an image to your post.
+    {:else if error === 'missing-summary'}
+        <div class="text-sm text-red-500 flex flex-row gap-6 items-center rounded-lg p-4">
+            <div class="flex flex-row  items-center gap-2 grow">
+                <MessageCircleWarning class="h-4 w-4" />
+                You must have a summary.
+            </div>
         </div>
-
-        <div class="self-end">
-            <CoverImage
-                {editorState}
-                variant="secondary"
-                class="px-6"
-            > 
-                Fix
-            </CoverImage>
+    {:else if error === 'missing-content'}
+        <div class="text-sm text-red-500 flex flex-row gap-6 items-center rounded-lg p-4">
+            <div class="flex flex-row  items-center gap-2 grow">
+                <MessageCircleWarning class="h-4 w-4" />
+                You must have content.
+            </div>
         </div>
-    </div>
-{/if}
+    {:else if error === 'missing-notes'}
+        <div class="text-sm text-red-500 flex flex-row gap-6 items-center rounded-lg p-4">
+            <div class="flex flex-row  items-center gap-2 grow">
+                <MessageCircleWarning class="h-4 w-4" />
+                You must have notes.
+            </div>
+        </div>
+    {:else if error === 'missing-image'}
+        <div class="text-sm text-orange-500 flex flex-row gap-6 items-center rounded-lg p-4">
+            <div class="flex flex-row  items-center gap-2 grow">
+                <MessageCircleWarning class="h-4 w-4" />
+                Consider adding an image to your post.
+            </div>
 
+            <div class="self-end">
+                <CoverImage
+                    {postState}
+                    variant="secondary"
+                    class="px-6"
+                > 
+                    Fix
+                </CoverImage>
+            </div>
+        </div>
+    {:else}
+        <div class="text-sm text-red-500 flex flex-row gap-6 items-center rounded-lg p-4">
+            <div class="flex flex-row  items-center gap-2 grow">
+                <MessageCircleWarning class="h-4 w-4" />
+                {error}
+            </div>
+        </div>
+    {/if}
+{/each}
 
-
-<SettingsModal {editorState} bind:open={settingsOpen} bind:selectedSetting={activePage} />
+<SettingsModal {postState} bind:open={settingsOpen} bind:selectedSetting={activePage} />

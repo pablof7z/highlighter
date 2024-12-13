@@ -1,6 +1,6 @@
 <script lang="ts">
 	import NostrEntitySearch from '@/components/NostrEntitySearch.svelte';
-	import { type EditorState } from '../state.svelte';
+	import { type PostState } from '../state.svelte';
 	import * as Dialog from '@/components/ui/dialog/';
 	import type { Hexpubkey } from '@nostr-dev-kit/ndk';
 	import AvatarWithName from '@/components/user/AvatarWithName.svelte';
@@ -9,10 +9,10 @@
 
     type Props = {
         open: boolean;
-        editorState: EditorState;
+        postState: PostState;
 	}
 
-	let { open = $bindable(), editorState = $bindable() }: Props = $props();
+	let { open = $bindable(), postState = $bindable() }: Props = $props();
 
     type Role = 'editor' | 'viewer';
     

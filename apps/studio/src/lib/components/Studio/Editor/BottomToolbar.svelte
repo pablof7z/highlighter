@@ -2,19 +2,19 @@
 	import ToggleDark from '@/components/buttons/ToggleDark.svelte';
 	import { Button } from '@/components/ui/button';
 	import { History } from 'lucide-svelte';
-	import type { EditorState } from '../state.svelte';
+	import type { PostState } from '../state.svelte';
 
 	export type Props = {
-		editorState: EditorState;
+		postState: PostState;
 		onOpenSettings: () => void;
 		onOpenHistory: () => void;
 	}
 	
-	let { editorState, onOpenSettings, onOpenHistory }: Props = $props();
+	let { postState, onOpenSettings, onOpenHistory }: Props = $props();
 </script>
 
 <div class="flex flex-row gap-2">
-	{#if editorState.draft}
+	{#if postState.draft}
 		<Button variant="secondary" size="icon" onclick={onOpenHistory}>
 			<History />
 		</Button>

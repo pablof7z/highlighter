@@ -1,15 +1,15 @@
 <script lang="ts">
     import * as Dialog from '@/components/ui/dialog';
     import Body from './Body.svelte';
-	import type { EditorState } from '../state.svelte';
+	import type { PostState } from '../state.svelte';
 
     interface Props {
-        editorState: EditorState;
+        postState: PostState;
         open: boolean;
 		selectedSetting?: string;
     }
 
-    let { editorState = $bindable(), open = $bindable(), selectedSetting = $bindable() }: Props = $props();
+    let { postState = $bindable(), open = $bindable(), selectedSetting = $bindable() }: Props = $props();
 </script>
 
 <Dialog.Root bind:open={open}>
@@ -19,6 +19,6 @@
 		<Dialog.Title class="sr-only">Settings</Dialog.Title>
 		<Dialog.Description class="sr-only">Customize your settings here.</Dialog.Description>
 
-		<Body bind:editorState bind:selectedSetting />
+		<Body bind:postState bind:selectedSetting />
 	</Dialog.Content>
 </Dialog.Root>

@@ -9,6 +9,7 @@
 	import { Copy, FileJson2, Pencil, Share, Trash } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { currentUser } from '@/state/current-user.svelte';
+	import Badge from '../ui/badge/badge.svelte';
 
 	const user = $derived.by(currentUser);
 
@@ -20,6 +21,7 @@
 		event?: NDKEvent;
 		editUrl: string;
 		byline?: string;
+		tags?: string[];
 		onShare?: () => void;
 		onDelete: () => void;
 		stats: Record<string, number>;
@@ -32,6 +34,7 @@
 		image,
 		editUrl,
 		byline,
+		tags,
 		event,
 		onDelete,
 		timestamp,
@@ -66,19 +69,31 @@
 				{title}
 			</h1>
 
-			{#if author && profile}
-				<div class="text-muted-foreground flex flex-row items-center gap-1 text-xs">
-					<Avatar {profile} />
-					{byline ?? ''}
-					<Name {profile} />
-				</div>
-			{/if}
+			<div class="flex flex-row gap-4">
+				{#if author && profile}
+					<div class="text-muted-foreground flex flex-row items-center gap-1 text-xs">
+						<Avatar {profile} />
+						{byline ?? ''}
+						<Name {profile} />
+					</div>
+				{/if}
+	
+				{#if timestamp}
+					<div class="text-muted-foreground text-xs">
+						{new Date(timestamp*1000).toLocaleDateString()}
+					</div>
+				{/if}
 
-			{#if timestamp}
-				<div class="text-muted-foreground text-xs">
-					{new Date(timestamp*1000).toLocaleDateString()}
-				</div>
-			{/if}
+				{#if tags}
+					<div class="text-muted-foreground text-xs">
+						{#each tags as tag}
+							<Badge variant="outline" class="text-xs">
+								{tag}
+							</Badge>
+						{/each}
+					</div>
+				{/if}
+			</div>
 		</div>
 	</div>
 

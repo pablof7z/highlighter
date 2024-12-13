@@ -2,8 +2,13 @@
 	import * as Editor from '@components/Editor';
 	import type { Editor as EditorType } from 'svelte-tiptap';
 	import CoverImage from '../buttons/CoverImage.svelte';
+	import { type ArticleState } from '../../state.svelte';
 
-	let { editorState = $bindable() } = $props();
+	type Props = {
+		postState: ArticleState;
+	}
+	
+	let { postState = $bindable() }: Props = $props();
 
 	let showMentions = $state(false);
 
@@ -12,19 +17,18 @@
 	}
 
 	let summary = $state<EditorType | undefined>(undefined);
-	let body = $state<EditorType | undefined>(undefined);
 </script>
 
 <div class="mx-auto flex h-full w-full max-w-3xl flex-col items-stretch justify-stretch p-4">
-	{#if editorState.editor}
+	{#if postState.editor}
 		<div class="bg-background sticky top-12 z-50 mb-4">
-			<Editor.Toolbar editor={editorState.editor} class="bg-background" onMention={onMention} />
+			<Editor.Toolbar editor={postState.editor} class="bg-background" onMention={onMention} />
 		</div>
 	{/if}
 
-	{#if editorState.image}
+	{#if postState.image}
 		<CoverImage
-			{editorState}
+			{postState}
 			class="w-full h-full max-h-[24vh] overflow-clip"
 			imgProps={{ class: 'w-full h-full object-cover'}}
 		/>
@@ -32,7 +36,7 @@
 
 	<div class="min-h-12 text-4xl font-bold">
 		<Editor.Root
-			bind:content={editorState.title}
+			bind:content={postState.title}
 			placeholder="Title"
 			skipToolbar={true}
 			markdown={false}
@@ -44,19 +48,19 @@
 	<div class="min-h-12 text-lg font-light">
 		<Editor.Root
 			bind:editor={summary}
-			bind:content={editorState.summary}
+			bind:content={postState.summary}
 			placeholder="Add a subtitle..."
 			markdown={false}
 			skipToolbar={true}
 			newline={false}
-			onEnter={() => editorState.editor?.commands.focus()}
+			onEnter={() => postState.editor?.commands.focus()}
 		/>
 	</div>
 
 	<div class="text-muted-foreground article min-h-[70vh] w-full">
 		<Editor.Root
-			bind:content={editorState.content}
-			bind:editor={editorState.editor}
+			bind:content={postState.content}
+			bind:editor={postState.editor}
 			skipToolbar={true}
 			bind:showMentions
 		/>

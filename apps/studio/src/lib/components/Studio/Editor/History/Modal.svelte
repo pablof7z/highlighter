@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Dialog from '@/components/ui/dialog';
-	import type { EditorState } from '../../state.svelte';
+	import type { PostState } from '../../state.svelte';
 	import { Button } from '@/components/ui/button';
 	import Editor from '@components/Editor/Root.svelte';
 	import SettingsModal from '../../Settings/Modal.svelte';
@@ -14,21 +14,21 @@
 	import { wrapEvent } from '@highlighter/common';
 
 	interface Props {
-		editorState: EditorState;
+		postState: PostState;
 		open: boolean;
 	}
 
-    let { editorState = $bindable(), open = $bindable() }: Props = $props();
+    let { postState = $bindable(), open = $bindable() }: Props = $props();
 
     let drafts = $state<NDKDraft[] | null>(null);
 
     $effect(() => {
-        console.log('running, open', open, !!editorState.draft);
-        if (!editorState.draft || drafts) return;
+        console.log('running, open', open, !!postState.draft);
+        if (!postState.draft?.id || drafts) return;
 
         drafts = ndk.$subscribe([
-            { kinds: [NDKKind.DraftCheckpoint], ...editorState.draft!.filter() },
-            { kinds: [NDKKind.Draft], ids: [editorState.draft!.id] },
+            { kinds: [NDKKind.DraftCheckpoint], ...postState.draft!.filter() },
+            { kinds: [NDKKind.Draft], ids: [postState.draft!.id] },
         ], undefined, NDKDraft)
 
         console.log(drafts);

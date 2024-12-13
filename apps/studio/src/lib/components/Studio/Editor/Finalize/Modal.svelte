@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Dialog from '@/components/ui/dialog';
-	import type { EditorState } from '../../state.svelte';
+	import type { PostState } from '../../state.svelte';
 	import { Button } from '@/components/ui/button';
 	import SettingsModal from '../../Settings/Modal.svelte';
 	import { publish } from '../../state.svelte';
@@ -13,13 +13,13 @@
 	import type { NDKEvent } from '@nostr-dev-kit/ndk';
 
 	interface Props {
-		editorState: EditorState;
+		postState: PostState;
 		open: boolean;
 		onSuccess: (event: NDKEvent) => void;
 	}
 
 	let {
-		editorState = $bindable(),
+		postState = $bindable(),
 		open = $bindable(),
 		onSuccess
 	}: Props = $props();
@@ -32,7 +32,7 @@
 	function _publish() {
 		status = 'loading';
 		error = null;
-		publish(editorState)
+		publish(postState)
 			.then((event) => {
 				status = 'success';
 				setTimeout(() => {
@@ -48,14 +48,11 @@
 
 	let allGood = $state(false);
 
-	// Whether we are performing the action
-	let acting = $state(false);
-
-	const publishButtonEnabled = $derived(allGood && !acting);
+	const publishButtonEnabled = $derived(allGood);
 </script>
 
 <Dialog.Root bind:open>
-	{#if editorState.proposalRecipient}
+	{#if postState.proposalRecipient}
 		<Dialog.Content>
 			<Dialog.Title>Ready to send proposal?</Dialog.Title>
 			<Dialog.Description>
@@ -67,12 +64,12 @@
 				<Button variant="link" onclick={() => (showSettings = true)}>Advanced</Button>
 				<Button variant="default" onclick={_publish} {status}>
 					Send proposal to
-					<Name of={editorState.proposalRecipient} />
+					<Name of={postState.proposalRecipient} />
 					<ArrowRightIcon class="h-4 w-4" />
 				</Button>
 			</Dialog.Footer>
 		</Dialog.Content>
-	{:else if editorState.publishAt}
+	{:else if postState.publishAt}
 		<Dialog.Content>
 			<Dialog.Title>Ready to schedule?</Dialog.Title>
 
@@ -84,22 +81,23 @@
 	{:else}
 		<Dialog.Content>
 			<Dialog.Title>Ready to publish?</Dialog.Title>
-			<Dialog.Description class="sr-only">Publish your content here.</Dialog.Description>
 
-			<div class="flex flex-row items-start gap-4">
-				<CoverImage
-					{editorState}
-					class="w-32 h-32 flex-none"
-					imgProps={{ class: "p-0 h-32 w-32 rounded-lg object-cover" }}
-				/>
+			{#if postState.type === 'article'}
+				<div class="flex flex-row items-start gap-4">
+					<CoverImage
+						{postState}
+						class="w-32 h-32 flex-none"
+						imgProps={{ class: "p-0 h-32 w-32 rounded-lg object-cover" }}
+					/>
 
-				<div class="flex flex-col gap-1">
-					<h2 class="text-base font-medium">{editorState.title}</h2>
-					<h3 class="text-muted-foreground/70 text-sm">{editorState.summary}</h3>
+					<div class="flex flex-col gap-1">
+						<h2 class="text-base font-medium">{postState.title}</h2>
+						<h3 class="text-muted-foreground/70 text-sm">{postState.summary}</h3>
+					</div>
 				</div>
-			</div>
+			{/if}
 
-			<Checks {editorState} bind:allGood />
+			<Checks {postState} bind:allGood />
 
 			<Dialog.Footer>
 				{#if error}
@@ -124,5 +122,5 @@
 		</Dialog.Content>
 	{/if}
 
-	<SettingsModal bind:editorState bind:open={showSettings} />
+	<SettingsModal bind:postState bind:open={showSettings} />
 </Dialog.Root>

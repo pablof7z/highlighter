@@ -59,5 +59,5 @@
 	{onShare}
 	event={wrappedEvent}
 	stats={stats}
-	viewLink={`https://highlighter.com/${wrappedEvent.encode()}`}
+	viewLink={`https://highlighter.com/a/${wrappedEvent.encode()}`}
 />

@@ -1,32 +1,29 @@
 <script lang="ts">
-	import { ndk } from '@/state/ndk';
-	import { NDKDraft, NDKKind } from '@nostr-dev-kit/ndk';
 	import RelativeTime from '@/components/RelativeTime.svelte';
-	import type { EditorState } from '@/components/Studio/state.svelte';
+	import type { PostState } from '@/components/Studio/state.svelte';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
-		editorState: EditorState;
-		onSave?: (event: NDKDraft) => void;
+		postState: PostState;
 	}
 
-	const { editorState, onSave }: Props = $props();
+	const { postState }: Props = $props();
 
-	let status = $state<'Unsaved' | 'Saving' | 'Saved' | 'Error'>('Unsaved');
+	let status = $state<'Unsaved' | 'Saving' | 'Saved' | 'Error'>(postState.draft ? 'Saved' : 'Unsaved');
 
-	let contentChanges = $state(0);
-	let content = $state(editorState.content);
+	let stateChanges = $state(0);
+	let stateSignatureCache = $state(postState.stateSignature);
 
 	let saveTimer: NodeJS.Timeout | null = null;
 
 	$effect(() => {
-		console.log(editorState.draft?.rawEvent())
-		if (content !== editorState.content) {
-			contentChanges++;
-			content = editorState.content;
+		if (stateSignatureCache !== postState.stateSignature) {
+			stateChanges++;
+			stateSignatureCache = postState.stateSignature;
 		}
 
 		// save after 30 seconds of inactivity if there are changes
-		if (contentChanges > 0) {
+		if (stateChanges > 0) {
 			if (saveTimer) {
 				clearTimeout(saveTimer);
 			}
@@ -34,20 +31,14 @@
 		}
 
 		// if there are over 500 changes, save immediately
-		if (contentChanges > 500) {
+		if (stateChanges > 500) {
 			save();
 		}
 	})
-	
-	$effect(() => {
-		if (editorState.draft) {
-			status = 'Saved';
-		}
-	});
-
-	let error = $state<string | null>(null);
 
 	const NEW_DRAFT_AUTOSAVE_THRESHOLD = 100;
+
+	let error = $state<string | null>(null);
 
 	/**
 	 * Saves the current editor content as a draft event
@@ -63,46 +54,25 @@
 	 * - Handles errors and updates status accordingly
 	 */
 	function save(manual: boolean = false) {
-		if (!editorState.content) {
-			console.error('No draft to save');
+		const draftExisted = !!postState.draft;
+		
+		if (!postState.shouldSaveDraft) {
+			toast.error('No draft to save');
 			return;
 		}
 
-		const draftExisted = !!editorState.draft;
+		if (!(
+			manual || // we always save when triggered manually
+			draftExisted || // we are saving a checkpoint of an existing draft
+			(stateChanges > NEW_DRAFT_AUTOSAVE_THRESHOLD) // we are auto-saving a draft that has enough changes to warrant a new draft
+		)) return;
 
-		let isPrimaryDraft = false;
-		let draftEvent: NDKDraft;
-
-		if (manual) {
-			draftEvent = editorState.draft || new NDKDraft(ndk);
-			isPrimaryDraft = true;
-		} else if (draftExisted || contentChanges > NEW_DRAFT_AUTOSAVE_THRESHOLD) { // only auto-save a draft if there are enough changes
-			isPrimaryDraft = !draftExisted; // only set it as the main draft if this is the first time we're saving
-			draftEvent = new NDKDraft(ndk);
-
-			if (draftExisted) {
-				draftEvent.kind = NDKKind.DraftCheckpoint;
-				draftEvent.tag(editorState.draft);
-			}
-		} else {
-			console.log('not saving draft');
-			return;
-		}
-
-		const event = editorState.generateEvent();
-		draftEvent.event = event;
 		status = 'Saving';
 		error = null;
-		draftEvent
-			.save({ publish: true })
+		postState.saveDraft(manual)
 			.then(() => {
 				status = 'Saved';
-				contentChanges = 0;
-
-				if (isPrimaryDraft) {
-					editorState.draft = draftEvent;
-				}
-				onSave?.(draftEvent);
+				stateChanges = 0;
 			})
 			.catch((e: any) => {
 				console.error(e);
@@ -126,16 +96,18 @@
 	{#if status === 'Saved'}
 		<div class="flex flex-col items-start">
 			{status}
-			{#if editorState.draft}
-				<span class="text-[10px] font-light leading-tight text-muted-foreground/70"><RelativeTime event={editorState.draft} /> ago</span>
+			{#if postState.draft}
+				<span class="text-[10px] font-light leading-tight text-muted-foreground/70"><RelativeTime event={postState.draft} /> ago</span>
 			{/if}
 		</div>
 	{:else}
 		<div class="flex flex-col items-start">
 			{status}
-			{#if editorState.draft}
-				Last saved <span class="text-[10px] font-light leading-tight text-muted-foreground/70"><RelativeTime event={editorState.draft} /> ago</span>
+			{#if postState.draft}
+				Last saved <span class="text-[10px] font-light leading-tight text-muted-foreground/70"><RelativeTime event={postState.draft} /> ago</span>
 			{/if}
 		</div>
 	{/if}
+
+	{stateChanges}
 </button>

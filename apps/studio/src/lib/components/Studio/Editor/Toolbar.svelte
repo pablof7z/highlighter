@@ -9,21 +9,21 @@
 	import { Import, Send, User2 } from 'lucide-svelte';
 	import { Profile } from '@/components/user/profile.svelte';
 	import Avatar from '@components/user/Avatar.svelte';
-	import type { EditorState } from '../state.svelte';
+	import type { PostState } from '../state.svelte';
 	import type { NDKDraft } from '@nostr-dev-kit/ndk';
 
 	type Props = {
 		onContinue: () => void;
-		editorState: EditorState;
+		postState: PostState;
 		onSaveDraft?: (event: NDKDraft) => void;
 	}
 
-	let { onContinue, editorState = $bindable(), onSaveDraft }: Props = $props();
+	let { onContinue, postState = $bindable(), onSaveDraft }: Props = $props();
 
 	let proposalModal = $state<boolean>(false);
 	let importModal = $state<boolean>(false);
 
-	let proposalRecipient = $derived(editorState.proposalRecipient ? new Profile(editorState.proposalRecipient) : null);
+	let proposalRecipient = $derived(postState.proposalRecipient ? new Profile(postState.proposalRecipient) : null);
 </script>
 
 <div class="flex w-full items-center justify-between">
@@ -32,7 +32,7 @@
 			<ArrowLeft size="18" weight="bold" />
 		</Button>
 
-		<DraftButton {editorState} onSave={onSaveDraft} />
+		<DraftButton {postState} onSave={onSaveDraft} />
 	</div>
 
 	<div class="flex flex-row items-center gap-2">
@@ -52,7 +52,7 @@
 					<!-- <DropdownMenu.Separator /> -->
 
 					<DropdownMenu.Item onclick={() => (proposalModal = true)}>
-						{#if !editorState.proposalRecipient}
+						{#if !postState.proposalRecipient}
 							<Users class="mr-2" size={20} /> Proposal mode
 						{:else}
 							<Avatar profile={proposalRecipient} size="small" class="mr-2" />
@@ -72,8 +72,8 @@
 	</div>
 </div>
 
-<ProposalMode bind:open={proposalModal} bind:editorState />
-<!-- <CollaboratorsModal bind:open={collaboratorsModal} bind:editorState /> -->
+<ProposalMode bind:open={proposalModal} bind:postState />
+<!-- <CollaboratorsModal bind:open={collaboratorsModal} bind:postState /> -->
 
-<ImportModal bind:open={importModal} bind:editorState />
+<ImportModal bind:open={importModal} bind:postState />
 

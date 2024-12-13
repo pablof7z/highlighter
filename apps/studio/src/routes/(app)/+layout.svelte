@@ -24,7 +24,7 @@
 		<enhanced:img src={DashboardLight} alt="Dashboard" class="block dark:hidden" />
 		<enhanced:img src={DashboardDark} alt="Dashboard" class="hidden dark:block" />
 	</div>
-	<div class="hidden flex-col md:flex">
+	<div class="flex flex-col">
 		<div class="border-b">
 			<div class="flex h-16 items-center px-4">
 				<a href="/" class="mr-4">
@@ -42,7 +42,7 @@
 			</div>
 		</div>
 
-		<div class="flex-1 space-y-4 p-8 pt-6">
+		<div class="flex-1 space-y-4 p-2 md:p-8 md:pt-6">
 			{@render children()}
 		</div>
 	</div>

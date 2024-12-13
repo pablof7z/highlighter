@@ -1,17 +1,17 @@
 <script lang="ts">
-	import type { EditorState } from "../state.svelte";
+	import type { PostState } from "../state.svelte";
 	import { Button } from "@/components/ui/button";
 	import { Input } from "@/components/ui/input";
 	import CoverImage from "../Editor/buttons/CoverImage.svelte";
 
     type Props = {
-		editorState: EditorState;
+		postState: PostState;
         onClose?: () => void;
 	}
 
-	const { editorState = $bindable(), onClose }: Props = $props();
+	const { postState = $bindable(), onClose }: Props = $props();
 
-    let tags = $derived(editorState.tags.join(','));
+    let tags = $derived(postState.tags.join(','));
     let tagsInput = $state(tags);
 </script>
 
@@ -21,7 +21,7 @@
             Cover Image
         </h2>
 
-        <CoverImage {editorState}
+        <CoverImage {postState}
             class="!w-fit h-32 bg-transparent min-w-32 bg-muted"
             imgProps={{ class: '!w-auto h-full object-contain'}}
         />
@@ -40,7 +40,7 @@
             class="w-full"
             bind:value={tagsInput}
             oninput={() => {
-                editorState.tags = tagsInput.split(',')
+                postState.tags = tagsInput.split(',')
                     .map(tag => tag.trim())
                     .filter(tag => tag.length > 0);
             }}

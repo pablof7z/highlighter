@@ -18,7 +18,6 @@
 	draft
 		.getEvent()
 		.then((e) => {
-			console.log(e);
 			if (e) {
 				event = wrapEvent(e);
 				editUrl = `/editor/article/${draft.encode()}`;
@@ -48,6 +47,7 @@
 			title={event.title}
 			image={event.image}
 			timestamp={draft.created_at}
+			tags={event.tags.filter(t => t[0] === 't').map(t => t[1])}
 			event={draft}
 			{editUrl}
 			{stats}
