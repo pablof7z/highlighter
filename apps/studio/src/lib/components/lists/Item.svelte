@@ -6,10 +6,12 @@
 	import Avatar from '@components/user/Avatar.svelte';
 	import Name from '@components/user/Name.svelte';
 	import { Profile } from '../user/profile.svelte';
-	import { Copy, FileJson2, Pencil, Share, Trash } from 'lucide-svelte';
+	import { Copy, FileJson2, Pencil, Radio, Share, Trash } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { currentUser } from '@/state/current-user.svelte';
 	import Badge from '../ui/badge/badge.svelte';
+	import { toast } from 'svelte-sonner';
+	import { slide } from 'svelte/transition';
 
 	const user = $derived.by(currentUser);
 
@@ -19,6 +21,7 @@
 		image: string;
 		timestamp: number;
 		event?: NDKEvent;
+		url: string;
 		editUrl: string;
 		byline?: string;
 		tags?: string[];
@@ -36,6 +39,7 @@
 		byline,
 		tags,
 		event,
+		url,
 		onDelete,
 		timestamp,
 		onShare,
@@ -45,9 +49,34 @@
 
 	let imageLoaded = $state(false);
 	let profile = author ? new Profile(author) : null;
+
+	let deleted = $state(false);
+
+	function delayedDelete() {
+		const timer = setTimeout(onDelete, 2500);
+		deleted = true;
+		
+		toast.success("Deleted", {
+			description: "This post has been deleted",
+			duration: 2500,
+			onDismiss: () => {
+				clearTimeout(timer);
+				onDelete();
+			},
+			action: {
+				label: "Undo",
+				onClick: () => {
+					clearTimeout(timer);
+					toast.success("Post restored");
+					deleted = false;
+				}
+			}
+		})
+	}
 </script>
 
-<div class="border-border mb-2 flex w-full flex-row items-center gap-4 border-b py-2">
+{#if !deleted}
+<a href={url} transition:slide class="border-border mb-2 flex w-full flex-row items-center gap-4 border-b py-2 hover:bg-secondary/20">
 	<div class="flex h-16 w-1/2 flex-row gap-4 overflow-clip">
 		<div class="flex-none">
 			{#if !imageLoaded}
@@ -134,6 +163,13 @@
 								<FileJson2 class="w-4 h-4 mr-2" />
 								Copy Raw Event
 							</DropdownMenu.Item>
+
+							<DropdownMenu.Item onclick={() => {
+								event.publish().then((relays) => toast.success("Rebroadcasted to " + relays.size + " relays"))
+							}}>
+								<Radio class="w-4 h-4 mr-2" />
+								Rebroadcast
+							</DropdownMenu.Item>
 						{/if}
 
 						{#if onShare}
@@ -146,16 +182,16 @@
 						{#if event?.pubkey === user?.pubkey}
 							<DropdownMenu.Separator />
 							
-							<DropdownMenu.Item class="text-red-500" onclick={onDelete}>
+							<DropdownMenu.Item class="text-red-500" onclick={delayedDelete}>
 								<Trash class="w-4 h-4 mr-2" />
 								Delete
 							</DropdownMenu.Item>
 						{/if}
 
 						{#if event}
-							<DropdownMenu.Item onclick={() => event.delete()}>
-								{#each event.onRelays as relay}
-									{relay.url}
+							<DropdownMenu.Item class="text-xs font-light flex flex-col gap-1 items-start text-muted-foreground">
+								{#each Array.from(new Set(event.onRelays.values().map(r => r.url))) as relay}
+									<span>{relay}</span>
 								{/each}
 							</DropdownMenu.Item>
 						{/if}
@@ -164,7 +200,8 @@
 			</DropdownMenu.Root>
 		</div>
 	</div>
-</div>
+</a>
+{/if}
 
 
 {#snippet stat(count: number, label: string)}

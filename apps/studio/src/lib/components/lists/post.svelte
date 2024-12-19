@@ -15,7 +15,7 @@
 	const wrappedEvent = wrapEvent(event);
 
 	const type = wrappedEvent instanceof NDKArticle ? 'article' : 'post';
-	const editUrl = `/editor/${type}/${wrappedEvent.encode()}`;
+	const editUrl = `/${type}/${wrappedEvent.encode()}`;
 
 	function onShare() {
 		appState.activeEvent = wrappedEvent;

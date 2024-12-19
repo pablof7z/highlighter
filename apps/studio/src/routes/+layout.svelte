@@ -13,7 +13,6 @@
 	import { browser } from '$app/environment';
 	import { Toaster } from '@/components/ui/sonner';
 	import { onMount } from 'svelte';
-	import { appState } from '@/state/app.svelte';
 
 	let { children } = $props();
 
@@ -36,7 +35,7 @@
 		}
 	});
 
-	ndk.explicitRelayUrls = ['wss://relay.primal.net', 'wss://relay.damus.io'];
+	ndk.explicitRelayUrls = ['wss://relay.primal.net', 'wss://relay.damus.io' ];
 	ndk.connect();
 </script>
 

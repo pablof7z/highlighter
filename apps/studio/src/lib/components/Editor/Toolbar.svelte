@@ -204,7 +204,7 @@
 								<Code size={18} weight="bold" />
 							</button>
 						</Tooltip.Trigger>
-						<Tooltip.Content>Toggle raw editor</Tooltip.Content>
+						<Tooltip.Content>Toggle WYSIWYG editor</Tooltip.Content>
 					</Tooltip.Root>
 				</Tooltip.Provider>
 			</div>

@@ -150,3 +150,16 @@
 		--sidebar-ring: 217.2 91.2% 59.8%;
 	}
 }
+
+.ProseMirror-selectednode {
+	@apply -m-1 border-4 border-primary;
+}
+
+.editor-toolbar button {
+	@apply flex h-10 w-10 cursor-pointer items-center justify-center rounded-sm p-2 text-muted-foreground hover:bg-secondary hover:text-secondary-foreground;
+}
+
+.editor-toolbar button[disabled] {
+	cursor: not-allowed;
+	opacity: 0.2;
+}

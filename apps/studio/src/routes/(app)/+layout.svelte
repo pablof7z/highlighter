@@ -15,6 +15,8 @@
 	import DashboardDark from '@/img/dashboard-dark.png?enhanced';
 	import MainNav from '@/dashboard/main-nav.svelte';
 	import Logo from '@/components/Logo.svelte';
+	import NewPost from '@/components/buttons/new-post.svelte';
+	import { Plus, PlusCircle } from 'lucide-svelte';
 	
 	let { children } = $props();
 </script>
@@ -37,6 +39,9 @@
 				
 				<div class="ml-auto flex items-center space-x-4">
 					<!-- <Search /> -->
+					 <NewPost variant="outline" class="rounded-full">
+						<Plus class="h-4 w-4" />
+					</NewPost>
 					<CurrentUser />
 				</div>
 			</div>

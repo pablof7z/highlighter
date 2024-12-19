@@ -43,6 +43,16 @@
 
     let previewEvent = $state<NDKEvent | null>(null);
     let selectedIndex = $state<number | null>(null);
+
+    function distanceOfTimeSincePrevious(current: number) {
+        const previousTime = orderedDrafts[current - 1]?.created_at;
+        const currentTime = orderedDrafts[current]?.created_at;
+        
+        if (!previousTime || !currentTime) return new Date(currentTime! * 1000).toLocaleString();
+        if (previousTime - currentTime > 3600) return new Date(previousTime! * 1000).toLocaleString();
+        // otherwise just show the time without the date
+        return new Date(previousTime! * 1000).toLocaleTimeString();
+    }
 </script>
 
 <Dialog.Root bind:open>
@@ -58,7 +68,7 @@
                             previewEvent = wrapEvent(event);
                             selectedIndex = i;
                         }}>
-                            {new Date(draft.created_at! * 1000).toLocaleString()}
+                            {distanceOfTimeSincePrevious(i)}
                             <div class="text-xs text-muted-foreground">{words} words</div>
 
                             {#if selectedIndex === i}

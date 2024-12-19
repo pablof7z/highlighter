@@ -52,19 +52,19 @@
 </script>
 
 {#if event}
-	<a href={editUrl} onclick={openDraft} class="hover:bg-secondary/20 block w-full">
-		<Item
-			{author}
-			byline={"from "}
-			title={event.title}
-			image={event.image}
-			timestamp={draft.created_at}
-			tags={event.tags.filter(t => t[0] === 't').map(t => t[1])}
-			event={draft}
-			{stats}
-			onDelete={() => draft.delete()}
-		/>
-	</a>
+	<Item
+		url={editUrl}
+		onclick={openDraft}
+		{author}
+		byline={"from "}
+		title={event.title}
+		image={event.image}
+		timestamp={draft.created_at}
+		tags={event.tags.filter(t => t[0] === 't').map(t => t[1])}
+		event={draft}
+		{stats}
+		onDelete={() => draft.delete()}
+	/>
 {:else}
 	<Item
 		{author}

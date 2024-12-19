@@ -8,13 +8,14 @@
 	import { goto } from '$app/navigation';
 	import TurndownService from 'turndown';
 	import { toast } from 'svelte-sonner';
+	import type { ArticleState } from '../Post/state/article.svelte';
 
 	type Props = {
 		open: boolean;
-		postState?: PostState;
+		postState?: ArticleState;
 	};
 
-	let { open = $bindable(false), postState = $bindable() } = $props();
+	let { open = $bindable(false), postState = $bindable() }: Props = $props();
 
 	let url = $state<string>('');
 	let fetching = $state<boolean>(false);
@@ -24,9 +25,13 @@
 		error = null;
 		fetching = true;
 
+		const timeoutPromise = new Promise((_, reject) =>
+			setTimeout(() => reject(new Error('Request timed out')), 10000)
+		);
+
 		try {
 			const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-			const response = await fetch(proxyUrl);
+			const response = await Promise.race([fetch(proxyUrl), timeoutPromise]);
 
 			if (!response.ok) {
 				throw new Error('Failed to fetch content');
@@ -63,7 +68,7 @@
 					draft.event = article;
 					await draft.sign();
 					await draft.save({});
-					goto(`/articles/${draft.encode()}`);
+					goto(`/article/${draft.encode()}`);
 				} else {
 					toast.error("Unable to fetch any content. Try again later or try a different URL.")
 				}

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { Editor, SvelteNodeViewRenderer } from 'svelte-tiptap';
 	import { Markdown } from 'tiptap-markdown';
-	import HardBreak from '@tiptap/extension-hard-break'
+	import HardBreak from '@tiptap/extension-hard-break';
 	import StarterKit from '@tiptap/starter-kit';
 	import PubkeyExtension from './extensions/pubkey.svelte';
 	import EventExtension from './extensions/event.svelte';
+	import UploadImage from './extensions/upload-image.js';
 	import { NostrExtension } from 'nostr-editor';
 	import BulletList from '@tiptap/extension-bullet-list';
 	import Strike from '@tiptap/extension-strike';
@@ -22,6 +23,9 @@
 	import NostrEntitySearchModal from '@components/NostrEntitySearchModal.svelte';
 	import Toolbar from './Toolbar.svelte';
 	import type { Extension } from '@tiptap/core';
+	import { Uploader } from '@highlighter/common';
+	import { ndk } from '@/state/ndk';
+	import { appState } from '@/state/app.svelte';
 
 	type Props = {
 		content: string;
@@ -38,8 +42,8 @@
 		onEnter?: () => void;
 		onFocus?: () => void;
 		onKeyDown?: (editor: Editor, event: KeyboardEvent) => void;
-	}
-	
+	};
+
 	let {
 		content = $bindable(),
 		placeholder = 'Write...',
@@ -66,10 +70,12 @@
 		if (markdown) {
 			extensions.push(Markdown.configure({ tightLists: true }));
 		} else {
-			extensions.push(HardBreak.configure({
-				keepMarks: true,
-				keepAttributes: false,
-			}));
+			extensions.push(
+				HardBreak.configure({
+					keepMarks: true,
+					keepAttributes: false
+				})
+			);
 		}
 
 		editor = new Editor({
@@ -82,6 +88,20 @@
 				BulletList,
 				TipTapImage.configure({
 					allowBase64: true
+				}),
+				UploadImage.configure({
+					uploadFn: (blob) => {
+						return new Promise((resolve, reject) => {
+							const uploader = new Uploader(blob, appState.activeBlossomServer, ndk);
+							uploader.onUploaded = (url: string) => {
+								resolve(url);
+							};
+							uploader.onError = (error: Error) => {
+								reject(error.message);
+							};
+							uploader.start();
+						});
+					}
 				}),
 				Placeholder.configure({
 					placeholder,
@@ -137,9 +157,9 @@
 					console.log('text', JSON.stringify(text));
 					if (text?.match(/\n\n/)) {
 						console.log('replacing newlines', text);
-						content = text.replace(/\n\n/g, "\n");
+						content = text.replace(/\n\n/g, '\n');
 					} else {
-						content = text ?? "";
+						content = text ?? '';
 					}
 					console.log('setting content cache', content);
 					contentCache = content;
@@ -162,7 +182,7 @@
 		});
 	});
 
-	let contentCache = $state("");
+	let contentCache = $state('');
 
 	$effect(() => {
 		if (!editor) return;
@@ -172,14 +192,14 @@
 
 		if (contentCache !== content) {
 			contentCache = content;
-			
+
 			editor.commands.setEventContent({
 				content: content,
 				kind: markdown ? 30023 : 1,
-				tags: [],
-			})
+				tags: []
+			});
 		}
-	})
+	});
 </script>
 
 {#if editor && !skipToolbar}

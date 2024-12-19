@@ -11,7 +11,7 @@
 	<div class="max-w-4xl mx-auto py-6">
 		<h2 class="text-4xl font-medium tracking-tight">Settings</h2>
 		<p class="text-muted-foreground">
-			Manage your account settings and set e-mail preferences.
+			Manage your account settings.
 		</p>
 	</div>
 

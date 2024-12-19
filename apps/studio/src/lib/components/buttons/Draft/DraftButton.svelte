@@ -2,6 +2,7 @@
 	import RelativeTime from '@/components/RelativeTime.svelte';
 	import type { PostState } from '@/components/Studio/state.svelte';
 	import { toast } from 'svelte-sonner';
+	import * as Tooltip from '@components/ui/tooltip';
 
 	type Props = {
 		postState: PostState;
@@ -101,26 +102,35 @@
 		<div class="h-2 w-2 rounded-full bg-gray-500"></div>
 	{/if}
 
-	{#if status === 'Saved'}
-		<div class="flex flex-col items-start">
-			{status}
-			{#if postState.draft}
-				<span class="text-muted-foreground/70 text-[10px] font-light leading-tight"
-					><RelativeTime event={postState.draft} /> ago</span
-				>
-			{/if}
-		</div>
-	{:else}
-		<div class="flex flex-col items-start">
-			{status}
-			{#if status === 'Unsaved'}
-				<span class="text-muted-foreground/70 text-[10px] font-light leading-tight">Click to save</span>
-			{/if}
-			{#if postState.draft}
-				Last saved <span class="text-muted-foreground/70 text-[10px] font-light leading-tight"
-					><RelativeTime event={postState.draft} /> ago</span
-				>
-			{/if}
-		</div>
-	{/if}
+	<Tooltip.Provider>
+		<Tooltip.Root delayDuration={0}>
+			<Tooltip.Trigger>
+				{#if status === 'Saved'}
+					<div class="flex flex-col items-start">
+						{status}
+						{#if postState.draft}
+							<span class="text-muted-foreground/70 text-[10px] font-light leading-tight"
+								><RelativeTime event={postState.draft} /> ago</span
+							>
+						{/if}
+					</div>
+				{:else}
+					<div class="flex flex-col items-start">
+						{status}
+						{#if status === 'Unsaved'}
+							<span class="text-muted-foreground/70 text-[10px] font-light leading-tight">Click to save</span>
+						{/if}
+						{#if postState.draft}
+							Last saved <span class="text-muted-foreground/70 text-[10px] font-light leading-tight"
+								><RelativeTime event={postState.draft} /> ago</span
+							>
+						{/if}
+					</div>
+				{/if}
+			</Tooltip.Trigger>
+			<Tooltip.Content>
+				Save draft
+			</Tooltip.Content>
+		</Tooltip.Root>
+	</Tooltip.Provider>
 </button>

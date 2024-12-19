@@ -63,10 +63,10 @@
 	class:one-column={!twoColumns}
 >
 	<main>
-		<div class="flex items-center justify-between space-y-2">
+		<div class="flex items-center justify-between space-y-2 mb-4">
 			<h2 class="text-3xl font-bold tracking-tight">Posts</h2>
 			<div class="flex items-center space-x-2">
-				<NewPost onImport={() => (importModal = true)} />
+				<NewPost variant="secondary" onImport={() => (importModal = true)} />
 			</div>
 		</div>
 

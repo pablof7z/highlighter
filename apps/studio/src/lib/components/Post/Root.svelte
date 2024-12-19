@@ -9,6 +9,8 @@
 	import Shell from './Shell/index.svelte';
 	import { appState } from '@/state/app.svelte';
 	import { beforeNavigate } from '$app/navigation';
+	import { toast } from 'svelte-sonner';
+	import { NDKEvent } from '@nostr-dev-kit/ndk';
 
 	/**
 	 * This component loads the event, if an event id has been provided,
@@ -16,20 +18,6 @@
 	const { type, id } = $props();
 
 	let error = $state<string | null>(null);
-	let isDirty = false;
-
-	// Set isDirty to true when there are changes
-	function markAsDirty() {
-		isDirty = true;
-	}
-
-	// Add event listener to prevent navigation
-	window.addEventListener('beforeunload', (event) => {
-		if (isDirty) {
-			event.preventDefault();
-			event.returnValue = ''; // Required for Chrome to show the dialog
-		}
-	});
 
 	if (id === 'new') {
 		if (type === 'article') {
@@ -38,7 +26,9 @@
 			appState.postState ??= new ThreadState();
 		}
 	} else {
+		console.log('fetching 1', id)
 		if (appState.postState && appState.postState.draft?.encode() === id) {
+			console.log('already fetched', id)
 		} else {
 			appState.postState = null;
 			const fetchEventWithTimeout = (id, timeout = 10000) => {
@@ -51,9 +41,18 @@
 			};
 
 			fetchEventWithTimeout(id).then((e) => {
-				if (e) {
+				if (e instanceof NDKEvent) {
+					if (e.hasTag('deleted')) {
+						error = 'Event has been deleted';
+						return;
+					}
+					
 					if (type === 'article') {
-						ArticleState.from(e).then((state) => (appState.postState = state));
+						ArticleState.from(e).then((state) => {
+							console.log('setting state', state)
+							appState.postState = state
+						})
+						.catch(toast.error)
 					}
 				} else {
 					error = 'Failed to fetch event';
@@ -65,13 +64,6 @@
 			});
 		}
 	}
-
-	// Example: Call markAsDirty when the postState changes
-	markAsDirty();
-
-	beforeNavigate(() => {
-		return false;
-	});
 </script>
 
 {#if appState.postState}
