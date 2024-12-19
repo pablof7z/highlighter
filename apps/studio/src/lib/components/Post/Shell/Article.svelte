@@ -3,6 +3,7 @@
 	import type { Editor as EditorType } from 'svelte-tiptap';
 	import CoverImage from './buttons/CoverImage.svelte';
 	import { type ArticleState } from '@components/Post/state/article.svelte';
+	import { Textarea } from '@/components/ui/textarea';
 
 	type Props = {
 		postState: ArticleState;
@@ -19,12 +20,18 @@
 	let summary = $state<EditorType | undefined>(undefined);
 
 	let editor = $state<EditorType | undefined>(undefined);
+
+	let rawEditor = $state(true);
+
+	function onToggleRaw() {
+		rawEditor = !rawEditor;
+	}
 </script>
 
 <div class="mx-auto flex h-full w-full max-w-3xl flex-col items-stretch justify-stretch p-4">
 	{#if editor}
 		<div class="bg-background sticky top-12 z-50 mb-4">
-			<Editor.Toolbar editor={editor} class="bg-background" onMention={onMention} />
+			<Editor.Toolbar editor={editor} class="bg-background" onMention={onMention} onToggleRaw={onToggleRaw} />
 		</div>
 	{/if}
 
@@ -36,7 +43,7 @@
 		/>
 	{/if}
 
-	<div class="min-h-12 !text-4xl font-bold article--title">
+	<div class="min-h-12 !text-4xl font-bold article--title !mt-0">
 		<Editor.Root
 			bind:content={postState.title}
 			placeholder="Title"
@@ -59,12 +66,16 @@
 		/>
 	</div>
 
-	<div class="text-muted-foreground article min-h-[70vh] w-full">
+	<div class="text-muted-foreground article min-h-[70vh] w-full mb-[50vh]" class:hidden={rawEditor}>
 		<Editor.Root
 			bind:content={postState.content}
 			bind:editor
 			skipToolbar={true}
 			bind:showMentions
 		/>
+	</div>
+
+	<div class="text-muted-foreground article min-h-[70vh] w-full mb-[50vh]" class:hidden={!rawEditor}>
+		<Textarea bind:value={postState.content} class="flex-1 h-full resize-none min-h-[70vh] border-none !text-lg p-0" />
 	</div>
 </div>
