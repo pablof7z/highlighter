@@ -163,3 +163,17 @@
 	cursor: not-allowed;
 	opacity: 0.2;
 }
+
+sup[id] {
+	@apply text-foreground;
+}
+
+ol.footnotes {
+	@apply mt-10 !border-t-2 !border-border pt-4;
+	list-style-type: decimal;
+	padding-left: 20px;
+}
+
+ol.footnotes:has(li) {
+	border-top: 1px solid black;
+}

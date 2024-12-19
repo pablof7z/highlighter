@@ -9,7 +9,10 @@
 		Link,
 		ListOrdered,
 		AtSign,
-		Code
+		Code,
+
+		Info
+
 	} from 'lucide-svelte';
 	import Image from './Toolbar/Image.svelte';
 	import Heading from './Toolbar/Heading.svelte';
@@ -26,10 +29,10 @@
 		editor: Editor;
 		class: string;
 		onMention?: () => void;
-		onToggleRaw?: () => void;
+		rawEditor?: boolean;
 	};
 
-	const { editor, class: className = '', onMention, onToggleRaw }: Props = $props();
+	let { editor, class: className = '', onMention, rawEditor = $bindable() }: Props = $props();
 
 	let listening = false;
 
@@ -170,6 +173,16 @@
 					<Tooltip.Content>Link</Tooltip.Content>
 				</Tooltip.Root>
 			</Tooltip.Provider>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={() => editor.chain().focus().addFootnote().run()}>
+							<Info size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Add footnote</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
 		</div>
 
 		<div class="button-group">
@@ -195,12 +208,12 @@
 			</Tooltip.Provider>
 		</div>
 
-		{#if onToggleRaw}
+		{#if rawEditor !== undefined}
 			<div class="button-group">
 				<Tooltip.Provider>
 					<Tooltip.Root delayDuration={0}>
 						<Tooltip.Trigger>
-							<button onclick={onToggleRaw}>
+							<button onclick={() => {rawEditor = !rawEditor }} class:active={rawEditor}>
 								<Code size={18} weight="bold" />
 							</button>
 						</Tooltip.Trigger>
@@ -215,6 +228,10 @@
 <style lang="postcss">
 	.editor-toolbar .button-group {
 		@apply flex flex-row items-center px-2;
+	}
+
+	button {
+		@apply flex items-center justify-center rounded-md px-3;
 	}
 
 	.editor-toolbar .active {

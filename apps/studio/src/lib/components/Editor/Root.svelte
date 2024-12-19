@@ -11,6 +11,7 @@
 	import Strike from '@tiptap/extension-strike';
 	import Dropcursor from '@tiptap/extension-dropcursor';
 	import Placeholder from '@tiptap/extension-placeholder';
+	import { Footnotes, FootnoteReference, Footnote } from "tiptap-footnotes";
 	import Blockquote from '@tiptap/extension-blockquote';
 	import { Image as TipTapImage } from '@tiptap/extension-image';
 	import Heading from '@tiptap/extension-heading';
@@ -22,10 +23,14 @@
 	import { onMount } from 'svelte';
 	import NostrEntitySearchModal from '@components/NostrEntitySearchModal.svelte';
 	import Toolbar from './Toolbar.svelte';
+	import Document from "@tiptap/extension-document";
 	import type { Extension } from '@tiptap/core';
 	import { Uploader } from '@highlighter/common';
 	import { ndk } from '@/state/ndk';
 	import { appState } from '@/state/app.svelte';
+	import { NDKEvent } from '@nostr-dev-kit/ndk';
+
+	import TurndownService from 'turndown';
 
 	type Props = {
 		content: string;
@@ -81,7 +86,15 @@
 		editor = new Editor({
 			element: editorElement,
 			extensions: [
-				StarterKit,
+				StarterKit.configure({
+					document: false,
+				}),
+				Document.extend({
+					content: "block+ footnotes?",
+				}),
+				Footnotes,
+				Footnote,
+				FootnoteReference,
 				...extensions,
 				Dropcursor,
 				Strike,
@@ -147,8 +160,9 @@
 			editable: !readonly,
 			onUpdate: () => {
 				if (markdown) {
-					content = editor?.storage.markdown.getMarkdown();
-					console.log('setting content cache', content);
+					const html = editor?.storage.markdown.getMarkdown();
+					const turndownService = new TurndownService();
+					content = turndownService.turndown(html);
 					contentCache = content;
 				} else {
 					// get as simple text

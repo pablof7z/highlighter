@@ -62,9 +62,15 @@ importers:
       '@tiptap/extension-bullet-list':
         specifier: ^2.10.3
         version: 2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))
+      '@tiptap/extension-document':
+        specifier: ^2.10.3
+        version: 2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))
       '@tiptap/extension-dropcursor':
         specifier: ^2.10.3
         version: 2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))(@tiptap/pm@2.10.3)
+      '@tiptap/extension-hard-break':
+        specifier: ^2.10.3
+        version: 2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))
       '@tiptap/extension-heading':
         specifier: ^2.10.3
         version: 2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))
@@ -110,6 +116,9 @@ importers:
       '@unovis/svelte':
         specifier: ^1.4.5
         version: 1.4.5(@unovis/ts@1.4.5)(svelte@5.10.0)
+      blurhash:
+        specifier: ^2.0.5
+        version: 2.0.5
       d3-scale:
         specifier: ^4.0.2
         version: 4.0.2
@@ -128,12 +137,18 @@ importers:
       svelte-tiptap:
         specifier: ^2.1.0
         version: 2.1.0(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))(@tiptap/extension-bubble-menu@2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))(@tiptap/pm@2.10.3))(@tiptap/extension-floating-menu@2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))(@tiptap/pm@2.10.3))(@tiptap/pm@2.10.3)(svelte@5.10.0)
+      tiptap-footnotes:
+        specifier: ^2.0.3
+        version: 2.0.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))(@tiptap/extension-list-item@2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3)))(@tiptap/extension-ordered-list@2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3)))(@tiptap/pm@2.10.3)
       tiptap-markdown:
         specifier: ^0.8.10
         version: 0.8.10(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))
       turndown:
         specifier: ^7.2.0
         version: 7.2.0
+      turndown-plugin-gfm:
+        specifier: ^1.0.0
+        version: 1.0.2
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.3
@@ -150,12 +165,15 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.0
         version: 5.0.1(svelte@5.10.0)(vite@6.0.3(@types/node@22.10.0)(jiti@1.21.6)(terser@5.37.0)(yaml@2.6.1))
+      '@types/turndown':
+        specifier: ^5.0.5
+        version: 5.0.5
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
       bits-ui:
-        specifier: 1.0.0-next.69
-        version: 1.0.0-next.69(svelte@5.10.0)
+        specifier: 1.0.0-next.71
+        version: 1.0.0-next.71(svelte@5.10.0)
       clsx:
         specifier: ^2.1.0
         version: 2.1.1
@@ -602,8 +620,8 @@ importers:
         specifier: ^10.4.15
         version: 10.4.20(postcss@8.4.49)
       bits-ui:
-        specifier: ^0.21.13
-        version: 0.21.16(svelte@4.2.19)
+        specifier: 1.0.0-next.74
+        version: 1.0.0-next.74(svelte@4.2.19)
       debug-esm:
         specifier: ^0.0.1
         version: 0.0.1
@@ -4732,6 +4750,9 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
+  '@types/turndown@5.0.5':
+    resolution: {integrity: sha512-TL2IgGgc7B5j78rIccBtlYAnkuv8nUQqhQc+DSYV5j9Be9XOcm/SKOVRuA47xAVI3680Tk9B1d8flK2GWT2+4w==}
+
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
 
@@ -5316,11 +5337,17 @@ packages:
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0-next.118
 
-  bits-ui@1.0.0-next.69:
-    resolution: {integrity: sha512-XN7Uso5gmI4GFtb/5zzce9sSzH/39gX3q6pxoSkV9bAa5mN9Lc+R6hZUDgx3cGY/quWBF/wFPqXgk27Nw2VkSw==}
+  bits-ui@1.0.0-next.71:
+    resolution: {integrity: sha512-ncZ42GwVpa1Ldw41opdLqP/HSkhNGNBnmfvWduYGZ0cVzDnkPwsUWvdikTsFI31ZoAMcfcUVFSVgLGCcBatUXQ==}
     engines: {node: '>=18', pnpm: '>=8.7.0'}
     peerDependencies:
       svelte: ^5.0.0-next.1
+
+  bits-ui@1.0.0-next.74:
+    resolution: {integrity: sha512-cazru5+NBKBCeK9KCV/OFy5I/B1zxOJGl5WpInzPTEPla5G9qZK9nrnXr6BbExKdhgusTiMm3h4Yvq4E5WHGJA==}
+    engines: {node: '>=18', pnpm: '>=8.7.0'}
+    peerDependencies:
+      svelte: ^5.0.0
 
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
@@ -5332,6 +5359,9 @@ packages:
   blossom-client-sdk@2.1.0:
     resolution: {integrity: sha512-WAlSD1BD8aRNUJym0wyftL1VNNzowg24yNTHsZD2a0EjGRGjYth+yXiY+RJuWN5uGuXzh8AWPWPeTCK6mVpP6g==}
     engines: {node: '>=18'}
+
+  blurhash@2.0.5:
+    resolution: {integrity: sha512-cRygWd7kGBQO3VEhPiTgq4Wc43ctsM+o46urrmPOiuAe+07fzlSB9OJVdpgDL0jPqXUVQ9ht7aq7kxOeJHRK+w==}
 
   bn.js@4.12.1:
     resolution: {integrity: sha512-k8TVBiPkPJT9uHLdOKfFpqcfprwBFOAAXXozRubr7R7PfIuKvQlzcI4M0pALeqXN09vdaMbUdUj+pass+uULAg==}
@@ -10497,6 +10527,14 @@ packages:
   tippy.js@6.3.7:
     resolution: {integrity: sha512-E1d3oP2emgJ9dRQZdf3Kkn0qJgI6ZLpyS5z6ZkY1DF3kaQaBsGZsndEpHwx+eC+tYM41HaSNvNtLx8tU57FzTQ==}
 
+  tiptap-footnotes@2.0.3:
+    resolution: {integrity: sha512-LQvcjKMxmLlEAPYC2W8hObQHL4xiSqHLaBgniW1gSfzmZg3Xn8sHhcM0jiyIXMwQVV7EufD29Mr3zRQgQDck1w==}
+    peerDependencies:
+      '@tiptap/core': ^2.4.0
+      '@tiptap/extension-list-item': ^2.4.0
+      '@tiptap/extension-ordered-list': ^2.4.0
+      '@tiptap/pm': ^2.4.0
+
   tiptap-markdown@0.8.10:
     resolution: {integrity: sha512-iDVkR2BjAqkTDtFX0h94yVvE2AihCXlF0Q7RIXSJPRSR5I0PA1TMuAg6FHFpmqTn4tPxJ0by0CK7PUMlnFLGEQ==}
     peerDependencies:
@@ -10724,6 +10762,9 @@ packages:
   turbo@2.3.3:
     resolution: {integrity: sha512-DUHWQAcC8BTiUZDRzAYGvpSpGLiaOQPfYXlCieQbwUvmml/LRGIe3raKdrOPOoiX0DYlzxs2nH6BoWJoZrj8hA==}
     hasBin: true
+
+  turndown-plugin-gfm@1.0.2:
+    resolution: {integrity: sha512-vwz9tfvF7XN/jE0dGoBei3FXWuvll78ohzCZQuOb+ZjWrs3a0XhQVomJEb2Qh4VHTPNRO4GPZh0V7VRbiWwkRg==}
 
   turndown@7.2.0:
     resolution: {integrity: sha512-eCZGBN4nNNqM9Owkv9HAtWRYfLA4h909E/WGAWWBpmB275ehNhZyk87/Tpvjbp0jjNl9XwCsbe6bm6CqFsgD+A==}
@@ -16088,6 +16129,8 @@ snapshots:
 
   '@types/trusted-types@2.0.7': {}
 
+  '@types/turndown@5.0.5': {}
+
   '@types/unist@2.0.11': {}
 
   '@types/unist@3.0.3': {}
@@ -16946,7 +16989,7 @@ snapshots:
       nanoid: 5.0.9
       svelte: 4.2.19
 
-  bits-ui@1.0.0-next.69(svelte@5.10.0):
+  bits-ui@1.0.0-next.71(svelte@5.10.0):
     dependencies:
       '@floating-ui/core': 1.6.8
       '@floating-ui/dom': 1.6.12
@@ -16955,6 +16998,16 @@ snapshots:
       runed: 0.15.4(svelte@5.10.0)
       svelte: 5.10.0
       svelte-toolbelt: 0.4.6(svelte@5.10.0)
+
+  bits-ui@1.0.0-next.74(svelte@4.2.19):
+    dependencies:
+      '@floating-ui/core': 1.6.8
+      '@floating-ui/dom': 1.6.12
+      '@internationalized/date': 3.6.0
+      esm-env: 1.2.1
+      runed: 0.15.4(svelte@4.2.19)
+      svelte: 4.2.19
+      svelte-toolbelt: 0.4.6(svelte@4.2.19)
 
   bl@4.1.0:
     dependencies:
@@ -16970,6 +17023,8 @@ snapshots:
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@noble/hashes': 1.6.1
+
+  blurhash@2.0.5: {}
 
   bn.js@4.12.1: {}
 
@@ -22590,6 +22645,11 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  runed@0.15.4(svelte@4.2.19):
+    dependencies:
+      esm-env: 1.2.1
+      svelte: 4.2.19
+
   runed@0.15.4(svelte@5.10.0):
     dependencies:
       esm-env: 1.2.1
@@ -23277,6 +23337,12 @@ snapshots:
     dependencies:
       svelte: 4.2.19
 
+  svelte-toolbelt@0.4.6(svelte@4.2.19):
+    dependencies:
+      clsx: 2.1.1
+      style-to-object: 1.0.8
+      svelte: 4.2.19
+
   svelte-toolbelt@0.4.6(svelte@5.10.0):
     dependencies:
       clsx: 2.1.1
@@ -23568,6 +23634,14 @@ snapshots:
   tippy.js@6.3.7:
     dependencies:
       '@popperjs/core': 2.11.8
+
+  tiptap-footnotes@2.0.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))(@tiptap/extension-list-item@2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3)))(@tiptap/extension-ordered-list@2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3)))(@tiptap/pm@2.10.3):
+    dependencies:
+      '@tiptap/core': 2.10.3(@tiptap/pm@2.10.3)
+      '@tiptap/extension-list-item': 2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))
+      '@tiptap/extension-ordered-list': 2.10.3(@tiptap/core@2.10.3(@tiptap/pm@2.10.3))
+      '@tiptap/pm': 2.10.3
+      uuid: 9.0.1
 
   tiptap-markdown@0.8.10(@tiptap/core@2.10.3(@tiptap/pm@2.10.3)):
     dependencies:
@@ -23905,6 +23979,8 @@ snapshots:
       turbo-linux-arm64: 2.3.3
       turbo-windows-64: 2.3.3
       turbo-windows-arm64: 2.3.3
+
+  turndown-plugin-gfm@1.0.2: {}
 
   turndown@7.2.0:
     dependencies:
