@@ -8,26 +8,28 @@
 		Strikethrough,
 		Link,
 		ListOrdered,
-		AtSign
+		AtSign,
+		Code
 	} from 'lucide-svelte';
 	import Image from './Toolbar/Image.svelte';
 	import Heading from './Toolbar/Heading.svelte';
 	// import { openModal } from '$utils/modal';
 	// import LinkModal from './Toolbar/LinkModal.svelte';
-	// import { Code } from 'lucide-svelte';
 	import * as DropdownMenu from '@components/ui/dropdown-menu';
 	import { Button } from '@components/ui/button';
 	import { NDKUser } from '@nostr-dev-kit/ndk';
 	import { ListBullet } from 'svelte-radix';
 	import type { Editor } from 'svelte-tiptap';
+	import * as Tooltip from '@components/ui/tooltip';
 
 	type Props = {
 		editor: Editor;
 		class: string;
 		onMention?: () => void;
+		onToggleRaw?: () => void;
 	};
 
-	const { editor, class: className = '', onMention }: Props = $props();
+	const { editor, class: className = '', onMention, onToggleRaw }: Props = $props();
 
 	let listening = false;
 
@@ -70,12 +72,26 @@
 <div class="flex w-full flex-row items-center justify-between {className}">
 	<div class="divide-border editor-toolbar flex flex-row items-center divide-x">
 		<div class="button-group">
-			<button onclick={() => editor.chain().focus().undo().run()} disabled={!undo}>
-				<Undo size={18} weight="bold" />
-			</button>
-			<button onclick={() => editor.chain().focus().redo().run()} disabled={!redo}>
-				<Redo size={18} weight="bold" />
-			</button>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={() => editor.chain().focus().undo().run()} disabled={!undo}>
+							<Undo size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Undo</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={() => editor.chain().focus().redo().run()} disabled={!redo}>
+							<Redo size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Redo</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
 		</div>
 
 		<div class="button-group">
@@ -83,47 +99,116 @@
         </div>
 
 		<div class="button-group">
-			<button onclick={() => editor.chain().focus().toggleBold().run()} class:active={bold}>
-				<Bold size={18} weight="bold" />
-			</button>
-			<button onclick={() => editor.chain().focus().toggleItalic().run()} class:active={italic}>
-				<Italic size={18} weight="bold" />
-			</button>
-			<button
-				onclick={() => editor.chain().focus().toggleBlockquote().run()}
-				class:active={blockquote}
-			>
-				<Quote size={18} />
-			</button>
-			<button onclick={() => editor.chain().focus().toggleStrike().run()} class:active={strike}>
-				<Strikethrough size={18} weight="bold" />
-			</button>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={() => editor.chain().focus().toggleBold().run()} class:active={bold}>
+							<Bold size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Bold</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={() => editor.chain().focus().toggleItalic().run()} class:active={italic}>
+							<Italic size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Italic</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={() => editor.chain().focus().toggleBlockquote().run()} class:active={blockquote}>
+							<Quote size={18} />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Blockquote</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={() => editor.chain().focus().toggleStrike().run()} class:active={strike}>
+							<Strikethrough size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Strikethrough</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
 		</div>
 
 		<div class="button-group">
-			<Image {editor} />
-			<button onclick={mentionPicker}>
-				<AtSign size={18} weight="bold" />
-			</button>
-			<button onclick={linkClick} class:active={link}>
-				<Link size={18} weight="bold" />
-			</button>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<Image {editor} />
+					</Tooltip.Trigger>
+					<Tooltip.Content>Image</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={mentionPicker}>
+							<AtSign size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Mention people or content in nostr</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={linkClick} class:active={link}>
+							<Link size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Link</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
 		</div>
 
 		<div class="button-group">
-			<button
-				onclick={() => editor.chain().focus().toggleBulletList().run()}
-				class:active={bulletList}
-			>
-				<ListBullet size={18} weight="bold" />
-			</button>
-			<button
-				onclick={() => editor.chain().focus().toggleOrderedList().run()}
-				class:active={orderedList}
-			>
-				<ListOrdered size={18} weight="bold" />
-			</button>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={() => editor.chain().focus().toggleBulletList().run()} class:active={bulletList}>
+							<ListBullet size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Bullet List</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+			<Tooltip.Provider>
+				<Tooltip.Root delayDuration={0}>
+					<Tooltip.Trigger>
+						<button onclick={() => editor.chain().focus().toggleOrderedList().run()} class:active={orderedList}>
+							<ListOrdered size={18} weight="bold" />
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>Ordered List</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.Provider>
 		</div>
+
+		{#if onToggleRaw}
+			<div class="button-group">
+				<Tooltip.Provider>
+					<Tooltip.Root delayDuration={0}>
+						<Tooltip.Trigger>
+							<button onclick={onToggleRaw}>
+								<Code size={18} weight="bold" />
+							</button>
+						</Tooltip.Trigger>
+						<Tooltip.Content>Toggle raw editor</Tooltip.Content>
+					</Tooltip.Root>
+				</Tooltip.Provider>
+			</div>
+		{/if}
 	</div>
 </div>
 
