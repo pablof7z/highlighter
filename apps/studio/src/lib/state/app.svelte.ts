@@ -6,15 +6,19 @@ class AppState {
     relays = $state<string[]>([
         'wss://relay.primal.net',
         'wss://relay.damus.io',
+        'wss://nos.lol',
     ]);
     draftRelays = $state<string[]>([
         'wss://relay.primal.net',
-        'wss://f7z.io'
+        'wss://relay.damus.io',
+        'wss://nos.lol'
     ]);
 
     activeEvent = $state<NDKEvent | null>(null);
 
     postState = $state<ArticleState | ThreadState | null>(null);
+
+    activeBlossomServer = $state<string>("https://nostr.download");
 }
 
 export const appState = new AppState();

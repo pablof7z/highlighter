@@ -43,6 +43,8 @@ ndk.on('signer:ready', async (signer) => {
 				case NDKKind.BlossomList:
 					if (!blossomListEvent || event.created_at! > blossomListEvent.created_at!) {
 						blossomListEvent = event;
+
+						appState.activeBlossomServer = blossomServers[0];
 					}
 					break;
 			}
