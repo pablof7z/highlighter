@@ -1,0 +1,60 @@
+name: Deploy to TestFlight
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to TestFlight
+    runs-on: macos-14
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.4.app
+    
+    - name: Install dependencies
+      run: |
+        brew install xcodegen
+        brew install xcbeautify
+    
+    - name: Setup API Key
+      env:
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      run: |
+        mkdir -p ~/.appstoreconnect/private_keys
+        echo "$APP_STORE_CONNECT_API_KEY" > ~/.appstoreconnect/private_keys/AuthKey_6VZ4NHWMQN.p8
+    
+    - name: Generate Xcode project
+      run: ./refresh-project.sh
+    
+    - name: Build and deploy
+      env:
+        API_KEY_ID: "6VZ4NHWMQN"
+        API_ISSUER_ID: "0acdb473-8d3f-4eba-85bc-d2de82234bea"
+      run: |
+        xcodebuild archive \
+          -project Highlighter.xcodeproj \
+          -scheme Highlighter \
+          -configuration Release \
+          -archivePath build/Highlighter.xcarchive \
+          -destination "generic/platform=iOS" \
+          CODE_SIGN_STYLE=Automatic \
+          DEVELOPMENT_TEAM="456SHKPP26" \
+          | xcbeautify
+        
+        xcodebuild -exportArchive \
+          -archivePath build/Highlighter.xcarchive \
+          -exportPath build \
+          -exportOptionsPlist ExportOptions-TestFlight.plist \
+          | xcbeautify
+        
+        xcrun altool --upload-app \
+          -f build/Highlighter.ipa \
+          -t ios \
+          --apiKey "$API_KEY_ID" \
+          --apiIssuer "$API_ISSUER_ID"

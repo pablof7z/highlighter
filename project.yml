@@ -1,0 +1,80 @@
+name: Highlighter
+options:
+  bundleIdPrefix: com.highlighter
+  deploymentTarget:
+    iOS: 17.0
+  groupSortPosition: top
+  generateEmptyDirectories: true
+packages:
+  NDKSwift:
+    url: https://github.com/pablof7z/NDKSwift
+    from: 0.2.0
+targets:
+  Highlighter:
+    type: application
+    platform: iOS
+    sources:
+      - Sources
+      - path: Resources
+        buildPhase: resources
+    dependencies:
+      - package: NDKSwift
+        product: NDKSwift
+      - package: NDKSwift
+        product: NDKSwiftUI
+    settings:
+      base:
+        # Code Signing Settings - Update these with your values
+        DEVELOPMENT_TEAM: "456SHKPP26"
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "Apple Development"
+        PROVISIONING_PROFILE_SPECIFIER: ""
+        
+        # App Settings
+        PRODUCT_BUNDLE_IDENTIFIER: com.highlighter.ios
+        PRODUCT_NAME: Highlighter
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        INFOPLIST_FILE: Sources/Highlighter/App/Info.plist
+        ENABLE_PREVIEWS: YES
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        IPHONEOS_DEPLOYMENT_TARGET: 17.0
+        SWIFT_VERSION: 5.9
+        TARGETED_DEVICE_FAMILY: 1
+      configs:
+        Debug:
+          SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+          DEBUG_INFORMATION_FORMAT: dwarf
+          ENABLE_TESTABILITY: YES
+          GCC_DYNAMIC_NO_PIC: NO
+          GCC_OPTIMIZATION_LEVEL: 0
+          GCC_PREPROCESSOR_DEFINITIONS: DEBUG=1
+          MTL_ENABLE_DEBUG_INFO: INCLUDE_SOURCE
+          ONLY_ACTIVE_ARCH: YES
+        Release:
+          SWIFT_OPTIMIZATION_LEVEL: "-O"
+          DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+          ENABLE_NS_ASSERTIONS: NO
+          ENABLE_TESTABILITY: NO
+          GCC_OPTIMIZATION_LEVEL: s
+          MTL_ENABLE_DEBUG_INFO: NO
+          SWIFT_COMPILATION_MODE: wholemodule
+          VALIDATE_PRODUCT: YES
+schemes:
+  Highlighter:
+    build:
+      targets:
+        Highlighter: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
