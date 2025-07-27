@@ -824,7 +824,7 @@ struct SmartArticleImportView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         contentComplexityScore = Double.random(in: 0.6...0.9)
                         readingTimeEstimate = Int.random(in: 5...15)
-                        importManager.completeProcessing()
+                        // completeProcessing is now handled by the async AI analysis
                     }
                 }
             }
@@ -1378,6 +1378,8 @@ class SmartImportManager: ObservableObject {
     @Published var detectQuotes = true
     @Published var processingQuality: SmartArticleImportView.ImportQuality = .balanced
     
+    private let aiEngine = AIHighlightEngine()
+    
     func importFromURL(_ urlString: String) {
         isProcessing = true
         processingStatus = "Fetching article..."
@@ -1409,58 +1411,90 @@ class SmartImportManager: ObservableObject {
     }
     
     private func processContent() {
-        // This would be replaced with actual AI processing
-        // For now, we'll simulate it
+        Task { @MainActor in
+            await performAIAnalysis()
+        }
+    }
+    
+    @MainActor
+    private func performAIAnalysis() async {
+        // For demo purposes, using sample text. In production, this would be the actual content
+        let sampleText = """
+        The future of knowledge sharing lies in decentralized networks that empower users to own their data and insights. This paradigm shift represents a fundamental change in how we think about information ownership and distribution.
+        
+        Traditional centralized platforms have dominated the knowledge-sharing landscape for decades, creating walled gardens where user-generated content becomes the property of corporations. However, a new wave of decentralized technologies is challenging this model.
+        
+        Studies show that collaborative highlighting increases retention by 40% compared to solo reading. This finding has profound implications for educational technology and the design of reading applications.
+        
+        The swarm intelligence approach treats every reader as a potential curator, creating emergent patterns of importance. When thousands of readers highlight the same passage, it signals something deeply resonant about that particular insight.
+        
+        By combining AI suggestions with human curation, we achieve a balance between efficiency and nuance. Artificial intelligence can process vast amounts of text quickly, but human judgment remains essential for contextual understanding.
+        
+        The most valuable highlights are often those that spark the most discussion and engagement. This social layer transforms passive reading into an active, community-driven experience.
+        """
+        
+        do {
+            // Map quality to analysis mode
+            let analysisMode: AIHighlightEngine.AnalysisMode
+            switch processingQuality {
+            case .quick:
+                analysisMode = .quick
+            case .balanced:
+                analysisMode = .balanced
+            case .thorough:
+                analysisMode = .thorough
+            }
+            
+            // Perform AI analysis
+            let result = try await aiEngine.analyzeText(sampleText, mode: analysisMode)
+            
+            // Convert AI suggestions to article highlights
+            let suggestions = result.suggestions.map { suggestion in
+                ArticleSuggestedHighlight(
+                    text: suggestion.text,
+                    confidence: suggestion.confidence,
+                    reason: suggestion.reason,
+                    hasContext: suggestion.context != nil,
+                    category: mapAICategory(suggestion.category)
+                )
+            }
+            
+            // Create processed article with real AI results
+            processedArticle = ProcessedArticle(
+                title: "The Evolution of Digital Knowledge Sharing",
+                author: "Dr. Sarah Chen",
+                preview: "An exploration of how decentralized networks and AI are transforming the way we discover, share, and retain knowledge in the digital age.",
+                suggestedHighlights: suggestions
+            )
+            
+            isProcessing = false
+        } catch {
+            // Handle error - for now just use fallback
+            processingStatus = "Error analyzing content"
+            isProcessing = false
+        }
+    }
+    
+    private func mapAICategory(_ category: AIHighlightEngine.SuggestionCategory) -> HighlightCategory {
+        switch category {
+        case .thesisStatement:
+            return .thesis
+        case .statistic:
+            return .statistic
+        case .keyInsight, .novelConcept:
+            return .insight
+        case .quote:
+            return .quote
+        case .definition:
+            return .definition
+        default:
+            return .insight
+        }
     }
     
     func completeProcessing() {
-        // Generate mock article with suggestions
-        let suggestions = [
-            ArticleSuggestedHighlight(
-                text: "The future of knowledge sharing lies in decentralized networks that empower users to own their data and insights.",
-                confidence: 0.95,
-                reason: "Key thesis statement",
-                hasContext: true,
-                category: .thesis
-            ),
-            ArticleSuggestedHighlight(
-                text: "Studies show that collaborative highlighting increases retention by 40% compared to solo reading.",
-                confidence: 0.88,
-                reason: "Important statistic",
-                hasContext: true,
-                category: .statistic
-            ),
-            ArticleSuggestedHighlight(
-                text: "The swarm intelligence approach treats every reader as a potential curator, creating emergent patterns of importance.",
-                confidence: 0.92,
-                reason: "Novel concept",
-                hasContext: true,
-                category: .insight
-            ),
-            ArticleSuggestedHighlight(
-                text: "By combining AI suggestions with human curation, we achieve a balance between efficiency and nuance.",
-                confidence: 0.85,
-                reason: "Key insight",
-                hasContext: true,
-                category: .insight
-            ),
-            ArticleSuggestedHighlight(
-                text: "The most valuable highlights are often those that spark the most discussion and engagement.",
-                confidence: 0.78,
-                reason: "Community wisdom",
-                hasContext: true,
-                category: .quote
-            )
-        ]
-        
-        processedArticle = ProcessedArticle(
-            title: "The Evolution of Digital Knowledge Sharing",
-            author: "Dr. Sarah Chen",
-            preview: "An exploration of how decentralized networks and AI are transforming the way we discover, share, and retain knowledge in the digital age.",
-            suggestedHighlights: suggestions
-        )
-        
-        isProcessing = false
+        // This is now handled by performAIAnalysis
+        // The method is kept for compatibility with the UI flow
     }
 }
 

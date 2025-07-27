@@ -2,9 +2,6 @@ import SwiftUI
 
 struct EmptyHighlightsView: View {
     @State private var animationPhase = false
-    @State private var floatingBooks: [FloatingBook] = []
-    @State private var glowIntensity: Double = 0
-    @State private var rotationAngle: Double = 0
     @State private var isPressed = false
     let onCreateHighlight: (() -> Void)?
     
@@ -13,119 +10,39 @@ struct EmptyHighlightsView: View {
     }
     
     var body: some View {
-        ZStack {
-            // Floating background elements
-            ForEach(floatingBooks) { book in
-                FloatingBookView(book: book)
-            }
-            
-            VStack(spacing: 40) {
+        VStack(spacing: 40) {
                 Spacer()
                 
-                // Animated central icon
+                // Simplified central icon
                 ZStack {
-                    // Ambient glow
+                    // Background circle with subtle material effect
                     Circle()
-                        .fill(
-                            RadialGradient(
+                        .fill(.ultraThinMaterial)
+                        .frame(width: 90, height: 90)
+                        .overlay(
+                            Circle()
+                                .stroke(
+                                    Color.white.opacity(0.1),
+                                    lineWidth: 1
+                                )
+                        )
+                    
+                    // Highlighter icon with gentle animation
+                    Image(systemName: "highlighter")
+                        .font(.system(size: 40, weight: .light))
+                        .foregroundStyle(
+                            LinearGradient(
                                 colors: [
-                                    DesignSystem.Colors.primary.opacity(0.2 * glowIntensity),
-                                    DesignSystem.Colors.secondary.opacity(0.1 * glowIntensity),
-                                    Color.clear
+                                    DesignSystem.Colors.primary,
+                                    DesignSystem.Colors.secondary
                                 ],
-                                center: .center,
-                                startRadius: 20,
-                                endRadius: 100
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
                             )
                         )
-                        .frame(width: 200, height: 200)
-                        .blur(radius: 20)
-                    
-                    // Rotating rings
-                    ForEach(0..<3) { index in
-                        Circle()
-                            .stroke(
-                                AngularGradient(
-                                    colors: [
-                                        DesignSystem.Colors.primary.opacity(0.3),
-                                        DesignSystem.Colors.secondary.opacity(0.2),
-                                        DesignSystem.Colors.primary.opacity(0.1),
-                                        DesignSystem.Colors.secondary.opacity(0.3)
-                                    ],
-                                    center: .center,
-                                    startAngle: .degrees(0),
-                                    endAngle: .degrees(360)
-                                ),
-                                lineWidth: 2 - CGFloat(index) * 0.5
-                            )
-                            .frame(
-                                width: 140 + CGFloat(index) * 30,
-                                height: 140 + CGFloat(index) * 30
-                            )
-                            .rotationEffect(.degrees(rotationAngle + Double(index) * 120))
-                            .opacity(1 - Double(index) * 0.3)
-                    }
-                    
-                    // Central icon composition
-                    ZStack {
-                        // Background circle
-                        Circle()
-                            .fill(.ultraThinMaterial)
-                            .frame(width: 100, height: 100)
-                            .overlay(
-                                Circle()
-                                    .stroke(
-                                        LinearGradient(
-                                            colors: [
-                                                Color.white.opacity(0.3),
-                                                Color.white.opacity(0.1)
-                                            ],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        ),
-                                        lineWidth: 1
-                                    )
-                            )
-                        
-                        // Animated highlighter icon
-                        ZStack {
-                            Image(systemName: "highlighter")
-                                .font(.system(size: 44, weight: .light))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [
-                                            DesignSystem.Colors.primary,
-                                            DesignSystem.Colors.secondary
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                                .rotationEffect(.degrees(animationPhase ? -10 : 10))
-                                .offset(y: animationPhase ? -3 : 3)
-                            
-                            // Sparkle effects
-                            ForEach(0..<4) { index in
-                                Image(systemName: "sparkle")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(DesignSystem.Colors.secondary)
-                                    .offset(
-                                        x: cos(CGFloat(index) * .pi / 2) * 40,
-                                        y: sin(CGFloat(index) * .pi / 2) * 40
-                                    )
-                                    .opacity(animationPhase ? 0.8 : 0.2)
-                                    .scaleEffect(animationPhase ? 1 : 0.8)
-                                    .animation(
-                                        .easeInOut(duration: 2)
-                                        .repeatForever(autoreverses: true)
-                                        .delay(Double(index) * 0.2),
-                                        value: animationPhase
-                                    )
-                            }
-                        }
-                    }
-                    .scaleEffect(animationPhase ? 1.05 : 0.95)
+                        .rotationEffect(.degrees(animationPhase ? -5 : 5))
                 }
+                .scaleEffect(animationPhase ? 1.02 : 0.98)
                 
                 VStack(spacing: 20) {
                     Text("Your Highlights Await")
@@ -141,75 +58,42 @@ struct EmptyHighlightsView: View {
                         .lineSpacing(4)
                 }
                 
-                // Enhanced CTA Button
+                // Simplified CTA Button
                 Button(action: {
                     HapticManager.shared.impact(.medium)
                     onCreateHighlight?()
                 }) {
-                    ZStack {
-                        // Button glow
+                    HStack(spacing: 10) {
+                        Image(systemName: "highlighter")
+                            .font(.system(size: 18, weight: .medium))
+                        
+                        Text("Create First Highlight")
+                            .font(.system(size: 16, weight: .medium))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(
                         Capsule()
                             .fill(
                                 LinearGradient(
                                     colors: [
-                                        DesignSystem.Colors.primary.opacity(0.6),
-                                        DesignSystem.Colors.secondary.opacity(0.4)
+                                        DesignSystem.Colors.primary,
+                                        DesignSystem.Colors.secondary
                                     ],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
                             )
-                            .frame(width: 200, height: 60)
-                            .blur(radius: 20)
-                            .opacity(glowIntensity)
-                        
-                        HStack(spacing: 10) {
-                            Image(systemName: "highlighter")
-                                .font(.system(size: 18, weight: .semibold))
-                                .rotationEffect(.degrees(isPressed ? 360 : 0))
-                            
-                            Text("Create First Highlight")
-                                .font(.system(size: 16, weight: .semibold))
-                        }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 28)
-                        .padding(.vertical, 14)
-                        .background(
-                            Capsule()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [
-                                            DesignSystem.Colors.primary,
-                                            DesignSystem.Colors.secondary
-                                        ],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                                .overlay(
-                                    Capsule()
-                                        .stroke(
-                                            LinearGradient(
-                                                colors: [
-                                                    Color.white.opacity(0.4),
-                                                    Color.white.opacity(0.1)
-                                                ],
-                                                startPoint: .top,
-                                                endPoint: .bottom
-                                            ),
-                                            lineWidth: 1
-                                        )
-                                )
-                        )
-                        .shadow(
-                            color: DesignSystem.Colors.primary.opacity(0.4),
-                            radius: isPressed ? 4 : 12,
-                            x: 0,
-                            y: isPressed ? 2 : 6
-                        )
-                    }
+                    )
+                    .shadow(
+                        color: DesignSystem.Colors.primary.opacity(0.3),
+                        radius: isPressed ? 4 : 8,
+                        x: 0,
+                        y: isPressed ? 2 : 4
+                    )
                 }
-                .scaleEffect(isPressed ? 0.95 : (animationPhase ? 1.05 : 1.0))
+                .scaleEffect(isPressed ? 0.96 : 1.0)
                 .onLongPressGesture(minimumDuration: 0.1, maximumDistance: .infinity, pressing: { pressing in
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         isPressed = pressing
@@ -231,75 +115,17 @@ struct EmptyHighlightsView: View {
                     }
                 }
                 .padding(.bottom, 40)
-                .opacity(animationPhase ? 0.8 : 1)
-            }
+                .opacity(0.8)
         }
         .onAppear {
             startAnimations()
-            generateFloatingBooks()
         }
     }
     
     private func startAnimations() {
-        withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
+        withAnimation(.easeInOut(duration: 4).repeatForever(autoreverses: true)) {
             animationPhase = true
         }
-        
-        withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
-            rotationAngle = 360
-        }
-        
-        withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
-            glowIntensity = 1
-        }
-    }
-    
-    private func generateFloatingBooks() {
-        floatingBooks = (0..<6).map { _ in
-            FloatingBook(
-                emoji: ["📚", "📖", "📕", "📗", "📘", "📙"].randomElement()!,
-                startX: CGFloat.random(in: 0...UIScreen.main.bounds.width),
-                startY: CGFloat.random(in: -100...UIScreen.main.bounds.height + 100),
-                duration: Double.random(in: 15...25)
-            )
-        }
-    }
-}
-
-struct FloatingBook: Identifiable {
-    let id = UUID()
-    let emoji: String
-    let startX: CGFloat
-    let startY: CGFloat
-    let duration: Double
-    var endX: CGFloat = CGFloat.random(in: 0...UIScreen.main.bounds.width)
-    var endY: CGFloat = CGFloat.random(in: -100...UIScreen.main.bounds.height + 100)
-}
-
-struct FloatingBookView: View {
-    let book: FloatingBook
-    @State private var position = CGPoint.zero
-    @State private var opacity: Double = 0
-    
-    var body: some View {
-        Text(book.emoji)
-            .font(.system(size: 30))
-            .opacity(opacity)
-            .position(position)
-            .onAppear {
-                position = CGPoint(x: book.startX, y: book.startY)
-                
-                withAnimation(.easeIn(duration: 1)) {
-                    opacity = 0.3
-                }
-                
-                withAnimation(
-                    .linear(duration: book.duration)
-                    .repeatForever(autoreverses: false)
-                ) {
-                    position = CGPoint(x: book.endX, y: book.endY)
-                }
-            }
     }
 }
 
