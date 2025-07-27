@@ -19,16 +19,13 @@ class AppState: ObservableObject {
     @Published private(set) var engagementService = EngagementService()
     @Published private(set) var lightningService = LightningService()
     
-    // Computed Content State (from services)
-    var highlights: [HighlightEvent] { dataStreamManager.highlights }
-    var curations: [ArticleCuration] { dataStreamManager.curations }
-    var userCurations: [ArticleCuration] { 
-        // For now, return all curations - proper implementation would need async context
-        // to fetch the current user's pubkey
-        return curations
-    }
-    var followPacks: [FollowPack] { dataStreamManager.followPacks }
-    var articles: [Article] { dataStreamManager.articles }
+    // Content State - these need to be @Published for UI updates
+    @Published var highlights: [HighlightEvent] = []
+    @Published var curations: [ArticleCuration] = []
+    @Published var userCurations: [ArticleCuration] = []
+    @Published var followPacks: [FollowPack] = []
+    @Published var articles: [Article] = []
+    @Published var savedArticles: [Article] = []
     var currentUserProfile: NDKUserProfile? { profileManager.currentUserProfile }
     
     // App-level state
@@ -46,7 +43,42 @@ class AppState: ObservableObject {
     
     @Published var userPubkey: String?
     
-    init() {}
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        setupBindings()
+    }
+    
+    private func setupBindings() {
+        // Sync DataStreamManager content with AppState
+        dataStreamManager.$highlights
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$highlights)
+        
+        dataStreamManager.$curations
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$curations)
+        
+        dataStreamManager.$followPacks
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$followPacks)
+        
+        dataStreamManager.$articles
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$articles)
+        
+        // User curations will be filtered based on current user
+        dataStreamManager.$curations
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] allCurations in
+                guard let self = self, let userPubkey = self.userPubkey else {
+                    self?.userCurations = []
+                    return
+                }
+                self.userCurations = allCurations.filter { $0.author == userPubkey }
+            }
+            .store(in: &cancellables)
+    }
     
     func initialize() async {
         do {

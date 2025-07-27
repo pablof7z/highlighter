@@ -181,19 +181,104 @@ struct LibraryView: View {
     }
     
     private func loadHighlights() async {
-        // Placeholder for loading highlights
+        guard let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return }
+        
+        do {
+            let pubkey = try await signer.pubkey
+            let filter = NDKFilter(
+                authors: [pubkey],
+                kinds: [9802], // NIP-84 highlights
+                limit: 100
+            )
+            
+            let dataSource = await ndk.outbox.observe(
+                filter: filter,
+                maxAge: 300 // 5 minute cache
+            )
+            
+            var highlights: [HighlightEvent] = []
+            for await event in dataSource.events {
+                if let highlight = try? HighlightEvent(from: event) {
+                    highlights.append(highlight)
+                }
+            }
+            
+            await MainActor.run {
+                appState.highlights = highlights.sorted { $0.createdAt > $1.createdAt }
+            }
+        } catch {
+            print("Failed to load highlights: \(error)")
+        }
     }
     
     private func loadCurations() async {
-        // Placeholder for loading curations
+        guard let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return }
+        
+        do {
+            let pubkey = try await signer.pubkey
+            let filter = NDKFilter(
+                authors: [pubkey],
+                kinds: [30004], // Article curations
+                limit: 50
+            )
+            
+            let dataSource = await ndk.outbox.observe(
+                filter: filter,
+                maxAge: 300 // 5 minute cache
+            )
+            
+            var curations: [ArticleCuration] = []
+            for await event in dataSource.events {
+                if let curation = try? ArticleCuration(from: event) {
+                    curations.append(curation)
+                }
+            }
+            
+            await MainActor.run {
+                appState.userCurations = curations.sorted { $0.createdAt > $1.createdAt }
+            }
+        } catch {
+            print("Failed to load curations: \(error)")
+        }
     }
     
     private func loadArticles() async {
-        // Placeholder for loading articles
+        guard let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return }
+        
+        do {
+            let pubkey = try await signer.pubkey
+            let filter = NDKFilter(
+                authors: [pubkey],
+                kinds: [30023], // Long-form articles
+                limit: 50
+            )
+            
+            let dataSource = await ndk.outbox.observe(
+                filter: filter,
+                maxAge: 300 // 5 minute cache
+            )
+            
+            var articles: [Article] = []
+            for await event in dataSource.events {
+                if let article = try? Article(from: event) {
+                    articles.append(article)
+                }
+            }
+            
+            await MainActor.run {
+                appState.savedArticles = articles.sorted { $0.createdAt > $1.createdAt }
+            }
+        } catch {
+            print("Failed to load articles: \(error)")
+        }
     }
     
     private func loadActivity() async {
-        // Placeholder for loading activity
+        // Activity is loaded in RecentActivitySection component
+        // This method can be used for additional activity loading if needed
     }
     
     @ViewBuilder
