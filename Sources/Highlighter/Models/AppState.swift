@@ -23,8 +23,9 @@ class AppState: ObservableObject {
     var highlights: [HighlightEvent] { dataStreamManager.highlights }
     var curations: [ArticleCuration] { dataStreamManager.curations }
     var userCurations: [ArticleCuration] { 
-        // For now, return empty array - proper implementation would track pubkey state
-        return []
+        // For now, return all curations - proper implementation would need async context
+        // to fetch the current user's pubkey
+        return curations
     }
     var followPacks: [FollowPack] { dataStreamManager.followPacks }
     var currentUserProfile: NDKUserProfile? { profileManager.currentUserProfile }

@@ -447,7 +447,7 @@ struct RecentActivitySection: View {
                 let filter = NDKFilter(
                     authors: [pubkey],
                     kinds: [7, 9735, 9802, 30004, 30023], // reactions, zaps, highlights, curations, articles
-                    since: Int(since.timeIntervalSince1970),
+                    since: Int64(since.timeIntervalSince1970),
                     limit: 20
                 )
                 
@@ -514,7 +514,8 @@ struct RecentActivitySection: View {
     private func extractZapAmount(from event: NDKEvent) -> Int? {
         // Extract zap amount from bolt11 tag
         if let bolt11Tag = event.tags.first(where: { $0.first == "bolt11" && $0.count > 1 }),
-           let bolt11 = bolt11Tag[1] as? String {
+           bolt11Tag.count > 1 {
+            let bolt11 = bolt11Tag[1]
             // Simple extraction - in production, use proper Lightning invoice parsing
             if let range = bolt11.range(of: "lnbc"),
                let endRange = bolt11.range(of: "1p", range: range.upperBound..<bolt11.endIndex) {

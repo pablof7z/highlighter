@@ -128,7 +128,7 @@ class LightningService: ObservableObject {
         comment: String? = nil
     ) async throws -> ZapTransaction {
         guard let nwc = nwc else { throw LightningError.walletNotConnected }
-        guard let ndk = ndk else { throw LightningError.ndkNotInitialized }
+        guard ndk != nil else { throw LightningError.ndkNotInitialized }
         
         // Create pending zap for UI feedback
         let pendingZap = PendingZap(
@@ -235,7 +235,7 @@ class LightningService: ObservableObject {
         comment: String? = nil
     ) async throws {
         guard let nwc = nwc else { throw LightningError.walletNotConnected }
-        guard let ndk = ndk else { throw LightningError.ndkNotInitialized }
+        guard ndk != nil else { throw LightningError.ndkNotInitialized }
         
         let zapRequest = try await createZapRequest(
             amount: amount,
@@ -570,8 +570,12 @@ class LightningService: ObservableObject {
         }
         
         var percentage: Double {
-            // This would be calculated based on total amount in actual usage
-            return 0.33 // Placeholder
+            // Default percentages based on role
+            switch role {
+            case .highlighter: return 0.5
+            case .author: return 0.4
+            case .curator: return 0.1
+            }
         }
         
         enum SplitStatus {

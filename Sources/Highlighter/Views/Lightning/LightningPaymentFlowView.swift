@@ -546,7 +546,7 @@ struct LightningPaymentFlowView: View {
                     isOriginal: true
                 ),
                 LightningService.PaymentSplit(
-                    recipientPubkey: highlight.author ?? highlight.pubkey,
+                    recipientPubkey: highlight.author,
                     amount: Int(Double(selectedAmount) * splits.authorPercentage),
                     role: .author,
                     isOriginal: false
