@@ -137,7 +137,7 @@ actor AIHighlightEngine {
         let cleanedText = preprocessText(text)
         
         // Extract document structure
-        let paragraphs = extractParagraphs(from: cleanedText)
+        _ = extractParagraphs(from: cleanedText)
         let sentences = extractSentences(from: cleanedText)
         
         // Calculate document metrics

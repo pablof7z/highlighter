@@ -365,10 +365,9 @@ struct EditProfileView: View {
         
         do {
             if let data = try await item.loadTransferable(type: Data.self) {
-                // In a real app, upload to a hosting service and get URL
-                // For now, just simulate with a placeholder
+                // Image upload functionality would go here
+                // Currently not implemented - requires image hosting service
                 await MainActor.run {
-                    profile.picture = "https://example.com/profile.jpg"
                     isLoadingPhoto = false
                 }
             }
@@ -386,10 +385,9 @@ struct EditProfileView: View {
         
         do {
             if let data = try await item.loadTransferable(type: Data.self) {
-                // In a real app, upload to a hosting service and get URL
-                // For now, just simulate with a placeholder
+                // Image upload functionality would go here
+                // Currently not implemented - requires image hosting service
                 await MainActor.run {
-                    profile.banner = "https://example.com/banner.jpg"
                     isLoadingBanner = false
                 }
             }

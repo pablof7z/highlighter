@@ -182,22 +182,18 @@ struct LibraryView: View {
     
     private func loadHighlights() async {
         // Placeholder for loading highlights
-        // Currently the app shows mock data which is fine for now
     }
     
     private func loadCurations() async {
         // Placeholder for loading curations
-        // Currently the app shows mock data which is fine for now
     }
     
     private func loadArticles() async {
         // Placeholder for loading articles
-        // Currently the app shows mock data which is fine for now
     }
     
     private func loadActivity() async {
         // Placeholder for loading activity
-        // Currently the app shows mock data which is fine for now
     }
     
     @ViewBuilder
@@ -426,7 +422,7 @@ struct RecentActivitySection: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: DesignSystem.Spacing.medium) {
-                    ForEach(mockActivities) { activity in
+                    ForEach(activities) { activity in
                         ActivityCard(activity: activity)
                     }
                 }

@@ -42,11 +42,7 @@ class AppState: ObservableObject {
         authManager.activeSigner
     }
     
-    var userPubkey: String? {
-        // This would need to be set asynchronously since pubkey is async
-        // For now return a placeholder
-        return nil
-    }
+    @Published var userPubkey: String?
     
     init() {}
     
@@ -77,6 +73,11 @@ class AppState: ObservableObject {
             
             // Initialize auth manager (restores sessions automatically)
             // await authManager.initialize()
+            
+            // Set user pubkey if authenticated
+            if let signer = activeSigner {
+                userPubkey = try? await signer.pubkey
+            }
             
             // Start NIP-77 sync in background
             Task {
@@ -214,7 +215,7 @@ class AppState: ObservableObject {
             // Starting NIP-77 sync for highlights from relay.damus.io
             
             // Perform NIP-77 sync with relay.damus.io
-            let syncResult = try await ndk.syncEvents(
+            _ = try await ndk.syncEvents(
                 filter: highlightFilter,
                 relay: "wss://relay.damus.io",
                 direction: .receive // Only download, don't upload

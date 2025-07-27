@@ -237,7 +237,16 @@ class PublishingService: ObservableObject {
                 title: curation.title ?? curation.name,
                 description: curation.description,
                 image: curation.image,
-                articles: curation.articleReferences,
+                articles: curation.articles.compactMap { ref in
+                    if let url = ref.url {
+                        return (.url, url)
+                    } else if let eventId = ref.eventId {
+                        return (.event, eventId)
+                    } else if let eventAddress = ref.eventAddress {
+                        return (.address, eventAddress)
+                    }
+                    return nil
+                },
                 signer: signer
             )
             
@@ -253,6 +262,6 @@ class PublishingService: ObservableObject {
     
     /// Delete a single curation
     func deleteCuration(_ curation: ArticleCuration) async throws {
-        await deleteCurations([curation])
+        try await deleteCurations([curation])
     }
 }

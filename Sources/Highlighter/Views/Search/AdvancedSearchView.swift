@@ -562,14 +562,20 @@ struct AdvancedSearchView: View {
                 case .articles:
                     // Search for articles (kind: 30023)
                     let articleFilter = NDKFilter(
-                        kinds: [30023],
-                        search: searchText
+                        kinds: [30023]
                     )
                     let dataSource = await ndk.outbox.observe(filter: articleFilter)
                     var articles: [Article] = []
                     for await event in dataSource.events {
-                        if let article = Article(from: event) {
-                            articles.append(article)
+                        if let article = try? Article(from: event) {
+                            // Filter by search text
+                            if searchText.isEmpty ||
+                               article.title.localizedCaseInsensitiveContains(searchText) ||
+                               (article.summary ?? "").localizedCaseInsensitiveContains(searchText) ||
+                               article.author.localizedCaseInsensitiveContains(searchText) ||
+                               article.content.localizedCaseInsensitiveContains(searchText) {
+                                articles.append(article)
+                            }
                         }
                     }
                     results.articles = articles
@@ -598,62 +604,65 @@ struct AdvancedSearchView: View {
     }
     
     private func searchHighlights(ndk: NDK) async -> [HighlightEvent] {
-        do {
-            let filter = NDKFilter(
-                kinds: [9802],
-                search: searchText
-            )
-            let dataSource = await ndk.outbox.observe(filter: filter)
-            var highlights: [HighlightEvent] = []
-            for await event in dataSource.events {
-                if let highlight = HighlightEvent(from: event) {
+        let filter = NDKFilter(
+            kinds: [9802]
+        )
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        var highlights: [HighlightEvent] = []
+        for await event in dataSource.events {
+            if let highlight = try? HighlightEvent(from: event) {
+                // Filter by search text
+                if searchText.isEmpty || 
+                   highlight.content.localizedCaseInsensitiveContains(searchText) ||
+                   (highlight.source ?? "").localizedCaseInsensitiveContains(searchText) ||
+                   highlight.author.localizedCaseInsensitiveContains(searchText) {
                     highlights.append(highlight)
                 }
             }
-            return highlights
-        } catch {
-            return []
         }
+        return highlights
     }
     
     private func searchUsers(ndk: NDK) async -> [(pubkey: String, profile: NDKUserProfile)] {
-        do {
-            // Search user metadata
-            let filter = NDKFilter(
-                kinds: [0],
-                search: searchText
-            )
-            let dataSource = await ndk.outbox.observe(filter: filter)
-            
-            var users: [(pubkey: String, profile: NDKUserProfile)] = []
-            for await event in dataSource.events {
-                if let profile = try? JSONDecoder().decode(NDKUserProfile.self, from: Data(event.content.utf8)) {
+        // Search user metadata
+        let filter = NDKFilter(
+            kinds: [0]
+        )
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        
+        var users: [(pubkey: String, profile: NDKUserProfile)] = []
+        for await event in dataSource.events {
+            if let profile = try? JSONDecoder().decode(NDKUserProfile.self, from: Data(event.content.utf8)) {
+                // Filter by search text
+                if searchText.isEmpty ||
+                   (profile.name ?? "").localizedCaseInsensitiveContains(searchText) ||
+                   (profile.displayName ?? "").localizedCaseInsensitiveContains(searchText) ||
+                   (profile.about ?? "").localizedCaseInsensitiveContains(searchText) {
                     users.append((event.pubkey, profile))
                 }
             }
-            return users
-        } catch {
-            return []
         }
+        return users
     }
     
     private func searchCurations(ndk: NDK) async -> [ArticleCuration] {
-        do {
-            let filter = NDKFilter(
-                kinds: [30004],
-                search: searchText
-            )
-            let dataSource = await ndk.outbox.observe(filter: filter)
-            var curations: [ArticleCuration] = []
-            for await event in dataSource.events {
-                if let curation = ArticleCuration(from: event) {
+        let filter = NDKFilter(
+            kinds: [30004]
+        )
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        var curations: [ArticleCuration] = []
+        for await event in dataSource.events {
+            if let curation = try? ArticleCuration(from: event) {
+                // Filter by search text
+                if searchText.isEmpty ||
+                   curation.name.localizedCaseInsensitiveContains(searchText) ||
+                   curation.title.localizedCaseInsensitiveContains(searchText) ||
+                   (curation.description ?? "").localizedCaseInsensitiveContains(searchText) {
                     curations.append(curation)
                 }
             }
-            return curations
-        } catch {
-            return []
         }
+        return curations
     }
     
     private func loadTrendingTopics() {
@@ -665,7 +674,7 @@ struct AdvancedSearchView: View {
                 let since = Date().addingTimeInterval(-24 * 60 * 60) // Last 24 hours
                 let filter = NDKFilter(
                     kinds: [9802],
-                    since: Int(since.timeIntervalSince1970)
+                    since: Int64(since.timeIntervalSince1970)
                 )
                 
                 let dataSource = await ndk.outbox.observe(filter: filter)
