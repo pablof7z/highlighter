@@ -84,7 +84,7 @@ struct FollowingListView: View {
             for followPubkey in followingPubkeys {
                 // Get cached profile if available
                 let profile = appState.profileManager.getCachedProfile(for: followPubkey)
-                followingList.append((pubkey: followPubkey, profile: profile)
+                followingList.append((pubkey: followPubkey, profile: profile))
             }
             
             break // We only need the first event

@@ -196,7 +196,7 @@ struct LightningWalletView: View {
                 endPoint: .bottomTrailing
             )
         )
-        .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous)
+        .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous))
         .modernCard()
     }
     
@@ -286,9 +286,9 @@ struct SplitIndicator: View {
                 
                 Circle()
                     .trim(from: 0, to: animatedPercentage)
-                    .stroke(color, style: StrokeStyle(lineWidth: 4, lineCap: .round)
+                    .stroke(color, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                     .frame(width: 60, height: 60)
-                    .rotationEffect(.degrees(-90)
+                    .rotationEffect(.degrees(-90))
                 
                 Text("\(Int(percentage * 100))%")
                     .font(.ds.captionMedium)
@@ -318,13 +318,13 @@ struct TransactionRow: View {
                 // Icon with animation
                 ZStack {
                     Circle()
-                        .fill(Color.orange.opacity(0.1)
+                        .fill(DesignSystem.Colors.secondary.opacity(0.1))
                         .frame(width: 40, height: 40)
                     
                     Image(systemName: "bolt.fill")
                         .font(.ds.body)
-                        .foregroundColor(.orange)
-                        .rotationEffect(.degrees(isPressed ? 360 : 0)
+                        .foregroundColor(DesignSystem.Colors.secondary)
+                        .rotationEffect(.degrees(isPressed ? 360 : 0))
                 }
                 
                 VStack(alignment: .leading, spacing: .ds.micro) {
@@ -362,7 +362,7 @@ struct TransactionRow: View {
             }
             .padding(.ds.base)
             .background(Color.ds.surfaceSecondary)
-            .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+            .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
             .scaleEffect(isPressed ? 0.98 : 1)
         }
         .buttonStyle(PlainButtonStyle())
@@ -401,10 +401,10 @@ struct ConnectWalletSheet: View {
                         .frame(width: 120, height: 120)
                     
                     Image(systemName: "bolt.circle.fill")
-                        .font(.system(size: 60)
+                        .font(.system(size: 60))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.orange, .yellow],
+                                colors: [DesignSystem.Colors.secondary, DesignSystem.Colors.secondaryLight],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -447,7 +447,7 @@ struct ConnectWalletSheet: View {
                     }
                     .padding(.ds.base)
                     .background(Color.ds.surfaceSecondary)
-                    .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                    .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
                 }
                 
                 HStack(spacing: .ds.medium) {
@@ -576,7 +576,7 @@ struct SplitConfigurationSheet: View {
                 }
                 .padding()
                 .background(Color.ds.surfaceSecondary)
-                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
                 
                 if !isValid {
                     HStack {
@@ -679,14 +679,14 @@ struct TransactionDetailSheet: View {
                                 .frame(width: 100, height: 100)
                             
                             Image(systemName: "bolt.fill")
-                                .font(.system(size: 40)
                                 .foregroundStyle(
                                     LinearGradient(
-                                        colors: [.orange, .yellow],
+                                        colors: [DesignSystem.Colors.secondary, DesignSystem.Colors.secondaryLight],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     )
                                 )
+                                .font(.system(size: 40))
                         }
                         
                         Text(transaction.formattedAmount)
@@ -711,7 +711,7 @@ struct TransactionDetailSheet: View {
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .background(Color.ds.surfaceSecondary)
-                                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
                         }
                     }
                     
@@ -766,7 +766,7 @@ struct SplitDetailRow: View {
         HStack {
             ZStack {
                 Circle()
-                    .fill(roleColor.opacity(0.1)
+                    .fill(roleColor.opacity(0.1))
                     .frame(width: 40, height: 40)
                 
                 Image(systemName: roleIcon)

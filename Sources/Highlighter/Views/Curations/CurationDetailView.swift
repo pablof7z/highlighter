@@ -56,7 +56,7 @@ struct CurationDetailView: View {
                         
                         // Gradient overlay
                         LinearGradient(
-                            colors: [Color.clear, Color.black.opacity(0.7)],
+                            colors: [Color.clear, DesignSystem.Colors.darkBackground.opacity(0.7)],
                             startPoint: .center,
                             endPoint: .bottom
                         )

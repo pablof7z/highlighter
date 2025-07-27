@@ -136,7 +136,7 @@ struct CurationManagementView: View {
                             .cornerRadius(DesignSystem.CornerRadius.medium)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                                    .stroke(DesignSystem.Colors.border, lineWidth: 1)
                             )
                             
                             // Sort button
@@ -683,7 +683,7 @@ struct CarouselView: View {
                     HStack(spacing: 8) {
                         ForEach(0..<curations.count, id: \.self) { index in
                             Circle()
-                                .fill(index == currentIndex ? DesignSystem.Colors.primary : Color.gray.opacity(0.3)
+                                .fill(index == currentIndex ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary
                                 .frame(width: 8, height: 8)
                                 .scaleEffect(index == currentIndex ? 1.2 : 1)
                                 .animation(DesignSystem.Animation.springSnappy, value: currentIndex)
@@ -777,7 +777,7 @@ struct CurationGridItem: View {
                 
                 // Selection overlay
                 if isEditMode {
-                    Color.black.opacity(isSelected ? 0.3 : 0)
+                    DesignSystem.Colors.darkBackground.opacity(isSelected ? 0.3 : 0)
                         .overlay(
                             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                                 .font(.title2)
@@ -844,7 +844,7 @@ struct CurationListRow: View {
             if isEditMode {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundColor(isSelected ? DesignSystem.Colors.primary : .gray)
+                    .foregroundColor(isSelected ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
                     .animation(DesignSystem.Animation.springSnappy, value: isSelected)
             }
             
@@ -1065,14 +1065,14 @@ struct ShimmerView: View {
     var body: some View {
         GeometryReader { geometry in
             Rectangle()
-                .fill(Color.gray.opacity(0.3)
+                .fill(DesignSystem.Colors.textTertiary
                 .overlay(
                     Rectangle()
                         .fill(
                             LinearGradient(
                                 colors: [
                                     Color.clear,
-                                    Color.white.opacity(0.3),
+                                    DesignSystem.Colors.surface.opacity(0.3),
                                     Color.clear
                                 ],
                                 startPoint: .leading,

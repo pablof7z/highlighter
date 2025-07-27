@@ -95,7 +95,7 @@ struct Article: Identifiable, Equatable {
         self.publishedAt = publishedAt
         self.tags = []
         
-        // Create a mock event for the convenience init
+        // Create event tags for the underlying NDKEvent
         var tags: [[String]] = [
             ["d", identifier],
             ["title", title]

@@ -33,10 +33,10 @@ struct CreateCurationView: View {
     
     let gradientColors: [[Color]] = [
         [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
-        [Color.blue, DesignSystem.Colors.primary],
-        [Color.pink, DesignSystem.Colors.secondary],
-        [Color.green, Color.blue],
-        [Color.indigo, Color.pink]
+        [DesignSystem.Colors.primary, DesignSystem.Colors.primaryLight],
+        [DesignSystem.Colors.secondary, DesignSystem.Colors.secondaryLight],
+        [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
+        [DesignSystem.Colors.primaryDark, DesignSystem.Colors.primary]
     ]
     
     var isFormValid: Bool {
@@ -153,7 +153,7 @@ struct CreateCurationView: View {
                                 .frame(width: 44, height: 44)
                                 .overlay(
                                     Circle()
-                                        .stroke(Color.white, lineWidth: 3)
+                                        .stroke(DesignSystem.Colors.surface, lineWidth: 3)
                                         .opacity(selectedColor == gradientColors[index].first ? 1 : 0)
                                 )
                         }
@@ -201,7 +201,7 @@ struct CreateCurationView: View {
                 if !curationName.isEmpty {
                     Text("\(curationName.count)/50")
                         .font(.ds.footnote)
-                        .foregroundColor(curationName.count > 50 ? .red : DesignSystem.Colors.textSecondary)
+                        .foregroundColor(curationName.count > 50 ? DesignSystem.Colors.error : DesignSystem.Colors.textSecondary)
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: nameFieldFocused)
@@ -233,7 +233,7 @@ struct CreateCurationView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(
-                                nameFieldFocused ? DesignSystem.Colors.primary : Color.gray.opacity(0.2),
+                                nameFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.border,
                                 lineWidth: nameFieldFocused ? 2 : 1
                             )
                     )
@@ -257,7 +257,7 @@ struct CreateCurationView: View {
                 if !curationTitle.isEmpty {
                     Text("\(curationTitle.count)/100")
                         .font(.ds.footnote)
-                        .foregroundColor(curationTitle.count > 100 ? .red : DesignSystem.Colors.textSecondary)
+                        .foregroundColor(curationTitle.count > 100 ? DesignSystem.Colors.error : DesignSystem.Colors.textSecondary)
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: titleFieldFocused)
@@ -287,7 +287,7 @@ struct CreateCurationView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(
-                                titleFieldFocused ? DesignSystem.Colors.primary : Color.gray.opacity(0.2),
+                                titleFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.border,
                                 lineWidth: titleFieldFocused ? 2 : 1
                             )
                     )
@@ -317,7 +317,7 @@ struct CreateCurationView: View {
             ZStack(alignment: .topLeading) {
                 if description.isEmpty {
                     Text("Describe your curation...")
-                        .foregroundColor(.gray.opacity(0.5)
+                        .foregroundColor(DesignSystem.Colors.textTertiary
                         .padding(.horizontal, DesignSystem.Spacing.micro)
                         .padding(.vertical, DesignSystem.Spacing.small)
                 }
@@ -336,7 +336,7 @@ struct CreateCurationView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(
-                                descriptionFieldFocused ? DesignSystem.Colors.primary : Color.gray.opacity(0.2),
+                                descriptionFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.border,
                                 lineWidth: descriptionFieldFocused ? 2 : 1
                             )
                     )
@@ -364,7 +364,7 @@ struct CreateCurationView: View {
                         .fill(DesignSystem.Colors.surface)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                                .stroke(DesignSystem.Colors.border, lineWidth: 1)
                         )
                 )
         }
@@ -412,7 +412,7 @@ struct CreateCurationView: View {
             HStack(spacing: 16) {
                 FeatureBadge(icon: "folder.fill", text: "Organize", color: DesignSystem.Colors.primary)
                 FeatureBadge(icon: "square.and.arrow.up", text: "Share", color: DesignSystem.Colors.secondary)
-                FeatureBadge(icon: "sparkles", text: "Discover", color: .blue)
+                FeatureBadge(icon: "sparkles", text: "Discover", color: DesignSystem.Colors.primary)
             }
         }
         .padding(DesignSystem.Spacing.large)
@@ -448,7 +448,7 @@ struct CreateCurationView: View {
                             LinearGradient(
                                 colors: isFormValid ? 
                                     [DesignSystem.Colors.primary, DesignSystem.Colors.primary.opacity(0.8)] :
-                                    [.gray.opacity(0.3), .gray.opacity(0.2)],
+                                    [DesignSystem.Colors.textTertiary, DesignSystem.Colors.divider],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -661,7 +661,7 @@ struct ProgressIndicatorView: View {
         HStack(spacing: 8) {
             ForEach(0..<totalSteps, id: \.self) { step in
                 Capsule()
-                    .fill(step <= currentStep ? DesignSystem.Colors.primary : Color.gray.opacity(0.3)
+                    .fill(step <= currentStep ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
                     .frame(height: 4)
                     .animation(.spring(response: 0.4, dampingFraction: 0.8), value: currentStep)
             }

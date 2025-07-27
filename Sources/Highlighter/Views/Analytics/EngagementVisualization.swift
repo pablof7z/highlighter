@@ -38,10 +38,10 @@ struct EngagementVisualization: View {
         var color: Color {
             switch self {
             case .all: return DesignSystem.Colors.primary
-            case .likes: return .red
-            case .comments: return .blue
+            case .likes: return DesignSystem.Colors.error
+            case .comments: return DesignSystem.Colors.primary
             case .zaps: return DesignSystem.Colors.secondary
-            case .reposts: return .green
+            case .reposts: return DesignSystem.Colors.success
             }
         }
         
@@ -323,7 +323,7 @@ struct EngagementVisualization: View {
                     value: averageEngagement,
                     change: 0.15,
                     icon: "divide.circle.fill",
-                    color: .blue
+                    color: DesignSystem.Colors.primary
                 )
             }
             
@@ -341,7 +341,7 @@ struct EngagementVisualization: View {
                     value: growthRate,
                     change: growthRateChange,
                     icon: "arrow.up.right.circle.fill",
-                    color: .green
+                    color: DesignSystem.Colors.success
                 )
             }
         }
@@ -362,7 +362,7 @@ struct EngagementVisualization: View {
                         icon: "lightbulb.fill",
                         title: "Peak Engagement Time",
                         description: "Your highlights get the most engagement around \(formatHour(peakHour))",
-                        color: .yellow
+                        color: DesignSystem.Colors.warning
                     )
                 }
                 
@@ -372,7 +372,7 @@ struct EngagementVisualization: View {
                         icon: "chart.bar.fill",
                         title: "Average Engagement",
                         description: "Each highlight receives an average of \(averageEngagement) interactions",
-                        color: .blue
+                        color: DesignSystem.Colors.primary
                     )
                 }
                 
@@ -382,7 +382,7 @@ struct EngagementVisualization: View {
                         icon: growthRate > 0 ? "arrow.up.right.circle.fill" : "arrow.down.right.circle.fill",
                         title: "Engagement Trend",
                         description: growthRate > 0 ? "Your engagement is up \(abs(growthRate))% compared to the previous period" : "Your engagement is down \(abs(growthRate))% compared to the previous period",
-                        color: growthRate > 0 ? .green : DesignSystem.Colors.secondary
+                        color: growthRate > 0 ? DesignSystem.Colors.success : DesignSystem.Colors.secondary
                     )
                 }
                 
@@ -825,7 +825,7 @@ struct AnimatedMetricCard: View {
                         Text("\(Int(abs(change * 100)))%")
                             .font(.ds.caption).fontWeight(.bold)
                     }
-                    .foregroundColor(change > 0 ? .green : .red)
+                    .foregroundColor(change > 0 ? DesignSystem.Colors.success : DesignSystem.Colors.error)
                 }
                 
                 Text("\(animatedValue)")

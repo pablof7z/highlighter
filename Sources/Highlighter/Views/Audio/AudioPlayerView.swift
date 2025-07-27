@@ -479,13 +479,13 @@ struct AudioPlayerView: View {
         VStack(spacing: 12) {
             HStack {
                 Label("Sat Streaming", systemImage: "bolt.fill")
-                    .font(.caption.weight(.medium)
-                    .foregroundColor(.orange)
+                    .font(.caption.weight(.medium))
+                    .foregroundColor(DesignSystem.Colors.secondary)
                 
                 Spacer()
                 
                 Toggle("", isOn: $showSatStreaming)
-                    .toggleStyle(SwitchToggleStyle(tint: .orange)
+                    .toggleStyle(SwitchToggleStyle(tint: DesignSystem.Colors.secondary))
                     .scaleEffect(0.8)
             }
             
@@ -761,7 +761,7 @@ struct AudioParticleView: View {
     
     private func animateParticle() {
         withAnimation(
-            .easeInOut(duration: Double.random(in: 3...6)
+            .easeInOut(duration: Double.random(in: 3...6))
             .repeatForever(autoreverses: true)
         ) {
             offset = CGSize(

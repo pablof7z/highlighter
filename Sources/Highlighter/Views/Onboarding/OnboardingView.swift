@@ -17,7 +17,7 @@ struct OnboardingView: View {
             UnifiedGradientBackground(style: currentPage == 0 ? .subtle : (currentPage == 1 ? .mesh : (currentPage == 2 ? .immersive : .glow)))
             
             // Subtle ambient background
-            Color.black.opacity(0.3)
+            DesignSystem.Colors.darkBackground.opacity(0.3)
             
             VStack(spacing: 0) {
                 // Skip button
@@ -160,7 +160,7 @@ struct OnboardingPage {
             title: "Build Your\nKnowledge Graph",
             subtitle: "Connect ideas, discover patterns, and grow your understanding",
             icon: "brain",
-            iconColor: .blue,
+            iconColor: DesignSystem.Colors.primary,
             features: [
                 Feature(icon: "link", text: "Connect related highlights"),
                 Feature(icon: "chart.xyaxis.line", text: "Visualize your learning"),
@@ -171,7 +171,7 @@ struct OnboardingPage {
             title: "Join the\nConversation",
             subtitle: "Share highlights, discuss ideas, and learn from others",
             icon: "bubble.left.and.bubble.right.fill",
-            iconColor: .green,
+            iconColor: DesignSystem.Colors.success,
             features: [
                 Feature(icon: "heart.fill", text: "Support great content"),
                 Feature(icon: "bolt.fill", text: "Zap creators directly"),
@@ -309,7 +309,7 @@ struct OnboardingPageIndicator: View {
     
     var body: some View {
         Capsule()
-            .fill(isActive ? Color.white : Color.white.opacity(0.3))
+            .fill(isActive ? DesignSystem.Colors.surface : DesignSystem.Colors.surface.opacity(0.3))
             .frame(width: isActive ? 32 : 8, height: 8)
             .scaleEffect(shouldAnimate ? 1.0 : 0.8)
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isActive)
@@ -331,8 +331,8 @@ struct OnboardingActionButton: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                isLastPage ? DesignSystem.Colors.secondary : Color.white.opacity(0.2),
-                                isLastPage ? DesignSystem.Colors.secondary.opacity(0.8) : Color.white.opacity(0.1)
+                                isLastPage ? DesignSystem.Colors.secondary : DesignSystem.Colors.surface.opacity(0.2),
+                                isLastPage ? DesignSystem.Colors.secondary.opacity(0.8) : DesignSystem.Colors.surface.opacity(0.1)
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
@@ -342,7 +342,7 @@ struct OnboardingActionButton: View {
                 // Simple border for last page
                 if isLastPage {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        .stroke(DesignSystem.Colors.surface.opacity(0.2), lineWidth: 1)
                 }
                 
                 // Button text
@@ -622,11 +622,11 @@ struct OnboardingImportSheet: View {
                                     .fill(Color.white.opacity(0.1))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                            .stroke(DesignSystem.Colors.surface.opacity(0.2), lineWidth: 1)
                                     )
                             )
                             .foregroundColor(.white)
-                            .tint(.orange)
+                            .tint(DesignSystem.Colors.secondary)
                             .focused($isTextFieldFocused)
                             .textContentType(.password)
                             .autocapitalization(.none)
@@ -638,7 +638,7 @@ struct OnboardingImportSheet: View {
                     HStack(spacing: 8) {
                         Image(systemName: "lock.shield.fill")
                             .font(.ds.caption)
-                            .foregroundColor(.orange)
+                            .foregroundColor(DesignSystem.Colors.secondary)
                         
                         Text("Your key is stored locally and never leaves your device")
                             .font(.ds.caption)

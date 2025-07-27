@@ -44,9 +44,9 @@ struct SmartArticleImportView: View {
         
         var color: Color {
             switch self {
-            case .quick: return .green
-            case .balanced: return .orange
-            case .thorough: return .purple
+            case .quick: return DesignSystem.Colors.success
+            case .balanced: return DesignSystem.Colors.secondary
+            case .thorough: return DesignSystem.Colors.primary
             }
         }
         

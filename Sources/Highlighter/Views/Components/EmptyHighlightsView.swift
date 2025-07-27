@@ -186,17 +186,17 @@ struct EmptyHighlightsView: View {
                         ActionPill(
                             icon: "doc.text.fill",
                             text: "Import",
-                            color: .blue
+                            color: DesignSystem.Colors.primary
                         )
                         ActionPill(
                             icon: "sparkle.magnifyingglass",
                             text: "Explore",
-                            color: .purple
+                            color: DesignSystem.Colors.secondary
                         )
                         ActionPill(
                             icon: "person.2.fill",
                             text: "Connect",
-                            color: .green
+                            color: DesignSystem.Colors.success
                         )
                     }
                 }

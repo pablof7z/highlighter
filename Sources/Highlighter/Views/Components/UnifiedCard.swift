@@ -365,7 +365,7 @@ struct PlaceholderCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(0..<lines, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(index == 0 ? 0.2 : 0.15)
+                        .fill(DesignSystem.Colors.textTertiary.opacity(index == 0 ? 0.5 : 0.3))
                         .frame(height: 16)
                         .frame(maxWidth: index == lines - 1 ? .infinity * 0.7 : .infinity)
                 }

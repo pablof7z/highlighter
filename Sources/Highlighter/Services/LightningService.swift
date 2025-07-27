@@ -603,7 +603,7 @@ class LightningService: ObservableObject {
             switch self {
             case .author: return DesignSystem.Colors.primary
             case .highlighter: return DesignSystem.Colors.secondary
-            case .curator: return .blue
+            case .curator: return DesignSystem.Colors.primaryLight
             }
         }
     }
