@@ -101,7 +101,7 @@ struct RelayManagerView: View {
                 Label("Add Relay", systemImage: "plus.circle.fill")
                     .font(.ds.bodyMedium)
             }
-            .buttonStyle(.unifiedPrimaryButton())
+            .unifiedPrimaryButton()
         }
         .padding()
     }
@@ -166,10 +166,14 @@ struct RelayManagerView: View {
                         .foregroundColor(.ds.textSecondary)
                     
                     TextField("wss://relay.example.com", text: $newRelayURL)
-                        .textFieldStyle(.unifiedTextField())
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .keyboardType(.URL)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(DesignSystem.Colors.surfaceSecondary)
+                        )
                 }
                 
                 // Suggested relays
@@ -335,7 +339,7 @@ struct RelayManagerView: View {
     
     private func loadRelays() {
         Task {
-            guard let ndk = appState.ndk else { return }
+            guard appState.ndk != nil else { return }
             
             await MainActor.run {
                 isRefreshing = true
@@ -394,7 +398,7 @@ struct RelayManagerView: View {
         }
         
         Task {
-            guard let ndk = appState.ndk else { return }
+            guard appState.ndk != nil else { return }
             
             // NDK manages relay connections internally
             // For now, just add to our local list
@@ -412,7 +416,7 @@ struct RelayManagerView: View {
     
     private func removeRelay(_ relay: RelayInfo) {
         Task {
-            guard let ndk = appState.ndk else { return }
+            guard appState.ndk != nil else { return }
             
             // NDK manages relay connections internally
             // For now, just remove from our local list
