@@ -138,7 +138,7 @@ struct OnboardingPage {
             title: "Welcome to\nHighlighter",
             subtitle: "Your personal knowledge companion for the decentralized web",
             icon: "highlighter",
-            iconColor: .orange,
+            iconColor: DesignSystem.Colors.secondary,
             features: [
                 Feature(icon: "quote.bubble.fill", text: "Capture insights from anywhere"),
                 Feature(icon: "sparkles", text: "AI-powered smart highlights"),
@@ -149,7 +149,7 @@ struct OnboardingPage {
             title: "Highlight\nWhat Matters",
             subtitle: "Save and organize the best content from articles, notes, and conversations",
             icon: "text.quote",
-            iconColor: .purple,
+            iconColor: DesignSystem.Colors.primary,
             features: [
                 Feature(icon: "wand.and.stars", text: "One-tap highlighting"),
                 Feature(icon: "folder.fill", text: "Smart collections"),
@@ -331,8 +331,8 @@ struct OnboardingActionButton: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                isLastPage ? Color.orange : Color.white.opacity(0.2),
-                                isLastPage ? Color.orange.opacity(0.8) : Color.white.opacity(0.1)
+                                isLastPage ? DesignSystem.Colors.secondary : Color.white.opacity(0.2),
+                                isLastPage ? DesignSystem.Colors.secondary.opacity(0.8) : Color.white.opacity(0.1)
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
@@ -369,7 +369,7 @@ struct OnboardingActionButton: View {
             }
         )
         .shadow(
-            color: isLastPage ? Color.orange.opacity(0.3) : Color.white.opacity(0.1),
+            color: isLastPage ? DesignSystem.Colors.secondary.opacity(0.3) : Color.white.opacity(0.1),
             radius: 20,
             y: 10
         )
@@ -406,8 +406,8 @@ struct OnboardingAuthView: View {
                         .fill(
                             LinearGradient(
                                 colors: [
-                                    Color.purple.opacity(0.2),
-                                    Color.orange.opacity(0.1)
+                                    DesignSystem.Colors.primary.opacity(0.2),
+                                    DesignSystem.Colors.secondary.opacity(0.1)
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -461,7 +461,7 @@ struct OnboardingAuthView: View {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .fill(
                                 LinearGradient(
-                                    colors: [Color.orange, Color.orange.opacity(0.8)],
+                                    colors: [DesignSystem.Colors.secondary, DesignSystem.Colors.secondary.opacity(0.8)],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
@@ -476,7 +476,7 @@ struct OnboardingAuthView: View {
                     )
                 }
                 .disabled(isCreatingAccount)
-                .shadow(color: Color.orange.opacity(0.3), radius: 20, y: 10)
+                .shadow(color: DesignSystem.Colors.secondary.opacity(0.3), radius: 20, y: 10)
                 
                 Button(action: { showImportSheet = true }) {
                     Text("I have an account")
@@ -580,7 +580,7 @@ struct OnboardingImportSheet: View {
             ZStack {
                 // Background gradient
                 LinearGradient(
-                    colors: [Color.purple.opacity(0.8), Color.black],
+                    colors: [DesignSystem.Colors.primary.opacity(0.8), Color.black],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -660,7 +660,7 @@ struct OnboardingImportSheet: View {
                                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                                         .fill(
                                             LinearGradient(
-                                                colors: [Color.orange, Color.orange.opacity(0.8)],
+                                                colors: [DesignSystem.Colors.secondary, DesignSystem.Colors.secondary.opacity(0.8)],
                                                 startPoint: .leading,
                                                 endPoint: .trailing
                                             )
@@ -669,7 +669,7 @@ struct OnboardingImportSheet: View {
                         }
                         .disabled(privateKey.isEmpty)
                         .opacity(privateKey.isEmpty ? 0.6 : 1)
-                        .shadow(color: Color.orange.opacity(0.3), radius: 20, y: 10)
+                        .shadow(color: DesignSystem.Colors.secondary.opacity(0.3), radius: 20, y: 10)
                         
                         Button("Cancel") {
                             dismiss()

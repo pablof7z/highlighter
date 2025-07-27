@@ -37,10 +37,10 @@ struct EngagementVisualization: View {
         
         var color: Color {
             switch self {
-            case .all: return .purple
+            case .all: return DesignSystem.Colors.primary
             case .likes: return .red
             case .comments: return .blue
-            case .zaps: return .orange
+            case .zaps: return DesignSystem.Colors.secondary
             case .reposts: return .green
             }
         }
@@ -315,7 +315,7 @@ struct EngagementVisualization: View {
                     value: totalEngagement,
                     change: engagementChange,
                     icon: "chart.line.uptrend.xyaxis",
-                    color: .purple
+                    color: DesignSystem.Colors.primary
                 )
                 
                 AnimatedMetricCard(
@@ -333,7 +333,7 @@ struct EngagementVisualization: View {
                     value: bestPerformingCount,
                     change: 0.32,
                     icon: "trophy.fill",
-                    color: .orange
+                    color: DesignSystem.Colors.secondary
                 )
                 
                 AnimatedMetricCard(
@@ -382,7 +382,7 @@ struct EngagementVisualization: View {
                         icon: growthRate > 0 ? "arrow.up.right.circle.fill" : "arrow.down.right.circle.fill",
                         title: "Engagement Trend",
                         description: growthRate > 0 ? "Your engagement is up \(abs(growthRate))% compared to the previous period" : "Your engagement is down \(abs(growthRate))% compared to the previous period",
-                        color: growthRate > 0 ? .green : .orange
+                        color: growthRate > 0 ? .green : DesignSystem.Colors.secondary
                     )
                 }
                 
@@ -392,7 +392,7 @@ struct EngagementVisualization: View {
                         icon: "trophy.fill",
                         title: "High Performers",
                         description: "\(bestPerformingCount) of your highlights performed exceptionally well",
-                        color: .purple
+                        color: DesignSystem.Colors.primary
                     )
                 }
             }
@@ -949,7 +949,7 @@ struct RealTrendingHighlightCard: View {
                 
                 Label("Trending", systemImage: "flame.fill")
                     .font(.ds.caption).fontWeight(.medium)
-                    .foregroundColor(.orange)
+                    .foregroundColor(DesignSystem.Colors.secondary)
             }
             
             Text(highlight.content)

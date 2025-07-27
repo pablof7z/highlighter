@@ -33,8 +33,8 @@ struct CreateCurationView: View {
     
     let gradientColors: [[Color]] = [
         [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
-        [Color.blue, Color.purple],
-        [Color.pink, Color.orange],
+        [Color.blue, DesignSystem.Colors.primary],
+        [Color.pink, DesignSystem.Colors.secondary],
         [Color.green, Color.blue],
         [Color.indigo, Color.pink]
     ]

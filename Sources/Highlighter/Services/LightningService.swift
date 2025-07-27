@@ -601,8 +601,8 @@ class LightningService: ObservableObject {
         
         var color: Color {
             switch self {
-            case .author: return .purple
-            case .highlighter: return .orange
+            case .author: return DesignSystem.Colors.primary
+            case .highlighter: return DesignSystem.Colors.secondary
             case .curator: return .blue
             }
         }

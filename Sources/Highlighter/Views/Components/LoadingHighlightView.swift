@@ -114,7 +114,7 @@ struct LoadingHighlightView: View {
             )
             .scaleEffect(pulseScale + CGFloat(index) * 0.05)
             .opacity(1 - Double(index) * 0.3)
-            .rotationEffect(.degrees(rotationAngle * (index % 2 == 0 ? 1 : -1))
+            .rotationEffect(.degrees(rotationAngle * (index % 2 == 0 ? 1 : -1)))
     }
     
     @ViewBuilder
@@ -166,7 +166,7 @@ struct LoadingHighlightView: View {
     @ViewBuilder
     private var quoteIcon: some View {
         Image(systemName: "quote.opening")
-            .font(.system(size: 42, weight: .thin)
+            .font(.system(size: 42, weight: .thin))
             .foregroundStyle(
                 LinearGradient(
                     colors: [
@@ -178,7 +178,7 @@ struct LoadingHighlightView: View {
                 )
             )
             .scaleEffect(pulseScale * 0.9)
-            .rotationEffect(.degrees(sin(rotationAngle * .pi / 180) * 5)
+            .rotationEffect(.degrees(sin(rotationAngle * .pi / 180) * 5))
     }
     
     @ViewBuilder

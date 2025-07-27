@@ -22,7 +22,7 @@ struct Article: Identifiable, Equatable {
         
         self.id = event.id
         self.author = event.pubkey
-        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt)
+        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt))
         self.event = event
         self.tags = event.tags
         
@@ -41,7 +41,7 @@ struct Article: Identifiable, Equatable {
         // Extract published_at from tag
         if let publishedAtString = event.tags.first(where: { $0.first == "published_at" })?[safe: 1],
            let publishedAtTimestamp = Int64(publishedAtString) {
-            self.publishedAt = Date(timeIntervalSince1970: TimeInterval(publishedAtTimestamp)
+            self.publishedAt = Date(timeIntervalSince1970: TimeInterval(publishedAtTimestamp))
         } else {
             self.publishedAt = nil
         }
@@ -86,7 +86,7 @@ struct Article: Identifiable, Equatable {
     ) {
         self.id = id
         self.author = author
-        self.createdAt = Date(timeIntervalSince1970: TimeInterval(createdAt)
+        self.createdAt = Date(timeIntervalSince1970: TimeInterval(createdAt))
         self.title = title
         self.summary = summary
         self.content = content

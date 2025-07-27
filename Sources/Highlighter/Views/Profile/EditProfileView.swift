@@ -380,7 +380,6 @@ struct EditProfileView: View {
             await MainActor.run {
                 isLoadingPhoto = false
                 // Show error to user
-                print("Failed to upload profile image: \(error.localizedDescription)")
             }
         }
     }
@@ -407,7 +406,6 @@ struct EditProfileView: View {
             await MainActor.run {
                 isLoadingBanner = false
                 // Show error to user
-                print("Failed to upload banner image: \(error.localizedDescription)")
             }
         }
     }

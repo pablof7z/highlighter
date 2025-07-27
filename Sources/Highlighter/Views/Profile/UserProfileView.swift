@@ -661,7 +661,7 @@ struct CommentCard: View {
                 .lineLimit(3)
             
             HStack {
-                Text(RelativeTimeFormatter.relativeTime(from: comment.createdAt)
+                Text(RelativeTimeFormatter.relativeTime(from: comment.createdAt))
                     .font(.ds.caption)
                     .foregroundColor(.ds.textTertiary)
                 
@@ -726,7 +726,7 @@ struct CollectionCard: View {
                         
                         Spacer()
                         
-                        Text(RelativeTimeFormatter.relativeTime(from: collection.updatedAt)
+                        Text(RelativeTimeFormatter.relativeTime(from: collection.updatedAt))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                     }

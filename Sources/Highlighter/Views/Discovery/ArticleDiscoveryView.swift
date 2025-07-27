@@ -64,7 +64,7 @@ struct ArticleDiscoveryView: View {
                         .transition(.asymmetric(
                             insertion: .push(from: .bottom).combined(with: .opacity),
                             removal: .push(from: .top).combined(with: .opacity)
-                        )
+                        ))
                 }
                 
                 // Trending articles
@@ -227,7 +227,7 @@ struct ArticleDiscoveryView: View {
                     
                     Text("Try adjusting your search terms")
                         .font(DesignSystem.Typography.body)
-                        .foregroundColor(DesignSystem.Colors.textSecondary.opacity(0.7)
+                        .foregroundColor(DesignSystem.Colors.textSecondary.opacity(0.7))
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
