@@ -10,6 +10,7 @@ class DataStreamManager: ObservableObject {
     @Published private(set) var highlights: [HighlightEvent] = []
     @Published private(set) var curations: [ArticleCuration] = []
     @Published private(set) var followPacks: [FollowPack] = []
+    @Published private(set) var articles: [Article] = []
     
     // MARK: - Private Properties
     private weak var ndk: NDK?
@@ -38,6 +39,7 @@ class DataStreamManager: ObservableObject {
             group.addTask { await self.startHighlightStream(ndk: ndk) }
             group.addTask { await self.startCurationStream(ndk: ndk) }
             group.addTask { await self.startFollowPackStream(ndk: ndk) }
+            group.addTask { await self.startArticleStream(ndk: ndk) }
         }
     }
     
@@ -55,6 +57,7 @@ class DataStreamManager: ObservableObject {
         highlights.removeAll()
         curations.removeAll()
         followPacks.removeAll()
+        articles.removeAll()
         
         await startAllStreams()
     }
@@ -118,6 +121,25 @@ class DataStreamManager: ObservableObject {
         streamingTasks.append(task)
     }
     
+    private func startArticleStream(ndk: NDK) async {
+        let articleFilter = NDKFilter(kinds: [30023], limit: 50)
+        let dataSource = await ndk.outbox.observe(
+            filter: articleFilter,
+            maxAge: CachePolicies.mediumTerm,
+            cachePolicy: .cacheWithNetwork
+        )
+        dataSourceRefs.append(dataSource)
+        
+        let task = Task {
+            for await event in dataSource.events {
+                if let article = try? Article(from: event) {
+                    await addArticle(article)
+                }
+            }
+        }
+        streamingTasks.append(task)
+    }
+    
     // MARK: - Data Management
     
     @MainActor
@@ -140,6 +162,14 @@ class DataStreamManager: ObservableObject {
     private func addFollowPack(_ pack: FollowPack) {
         if !followPacks.contains(where: { $0.id == pack.id }) {
             followPacks.append(pack)
+        }
+    }
+    
+    @MainActor
+    private func addArticle(_ article: Article) {
+        if !articles.contains(where: { $0.id == article.id }) {
+            articles.append(article)
+            articles.sort { $0.createdAt > $1.createdAt }
         }
     }
     

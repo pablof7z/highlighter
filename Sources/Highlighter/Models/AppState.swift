@@ -28,6 +28,7 @@ class AppState: ObservableObject {
         return curations
     }
     var followPacks: [FollowPack] { dataStreamManager.followPacks }
+    var articles: [Article] { dataStreamManager.articles }
     var currentUserProfile: NDKUserProfile? { profileManager.currentUserProfile }
     
     // App-level state

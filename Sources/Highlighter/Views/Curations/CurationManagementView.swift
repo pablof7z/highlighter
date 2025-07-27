@@ -430,17 +430,19 @@ struct CurationManagementView: View {
     }
     
     private func addArticleToCuration(_ article: DraggedArticle, _ curation: ArticleCuration) async {
-        // Since ArticleCuration is immutable, we need to create a new curation with the added article
-        // This is a placeholder - the actual implementation would need to update the curation
-        // through the publishing service
-        print("Adding article \(article.identifier) to curation \(curation.name)")
+        // Find the actual article from the data
+        guard let actualArticle = appState.articles.first(where: { $0.id == article.identifier }) else {
+            HapticManager.shared.notification(.error)
+            return
+        }
         
-        // TODO: Implement proper article addition to curation
-        // This would involve:
-        // 1. Creating a new ArticleReference from the DraggedArticle
-        // 2. Creating an updated curation with the new article
-        // 3. Publishing the updated curation event
-        HapticManager.shared.notification(.success)
+        do {
+            try await appState.publishingService.updateCuration(curation, addingArticle: actualArticle)
+            HapticManager.shared.notification(.success)
+        } catch {
+            HapticManager.shared.notification(.error)
+            print("Failed to add article to curation: \(error.localizedDescription)")
+        }
     }
 }
 

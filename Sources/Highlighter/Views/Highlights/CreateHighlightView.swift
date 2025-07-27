@@ -14,6 +14,8 @@ struct CreateHighlightView: View {
     @State private var isImporting = false
     @State private var animateBackground = false
     @State private var showSmartImporter = false
+    @State private var commentText = ""
+    @State private var contextText = ""
     @Environment(\.dismiss) var dismiss
     
     enum HighlightMode: CaseIterable {
@@ -189,18 +191,21 @@ struct CreateHighlightView: View {
                 .font(.headline)
                 .foregroundColor(.ds.text)
             
-            // TODO: Show recent articles from DataStreamManager
-            if true { // Placeholder - no articles property in AppState
+            if appState.articles.isEmpty {
                 ArticlePlaceholderCard()
                     .onTapGesture {
                         showImportOptions = true
                     }
             } else {
-                // TODO: Implement article list from DataStreamManager
-                ForEach([] as [Article], id: \.id) { article in
-                    ArticleSelectionCard(article: article) {
-                        selectArticle(article)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(Array(appState.articles.prefix(5)), id: \.id) { article in
+                            ArticleSelectionCard(article: article) {
+                                selectArticle(article)
+                            }
+                        }
                     }
+                    .padding(.horizontal, 2)
                 }
             }
             
@@ -228,8 +233,9 @@ struct CreateHighlightView: View {
     private func selectArticle(_ article: Article) {
         importedContent = article.content
         sourceTitle = article.title
-        sourceAuthor = article.author
-        // Article doesn't have a source URL property
+        sourceAuthor = "nostr:" + article.author
+        sourceURL = article.references.first ?? ""
+        selectedMode = .article
         HapticManager.shared.impact(.medium)
     }
     
@@ -241,11 +247,28 @@ struct CreateHighlightView: View {
             }
             
             let content = selectedMode == .paste ? pastedText : importedContent
-            // TODO: Implement proper highlight creation and publishing
-            // For now, just dismiss
-            await MainActor.run {
-                HapticManager.shared.notification(.success)
-                dismiss()
+            
+            // Create highlight event
+            let highlight = HighlightEvent(
+                content: content,
+                context: contextText.isEmpty ? nil : contextText,
+                source: sourceURL.isEmpty ? nil : sourceURL,
+                author: sourceAuthor.isEmpty ? nil : sourceAuthor.replacingOccurrences(of: "nostr:", with: ""),
+                comment: commentText.isEmpty ? nil : commentText
+            )
+            
+            // Publish the highlight
+            do {
+                try await appState.publishingService.publishHighlight(highlight)
+                await MainActor.run {
+                    HapticManager.shared.notification(.success)
+                    dismiss()
+                }
+            } catch {
+                await MainActor.run {
+                    HapticManager.shared.notification(.error)
+                    // Keep the view open to let user retry
+                }
             }
             
             await MainActor.run {
@@ -333,38 +356,42 @@ struct ArticleSelectionCard: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(LinearGradient(
-                        colors: [Color.ds.primary.opacity(0.8), Color.ds.secondary.opacity(0.8)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ))
-                    .frame(width: 4)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(article.title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.ds.text)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
                 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(article.title)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.ds.text)
-                        .lineLimit(1)
-                    
-                    Text("by \(article.author)")
-                        .font(.system(size: 14))
+                if let summary = article.summary {
+                    Text(summary)
+                        .font(.system(size: 12))
                         .foregroundColor(.ds.textSecondary)
-                        .lineLimit(1)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
                 }
                 
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.ds.textTertiary)
+                HStack {
+                    Label("\(article.estimatedReadingTime) min", systemImage: "clock")
+                        .font(.system(size: 11))
+                        .foregroundColor(.ds.textTertiary)
+                    
+                    Spacer()
+                    
+                    Text(article.createdAt.formatted(.relative(presentation: .named)))
+                        .font(.system(size: 11))
+                        .foregroundColor(.ds.textTertiary)
+                }
             }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 16)
+            .padding(12)
+            .frame(width: 220, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(Color.ds.surfaceSecondary)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(Color.ds.border, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

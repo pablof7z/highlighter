@@ -110,6 +110,61 @@ class PublishingService: ObservableObject {
         isPublishing = false
     }
     
+    /// Update an existing curation with new articles
+    func updateCuration(
+        _ curation: ArticleCuration,
+        addingArticle article: Article
+    ) async throws {
+        guard let ndk = ndk, let signer = signer else {
+            throw AuthError.noSigner
+        }
+        
+        isPublishing = true
+        lastPublishError = nil
+        
+        do {
+            // Create a new list of articles including the new one
+            var articles = curation.articles.map { ref -> (type: ArticleCuration.ArticleType, value: String) in
+                if let url = ref.url {
+                    return (.url, url)
+                } else if let eventId = ref.eventId {
+                    return (.event, eventId)
+                } else if let eventAddress = ref.eventAddress {
+                    return (.address, eventAddress)
+                } else {
+                    return (.url, "") // Fallback, shouldn't happen
+                }
+            }
+            
+            // Add the new article reference
+            // If the article has a source URL, use that; otherwise use the event ID
+            if let sourceUrl = article.references.first {
+                articles.append((.url, sourceUrl))
+            } else {
+                articles.append((.event, article.id))
+            }
+            
+            // Create updated curation event
+            let event = try await ArticleCuration.create(
+                ndk: ndk,
+                name: curation.name,
+                title: curation.title,
+                description: curation.description,
+                image: curation.image,
+                articles: articles,
+                signer: signer
+            )
+            
+            _ = try await ndk.publish(event)
+            
+        } catch {
+            lastPublishError = error
+            throw error
+        }
+        
+        isPublishing = false
+    }
+    
     /// Publish a text note with bookstr tag
     func publishNote(_ content: String, tags: [String] = []) async throws {
         guard let ndk = ndk, let signer = signer else {
@@ -234,7 +289,7 @@ class PublishingService: ObservableObject {
             let event = try await ArticleCuration.create(
                 ndk: ndk,
                 name: curation.name,
-                title: curation.title ?? curation.name,
+                title: curation.title,
                 description: curation.description,
                 image: curation.image,
                 articles: curation.articles.compactMap { ref in
