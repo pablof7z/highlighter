@@ -95,9 +95,9 @@ struct LibraryView: View {
                             case .all:
                                 allContentView
                             case .highlights:
-                                EnhancedSavedHighlightsSection()
+                                SavedHighlightsSection()
                             case .curations:
-                                EnhancedYourCurationsSection(
+                                YourCurationsSection(
                                     curations: sortedCurations,
                                     showCreateCuration: $showCreateCuration,
                                     selectedCuration: $selectedCuration,
@@ -374,7 +374,7 @@ struct LibraryView: View {
     // MARK: - Computed Properties
     
     private var sortedCurations: [ArticleCuration] {
-        switch selectedSortOption {
+        switch sortOption {
         case .newest:
             return appState.userCurations.sorted { $0.createdAt > $1.createdAt }
         case .oldest:
@@ -393,10 +393,10 @@ struct LibraryView: View {
             RecentActivitySection()
             
             // Saved highlights
-            EnhancedSavedHighlightsSection()
+            SavedHighlightsSection()
             
             // Your curations
-            EnhancedYourCurationsSection(
+            YourCurationsSection(
                 curations: sortedCurations,
                 showCreateCuration: $showCreateCuration,
                 selectedCuration: $selectedCuration,
@@ -404,7 +404,7 @@ struct LibraryView: View {
             )
             
             // Follow packs
-            EnhancedFollowPacksSection(
+            FollowPacksSection(
                 followPacks: appState.followPacks,
                 selectedFollowPack: $selectedFollowPack
             )
@@ -677,23 +677,24 @@ struct ActivityCard: View {
     }
 }
 
-struct EnhancedSavedHighlightsSection: View {
+struct SavedHighlightsSection: View {
     @EnvironmentObject var appState: AppState
     @State private var showAllHighlights = false
-    @State private var selectedSortOption = SortOption.recent
-    
-    enum SortOption: String, CaseIterable {
-        case recent = "Recent"
-        case popular = "Popular"
-        case alphabetical = "A-Z"
-    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            UnifiedSectionHeader(
-                title: "Your Highlights",
-                subtitle: "\(appState.highlights.count) highlights saved"
-            )
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Your Highlights")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundColor(.ds.text)
+                    
+                    Text("\(appState.highlights.count) highlights saved")
+                        .font(.system(size: 14))
+                        .foregroundColor(.ds.textSecondary)
+                }
+                Spacer()
+            }
             .padding(.horizontal)
             
             if appState.highlights.isEmpty {
@@ -723,17 +724,8 @@ struct EnhancedSavedHighlightsSection: View {
     }
     
     private var sortedHighlights: [HighlightEvent] {
-        switch selectedSortOption {
-        case .newest:
-            return appState.highlights.sorted { $0.createdAt > $1.createdAt }
-        case .oldest:
-            return appState.highlights.sorted { $0.createdAt < $1.createdAt }
-        case .alphabetical:
-            return appState.highlights.sorted { $0.content.localizedCaseInsensitiveCompare($1.content) == .orderedAscending }
-        case .mostHighlighted:
-            // For highlights, we can sort by content length as a proxy for "importance"
-            return appState.highlights.sorted { $0.content.count > $1.content.count }
-        }
+        // Simple sort by date for now
+        return appState.highlights.sorted { $0.createdAt > $1.createdAt }
     }
 }
 
@@ -853,6 +845,7 @@ struct ViewAllCard: View {
 struct SavedArticlesSection: View {
     @EnvironmentObject var appState: AppState
     @State private var highlightCounts: [String: Int] = [:]
+    let sortOption: LibraryView.SortOption
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -915,21 +908,8 @@ struct SavedArticlesSection: View {
     }
     
     private var sortedArticles: [Article] {
-        switch selectedSortOption {
-        case .newest:
-            return appState.savedArticles.sorted { $0.createdAt > $1.createdAt }
-        case .oldest:
-            return appState.savedArticles.sorted { $0.createdAt < $1.createdAt }
-        case .alphabetical:
-            return appState.savedArticles.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
-        case .mostHighlighted:
-            // Sort by highlight count, need to do it differently since we have the counts
-            return appState.savedArticles.sorted { article1, article2 in
-                let count1 = highlightCounts[article1.id] ?? 0
-                let count2 = highlightCounts[article2.id] ?? 0
-                return count1 > count2
-            }
-        }
+        // Simple sort by date for now
+        return appState.savedArticles.sorted { $0.createdAt > $1.createdAt }
     }
 }
 
@@ -1054,7 +1034,7 @@ struct ArticleImagePlaceholder: View {
     }
 }
 
-struct EnhancedYourCurationsSection: View {
+struct YourCurationsSection: View {
     let curations: [ArticleCuration]
     @Binding var showCreateCuration: Bool
     @Binding var selectedCuration: ArticleCuration?
@@ -1063,10 +1043,18 @@ struct EnhancedYourCurationsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            UnifiedSectionHeader(
-                title: "Your Collections",
-                subtitle: "\(curations.count) curated collections"
-            )
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Your Collections")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundColor(.ds.text)
+                    
+                    Text("\(curations.count) curated collections")
+                        .font(.system(size: 14))
+                        .foregroundColor(.ds.textSecondary)
+                }
+                Spacer()
+            }
                 
                 Spacer()
                 
@@ -1117,7 +1105,7 @@ struct EnhancedYourCurationsSection: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: DesignSystem.Spacing.medium) {
                         ForEach(Array(curations.enumerated()), id: \.element.id) { index, curation in
-                            EnhancedCurationCard(curation: curation)
+                            CurationCard(curation: curation)
                                 .onTapGesture {
                                     selectedCuration = curation
                                     HapticManager.shared.impact(.light)
@@ -1145,7 +1133,7 @@ struct EnhancedYourCurationsSection: View {
     }
 }
 
-struct EnhancedCurationCard: View {
+struct CurationCard: View {
     let curation: ArticleCuration
     @State private var isPressed = false
     
@@ -1204,19 +1192,17 @@ struct EnhancedCurationCard: View {
                         .italic()
                 }
                 
-                // Tags or metadata
+                // Article count indicator
                 HStack(spacing: DesignSystem.Spacing.small) {
-                    ForEach(["Featured", "Tech", "Insights"], id: \.self) { tag in
-                        Text(tag)
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(.purple)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(
-                                Capsule()
-                                    .fill(Color.purple.opacity(0.1))
-                            )
-                    }
+                    Label("\(curation.articles.count) articles", systemImage: "doc.text")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.purple)
+                    
+                    Spacer()
+                    
+                    Text(RelativeTimeFormatter.shortRelativeTime(from: curation.updatedAt))
+                        .font(.system(size: 11))
+                        .foregroundColor(.ds.textTertiary)
                 }
                 .padding(.top, 4)
             }
@@ -1276,17 +1262,25 @@ struct GradientPlaceholder: View {
     }
 }
 
-struct EnhancedFollowPacksSection: View {
+struct FollowPacksSection: View {
     let followPacks: [FollowPack]
     @Binding var selectedFollowPack: FollowPack?
     @State private var showDiscoverMore = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            UnifiedSectionHeader(
-                title: "Follow Packs",
-                subtitle: "Curated lists of people to follow"
-            )
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Follow Packs")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundColor(.ds.text)
+                    
+                    Text("Curated lists of people to follow")
+                        .font(.system(size: 14))
+                        .foregroundColor(.ds.textSecondary)
+                }
+                Spacer()
+            }
             .padding(.horizontal)
             
             if followPacks.isEmpty {
@@ -1300,7 +1294,7 @@ struct EnhancedFollowPacksSection: View {
             } else {
                 LazyVStack(spacing: 12) {
                     ForEach(followPacks) { pack in
-                        EnhancedFollowPackRow(followPack: pack)
+                        FollowPackRow(followPack: pack)
                             .onTapGesture {
                                 selectedFollowPack = pack
                                 HapticManager.shared.impact(.light)
@@ -1313,7 +1307,7 @@ struct EnhancedFollowPacksSection: View {
     }
 }
 
-struct EnhancedFollowPackRow: View {
+struct FollowPackRow: View {
     let followPack: FollowPack
     @State private var profileImages: [String] = []
     

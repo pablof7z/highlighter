@@ -20,7 +20,7 @@ struct CurationDiscoveryView: View {
         ScrollView {
             LazyVStack(spacing: 16) {
                 ForEach(filteredCurations) { curation in
-                    CurationCard(curation: curation)
+                    DiscoveryCurationCard(curation: curation)
                 }
             }
             .padding()
@@ -54,7 +54,7 @@ struct CurationDiscoveryView: View {
 
 // MARK: - Curation Card
 
-struct CurationCard: View {
+struct DiscoveryCurationCard: View {
     let curation: ArticleCuration
     @State private var curator: NDKUserProfile?
     @EnvironmentObject var appState: AppState

@@ -73,7 +73,7 @@ struct SimplifiedHybridFeedView: View {
                                 
                                 // Featured Highlights with enhanced carousel
                                 if !dataManager.userHighlights.isEmpty {
-                                    enhancedCarouselSection(
+                                    carouselSection(
                                         title: "Featured Highlights",
                                         subtitle: "Top highlights from your network",
                                         items: dataManager.userHighlights,
@@ -86,7 +86,7 @@ struct SimplifiedHybridFeedView: View {
                                 
                                 // Active Discussions
                                 if !dataManager.discussions.isEmpty {
-                                    enhancedDiscussionsSection
+                                    discussionsSection
                                 }
                             }
                             .padding(.top, DesignSystem.Spacing.xl)
@@ -162,7 +162,7 @@ struct SimplifiedHybridFeedView: View {
         }
     }
     
-    private func enhancedCarouselSection<Item: Identifiable, Content: View>(
+    private func carouselSection<Item: Identifiable, Content: View>(
         title: String,
         subtitle: String? = nil,
         items: [Item],
@@ -238,7 +238,7 @@ struct SimplifiedHybridFeedView: View {
         }
     }
     
-    private var enhancedDiscussionsSection: some View {
+    private var discussionsSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             HStack {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
@@ -263,7 +263,7 @@ struct SimplifiedHybridFeedView: View {
             
             VStack(spacing: 0) {
                 ForEach(dataManager.discussions.prefix(5), id: \.id) { event in
-                    EnhancedDiscussionRow(
+                    DiscussionRow(
                         event: event,
                         engagement: discussionEngagements[event.id] ?? EngagementService.EngagementMetrics()
                     )
@@ -285,10 +285,9 @@ struct SimplifiedHybridFeedView: View {
     }
 }
 
-// MARK: - Enhanced Cards
-// Now using UnifiedCard system - see UnifiedCard.swift for ModernHighlightCard implementation
+// MARK: - Cards
 
-struct EnhancedDiscussionRow: View {
+struct DiscussionRow: View {
     let event: NDKEvent
     let engagement: EngagementService.EngagementMetrics
     @State private var author: NDKUserProfile?

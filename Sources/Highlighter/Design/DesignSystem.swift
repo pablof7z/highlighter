@@ -262,8 +262,8 @@ extension View {
         self.modifier(HighlightTextEffect(isHighlighted: isHighlighted, highlightColor: color))
     }
     
-    func enhancedHighlightCard(isSelected: Bool = false, isHighlighted: Bool = false) -> some View {
-        self.modifier(EnhancedHighlightCardModifier(isSelected: isSelected, isHighlighted: isHighlighted))
+    func highlightCard(isSelected: Bool = false, isHighlighted: Bool = false) -> some View {
+        self.modifier(HighlightCardModifier(isSelected: isSelected, isHighlighted: isHighlighted))
     }
     
     func rotateAndScale(isActive: Bool) -> some View {
@@ -353,7 +353,7 @@ struct HighlightTextEffect: ViewModifier {
     }
 }
 
-struct EnhancedHighlightCardModifier: ViewModifier {
+struct HighlightCardModifier: ViewModifier {
     let isSelected: Bool
     let isHighlighted: Bool
     

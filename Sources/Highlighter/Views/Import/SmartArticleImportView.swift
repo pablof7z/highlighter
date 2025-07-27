@@ -561,7 +561,7 @@ struct SmartArticleImportView: View {
                         // Suggested highlights with enhanced UI
                         VStack(spacing: .ds.base) {
                             ForEach(Array(article.suggestedHighlights.enumerated()), id: \.element.id) { index, suggestion in
-                                EnhancedSuggestionCard(
+                                SuggestionCard(
                                     suggestion: suggestion,
                                     isSelected: selectedSuggestions.contains(suggestion.id),
                                     index: index,
@@ -2015,7 +2015,7 @@ struct ComplexityVisualization: View {
     }
 }
 
-struct EnhancedSuggestionCard: View {
+struct SuggestionCard: View {
     let suggestion: ArticleSuggestedHighlight
     let isSelected: Bool
     let index: Int

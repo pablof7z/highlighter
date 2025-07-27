@@ -648,7 +648,6 @@ struct CommentsSectionHeader: View {
     }
 }
 
-// AsyncProfileImage has been replaced with ProfileImage
 
 // Extension to handle reactions
 extension CommentsSection {
