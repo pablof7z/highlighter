@@ -236,18 +236,20 @@ struct HybridFeedView: View {
             }
             
             // Community curations carousel
-            CarouselSection(
-                title: "Community Curations",
-                icon: "folder.fill",
-                iconColor: .blue,
-                id: "curations",
-                cardWidth: 300
-            ) {
-                ForEach(0..<5) { index in
-                    CurationCarouselCard(index: index)
+            if !dataManager.curations.isEmpty {
+                CarouselSection(
+                    title: "Community Curations",
+                    icon: "folder.fill",
+                    iconColor: .blue,
+                    id: "curations",
+                    cardWidth: 300
+                ) {
+                    ForEach(dataManager.curations) { curation in
+                        CurationCarouselCard(curation: curation)
+                    }
                 }
+                .revealAnimation(id: "curations", visibility: $sectionVisibility)
             }
-            .revealAnimation(id: "curations", visibility: $sectionVisibility)
             
             // Recently zapped articles
             if !dataManager.zappedArticles.isEmpty {
@@ -266,18 +268,23 @@ struct HybridFeedView: View {
             }
             
             // Follow recommendations carousel
-            CarouselSection(
-                title: "Discover People",
-                icon: "person.crop.circle.badge.plus",
-                iconColor: .green,
-                id: "people",
-                cardWidth: 160
-            ) {
-                ForEach(0..<8) { index in
-                    PersonDiscoveryCard(index: index)
+            if !dataManager.suggestedUsers.isEmpty {
+                CarouselSection(
+                    title: "Discover People",
+                    icon: "person.crop.circle.badge.plus",
+                    iconColor: .green,
+                    id: "people",
+                    cardWidth: 160
+                ) {
+                    ForEach(Array(dataManager.suggestedUsers.enumerated()), id: \.offset) { index, profile in
+                        PersonDiscoveryCard(
+                            profile: profile, 
+                            pubkey: index < dataManager.suggestedUserPubkeys.count ? dataManager.suggestedUserPubkeys[index] : ""
+                        )
+                    }
                 }
+                .revealAnimation(id: "people", visibility: $sectionVisibility)
             }
-            .revealAnimation(id: "people", visibility: $sectionVisibility)
         }
         .padding(.vertical, 24)
     }
@@ -512,43 +519,48 @@ struct QuoteCarouselCard: View {
 }
 
 struct CurationCarouselCard: View {
-    let index: Int
+    let curation: ArticleCuration
     @State private var imageOffset: CGSize = .zero
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Cover image with parallax
             ZStack {
-                LinearGradient(
-                    colors: [.blue, .purple],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .opacity(0.8)
-                
-                Image(systemName: "books.vertical.fill")
-                    .font(.system(size: 40))
-                    .foregroundColor(.white.opacity(0.3))
-                    .offset(imageOffset)
+                if let imageUrl = curation.image {
+                    AsyncImage(url: URL(string: imageUrl)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(height: 120)
+                            .clipped()
+                    } placeholder: {
+                        gradientBackground
+                    }
+                } else {
+                    gradientBackground
+                }
             }
             .frame(height: 120)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             
             // Content
             VStack(alignment: .leading, spacing: 8) {
-                Text("Philosophy Essentials")
+                Text(curation.title)
                     .font(.ds.headline)
                     .foregroundColor(.ds.text)
+                    .lineLimit(1)
                 
-                Text("A collection of timeless wisdom from great thinkers")
-                    .font(.ds.caption)
-                    .foregroundColor(.ds.textSecondary)
-                    .lineLimit(2)
+                if let description = curation.description {
+                    Text(description)
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textSecondary)
+                        .lineLimit(2)
+                }
                 
                 // Stats
                 HStack(spacing: 16) {
-                    Label("24 items", systemImage: "doc.text")
-                    Label("1.2k zaps", systemImage: "bolt.fill")
+                    Label("\(curation.articles.count)", systemImage: "doc.text")
+                    Label(PubkeyFormatter.formatCompact(curation.author), systemImage: "person.circle")
                 }
                 .font(.ds.caption)
                 .foregroundColor(.ds.textTertiary)
@@ -564,60 +576,74 @@ struct CurationCarouselCard: View {
             }
         }
     }
+    
+    private var gradientBackground: some View {
+        ZStack {
+            LinearGradient(
+                colors: [.blue, .purple],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .opacity(0.8)
+            
+            Image(systemName: "books.vertical.fill")
+                .font(.system(size: 40))
+                .foregroundColor(.white.opacity(0.3))
+                .offset(imageOffset)
+        }
+    }
 }
 
 struct PersonDiscoveryCard: View {
-    let index: Int
+    let profile: NDKUserProfile
+    let pubkey: String
     @State private var isFollowing = false
     @State private var bounceScale: CGFloat = 1
+    @EnvironmentObject var appState: AppState
+    
+    var displayName: String {
+        profile.displayName ?? profile.name ?? PubkeyFormatter.formatCompact(pubkey)
+    }
     
     var body: some View {
         VStack(spacing: 12) {
             // Avatar
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.purple, .blue],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 80, height: 80)
-                
-                Text("NP")
-                    .font(.title2.bold())
-                    .foregroundColor(.white)
+            if let picture = profile.picture {
+                AsyncImage(url: URL(string: picture)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .clipShape(Circle())
+                } placeholder: {
+                    avatarPlaceholder
+                }
+                .scaleEffect(bounceScale)
+            } else {
+                avatarPlaceholder
+                    .scaleEffect(bounceScale)
             }
-            .scaleEffect(bounceScale)
             
             // Name
-            Text("Nostrich #\(index + 1)")
+            Text(displayName)
                 .font(.ds.footnoteMedium)
                 .foregroundColor(.ds.text)
                 .lineLimit(1)
             
-            // Stats
-            HStack(spacing: 4) {
-                Image(systemName: "person.2.fill")
-                    .font(.caption2)
-                Text("\(Int.random(in: 100...999))")
-                    .font(.ds.caption)
+            // Bio snippet if available
+            if let about = profile.about {
+                Text(about)
+                    .font(.system(size: 10))
+                    .foregroundColor(.ds.textSecondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 8)
             }
-            .foregroundColor(.ds.textSecondary)
             
             // Follow button
             Button(action: {
-                isFollowing.toggle()
-                HapticManager.shared.impact(.light)
-                
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                    bounceScale = 1.1
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    withAnimation(.spring(response: 0.3)) {
-                        bounceScale = 1
-                    }
+                Task {
+                    await toggleFollow()
                 }
             }) {
                 Text(isFollowing ? "Following" : "Follow")
@@ -636,6 +662,132 @@ struct PersonDiscoveryCard: View {
         .frame(maxWidth: .infinity)
         .background(Color.ds.surfaceSecondary)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .task {
+            await checkFollowStatus()
+        }
+    }
+    
+    private var avatarPlaceholder: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [.purple, .blue],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 80, height: 80)
+            
+            Text(String(displayName.prefix(2)).uppercased())
+                .font(.title2.bold())
+                .foregroundColor(.white)
+        }
+    }
+    
+    private func checkFollowStatus() async {
+        guard let signer = appState.activeSigner,
+              let ndk = appState.ndk else { return }
+        
+        do {
+            let userPubkey = try await signer.pubkey
+            let contactsFilter = NDKFilter(
+                authors: [userPubkey],
+                kinds: [3],
+                limit: 1
+            )
+            
+            let contactsSource = NDKDataSource(
+                ndk: ndk,
+                filter: contactsFilter,
+                maxAge: 0,
+                cachePolicy: .cacheOnly,
+                closeOnEose: true
+            )
+            
+            for await event in contactsSource.events {
+                let followedPubkeys = event.tags
+                    .filter { $0.first == "p" }
+                    .compactMap { $0.count > 1 ? $0[1] : nil }
+                
+                await MainActor.run {
+                    isFollowing = followedPubkeys.contains(pubkey)
+                }
+            }
+        } catch {
+            print("Error checking follow status: \(error)")
+        }
+    }
+    
+    private func toggleFollow() async {
+        isFollowing.toggle()
+        HapticManager.shared.impact(.light)
+        
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+            bounceScale = 1.1
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation(.spring(response: 0.3)) {
+                bounceScale = 1
+            }
+        }
+        
+        // Actually update the follow list
+        guard let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return }
+        
+        do {
+            let userPubkey = try await signer.pubkey
+            
+            // Get current contacts
+            let contactsFilter = NDKFilter(
+                authors: [userPubkey],
+                kinds: [3],
+                limit: 1
+            )
+            
+            let contactsSource = NDKDataSource(
+                ndk: ndk,
+                filter: contactsFilter,
+                maxAge: 0,
+                cachePolicy: .cacheOnly,
+                closeOnEose: true
+            )
+            
+            var currentTags: [[String]] = []
+            
+            for await event in contactsSource.events {
+                currentTags = event.tags
+                break
+            }
+            
+            // Update tags
+            if isFollowing {
+                // Add follow
+                if !currentTags.contains(where: { $0.first == "p" && $0.count > 1 && $0[1] == pubkey }) {
+                    currentTags.append(["p", pubkey])
+                }
+            } else {
+                // Remove follow
+                currentTags.removeAll { $0.first == "p" && $0.count > 1 && $0[1] == pubkey }
+            }
+            
+            // Publish updated contacts
+            let contactsEvent = try await NDKEventBuilder(ndk: ndk)
+                .kind(3)
+                .content("")
+                .tags(currentTags)
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(contactsEvent)
+            
+        } catch {
+            // Revert on error
+            await MainActor.run {
+                isFollowing.toggle()
+            }
+            print("Error updating follow status: \(error)")
+        }
     }
 }
 

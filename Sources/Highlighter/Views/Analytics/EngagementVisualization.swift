@@ -10,6 +10,7 @@ struct EngagementVisualization: View {
     @State private var selectedMetric: MetricType = .all
     @State private var showInsights = false
     @State private var hoveredDataPoint: EngagementDataPoint?
+    @State private var trendingHighlights: [HighlightEvent] = []
     
     enum TimeRange: String, CaseIterable {
         case day = "24h"
@@ -112,6 +113,7 @@ struct EngagementVisualization: View {
         .onAppear {
             loadEngagementData()
             startAnimations()
+            loadTrendingHighlights()
         }
     }
     
@@ -417,9 +419,16 @@ struct EngagementVisualization: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: DesignSystem.Spacing.medium) {
-                    ForEach(0..<5) { index in
-                        TrendingHighlightCard(index: index)
-                            .frame(width: 280)
+                    if trendingHighlights.isEmpty {
+                        ForEach(0..<3) { index in
+                            TrendingHighlightPlaceholder(index: index)
+                                .frame(width: 280)
+                        }
+                    } else {
+                        ForEach(Array(trendingHighlights.prefix(10).enumerated()), id: \.element.id) { index, highlight in
+                            RealTrendingHighlightCard(index: index, highlight: highlight)
+                                .frame(width: 280)
+                        }
                     }
                 }
                 .padding(.horizontal, DesignSystem.Spacing.large)
@@ -652,6 +661,42 @@ struct EngagementVisualization: View {
         }
     }
     
+    private func loadTrendingHighlights() {
+        Task {
+            guard let ndk = appState.ndk else { return }
+            
+            // Fetch recent highlights with high engagement
+            let filter = NDKFilter(
+                kinds: [9802],
+                since: Timestamp(Date().addingTimeInterval(-7 * 24 * 60 * 60).timeIntervalSince1970),
+                limit: 50
+            )
+            
+            let dataSource = NDKDataSource(
+                ndk: ndk,
+                filter: filter,
+                maxAge: CachePolicies.shortTerm,
+                cachePolicy: .cacheWithNetwork,
+                closeOnEose: true
+            )
+            
+            var highlights: [HighlightEvent] = []
+            
+            for await event in dataSource.events {
+                if let highlight = try? HighlightEvent(from: event) {
+                    highlights.append(highlight)
+                }
+            }
+            
+            // Sort by engagement (approximated by recent creation time for now)
+            let sortedHighlights = highlights.sorted { $0.createdAt > $1.createdAt }
+            
+            await MainActor.run {
+                self.trendingHighlights = Array(sortedHighlights.prefix(10))
+            }
+        }
+    }
+    
     private func startAnimations() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
@@ -806,7 +851,7 @@ struct InsightCard: View {
     }
 }
 
-struct TrendingHighlightCard: View {
+struct TrendingHighlightPlaceholder: View {
     let index: Int
     
     var body: some View {
@@ -818,41 +863,83 @@ struct TrendingHighlightCard: View {
                 
                 Spacer()
                 
-                Label("\(Int.random(in: 100...500))", systemImage: "flame.fill")
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
+                    .frame(width: 60, height: 16)
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
+                    .frame(height: 16)
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
+                    .frame(height: 16)
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
+                    .frame(width: 180, height: 16)
+            }
+            
+            HStack(spacing: DesignSystem.Spacing.medium) {
+                ForEach(0..<3) { _ in
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
+                        .frame(width: 50, height: 14)
+                }
+            }
+        }
+        .padding(DesignSystem.Spacing.medium)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(DesignSystem.Colors.surface)
+                .shadow(color: DesignSystem.Shadow.small.color, radius: DesignSystem.Shadow.small.radius)
+        )
+        .redacted(reason: .placeholder)
+    }
+}
+
+struct RealTrendingHighlightCard: View {
+    let index: Int
+    let highlight: HighlightEvent
+    @State private var reactions: [String: Int] = [:]
+    @EnvironmentObject var appState: AppState
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+            HStack {
+                Text("#\(index + 1)")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundColor(DesignSystem.Colors.primary)
+                
+                Spacer()
+                
+                Label("Trending", systemImage: "flame.fill")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.orange)
             }
             
-            Text("Loading trending highlights...")
+            Text(highlight.content)
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(DesignSystem.Colors.text)
                 .lineLimit(3)
                 .multilineTextAlignment(.leading)
             
-            HStack(spacing: DesignSystem.Spacing.medium) {
-                HStack(spacing: 4) {
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: 12))
-                        .foregroundColor(.red)
-                    Text("\(Int.random(in: 50...200))")
-                        .font(.system(size: 12))
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
-                }
+            HStack {
+                Text(PubkeyFormatter.formatCompact(highlight.author))
+                    .font(.system(size: 12))
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
                 
-                HStack(spacing: 4) {
-                    Image(systemName: "bubble.right.fill")
-                        .font(.system(size: 12))
-                        .foregroundColor(.blue)
-                    Text("\(Int.random(in: 10...50))")
-                        .font(.system(size: 12))
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
-                }
+                Text("·")
+                    .foregroundColor(DesignSystem.Colors.textTertiary)
                 
-                HStack(spacing: 4) {
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: 12))
-                        .foregroundColor(.orange)
-                    Text("\(Int.random(in: 100...1000))")
+                Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
+                    .font(.system(size: 12))
+                    .foregroundColor(DesignSystem.Colors.textTertiary)
+                
+                Spacer()
+                
+                if highlight.context != nil {
+                    Image(systemName: "text.bubble")
                         .font(.system(size: 12))
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }

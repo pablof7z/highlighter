@@ -11,6 +11,9 @@ class HomeDataManager: ObservableObject {
     @Published var discussions: [NDKEvent] = []
     @Published var zappedArticles: [NDKEvent] = []
     @Published var userHighlights: [HighlightEvent] = []
+    @Published var curations: [ArticleCuration] = []
+    @Published var suggestedUsers: [NDKUserProfile] = []
+    @Published var suggestedUserPubkeys: [String] = []
     @Published var isRefreshing = false
     
     // MARK: - Private Properties
@@ -44,6 +47,8 @@ class HomeDataManager: ObservableObject {
             group.addTask { await self.streamUserHighlights(ndk: ndk) }
             group.addTask { await self.streamDiscussions(ndk: ndk) }
             group.addTask { await self.streamZappedArticles(ndk: ndk) }
+            group.addTask { await self.streamCurations(ndk: ndk) }
+            group.addTask { await self.fetchSuggestedUsers(ndk: ndk) }
         }
     }
     
@@ -58,6 +63,9 @@ class HomeDataManager: ObservableObject {
         discussions.removeAll()
         zappedArticles.removeAll()
         userHighlights.removeAll()
+        curations.removeAll()
+        suggestedUsers.removeAll()
+        suggestedUserPubkeys.removeAll()
         
         // Restart streaming
         await startStreaming()
@@ -327,6 +335,98 @@ class HomeDataManager: ObservableObject {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    private func streamCurations(ndk: NDK) async {
+        let task = Task {
+            let curationSource = await ndk.outbox.observe(
+                filter: NDKFilter(kinds: [30004], limit: 20),
+                maxAge: CachePolicies.mediumTerm,
+                cachePolicy: .cacheWithNetwork
+            )
+            
+            for await event in curationSource.events {
+                if let curation = try? ArticleCuration(from: event) {
+                    await MainActor.run {
+                        withAnimation(DesignSystem.Animation.quick) {
+                            if !curations.contains(where: { $0.id == curation.id }) {
+                                curations.append(curation)
+                                // Sort by creation date, newest first
+                                curations.sort { $0.createdAt > $1.createdAt }
+                                // Keep top 10 curations
+                                if curations.count > 10 {
+                                    curations = Array(curations.prefix(10))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        streamingTasks.append(task)
+    }
+    
+    private func fetchSuggestedUsers(ndk: NDK) async {
+        // Fetch users who are actively creating highlights
+        let highlightersFilter = NDKFilter(
+            kinds: [9802],
+            limit: 50
+        )
+        
+        let dataSource = NDKDataSource(
+            ndk: ndk,
+            filter: highlightersFilter,
+            maxAge: CachePolicies.mediumTerm,
+            cachePolicy: .cacheOnly,
+            closeOnEose: true
+        )
+        
+        var userPubkeys = Set<String>()
+        
+        // Collect unique pubkeys from recent highlights
+        for await event in dataSource.events {
+            userPubkeys.insert(event.pubkey)
+            if userPubkeys.count >= 20 {
+                break
+            }
+        }
+        
+        // Fetch profiles for these users
+        guard !userPubkeys.isEmpty else { return }
+        
+        let profileFilter = NDKFilter(
+            authors: Array(userPubkeys),
+            kinds: [0]
+        )
+        
+        let profileSource = NDKDataSource(
+            ndk: ndk,
+            filter: profileFilter,
+            maxAge: 0,
+            cachePolicy: .cacheWithNetwork,
+            closeOnEose: true
+        )
+        
+        var profilesWithPubkeys: [(profile: NDKUserProfile, pubkey: String)] = []
+        
+        for await event in profileSource.events {
+            if event.kind == 0,
+               let profile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
+                profilesWithPubkeys.append((profile: profile, pubkey: event.pubkey))
+            }
+        }
+        
+        // Update suggested users - we'll need to handle this differently
+        await MainActor.run {
+            withAnimation(DesignSystem.Animation.quick) {
+                // For now, store pubkeys separately
+                suggestedUserPubkeys = profilesWithPubkeys.map { $0.pubkey }
+                suggestedUsers = profilesWithPubkeys
+                    .filter { $0.profile.displayName != nil || $0.profile.name != nil } // Only users with names
+                    .prefix(10)
+                    .map { $0.profile }
             }
         }
     }
