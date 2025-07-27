@@ -643,13 +643,14 @@ struct ImmersiveHighlightDetailView: View {
     // MARK: - Helper Methods
     
     private func loadData() async {
-        guard appState.ndk != nil else { return }
+        guard let ndk = appState.ndk else { return }
         
         // Load author profile
-        if let profile = appState.profileManager.getCachedProfile(for: highlight.author) {
+        for await profile in await ndk.profileManager.observe(for: highlight.author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.author = profile
             }
+            break // Only need first value
         }
         
         // Load engagement metrics

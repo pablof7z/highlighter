@@ -17,7 +17,7 @@ struct LightningPaymentFlowView: View {
     @State private var splitAnimations: [String: CGFloat] = [:]
     @State private var lightningBoltAnimation = false
     @State private var coinFlipRotation: Double = 0
-    @State private var activePayment: LightningService.ActivePayment?
+    @State private var activePayment: ActivePayment?
     @State private var selectedSplitConfiguration = 0
     @State private var customSplitConfig = LightningService.SplitConfiguration.highlight
     @State private var showCustomSplitEditor = false
@@ -540,19 +540,19 @@ struct LightningPaymentFlowView: View {
             let splits = selectedSplitConfiguration == 3 ? customSplitConfig : splitConfigurations[selectedSplitConfiguration].1
             
             let paymentSplits = [
-                LightningService.PaymentSplit(
+                PaymentSplit(
                     recipientPubkey: highlight.pubkey,
                     amount: Int(Double(selectedAmount) * splits.highlighterPercentage),
                     role: .highlighter,
                     isOriginal: true
                 ),
-                LightningService.PaymentSplit(
+                PaymentSplit(
                     recipientPubkey: highlight.author,
                     amount: Int(Double(selectedAmount) * splits.authorPercentage),
                     role: .author,
                     isOriginal: false
                 ),
-                LightningService.PaymentSplit(
+                PaymentSplit(
                     recipientPubkey: highlight.pubkey, // Use highlight pubkey as fallback
                     amount: Int(Double(selectedAmount) * splits.curatorPercentage),
                     role: .curator,
@@ -560,7 +560,7 @@ struct LightningPaymentFlowView: View {
                 )
             ].filter { $0.amount > 0 }
             
-            let payment = LightningService.ActivePayment(
+            let payment = ActivePayment(
                 id: UUID(),
                 totalAmount: selectedAmount,
                 splits: paymentSplits,
@@ -577,7 +577,7 @@ struct LightningPaymentFlowView: View {
         }
     }
     
-    private func handlePaymentStatusChange(_ status: LightningService.ActivePayment.PaymentStatus?) {
+    private func handlePaymentStatusChange(_ status: PaymentStatus?) {
         guard let status = status else { return }
         
         switch status {
@@ -938,7 +938,7 @@ struct SplitSegment: View {
 }
 
 struct PaymentStatusIndicator: View {
-    let payment: LightningService.ActivePayment
+    let payment: ActivePayment
     @State private var pulseAnimation = false
     
     var body: some View {
@@ -1067,7 +1067,7 @@ struct LightningParticleView: View {
 // MARK: - Additional Supporting Views
 
 struct SplitFlowVisualization: View {
-    let payment: LightningService.ActivePayment?
+    let payment: ActivePayment?
     let animationProgress: CGFloat
     @Binding var particles: [LightningParticle]
     @State private var pathAnimation: CGFloat = 0
@@ -1118,7 +1118,7 @@ struct SplitFlowVisualization: View {
 }
 
 struct SplitPathView: View {
-    let split: LightningService.PaymentSplit
+    let split: PaymentSplit
     let index: Int
     let totalSplits: Int
     let centerPoint: CGPoint
@@ -1178,7 +1178,7 @@ struct SplitPathView: View {
 }
 
 struct SplitProgressRow: View {
-    let split: LightningService.PaymentSplit
+    let split: PaymentSplit
     let animationProgress: CGFloat
     
     var body: some View {
@@ -1231,7 +1231,7 @@ struct SplitProgressRow: View {
 }
 
 struct TransactionSummaryCard: View {
-    let payment: LightningService.ActivePayment
+    let payment: ActivePayment
     
     var body: some View {
         VStack(spacing: 16) {

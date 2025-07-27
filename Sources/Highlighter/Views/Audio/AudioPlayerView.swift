@@ -679,8 +679,14 @@ struct AudioPlayerView: View {
     
     private func resolveLightningAddress(for pubkey: String) async -> String? {
         // Try to get Lightning address from user's profile
-        if let profile = appState.profileManager.getCachedProfile(for: pubkey) {
-            return profile.lud16 ?? profile.lud06
+        guard let ndk = appState.ndk else { return nil }
+        
+        // Get profile from NDK (will use cache if available)
+        for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
+            if let profile = profile {
+                return profile.lud16 ?? profile.lud06
+            }
+            break // Only need first value
         }
         
         return nil

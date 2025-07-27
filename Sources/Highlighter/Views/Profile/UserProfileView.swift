@@ -95,7 +95,7 @@ struct UserProfileView: View {
         }
         .task {
             // Start streaming profile updates
-            appState.profileManager.streamProfile(for: pubkey)
+            // Profile streaming is handled by NDK's profile manager
             
             // Load profile data
             await loadProfileData()
@@ -103,18 +103,13 @@ struct UserProfileView: View {
         }
         .onChange(of: pubkey) { _, newPubkey in
             Task {
-                // Start streaming profile updates for new pubkey
-                appState.profileManager.streamProfile(for: newPubkey)
+                // Profile updates for new pubkey
+                // Profile streaming is handled by NDK's profile manager
                 await loadProfileData()
                 checkFollowStatus()
             }
         }
-        .onReceive(appState.profileManager.$cachedProfiles) { profiles in
-            // Update profile when it changes in the cache
-            if let updatedProfile = profiles[pubkey] {
-                self.profile = updatedProfile
-            }
-        }
+        // Profile updates are handled through loadProfileData()
     }
     
     // MARK: - Profile Header
@@ -367,9 +362,12 @@ struct UserProfileView: View {
     private func loadProfileData() async {
         guard let ndk = appState.ndk else { return }
         
-        // Get cached profile immediately if available
-        if let cachedProfile = appState.profileManager.getCachedProfile(for: pubkey) {
-            self.profile = cachedProfile
+        // Get profile from NDK
+        for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
+            await MainActor.run {
+                self.profile = profile
+            }
+            break // Only need first value
         }
         
         // Load all content in parallel

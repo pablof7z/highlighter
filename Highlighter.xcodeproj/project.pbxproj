@@ -65,7 +65,6 @@
 		981A640F5DAAE1DC2566BE65 /* ModernFormComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BB1CEB6B1AF8996372B0A9 /* ModernFormComponents.swift */; };
 		9B5E2280A6B1D40EB14EF146 /* FollowingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72B83ED7201352D81B038D4 /* FollowingListView.swift */; };
 		A06F95F603A679D35B71830C /* UnifiedCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFA2646020373D085219CD1 /* UnifiedCard.swift */; };
-		A14D87798BCA853B8ADB1094 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD20236BF86EF8694B01BCB /* ProfileManager.swift */; };
 		A25241FBBFAFEE09E8F309E6 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F9CBDB1F581FAFF82499ED /* HapticManager.swift */; };
 		A511B4B1AC90D691C950B6DC /* NDKSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 066BFE60CA36619DDAF24249 /* NDKSwiftUI */; };
 		A529566D32F92D65708AC6EE /* UserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D42BFB31D49E39DB2B64A3A /* UserProfileView.swift */; };
@@ -84,7 +83,6 @@
 		BEEFC7E63EE19685B859327B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3CDA726BB07F1F8F89ABF1C /* Assets.xcassets */; };
 		BF8BF379A7FFE947E5F3811B /* ArticleTimeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E74B3E244D7F253B507F4B6 /* ArticleTimeEstimator.swift */; };
 		C2AD1BBC79D059AF8C6F6DC9 /* SimplifiedHybridFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1770A666CC88A1326723FA2 /* SimplifiedHybridFeedView.swift */; };
-		D4B22C3274D4A1E3D768FD3F /* NostrWalletConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6282146FEAFAE4EB50E8C9DF /* NostrWalletConnect.swift */; };
 		D6A56128381947ACC6639CC6 /* HighlightEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0151014CE7E449B5BE685BE8 /* HighlightEvent.swift */; };
 		D6BF6DEBA828B3B11D10832E /* CurationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D807FD00E2D24A226C0CA61A /* CurationDetailView.swift */; };
 		D9DDE855A6260257D14B363C /* TimelineFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02BF635DE3D5488C2EC049B /* TimelineFeedView.swift */; };
@@ -94,7 +92,6 @@
 		E85CEAE60DFDAE1A4E709ED0 /* CreateHighlightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513F373BC7DB42A589AB44E8 /* CreateHighlightView.swift */; };
 		ECCBD2BA032658F81A258FFF /* RelayManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87752C08F9C5A7A362497571 /* RelayManagerView.swift */; };
 		EDF1676E64A7D57933E21659 /* SwarmHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A30F0A9531B551A701C1BD7 /* SwarmHeatmapView.swift */; };
-		FD019527E54BE2174506C28F /* LNURLService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DD7BF767733E9613C254DE /* LNURLService.swift */; };
 		FFD8561B2EB92A93B7D780C6 /* AnimationExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7557E38E531DE0B78A14909E /* AnimationExtensions.swift */; };
 /* End PBXBuildFile section */
 
@@ -104,7 +101,6 @@
 		03DEF9DECD6C6F4D9AF8C400 /* FollowPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowPack.swift; sourceTree = "<group>"; };
 		08C9371F823E831254881AA4 /* FollowersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowersListView.swift; sourceTree = "<group>"; };
 		0986709D8D575050D8063F5D /* EmptyHighlightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHighlightsView.swift; sourceTree = "<group>"; };
-		0CD20236BF86EF8694B01BCB /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 		0E3DC62588BEBADA506749EE /* AdvancedSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchView.swift; sourceTree = "<group>"; };
 		1218D531D7715736DC097843 /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
 		15E27589CBE68F327B765B12 /* CurationManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurationManagementView.swift; sourceTree = "<group>"; };
@@ -135,7 +131,6 @@
 		5C9A8C38CB54B7E5605AF14A /* BlurHashDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurHashDecoder.swift; sourceTree = "<group>"; };
 		5D42BFB31D49E39DB2B64A3A /* UserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileView.swift; sourceTree = "<group>"; };
 		5E06D1E90D26910A32BBA586 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		6282146FEAFAE4EB50E8C9DF /* NostrWalletConnect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrWalletConnect.swift; sourceTree = "<group>"; };
 		6518EDA69718BECFF41C4E02 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		666B0ACBD17E885451A80F89 /* ProfileImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImage.swift; sourceTree = "<group>"; };
 		68EE862B30307430C752F295 /* SelectableMarkdownRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableMarkdownRenderer.swift; sourceTree = "<group>"; };
@@ -155,7 +150,6 @@
 		9D458CCB519B3373BBBAA25E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		9FE479875030C79E23CEC371 /* CreateCurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCurationView.swift; sourceTree = "<group>"; };
 		A0D6F1E556E98D164B99B869 /* FollowPackDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowPackDetailView.swift; sourceTree = "<group>"; };
-		A1DD7BF767733E9613C254DE /* LNURLService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNURLService.swift; sourceTree = "<group>"; };
 		A2CDAC5B2099CFF6ED8BE9AE /* ArticleCuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleCuration.swift; sourceTree = "<group>"; };
 		A4C6D9AB2A21C93E8951D6E4 /* SmartArticleImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartArticleImportView.swift; sourceTree = "<group>"; };
 		A89145FF0C6BCD85C2ADB6B0 /* ArticleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleListView.swift; sourceTree = "<group>"; };
@@ -506,9 +500,6 @@
 				361A54288A443FAC2E4515E8 /* EngagementService.swift */,
 				82A5731C3876CFC3835D623E /* ImageUploadService.swift */,
 				5818E9E0A5081751B12C7A05 /* LightningService.swift */,
-				A1DD7BF767733E9613C254DE /* LNURLService.swift */,
-				6282146FEAFAE4EB50E8C9DF /* NostrWalletConnect.swift */,
-				0CD20236BF86EF8694B01BCB /* ProfileManager.swift */,
 				7542540C7ACFB260E24E01B2 /* PublishingService.swift */,
 				244A38BDC30B8AFB74E55CF6 /* ReadingProgressService.swift */,
 			);
@@ -665,19 +656,16 @@
 				7D93A481371B7F31B093B6DB /* ImageUploadService.swift in Sources */,
 				0AB8E358C4D1ED0B7B320B12 /* ImmersiveHighlightDetailView.swift in Sources */,
 				DE72306A67DEB86D06A8878E /* KeychainManager.swift in Sources */,
-				FD019527E54BE2174506C28F /* LNURLService.swift in Sources */,
 				39ED8F05509F9A4FFF466557 /* LibraryView.swift in Sources */,
 				8CC027C461CC53CF47AC2ECB /* LightningPaymentFlowView.swift in Sources */,
 				0CAD93077385698E44D03486 /* LightningService.swift in Sources */,
 				B27F8ADE7A1BC93C9447C110 /* LightningWalletView.swift in Sources */,
 				1F8DBCE1121AC3831365569B /* LoadingHighlightView.swift in Sources */,
 				981A640F5DAAE1DC2566BE65 /* ModernFormComponents.swift in Sources */,
-				D4B22C3274D4A1E3D768FD3F /* NostrWalletConnect.swift in Sources */,
 				224179F5F3F178E3DEFA54FF /* OnboardingView.swift in Sources */,
 				27E43CED07B3F0A59D94F368 /* PreferenceKeys.swift in Sources */,
 				56E60BD4D4C416D345463298 /* PreviewData.swift in Sources */,
 				3C97E53C3B882261B366F8B4 /* ProfileImage.swift in Sources */,
-				A14D87798BCA853B8ADB1094 /* ProfileManager.swift in Sources */,
 				762E0B52E6C34458CB162E73 /* ProfileView.swift in Sources */,
 				43920B59A88E931B495919A8 /* PublishingService.swift in Sources */,
 				B06661ECC0DF92E6D63812C5 /* ReadingProgressService.swift in Sources */,

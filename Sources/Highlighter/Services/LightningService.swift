@@ -3,7 +3,7 @@ import NDKSwift
 import Combine
 import SwiftUI
 
-/// Lightning service for managing payments with smart splits
+/// Lightning service for managing payments using NDKSwift's built-in functionality
 @MainActor
 class LightningService: ObservableObject {
     // MARK: - Published Properties
@@ -16,8 +16,7 @@ class LightningService: ObservableObject {
     
     // MARK: - Properties
     private var ndk: NDK?
-    private var signer: NDKSigner?
-    private var nwc: NostrWalletConnect?
+    private var nwcWallet: NDKNWCWallet?
     private var cancellables = Set<AnyCancellable>()
     
     // Smart split configurations
@@ -52,9 +51,16 @@ class LightningService: ObservableObject {
             curator: 0.15,
             platform: 0.05
         )
+        
+        static let article = SplitConfiguration(
+            author: 0.7,
+            highlighter: 0.0,
+            curator: 0.25,
+            platform: 0.05
+        )
     }
     
-    @Published var splitConfig = SplitConfiguration()
+    @Published var splitConfiguration = SplitConfiguration.highlight
     
     // MARK: - Initialization
     init() {
@@ -63,72 +69,62 @@ class LightningService: ObservableObject {
     
     // MARK: - Public Methods
     
-    /// Connect to Lightning wallet via Nostr Wallet Connect
     func connectWallet(connectionString: String) async throws {
         guard let ndk = ndk else { throw LightningError.ndkNotInitialized }
         
-        do {
-            // Parse NWC connection string
-            guard let url = URL(string: connectionString),
-                  url.scheme == "nostr+walletconnect" else {
-                throw LightningError.invalidConnectionString
+        // Create NWC wallet using NDKSwift
+        let wallet = try await NDKNWCWallet(ndk: ndk, connectionURI: connectionString)
+        
+        // Connect the wallet
+        try await wallet.connect()
+        
+        // Configure NDK's zap manager with the wallet
+        await ndk.zapManager.configureDefaults(nwcWallet: wallet)
+        
+        self.nwcWallet = wallet
+        
+        // Update connection state
+        isConnected = true
+        
+        // Get wallet info
+        if let info = await wallet.walletInfo {
+            walletInfo = WalletInfo(
+                alias: info.alias,
+                balance: info.balance?.balance_msat ?? 0,
+                methods: info.methods
+            )
+            balance = Int((info.balance?.balance_msat ?? 0) / 1000) // Convert millisats to sats
+        }
+        
+        // Save connection for persistence
+        saveConnectionString(connectionString)
+        
+        // Start balance updates
+        startBalanceUpdates()
+    }
+    
+    func disconnectWallet() {
+        Task {
+            if let wallet = nwcWallet {
+                await wallet.disconnect()
             }
-            
-            // Initialize NWC with parsed parameters
-            let nwc = try NostrWalletConnect(from: connectionString, ndk: ndk)
-            self.nwc = nwc
-            
-            // Request wallet info
-            let info = try await nwc.getInfo()
-            await MainActor.run {
-                self.walletInfo = WalletInfo(
-                    alias: info.alias,
-                    color: "#FF9500", // Default color for now
-                    pubkey: info.pubkey,
-                    network: info.network,
-                    blockHeight: info.blockHeight,
-                    methods: info.methods
-                )
-                self.isConnected = true
-                self.connectionError = nil
-            }
-            
-            // Start listening for balance updates
-            startBalanceUpdates()
-            
-            // Save connection for future use
-            saveConnectionString(connectionString)
-            
-            HapticManager.shared.notification(.success)
-        } catch {
-            await MainActor.run {
-                self.connectionError = error.localizedDescription
-                self.isConnected = false
-            }
-            HapticManager.shared.notification(.error)
-            throw error
+            nwcWallet = nil
+            isConnected = false
+            walletInfo = nil
+            balance = 0
+            clearConnectionString()
         }
     }
     
-    /// Disconnect from Lightning wallet
-    func disconnectWallet() {
-        nwc = nil
-        isConnected = false
-        balance = 0
-        walletInfo = nil
-        clearConnectionString()
-        HapticManager.shared.impact(.medium)
-    }
-    
-    /// Send a zap with smart splits
+    /// Send a smart zap with splits using NDKSwift
     func sendSmartZap(
         amount: Int,
         to highlight: HighlightEvent,
         article: Article? = nil,
         comment: String? = nil
     ) async throws -> ZapTransaction {
-        guard let nwc = nwc else { throw LightningError.walletNotConnected }
-        guard ndk != nil else { throw LightningError.ndkNotInitialized }
+        guard let ndk = ndk else { throw LightningError.ndkNotInitialized }
+        guard nwcWallet != nil else { throw LightningError.walletNotConnected }
         
         // Create pending zap for UI feedback
         let pendingZap = PendingZap(
@@ -154,26 +150,33 @@ class LightningService: ObservableObject {
             // Update pending zap status
             updatePendingZapStatus(pendingZap.id, status: .sending)
             
-            // Create zap transactions for each recipient
+            // Create transactions for each split
             var transactions: [SubTransaction] = []
             
             for split in splits {
                 if split.amount > 0 {
-                    // Create zap request event
-                    let zapRequest = try await createZapRequest(
-                        amount: split.amount,
-                        recipientPubkey: split.recipientPubkey,
+                    // Create NDKUser for recipient
+                    let recipient = NDKUser(pubkey: split.recipientPubkey)
+                    recipient.ndk = ndk
+                    
+                    // Create NDKEvent for the highlight reference if this is the original zap
+                    var eventToZap: NDKEvent? = nil
+                    if split.isOriginal {
+                        // Find or create the highlight event
+                        eventToZap = try await fetchHighlightEvent(highlight.id, ndk: ndk)
+                    }
+                    
+                    // Use NDK's zap manager to send the zap
+                    let zapResult = try await ndk.zapManager.zap(
+                        event: eventToZap,
+                        to: recipient,
+                        amountSats: Int64(split.amount),
                         comment: split.isOriginal ? comment : "Split payment from highlight zap",
-                        highlightReference: highlight.id
+                        preferredType: .lightning
                     )
                     
-                    // Send payment
-                    let invoice = try await getInvoiceForZap(
-                        zapRequest: zapRequest,
-                        recipientPubkey: split.recipientPubkey
-                    )
-                    
-                    let paymentHash = try await nwc.payInvoice(invoice)
+                    // Extract payment info from result
+                    let paymentHash = extractPaymentHash(from: zapResult)
                     
                     transactions.append(SubTransaction(
                         recipientPubkey: split.recipientPubkey,
@@ -204,15 +207,6 @@ class LightningService: ObservableObject {
                 HapticManager.shared.notification(.success)
             }
             
-            // Publish zap receipt events
-            for (split, subTx) in zip(splits, transactions) {
-                try await publishZapReceipt(
-                    transaction: subTx,
-                    originalEvent: highlight.id,
-                    split: split
-                )
-            }
-            
             return transaction
             
         } catch {
@@ -228,28 +222,26 @@ class LightningService: ObservableObject {
         }
     }
     
-    /// Send a simple zap without splits
+    /// Send a simple zap without splits using NDKSwift
     func sendSimpleZap(
         amount: Int,
         to pubkey: String,
         comment: String? = nil
     ) async throws {
-        guard let nwc = nwc else { throw LightningError.walletNotConnected }
-        guard ndk != nil else { throw LightningError.ndkNotInitialized }
+        guard let ndk = ndk else { throw LightningError.ndkNotInitialized }
+        guard nwcWallet != nil else { throw LightningError.walletNotConnected }
         
-        let zapRequest = try await createZapRequest(
-            amount: amount,
-            recipientPubkey: pubkey,
+        // Create recipient user
+        let recipient = NDKUser(pubkey: pubkey)
+        recipient.ndk = ndk
+        
+        // Send zap using NDK
+        _ = try await ndk.zapManager.zap(
+            to: recipient,
+            amountSats: Int64(amount),
             comment: comment,
-            highlightReference: nil
+            preferredType: .lightning
         )
-        
-        let invoice = try await getInvoiceForZap(
-            zapRequest: zapRequest,
-            recipientPubkey: pubkey
-        )
-        
-        _ = try await nwc.payInvoice(invoice)
         
         HapticManager.shared.notification(.success)
     }
@@ -258,16 +250,16 @@ class LightningService: ObservableObject {
     
     func updateSplitConfiguration(_ config: SplitConfiguration) {
         guard config.isValid else { return }
-        splitConfig = config
+        splitConfiguration = config
         saveSplitConfiguration()
-        HapticManager.shared.impact(.light)
     }
+    
+    // MARK: - NDK Integration
     
     func setNDK(_ ndk: NDK, signer: NDKSigner?) {
         self.ndk = ndk
-        self.signer = signer
         
-        // Try to reconnect if we have a saved connection
+        // Auto-reconnect if we have saved credentials
         if let savedConnection = getSavedConnectionString() {
             Task {
                 try? await connectWallet(connectionString: savedConnection)
@@ -285,160 +277,90 @@ class LightningService: ObservableObject {
     ) -> [PaymentSplit] {
         var splits: [PaymentSplit] = []
         
-        // Always pay the highlighter
-        let highlighterAmount = Int(Double(totalAmount) * splitConfig.highlighterPercentage)
-        splits.append(PaymentSplit(
-            recipientPubkey: highlighterPubkey,
-            amount: highlighterAmount,
-            role: .highlighter,
-            isOriginal: true
-        ))
-        
-        // Pay author if different from highlighter
-        if let authorPubkey = authorPubkey, authorPubkey != highlighterPubkey {
-            let authorAmount = Int(Double(totalAmount) * splitConfig.authorPercentage)
+        // Highlighter gets their share
+        let highlighterAmount = Int(Double(totalAmount) * splitConfiguration.highlighter)
+        if highlighterAmount > 0 {
             splits.append(PaymentSplit(
-                recipientPubkey: authorPubkey,
-                amount: authorAmount,
-                role: .author,
-                isOriginal: false
+                recipientPubkey: highlighterPubkey,
+                amount: highlighterAmount,
+                role: .highlighter,
+                isOriginal: true
             ))
-        } else {
-            // If highlighter is the author, give them the author portion too
-            let extraAmount = Int(Double(totalAmount) * splitConfig.authorPercentage)
-            if var highlighterSplit = splits.first {
-                highlighterSplit.amount += extraAmount
-                splits[0] = highlighterSplit
+        }
+        
+        // Author gets their share if different from highlighter
+        if let authorPubkey = authorPubkey,
+           authorPubkey != highlighterPubkey {
+            let authorAmount = Int(Double(totalAmount) * splitConfiguration.author)
+            if authorAmount > 0 {
+                splits.append(PaymentSplit(
+                    recipientPubkey: authorPubkey,
+                    amount: authorAmount,
+                    role: .author,
+                    isOriginal: false
+                ))
             }
         }
         
-        // Pay curator if exists and different
+        // Curator gets their share if present and different
         if let curatorPubkey = curatorPubkey,
-           curatorPubkey != highlighterPubkey && curatorPubkey != authorPubkey {
-            let curatorAmount = Int(Double(totalAmount) * splitConfig.curatorPercentage)
+           curatorPubkey != highlighterPubkey,
+           curatorPubkey != authorPubkey {
+            let curatorAmount = Int(Double(totalAmount) * splitConfiguration.curator)
+            if curatorAmount > 0 {
+                splits.append(PaymentSplit(
+                    recipientPubkey: curatorPubkey,
+                    amount: curatorAmount,
+                    role: .curator,
+                    isOriginal: false
+                ))
+            }
+        }
+        
+        // Platform fee (if configured)
+        let platformPubkey = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2" // jack
+        let platformAmount = Int(Double(totalAmount) * splitConfiguration.platform)
+        if platformAmount > 0 {
             splits.append(PaymentSplit(
-                recipientPubkey: curatorPubkey,
-                amount: curatorAmount,
-                role: .curator,
+                recipientPubkey: platformPubkey,
+                amount: platformAmount,
+                role: .platform,
                 isOriginal: false
             ))
-        } else {
-            // Distribute curator portion to highlighter
-            let extraAmount = Int(Double(totalAmount) * splitConfig.curatorPercentage)
-            if var highlighterSplit = splits.first {
-                highlighterSplit.amount += extraAmount
-                splits[0] = highlighterSplit
+        }
+        
+        // Ensure total doesn't exceed original amount
+        let totalSplit = splits.reduce(0) { $0 + $1.amount }
+        if totalSplit > totalAmount {
+            // Scale down proportionally if needed
+            let scale = Double(totalAmount) / Double(totalSplit)
+            splits = splits.map { split in
+                var adjusted = split
+                adjusted.amount = Int(Double(split.amount) * scale)
+                return adjusted
             }
         }
         
         return splits
     }
     
-    private func createZapRequest(
-        amount: Int,
-        recipientPubkey: String,
-        comment: String?,
-        highlightReference: String?
-    ) async throws -> NDKEvent {
-        guard let ndk = ndk else {
-            throw LightningError.ndkNotInitialized
-        }
-        guard let signer = signer else {
-            throw LightningError.signerNotAvailable
-        }
-        
-        var tags: [[String]] = [
-            ["amount", String(amount * 1000)], // Convert sats to millisats
-            ["p", recipientPubkey]
-        ]
-        
-        if let highlight = highlightReference {
-            tags.append(["e", highlight])
-        }
-        
-        let content = comment ?? ""
-        
-        return try await NDKEventBuilder(ndk: ndk)
-            .kind(9734) // Zap request
-            .content(content)
-            .tags(tags)
-            .build(signer: signer)
+    private func fetchHighlightEvent(_ eventId: String, ndk: NDK) async throws -> NDKEvent? {
+        // Try to fetch the highlight event
+        let filter = NDKFilter(ids: [eventId])
+        return try await ndk.fetchEvent(filter: filter)
     }
     
-    private func getInvoiceForZap(zapRequest: NDKEvent, recipientPubkey: String) async throws -> String {
-        guard let ndk = ndk else { throw LightningError.ndkNotInitialized }
-        
-        // Get user's lightning address
-        let profileDataSource = await ndk.outbox.observe(
-            filter: NDKFilter(
-                authors: [recipientPubkey],
-                kinds: [0]
-            ),
-            maxAge: 3600,
-            cachePolicy: .cacheWithNetwork
-        )
-        
-        var lightningAddress: String?
-        for await event in profileDataSource.events {
-            if let profile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
-                lightningAddress = profile.lud16 ?? profile.lud06
-                break
-            }
+    private func extractPaymentHash(from zapResult: ZapResult) -> String {
+        // Extract payment hash from the zap result
+        switch zapResult {
+        case .lightning(let receipt):
+            return receipt.paymentHash ?? "unknown"
+        case .nutzap:
+            return "nutzap-\(UUID().uuidString)"
         }
-        
-        guard let address = lightningAddress else {
-            throw LightningError.noLightningAddress
-        }
-        
-        // Get amount from zap request
-        var amount = 1000 // Default 1000 sats
-        for tag in zapRequest.tags {
-            if tag.count >= 2 && tag[0] == "amount" {
-                amount = (Int(tag[1]) ?? 1000) / 1000 // Convert millisats to sats
-                break
-            }
-        }
-        
-        // Serialize zap request for LNURL
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .sortedKeys
-        let zapRequestData = try encoder.encode(zapRequest)
-        let zapRequestString = String(data: zapRequestData, encoding: .utf8) ?? ""
-        
-        // Request invoice from LNURL service
-        return try await LNURLService.getInvoice(
-            for: address,
-            amount: amount,
-            comment: zapRequest.content.isEmpty ? nil : zapRequest.content,
-            zapRequest: zapRequestString
-        )
-    }
-    
-    private func publishZapReceipt(
-        transaction: SubTransaction,
-        originalEvent: String,
-        split: PaymentSplit
-    ) async throws {
-        guard let ndk = ndk,
-              let signer = signer else { return }
-        
-        let tags: [[String]] = [
-            ["p", transaction.recipientPubkey],
-            ["e", originalEvent],
-            ["amount", String(transaction.amount * 1000)],
-            ["split-role", split.role.rawValue]
-        ]
-        
-        let event = try await NDKEventBuilder(ndk: ndk)
-            .kind(9735) // Zap receipt
-            .tags(tags)
-            .build(signer: signer)
-        
-        _ = try await ndk.publish(event)
     }
     
     private func startBalanceUpdates() {
-        // Poll balance every 30 seconds
         Timer.publish(every: 30, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
@@ -447,243 +369,183 @@ class LightningService: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-        
-        // Initial balance fetch
-        Task {
-            await updateBalance()
-        }
     }
     
     private func updateBalance() async {
-        guard let nwc = nwc else { return }
+        guard let wallet = nwcWallet else { return }
         
-        do {
-            let balanceInfo = try await nwc.getBalance()
+        if let newBalance = try? await wallet.getBalance() {
             await MainActor.run {
-                self.balance = balanceInfo / 1000 // Convert millisats to sats
+                self.balance = Int(newBalance / 1000) // Convert millisats to sats
             }
-        } catch {
-            // Failed to update balance
         }
     }
     
     private func updatePendingZapStatus(_ id: UUID, status: PendingZap.Status) {
-        DispatchQueue.main.async {
-            if let index = self.pendingZaps.firstIndex(where: { $0.id == id }) {
-                self.pendingZaps[index].status = status
-            }
+        if let index = pendingZaps.firstIndex(where: { $0.id == id }) {
+            pendingZaps[index].status = status
         }
     }
     
     // MARK: - Persistence
     
     private func saveConnectionString(_ connection: String) {
-        do {
-            try KeychainManager.shared.save(connection, for: KeychainManager.Keys.nwcConnection)
-        } catch {
-            // Failed to save NWC connection to keychain
-        }
+        UserDefaults.standard.set(connection, forKey: "lightning.nwc.connection")
     }
     
     private func getSavedConnectionString() -> String? {
-        do {
-            return try KeychainManager.shared.retrieve(key: KeychainManager.Keys.nwcConnection)
-        } catch {
-            // If error is not .noData, log it
-            if case KeychainManager.KeychainError.noData = error {
-                // Expected when no connection saved
-            } else {
-                // Failed to retrieve NWC connection from keychain
-            }
-            return nil
-        }
+        UserDefaults.standard.string(forKey: "lightning.nwc.connection")
     }
     
     private func clearConnectionString() {
-        do {
-            try KeychainManager.shared.delete(key: KeychainManager.Keys.nwcConnection)
-        } catch {
-            // Failed to clear NWC connection from keychain
-        }
+        UserDefaults.standard.removeObject(forKey: "lightning.nwc.connection")
     }
     
     private func saveSplitConfiguration() {
-        UserDefaults.standard.set(splitConfig.authorPercentage, forKey: "highlighter.split.author")
-        UserDefaults.standard.set(splitConfig.highlighterPercentage, forKey: "highlighter.split.highlighter")
-        UserDefaults.standard.set(splitConfig.curatorPercentage, forKey: "highlighter.split.curator")
+        let config = [
+            "author": splitConfiguration.author,
+            "highlighter": splitConfiguration.highlighter,
+            "curator": splitConfiguration.curator,
+            "platform": splitConfiguration.platform
+        ]
+        UserDefaults.standard.set(config, forKey: "lightning.splits.config")
     }
     
     private func loadSavedConfiguration() {
-        let author = UserDefaults.standard.double(forKey: "highlighter.split.author")
-        let highlighter = UserDefaults.standard.double(forKey: "highlighter.split.highlighter")
-        let curator = UserDefaults.standard.double(forKey: "highlighter.split.curator")
-        
-        if author > 0 || highlighter > 0 || curator > 0 {
-            splitConfig = SplitConfiguration(
-                author: author > 0 ? author : 0.5,
-                highlighter: highlighter > 0 ? highlighter : 0.3,
-                curator: curator > 0 ? curator : 0.2,
-                platform: 0.05
+        if let saved = UserDefaults.standard.dictionary(forKey: "lightning.splits.config") as? [String: Double] {
+            splitConfiguration = SplitConfiguration(
+                author: saved["author"] ?? 0.5,
+                highlighter: saved["highlighter"] ?? 0.3,
+                curator: saved["curator"] ?? 0.15,
+                platform: saved["platform"] ?? 0.05
             )
-        }
-    }
-    
-    
-    // MARK: - Nested Types
-    
-        struct ZapTransaction: Identifiable, Equatable {
-        let id: UUID
-        let totalAmount: Int
-        let splits: [SubTransaction]
-        let highlightId: String
-        let comment: String?
-        let timestamp: Date
-        
-        var formattedAmount: String {
-            "\(totalAmount.formatted()) sats"
-        }
-    }
-    
-        struct SubTransaction: Equatable {
-        let recipientPubkey: String
-        let amount: Int
-        let role: PaymentRole
-        let paymentHash: String
-        let timestamp: Date
-    }
-    
-        struct PaymentSplit: Identifiable {
-        let id = UUID()
-        let recipientPubkey: String
-        var amount: Int
-        let role: PaymentRole
-        let isOriginal: Bool // True for the main recipient
-        var type: PaymentRole { role } // Alias for compatibility
-        var status: SplitStatus = .pending
-        
-        var recipientName: String {
-            switch role {
-            case .author: return "Author"
-            case .highlighter: return "Highlighter"
-            case .curator: return "Curator"
-            }
-        }
-        
-        var percentage: Double {
-            // Default percentages based on role
-            switch role {
-            case .highlighter: return 0.5
-            case .author: return 0.4
-            case .curator: return 0.1
-            }
-        }
-        
-        enum SplitStatus {
-            case pending
-            case sending
-            case completed
-            case failed
-        }
-    }
-    
-        enum PaymentRole: String {
-        case author
-        case highlighter
-        case curator
-        
-        var icon: String {
-            switch self {
-            case .author: return "person.fill"
-            case .highlighter: return "highlighter"
-            case .curator: return "folder.fill"
-            }
-        }
-        
-        var color: Color {
-            switch self {
-            case .author: return DesignSystem.Colors.primary
-            case .highlighter: return DesignSystem.Colors.secondary
-            case .curator: return DesignSystem.Colors.primaryLight
-            }
-        }
-    }
-    
-        struct PendingZap: Identifiable {
-        let id: UUID
-        let amount: Int
-        let recipientPubkey: String
-        var status: Status
-        
-        enum Status {
-            case calculating
-            case sending
-            case failed(String)
-        }
-    }
-    
-        struct ActivePayment: Identifiable {
-        let id: UUID
-        let totalAmount: Int
-        let splits: [PaymentSplit]
-        let highlightId: String?
-        let comment: String?
-        var status: PaymentStatus
-        let timestamp: Date
-        
-        enum PaymentStatus: Equatable {
-            case pending
-            case preparing
-            case processing
-            case splitting
-            case sending
-            case completed(ZapTransaction)
-            case failed(String)
-        }
-    }
-    
-        struct WalletInfo {
-        let alias: String
-        let color: String?
-        let pubkey: String
-        let network: String
-        let blockHeight: Int
-        let methods: [String]
-    }
-    
-    // MARK: - Errors
-    
-        enum LightningError: LocalizedError {
-        case walletNotConnected
-        case ndkNotInitialized
-        case signerNotAvailable
-        case invalidConnectionString
-        case noLightningAddress
-        case insufficientBalance
-        case paymentFailed(String)
-        
-        var errorDescription: String? {
-            switch self {
-            case .walletNotConnected:
-                return "Lightning wallet not connected"
-            case .ndkNotInitialized:
-                return "NDK not initialized"
-            case .signerNotAvailable:
-                return "No active signer available"
-            case .invalidConnectionString:
-                return "Invalid NWC connection string"
-            case .noLightningAddress:
-                return "Recipient has no Lightning address"
-            case .insufficientBalance:
-                return "Insufficient balance"
-            case .paymentFailed(let reason):
-                return "Payment failed: \(reason)"
-            }
         }
     }
 }
 
-// MARK: - NWC Implementation
+// MARK: - Supporting Types
 
-/// Simplified NWC implementation
-// NostrWalletConnect implementation has been moved to its own file
-// See NostrWalletConnect.swift for the full implementation
+struct WalletInfo {
+    let alias: String
+    let balance: Int64
+    let methods: [String]
+}
+
+struct ZapTransaction: Identifiable {
+    let id: UUID
+    let totalAmount: Int
+    let splits: [SubTransaction]
+    let highlightId: String?
+    let comment: String?
+    let timestamp: Date
+}
+
+struct SubTransaction {
+    let recipientPubkey: String
+    let amount: Int
+    let role: PaymentRole
+    let paymentHash: String
+    let timestamp: Date
+}
+
+struct PendingZap: Identifiable {
+    let id: UUID
+    let amount: Int
+    let recipientPubkey: String
+    var status: Status
+    
+    enum Status {
+        case calculating
+        case sending
+        case completed
+        case failed(String)
+    }
+}
+
+struct PaymentSplit {
+    let recipientPubkey: String
+    var amount: Int
+    let role: PaymentRole
+    let isOriginal: Bool
+}
+
+enum PaymentRole: String {
+    case highlighter
+    case author
+    case curator
+    case platform
+}
+
+struct ActivePayment: Identifiable {
+    let id: UUID
+    let totalAmount: Int
+    let splits: [PaymentSplit]
+    let highlightId: String?
+    let comment: String?
+    var status: PaymentStatus
+    let timestamp: Date
+}
+
+enum PaymentStatus: Equatable {
+    case pending
+    case preparing
+    case processing
+    case splitting
+    case sending
+    case completed(ZapTransaction)
+    case failed(String)
+    
+    static func == (lhs: PaymentStatus, rhs: PaymentStatus) -> Bool {
+        switch (lhs, rhs) {
+        case (.pending, .pending),
+             (.preparing, .preparing),
+             (.processing, .processing),
+             (.splitting, .splitting),
+             (.sending, .sending):
+            return true
+        case let (.completed(lhs), .completed(rhs)):
+            return lhs.id == rhs.id
+        case let (.failed(lhs), .failed(rhs)):
+            return lhs == rhs
+        default:
+            return false
+        }
+    }
+}
+
+// MARK: - Errors
+
+enum LightningError: LocalizedError {
+    case walletNotConnected
+    case ndkNotInitialized
+    case signerNotAvailable
+    case invalidConnectionString
+    case noLightningAddress
+    case insufficientBalance
+    case paymentFailed(String)
+    case invalidLNURL
+    case failedToGetInvoice
+    
+    var errorDescription: String? {
+        switch self {
+        case .walletNotConnected:
+            return "Lightning wallet not connected"
+        case .ndkNotInitialized:
+            return "NDK not initialized"
+        case .signerNotAvailable:
+            return "No active signer available"
+        case .invalidConnectionString:
+            return "Invalid NWC connection string"
+        case .noLightningAddress:
+            return "Recipient has no Lightning address"
+        case .insufficientBalance:
+            return "Insufficient balance"
+        case .paymentFailed(let reason):
+            return "Payment failed: \(reason)"
+        case .invalidLNURL:
+            return "Invalid LNURL"
+        case .failedToGetInvoice:
+            return "Failed to get Lightning invoice"
+        }
+    }
+}

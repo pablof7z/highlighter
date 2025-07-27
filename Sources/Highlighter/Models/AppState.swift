@@ -12,7 +12,6 @@ class AppState: ObservableObject {
     
     // Service Dependencies
     @Published private(set) var dataStreamManager = DataStreamManager()
-    @Published private(set) var profileManager = ProfileManager()
     @Published private(set) var publishingService = PublishingService()
     @Published private(set) var bookmarkService = BookmarkService()
     @Published private(set) var commentService = CommentService()
@@ -28,7 +27,7 @@ class AppState: ObservableObject {
     @Published var followPacks: [FollowPack] = []
     @Published var articles: [Article] = []
     @Published var savedArticles: [Article] = []
-    var currentUserProfile: NDKUserProfile? { profileManager.currentUserProfile }
+    @Published var currentUserProfile: NDKUserProfile?
     
     // App-level state
     @Published private(set) var following: Set<String> = []
@@ -84,12 +83,13 @@ class AppState: ObservableObject {
     
     private func configureServices(ndk: NDK, signer: NDKSigner?) {
         dataStreamManager.configure(with: ndk)
-        profileManager.configure(with: ndk)
         publishingService.configure(with: ndk, signer: signer)
         bookmarkService.configure(with: ndk, signer: signer)
         commentService.configure(with: ndk, signer: signer)
         engagementService.configure(with: ndk, signer: signer)
         archiveService.configure(with: ndk, signer: signer)
+        lightningService.setNDK(ndk, signer: signer)
+        ImageUploadService.shared.configure(with: ndk)
     }
     
     func initialize() async {
@@ -143,7 +143,7 @@ class AppState: ObservableObject {
                 // Load user profile in background
                 if let signer = authManager.activeSigner {
                     Task {
-                        await profileManager.loadCurrentUserProfile(for: signer)
+                        await loadCurrentUserProfile(for: signer)
                     }
                 }
                 
@@ -223,20 +223,38 @@ class AppState: ObservableObject {
         await dataStreamManager.startAllStreams()
         
         // Load user profile
-        await profileManager.loadCurrentUserProfile(for: signer)
+        await loadCurrentUserProfile(for: signer)
         
         // Load following list
         try? await loadFollowingList()
     }
     
+    private func loadCurrentUserProfile(for signer: NDKSigner) async {
+        guard let ndk = ndk else { return }
+        
+        do {
+            let pubkey = try await signer.pubkey
+            
+            // Use NDK's profile manager to observe profile updates
+            Task {
+                for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
+                    await MainActor.run {
+                        self.currentUserProfile = profile
+                    }
+                }
+            }
+        } catch {
+            print("Failed to load user profile: \(error)")
+        }
+    }
+    
     func logout() async {
         // Stop all services
         dataStreamManager.stopAllStreams()
-        profileManager.stopAllTasks()
         
         // Clear service state
         await dataStreamManager.refresh()
-        profileManager.clearCache()
+        currentUserProfile = nil
         following = []
         
         // Proper logout implementation - clear cache and delete sessions from keychain

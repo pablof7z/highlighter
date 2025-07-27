@@ -75,6 +75,7 @@ struct RelayManagerView: View {
             }
             .onAppear {
                 loadRelays()
+                setupRelayMonitoring()
             }
         }
     }
@@ -337,6 +338,57 @@ struct RelayManagerView: View {
     
     // MARK: - Methods
     
+    private func setupRelayMonitoring() {
+        Task {
+            guard let ndk = appState.ndk else { return }
+            
+            // Monitor relay changes
+            for await change in ndk.relayChanges {
+                switch change {
+                case .relayAdded(let relay):
+                    let info = RelayInfo(
+                        url: relay.url,
+                        isConnected: false,
+                        latency: nil,
+                        supportedNIPs: [1, 2, 4, 9, 11, 12, 16, 20, 23, 25, 28, 30, 33, 40, 42],
+                        software: "nostr-relay",
+                        version: "1.0.0",
+                        isRead: true,
+                        isWrite: true
+                    )
+                    await MainActor.run {
+                        if !relays.contains(where: { $0.url == relay.url }) {
+                            relays.append(info)
+                        }
+                    }
+                    
+                case .relayConnected(let relay):
+                    await MainActor.run {
+                        if let index = relays.firstIndex(where: { $0.url == relay.url }) {
+                            relays[index].isConnected = true
+                            Task {
+                                relays[index].latency = await measureRelayLatency(url: relay.url, ndk: ndk)
+                            }
+                        }
+                    }
+                    
+                case .relayDisconnected(let relay):
+                    await MainActor.run {
+                        if let index = relays.firstIndex(where: { $0.url == relay.url }) {
+                            relays[index].isConnected = false
+                            relays[index].latency = nil
+                        }
+                    }
+                    
+                case .relayRemoved(let url):
+                    await MainActor.run {
+                        relays.removeAll { $0.url == url }
+                    }
+                }
+            }
+        }
+    }
+    
     private func loadRelays() {
         Task {
             guard let ndk = appState.ndk else { return }
@@ -347,21 +399,14 @@ struct RelayManagerView: View {
             
             var relayInfos: [RelayInfo] = []
             
-            // Get configured relays from NDK
-            // Note: NDK manages relay connections internally
-            // We'll use the saved relay list or defaults
+            // Get currently connected relays from NDK
+            let connectedRelays = await ndk.connectedRelays()
             
-            // Get relay URLs from preferences or use defaults
-            let configuredRelays = loadRelayPreferences()
-            
-            for url in configuredRelays {
-                // Simple connectivity check by attempting to fetch a recent event
-                let isConnected = await checkRelayConnection(url: url, ndk: ndk)
-                let latency = isConnected ? await measureRelayLatency(url: url, ndk: ndk) : nil
-                
+            for relay in connectedRelays {
+                let latency = await measureRelayLatency(url: relay.url, ndk: ndk)
                 let info = RelayInfo(
-                    url: url,
-                    isConnected: isConnected,
+                    url: relay.url,
+                    isConnected: true,
                     latency: latency,
                     supportedNIPs: [1, 2, 4, 9, 11, 12, 16, 20, 23, 25, 28, 30, 33, 40, 42],
                     software: "nostr-relay",
@@ -369,7 +414,6 @@ struct RelayManagerView: View {
                     isRead: true,
                     isWrite: true
                 )
-                
                 relayInfos.append(info)
             }
             
@@ -449,7 +493,7 @@ struct RelayManagerView: View {
         }
         
         Task {
-            guard let _ = appState.ndk else { return }
+            guard let ndk = appState.ndk else { return }
             
             // Check if relay is already added
             if relays.contains(where: { $0.url == url }) {
@@ -460,42 +504,25 @@ struct RelayManagerView: View {
                 return
             }
             
-            // Note: NDK manages relay connections internally
-            // We'll add it to our local list and save to preferences
-            
-            // Add to local list
-            let newRelay = RelayInfo(
-                url: url,
-                isConnected: false,
-                latency: nil,
-                supportedNIPs: [1, 2, 4, 9, 11, 12, 16, 20, 23, 25, 28, 30, 33, 40, 42],
-                software: "unknown",
-                version: "unknown",
-                isRead: true,
-                isWrite: true
-            )
+            // Add relay using NDK's relay management
+            _ = await ndk.addRelayAndConnect(url)
             
             await MainActor.run {
-                relays.append(newRelay)
-                saveRelayPreferences()
                 newRelayURL = ""
                 isAddingRelay = false
                 HapticManager.shared.notification(.success)
             }
-            
-            // Refresh to check connection status
-            loadRelays()
         }
     }
     
     private func removeRelay(_ relay: RelayInfo) {
         Task {
-            guard let _ = appState.ndk else { return }
+            guard let ndk = appState.ndk else { return }
             
-            // Update local state
+            // Remove relay using NDK's relay management
+            await ndk.removeRelay(relay.url)
+            
             await MainActor.run {
-                relays.removeAll { $0.id == relay.id }
-                saveRelayPreferences()
                 HapticManager.shared.impact(.medium)
             }
         }
@@ -504,7 +531,6 @@ struct RelayManagerView: View {
     private func toggleRead(_ relay: RelayInfo) {
         if let index = relays.firstIndex(where: { $0.id == relay.id }) {
             relays[index].isRead.toggle()
-            saveRelayPreferences()
             HapticManager.shared.impact(.light)
         }
     }
@@ -512,21 +538,10 @@ struct RelayManagerView: View {
     private func toggleWrite(_ relay: RelayInfo) {
         if let index = relays.firstIndex(where: { $0.id == relay.id }) {
             relays[index].isWrite.toggle()
-            saveRelayPreferences()
             HapticManager.shared.impact(.light)
         }
     }
     
-    // MARK: - Persistence
-    
-    private func saveRelayPreferences() {
-        let relayUrls = relays.map { $0.url }
-        UserDefaults.standard.set(relayUrls, forKey: "highlighter.configured_relays")
-    }
-    
-    private func loadRelayPreferences() -> [String] {
-        UserDefaults.standard.stringArray(forKey: "highlighter.configured_relays") ?? suggestedRelays
-    }
 }
 
 // MARK: - Supporting Views

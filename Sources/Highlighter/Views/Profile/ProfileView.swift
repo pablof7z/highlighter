@@ -584,12 +584,8 @@ struct ProfileView: View {
                 _ = try await ndk.publish(event)
                 
                 // Update local profile
-                let pubkey = try await signer.pubkey
                 await MainActor.run {
-                    appState.profileManager.invalidateCacheForUser(pubkey)
-                    Task {
-                        await appState.profileManager.loadCurrentUserProfile(for: signer)
-                    }
+                    // Profile will automatically update through NDK's profile manager
                     HapticManager.shared.notification(.success)
                 }
                 

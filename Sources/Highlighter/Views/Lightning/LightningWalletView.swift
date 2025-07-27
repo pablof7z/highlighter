@@ -6,7 +6,7 @@ struct LightningWalletView: View {
     @StateObject private var lightning = LightningService()
     @State private var showConnectSheet = false
     @State private var showSplitConfiguration = false
-    @State private var selectedTransaction: LightningService.ZapTransaction?
+    @State private var selectedTransaction: ZapTransaction?
     @State private var pulseAnimation = false
     @State private var balanceRevealAnimation = false
     @State private var connectionString = ""
@@ -308,7 +308,7 @@ struct SplitIndicator: View {
 }
 
 struct TransactionRow: View {
-    let transaction: LightningService.ZapTransaction
+    let transaction: ZapTransaction
     let onTap: () -> Void
     @State private var isPressed = false
     
@@ -658,7 +658,7 @@ struct SplitSlider: View {
 }
 
 struct TransactionDetailSheet: View {
-    let transaction: LightningService.ZapTransaction
+    let transaction: ZapTransaction
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -743,7 +743,7 @@ struct TransactionDetailSheet: View {
 }
 
 struct SplitDetailRow: View {
-    let split: LightningService.SubTransaction
+    let split: SubTransaction
     let profiles: [String: NDKUserProfile]
     
     var roleIcon: String {
