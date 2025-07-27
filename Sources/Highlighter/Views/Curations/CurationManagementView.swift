@@ -791,7 +791,7 @@ struct CurationGridItem: View {
                 if isHovered {
                     RoundedRectangle(cornerRadius: 0)
                         .stroke(DesignSystem.Colors.primary, lineWidth: 3)
-                        .background(DesignSystem.Colors.primary.opacity(0.1)
+                        .background(DesignSystem.Colors.primary.opacity(0.1))
                         .scaleEffect(animateHover ? 1.05 : 1)
                 }
             }
@@ -800,7 +800,7 @@ struct CurationGridItem: View {
             // Content section
             VStack(alignment: .leading, spacing: 6) {
                 Text(curation.title)
-                    .font(DesignSystem.Typography.body.weight(.medium)
+                    .font(DesignSystem.Typography.body.weight(.medium))
                     .lineLimit(1)
                 
                 HStack {
@@ -878,7 +878,7 @@ struct CurationListRow: View {
             // Content
             VStack(alignment: .leading, spacing: 4) {
                 Text(curation.title)
-                    .font(DesignSystem.Typography.body.weight(.medium)
+                    .font(DesignSystem.Typography.body.weight(.medium))
                     .lineLimit(1)
                 
                 if let description = curation.description {
@@ -950,8 +950,8 @@ struct CurationManagementCarouselCard: View {
                     )
                     
                     Image(systemName: "folder.fill")
-                        .font(.system(size: 80, weight: .regular, design: .default)
-                        .foregroundColor(.white.opacity(0.8)
+                        .font(.system(size: 80, weight: .regular, design: .default))
+                        .foregroundColor(.white.opacity(0.8))
                 }
                 .frame(height: geometry.size.height * 0.5)
             }
@@ -1034,8 +1034,8 @@ struct CurationEmptyStateView: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: searchText.isEmpty ? "folder.badge.plus" : "magnifyingglass")
-                .font(.system(size: 60, weight: .regular, design: .default)
-                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5)
+                .font(.system(size: 60, weight: .regular, design: .default))
+                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
                 .scaleEffect(animateIcon ? 1.1 : 1)
                 .onAppear {
                     withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
@@ -1065,7 +1065,7 @@ struct ShimmerView: View {
     var body: some View {
         GeometryReader { geometry in
             Rectangle()
-                .fill(DesignSystem.Colors.textTertiary
+                .fill(DesignSystem.Colors.textTertiary)
                 .overlay(
                     Rectangle()
                         .fill(

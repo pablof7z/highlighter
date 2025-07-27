@@ -70,8 +70,7 @@ struct CurationDetailView: View {
                             if let description = curation.description {
                                 Text(description)
                                     .font(DesignSystem.Typography.body)
-                                    .foregroundColor(.white.opacity(0.9)
-                                    .lineLimit(2)
+                                    .foregroundColor(.white.opacity(0.9))
                             }
                         }
                         .padding()
@@ -80,7 +79,7 @@ struct CurationDetailView: View {
                     // Curator info
                     HStack {
                         Image(systemName: "person.circle.fill")
-                            .font(.system(size: 44)
+                            .font(.system(size: 44))
                             .foregroundColor(DesignSystem.Colors.primary)
                         
                         VStack(alignment: .leading, spacing: 4) {
@@ -217,7 +216,7 @@ struct CurationDetailView: View {
                         kind: kind,
                         pubkey: String(parts[1]),
                         identifier: String(parts[2])
-                    )
+                    ))
                 }
             }
         }
@@ -279,22 +278,111 @@ struct CurationDetailView: View {
     }
     
     private func toggleFollow() {
-        isFollowing.toggle()
-        HapticManager.shared.impact(.light)
-        // Note: Follow functionality requires contact list management (NIP-02)
-        // This demo focuses on curation display features
+        Task {
+            guard let ndk = appState.ndk,
+                  let signer = appState.activeSigner else { return }
+            
+            do {
+                let pubkey = try await signer.pubkey
+                
+                if isFollowing {
+                    // Unfollow
+                    let filter = NDKFilter(
+                        authors: [pubkey],
+                        kinds: [3],
+                        limit: 1
+                    )
+                    
+                    let events = await ndk.outbox.observe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
+                    for await contactListEvent in events {
+                        var tags = contactListEvent.tags.filter { tag in
+                            !(tag.first == "p" && tag[safe: 1] == curation.author)
+                        }
+                        
+                        let newEvent = try await ndk.createEvent(
+                            kind: 3,
+                            content: contactListEvent.content,
+                            tags: tags
+                        )
+                        
+                        try await newEvent.sign(using: signer)
+                        try await ndk.publish(event: newEvent)
+                        break
+                    }
+                } else {
+                    // Follow
+                    let filter = NDKFilter(
+                        authors: [pubkey],
+                        kinds: [3],
+                        limit: 1
+                    )
+                    
+                    var tags: [[String]] = []
+                    var content = ""
+                    
+                    let events = await ndk.outbox.observe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
+                    for await contactListEvent in events {
+                        tags = contactListEvent.tags
+                        content = contactListEvent.content
+                        break
+                    }
+                    
+                    // Add new follow
+                    tags.append(["p", curation.author])
+                    
+                    let newEvent = try await ndk.createEvent(
+                        kind: 3,
+                        content: content,
+                        tags: tags
+                    )
+                    
+                    try await newEvent.sign(using: signer)
+                    try await ndk.publish(event: newEvent)
+                }
+                
+                await MainActor.run {
+                    isFollowing.toggle()
+                    HapticManager.shared.impact(.medium)
+                }
+            } catch {
+                await MainActor.run {
+                    HapticManager.shared.notification(.error)
+                }
+            }
+        }
     }
     
     private func shareCuration() {
         HapticManager.shared.impact(.light)
-        // Note: Share functionality would generate a shareable link or QR code
-        // This demo focuses on core curation features
+        
+        // Create shareable nostr: URL
+        let nostrURL = "nostr:\(curation.event.id)"
+        
+        // Create share content
+        let shareText = """
+        Check out this curation: "\(curation.title)"
+        \(curation.description ?? "")
+        
+        \(nostrURL)
+        """
+        
+        // Present share sheet
+        let activityController = UIActivityViewController(
+            activityItems: [shareText],
+            applicationActivities: nil
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let rootViewController = window.rootViewController {
+            rootViewController.present(activityController, animated: true)
+        }
     }
     
     private func relativeTime(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date()
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 
@@ -338,7 +426,7 @@ struct ArticleCard: View {
     private func relativeTime(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date()
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 
@@ -346,8 +434,8 @@ struct EmptyArticlesView: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "doc.text.magnifyingglass")
-                .font(.system(size: 48)
-                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5)
+                .font(.system(size: 48))
+                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
             
             Text("No articles yet")
                 .font(DesignSystem.Typography.body)
@@ -360,7 +448,7 @@ struct EmptyArticlesView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
-        .background(DesignSystem.Colors.surface.opacity(0.5)
+        .background(DesignSystem.Colors.surface.opacity(0.5))
         .cornerRadius(DesignSystem.CornerRadius.medium)
     }
 }
@@ -415,7 +503,7 @@ struct LoadedArticleCard: View {
                             Text("•")
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                             
-                            Text(relativeTime(from: article.createdAt)
+                            Text(RelativeTimeFormatter.relativeTime(from: article.createdAt))
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                             
@@ -457,7 +545,7 @@ struct LoadedArticleCard: View {
     private func relativeTime(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date()
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 
@@ -481,7 +569,7 @@ struct AddArticleSheet: View {
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 TextField("https://...", text: $articleUrl)
-                    .textFieldStyle(RoundedBorderTextFieldStyle()
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                 
@@ -518,15 +606,65 @@ struct AddArticleSheet: View {
     }
     
     private func addArticle() {
-        guard !articleUrl.isEmpty else { return }
+        guard !articleUrl.isEmpty,
+              let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return }
         
         HapticManager.shared.impact(.light)
         
         Task {
-            // Note: Adding articles requires updating the curation event
-            // This demo focuses on curation viewing
-            await MainActor.run {
-                dismiss()
+            do {
+                // Create updated article references
+                var updatedArticles = curation.articles
+                let newReference = ArticleCuration.ArticleReference(from: ["r", articleUrl])
+                updatedArticles.append(newReference)
+                
+                // Create updated tags
+                var tags = curation.event.tags.filter { tag in
+                    tag.first != "a" && tag.first != "e"
+                }
+                
+                // Add article references as tags
+                for article in updatedArticles {
+                    if let eventId = article.eventId {
+                        tags.append(["e", eventId])
+                    } else if let eventAddress = article.eventAddress {
+                        tags.append(["a", eventAddress])
+                    } else if let url = article.url {
+                        tags.append(["r", url])
+                    }
+                }
+                
+                // Keep other metadata tags
+                tags.append(["d", curation.name])
+                tags.append(["title", curation.title])
+                if let description = curation.description {
+                    tags.append(["summary", description])
+                }
+                if let image = curation.image {
+                    tags.append(["image", image])
+                }
+                
+                // Create updated curation event
+                let updatedEvent = try await ndk.createEvent(
+                    kind: 30004,
+                    content: curation.event.content,
+                    tags: tags
+                )
+                
+                try await updatedEvent.sign(using: signer)
+                try await ndk.publish(event: updatedEvent)
+                
+                await MainActor.run {
+                    HapticManager.shared.notification(.success)
+                    dismiss()
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = "Failed to add article: \(error.localizedDescription)"
+                    showError = true
+                    HapticManager.shared.notification(.error)
+                }
             }
         }
     }

@@ -95,11 +95,11 @@ struct LightningWalletView: View {
                 VStack(alignment: .leading, spacing: .ds.small) {
                     HStack(spacing: .ds.small) {
                         Circle()
-                            .fill(lightning.isConnected ? Color.green : Color.red)
+                            .fill(lightning.isConnected ? DesignSystem.Colors.success : DesignSystem.Colors.error)
                             .frame(width: 10, height: 10)
                             .overlay(
                                 Circle()
-                                    .stroke(lightning.isConnected ? Color.green : Color.red, lineWidth: 2)
+                                    .stroke(lightning.isConnected ? DesignSystem.Colors.success : DesignSystem.Colors.error, lineWidth: 2)
                                     .scaleEffect(pulseAnimation ? 1.5 : 1)
                                     .opacity(pulseAnimation ? 0 : 1)
                             )
@@ -163,7 +163,7 @@ struct LightningWalletView: View {
             
             HStack(alignment: .firstTextBaseline, spacing: .ds.micro) {
                 Text("\(lightning.balance.formatted())")
-                    .font(.ds.bodyBold, design: .rounded)
+                    .font(.ds.body.weight(.bold))
                     .foregroundColor(.ds.text)
                 
                 Text("sats")
@@ -174,7 +174,7 @@ struct LightningWalletView: View {
         
         let lightningIcon = Image(systemName: "bolt.fill")
             .font(.ds.largeTitle)
-            .foregroundColor(.orange)
+            .foregroundColor(DesignSystem.Colors.secondary)
         
         return VStack(spacing: .ds.medium) {
             HStack {
@@ -189,8 +189,8 @@ struct LightningWalletView: View {
         .background(
             LinearGradient(
                 colors: [
-                    Color.orange.opacity(0.1),
-                    Color.orange.opacity(0.05)
+                    DesignSystem.Colors.secondary.opacity(0.1),
+                    DesignSystem.Colors.secondary.opacity(0.05)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -223,19 +223,19 @@ struct LightningWalletView: View {
                 SplitIndicator(
                     label: "Author",
                     percentage: lightning.splitConfig.authorPercentage,
-                    color: .blue
+                    color: DesignSystem.Colors.primary
                 )
                 
                 SplitIndicator(
                     label: "Highlighter",
                     percentage: lightning.splitConfig.highlighterPercentage,
-                    color: .orange
+                    color: DesignSystem.Colors.secondary
                 )
                 
                 SplitIndicator(
                     label: "Curator",
                     percentage: lightning.splitConfig.curatorPercentage,
-                    color: .purple
+                    color: DesignSystem.Colors.primaryDark
                 )
             }
         }
@@ -343,14 +343,14 @@ struct TransactionRow: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: .ds.micro) {
-                    Text(transaction.timestamp.formatted(.relative(presentation: .named))
+                    Text(transaction.timestamp.formatted(.relative(presentation: .named)))
                         .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                     
                     HStack(spacing: 2) {
                         ForEach(0..<transaction.splits.count, id: \.self) { _ in
                             Circle()
-                                .fill(Color.orange)
+                                .fill(DesignSystem.Colors.secondary)
                                 .frame(width: 4, height: 4)
                         }
                     }
@@ -393,7 +393,7 @@ struct ConnectWalletSheet: View {
                     Circle()
                         .fill(
                             LinearGradient(
-                                colors: [.orange.opacity(0.2), .orange.opacity(0.05)],
+                                colors: [DesignSystem.Colors.secondary.opacity(0.2), DesignSystem.Colors.secondary.opacity(0.05)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -488,7 +488,7 @@ struct ConnectWalletSheet: View {
                         .frame(maxWidth: .infinity)
                 }
                 .unifiedPrimaryButton()
-                .disabled(connectionString.isEmpty || !connectionString.hasPrefix("nostr+walletconnect://")
+                .disabled(connectionString.isEmpty || !connectionString.hasPrefix("nostr+walletconnect://"))
             }
             .padding(.horizontal, .ds.screenPadding)
             .navigationTitle("Connect Wallet")
@@ -531,9 +531,9 @@ struct SplitConfigurationSheet: View {
                     // Pie chart
                     PieChart(
                         data: [
-                            (value: configuration.authorPercentage, color: .blue),
-                            (value: configuration.highlighterPercentage, color: .orange),
-                            (value: configuration.curatorPercentage, color: .purple)
+                            (value: configuration.authorPercentage, color: DesignSystem.Colors.primary),
+                            (value: configuration.highlighterPercentage, color: DesignSystem.Colors.secondary),
+                            (value: configuration.curatorPercentage, color: DesignSystem.Colors.primaryDark)
                         ]
                     )
                     .frame(width: 180, height: 180)
@@ -545,19 +545,19 @@ struct SplitConfigurationSheet: View {
                     SplitSlider(
                         label: "Author",
                         value: $configuration.authorPercentage,
-                        color: .blue
+                        color: DesignSystem.Colors.primary
                     )
                     
                     SplitSlider(
                         label: "Highlighter",
                         value: $configuration.highlighterPercentage,
-                        color: .orange
+                        color: DesignSystem.Colors.secondary
                     )
                     
                     SplitSlider(
                         label: "Curator",
                         value: $configuration.curatorPercentage,
-                        color: .purple
+                        color: DesignSystem.Colors.primaryDark
                     )
                 }
                 
@@ -571,8 +571,8 @@ struct SplitConfigurationSheet: View {
                     
                     Text("\(Int(totalPercentage * 100))%")
                         .font(.ds.bodyMedium)
-                        .foregroundColor(isValid ? .green : .red)
-                        .contentTransition(.numericText()
+                        .foregroundColor(isValid ? DesignSystem.Colors.success : DesignSystem.Colors.error)
+                        .contentTransition(.numericText())
                 }
                 .padding()
                 .background(Color.ds.surfaceSecondary)
@@ -644,7 +644,7 @@ struct SplitSlider: View {
                 Text("\(Int(value * 100))%")
                     .font(.ds.bodyMedium)
                     .foregroundColor(.ds.text)
-                    .contentTransition(.numericText()
+                    .contentTransition(.numericText())
             }
             
             Slider(value: $value, in: 0...1, step: 0.05) {
@@ -671,7 +671,7 @@ struct TransactionDetailSheet: View {
                             Circle()
                                 .fill(
                                     LinearGradient(
-                                        colors: [.orange.opacity(0.2), .orange.opacity(0.05)],
+                                        colors: [DesignSystem.Colors.secondary.opacity(0.2), DesignSystem.Colors.secondary.opacity(0.05)],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     )
@@ -756,9 +756,9 @@ struct SplitDetailRow: View {
     
     var roleColor: Color {
         switch split.role {
-        case .author: return .blue
-        case .highlighter: return .orange
-        case .curator: return .purple
+        case .author: return DesignSystem.Colors.primary
+        case .highlighter: return DesignSystem.Colors.secondary
+        case .curator: return DesignSystem.Colors.primaryDark
         }
     }
     
@@ -798,7 +798,7 @@ struct SplitDetailRow: View {
         }
         .padding(.ds.base)
         .background(Color.ds.surfaceSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+        .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
     }
 }
 

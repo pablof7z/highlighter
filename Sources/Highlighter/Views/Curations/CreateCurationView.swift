@@ -70,7 +70,7 @@ struct CreateCurationView: View {
                     .transition(.asymmetric(
                         insertion: .scale.combined(with: .opacity),
                         removal: .opacity
-                    )
+                    ))
             }
             
             // Interactive overlay
@@ -109,7 +109,7 @@ struct CreateCurationView: View {
                             .symbolEffect(.bounce, value: selectedImageData != nil)
                         
                         Text(selectedImageData == nil ? "Add Cover Image" : "Change Image")
-                            .font(DesignSystem.Typography.body.weight(.medium)
+                            .font(DesignSystem.Typography.body.weight(.medium))
                     }
                     .foregroundColor(.white)
                     .padding(.horizontal, DesignSystem.Spacing.large)
@@ -164,7 +164,7 @@ struct CreateCurationView: View {
             .transition(.asymmetric(
                 insertion: .move(edge: .top).combined(with: .opacity),
                 removal: .move(edge: .top).combined(with: .opacity)
-            )
+            ))
         }
     }
     
@@ -317,7 +317,7 @@ struct CreateCurationView: View {
             ZStack(alignment: .topLeading) {
                 if description.isEmpty {
                     Text("Describe your curation...")
-                        .foregroundColor(DesignSystem.Colors.textTertiary
+                        .foregroundColor(DesignSystem.Colors.textTertiary)
                         .padding(.horizontal, DesignSystem.Spacing.micro)
                         .padding(.vertical, DesignSystem.Spacing.small)
                 }
@@ -492,7 +492,7 @@ struct CreateCurationView: View {
                             .symbolEffect(.bounce, value: isFormValid)
                         
                         Text("Create Curation")
-                            .font(DesignSystem.Typography.body.weight(.semibold)
+                            .font(DesignSystem.Typography.body.weight(.semibold))
                     }
                     .foregroundColor(.white)
                 }
@@ -558,7 +558,7 @@ struct CreateCurationView: View {
                     }
                 }
             }
-            .background(DesignSystem.Colors.background.ignoresSafeArea()
+            .background(DesignSystem.Colors.background.ignoresSafeArea())
             .navigationTitle("New Curation")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -596,11 +596,11 @@ struct CreateCurationView: View {
             .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
                 keyboardHeight = 0
             }
-        }
-        .alert("Error", isPresented: $showError) {
-            Button("OK") { }
-        } message: {
-            Text(errorMessage)
+            .alert("Error", isPresented: $showError) {
+                Button("OK") { }
+            } message: {
+                Text(errorMessage)
+            }
         }
     }
     

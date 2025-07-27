@@ -55,7 +55,7 @@ struct CreateHighlightView: View {
                         // Mode Selection
                         VStack(spacing: 16) {
                             Text("Create Highlight")
-                                .font(.largeTitle.weight(.bold)
+                                .font(.largeTitle.weight(.bold))
                                 .foregroundColor(.ds.text)
                             
                             HStack(spacing: 12) {
@@ -87,7 +87,7 @@ struct CreateHighlightView: View {
                         .transition(.asymmetric(
                             insertion: .push(from: .trailing).combined(with: .opacity),
                             removal: .push(from: .leading).combined(with: .opacity)
-                        )
+                        ))
                         
                         // Save Button
                         Button(action: saveHighlight) {
@@ -98,7 +98,7 @@ struct CreateHighlightView: View {
                                 .padding(.vertical, DesignSystem.Spacing.medium)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                        .fill(isReadyToSave ? Color.ds.primary : Color.secondary.opacity(0.3)
+                                        .fill(isReadyToSave ? Color.ds.primary : Color.ds.textTertiary)
                                 )
                                 .foregroundColor(.white)
                                 .scaleEffect(isSaving ? 0.95 : 1.0)
@@ -259,7 +259,7 @@ struct CreateHighlightView: View {
                     .padding(.vertical, DesignSystem.Spacing.base)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color.ds.primary.opacity(0.1)
+                            .fill(Color.ds.primary.opacity(0.1))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                                     .strokeBorder(Color.ds.primary.opacity(0.3), lineWidth: 1)
@@ -415,13 +415,13 @@ struct ArticleSelectionCard: View {
                 
                 HStack {
                     Label("\(article.estimatedReadingTime) min", systemImage: "clock")
-                        .font(.ds.caption2)
+                        .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                     
                     Spacer()
                     
-                    Text(article.createdAt.formatted(.relative(presentation: .named))
-                        .font(.ds.caption2)
+                    Text(article.createdAt.formatted(.relative(presentation: .named)))
+                        .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                 }
             }
@@ -445,7 +445,7 @@ struct ArticlePlaceholderCard: View {
         VStack(spacing: 16) {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(DesignSystem.Typography.largeTitle.weight(.regular))
-                .foregroundColor(.orange.opacity(0.6)
+                .foregroundColor(DesignSystem.Colors.secondary.opacity(0.6))
             
             VStack(spacing: 8) {
                 Text("No articles yet")
@@ -460,18 +460,18 @@ struct ArticlePlaceholderCard: View {
             
             Text("Tap to import")
                 .font(.caption)
-                .foregroundColor(.orange)
+                .foregroundColor(DesignSystem.Colors.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, DesignSystem.Spacing.huge)
         .padding(.horizontal, DesignSystem.Spacing.xl)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.orange.opacity(0.05)
+                .fill(DesignSystem.Colors.secondary.opacity(0.05))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.orange.opacity(0.2), lineWidth: 1)
+                .strokeBorder(DesignSystem.Colors.secondary.opacity(0.2), lineWidth: 1)
         )
     }
 }
