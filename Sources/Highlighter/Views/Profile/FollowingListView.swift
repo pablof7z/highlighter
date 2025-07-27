@@ -83,7 +83,11 @@ struct FollowingListView: View {
             // Load profiles for each pubkey
             for followPubkey in followingPubkeys {
                 // Get cached profile if available from NDK's profile manager
-                let profile = await ndk.profileManager.loadProfile(for: followPubkey)
+                var profile: NDKUserProfile?
+                for await p in await ndk.profileManager.observe(for: followPubkey, maxAge: TimeConstants.hour) {
+                    profile = p
+                    break
+                }
                 followingList.append((pubkey: followPubkey, profile: profile))
             }
             

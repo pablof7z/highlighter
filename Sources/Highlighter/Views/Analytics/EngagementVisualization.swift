@@ -146,7 +146,7 @@ struct EngagementVisualization: View {
                         Text("Insights")
                             .font(.ds.callout).fontWeight(.medium)
                     }
-                    .foregroundColor(showInsights ? .white : DesignSystem.Colors.primary)
+                    .foregroundColor(showInsights ? Color.white : DesignSystem.Colors.primary)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(
@@ -248,7 +248,7 @@ struct EngagementVisualization: View {
                             x: .value("Date", dataPoint.date),
                             y: .value("Value", animateChart ? dataPoint.value(for: selectedMetric) : 0)
                         )
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.white)
                         .symbolSize(hoveredDataPoint?.id == dataPoint.id ? 100 : 60)
                         .annotation(position: .top) {
                             if hoveredDataPoint?.id == dataPoint.id {
@@ -286,7 +286,7 @@ struct EngagementVisualization: View {
                                 .foregroundStyle(DesignSystem.Colors.textSecondary)
                             
                             AxisGridLine()
-                                .foregroundStyle(DesignSystem.Colors.divider.opacity(0.5)
+                                .foregroundStyle(DesignSystem.Colors.divider.opacity(0.5))
                         }
                     }
                     .animation(.spring(response: 0.8, dampingFraction: 0.8), value: animateChart)
@@ -489,7 +489,7 @@ struct EngagementVisualization: View {
     }
     
     private var growthRateChange: Double {
-        growthRate > 0 ? 0.01 * Double(growthRate) : -0.01 * Double(abs(growthRate)
+        growthRate > 0 ? 0.01 * Double(growthRate) : -0.01 * Double(abs(growthRate))
     }
     
     // MARK: - Helper Methods
@@ -593,7 +593,7 @@ struct EngagementVisualization: View {
                 
                 // For each highlight, get its engagement
                 for highlight in highlights {
-                    let highlightDate = Date(timeIntervalSince1970: Double(highlight.createdAt)
+                    let highlightDate = Date(timeIntervalSince1970: Double(highlight.createdAt))
                     let bucketDate = Date(timeIntervalSince1970: floor(highlightDate.timeIntervalSince1970 / interval) * interval)
                     
                     // Fetch reactions for this highlight
@@ -713,12 +713,10 @@ struct EngagementVisualization: View {
                 limit: 50
             )
             
-            let dataSource = NDKDataSource(
-                ndk: ndk,
+            let dataSource = await ndk.outbox.observe(
                 filter: filter,
                 maxAge: CachePolicies.shortTerm,
-                cachePolicy: .cacheWithNetwork,
-                closeOnEose: true
+                cachePolicy: .cacheWithNetwork
             )
             
             var highlights: [HighlightEvent] = []
@@ -733,7 +731,7 @@ struct EngagementVisualization: View {
             let sortedHighlights = highlights.sorted { $0.createdAt > $1.createdAt }
             
             await MainActor.run {
-                self.trendingHighlights = Array(sortedHighlights.prefix(10)
+                self.trendingHighlights = Array(sortedHighlights.prefix(10))
             }
         }
     }
@@ -758,7 +756,7 @@ struct TimeRangeButton: View {
         Button(action: action) {
             Text(range.rawValue)
                 .font(.ds.callout, weight: isSelected ? .semibold : .regular)
-                .foregroundColor(isSelected ? .white : DesignSystem.Colors.text)
+                .foregroundColor(isSelected ? Color.white : DesignSystem.Colors.text)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
@@ -782,12 +780,12 @@ struct MetricButton: View {
                 Text(metric.rawValue)
                     .font(.ds.callout).fontWeight(.medium)
             }
-            .foregroundColor(isSelected ? .white : metric.color)
+            .foregroundColor(isSelected ? Color.white : metric.color)
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .background(
                 Capsule()
-                    .fill(isSelected ? metric.color : metric.color.opacity(0.1)
+                    .fill(isSelected ? metric.color : metric.color.opacity(0.1))
                     .overlay(
                         Capsule()
                             .stroke(metric.color, lineWidth: isSelected ? 0 : 1)
@@ -814,7 +812,7 @@ struct AnimatedMetricCard: View {
                     Image(systemName: icon)
                         .font(.ds.title3)
                         .foregroundColor(color)
-                        .rotationEffect(.degrees(showValue ? 0 : -180)
+                        .rotationEffect(.degrees(showValue ? 0 : -180))
                         .animation(.spring(response: 0.6, dampingFraction: 0.8), value: showValue)
                     
                     Spacer()
@@ -831,7 +829,7 @@ struct AnimatedMetricCard: View {
                 Text("\(animatedValue)")
                     .font(.ds.title, weight: .bold, design: .rounded)
                     .foregroundColor(DesignSystem.Colors.text)
-                    .contentTransition(.numericText()
+                    .contentTransition(.numericText())
                     .opacity(showValue ? 1 : 0)
                     .offset(y: showValue ? 0 : 20)
                 
@@ -865,7 +863,7 @@ struct InsightCard: View {
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
-                            .fill(color.opacity(0.1)
+                            .fill(color.opacity(0.1))
                     )
                 
                 VStack(alignment: .leading, spacing: 4) {
@@ -898,26 +896,26 @@ struct TrendingHighlightPlaceholder: View {
                 Spacer()
                 
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3)
+                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
                     .frame(width: 60, height: 16)
             }
             
             VStack(alignment: .leading, spacing: 8) {
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3)
+                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
                     .frame(height: 16)
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3)
+                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
                     .frame(height: 16)
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3)
+                    .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
                     .frame(width: 180, height: 16)
             }
             
             HStack(spacing: DesignSystem.Spacing.medium) {
                 ForEach(0..<3) { _ in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(DesignSystem.Colors.textTertiary.opacity(0.3)
+                        .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
                         .frame(width: 50, height: 14)
                 }
             }
@@ -959,14 +957,14 @@ struct RealTrendingHighlightCard: View {
                 .multilineTextAlignment(.leading)
             
             HStack {
-                Text(PubkeyFormatter.formatCompact(highlight.author)
+                Text(PubkeyFormatter.formatCompact(highlight.author))
                     .font(.ds.caption)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Text("·")
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
-                Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt)
+                Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
                     .font(.ds.caption)
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 

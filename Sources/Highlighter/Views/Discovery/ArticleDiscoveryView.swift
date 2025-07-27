@@ -32,11 +32,11 @@ struct ArticleDiscoveryView: View {
         var color: Color {
             switch self {
             case .all: return .ds.primary
-            case .technology: return .blue
-            case .bitcoin: return .orange
-            case .philosophy: return .purple
-            case .science: return .green
-            case .culture: return .pink
+            case .technology: return .ds.primary
+            case .bitcoin: return .ds.secondary
+            case .philosophy: return .ds.primaryDark
+            case .science: return .ds.success
+            case .culture: return .ds.primaryLight
             }
         }
         
@@ -154,12 +154,12 @@ struct ArticleDiscoveryView: View {
                 
                 Text("AI Recommended")
                     .font(.ds.captionMedium)
-                    .foregroundColor(.purple)
+                    .foregroundColor(.ds.primary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill(Color.purple.opacity(0.1))
+                            .fill(Color.ds.primary.opacity(0.1))
                     )
             }
             .padding(.horizontal)
@@ -312,13 +312,11 @@ class ArticleDiscoveryViewModel: ObservableObject {
         
         filter.limit = 50
         
-        // Subscribe with closeOnEose to get all matching events then close
-        let dataSource = NDKDataSource(
-            ndk: ndk,
+        // Subscribe to get all matching events
+        let dataSource = await ndk.outbox.observe(
             filter: filter,
             maxAge: 0,
-            cachePolicy: .networkOnly,
-            closeOnEose: true
+            cachePolicy: .networkOnly
         )
         
         var collectedEvents: [NDKEvent] = []
@@ -367,13 +365,11 @@ class ArticleDiscoveryViewModel: ObservableObject {
             filter.until = lastTimestamp
         }
         
-        // Subscribe with closeOnEose to get all matching events then close
-        let dataSource = NDKDataSource(
-            ndk: ndk,
+        // Subscribe to get all matching events
+        let dataSource = await ndk.outbox.observe(
             filter: filter,
             maxAge: 0,
-            cachePolicy: .networkOnly,
-            closeOnEose: true
+            cachePolicy: .networkOnly
         )
         
         var collectedEvents: [NDKEvent] = []
@@ -491,7 +487,7 @@ struct CategoryChip: View {
                 Text(category.rawValue)
                     .font(.ds.bodyMedium)
             }
-            .foregroundColor(isSelected ? .white : category.color)
+            .foregroundColor(isSelected ? Color.white : category.color)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(
@@ -531,7 +527,7 @@ struct FeaturedArticleCard: View {
                                 RoundedRectangle(cornerRadius: 0)
                                     .fill(
                                         LinearGradient(
-                                            colors: [.purple.opacity(0.3), .blue.opacity(0.3)],
+                                            colors: [Color.ds.primary.opacity(0.3), Color.ds.primaryLight.opacity(0.3)],
                                             startPoint: .topLeading,
                                             endPoint: .bottomTrailing
                                         )
@@ -555,7 +551,7 @@ struct FeaturedArticleCard: View {
                     
                     // Gradient overlay
                     LinearGradient(
-                        colors: [.clear, .black.opacity(0.7)],
+                        colors: [Color.clear, Color.black.opacity(0.7)],
                         startPoint: .center,
                         endPoint: .bottom
                     )
@@ -564,7 +560,7 @@ struct FeaturedArticleCard: View {
                     Text(article.title)
                         .font(.ds.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.white)
                         .lineLimit(2)
                         .padding()
                 }
@@ -624,12 +620,12 @@ struct FeaturedArticleCard: View {
                                 ForEach(article.hashtags.prefix(5), id: \.self) { tag in
                                     Text("#\(tag)")
                                         .font(.ds.captionMedium)
-                                        .foregroundColor(.purple)
+                                        .foregroundColor(.ds.primary)
                                         .padding(.horizontal, 10)
                                         .padding(.vertical, 4)
                                         .background(
                                             Capsule()
-                                                .fill(Color.purple.opacity(0.1))
+                                                .fill(Color.ds.primary.opacity(0.1))
                                         )
                                 }
                             }
@@ -642,7 +638,7 @@ struct FeaturedArticleCard: View {
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(Color.ds.surface)
-                .shadow(color: .black.opacity(0.1), radius: 20, y: 10)
+                .shadow(color: Color.black.opacity(0.1), radius: 20, y: 10)
         )
         .buttonStyle(PlainButtonStyle())
         .onAppear {
@@ -683,7 +679,7 @@ struct TrendingArticleCard: View {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                         .fill(
                             LinearGradient(
-                                colors: [.orange.opacity(0.3), .red.opacity(0.3)],
+                                colors: [Color.ds.secondary.opacity(0.3), Color.ds.secondaryDark.opacity(0.3)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -717,7 +713,7 @@ struct TrendingArticleCard: View {
                         
                         Image(systemName: "flame.fill")
                             .font(.ds.callout)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.ds.secondary)
                     }
                 }
                 
@@ -727,7 +723,7 @@ struct TrendingArticleCard: View {
             .background(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .fill(Color.ds.surface)
-                    .shadow(color: .black.opacity(0.05), radius: 10, y: 5)
+                    .shadow(color: Color.black.opacity(0.05), radius: 10, y: 5)
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -818,7 +814,7 @@ struct ArticleGridCard: View {
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(Color.ds.surface)
-                .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
+                .shadow(color: Color.black.opacity(0.08), radius: 8, y: 4)
         )
         .scaleEffect(isPressed ? 0.95 : 1)
         .buttonStyle(PlainButtonStyle())

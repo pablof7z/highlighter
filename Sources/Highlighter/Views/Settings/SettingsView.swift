@@ -194,7 +194,7 @@ struct SettingsView: View {
                                                 .padding(.vertical, 6)
                                                 .background(
                                                     Capsule()
-                                                        .fill(defaultZapAmount == amount ? Color.yellow : Color.gray.opacity(0.2)
+                                                        .fill(defaultZapAmount == amount ? Color.ds.secondary : Color.ds.textTertiary.opacity(0.2))
                                                 )
                                         }
                                     }
@@ -315,10 +315,10 @@ struct SettingsView: View {
                             .padding()
                             .background(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(Color.red.opacity(0.1)
+                                    .fill(Color.ds.error.opacity(0.1)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                            .stroke(Color.red.opacity(0.3), lineWidth: 1)
+                                            .stroke(Color.ds.error.opacity(0.3), lineWidth: 1)
                                     )
                             )
                         }
@@ -602,7 +602,7 @@ struct ThemeButton: View {
                     .frame(width: 60, height: 60)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(isSelected ? Color.ds.primary : Color.gray.opacity(0.1))
+                            .fill(isSelected ? Color.ds.primary : Color.ds.textTertiary.opacity(0.1))
                     )
                 
                 Text(theme.rawValue)

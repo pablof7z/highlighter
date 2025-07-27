@@ -339,54 +339,8 @@ struct RelayManagerView: View {
     // MARK: - Methods
     
     private func setupRelayMonitoring() {
-        Task {
-            guard let ndk = appState.ndk else { return }
-            
-            // Monitor relay changes
-            for await change in ndk.relayChanges {
-                switch change {
-                case .relayAdded(let relay):
-                    let info = RelayInfo(
-                        url: relay.url,
-                        isConnected: false,
-                        latency: nil,
-                        supportedNIPs: [1, 2, 4, 9, 11, 12, 16, 20, 23, 25, 28, 30, 33, 40, 42],
-                        software: "nostr-relay",
-                        version: "1.0.0",
-                        isRead: true,
-                        isWrite: true
-                    )
-                    await MainActor.run {
-                        if !relays.contains(where: { $0.url == relay.url }) {
-                            relays.append(info)
-                        }
-                    }
-                    
-                case .relayConnected(let relay):
-                    await MainActor.run {
-                        if let index = relays.firstIndex(where: { $0.url == relay.url }) {
-                            relays[index].isConnected = true
-                            Task {
-                                relays[index].latency = await measureRelayLatency(url: relay.url, ndk: ndk)
-                            }
-                        }
-                    }
-                    
-                case .relayDisconnected(let relay):
-                    await MainActor.run {
-                        if let index = relays.firstIndex(where: { $0.url == relay.url }) {
-                            relays[index].isConnected = false
-                            relays[index].latency = nil
-                        }
-                    }
-                    
-                case .relayRemoved(let url):
-                    await MainActor.run {
-                        relays.removeAll { $0.url == url }
-                    }
-                }
-            }
-        }
+        // TODO: Monitor relay changes when NDK provides public API
+        // For now, we'll rely on manual refresh
     }
     
     private func loadRelays() {
@@ -399,14 +353,20 @@ struct RelayManagerView: View {
             
             var relayInfos: [RelayInfo] = []
             
-            // Get currently connected relays from NDK
-            let connectedRelays = await ndk.connectedRelays()
+            // Load default relays - in production this would come from NDK's relay configuration
+            let defaultRelays = [
+                "wss://relay.damus.io",
+                "wss://relay.nostr.band",
+                "wss://nos.lol",
+                "wss://relay.primal.net"
+            ]
             
-            for relay in connectedRelays {
-                let latency = await measureRelayLatency(url: relay.url, ndk: ndk)
+            for relayUrl in defaultRelays {
+                let isConnected = await checkRelayConnection(url: relayUrl, ndk: ndk)
+                let latency = isConnected ? await measureRelayLatency(url: relayUrl, ndk: ndk) : nil
                 let info = RelayInfo(
-                    url: relay.url,
-                    isConnected: true,
+                    url: relayUrl,
+                    isConnected: isConnected,
                     latency: latency,
                     supportedNIPs: [1, 2, 4, 9, 11, 12, 16, 20, 23, 25, 28, 30, 33, 40, 42],
                     software: "nostr-relay",

@@ -238,12 +238,10 @@ class HomeDataManager: ObservableObject {
         
         // Fetch articles for each filter
         for filter in articleFilters {
-            let dataSource = NDKDataSource(
-                ndk: ndk,
+            let dataSource = await ndk.outbox.observe(
                 filter: filter,
                 maxAge: 0,
-                cachePolicy: .networkOnly,
-                closeOnEose: true
+                cachePolicy: .networkOnly
             )
             
             for await event in dataSource.events {
@@ -271,7 +269,7 @@ class HomeDataManager: ObservableObject {
                                     
                                     // Limit to top 10 most recently highlighted articles
                                     if highlightedArticles.count > 10 {
-                                        highlightedArticles = Array(highlightedArticles.prefix(10)
+                                        highlightedArticles = Array(highlightedArticles.prefix(10))
                                     }
                                 }
                             }
@@ -291,12 +289,10 @@ class HomeDataManager: ObservableObject {
             limit: 50
         )
         
-        let dataSource = NDKDataSource(
-            ndk: ndk,
+        let dataSource = await ndk.outbox.observe(
             filter: highlightersFilter,
             maxAge: CachePolicies.mediumTerm,
-            cachePolicy: .cacheOnly,
-            closeOnEose: true
+            cachePolicy: .cacheOnly
         )
         
         var userPubkeys = Set<String>()
@@ -317,12 +313,10 @@ class HomeDataManager: ObservableObject {
             kinds: [0]
         )
         
-        let profileSource = NDKDataSource(
-            ndk: ndk,
+        let profileSource = await ndk.outbox.observe(
             filter: profileFilter,
             maxAge: 0,
-            cachePolicy: .cacheWithNetwork,
-            closeOnEose: true
+            cachePolicy: .cacheWithNetwork
         )
         
         var profilesWithPubkeys: [(profile: NDKUserProfile, pubkey: String)] = []

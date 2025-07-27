@@ -147,14 +147,14 @@ struct UserRow: View {
             // User info
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(profile?.displayName ?? profile?.name ?? PubkeyFormatter.formatShort(pubkey)
+                    Text(profile?.displayName ?? profile?.name ?? PubkeyFormatter.formatShort(pubkey))
                         .font(.ds.bodyMedium)
                         .foregroundColor(.ds.text)
                     
                     if profile?.nip05 != nil {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.ds.caption)
-                            .foregroundColor(.blue)
+                            .foregroundColor(.ds.primary)
                     }
                 }
                 
@@ -173,12 +173,12 @@ struct UserRow: View {
                 Button(action: toggleFollow) {
                     Text(isFollowing ? "Following" : "Follow")
                         .font(.ds.captionMedium)
-                        .foregroundColor(isFollowing ? .ds.text : .white)
+                        .foregroundColor(isFollowing ? .ds.text : Color.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 6)
                         .background(
                             Capsule()
-                                .fill(isFollowing ? Color.gray.opacity(0.2) : Color.ds.primary)
+                                .fill(isFollowing ? Color.ds.textTertiary.opacity(0.2) : Color.ds.primary)
                         )
                 }
                 .unifiedScaleButton()
@@ -205,16 +205,16 @@ struct UserRow: View {
         Circle()
             .fill(
                 LinearGradient(
-                    colors: [.purple.opacity(0.3), .blue.opacity(0.3)],
+                    colors: [Color.ds.primary.opacity(0.3), Color.ds.primaryLight.opacity(0.3)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
             )
             .frame(width: 48, height: 48)
             .overlay(
-                Text(String((profile?.displayName ?? profile?.name ?? "A").prefix(1))
+                Text(String((profile?.displayName ?? profile?.name ?? "A").prefix(1)))
                     .font(.ds.bodyMedium)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.white)
             )
     }
     

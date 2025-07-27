@@ -84,13 +84,13 @@ struct TextSelectionView: View {
                 Button("Cancel") {
                     dismiss()
                 }
-                .foregroundColor(.secondary)
+                .foregroundColor(.ds.textSecondary)
                 
                 Spacer()
                 
                 Text("Select Text to Highlight")
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.ds.text)
                 
                 Spacer()
                 
@@ -103,7 +103,7 @@ struct TextSelectionView: View {
             if let source = source {
                 Text(source)
                     .font(.footnote)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.ds.textSecondary)
                     .padding(.horizontal)
             }
             
@@ -120,8 +120,8 @@ struct TextSelectionView: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.orange.opacity(0.25),
-                                Color.orange.opacity(0.15)
+                                Color.ds.secondary.opacity(0.25),
+                                Color.ds.secondary.opacity(0.15)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -133,7 +133,7 @@ struct TextSelectionView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .strokeBorder(
                                 LinearGradient(
-                                    colors: [Color.orange, Color.orange.opacity(0.5)],
+                                    colors: [Color.ds.secondary, Color.ds.secondary.opacity(0.5)],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ),
@@ -143,7 +143,7 @@ struct TextSelectionView: View {
                             .position(x: selectionRect.midX, y: selectionRect.midY)
                     )
                     .scaleEffect(highlightAnimation ? 1.02 : 1.0)
-                    .shadow(color: Color.orange.opacity(selectionGlow), radius: highlightAnimation ? 20 : 10)
+                    .shadow(color: Color.ds.secondary.opacity(selectionGlow), radius: highlightAnimation ? 20 : 10)
                     .blur(radius: selectionPulse ? 0.5 : 0)
                 
                 // Selection handles at corners
@@ -180,18 +180,18 @@ struct TextSelectionView: View {
                             }) {
                                 Label("Create Highlight", systemImage: "highlighter")
                                     .font(.ds.callout).fontWeight(.semibold)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color.white)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 10)
                                     .background(
                                         LinearGradient(
-                                            colors: [Color.orange, Color.orange.opacity(0.8)],
+                                            colors: [Color.ds.secondary, Color.ds.secondary.opacity(0.8)],
                                             startPoint: .leading,
                                             endPoint: .trailing
                                         )
                                     )
                                     .clipShape(Capsule())
-                                    .shadow(color: Color.orange.opacity(0.4), radius: 8, y: 4)
+                                    .shadow(color: Color.ds.secondary.opacity(0.4), radius: 8, y: 4)
                             }
                             .scaleEffect(buttonScale * (highlightAnimation ? 1.05 : 1.0))
                             
@@ -202,9 +202,9 @@ struct TextSelectionView: View {
                             }) {
                                 Image(systemName: "doc.on.doc")
                                     .font(.ds.body).fontWeight(.medium)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color.white)
                                     .frame(width: 40, height: 40)
-                                    .background(Circle().fill(Color.secondary.opacity(0.8))
+                                    .background(Circle().fill(Color.ds.textSecondary.opacity(0.8)))
                             }
                         }
                         .position(x: selectionRect.midX, y: selectionRect.maxY + 50)
@@ -271,7 +271,7 @@ struct TextSelectionView: View {
         let beforeStart = max(0, range.location - contextLength)
         let beforeLength = range.location - beforeStart
         if beforeLength > 0 {
-            contextBefore = nsString.substring(with: NSRange(location: beforeStart, length: beforeLength)
+            contextBefore = nsString.substring(with: NSRange(location: beforeStart, length: beforeLength))
             // Find the last sentence boundary
             if let lastPeriod = contextBefore.lastIndex(of: ".") {
                 contextBefore = String(contextBefore[contextBefore.index(after: lastPeriod)...]).trimmingCharacters(in: .whitespacesAndNewlines)
@@ -282,7 +282,7 @@ struct TextSelectionView: View {
         let afterStart = range.location + range.length
         let afterLength = min(contextLength, nsString.length - afterStart)
         if afterLength > 0 {
-            contextAfter = nsString.substring(with: NSRange(location: afterStart, length: afterLength)
+            contextAfter = nsString.substring(with: NSRange(location: afterStart, length: afterLength))
             // Find the first sentence boundary
             if let firstPeriod = contextAfter.firstIndex(of: ".") {
                 contextAfter = String(contextAfter[...firstPeriod])
@@ -420,7 +420,7 @@ struct RippleEffectView: View {
         Circle()
             .stroke(
                 LinearGradient(
-                    colors: [Color.orange, Color.orange.opacity(0.3)],
+                    colors: [Color.ds.secondary, Color.ds.secondary.opacity(0.3)],
                     startPoint: .center,
                     endPoint: .trailing
                 ),
@@ -462,7 +462,7 @@ struct HighlightEditorView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Label("Preview", systemImage: "eye")
                                 .font(.headline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.ds.textSecondary)
                             
                             HighlightPreviewCard(
                                 text: selectedText,
@@ -479,7 +479,7 @@ struct HighlightEditorView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Add Your Thoughts (Optional)", systemImage: "bubble.left")
                             .font(.headline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.ds.textSecondary)
                         
                         TextField("What makes this passage special?", text: $comment, axis: .vertical)
                             .textFieldStyle(.roundedBorder)
@@ -507,25 +507,25 @@ struct HighlightEditorView: View {
                                 Text("Create Highlight")
                             }
                             .font(.ds.body).fontWeight(.semibold)
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
                             .background(
                                 LinearGradient(
-                                    colors: [Color.orange, Color.orange.opacity(0.9)],
+                                    colors: [Color.ds.secondary, Color.ds.secondary.opacity(0.9)],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
                             )
-                            .clipShape(RoundedRectangle(cornerRadius: 12)
-                            .shadow(color: Color.orange.opacity(0.3), radius: 8, y: 4)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .shadow(color: Color.ds.secondary.opacity(0.3), radius: 8, y: 4)
                         }
                         
                         Button("Cancel") {
                             dismiss()
                         }
                         .font(.ds.body).fontWeight(.medium)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.ds.textSecondary)
                     }
                     .padding(.horizontal)
                 }
@@ -562,17 +562,17 @@ struct HighlightPreviewCard: View {
             // Context and highlighted text
             HStack(alignment: .top, spacing: 0) {
                 Text(contextBefore + " ")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.ds.textSecondary)
                     .font(.ds.body)
                 
                 Text(text)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.ds.text)
                     .font(.ds.body).fontWeight(.semibold)
-                    .underline(color: .orange)
-                    .background(Color.orange.opacity(0.1)
+                    .underline(color: Color.ds.secondary)
+                    .background(Color.ds.secondary.opacity(0.1))
                 
                 Text(" " + contextAfter)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.ds.textSecondary)
                     .font(.ds.body)
             }
             
@@ -583,17 +583,17 @@ struct HighlightPreviewCard: View {
                 if let author = author {
                     Label(author, systemImage: "person")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.ds.textSecondary)
                 }
                 
                 if let source = source {
                     if author != nil {
                         Text("•")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.ds.textSecondary)
                     }
                     Label(source, systemImage: "book")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.ds.textSecondary)
                 }
                 
                 Spacer()
@@ -602,11 +602,11 @@ struct HighlightPreviewCard: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(uiColor: .secondarySystemBackground)
+                .fill(Color(uiColor: .secondarySystemBackground))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .strokeBorder(Color.orange.opacity(0.3), lineWidth: 1)
+                .strokeBorder(Color.ds.secondary.opacity(0.3), lineWidth: 1)
         )
     }
 }
@@ -632,19 +632,19 @@ struct SelectionHandle: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color.orange)
+                .fill(Color.ds.secondary)
                 .frame(width: 16, height: 16)
                 .overlay(
                     Circle()
                         .stroke(Color.white, lineWidth: 2)
                 )
-                .shadow(color: Color.orange.opacity(0.4), radius: 4, x: 0, y: 2)
+                .shadow(color: Color.ds.secondary.opacity(0.4), radius: 4, x: 0, y: 2)
             
             // Inner glow
             Circle()
                 .fill(
                     RadialGradient(
-                        colors: [Color.orange.opacity(0.6), Color.clear],
+                        colors: [Color.ds.secondary.opacity(0.6), Color.clear],
                         center: .center,
                         startRadius: 0,
                         endRadius: 8
