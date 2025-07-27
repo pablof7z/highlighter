@@ -224,7 +224,7 @@ struct CreateHighlightView: View {
     
     private var importArticleView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Recent Articles")
+            Text("Recent Articles5")
                 .font(.headline)
                 .foregroundColor(.primary)
             

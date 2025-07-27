@@ -177,38 +177,11 @@ struct SimplifiedHybridFeedView: View {
     
     private var headerView: some View {
         HStack {
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
-                HStack(spacing: DesignSystem.Spacing.base) {
-                    Text(GreetingFormatter.timeBasedGreeting())
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
-                        .foregroundColor(DesignSystem.Colors.text)
-                    
-                    // Time-based emoji without pulsing animation
-                    Text(timeBasedEmoji)
-                        .font(.system(size: 28))
-                }
-                
-                HStack(spacing: DesignSystem.Spacing.mini) {
-                    Text(GreetingFormatter.formattedDate())
-                        .font(.ds.footnote)
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
-                    
-                    Circle()
-                        .fill(DesignSystem.Colors.success)
-                        .frame(width: 6, height: 6)
-                    
-                    Text("Live")
-                        .font(.ds.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(DesignSystem.Colors.success)
-                }
-            }
+            Text("Highlighter")
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .foregroundColor(DesignSystem.Colors.text)
             
             Spacer()
-            
-            // Activity indicator
-            ActivityRing()
-                .frame(width: 48, height: 48)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -549,18 +522,8 @@ struct EnhancedDiscussionRow: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            // Avatar with online indicator
-            ZStack(alignment: .bottomTrailing) {
-                EnhancedAsyncProfileImage(pubkey: event.pubkey, size: 44)
-                
-                Circle()
-                    .fill(DesignSystem.Colors.success)
-                    .frame(width: 12, height: 12)
-                    .overlay(
-                        Circle()
-                            .stroke(DesignSystem.Colors.background, lineWidth: 2)
-                    )
-            }
+            // Avatar
+            EnhancedAsyncProfileImage(pubkey: event.pubkey, size: 44)
             
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                 HStack {

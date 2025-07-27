@@ -40,7 +40,7 @@ struct ArticleListView: View {
                         // Regular Articles Section
                         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
                             if !featuredArticles.isEmpty {
-                                Text("Recent Articles")
+                                Text("Recent Articles3")
                                     .font(DesignSystem.Typography.headline)
                                     .foregroundColor(DesignSystem.Colors.text)
                                     .padding(.horizontal)

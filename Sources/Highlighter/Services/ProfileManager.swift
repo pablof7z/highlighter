@@ -9,7 +9,6 @@ class ProfileManager: ObservableObject {
     // MARK: - Published State
     @Published private(set) var currentUserProfile: NDKUserProfile?
     @Published private(set) var cachedProfiles: [String: NDKUserProfile] = [:]
-    @Published private(set) var isLoadingProfile = false
     
     // MARK: - Private Properties
     private weak var ndk: NDK?
@@ -29,61 +28,53 @@ class ProfileManager: ObservableObject {
     func loadCurrentUserProfile(for signer: NDKSigner) async {
         guard let ndk = ndk else { return }
         
-        isLoadingProfile = true
-        
         let pubkey: String
         do {
             pubkey = try await signer.pubkey
         } catch {
             print("Failed to get pubkey: \(error)")
-            isLoadingProfile = false
             return
         }
         
-        // Check cache first
+        // Check cache first and set immediately if available
         if let cachedProfile = cachedProfiles[pubkey] {
             currentUserProfile = cachedProfile
-            isLoadingProfile = false
-            return
         }
         
-        // Use profile manager for efficient caching
+        // Always stream for updates - following "never wait, always stream" principle
         let profileTask = Task {
             for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
                 await MainActor.run {
                     self.currentUserProfile = profile
-                    self.cachedProfiles[pubkey] = profile
-                    self.isLoadingProfile = false
+                    if let profile = profile {
+                        self.cachedProfiles[pubkey] = profile
+                    }
                 }
-                break // Only need current value
             }
         }
         profileTasks.append(profileTask)
     }
     
-    /// Load profile for any pubkey with caching
-    func loadProfile(for pubkey: String) async -> NDKUserProfile? {
-        guard let ndk = ndk else { return nil }
+    /// Stream profile for any pubkey with caching
+    func streamProfile(for pubkey: String) {
+        guard let ndk = ndk else { return }
         
-        // Check cache first
-        if let cachedProfile = cachedProfiles[pubkey] {
-            return cachedProfile
-        }
-        
-        // Load from network
-        return await withCheckedContinuation { continuation in
-            let task = Task {
-                for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
-                    await MainActor.run {
+        // Start streaming profile updates
+        let task = Task {
+            for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
+                await MainActor.run {
+                    if let profile = profile {
                         self.cachedProfiles[pubkey] = profile
                     }
-                    continuation.resume(returning: profile)
-                    return
                 }
-                continuation.resume(returning: nil)
             }
-            profileTasks.append(task)
         }
+        profileTasks.append(task)
+    }
+    
+    /// Get cached profile if available (no waiting)
+    func getCachedProfile(for pubkey: String) -> NDKUserProfile? {
+        return cachedProfiles[pubkey]
     }
     
     /// Clear current user profile (e.g., on logout)

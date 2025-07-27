@@ -77,11 +77,7 @@ struct TimelineFeedView: View {
                                     .id(event.id)
                                 }
                                 
-                                if feedDataManager.isLoading {
-                                    ForEach(0..<3, id: \.self) { _ in
-                                        TimelineSkeletonCard()
-                                    }
-                                }
+                                // No loading states - events stream in progressively
                             }
                             .padding(.horizontal, DesignSystem.Spacing.large)
                             .padding(.vertical, DesignSystem.Spacing.xl)
@@ -659,7 +655,7 @@ struct TimelineScaleButtonStyle: ButtonStyle {
 @MainActor
 class FeedDataManager: ObservableObject {
     @Published var timelineEvents: [NDKEvent] = []
-    @Published var isLoading = false
+    // No loading states - data streams progressively
     
     weak var appState: AppState?
     private var activeFilter: TimelineFeedView.FeedFilter = .all
@@ -669,7 +665,7 @@ class FeedDataManager: ObservableObject {
     func startStreaming(filter: TimelineFeedView.FeedFilter) async {
         guard let appState = appState, let ndk = appState.ndk else { return }
         
-        isLoading = true
+        // Start streaming immediately - no loading states
         activeFilter = filter
         
         // Cancel existing stream
@@ -697,7 +693,7 @@ class FeedDataManager: ObservableObject {
             }
         }
         
-        isLoading = false
+        // Events stream continuously
     }
     
     func changeFilter(_ filter: TimelineFeedView.FeedFilter) async {

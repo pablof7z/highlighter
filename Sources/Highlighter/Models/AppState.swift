@@ -76,8 +76,8 @@ class AppState: ObservableObject {
             // Set NDK instance in auth manager
             authManager.setNDK(ndk!)
             
-            // Restore session from keychain (handles automatic session switching)
-            authManager.restoreSession()
+            // Initialize auth manager (restores sessions automatically)
+            // await authManager.initialize()
             
             // Start NIP-77 sync in background
             Task {
@@ -86,6 +86,14 @@ class AppState: ObservableObject {
             
             // If authenticated after restore, start services immediately
             if authManager.isAuthenticated {
+                // Update services with restored signer
+                if let signer = authManager.activeSigner {
+                    publishingService.configure(with: ndk!, signer: signer)
+                    bookmarkService.configure(with: ndk!, signer: signer)
+                    commentService.configure(with: ndk!, signer: signer)
+                    engagementService.configure(with: ndk!, signer: signer)
+                }
+                
                 // Start streaming data
                 await dataStreamManager.startAllStreams()
                 
@@ -102,8 +110,20 @@ class AppState: ObservableObject {
     }
     
     func createAccount() async throws {
+        guard let ndk = ndk else { throw AuthError.noSigner }
+        
         let signer = try NDKPrivateKeySigner.generate()
         
+        // Start NDK session first
+        try await ndk.startSession(
+            signer: signer,
+            config: NDKSessionConfiguration(
+                dataRequirements: [.followList, .muteList],
+                preloadStrategy: .progressive
+            )
+        )
+        
+        // Create persistent auth session
         let session = try await authManager.createSession(
             with: signer,
             requiresBiometric: true
@@ -112,18 +132,30 @@ class AppState: ObservableObject {
         try await authManager.switchToSession(session)
         
         // Update services with new signer
-        publishingService.configure(with: ndk!, signer: signer)
-        bookmarkService.configure(with: ndk!, signer: signer)
-        commentService.configure(with: ndk!, signer: signer)
-        engagementService.configure(with: ndk!, signer: signer)
+        publishingService.configure(with: ndk, signer: signer)
+        bookmarkService.configure(with: ndk, signer: signer)
+        commentService.configure(with: ndk, signer: signer)
+        engagementService.configure(with: ndk, signer: signer)
         
         // Start streaming data
         await dataStreamManager.startAllStreams()
     }
     
     func importAccount(nsec: String) async throws {
+        guard let ndk = ndk else { throw AuthError.noSigner }
+        
         let signer = try NDKPrivateKeySigner(nsec: nsec)
         
+        // Start NDK session first
+        try await ndk.startSession(
+            signer: signer,
+            config: NDKSessionConfiguration(
+                dataRequirements: [.followList, .muteList],
+                preloadStrategy: .progressive
+            )
+        )
+        
+        // Create persistent auth session
         let session = try await authManager.createSession(
             with: signer,
             requiresBiometric: true
@@ -132,10 +164,10 @@ class AppState: ObservableObject {
         try await authManager.switchToSession(session)
         
         // Update services with new signer
-        publishingService.configure(with: ndk!, signer: signer)
-        bookmarkService.configure(with: ndk!, signer: signer)
-        commentService.configure(with: ndk!, signer: signer)
-        engagementService.configure(with: ndk!, signer: signer)
+        publishingService.configure(with: ndk, signer: signer)
+        bookmarkService.configure(with: ndk, signer: signer)
+        commentService.configure(with: ndk, signer: signer)
+        engagementService.configure(with: ndk, signer: signer)
         
         // Start streaming data
         await dataStreamManager.startAllStreams()

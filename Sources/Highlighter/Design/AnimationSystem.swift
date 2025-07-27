@@ -11,26 +11,26 @@ struct AnimationSystem {
     enum Curves {
         /// Ultra-smooth spring animation for premium feel
         static let premiumSpring = Animation.interpolatingSpring(
-            mass: 0.7,
-            stiffness: 120,
-            damping: 12,
+            mass: 1.0,
+            stiffness: 100,
+            damping: 20,
             initialVelocity: 0
         )
         
-        /// Snappy spring for responsive interactions
-        static let springSnappy = Animation.spring(response: 0.3, dampingFraction: 0.8)
+        /// Subtle spring for responsive interactions
+        static let springSnappy = Animation.spring(response: 0.3, dampingFraction: 0.9)
         
         /// Smooth spring for general animations
-        static let springSmooth = Animation.spring(response: 0.4, dampingFraction: 0.75)
+        static let springSmooth = Animation.spring(response: 0.4, dampingFraction: 0.85)
         
-        /// Bouncy spring for playful interactions
-        static let springBouncy = Animation.spring(response: 0.5, dampingFraction: 0.6)
+        /// Gentle spring for subtle interactions
+        static let springBouncy = Animation.spring(response: 0.5, dampingFraction: 0.95)
         
-        /// Elastic bounce for emphasis
+        /// Minimal bounce for refined emphasis
         static let elasticBounce = Animation.interpolatingSpring(
-            mass: 1.2,
-            stiffness: 170,
-            damping: 10,
+            mass: 1.0,
+            stiffness: 120,
+            damping: 18,
             initialVelocity: 0
         )
         

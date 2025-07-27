@@ -82,8 +82,8 @@ struct FollowingListView: View {
             
             // Load profiles for each pubkey
             for followPubkey in followingPubkeys {
-                // Load profile using ProfileManager's loadProfile method
-                let profile = await appState.profileManager.loadProfile(for: followPubkey)
+                // Get cached profile if available
+                let profile = appState.profileManager.getCachedProfile(for: followPubkey)
                 followingList.append((pubkey: followPubkey, profile: profile))
             }
             

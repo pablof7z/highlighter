@@ -1,0 +1,1616 @@
+This file is a merged representation of a subset of the codebase, containing specifically included files and files not matching ignore patterns, combined into a single document by Repomix.
+The content has been processed where empty lines have been removed.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: Sources/Highlighter/Views/Profile/UserProfileView.swift, Sources/Highlighter/Views/Components/TappableAvatar.swift, Sources/Highlighter/Models/AppState.swift, Sources/Highlighter/Utilities/FormattingUtilities.swift
+- Files matching these patterns are excluded: .*.*, **/*.pbxproj, **/node_modules/**, **/dist/**, **/build/**, **/compile/**, **/*.spec.*, **/*.pyc, **/.env, **/.env.*, **/*.env, **/*.env.*, **/*.lock, **/*.lockb, **/package-lock.*, **/pnpm-lock.*, **/*.tsbuildinfo, **/certdata.txt
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Empty lines have been removed from all files
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+Sources/
+  Highlighter/
+    Models/
+      AppState.swift
+    Utilities/
+      FormattingUtilities.swift
+    Views/
+      Components/
+        TappableAvatar.swift
+      Profile/
+        UserProfileView.swift
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="Sources/Highlighter/Views/Components/TappableAvatar.swift">
+import SwiftUI
+import NDKSwift
+struct TappableAvatar: View {
+    let pubkey: String
+    let size: CGFloat
+    let profile: NDKUserProfile?
+    let showOnlineIndicator: Bool
+    let enableHoverEffect: Bool
+    @State private var showingProfile = false
+    @State private var isPressed = false
+    @State private var isHovering = false
+    @State private var loadingProgress: CGFloat = 0
+    @Namespace private var animationNamespace
+    init(
+        pubkey: String,
+        size: CGFloat = 40,
+        profile: NDKUserProfile? = nil,
+        showOnlineIndicator: Bool = false,
+        enableHoverEffect: Bool = true
+    ) {
+        self.pubkey = pubkey
+        self.size = size
+        self.profile = profile
+        self.showOnlineIndicator = showOnlineIndicator
+        self.enableHoverEffect = enableHoverEffect
+    }
+    var body: some View {
+        Button(action: {
+            showingProfile = true
+            HapticManager.shared.impact(.light)
+        }) {
+            ZStack {
+                // Main avatar
+                avatarView
+                    .scaleEffect(isPressed ? 0.92 : (isHovering && enableHoverEffect ? 1.05 : 1.0))
+                    .animation(AnimationSystem.Curves.springBouncy, value: isPressed)
+                    .animation(AnimationSystem.Curves.springSmooth, value: isHovering)
+                    .shadow(
+                        color: Color.black.opacity(isHovering ? 0.15 : 0.1),
+                        radius: isHovering ? 12 : 6,
+                        x: 0,
+                        y: isHovering ? 4 : 2
+                    )
+                // Online indicator
+                if showOnlineIndicator {
+                    Circle()
+                        .fill(Color.green)
+                        .frame(width: size * 0.25, height: size * 0.25)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.ds.background, lineWidth: 2)
+                        )
+                        .offset(x: size * 0.35, y: size * 0.35)
+                        .scaleEffect(isHovering ? 1.2 : 1.0)
+                        .animation(AnimationSystem.Curves.springBouncy, value: isHovering)
+                }
+            }
+        }
+        .buttonStyle(PlainButtonStyle())
+        .onHover { hovering in
+            withAnimation(AnimationSystem.Curves.springSmooth) {
+                isHovering = hovering
+            }
+        }
+        .pressEvents(
+            onPress: {
+                withAnimation(AnimationSystem.Curves.springBouncy) {
+                    isPressed = true
+                }
+            },
+            onRelease: {
+                withAnimation(AnimationSystem.Curves.springBouncy) {
+                    isPressed = false
+                }
+            }
+        )
+        .sheet(isPresented: $showingProfile) {
+            UserProfileView(pubkey: pubkey)
+                .presentationDragIndicator(.visible)
+                .presentationDetents([.large])
+                .presentationCornerRadius(24)
+        }
+    }
+    @ViewBuilder
+    private var avatarView: some View {
+        if let picture = profile?.picture, let url = URL(string: picture) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: size, height: size)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .strokeBorder(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(0.4),
+                                            Color.white.opacity(0.1)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1
+                                )
+                        )
+                        .transition(.opacity.combined(with: .scale))
+                case .failure(_):
+                    placeholderAvatar
+                        .overlay(
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.system(size: size * 0.3))
+                                .foregroundColor(.white.opacity(0.8))
+                        )
+                case .empty:
+                    ZStack {
+                        placeholderAvatar
+                        // Loading animation
+                        Circle()
+                            .trim(from: 0, to: loadingProgress)
+                            .stroke(
+                                Color.white.opacity(0.3),
+                                style: StrokeStyle(lineWidth: 2, lineCap: .round)
+                            )
+                            .frame(width: size - 4, height: size - 4)
+                            .rotationEffect(.degrees(-90))
+                            .onAppear {
+                                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: false)) {
+                                    loadingProgress = 1
+                                }
+                            }
+                    }
+                @unknown default:
+                    placeholderAvatar
+                }
+            }
+        } else {
+            placeholderAvatar
+        }
+    }
+    @ViewBuilder
+    private var placeholderAvatar: some View {
+        ZStack {
+            // Gradient background with animation
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: gradientColors(for: pubkey),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: size, height: size)
+                .overlay(
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [
+                                    Color.white.opacity(0.2),
+                                    Color.clear
+                                ],
+                                center: .topLeading,
+                                startRadius: 0,
+                                endRadius: size * 0.7
+                            )
+                        )
+                )
+            // Initial text
+            Text(PubkeyFormatter.formatForAvatar(pubkey))
+                .font(.system(size: size * 0.4, weight: .semibold, design: .rounded))
+                .foregroundColor(.white)
+                .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
+        }
+    }
+    private func gradientColors(for pubkey: String) -> [Color] {
+        // Generate consistent colors based on pubkey
+        let hash = pubkey.hashValue
+        let hue1 = Double(abs(hash % 360)) / 360.0
+        let hue2 = (hue1 + 0.15).truncatingRemainder(dividingBy: 1.0)
+        return [
+            Color(hue: hue1, saturation: 0.7, brightness: 0.8),
+            Color(hue: hue2, saturation: 0.8, brightness: 0.6)
+        ]
+    }
+}
+// MARK: - Convenience Modifier
+extension View {
+    func tappableAvatar(
+        pubkey: String,
+        size: CGFloat = 40,
+        profile: NDKUserProfile? = nil,
+        showOnlineIndicator: Bool = false,
+        enableHoverEffect: Bool = true
+    ) -> some View {
+        self.overlay(
+            TappableAvatar(
+                pubkey: pubkey,
+                size: size,
+                profile: profile,
+                showOnlineIndicator: showOnlineIndicator,
+                enableHoverEffect: enableHoverEffect
+            )
+        )
+    }
+}
+// MARK: - Press Events Modifier
+private struct PressEventsModifier: ViewModifier {
+    var onPress: () -> Void
+    var onRelease: () -> Void
+    @GestureState private var isPressed = false
+    func body(content: Content) -> some View {
+        content
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .updating($isPressed) { _, state, _ in
+                        if !state {
+                            state = true
+                            onPress()
+                        }
+                    }
+                    .onEnded { _ in
+                        onRelease()
+                    }
+            )
+    }
+}
+extension View {
+    func pressEvents(onPress: @escaping () -> Void, onRelease: @escaping () -> Void) -> some View {
+        self.modifier(PressEventsModifier(onPress: onPress, onRelease: onRelease))
+    }
+}
+</file>
+
+<file path="Sources/Highlighter/Views/Profile/UserProfileView.swift">
+import SwiftUI
+import NDKSwift
+struct UserProfileView: View {
+    let pubkey: String
+    @EnvironmentObject var appState: AppState
+    @StateObject private var profileManager = UserProfileManager()
+    @State private var selectedTab = ProfileTab.highlights
+    @State private var showingFollowConfirmation = false
+    @State private var isFollowing = false
+    private func formatNpub(_ pubkey: String) -> String {
+        // Convert hex pubkey to npub using proper bech32 encoding
+        if let npub = NDKUser(pubkey: pubkey).npub {
+            return npub
+        }
+        // Fallback to truncated display
+        return "npub\(String(pubkey.prefix(8)))...\(String(pubkey.suffix(4)))"
+    }
+    enum ProfileTab: String, CaseIterable {
+        case highlights = "Highlights"
+        case articles = "Articles"
+        case comments = "Comments"
+        case collections = "Collections"
+        var icon: String {
+            switch self {
+            case .highlights: return "highlighter"
+            case .articles: return "doc.richtext"
+            case .comments: return "bubble.left.and.bubble.right"
+            case .collections: return "folder"
+            }
+        }
+    }
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Profile Header
+                    profileHeader
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 24)
+                    // Stats Bar
+                    statsBar
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
+                    // Tab Selection
+                    tabSelector
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 16)
+                    // Content based on selected tab
+                    tabContent
+                        .padding(.horizontal, 20)
+                }
+            }
+            .background(Color.ds.background)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                        Button(action: { shareProfile() }) {
+                            Label("Share Profile", systemImage: "square.and.arrow.up")
+                        }
+                        Button(action: { copyNpub() }) {
+                            Label("Copy npub", systemImage: "doc.on.doc")
+                        }
+                        if isFollowing {
+                            Button(role: .destructive, action: { unfollowUser() }) {
+                                Label("Unfollow", systemImage: "person.badge.minus")
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .font(.ds.body)
+                            .foregroundColor(.ds.primary)
+                    }
+                }
+            }
+        }
+        .onAppear {
+            profileManager.appState = appState
+            Task {
+                await profileManager.loadProfile(pubkey: pubkey)
+                checkFollowStatus()
+            }
+        }
+    }
+    // MARK: - Profile Header
+    @ViewBuilder
+    private var profileHeader: some View {
+        VStack(spacing: 16) {
+            // Avatar
+            if let picture = profileManager.profile?.picture, let url = URL(string: picture) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                    case .failure(_), .empty:
+                        avatarPlaceholder
+                    @unknown default:
+                        avatarPlaceholder
+                    }
+                }
+            } else {
+                avatarPlaceholder
+            }
+            // Name and username
+            VStack(spacing: 8) {
+                if let name = profileManager.profile?.name {
+                    Text(name)
+                        .font(.ds.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.ds.text)
+                }
+                Text(formatNpub(pubkey))
+                    .font(.ds.caption)
+                    .foregroundColor(.ds.textSecondary)
+                    .textSelection(.enabled)
+            }
+            // Bio
+            if let about = profileManager.profile?.about {
+                Text(about)
+                    .font(.ds.body)
+                    .foregroundColor(.ds.text)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(4)
+                    .padding(.top, 8)
+            }
+            // Follow/Message buttons
+            HStack(spacing: 12) {
+                Button(action: { toggleFollow() }) {
+                    HStack {
+                        Image(systemName: isFollowing ? "person.badge.minus" : "person.badge.plus")
+                        Text(isFollowing ? "Following" : "Follow")
+                    }
+                    .font(.ds.footnoteMedium)
+                    .foregroundColor(isFollowing ? .ds.text : .white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .fill(isFollowing ? Color.ds.surfaceSecondary : Color.ds.primary)
+                    )
+                }
+                Button(action: { /* Open DM */ }) {
+                    Image(systemName: "envelope")
+                        .font(.ds.body)
+                        .foregroundColor(.ds.primary)
+                        .padding(12)
+                        .background(
+                            Circle()
+                                .stroke(Color.ds.primary, lineWidth: 1)
+                        )
+                }
+            }
+            .padding(.top, 12)
+        }
+    }
+    // MARK: - Avatar Placeholder
+    @ViewBuilder
+    private var avatarPlaceholder: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [.purple, .blue],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 100, height: 100)
+            Text(PubkeyFormatter.formatForAvatar(pubkey))
+                .font(.system(size: 36, weight: .medium))
+                .foregroundColor(.white)
+        }
+    }
+    // MARK: - Stats Bar
+    @ViewBuilder
+    private var statsBar: some View {
+        HStack(spacing: 0) {
+            ProfileStatItem(
+                value: "\(profileManager.stats.highlightCount)",
+                label: "Highlights",
+                color: .orange
+            )
+            Divider()
+                .frame(height: 40)
+            ProfileStatItem(
+                value: "\(profileManager.stats.articleCount)",
+                label: "Articles",
+                color: .blue
+            )
+            Divider()
+                .frame(height: 40)
+            ProfileStatItem(
+                value: "\(profileManager.stats.followerCount)",
+                label: "Followers",
+                color: .purple
+            )
+            Divider()
+                .frame(height: 40)
+            ProfileStatItem(
+                value: "\(profileManager.stats.followingCount)",
+                label: "Following",
+                color: .green
+            )
+        }
+        .padding(.vertical, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.ds.surfaceSecondary)
+        )
+    }
+    // MARK: - Tab Selector
+    @ViewBuilder
+    private var tabSelector: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) {
+                ForEach(ProfileTab.allCases, id: \.self) { tab in
+                    UserProfileTabButton(
+                        tab: tab,
+                        isSelected: selectedTab == tab,
+                        count: countForTab(tab)
+                    ) {
+                        withAnimation(.spring(response: 0.3)) {
+                            selectedTab = tab
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // MARK: - Tab Content
+    @ViewBuilder
+    private var tabContent: some View {
+        switch selectedTab {
+        case .highlights:
+            HighlightsListView(highlights: profileManager.highlights)
+        case .articles:
+            ArticlesListView(articles: profileManager.articles)
+        case .comments:
+            CommentsListView(comments: profileManager.comments)
+        case .collections:
+            CollectionsListView(collections: profileManager.collections)
+        }
+    }
+    // MARK: - Helper Methods
+    private func countForTab(_ tab: ProfileTab) -> Int {
+        switch tab {
+        case .highlights: return profileManager.highlights.count
+        case .articles: return profileManager.articles.count
+        case .comments: return profileManager.comments.count
+        case .collections: return profileManager.collections.count
+        }
+    }
+    private func checkFollowStatus() {
+        guard let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return }
+        // Check if current user follows this pubkey
+        Task {
+            guard let currentUserPubkey = try? await signer.pubkey else { return }
+            let filter = NDKFilter(
+                authors: [currentUserPubkey],
+                kinds: [3]
+            )
+            var events: Set<NDKEvent> = []
+            let dataSource = await ndk.outbox.observe(filter: filter)
+            for await event in dataSource.events {
+                events.insert(event)
+                break // Only need the first contact list
+            }
+            if let contactList = events.first {
+                // Check if pubkey is in the contact list
+                isFollowing = contactList.tags.contains { tag in
+                    tag.count >= 2 && tag[0] == "p" && tag[1] == pubkey
+                }
+            }
+        }
+    }
+    private func toggleFollow() {
+        if isFollowing {
+            unfollowUser()
+        } else {
+            followUser()
+        }
+    }
+    private func followUser() {
+        guard let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return }
+        HapticManager.shared.impact(.medium)
+        Task {
+            do {
+                // Get current contact list
+                let filter = NDKFilter(
+                    authors: Set([signer.publicKey]),
+                    kinds: [3],
+                    limit: 1
+                )
+                var currentFollows: [[String]] = []
+                for try await event in ndk.events(matching: filter) {
+                    currentFollows = event.tags.filter { $0.count >= 2 && $0[0] == "p" }
+                    break
+                }
+                // Add new follow if not already following
+                let isAlreadyFollowing = currentFollows.contains { tag in
+                    tag.count >= 2 && tag[1] == pubkey
+                }
+                if !isAlreadyFollowing {
+                    currentFollows.append(["p", pubkey])
+                    // Build and publish updated contact list
+                    let contactListEvent = try await NDKEventBuilder(ndk: ndk)
+                        .kind(3)
+                        .tags(currentFollows)
+                        .content("")
+                        .build(signer: signer)
+                    _ = try await ndk.publish(contactListEvent)
+                    await MainActor.run {
+                        isFollowing = true
+                        profileManager.followers += 1
+                    }
+                }
+            } catch {
+                print("Failed to follow user: \(error)")
+                await MainActor.run {
+                    isFollowing = false
+                }
+            }
+        }
+    }
+    private func unfollowUser() {
+        guard let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return }
+        HapticManager.shared.impact(.light)
+        Task {
+            do {
+                // Get current contact list
+                let filter = NDKFilter(
+                    authors: Set([signer.publicKey]),
+                    kinds: [3],
+                    limit: 1
+                )
+                var currentFollows: [[String]] = []
+                for try await event in ndk.events(matching: filter) {
+                    currentFollows = event.tags.filter { $0.count >= 2 && $0[0] == "p" }
+                    break
+                }
+                // Remove the follow
+                currentFollows = currentFollows.filter { tag in
+                    !(tag.count >= 2 && tag[1] == pubkey)
+                }
+                // Build and publish updated contact list
+                let contactListEvent = try await NDKEventBuilder(ndk: ndk)
+                    .kind(3)
+                    .tags(currentFollows)
+                    .content("")
+                    .build(signer: signer)
+                _ = try await ndk.publish(contactListEvent)
+                await MainActor.run {
+                    isFollowing = false
+                    profileManager.followers = max(0, profileManager.followers - 1)
+                }
+            } catch {
+                print("Failed to unfollow user: \(error)")
+                await MainActor.run {
+                    isFollowing = true
+                }
+            }
+        }
+    }
+    private func shareProfile() {
+        // Share profile implementation
+    }
+    private func copyNpub() {
+        let npub = formatNpub(pubkey)
+        if !npub.isEmpty {
+            UIPasteboard.general.string = npub
+            HapticManager.shared.notification(.success)
+        }
+    }
+}
+// MARK: - Supporting Views
+struct ProfileStatItem: View {
+    let value: String
+    let label: String
+    let color: Color
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(value)
+                .font(.ds.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.ds.text)
+            Text(label)
+                .font(.ds.caption)
+                .foregroundColor(.ds.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+struct UserProfileTabButton: View {
+    let tab: UserProfileView.ProfileTab
+    let isSelected: Bool
+    let count: Int
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: tab.icon)
+                    .font(.ds.footnote)
+                Text(tab.rawValue)
+                    .font(.ds.footnoteMedium)
+                if count > 0 {
+                    Text("\(count)")
+                        .font(.ds.caption)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            Capsule()
+                                .fill(isSelected ? Color.ds.primary.opacity(0.2) : Color.ds.surfaceSecondary)
+                        )
+                }
+            }
+            .foregroundColor(isSelected ? .ds.primary : .ds.textSecondary)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(isSelected ? Color.ds.primary.opacity(0.1) : Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(isSelected ? Color.ds.primary : Color.clear, lineWidth: 1)
+                    )
+            )
+        }
+    }
+}
+// MARK: - Content List Views
+struct HighlightsListView: View {
+    let highlights: [HighlightEvent]
+    var body: some View {
+        VStack(spacing: 16) {
+            if highlights.isEmpty {
+                UserProfileEmptyStateView(
+                    icon: "highlighter",
+                    title: "No highlights yet",
+                    description: "This user hasn't created any highlights"
+                )
+                .padding(.vertical, 40)
+            } else {
+                ForEach(highlights, id: \.id) { highlight in
+                    HighlightCard(highlight: highlight)
+                }
+            }
+        }
+    }
+}
+struct ArticlesListView: View {
+    let articles: [Article]
+    var body: some View {
+        VStack(spacing: 16) {
+            if articles.isEmpty {
+                UserProfileEmptyStateView(
+                    icon: "doc.richtext",
+                    title: "No articles yet",
+                    description: "This user hasn't written any articles"
+                )
+                .padding(.vertical, 40)
+            } else {
+                ForEach(articles, id: \.id) { article in
+                    ArticleRowCard(article: article)
+                }
+            }
+        }
+    }
+}
+struct CommentsListView: View {
+    let comments: [NDKEvent]
+    var body: some View {
+        VStack(spacing: 16) {
+            if comments.isEmpty {
+                UserProfileEmptyStateView(
+                    icon: "bubble.left.and.bubble.right",
+                    title: "No comments yet",
+                    description: "This user hasn't commented on any articles"
+                )
+                .padding(.vertical, 40)
+            } else {
+                ForEach(comments, id: \.id) { comment in
+                    CommentCard(comment: comment)
+                }
+            }
+        }
+    }
+}
+struct CollectionsListView: View {
+    let collections: [ArticleCuration]
+    var body: some View {
+        VStack(spacing: 16) {
+            if collections.isEmpty {
+                UserProfileEmptyStateView(
+                    icon: "folder",
+                    title: "No collections yet",
+                    description: "This user hasn't created any collections"
+                )
+                .padding(.vertical, 40)
+            } else {
+                ForEach(collections, id: \.id) { collection in
+                    CollectionCard(collection: collection)
+                }
+            }
+        }
+    }
+}
+struct CommentCard: View {
+    let comment: NDKEvent
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(comment.content)
+                .font(.ds.body)
+                .foregroundColor(.ds.text)
+                .lineLimit(3)
+            HStack {
+                Text(RelativeTimeFormatter.relativeTime(from: comment.createdAt))
+                    .font(.ds.caption)
+                    .foregroundColor(.ds.textTertiary)
+                Spacer()
+                // Reference to article
+                if comment.tags.first(where: { $0.count >= 2 && $0[0] == "a" }) != nil {
+                    Label("View Article", systemImage: "doc.text")
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.primary)
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.ds.surfaceSecondary)
+        )
+    }
+}
+struct CollectionCard: View {
+    let collection: ArticleCuration
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                if let image = collection.image, let url = URL(string: image) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 60, height: 60)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        default:
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.ds.surfaceSecondary)
+                                .frame(width: 60, height: 60)
+                        }
+                    }
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(collection.title)
+                        .font(.ds.headline)
+                        .foregroundColor(.ds.text)
+                        .lineLimit(1)
+                    if let description = collection.description {
+                        Text(description)
+                            .font(.ds.caption)
+                            .foregroundColor(.ds.textSecondary)
+                            .lineLimit(2)
+                    }
+                    HStack {
+                        Label("\(collection.articles.count) articles", systemImage: "doc.text")
+                            .font(.ds.caption)
+                            .foregroundColor(.ds.textTertiary)
+                        Spacer()
+                        Text(RelativeTimeFormatter.relativeTime(from: collection.updatedAt))
+                            .font(.ds.caption)
+                            .foregroundColor(.ds.textTertiary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.ds.surfaceSecondary)
+        )
+    }
+}
+struct UserProfileEmptyStateView: View {
+    let icon: String
+    let title: String
+    let description: String
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 48))
+                .foregroundColor(.ds.textTertiary)
+            Text(title)
+                .font(.ds.headline)
+                .foregroundColor(.ds.text)
+            Text(description)
+                .font(.ds.caption)
+                .foregroundColor(.ds.textSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+    }
+}
+// MARK: - Profile Manager
+class UserProfileManager: ObservableObject {
+    @Published var profile: NDKUserProfile?
+    @Published var highlights: [HighlightEvent] = []
+    @Published var articles: [Article] = []
+    @Published var comments: [NDKEvent] = []
+    @Published var collections: [ArticleCuration] = []
+    @Published var stats = ProfileStats()
+    weak var appState: AppState?
+    struct ProfileStats {
+        var highlightCount = 0
+        var articleCount = 0
+        var followerCount = 0
+        var followingCount = 0
+    }
+    func loadProfile(pubkey: String) async {
+        guard let ndk = await appState?.ndk else { return }
+        // Load user profile
+        if let user = try? await ndk.getUser(pubkey) {
+            let userProfile = await user.profile
+            await MainActor.run {
+                self.profile = userProfile
+            }
+        }
+        // Load all content in parallel
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { await self.loadHighlights(pubkey: pubkey, ndk: ndk) }
+            group.addTask { await self.loadArticles(pubkey: pubkey, ndk: ndk) }
+            group.addTask { await self.loadComments(pubkey: pubkey, ndk: ndk) }
+            group.addTask { await self.loadCollections(pubkey: pubkey, ndk: ndk) }
+            group.addTask { await self.loadStats(pubkey: pubkey, ndk: ndk) }
+        }
+    }
+    private func loadHighlights(pubkey: String, ndk: NDK) async {
+        let filter = NDKFilter(
+            authors: [pubkey],
+            kinds: [9802],
+            limit: 50
+        )
+        var events: Set<NDKEvent> = []
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        for await event in dataSource.events {
+            events.insert(event)
+            if events.count >= 50 { break }
+        }
+        let highlights = events.compactMap { try? HighlightEvent(from: $0) }
+        await MainActor.run {
+            self.highlights = highlights.sorted { $0.createdAt > $1.createdAt }
+            self.stats.highlightCount = highlights.count
+        }
+    }
+    private func loadArticles(pubkey: String, ndk: NDK) async {
+        let filter = NDKFilter(
+            authors: [pubkey],
+            kinds: [30023],
+            limit: 50
+        )
+        var events: Set<NDKEvent> = []
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        for await event in dataSource.events {
+            events.insert(event)
+            if events.count >= 50 { break }
+        }
+        if !events.isEmpty {
+            let articles = events.compactMap { try? Article(from: $0) }
+            await MainActor.run {
+                self.articles = articles.sorted { $0.publishedAt ?? $0.createdAt > $1.publishedAt ?? $1.createdAt }
+                self.stats.articleCount = articles.count
+            }
+        }
+    }
+    private func loadComments(pubkey: String, ndk: NDK) async {
+        // NIP-22 comments on articles
+        let filter = NDKFilter(
+            authors: [pubkey],
+            kinds: [1111],
+            tags: ["K": Set(["30023"])]
+        )
+        var events: Set<NDKEvent> = []
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        for await event in dataSource.events {
+            events.insert(event)
+        }
+        if !events.isEmpty {
+            await MainActor.run {
+                self.comments = Array(events).sorted { $0.createdAt > $1.createdAt }
+            }
+        }
+    }
+    private func loadCollections(pubkey: String, ndk: NDK) async {
+        let filter = NDKFilter(
+            authors: [pubkey],
+            kinds: [30001],
+            limit: 20
+        )
+        var events: Set<NDKEvent> = []
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        for await event in dataSource.events {
+            events.insert(event)
+            if events.count >= 20 { break }
+        }
+        if !events.isEmpty {
+            let collections = events.compactMap { try? ArticleCuration(from: $0) }
+            await MainActor.run {
+                self.collections = collections.sorted { $0.updatedAt > $1.updatedAt }
+            }
+        }
+    }
+    private func loadStats(pubkey: String, ndk: NDK) async {
+        // Load follower count
+        let followerFilter = NDKFilter(kinds: [3], tags: ["p": Set([pubkey])])
+        var followers: Set<NDKEvent> = []
+        let followerDataSource = await ndk.outbox.observe(filter: followerFilter)
+        for await event in followerDataSource.events {
+            followers.insert(event)
+        }
+        await MainActor.run {
+            self.stats.followerCount = followers.count
+        }
+        // Load following count
+        let followingFilter = NDKFilter(
+            authors: [pubkey],
+            kinds: [3],
+            limit: 1
+        )
+        var followingEvents: Set<NDKEvent> = []
+        let followingDataSource = await ndk.outbox.observe(filter: followingFilter)
+        for await event in followingDataSource.events {
+            followingEvents.insert(event)
+            break // Only need first contact list
+        }
+        if let contactList = followingEvents.first {
+            let followingCount = contactList.tags.filter { $0.count >= 2 && $0[0] == "p" }.count
+            await MainActor.run {
+                self.stats.followingCount = followingCount
+            }
+        }
+    }
+}
+// MARK: - Preview
+struct UserProfileView_Previews: PreviewProvider {
+    static var previews: some View {
+        UserProfileView(pubkey: "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m")
+            .environmentObject(AppState())
+    }
+}
+</file>
+
+<file path="Sources/Highlighter/Models/AppState.swift">
+import Foundation
+import NDKSwift
+import Combine
+@MainActor
+class AppState: ObservableObject {
+    // NDK Core
+    @Published private(set) var ndk: NDK?
+    // Auth Manager
+    @Published private var authManager = NDKAuthManager.shared
+    // Service Dependencies
+    @Published private(set) var dataStreamManager = DataStreamManager()
+    @Published private(set) var profileManager = ProfileManager()
+    @Published private(set) var publishingService = PublishingService()
+    @Published private(set) var bookmarkService = BookmarkService()
+    @Published private(set) var commentService = CommentService()
+    @Published private(set) var engagementService = EngagementService()
+    // Computed Content State (from services)
+    var highlights: [HighlightEvent] { dataStreamManager.highlights }
+    var curations: [ArticleCuration] { dataStreamManager.curations }
+    var userCurations: [ArticleCuration] { 
+        // For now, return empty array - proper implementation would track pubkey state
+        return []
+    }
+    var followPacks: [FollowPack] { dataStreamManager.followPacks }
+    var currentUserProfile: NDKUserProfile? { profileManager.currentUserProfile }
+    // App-level state
+    @Published private(set) var following: Set<String> = []
+    @Published var selectedTab = 0
+    @Published var errorMessage: String?
+    var isAuthenticated: Bool {
+        authManager.isAuthenticated
+    }
+    var activeSigner: NDKSigner? {
+        authManager.activeSigner
+    }
+    var userPubkey: String? {
+        // This would need to be set asynchronously since pubkey is async
+        // For now return a placeholder
+        return nil
+    }
+    init() {}
+    func initialize() async {
+        do {
+            // Setup NDK with cache
+            let cache = try await NDKSQLiteCache(path: nil)
+            ndk = NDK(
+                relayUrls: RelayConstants.extendedRelays.dropLast(),
+                cache: cache
+            )
+            // Configure services with NDK instance
+            dataStreamManager.configure(with: ndk!)
+            profileManager.configure(with: ndk!)
+            publishingService.configure(with: ndk!, signer: authManager.activeSigner)
+            bookmarkService.configure(with: ndk!, signer: authManager.activeSigner)
+            commentService.configure(with: ndk!, signer: authManager.activeSigner)
+            engagementService.configure(with: ndk!, signer: authManager.activeSigner)
+            // Connect to relays asynchronously
+            Task {
+                print("DEBUG: Connecting to relays...")
+                await ndk?.connect()
+                print("DEBUG: Connected to relays")
+            }
+            // Set NDK instance in auth manager
+            authManager.setNDK(ndk!)
+            // Initialize auth manager (restores sessions automatically)
+            // await authManager.initialize()
+            // Start NIP-77 sync in background
+            Task {
+                await syncHighlights()
+            }
+            // If authenticated after restore, start services immediately
+            if authManager.isAuthenticated {
+                // Update services with restored signer
+                if let signer = authManager.activeSigner {
+                    publishingService.configure(with: ndk!, signer: signer)
+                    bookmarkService.configure(with: ndk!, signer: signer)
+                    commentService.configure(with: ndk!, signer: signer)
+                    engagementService.configure(with: ndk!, signer: signer)
+                }
+                // Start streaming data
+                await dataStreamManager.startAllStreams()
+                // Load user profile in background
+                if let signer = authManager.activeSigner {
+                    Task {
+                        await profileManager.loadCurrentUserProfile(for: signer)
+                    }
+                }
+            }
+        } catch {
+            errorMessage = "Failed to initialize: \(error.localizedDescription)"
+        }
+    }
+    func createAccount() async throws {
+        guard let ndk = ndk else { throw AuthError.noSigner }
+        let signer = try NDKPrivateKeySigner.generate()
+        // Start NDK session first
+        try await ndk.startSession(
+            signer: signer,
+            config: NDKSessionConfiguration(
+                dataRequirements: [.followList, .muteList],
+                preloadStrategy: .progressive
+            )
+        )
+        // Create persistent auth session
+        let session = try await authManager.createSession(
+            with: signer,
+            requiresBiometric: true
+        )
+        try await authManager.switchToSession(session)
+        // Update services with new signer
+        publishingService.configure(with: ndk, signer: signer)
+        bookmarkService.configure(with: ndk, signer: signer)
+        commentService.configure(with: ndk, signer: signer)
+        engagementService.configure(with: ndk, signer: signer)
+        // Start streaming data
+        await dataStreamManager.startAllStreams()
+    }
+    func importAccount(nsec: String) async throws {
+        guard let ndk = ndk else { throw AuthError.noSigner }
+        let signer = try NDKPrivateKeySigner(nsec: nsec)
+        // Start NDK session first
+        try await ndk.startSession(
+            signer: signer,
+            config: NDKSessionConfiguration(
+                dataRequirements: [.followList, .muteList],
+                preloadStrategy: .progressive
+            )
+        )
+        // Create persistent auth session
+        let session = try await authManager.createSession(
+            with: signer,
+            requiresBiometric: true
+        )
+        try await authManager.switchToSession(session)
+        // Update services with new signer
+        publishingService.configure(with: ndk, signer: signer)
+        bookmarkService.configure(with: ndk, signer: signer)
+        commentService.configure(with: ndk, signer: signer)
+        engagementService.configure(with: ndk, signer: signer)
+        // Start streaming data
+        await dataStreamManager.startAllStreams()
+        // Load user profile
+        await profileManager.loadCurrentUserProfile(for: signer)
+    }
+    func logout() async {
+        // Stop all services
+        dataStreamManager.stopAllStreams()
+        profileManager.stopAllTasks()
+        // Clear service state
+        await dataStreamManager.refresh()
+        profileManager.clearCache()
+        following = []
+        // Proper logout implementation - clear cache and delete sessions from keychain
+        Task {
+            // Clear cache data
+            if let cache = ndk?.cache {
+                try? await cache.clear()
+            }
+            // Delete ALL sessions from keychain - this is critical!
+            for session in authManager.availableSessions {
+                try? await authManager.deleteSession(session)
+            }
+        }
+        // Clear memory state
+        authManager.logout()
+    }
+    // MARK: - Private Methods
+    private func syncHighlights() async {
+        guard let ndk = ndk else { return }
+        do {
+            // Create filter for kind 9802 (highlights)
+            let highlightFilter = NDKFilter(kinds: [9802])
+            print("Starting NIP-77 sync for highlights from relay.damus.io...")
+            // Perform NIP-77 sync with relay.damus.io
+            let syncResult = try await ndk.syncEvents(
+                filter: highlightFilter,
+                relay: "wss://relay.damus.io",
+                direction: .receive // Only download, don't upload
+            )
+            print("NIP-77 sync completed:")
+            print("- Local events: \(syncResult.localEventCount)")
+            print("- Downloaded: \(syncResult.downloadedEvents.count) events")
+            print("- Rounds: \(syncResult.messageRounds)")
+            print("- Bytes transferred: \(syncResult.bytesTransferred)")
+            print("- Efficiency: \(syncResult.efficiencyRatio)%")
+            // Let the DataStreamManager handle the highlights after sync
+            await dataStreamManager.refresh()
+        } catch {
+            print("NIP-77 sync failed: \(error)")
+            // Don't show error to user, continue with normal operation
+        }
+    }
+    // MARK: - Publishing Methods (delegated to PublishingService)
+    func publishHighlight(_ highlight: HighlightEvent) async throws {
+        try await publishingService.publishHighlight(highlight)
+    }
+    func createCuration(name: String, title: String, description: String?, image: String?) async throws {
+        try await publishingService.createCuration(name: name, title: title, description: description, image: image)
+    }
+}
+enum AuthError: LocalizedError {
+    case invalidPrivateKey
+    case noSigner
+    var errorDescription: String? {
+        switch self {
+        case .invalidPrivateKey:
+            return "Invalid private key format"
+        case .noSigner:
+            return "No signer configured"
+        }
+    }
+}
+</file>
+
+<file path="Sources/Highlighter/Utilities/FormattingUtilities.swift">
+import SwiftUI
+import NDKSwift
+// MARK: - Centralized Formatting Utilities
+// Following DRY principle: All formatting logic consolidated in one place
+// MARK: - Pubkey Formatting
+struct PubkeyFormatter {
+    /// Format pubkey for display with customizable length
+    /// - Parameters:
+    ///   - pubkey: The public key to format
+    ///   - prefixLength: Number of characters from the start (default: 8)
+    ///   - suffixLength: Number of characters from the end (default: 4)
+    /// - Returns: Formatted string like "npub1abc...xyz"
+    static func format(_ pubkey: String, prefixLength: Int = 8, suffixLength: Int = 4) -> String {
+        guard pubkey.count > prefixLength + suffixLength else {
+            return pubkey
+        }
+        let prefix = String(pubkey.prefix(prefixLength))
+        let suffix = String(pubkey.suffix(suffixLength))
+        return "\(prefix)...\(suffix)"
+    }
+    /// Compact format for tight spaces (6 + 3 characters)
+    static func formatCompact(_ pubkey: String) -> String {
+        format(pubkey, prefixLength: 6, suffixLength: 3)
+    }
+    /// Short format for lists and cards (8 + 4 characters)
+    static func formatShort(_ pubkey: String) -> String {
+        format(pubkey, prefixLength: 8, suffixLength: 4)
+    }
+    /// Long format for profile pages (12 + 6 characters)
+    static func formatLong(_ pubkey: String) -> String {
+        format(pubkey, prefixLength: 12, suffixLength: 6)
+    }
+    /// Format for avatar initials (first 2 characters)
+    static func formatForAvatar(_ pubkey: String) -> String {
+        String(pubkey.prefix(2)).uppercased()
+    }
+    /// Format for display name with fallback options
+    static func displayName(from profile: NDKUserProfile?, pubkey: String) -> String {
+        if let displayName = profile?.displayName, !displayName.isEmpty {
+            return displayName
+        } else if let name = profile?.name, !name.isEmpty {
+            return name
+        } else {
+            return formatShort(pubkey)
+        }
+    }
+    /// Check if a string is a valid pubkey format
+    static func isValidPubkey(_ pubkey: String) -> Bool {
+        HexValidator.isValid32ByteHex(pubkey)
+    }
+    /// Convert hex pubkey to npub format (if needed in the future)
+    static func toNpub(_ hexPubkey: String) -> String {
+        // For now, just return the hex format as specified in the NDK guidance
+        // "All public keys are hex encoded (not npub)"
+        return hexPubkey
+    }
+}
+// MARK: - Time Formatting
+struct RelativeTimeFormatter {
+    // Time interval constants in seconds
+    private enum TimeIntervals {
+        static let justNow: TimeInterval = 30
+        static let minute: TimeInterval = 60
+        static let hour: TimeInterval = 3600
+        static let day: TimeInterval = 86400
+        static let week: TimeInterval = 604800
+        static let month: TimeInterval = 2592000  // 30 days approximation
+        static let year: TimeInterval = 31536000  // 365 days
+    }
+    /// Format timestamp as relative time (e.g., "2 hours ago", "just now")
+    /// - Parameter timestamp: NDK timestamp to format
+    /// - Returns: Human-readable relative time string
+    static func relativeTime(from timestamp: Timestamp) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
+        return relativeTime(from: date)
+    }
+    /// Format Date as relative time
+    /// - Parameter date: Date to format
+    /// - Returns: Human-readable relative time string
+    static func relativeTime(from date: Date) -> String {
+        let now = Date()
+        let interval = now.timeIntervalSince(date)
+        // Future dates
+        if interval < 0 {
+            return "in the future"
+        }
+        // Just now (under 30 seconds)
+        if interval < TimeIntervals.justNow {
+            return "just now"
+        }
+        // Minutes
+        if interval < TimeIntervals.hour {
+            let minutes = Int(interval / TimeIntervals.minute)
+            return "\(minutes) minute\(minutes == 1 ? "" : "s") ago"
+        }
+        // Hours (under 24 hours)
+        if interval < TimeIntervals.day {
+            let hours = Int(interval / TimeIntervals.hour)
+            return "\(hours) hour\(hours == 1 ? "" : "s") ago"
+        }
+        // Days (under 7 days)
+        if interval < TimeIntervals.week {
+            let days = Int(interval / TimeIntervals.day)
+            return "\(days) day\(days == 1 ? "" : "s") ago"
+        }
+        // Weeks (under 30 days)
+        if interval < TimeIntervals.month {
+            let weeks = Int(interval / TimeIntervals.week)
+            return "\(weeks) week\(weeks == 1 ? "" : "s") ago"
+        }
+        // Months (under 365 days)
+        if interval < TimeIntervals.year {
+            let months = Int(interval / TimeIntervals.month)
+            return "\(months) month\(months == 1 ? "" : "s") ago"
+        }
+        // Years
+        let years = Int(interval / TimeIntervals.year)
+        return "\(years) year\(years == 1 ? "" : "s") ago"
+    }
+    /// Short relative time format for compact display (e.g., "2h", "3d", "1y")
+    /// - Parameter timestamp: NDK timestamp to format
+    /// - Returns: Short relative time string
+    static func shortRelativeTime(from timestamp: Timestamp) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
+        return shortRelativeTime(from: date)
+    }
+    /// Short relative time format for compact display
+    /// - Parameter date: Date to format
+    /// - Returns: Short relative time string
+    static func shortRelativeTime(from date: Date) -> String {
+        let now = Date()
+        let interval = now.timeIntervalSince(date)
+        // Future dates
+        if interval < 0 {
+            return "future"
+        }
+        // Just now (under 30 seconds)
+        if interval < TimeIntervals.justNow {
+            return "now"
+        }
+        // Minutes
+        if interval < TimeIntervals.hour {
+            let minutes = Int(interval / TimeIntervals.minute)
+            return "\(minutes)m"
+        }
+        // Hours (under 24 hours)
+        if interval < TimeIntervals.day {
+            let hours = Int(interval / TimeIntervals.hour)
+            return "\(hours)h"
+        }
+        // Days (under 7 days)
+        if interval < TimeIntervals.week {
+            let days = Int(interval / TimeIntervals.day)
+            return "\(days)d"
+        }
+        // Weeks (under 30 days)
+        if interval < TimeIntervals.month {
+            let weeks = Int(interval / TimeIntervals.week)
+            return "\(weeks)w"
+        }
+        // Months (under 365 days)
+        if interval < TimeIntervals.year {
+            let months = Int(interval / TimeIntervals.month)
+            return "\(months)mo"
+        }
+        // Years
+        let years = Int(interval / TimeIntervals.year)
+        return "\(years)y"
+    }
+    /// Format timestamp as exact time when needed (e.g., "Mar 15, 2024 at 3:45 PM")
+    /// - Parameter timestamp: NDK timestamp to format
+    /// - Returns: Formatted date and time string
+    static func exactTime(from timestamp: Timestamp) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
+        return exactTime(from: date)
+    }
+    /// Format Date as exact time
+    /// - Parameter date: Date to format
+    /// - Returns: Formatted date and time string
+    static func exactTime(from date: Date) -> String {
+        return DateFormatters.display.string(from: date)
+    }
+    /// Smart formatting that switches between relative and exact based on age
+    /// Recent items show relative time, older items show exact date
+    /// - Parameter timestamp: NDK timestamp to format
+    /// - Returns: Contextually appropriate time string
+    static func smartFormat(from timestamp: Timestamp) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
+        let now = Date()
+        let interval = now.timeIntervalSince(date)
+        // Use relative time for recent items (under 7 days)
+        if interval < TimeIntervals.week {
+            return relativeTime(from: date)
+        }
+        // Use exact date for older items
+        return exactTime(from: date)
+    }
+    /// Ultra-compact time formatting for cards (legacy compatibility)
+    static func compactTime(from timestamp: Timestamp) -> String {
+        return shortRelativeTime(from: timestamp)
+    }
+}
+// MARK: - Content Formatting
+struct ContentFormatter {
+    /// Smart truncation of content based on context
+    static func smartTruncate(_ content: String, maxLength: Int, context: TruncationContext = .general) -> String {
+        guard content.count > maxLength else { return content }
+        let actualLimit = max(maxLength - 3, 10) // Reserve space for ellipsis
+        let truncated = String(content.prefix(actualLimit))
+        // Try to break at word boundary for better readability
+        if let lastSpace = truncated.lastIndex(of: " "), lastSpace > truncated.startIndex {
+            let wordBoundaryTruncated = String(truncated[..<lastSpace])
+            if wordBoundaryTruncated.count > actualLimit * 3 / 4 { // Only use word boundary if it's not too short
+                return wordBoundaryTruncated + "..."
+            }
+        }
+        return truncated + "..."
+    }
+    /// Format highlight content with proper quotes
+    static func formatHighlight(_ content: String, addQuotes: Bool = true) -> String {
+        let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        return addQuotes ? "\"\(trimmed)\"" : trimmed
+    }
+    /// Extract domain from URL for display
+    static func extractDomain(from urlString: String) -> String {
+        guard let url = URL(string: urlString) else { return "Source" }
+        return url.host ?? "Source"
+    }
+    /// Format sats amount with appropriate units
+    static func formatSatsAmount(_ sats: Int64) -> String {
+        let thousand: Int64 = 1_000
+        let million: Int64 = 1_000_000
+        if sats < thousand {
+            return "\(sats)"
+        } else if sats < million {
+            let k = Double(sats) / Double(thousand)
+            return String(format: "%.1fk", k)
+        } else {
+            let m = Double(sats) / Double(million)
+            return String(format: "%.1fM", m)
+        }
+    }
+}
+// MARK: - Supporting Types
+enum TruncationContext {
+    case general
+    case quote
+    case title
+    case description
+    var preferredLength: Int {
+        switch self {
+        case .general: return 100
+        case .quote: return 150
+        case .title: return 50
+        case .description: return 200
+        }
+    }
+}
+// MARK: - Validation Utilities
+struct ValidationUtilities {
+    /// Validate if a string is a valid Nostr private key (nsec)
+    static func isValidNsec(_ nsec: String) -> Bool {
+        return nsec.hasPrefix("nsec") && nsec.count > 10
+    }
+    /// Validate if a string is a valid URL
+    static func isValidURL(_ urlString: String) -> Bool {
+        guard let url = URL(string: urlString) else { return false }
+        return url.scheme != nil && url.host != nil
+    }
+    /// Clean and validate highlight content
+    static func cleanHighlightContent(_ content: String) -> String? {
+        let cleaned = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty && cleaned.count >= 3 else { return nil }
+        return cleaned
+    }
+}
+// MARK: - SwiftUI Integration Helpers
+extension View {
+    /// Apply smart content truncation with consistent styling
+    func smartContent(_ content: String, maxLength: Int = 100, context: TruncationContext = .general) -> some View {
+        Text(ContentFormatter.smartTruncate(content, maxLength: maxLength, context: context))
+    }
+    /// Display relative time with consistent formatting
+    func relativeTime(from timestamp: Timestamp, style: RelativeTimeStyle = .standard) -> some View {
+        let timeString: String
+        switch style {
+        case .standard:
+            timeString = RelativeTimeFormatter.relativeTime(from: timestamp)
+        case .short:
+            timeString = RelativeTimeFormatter.shortRelativeTime(from: timestamp)
+        case .compact:
+            timeString = RelativeTimeFormatter.compactTime(from: timestamp)
+        }
+        return Text(timeString)
+    }
+}
+enum RelativeTimeStyle {
+    case standard
+    case short
+    case compact
+}
+// MARK: - Greeting Utilities
+struct GreetingFormatter {
+    /// Generate time-based greeting text
+    static func timeBasedGreeting() -> String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 0..<12: return "Good morning"
+        case 12..<17: return "Good afternoon"
+        default: return "Good evening"
+        }
+    }
+    /// Format current date for display
+    static func formattedDate() -> String {
+        Date().formatted(.dateTime.weekday(.wide).month(.wide).day())
+    }
+}
+// MARK: - Cache Policies
+/// Common cache duration policies for consistent caching behavior across the app
+struct CachePolicies {
+    // Base time units
+    private static let minute: TimeInterval = 60
+    private static let hour: TimeInterval = 60 * minute
+    private static let day: TimeInterval = 24 * hour
+    /// Short-term cache for frequently changing content (5 minutes)
+    /// Used for: Highlights (kind 9802) that update frequently  
+    static let shortTerm: TimeInterval = 5 * minute
+    /// Medium-term cache for moderately changing content (1 hour)
+    /// Used for: Curations (kind 30004) and Follow Packs (kind 39089)
+    static let mediumTerm: TimeInterval = hour
+    /// Long-term cache for rarely changing content (24 hours)
+    /// Used for: User profiles and metadata
+    static let longTerm: TimeInterval = day
+    /// Extended cache for very stable content (7 days)
+    /// Used for: Relay lists and other configuration data
+    static let extended: TimeInterval = 7 * day
+}
+</file>
+
+</files>

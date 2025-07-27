@@ -7,8 +7,8 @@ struct HighlightsFeedView: View {
     @State private var currentIndex = 0
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging = false
-    @State private var isLoading = true
-    @State private var showLoadingAnimation = true
+    // Stream task reference
+    @State private var streamTask: Task<Void, Never>?
     @State private var selectedHighlight: HighlightEvent?
     @State private var showHighlightDetail = false
     @State private var showCommentSheet = false
@@ -35,14 +35,7 @@ struct HighlightsFeedView: View {
                 // Enhanced animated background
                 ImmersiveGradientBackground(animate: $backgroundAnimation)
                 
-                if isLoading && showLoadingAnimation {
-                    // Premium loading state
-                    LoadingHighlightView()
-                        .transition(.asymmetric(
-                            insertion: .opacity,
-                            removal: .scale(scale: 0.9).combined(with: .opacity)
-                        ))
-                } else if highlights.isEmpty {
+                if highlights.isEmpty {
                     EmptyHighlightsView()
                         .transition(.scale.combined(with: .opacity))
                 } else {
@@ -112,14 +105,16 @@ struct HighlightsFeedView: View {
             }
         }
         .onAppear {
-            tabBarVisible = false
+            tabBarVisible = true
             prepareHaptics()
             withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
                 backgroundAnimation = true
             }
-            Task {
-                await loadHighlights()
-            }
+            // Start streaming immediately
+            streamHighlights()
+        }
+        .onDisappear {
+            streamTask?.cancel()
         }
         .sheet(isPresented: $showCommentSheet) {
             if let highlight = selectedHighlight {
@@ -136,61 +131,44 @@ struct HighlightsFeedView: View {
         }
     }
     
-    private func loadHighlights() async {
+    private func streamHighlights() {
         guard let ndk = appState.ndk else { return }
         
-        // Show loading for at least 1 second for smooth transition
-        let minimumLoadingTime = Task {
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-        }
-        
-        let filter = NDKFilter(
-            kinds: [9802],
-            limit: 50
-        )
-        
-        // Stream highlights as they arrive
-        let dataSource = await ndk.outbox.observe(
-            filter: filter,
-            maxAge: 300, // Use 5 minute cache
-            cachePolicy: .cacheWithNetwork
-        )
-        
-        var hasReceivedFirstEvent = false
-        
-        // Process each highlight as it arrives
-        for await event in dataSource.events {
-            if let highlightEvent = try? HighlightEvent(from: event) {
-                await MainActor.run {
-                    // Add if not already present
-                    if !highlights.contains(where: { $0.id == highlightEvent.id }) {
-                        highlights.append(highlightEvent)
-                        highlights.sort { $0.createdAt > $1.createdAt }
-                        
-                        if !hasReceivedFirstEvent {
-                            hasReceivedFirstEvent = true
-                            Task {
-                                await minimumLoadingTime.value
-                                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                                    isLoading = false
-                                }
-                                // Keep loading animation visible briefly for smooth transition
-                                try? await Task.sleep(nanoseconds: 200_000_000)
-                                showLoadingAnimation = false
-                            }
+        streamTask?.cancel()
+        streamTask = Task {
+            let filter = NDKFilter(
+                kinds: [9802],
+                limit: 50
+            )
+            
+            // Stream highlights as they arrive
+            let dataSource = await ndk.outbox.observe(
+                filter: filter,
+                maxAge: 300, // Use 5 minute cache
+                cachePolicy: .cacheWithNetwork
+            )
+            
+            // Process each highlight as it arrives - no waiting!
+            for await event in dataSource.events {
+                if let highlightEvent = try? HighlightEvent(from: event) {
+                    await MainActor.run {
+                        // Add if not already present
+                        if !highlights.contains(where: { $0.id == highlightEvent.id }) {
+                            highlights.append(highlightEvent)
+                            highlights.sort { $0.createdAt > $1.createdAt }
                         }
                     }
-                }
-                
-                // Load author profile for this highlight
-                Task {
-                    await loadAuthorProfile(for: highlightEvent.author)
-                }
-                
-                // Load referenced article if any
-                if highlightEvent.referencedEvent != nil {
+                    
+                    // Load author profile for this highlight
                     Task {
-                        await loadReferencedArticleForHighlight(highlightEvent)
+                        await loadAuthorProfile(for: highlightEvent.author)
+                    }
+                    
+                    // Load referenced article if any
+                    if highlightEvent.referencedEvent != nil {
+                        Task {
+                            await loadReferencedArticleForHighlight(highlightEvent)
+                        }
                     }
                 }
             }
@@ -264,8 +242,9 @@ struct HighlightsFeedView: View {
             currentIndex = 0
         }
         
-        // Reload highlights
-        await loadHighlights()
+        // Cancel existing stream and restart
+        streamTask?.cancel()
+        streamHighlights()
     }
     
     private func showProfile(for pubkey: String) {

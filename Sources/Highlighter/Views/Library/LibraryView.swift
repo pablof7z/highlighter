@@ -159,10 +159,6 @@ struct LibraryView: View {
             HapticManager.shared.impact(.medium)
         }
         
-        // Simulate refreshing library data
-        // In a real app, this would reload highlights, curations, etc. from the network
-        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay for demo
-        
         // TODO: Implement actual refresh logic
         // - Reload highlights from network
         // - Refresh curations

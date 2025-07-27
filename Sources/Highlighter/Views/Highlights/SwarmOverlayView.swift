@@ -1127,24 +1127,6 @@ struct LiveSwarmActivityIndicator: View {
                     .scaleEffect(isPulsing && activityLevel > Double(index) / 8 ? 1.2 : 1)
             }
             
-            // Center live indicator
-            HStack(spacing: 2) {
-                Circle()
-                    .fill(Color.red)
-                    .frame(width: 6, height: 6)
-                    .opacity(isPulsing ? 1 : 0.6)
-                
-                Text("LIVE")
-                    .font(.system(size: 8, weight: .bold))
-                    .foregroundColor(.white)
-            }
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background(
-                Capsule()
-                    .fill(Color.black.opacity(0.6))
-            )
-            .opacity(activityLevel > 0.3 ? 1 : 0)
         }
         .onAppear {
             withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {

@@ -49,7 +49,7 @@ struct AdvancedSearchView: View {
     struct SearchResults {
         var highlights: [HighlightEvent] = []
         var articles: [Article] = []
-        var users: [NDKUserProfile] = []
+        var users: [(pubkey: String, profile: NDKUserProfile)] = []
         var curations: [ArticleCuration] = []
         
         var isEmpty: Bool {
@@ -254,7 +254,7 @@ struct AdvancedSearchView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: DesignSystem.Spacing.small) {
                 ForEach(SearchCategory.allCases, id: \.self) { category in
-                    CategoryChip(
+                    SearchCategoryChip(
                         category: category,
                         isSelected: selectedCategory == category,
                         action: {
@@ -331,7 +331,7 @@ struct AdvancedSearchView: View {
                         searchText = topic.topic
                         performSearch()
                     }
-                    .premiumEntrance()
+                    .searchPremiumEntrance()
                 }
             }
             .padding(.horizontal, DesignSystem.Spacing.large)
@@ -413,7 +413,7 @@ struct AdvancedSearchView: View {
                         ) {
                             ForEach(searchResults.highlights, id: \.id) { highlight in
                                 SearchResultHighlightCard(highlight: highlight)
-                                    .premiumEntrance()
+                                    .searchPremiumEntrance()
                             }
                         }
                     }
@@ -429,7 +429,7 @@ struct AdvancedSearchView: View {
                         ) {
                             ForEach(searchResults.articles, id: \.id) { article in
                                 SearchResultArticleCard(article: article)
-                                    .premiumEntrance()
+                                    .searchPremiumEntrance()
                             }
                         }
                     }
@@ -443,9 +443,9 @@ struct AdvancedSearchView: View {
                             color: .purple,
                             count: searchResults.users.count
                         ) {
-                            ForEach(searchResults.users, id: \.pubkey) { user in
-                                SearchResultUserCard(user: user)
-                                    .premiumEntrance()
+                            ForEach(searchResults.users, id: \.pubkey) { userInfo in
+                                SearchResultUserCard(pubkey: userInfo.pubkey, user: userInfo.profile)
+                                    .searchPremiumEntrance()
                             }
                         }
                     }
@@ -533,9 +533,6 @@ struct AdvancedSearchView: View {
         animateResults = false
         
         Task {
-            // Simulate search delay for demo
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-            
             await MainActor.run {
                 // Mock search results
                 searchResults = SearchResults(
@@ -614,7 +611,7 @@ struct AdvancedSearchView: View {
 
 // MARK: - Supporting Views
 
-struct CategoryChip: View {
+struct SearchCategoryChip: View {
     let category: AdvancedSearchView.SearchCategory
     let isSelected: Bool
     let action: () -> Void
@@ -928,11 +925,12 @@ struct SearchResultArticleCard: View {
 }
 
 struct SearchResultUserCard: View {
+    let pubkey: String
     let user: NDKUserProfile
     
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.medium) {
-            EnhancedAsyncProfileImage(pubkey: user.pubkey, size: 50)
+            EnhancedAsyncProfileImage(pubkey: pubkey, size: 50)
             
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
@@ -979,29 +977,13 @@ struct SearchResultUserCard: View {
 // MARK: - View Modifiers
 
 extension View {
-    func magneticHover() -> some View {
-        self.modifier(MagneticHoverModifier())
-    }
-    
-    func premiumEntrance() -> some View {
-        self.modifier(PremiumEntranceModifier())
+    func searchPremiumEntrance() -> some View {
+        self.modifier(SearchPremiumEntranceModifier())
     }
 }
 
-struct MagneticHoverModifier: ViewModifier {
-    @State private var isHovered = false
-    
-    func body(content: Content) -> some View {
-        content
-            .scaleEffect(isHovered ? 1.05 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isHovered)
-            .onHover { hovering in
-                isHovered = hovering
-            }
-    }
-}
 
-struct PremiumEntranceModifier: ViewModifier {
+struct SearchPremiumEntranceModifier: ViewModifier {
     @State private var appeared = false
     
     func body(content: Content) -> some View {

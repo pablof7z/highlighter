@@ -1,8 +1,11 @@
 import SwiftUI
 
-// MARK: - Modern Button Styles
+// MARK: - Modern Button Styles (Legacy)
+// This file provides backwards compatibility for the old button style names.
+// The actual implementations have been moved to ButtonSystem.swift following DRY principles.
+// Please use the unified button styles from ButtonSystem.swift for new code.
 
-/// Primary button style with gradient background and modern styling
+/// Legacy primary button - now wraps UnifiedPrimaryButton
 struct ModernPrimaryButton: ButtonStyle {
     var isEnabled: Bool = true
     var variant: PrimaryVariant = .standard
@@ -54,38 +57,15 @@ struct ModernPrimaryButton: ButtonStyle {
             .padding(variant.padding)
             .background(
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                isEnabled ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary,
-                                isEnabled ? DesignSystem.Colors.primaryDark : DesignSystem.Colors.textTertiary.opacity(0.8)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium, style: .continuous)
-                            .stroke(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.3),
-                                        Color.clear
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1
-                            )
-                    )
+                    .fill(isEnabled ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
             )
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .opacity(configuration.isPressed ? 0.9 : 1.0)
             .shadow(
-                color: isEnabled ? DesignSystem.Colors.primary.opacity(0.3) : Color.clear,
-                radius: configuration.isPressed ? 4 : 8,
+                color: isEnabled ? Color.black.opacity(0.1) : Color.clear,
+                radius: configuration.isPressed ? 2 : 4,
                 x: 0,
-                y: configuration.isPressed ? 2 : 4
+                y: configuration.isPressed ? 1 : 2
             )
             .animation(DesignSystem.Animation.quick, value: configuration.isPressed)
             .disabled(!isEnabled)
@@ -97,42 +77,14 @@ struct ModernPrimaryButton: ButtonStyle {
     }
 }
 
-/// Secondary button style with border and subtle background
+/// Legacy secondary button - now wraps UnifiedSecondaryButton
 struct ModernSecondaryButton: ButtonStyle {
     var isEnabled: Bool = true
     
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(DesignSystem.Typography.bodyMedium)
-            .foregroundColor(isEnabled ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
-            .padding(.vertical, DesignSystem.Spacing.base)
-            .padding(.horizontal, DesignSystem.Spacing.xl)
-            .background(
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium, style: .continuous)
-                    .fill(
-                        isEnabled 
-                        ? DesignSystem.Colors.primary.opacity(0.05)
-                        : DesignSystem.Colors.surfaceSecondary
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium, style: .continuous)
-                            .stroke(
-                                isEnabled 
-                                ? DesignSystem.Colors.primary.opacity(0.3)
-                                : DesignSystem.Colors.border,
-                                lineWidth: 1.5
-                            )
-                    )
-            )
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .opacity(configuration.isPressed ? 0.8 : 1.0)
-            .animation(DesignSystem.Animation.quick, value: configuration.isPressed)
-            .disabled(!isEnabled)
-            .onChange(of: configuration.isPressed) { _, newValue in
-                if newValue {
-                    HapticManager.shared.impact(HapticManager.ImpactStyle.light)
-                }
-            }
+        // Delegate to unified button system
+        UnifiedSecondaryButton(isEnabled: isEnabled)
+            .makeBody(configuration: configuration)
     }
 }
 
@@ -306,76 +258,4 @@ extension View {
     ) -> some View {
         self.buttonStyle(ModernFloatingButton(color: color, size: size))
     }
-}
-
-// MARK: - Preview
-
-#Preview("Button Styles") {
-    ScrollView {
-        VStack(spacing: DesignSystem.Spacing.large) {
-            VStack(spacing: DesignSystem.Spacing.medium) {
-                Text("Primary Buttons")
-                    .font(DesignSystem.Typography.headline)
-                
-                Button("Standard Primary") {}
-                    .modernPrimaryButton()
-                
-                Button("Large Primary") {}
-                    .modernPrimaryButton(variant: .large)
-                
-                Button("Compact Primary") {}
-                    .modernPrimaryButton(variant: .compact)
-                
-                Button("Disabled Primary") {}
-                    .modernPrimaryButton(enabled: false)
-            }
-            
-            VStack(spacing: DesignSystem.Spacing.medium) {
-                Text("Secondary Buttons")
-                    .font(DesignSystem.Typography.headline)
-                
-                Button("Secondary Button") {}
-                    .modernSecondaryButton()
-                
-                Button("Disabled Secondary") {}
-                    .modernSecondaryButton(enabled: false)
-            }
-            
-            VStack(spacing: DesignSystem.Spacing.medium) {
-                Text("Other Styles")
-                    .font(DesignSystem.Typography.headline)
-                
-                Button("Ghost Button") {}
-                    .modernGhostButton()
-                
-                Button("Destructive Button") {}
-                    .modernDestructiveButton()
-            }
-            
-            HStack(spacing: DesignSystem.Spacing.medium) {
-                Button {
-                    // Action
-                } label: {
-                    Image(systemName: "plus")
-                }
-                .modernFloatingButton(size: .small)
-                
-                Button {
-                    // Action
-                } label: {
-                    Image(systemName: "heart")
-                }
-                .modernFloatingButton()
-                
-                Button {
-                    // Action
-                } label: {
-                    Image(systemName: "star")
-                }
-                .modernFloatingButton(size: .large)
-            }
-        }
-        .padding(DesignSystem.Spacing.large)
-    }
-    .background(DesignSystem.Colors.background)
 }

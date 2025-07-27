@@ -7,26 +7,26 @@ struct DesignSystem {
     
     // MARK: - Colors
     enum Colors {
-        // Primary - Deep purple as specified in HL-SPEC.md
-        static let primary = Color(hex: "6A1B9A")
-        static let primaryLight = Color(hex: "8E4EC6") 
-        static let primaryDark = Color(hex: "4A1270")
+        // Primary - Sophisticated dark blue/indigo
+        static let primary = Color(hex: "1A237E")
+        static let primaryLight = Color(hex: "3949AB") 
+        static let primaryDark = Color(hex: "0D1551")
         
-        // Secondary - Warm orange for value flows and highlights
-        static let secondary = Color(hex: "FF9500")
-        static let secondaryLight = Color(hex: "FFB143")
-        static let secondaryDark = Color(hex: "CC7700")
+        // Secondary - Elegant sage green for subtle accents
+        static let secondary = Color(hex: "4A5F4E")
+        static let secondaryLight = Color(hex: "6B7B6F")
+        static let secondaryDark = Color(hex: "2F3F32")
         
         // Semantic Colors
         static let text = Color.primary
         static let textSecondary = Color.primary.opacity(0.6)
         static let textTertiary = Color.primary.opacity(0.4)
         
-        // Backgrounds - Clean, minimal following spec
-        static let background = Color(hex: "F5F5F5")
-        static let backgroundSecondary = Color(UIColor.secondarySystemBackground)
+        // Backgrounds - Premium neutral tones
+        static let background = Color(hex: "FAFAFA")
+        static let backgroundSecondary = Color(hex: "F5F5F7")
         static let surface = Color.white
-        static let surfaceSecondary = Color(UIColor.secondarySystemBackground).opacity(0.5)
+        static let surfaceSecondary = Color(hex: "F8F8FA")
         
         // Dark mode colors
         static let darkBackground = Color(hex: "1C1C1E")
@@ -34,17 +34,17 @@ struct DesignSystem {
         static let darkText = Color.white
         
         // Functional
-        static let success = Color(hex: "34C759")
-        static let warning = secondary // Use orange for warnings to maintain consistency
-        static let error = Color(hex: "FF3B30")
+        static let success = Color(hex: "4CAF50")
+        static let warning = Color(hex: "FFA726")
+        static let error = Color(hex: "E57373")
         
         // Borders & Dividers
         static let divider = Color.primary.opacity(0.08)
         static let border = Color.primary.opacity(0.12)
         
-        // Interactive States - orange for highlights as specified
-        static let highlight = secondary
-        static let highlightSubtle = secondary.opacity(0.1)
+        // Interactive States - subtle highlights
+        static let highlight = primary.opacity(0.8)
+        static let highlightSubtle = primary.opacity(0.05)
     }
     
     // MARK: - Typography
@@ -112,38 +112,38 @@ struct DesignSystem {
     // MARK: - Shadows (Subtle and sophisticated)
     enum Shadow {
         static let subtle = (
-            color: Color.black.opacity(0.04),
+            color: Color.black.opacity(0.02),
+            radius: CGFloat(1),
+            x: CGFloat(0),
+            y: CGFloat(0.5)
+        )
+        
+        static let small = (
+            color: Color.black.opacity(0.03),
             radius: CGFloat(2),
             x: CGFloat(0),
             y: CGFloat(1)
         )
         
-        static let small = (
-            color: Color.black.opacity(0.06),
+        static let medium = (
+            color: Color.black.opacity(0.04),
             radius: CGFloat(4),
             x: CGFloat(0),
             y: CGFloat(2)
         )
         
-        static let medium = (
-            color: Color.black.opacity(0.08),
+        static let large = (
+            color: Color.black.opacity(0.06),
             radius: CGFloat(8),
             x: CGFloat(0),
             y: CGFloat(4)
         )
         
-        static let large = (
-            color: Color.black.opacity(0.12),
-            radius: CGFloat(16),
-            x: CGFloat(0),
-            y: CGFloat(8)
-        )
-        
         static let elevated = (
-            color: Color.black.opacity(0.15),
-            radius: CGFloat(24),
+            color: Color.black.opacity(0.08),
+            radius: CGFloat(12),
             x: CGFloat(0),
-            y: CGFloat(12)
+            y: CGFloat(6)
         )
     }
     
@@ -268,24 +268,6 @@ extension View {
         }
     }
     
-    func shimmer() -> some View {
-        self.overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(
-                    LinearGradient(
-                        colors: [Color.clear, Color.white.opacity(0.4), Color.clear],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .offset(x: -200)
-                .animation(
-                    Animation.linear(duration: 1.5).repeatForever(autoreverses: false),
-                    value: UUID()
-                )
-        )
-        .clipped()
-    }
     
     func pulseGently() -> some View {
         self.modifier(GentlePulseModifier())
@@ -317,19 +299,16 @@ extension View {
 
 struct GentlePulseModifier: ViewModifier {
     @State private var scale: CGFloat = 1
-    @State private var opacity: Double = 1
     
     func body(content: Content) -> some View {
         content
             .scaleEffect(scale)
-            .opacity(opacity)
             .onAppear {
                 withAnimation(
-                    .easeInOut(duration: 2.5)
+                    .easeInOut(duration: 3)
                     .repeatForever(autoreverses: true)
                 ) {
-                    scale = 1.02
-                    opacity = 0.9
+                    scale = 1.01
                 }
             }
     }
@@ -477,59 +456,29 @@ struct PressButtonStyle: ButtonStyle {
     }
 }
 
-// Enhanced Zap Button Style for specialized zap actions
+// Minimal Zap Button Style
 struct EnhancedZapButtonStyle: ButtonStyle {
-    @State private var isAnimating = false
-    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(DesignSystem.Typography.callout)
             .fontWeight(.medium)
-            .foregroundColor(.white)
+            .foregroundColor(DesignSystem.Colors.primary)
             .padding(.horizontal, DesignSystem.Spacing.medium)
             .padding(.vertical, DesignSystem.Spacing.small)
             .background(
                 Capsule()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                DesignSystem.Colors.secondary,
-                                DesignSystem.Colors.secondaryDark
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .fill(DesignSystem.Colors.primary.opacity(0.1))
                     .overlay(
                         Capsule()
-                            .stroke(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.3),
-                                        Color.clear
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                ),
-                                lineWidth: 1
-                            )
+                            .stroke(DesignSystem.Colors.primary, lineWidth: 1)
                     )
             )
-            .scaleEffect(configuration.isPressed ? 0.95 : (isAnimating ? 1.05 : 1.0))
-            .shadow(
-                color: DesignSystem.Colors.secondary.opacity(0.4),
-                radius: configuration.isPressed ? 2 : 4,
-                x: 0,
-                y: configuration.isPressed ? 1 : 2
-            )
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: configuration.isPressed)
-            .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: isAnimating)
-            .onAppear {
-                isAnimating = true
-            }
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
             .onChange(of: configuration.isPressed) { _, newValue in
                 if newValue {
-                    HapticManager.shared.impact(.medium)
+                    HapticManager.shared.impact(.light)
                 }
             }
     }

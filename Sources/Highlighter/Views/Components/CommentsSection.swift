@@ -5,7 +5,7 @@ struct CommentsSection: View {
     let highlightId: String
     @EnvironmentObject var appState: AppState
     @State private var comments: [CommentEvent] = []
-    @State private var isLoading = true
+    // No loading states - stream progressively
     @State private var newCommentText = ""
     @State private var isPostingComment = false
     @State private var commentAuthors: [String: NDKUserProfile] = [:]
@@ -19,13 +19,12 @@ struct CommentsSection: View {
         VStack(alignment: .leading, spacing: 16) {
             // Enhanced section header
             CommentsSectionHeader(
-                commentsCount: comments.count,
-                isLoading: isLoading
+                commentsCount: comments.count
             )
             .padding(.horizontal)
             
             // Enhanced comments list with animations
-            if comments.isEmpty && !isLoading {
+            if comments.isEmpty {
                 EmptyCommentsView(onComment: { showComposer = true })
                     .padding(.horizontal)
                     .transition(.asymmetric(
@@ -198,7 +197,7 @@ struct CommentsSection: View {
                         
                         if !hasReceivedFirstComment {
                             hasReceivedFirstComment = true
-                            isLoading = false
+                            // Comment loaded
                         }
                     }
                 }
@@ -210,13 +209,7 @@ struct CommentsSection: View {
             }
         }
         
-        // Set loading to false after a timeout if no comments found
-        if !hasReceivedFirstComment {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            await MainActor.run {
-                isLoading = false
-            }
-        }
+        // Comments stream in progressively - no artificial delays
     }
     
     private func loadAuthorProfile(for pubkey: String) async {
@@ -628,7 +621,6 @@ struct CommentRowWrapper: View {
 
 struct CommentsSectionHeader: View {
     let commentsCount: Int
-    let isLoading: Bool
     
     var body: some View {
         HStack {
@@ -669,11 +661,6 @@ struct CommentsSectionHeader: View {
             }
             
             Spacer()
-            
-            if isLoading {
-                LoadingDots()
-                    .frame(width: 40, height: 20)
-            }
         }
     }
 }

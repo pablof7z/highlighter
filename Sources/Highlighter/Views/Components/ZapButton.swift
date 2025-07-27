@@ -139,42 +139,22 @@ struct ZapButton: View {
         HapticManager.shared.impact(.medium)
         
         Task {
-            do {
-                // Add realistic delay for better UX feedback
-                try await Task.sleep(nanoseconds: 800_000_000) // 0.8 seconds
-                
-                // Note: Actual zapping requires wallet integration (NIP-57/NIP-60)
-                // This would create a zap event (kind 9735) and send payment
-                // This demo app simulates the zap UI without actual payment
-                
-                await MainActor.run {
-                    zapAmount = amount
-                    withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                        zapState = .zapped
-                    }
-                    
-                    createParticleEffect()
-                    HapticManager.shared.notification(.success)
-                    
-                    // Add a subtle second feedback after delay
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        HapticManager.shared.impact(.light)
-                    }
+            // Note: Actual zapping requires wallet integration (NIP-57/NIP-60)
+            // This would create a zap event (kind 9735) and send payment
+            // This demo app simulates the zap UI without actual payment
+            
+            await MainActor.run {
+                zapAmount = amount
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                    zapState = .zapped
                 }
-            } catch {
-                await MainActor.run {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        zapState = .failed
-                    }
-                    HapticManager.shared.notification(.error)
-                    print("Zap failed: \(error)")
-                    
-                    // Auto-reset failed state after 2 seconds
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        withAnimation(.easeOut(duration: 0.3)) {
-                            zapState = .idle
-                        }
-                    }
+                
+                createParticleEffect()
+                HapticManager.shared.notification(.success)
+                
+                // Add a subtle second feedback after delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    HapticManager.shared.impact(.light)
                 }
             }
         }

@@ -57,26 +57,6 @@ struct CreateCurationView: View {
                     )
                 )
                 .frame(height: 220)
-                .overlay(
-                    // Animated particles
-                    GeometryReader { geometry in
-                        ForEach(0..<15) { index in
-                            Circle()
-                                .fill(Color.white.opacity(0.3))
-                                .frame(width: 8)
-                                .position(
-                                    x: geometry.size.width / 2,
-                                    y: geometry.size.height / 2
-                                )
-                                .animation(
-                                    .easeInOut(duration: 4)
-                                    .repeatForever(autoreverses: true)
-                                    .delay(Double(index) * 0.1),
-                                    value: particleAnimation
-                                )
-                        }
-                    }
-                )
             
             // Image preview or placeholder
             if let imageData = selectedImageData,

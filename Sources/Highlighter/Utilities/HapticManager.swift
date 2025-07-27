@@ -2,6 +2,7 @@ import UIKit
 
 /// Centralized haptic feedback manager for consistent tactile interactions
 /// Follows the Highlighter app's focus on "pixel-perfect" user experience with refined haptics
+@MainActor
 class HapticManager {
     static let shared = HapticManager()
     

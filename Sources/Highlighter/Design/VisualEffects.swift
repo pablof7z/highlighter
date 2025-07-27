@@ -70,54 +70,9 @@ struct CardBackground: ViewModifier {
     }
 }
 
-struct ShimmerEffect: ViewModifier {
-    @State private var phase: CGFloat = 0
-    
-    func body(content: Content) -> some View {
-        content
-            .overlay {
-                GeometryReader { geometry in
-                    Rectangle()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0),
-                                    Color.white.opacity(0.3),
-                                    Color.white.opacity(0)
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .frame(width: geometry.size.width * 0.3)
-                        .offset(x: -geometry.size.width * 0.3 + phase * geometry.size.width * 1.6)
-                        .mask(content)
-                }
-            }
-            .onAppear {
-                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
-                    phase = 1
-                }
-            }
-    }
-}
-
-struct PulseEffect: ViewModifier {
-    @State private var scale: CGFloat = 1
-    @State private var opacity: Double = 1
-    
-    func body(content: Content) -> some View {
-        content
-            .scaleEffect(scale)
-            .opacity(opacity)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
-                    scale = 1.05
-                    opacity = 0.8
-                }
-            }
-    }
-}
+// Note: ShimmerEffect and PulseEffect have been moved to AnimationSystem.swift
+// to consolidate all animation-related functionality in one place.
+// Please use .shimmer() and .pulse() extensions from AnimationSystem.swift
 
 struct SimplifiedParallaxEffect: ViewModifier {
     let magnitude: CGFloat
@@ -138,7 +93,8 @@ struct SimplifiedParallaxEffect: ViewModifier {
 }
 
 extension View {
-    // shimmer() method moved to DesignSystem.swift to avoid duplication
+    // shimmer() method is available from AnimationSystem.swift
+    // pulse() method is available from AnimationSystem.swift
     
     func simplifiedParallax(magnitude: CGFloat = 20) -> some View {
         modifier(SimplifiedParallaxEffect(magnitude: magnitude))

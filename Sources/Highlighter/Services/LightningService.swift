@@ -81,7 +81,14 @@ class LightningService: ObservableObject {
             // Request wallet info
             let info = try await nwc.getInfo()
             await MainActor.run {
-                self.walletInfo = info
+                self.walletInfo = WalletInfo(
+                    alias: info.alias,
+                    color: "#FF9500", // Default color for now
+                    pubkey: info.pubkey,
+                    network: info.network,
+                    blockHeight: info.blockHeight,
+                    methods: info.methods
+                )
                 self.isConnected = true
                 self.connectionError = nil
             }
@@ -383,9 +390,28 @@ class LightningService: ObservableObject {
             throw LightningError.noLightningAddress
         }
         
+        // Get amount from zap request
+        var amount = 1000 // Default 1000 sats
+        for tag in zapRequest.tags {
+            if tag.count >= 2 && tag[0] == "amount" {
+                amount = (Int(tag[1]) ?? 1000) / 1000 // Convert millisats to sats
+                break
+            }
+        }
+        
+        // Serialize zap request for LNURL
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        let zapRequestData = try encoder.encode(zapRequest)
+        let zapRequestString = String(data: zapRequestData, encoding: .utf8) ?? ""
+        
         // Request invoice from LNURL service
-        // This is simplified - in production you'd make actual LNURL requests
-        throw LightningError.lnurlNotImplemented
+        return try await LNURLService.getInvoice(
+            for: address,
+            amount: amount,
+            comment: zapRequest.content.isEmpty ? nil : zapRequest.content,
+            zapRequest: zapRequestString
+        )
     }
     
     private func publishZapReceipt(
@@ -452,15 +478,33 @@ class LightningService: ObservableObject {
     // MARK: - Persistence
     
     private func saveConnectionString(_ connection: String) {
-        UserDefaults.standard.set(connection, forKey: "highlighter.nwc.connection")
+        do {
+            try KeychainManager.shared.save(connection, for: KeychainManager.Keys.nwcConnection)
+        } catch {
+            print("Failed to save NWC connection to keychain: \(error)")
+        }
     }
     
     private func getSavedConnectionString() -> String? {
-        UserDefaults.standard.string(forKey: "highlighter.nwc.connection")
+        do {
+            return try KeychainManager.shared.retrieve(key: KeychainManager.Keys.nwcConnection)
+        } catch {
+            // If error is not .noData, log it
+            if case KeychainManager.KeychainError.noData = error {
+                // Expected when no connection saved
+            } else {
+                print("Failed to retrieve NWC connection from keychain: \(error)")
+            }
+            return nil
+        }
     }
     
     private func clearConnectionString() {
-        UserDefaults.standard.removeObject(forKey: "highlighter.nwc.connection")
+        do {
+            try KeychainManager.shared.delete(key: KeychainManager.Keys.nwcConnection)
+        } catch {
+            print("Failed to clear NWC connection from keychain: \(error)")
+        }
     }
     
     private func saveSplitConfiguration() {
@@ -674,36 +718,5 @@ class LightningService: ObservableObject {
 // MARK: - Mock NWC Implementation
 
 /// Simplified NWC implementation for the example
-/// In production, use a proper NWC library
-struct NostrWalletConnect {
-    let connectionString: String
-    let ndk: NDK
-    
-    init(from connectionString: String, ndk: NDK) throws {
-        self.connectionString = connectionString
-        self.ndk = ndk
-    }
-    
-    func getInfo() async throws -> LightningService.WalletInfo {
-        // Mock implementation
-        return LightningService.WalletInfo(
-            alias: "Highlighter Wallet",
-            color: "#FF9500",
-            pubkey: "mock_pubkey",
-            network: "mainnet",
-            blockHeight: 800000,
-            methods: ["pay_invoice", "get_balance", "get_info"]
-        )
-    }
-    
-    func getBalance() async throws -> Int {
-        // Mock implementation - return random balance
-        return Int.random(in: 100000...1000000) * 1000
-    }
-    
-    func payInvoice(_ invoice: String) async throws -> String {
-        // Mock implementation - simulate payment delay
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-        return "mock_payment_hash_\(UUID().uuidString)"
-    }
-}
+// NostrWalletConnect implementation has been moved to its own file
+// See NostrWalletConnect.swift for the full implementation

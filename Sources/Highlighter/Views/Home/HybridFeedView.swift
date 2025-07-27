@@ -42,7 +42,9 @@ struct HybridFeedView: View {
     }
     
     init() {
-        self._dataManager = StateObject(wrappedValue: HomeDataManager())
+        let manager = HomeDataManager()
+        self._dataManager = StateObject(wrappedValue: manager)
+        print("🔍 HybridFeedView initialized with dataManager")
     }
     
     var body: some View {
@@ -60,10 +62,14 @@ struct HybridFeedView: View {
                                 .offset(y: parallaxOffset * 0.5)
                                 .opacity(1 - (abs(parallaxOffset) / 200.0))
                             
+                            // Recent articles - ALWAYS shown at the top, right after greeting
+                            RecentArticlesSection(dataManager: dataManager)
+                                .padding(.vertical, 24)
+                            
                             // Sticky section tabs
                             sectionTabs
                                 .background(
-                                    VisualEffectBlur(blurStyle: .systemMaterial)
+                                    HybridFeedVisualEffectBlur(blurStyle: .systemMaterial)
                                         .opacity(floatingHeaderOpacity)
                                         .ignoresSafeArea()
                                 )
@@ -89,18 +95,18 @@ struct HybridFeedView: View {
                         handleScrollOffset(value)
                     }
                 }
-                
-                // Floating quick action button
-                floatingActionButton
             }
             .navigationBarHidden(true)
         }
         .onAppear {
+            print("🔍 HybridFeedView appeared, setting appState")
             dataManager.appState = appState
             startAnimations()
         }
         .task {
+            print("🔍 Starting data streaming...")
             await dataManager.startStreaming()
+            print("🔍 Data streaming started, articles count: \(dataManager.highlightedArticles.count)")
         }
         .sheet(isPresented: $showingHighlightDetail) {
             if let highlight = activeHighlight {
@@ -148,47 +154,17 @@ struct HybridFeedView: View {
     @ViewBuilder
     private var heroHeader: some View {
         VStack(spacing: 20) {
-            // Time-based greeting with date
-            VStack(spacing: 8) {
-                Text(GreetingFormatter.timeBasedGreeting())
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.ds.text, .ds.text.opacity(0.8)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+            // App name
+            Text("Highlighter")
+                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.ds.text, .ds.text.opacity(0.8)],
+                        startPoint: .leading,
+                        endPoint: .trailing
                     )
-                
-                Text(GreetingFormatter.formattedDate())
-                    .font(.ds.callout)
-                    .foregroundColor(.ds.textSecondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            // Stats summary with animations
-            HStack(spacing: 16) {
-                StatPill(
-                    icon: "highlighter",
-                    value: "\(dataManager.userHighlights.count)",
-                    label: "Today",
-                    color: .orange
                 )
-                
-                StatPill(
-                    icon: "bolt.fill",
-                    value: "2.4k",
-                    label: "Zaps",
-                    color: .yellow
-                )
-                
-                StatPill(
-                    icon: "person.2.fill",
-                    value: "+12",
-                    label: "Followers",
-                    color: .purple
-                )
-            }
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 30)
@@ -307,45 +283,6 @@ struct HybridFeedView: View {
             .revealAnimation(id: "people", visibility: $sectionVisibility)
         }
         .padding(.vertical, 24)
-    }
-    
-    // MARK: - Floating Action Button
-    @ViewBuilder
-    private var floatingActionButton: some View {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                
-                Button(action: {
-                    HapticManager.shared.impact(.medium)
-                    // Navigate to create highlight
-                }) {
-                    ZStack {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [.orange, .orange.opacity(0.8)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 56, height: 56)
-                            .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
-                        
-                        Image(systemName: "highlighter")
-                            .font(.system(size: 24, weight: .medium))
-                            .foregroundColor(.white)
-                            .rotationEffect(.degrees(-45))
-                    }
-                }
-                .scaleEffect(floatingHeaderOpacity > 0.5 ? 0.9 : 1)
-                .opacity(floatingHeaderOpacity < 0.8 ? 1 : 0)
-                .animation(.spring(response: 0.3), value: floatingHeaderOpacity)
-            }
-            .padding(.trailing, 20)
-            .padding(.bottom, 90) // Account for tab bar
-        }
     }
     
     // MARK: - Helper Methods
@@ -811,20 +748,7 @@ struct DiscussionRowEnhanced: View {
         VStack(spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
                 // Avatar
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 40, height: 40)
-                    .overlay(
-                        Text(PubkeyFormatter.formatForAvatar(event.pubkey))
-                            .font(.ds.captionMedium)
-                            .foregroundColor(.white)
-                    )
+                TappableAvatar(pubkey: event.pubkey, size: 40)
                 
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
@@ -962,7 +886,7 @@ struct StatPill: View {
 
 // MARK: - Visual Effects
 
-struct VisualEffectBlur: UIViewRepresentable {
+struct HybridFeedVisualEffectBlur: UIViewRepresentable {
     var blurStyle: UIBlurEffect.Style
     
     func makeUIView(context: Context) -> UIVisualEffectView {
@@ -990,6 +914,606 @@ struct NoiseTextureView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Recent Articles Section
+
+struct RecentArticlesSection: View {
+    @ObservedObject var dataManager: HomeDataManager
+    @State private var currentPage = 0
+    @State private var selectedArticle: Article?
+    @State private var showingArticleDetail = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Section header
+            HStack {
+                Label("Recent articles", systemImage: "clock.fill")
+                    .font(.ds.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.ds.text)
+                
+                Spacer()
+                
+                // Page indicators
+                if !dataManager.highlightedArticles.isEmpty {
+                    HStack(spacing: 6) {
+                        ForEach(0..<min(dataManager.highlightedArticles.count, 5), id: \.self) { index in
+                            Circle()
+                                .fill(currentPage == index ? Color.ds.primary : Color.ds.textTertiary.opacity(0.3))
+                                .frame(width: 6, height: 6)
+                                .scaleEffect(currentPage == index ? 1.2 : 1)
+                                .animation(.spring(response: 0.3), value: currentPage)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            
+            // Portrait article cards carousel
+            if !dataManager.highlightedArticles.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 16) {
+                        ForEach(Array(dataManager.highlightedArticles.prefix(5).enumerated()), id: \.element.article.id) { index, highlightedArticle in
+                            RecentArticlePortraitCard(
+                                article: highlightedArticle.article,
+                                highlights: highlightedArticle.highlights,
+                                index: index
+                            )
+                            .frame(width: UIScreen.main.bounds.width - 80)
+                            .onTapGesture {
+                                selectedArticle = highlightedArticle.article
+                                showingArticleDetail = true
+                                HapticManager.shared.impact(.medium)
+                            }
+                            .onAppear {
+                                withAnimation {
+                                    currentPage = index
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .scrollTargetLayout()
+                }
+                .scrollTargetBehavior(.viewAligned)
+                .sensoryFeedback(.selection, trigger: currentPage)
+            }
+        }
+        .sheet(isPresented: $showingArticleDetail) {
+            if let article = selectedArticle {
+                ArticleView(article: article)
+                    .presentationDragIndicator(.visible)
+                    .presentationDetents([.large])
+            }
+        }
+    }
+}
+
+struct RecentArticlePortraitCard: View {
+    let article: Article?
+    let highlights: [HighlightEvent]
+    let index: Int
+    @State private var isPressed = false
+    @State private var imageScale: CGFloat = 1.0
+    @State private var shimmerOffset: CGFloat = -200
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            // Background image or gradient
+            if let article = article, let imageUrl = article.image {
+                GeometryReader { geometry in
+                    AsyncImage(url: URL(string: imageUrl)) { phase in
+                        switch phase {
+                        case .empty:
+                            shimmeringGradient
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                                .scaleEffect(imageScale)
+                                .animation(.easeInOut(duration: 20).repeatForever(autoreverses: true), value: imageScale)
+                                .clipped()
+                        case .failure(_):
+                            fallbackGradient
+                        @unknown default:
+                            fallbackGradient
+                        }
+                    }
+                }
+            } else {
+                fallbackGradient
+            }
+            
+            // Dark overlay gradient for text readability
+            LinearGradient(
+                colors: [
+                    Color.black.opacity(0),
+                    Color.black.opacity(0.3),
+                    Color.black.opacity(0.8)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            
+            // Content overlay
+            VStack(alignment: .leading, spacing: 16) {
+                Spacer()
+                
+                // Category/Topic badge
+                if let article = article, let firstTag = article.hashtags.first {
+                    Text(firstTag.uppercased())
+                        .font(.ds.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white.opacity(0.9))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(.ultraThinMaterial)
+                                .environment(\.colorScheme, .dark)
+                        )
+                } else {
+                    Text(["PHILOSOPHY", "TECHNOLOGY", "SCIENCE", "CULTURE", "BITCOIN"][index % 5])
+                        .font(.ds.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white.opacity(0.9))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(.ultraThinMaterial)
+                                .environment(\.colorScheme, .dark)
+                        )
+                }
+                
+                // Title
+                Text(article?.title ?? "Recent Article Title \(index + 1)")
+                    .font(.system(size: 28, weight: .bold, design: .default))
+                    .foregroundColor(.white)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                // Summary or first highlight
+                if let article = article, let summary = article.summary {
+                    Text(summary)
+                        .font(.ds.body)
+                        .foregroundColor(.white.opacity(0.9))
+                        .lineLimit(2)
+                } else if !highlights.isEmpty, let firstHighlight = highlights.first {
+                    HStack(spacing: 8) {
+                        Image(systemName: "quote.opening")
+                            .font(.caption)
+                            .foregroundColor(.yellow)
+                        
+                        Text(firstHighlight.content)
+                            .font(.ds.body)
+                            .italic()
+                            .foregroundColor(.white.opacity(0.9))
+                            .lineLimit(2)
+                    }
+                } else {
+                    Text("This is a compelling summary that draws readers in and gives them a preview of the fascinating content within this article...")
+                        .font(.ds.body)
+                        .foregroundColor(.white.opacity(0.9))
+                        .lineLimit(2)
+                }
+                
+                // Metadata bar
+                HStack(spacing: 16) {
+                    // Reading time
+                    if let article = article {
+                        Label("\(article.estimatedReadingTime) min", systemImage: "clock")
+                            .font(.ds.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                    } else {
+                        Label("\(5 + index) min", systemImage: "clock")
+                            .font(.ds.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                    
+                    // Highlights count
+                    Label("\(highlights.count)", systemImage: "highlighter")
+                        .font(.ds.caption)
+                        .foregroundColor(.yellow)
+                    
+                    Spacer()
+                    
+                    // Author avatar and time
+                    if let article = article {
+                        HStack(spacing: 8) {
+                            TappableAvatar(pubkey: article.author, size: 24)
+                            
+                            Text(PubkeyFormatter.formatCompact(article.author))
+                                .font(.ds.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                }
+            }
+            .padding(24)
+        }
+        .frame(height: 500)
+        .background(Color.ds.surfaceSecondary)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .shadow(
+            color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.15),
+            radius: 20,
+            x: 0,
+            y: 10
+        )
+        .scaleEffect(isPressed ? 0.96 : 1)
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isPressed)
+        .onLongPressGesture(
+            minimumDuration: 0,
+            maximumDistance: .infinity,
+            pressing: { pressing in
+                isPressed = pressing
+                if pressing {
+                    HapticManager.shared.impact(.light)
+                }
+            },
+            perform: {}
+        )
+        .onTapGesture {
+            HapticManager.shared.impact(.medium)
+        }
+        .onAppear {
+            // Start subtle Ken Burns effect
+            withAnimation(.easeInOut(duration: 20).repeatForever(autoreverses: true)) {
+                imageScale = 1.1
+            }
+            
+            // Start shimmer animation
+            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+                shimmerOffset = 400
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var shimmeringGradient: some View {
+        LinearGradient(
+            colors: [
+                Color.ds.surfaceSecondary,
+                Color.ds.surfaceSecondary.opacity(0.8)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .overlay(
+            LinearGradient(
+                colors: [
+                    Color.clear,
+                    Color.white.opacity(0.2),
+                    Color.clear
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .rotationEffect(.degrees(30))
+            .offset(x: shimmerOffset)
+            .blendMode(.screen)
+        )
+    }
+    
+    @ViewBuilder
+    private var fallbackGradient: some View {
+        let gradients: [[Color]] = [
+            [Color.purple, Color.blue],
+            [Color.orange, Color.pink],
+            [Color.green, Color.teal],
+            [Color.red, Color.orange],
+            [Color.indigo, Color.purple]
+        ]
+        
+        LinearGradient(
+            colors: gradients[index % gradients.count],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .overlay(
+            // Subtle pattern overlay
+            ZStack {
+                ForEach(0..<3) { i in
+                    Circle()
+                        .fill(Color.white.opacity(0.05))
+                        .frame(width: 200, height: 200)
+                        .offset(
+                            x: CGFloat(i * 50 - 50),
+                            y: CGFloat(i * 80 - 100)
+                        )
+                        .blur(radius: 50)
+                }
+            }
+        )
+    }
+}
+
+// MARK: - Featured Articles Section
+
+struct FeaturedArticlesSection: View {
+    let articles: [HomeDataManager.HighlightedArticle]
+    let onArticleTap: (Article) -> Void
+    @State private var currentPage = 0
+    @State private var dragOffset: CGFloat = 0
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Section header
+            HStack {
+                Label("Recent articles2", systemImage: "doc.richtext.fill")
+                    .font(.ds.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.ds.text)
+                
+                Spacer()
+                
+                // Page indicators
+                HStack(spacing: 6) {
+                    ForEach(0..<min(articles.count, 5), id: \.self) { index in
+                        Circle()
+                            .fill(currentPage == index ? Color.ds.primary : Color.ds.textTertiary.opacity(0.3))
+                            .frame(width: 6, height: 6)
+                            .scaleEffect(currentPage == index ? 1.2 : 1)
+                            .animation(.spring(response: 0.3), value: currentPage)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            
+            // Portrait article cards carousel
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 16) {
+                    ForEach(Array(articles.prefix(5).enumerated()), id: \.element.article.id) { index, highlightedArticle in
+                        PortraitArticleCard(
+                            article: highlightedArticle.article,
+                            highlights: highlightedArticle.highlights,
+                            index: index
+                        )
+                        .onTapGesture {
+                            onArticleTap(highlightedArticle.article)
+                        }
+                        .frame(width: UIScreen.main.bounds.width - 40)
+                        .onAppear {
+                            withAnimation {
+                                currentPage = index
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .scrollTargetLayout()
+            }
+            .scrollTargetBehavior(.viewAligned)
+            .sensoryFeedback(.selection, trigger: currentPage)
+        }
+    }
+}
+
+struct PortraitArticleCard: View {
+    let article: Article
+    let highlights: [HighlightEvent]
+    let index: Int
+    @State private var isPressed = false
+    @State private var imageScale: CGFloat = 1.0
+    @State private var shimmerOffset: CGFloat = -200
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            // Background image or gradient
+            if let imageUrl = article.image {
+                GeometryReader { geometry in
+                    AsyncImage(url: URL(string: imageUrl)) { phase in
+                        switch phase {
+                        case .empty:
+                            shimmeringGradient
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                                .scaleEffect(imageScale)
+                                .animation(.easeInOut(duration: 20).repeatForever(autoreverses: true), value: imageScale)
+                                .clipped()
+                        case .failure(_):
+                            fallbackGradient
+                        @unknown default:
+                            fallbackGradient
+                        }
+                    }
+                }
+            } else {
+                fallbackGradient
+            }
+            
+            // Dark overlay gradient for text readability
+            LinearGradient(
+                colors: [
+                    Color.black.opacity(0),
+                    Color.black.opacity(0.3),
+                    Color.black.opacity(0.8)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            
+            // Content overlay
+            VStack(alignment: .leading, spacing: 16) {
+                Spacer()
+                
+                // Category/Topic badge
+                if let firstTag = article.hashtags.first {
+                    Text(firstTag.uppercased())
+                        .font(.ds.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white.opacity(0.9))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(.ultraThinMaterial)
+                                .environment(\.colorScheme, .dark)
+                        )
+                }
+                
+                // Title
+                Text(article.title)
+                    .font(.system(size: 28, weight: .bold, design: .default))
+                    .foregroundColor(.white)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                // Summary or first highlight
+                if let summary = article.summary {
+                    Text(summary)
+                        .font(.ds.body)
+                        .foregroundColor(.white.opacity(0.9))
+                        .lineLimit(2)
+                } else if let firstHighlight = highlights.first {
+                    HStack(spacing: 8) {
+                        Image(systemName: "quote.opening")
+                            .font(.caption)
+                            .foregroundColor(.yellow)
+                        
+                        Text(firstHighlight.content)
+                            .font(.ds.body)
+                            .italic()
+                            .foregroundColor(.white.opacity(0.9))
+                            .lineLimit(2)
+                    }
+                }
+                
+                // Metadata bar
+                HStack(spacing: 16) {
+                    // Reading time
+                    Label("\(article.estimatedReadingTime) min", systemImage: "clock")
+                        .font(.ds.caption)
+                        .foregroundColor(.white.opacity(0.8))
+                    
+                    // Highlights count
+                    Label("\(highlights.count)", systemImage: "highlighter")
+                        .font(.ds.caption)
+                        .foregroundColor(.yellow)
+                    
+                    Spacer()
+                    
+                    // Author avatar placeholder
+                    HStack(spacing: 8) {
+                        Circle()
+                            .fill(.white.opacity(0.3))
+                            .frame(width: 24, height: 24)
+                            .overlay(
+                                Text(PubkeyFormatter.formatForAvatar(article.author))
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundColor(.white)
+                            )
+                        
+                        Text(PubkeyFormatter.formatCompact(article.author))
+                            .font(.ds.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                }
+            }
+            .padding(24)
+        }
+        .frame(height: 500)
+        .background(Color.ds.surfaceSecondary)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .shadow(
+            color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.15),
+            radius: 20,
+            x: 0,
+            y: 10
+        )
+        .scaleEffect(isPressed ? 0.96 : 1)
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isPressed)
+        .onLongPressGesture(
+            minimumDuration: 0,
+            maximumDistance: .infinity,
+            pressing: { pressing in
+                isPressed = pressing
+                if pressing {
+                    HapticManager.shared.impact(.light)
+                }
+            },
+            perform: {}
+        )
+        .onAppear {
+            // Start subtle Ken Burns effect
+            withAnimation(.easeInOut(duration: 20).repeatForever(autoreverses: true)) {
+                imageScale = 1.1
+            }
+            
+            // Start shimmer animation
+            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+                shimmerOffset = 400
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var shimmeringGradient: some View {
+        LinearGradient(
+            colors: [
+                Color.ds.surfaceSecondary,
+                Color.ds.surfaceSecondary.opacity(0.8)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .overlay(
+            LinearGradient(
+                colors: [
+                    Color.clear,
+                    Color.white.opacity(0.2),
+                    Color.clear
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .rotationEffect(.degrees(30))
+            .offset(x: shimmerOffset)
+            .blendMode(.screen)
+        )
+    }
+    
+    @ViewBuilder
+    private var fallbackGradient: some View {
+        let gradients: [[Color]] = [
+            [Color.purple, Color.blue],
+            [Color.orange, Color.pink],
+            [Color.green, Color.teal],
+            [Color.red, Color.orange],
+            [Color.indigo, Color.purple]
+        ]
+        
+        LinearGradient(
+            colors: gradients[index % gradients.count],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .overlay(
+            // Subtle pattern overlay
+            ZStack {
+                ForEach(0..<3) { i in
+                    Circle()
+                        .fill(Color.white.opacity(0.05))
+                        .frame(width: 200, height: 200)
+                        .offset(
+                            x: CGFloat(i * 50 - 50),
+                            y: CGFloat(i * 80 - 100)
+                        )
+                        .blur(radius: 50)
+                }
+            }
+        )
     }
 }
 

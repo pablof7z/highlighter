@@ -8,7 +8,7 @@ options:
 packages:
   NDKSwift:
     url: https://github.com/pablof7z/NDKSwift
-    from: 0.2.0
+    branch: master
 targets:
   Highlighter:
     type: application

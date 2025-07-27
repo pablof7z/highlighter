@@ -35,13 +35,13 @@ struct ImmersiveHighlightDetailView: View {
                 animatedBackground
                 
                 ScrollViewReader { proxy in
-                    ScrollView {
+                    ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
                             // Parallax header
                             parallaxHeader
                                 .offset(y: scrollOffset > 0 ? -scrollOffset * 0.8 : 0)
                                 .scaleEffect(scrollOffset > 0 ? 1 + scrollOffset / 500 : 1)
-                                .opacity(1 - (scrollOffset / 200))
+                                .opacity(1.0 - (scrollOffset / 200.0))
                             
                             // Main content
                             mainContent
@@ -518,7 +518,7 @@ struct ImmersiveHighlightDetailView: View {
             
             HStack(spacing: DesignSystem.Spacing.large) {
                 // Bookmark button
-                FloatingActionButton(
+                ImmersiveFloatingActionButton(
                     icon: isBookmarked ? "bookmark.fill" : "bookmark",
                     color: .blue,
                     isActive: isBookmarked,
@@ -526,7 +526,7 @@ struct ImmersiveHighlightDetailView: View {
                 )
                 
                 // Comment button
-                FloatingActionButton(
+                ImmersiveFloatingActionButton(
                     icon: "bubble.left.fill",
                     color: .green,
                     badge: engagementMetrics.comments > 0 ? "\(engagementMetrics.comments)" : nil,
@@ -534,7 +534,7 @@ struct ImmersiveHighlightDetailView: View {
                 )
                 
                 // Zap button
-                FloatingActionButton(
+                ImmersiveFloatingActionButton(
                     icon: "bolt.fill",
                     color: .orange,
                     isActive: hasZapped,
@@ -542,7 +542,7 @@ struct ImmersiveHighlightDetailView: View {
                 )
                 
                 // Share button
-                FloatingActionButton(
+                ImmersiveFloatingActionButton(
                     icon: "square.and.arrow.up",
                     color: .purple,
                     action: { showShareSheet = true }
@@ -646,7 +646,7 @@ struct ImmersiveHighlightDetailView: View {
         guard let ndk = appState.ndk else { return }
         
         // Load author profile
-        if let profile = await appState.profileManager.fetchProfile(pubkey: highlight.author) {
+        if let profile = appState.profileManager.getCachedProfile(for: highlight.author) {
             await MainActor.run {
                 self.author = profile
             }
@@ -698,7 +698,8 @@ struct ImmersiveHighlightDetailView: View {
         HapticManager.shared.impact(.medium)
         
         Task {
-            await appState.bookmarkService.toggleBookmark(for: highlight)
+            // TODO: Implement bookmark toggle
+            // await appState.bookmarkService.toggleBookmark(for: highlight)
         }
     }
     
@@ -711,7 +712,8 @@ struct ImmersiveHighlightDetailView: View {
         
         // Trigger zap flow
         Task {
-            await appState.lightningService.zapEvent(highlight.id, amount: 21)
+            // TODO: Implement zap functionality
+            // await appState.lightningService.zapEvent(highlight.id, amount: 21)
         }
         
         // Reset animation
@@ -756,7 +758,7 @@ struct MetricView: View {
     }
 }
 
-struct FloatingActionButton: View {
+struct ImmersiveFloatingActionButton: View {
     let icon: String
     let color: Color
     var isActive: Bool = false

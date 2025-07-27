@@ -6,9 +6,6 @@ struct ContentView: View {
     @State private var authManager = NDKAuthManager.shared
     @State private var selectedTab = Tab.home
     @State private var tabBarVisible = true
-    @State private var showCreateHighlight = false
-    @State private var fabScale: CGFloat = 1.0
-    @State private var fabRotation: Double = 0
     @State private var tabTransition: AnyTransition = .identity
     @State private var contentOffset: CGFloat = 0
     @State private var dragOffset: CGFloat = 0
@@ -16,6 +13,7 @@ struct ContentView: View {
     @State private var tabSwitchProgress: CGFloat = 0
     @State private var activeTabGlow: CGFloat = 0
     @State private var navigationHapticTriggered = false
+    @State private var contentAppeared = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     
     enum Tab: CaseIterable {
@@ -37,9 +35,9 @@ struct ContentView: View {
                         Group {
                             switch tab {
                             case .home:
-                                SimplifiedHybridFeedView()
+                                HybridFeedView()
                             case .feed:
-                                TimelineFeedView()
+                                HighlightsFeedView(tabBarVisible: $tabBarVisible)
                             case .discover:
                                 SearchView()
                             case .library:
@@ -70,6 +68,8 @@ struct ContentView: View {
                     ),
                     value: selectedTab
                 )
+                // Add padding to prevent content from going under tab bar
+                .padding(.bottom, tabBarVisible ? 88 : 0)
                 .background(
                     // Ambient glow effect
                     Circle()
@@ -120,120 +120,9 @@ struct ContentView: View {
                         }
                 )
                 
-                // Live Activity Indicator (floating)
-                if selectedTab == .home || selectedTab == .feed {
-                    LiveActivityWidget()
-                        .zIndex(100)
-                        .transition(.scale.combined(with: .opacity))
-                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: contentAppeared)
-                }
                 
                 if tabBarVisible {
                     VStack(spacing: 0) {
-                        // Floating Action Button
-                        HStack {
-                            Spacer()
-                            
-                            Button(action: {
-                                HapticManager.shared.impact(.medium)
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                                    fabScale = 1.2
-                                    fabRotation += 180
-                                    showTabSwitchAnimation = true
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                                        fabScale = 1.0
-                                    }
-                                }
-                                showCreateHighlight = true
-                                showTabSwitchAnimation = true
-                            }) {
-                                ZStack {
-                                    // Outer glow
-                                    Circle()
-                                        .fill(
-                                            RadialGradient(
-                                                colors: [
-                                                    DesignSystem.Colors.secondary.opacity(0.4),
-                                                    DesignSystem.Colors.secondary.opacity(0)
-                                                ],
-                                                center: .center,
-                                                startRadius: 20,
-                                                endRadius: 40
-                                            )
-                                        )
-                                        .frame(width: 80, height: 80)
-                                        .blur(radius: 10)
-                                        .opacity(fabScale > 1 ? 1 : 0.6)
-                                    
-                                    // Gradient background
-                                    Circle()
-                                        .fill(
-                                            LinearGradient(
-                                                colors: [DesignSystem.Colors.secondary, DesignSystem.Colors.secondary.opacity(0.8)],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            )
-                                        )
-                                        .frame(width: 56, height: 56)
-                                        .overlay(
-                                            Circle()
-                                                .stroke(
-                                                    LinearGradient(
-                                                        colors: [Color.white.opacity(0.6), Color.white.opacity(0.2)],
-                                                        startPoint: .topLeading,
-                                                        endPoint: .bottomTrailing
-                                                    ),
-                                                    lineWidth: 1
-                                                )
-                                        )
-                                    
-                                    // Shadow layers for depth
-                                    Circle()
-                                        .fill(DesignSystem.Colors.secondary.opacity(0.2))
-                                        .frame(width: 56, height: 56)
-                                        .blur(radius: 8)
-                                        .offset(y: 4)
-                                    
-                                    // Icon with enhanced animation
-                                    ZStack {
-                                        Image(systemName: "highlighter")
-                                            .font(.system(size: 24, weight: .semibold))
-                                            .foregroundColor(.white)
-                                            .rotationEffect(.degrees(fabRotation))
-                                            .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
-                                        
-                                        // Particle burst on tap
-                                        if showTabSwitchAnimation {
-                                            ForEach(0..<8, id: \.self) { index in
-                                                Circle()
-                                                    .fill(DesignSystem.Colors.secondary)
-                                                    .frame(width: 4, height: 4)
-                                                    .offset(
-                                                        x: showTabSwitchAnimation ? cos(CGFloat(index) * .pi / 4) * 30 : 0,
-                                                        y: showTabSwitchAnimation ? sin(CGFloat(index) * .pi / 4) * 30 : 0
-                                                    )
-                                                    .opacity(showTabSwitchAnimation ? 0 : 1)
-                                                    .animation(
-                                                        .easeOut(duration: 0.6)
-                                                        .delay(Double(index) * 0.02),
-                                                        value: showTabSwitchAnimation
-                                                    )
-                                            }
-                                        }
-                                    }
-                                }
-                                .scaleEffect(fabScale)
-                                .rotation3DEffect(
-                                    .degrees(fabScale > 1 ? 10 : 0),
-                                    axis: (x: 0, y: 1, z: 0)
-                                )
-                            }
-                            .padding(.trailing, DesignSystem.Spacing.large)
-                            .padding(.bottom, DesignSystem.Spacing.medium)
-                            .shadow(color: DesignSystem.Colors.secondary.opacity(0.4), radius: DesignSystem.Shadow.medium.radius, x: DesignSystem.Shadow.medium.x, y: DesignSystem.Shadow.medium.y)
-                        }
                         
                         EnhancedTabBar(selectedTab: $selectedTab)
                     }
@@ -242,9 +131,6 @@ struct ContentView: View {
                 }
             }
             .background(DesignSystem.Colors.background)
-            .fullScreenCover(isPresented: $showCreateHighlight) {
-                CreateHighlightView()
-            }
         }
     }
     

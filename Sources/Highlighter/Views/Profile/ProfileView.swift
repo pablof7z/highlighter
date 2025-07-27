@@ -6,7 +6,7 @@ struct ProfileView: View {
     @State private var selectedTab = 0
     @State private var userHighlights: [HighlightEvent] = []
     @State private var userCurations: [ArticleCuration] = []
-    @State private var isLoading = true
+    // No loading states - progressive enhancement
     @State private var showLogoutConfirmation = false
     
     var body: some View {
@@ -15,23 +15,20 @@ struct ProfileView: View {
                 VStack(spacing: DesignSystem.Spacing.large) {
                     // Profile Header
                     ProfileHeaderView(
-                        profile: appState.currentUserProfile,
-                        isLoading: isLoading
+                        profile: appState.currentUserProfile
                     )
                     
                     // Stats
                     StatsView(
                         highlightsCount: userHighlights.count,
-                        curationsCount: userCurations.count,
-                        isLoading: isLoading
+                        curationsCount: userCurations.count
                     )
                     
                     // Content Tabs
                     ProfileContentTabs(
                         selectedTab: $selectedTab,
                         highlights: userHighlights,
-                        curations: userCurations,
-                        isLoading: isLoading
+                        curations: userCurations
                     )
                     
                     // Settings Section
@@ -129,12 +126,10 @@ struct ProfileView: View {
     private func loadUserContent() async {
         guard let ndk = appState.ndk, let signer = appState.activeSigner else { return }
         
-        isLoading = true
-        
         do {
             let pubkey = try await signer.pubkey
             
-            // Load user's highlights
+            // Stream user's highlights - no waiting!
             let highlightFilter = NDKFilter(
                 authors: [pubkey],
                 kinds: [9802],
@@ -147,7 +142,7 @@ struct ProfileView: View {
                 cachePolicy: .cacheWithNetwork
             )
             
-            // Load user's curations
+            // Stream user's curations
             let curationFilter = NDKFilter(
                 authors: [pubkey],
                 kinds: [30004],
@@ -160,53 +155,44 @@ struct ProfileView: View {
                 cachePolicy: .cacheWithNetwork
             )
             
-            // Process highlights
+            // Process highlights as they arrive
             Task {
-                var highlights: [HighlightEvent] = []
                 for await event in highlightDataSource.events {
                     if let highlight = try? HighlightEvent(from: event) {
-                        highlights.append(highlight)
+                        await MainActor.run {
+                            // Add if not already present
+                            if !userHighlights.contains(where: { $0.id == highlight.id }) {
+                                userHighlights.append(highlight)
+                                userHighlights.sort { $0.createdAt > $1.createdAt }
+                            }
+                        }
                     }
-                }
-                
-                await MainActor.run {
-                    userHighlights = highlights.sorted { $0.createdAt > $1.createdAt }
                 }
             }
             
-            // Process curations
+            // Process curations as they arrive
             Task {
-                var curations: [ArticleCuration] = []
                 for await event in curationDataSource.events {
                     if let curation = try? ArticleCuration(from: event) {
-                        curations.append(curation)
+                        await MainActor.run {
+                            // Add if not already present
+                            if !userCurations.contains(where: { $0.id == curation.id }) {
+                                userCurations.append(curation)
+                                userCurations.sort { $0.updatedAt > $1.updatedAt }
+                            }
+                        }
                     }
                 }
-                
-                await MainActor.run {
-                    userCurations = curations.sorted { $0.updatedAt > $1.updatedAt }
-                }
-            }
-            
-            // Wait for initial data to load
-            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
-            
-            await MainActor.run {
-                isLoading = false
             }
             
         } catch {
-            await MainActor.run {
-                isLoading = false
-                print("Failed to load user content: \(error)")
-            }
+            print("Failed to get user pubkey: \(error)")
         }
     }
 }
 
 struct ProfileHeaderView: View {
     let profile: NDKUserProfile?
-    let isLoading: Bool
     
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.medium) {
@@ -227,39 +213,19 @@ struct ProfileHeaderView: View {
             
             VStack(spacing: DesignSystem.Spacing.small) {
                 // Display Name
-                Group {
-                    if isLoading {
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
-                            .frame(width: 120, height: 20)
-                            .shimmer()
-                    } else {
-                        Text(profile?.displayName ?? profile?.name ?? "Anonymous")
-                            .font(DesignSystem.Typography.headline)
-                            .foregroundColor(DesignSystem.Colors.text)
-                    }
-                }
+                // Progressive enhancement - show immediately what we have
+                Text(profile?.displayName ?? profile?.name ?? "Loading...")
+                    .font(DesignSystem.Typography.headline)
+                    .foregroundColor(DesignSystem.Colors.text)
                 
                 // About/Bio
-                Group {
-                    if isLoading {
-                        VStack(spacing: 4) {
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
-                                .frame(width: 200, height: 14)
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
-                                .frame(width: 160, height: 14)
-                        }
-                        .shimmer()
-                    } else {
-                        Text(profile?.about ?? "Nostr user sharing highlights and insights")
-                            .font(DesignSystem.Typography.body)
-                            .foregroundColor(DesignSystem.Colors.textSecondary)
-                            .multilineTextAlignment(.center)
-                            .lineLimit(3)
-                    }
-                }
+                // Show bio when available
+                Text(profile?.about ?? "")
+                    .font(DesignSystem.Typography.body)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(3)
+                    .opacity(profile?.about == nil ? 0 : 1)
             }
             .padding(.horizontal)
         }
@@ -289,24 +255,20 @@ struct ProfileHeaderView: View {
 struct StatsView: View {
     let highlightsCount: Int
     let curationsCount: Int
-    let isLoading: Bool
     
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.xl) {
             StatItem(
-                value: isLoading ? "..." : "\(highlightsCount)",
-                label: "Highlights",
-                isLoading: isLoading
+                value: "\(highlightsCount)",
+                label: "Highlights"
             )
             StatItem(
-                value: isLoading ? "..." : "\(curationsCount)",
-                label: "Curations",
-                isLoading: isLoading
+                value: "\(curationsCount)",
+                label: "Curations"
             )
             StatItem(
-                value: isLoading ? "..." : "0", // TODO: Implement zap counting
-                label: "Zaps Earned",
-                isLoading: isLoading
+                value: "0", // TODO: Implement zap counting
+                label: "Zaps Earned"
             )
         }
         .padding()
@@ -319,22 +281,12 @@ struct StatsView: View {
 struct StatItem: View {
     let value: String
     let label: String
-    let isLoading: Bool
     
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.micro) {
-            Group {
-                if isLoading {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(DesignSystem.Colors.textTertiary.opacity(0.3))
-                        .frame(width: 30, height: 18)
-                        .shimmer()
-                } else {
-                    Text(value)
-                        .font(DesignSystem.Typography.headline)
-                        .foregroundColor(DesignSystem.Colors.primary)
-                }
-            }
+            Text(value)
+                .font(DesignSystem.Typography.headline)
+                .foregroundColor(DesignSystem.Colors.primary)
             
             Text(label)
                 .font(DesignSystem.Typography.caption)
@@ -347,7 +299,6 @@ struct ProfileContentTabs: View {
     @Binding var selectedTab: Int
     let highlights: [HighlightEvent]
     let curations: [ArticleCuration]
-    let isLoading: Bool
     
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.medium) {
@@ -361,13 +312,7 @@ struct ProfileContentTabs: View {
             // Content based on selection
             ScrollView {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                    if isLoading {
-                        // Loading placeholders
-                        ForEach(0..<3, id: \.self) { _ in
-                            ContentItemPlaceholder()
-                        }
-                    } else {
-                        switch selectedTab {
+                    switch selectedTab {
                         case 0:
                             if highlights.isEmpty {
                                 ProfileEmptyStateView(
@@ -397,7 +342,6 @@ struct ProfileContentTabs: View {
                         default:
                             EmptyView()
                         }
-                    }
                 }
                 .padding(.horizontal)
             }

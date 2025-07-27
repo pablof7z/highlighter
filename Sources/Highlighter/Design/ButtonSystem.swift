@@ -54,36 +54,25 @@ extension ModernButtonProtocol {
             )
             .onChange(of: isPressed) { _, newValue in
                 if newValue && isEnabled {
-                    HapticManager.shared.impact(configuration.hapticType)
+                    Task { @MainActor in
+                        HapticManager.shared.impact(configuration.hapticType)
+                    }
                 }
             }
     }
     
-    /// Common gradient background generator
-    func gradientBackground(
-        colors: [Color],
+    /// Common solid color background generator
+    func solidBackground(
+        color: Color,
         cornerRadius: CGFloat = DesignSystem.CornerRadius.medium
     ) -> some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .fill(
-                LinearGradient(
-                    colors: colors,
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
+            .fill(color)
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .stroke(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.3),
-                                Color.clear
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
+                        color.opacity(0.1),
+                        lineWidth: 0.5
                     )
             )
     }
@@ -107,11 +96,52 @@ extension ModernButtonProtocol {
 
 // MARK: - Refactored Button Styles using unified system
 
+/// Primary button variant styles
+enum PrimaryVariant {
+    case standard
+    case large
+    case compact
+    
+    var padding: EdgeInsets {
+        switch self {
+        case .standard:
+            return EdgeInsets(
+                top: DesignSystem.Spacing.base,
+                leading: DesignSystem.Spacing.xl,
+                bottom: DesignSystem.Spacing.base,
+                trailing: DesignSystem.Spacing.xl
+            )
+        case .large:
+            return EdgeInsets(
+                top: DesignSystem.Spacing.medium,
+                leading: DesignSystem.Spacing.xl,
+                bottom: DesignSystem.Spacing.medium,
+                trailing: DesignSystem.Spacing.xl
+            )
+        case .compact:
+            return EdgeInsets(
+                top: DesignSystem.Spacing.small,
+                leading: DesignSystem.Spacing.medium,
+                bottom: DesignSystem.Spacing.small,
+                trailing: DesignSystem.Spacing.medium
+            )
+        }
+    }
+    
+    var font: Font {
+        switch self {
+        case .standard: return DesignSystem.Typography.bodyMedium
+        case .large: return DesignSystem.Typography.headline
+        case .compact: return DesignSystem.Typography.footnoteMedium
+        }
+    }
+}
+
 /// Simplified Primary Button using unified system
 struct UnifiedPrimaryButton: ModernButtonProtocol {
     let configuration = ButtonConfiguration.primary
     var isEnabled: Bool = true
-    var variant: ModernPrimaryButton.PrimaryVariant = .standard
+    var variant: PrimaryVariant = .standard
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -119,10 +149,9 @@ struct UnifiedPrimaryButton: ModernButtonProtocol {
             .foregroundColor(.white)
             .padding(variant.padding)
             .background(
-                gradientBackground(colors: [
-                    isEnabled ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary,
-                    isEnabled ? DesignSystem.Colors.primaryDark : DesignSystem.Colors.textTertiary.opacity(0.8)
-                ])
+                solidBackground(
+                    color: isEnabled ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary
+                )
             )
             .modifier(
                 ButtonPressModifier(
@@ -204,7 +233,9 @@ struct ButtonPressModifier: ViewModifier {
             )
             .onChange(of: isPressed) { _, newValue in
                 if newValue && isEnabled {
-                    HapticManager.shared.impact(buttonConfig.hapticType)
+                    Task { @MainActor in
+                        HapticManager.shared.impact(buttonConfig.hapticType)
+                    }
                 }
             }
     }
@@ -216,7 +247,7 @@ extension View {
     /// Apply unified primary button style
     func unifiedPrimaryButton(
         enabled: Bool = true,
-        variant: ModernPrimaryButton.PrimaryVariant = .standard
+        variant: PrimaryVariant = .standard
     ) -> some View {
         self.buttonStyle(UnifiedPrimaryButton(isEnabled: enabled, variant: variant))
     }
