@@ -49,7 +49,6 @@
 		7C85339864BF38DD2C701BA2 /* SwipeableHighlightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F272232DC05F56A99327CE3F /* SwipeableHighlightCard.swift */; };
 		7FE69D4234C9337807120935 /* CommentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E226564B9D8D44FE91929960 /* CommentService.swift */; };
 		827B3C3EA3D94EABD1690B6D /* CommentsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7CB442B1CBDC62436052A8 /* CommentsSection.swift */; };
-		8691D5E4EAF2824D10C0E28B /* ModernTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9831C9AF1F1938111965B8CE /* ModernTabBar.swift */; };
 		8A5C45073A61569328188B21 /* FollowersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C9371F823E831254881AA4 /* FollowersListView.swift */; };
 		8B1648772C86AD40FCF6602E /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3025E76E14FBF1C8D93736 /* DesignSystem.swift */; };
 		8CC027C461CC53CF47AC2ECB /* LightningPaymentFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978B907455CE5F514DADD37A /* LightningPaymentFlowView.swift */; };
@@ -149,7 +148,6 @@
 		8C6C4024D5AE536DD3ADC4C4 /* HighlightsFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightsFeedView.swift; sourceTree = "<group>"; };
 		96BB1CEB6B1AF8996372B0A9 /* ModernFormComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernFormComponents.swift; sourceTree = "<group>"; };
 		978B907455CE5F514DADD37A /* LightningPaymentFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningPaymentFlowView.swift; sourceTree = "<group>"; };
-		9831C9AF1F1938111965B8CE /* ModernTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernTabBar.swift; sourceTree = "<group>"; };
 		9906E08DF53F3E88E7370583 /* SwarmHighlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwarmHighlight.swift; sourceTree = "<group>"; };
 		9D458CCB519B3373BBBAA25E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		9FE479875030C79E23CEC371 /* CreateCurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCurationView.swift; sourceTree = "<group>"; };
@@ -432,7 +430,6 @@
 				06EC35345A13411260DCEEF7 /* MeshGradientBackground.swift */,
 				96BB1CEB6B1AF8996372B0A9 /* ModernFormComponents.swift */,
 				FA46623C808023B5D65EB473 /* ModernStateViews.swift */,
-				9831C9AF1F1938111965B8CE /* ModernTabBar.swift */,
 				68EE862B30307430C752F295 /* SelectableMarkdownRenderer.swift */,
 				D715EDA3BA34145E7508D03E /* SharedStyles.swift */,
 				F272232DC05F56A99327CE3F /* SwipeableHighlightCard.swift */,
@@ -668,7 +665,6 @@
 				9D8D0E11AFFAEBF826CA8C35 /* ModernAuthenticationView.swift in Sources */,
 				981A640F5DAAE1DC2566BE65 /* ModernFormComponents.swift in Sources */,
 				410141EDC0B7B0D01CCE3452 /* ModernStateViews.swift in Sources */,
-				8691D5E4EAF2824D10C0E28B /* ModernTabBar.swift in Sources */,
 				DDE1B699AD2C62049E2AF2E3 /* ModernViewModifiers.swift in Sources */,
 				D4B22C3274D4A1E3D768FD3F /* NostrWalletConnect.swift in Sources */,
 				224179F5F3F178E3DEFA54FF /* OnboardingView.swift in Sources */,

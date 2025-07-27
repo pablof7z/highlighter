@@ -92,7 +92,7 @@ struct ContentView: View {
                 )
                 .onAppear {
                     withAnimation(
-                        .easeInOut(duration: 2)
+                        .easeInOut(duration: 4)
                         .repeatForever(autoreverses: true)
                     ) {
                         activeTabGlow = 1

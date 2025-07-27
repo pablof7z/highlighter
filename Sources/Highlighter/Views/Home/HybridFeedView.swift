@@ -715,7 +715,7 @@ struct PersonDiscoveryCard: View {
                 }
             }
         } catch {
-            print("Error checking follow status: \(error)")
+            // Error checking follow status
         }
     }
     
@@ -786,7 +786,7 @@ struct PersonDiscoveryCard: View {
             await MainActor.run {
                 isFollowing.toggle()
             }
-            print("Error updating follow status: \(error)")
+            // Error updating follow status
         }
     }
 }
@@ -794,6 +794,35 @@ struct PersonDiscoveryCard: View {
 struct ZappedArticleCard: View {
     let event: NDKEvent
     @State private var lightningAnimation = false
+    
+    private var zapAmount: Int {
+        // Extract amount from bolt11 tag if available
+        if let bolt11Tag = event.tags.first(where: { $0.first == "bolt11" }),
+           bolt11Tag.count > 1,
+           let amountTag = event.tags.first(where: { $0.first == "amount" }),
+           amountTag.count > 1,
+           let amount = Int(amountTag[1]) {
+            return amount / 1000 // Convert millisats to sats
+        }
+        return 0
+    }
+    
+    private var zapperPubkey: String? {
+        event.tags.first(where: { $0.first == "P" })?[safe: 1]
+    }
+    
+    private var zappedEventId: String? {
+        event.tags.first(where: { $0.first == "e" })?[safe: 1]
+    }
+    
+    private var zapDescription: String {
+        // Try to extract description from the event
+        if let descriptionTag = event.tags.first(where: { $0.first == "description" }),
+           descriptionTag.count > 1 {
+            return descriptionTag[1]
+        }
+        return event.content
+    }
     
     var body: some View {
         HStack(spacing: 16) {
@@ -813,18 +842,34 @@ struct ZappedArticleCard: View {
             
             // Content
             VStack(alignment: .leading, spacing: 8) {
-                Text("Article received 1,000 sats")
-                    .font(.ds.headline)
-                    .foregroundColor(.ds.text)
+                if zapAmount > 0 {
+                    Text("⚡ \(zapAmount.formatted()) sats")
+                        .font(.ds.headline)
+                        .foregroundColor(.ds.text)
+                } else {
+                    Text("Lightning payment")
+                        .font(.ds.headline)
+                        .foregroundColor(.ds.text)
+                }
                 
-                Text(event.content.prefix(100) + "...")
-                    .font(.ds.caption)
-                    .foregroundColor(.ds.textSecondary)
-                    .lineLimit(2)
+                if !zapDescription.isEmpty {
+                    Text(zapDescription.prefix(100) + (zapDescription.count > 100 ? "..." : ""))
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textSecondary)
+                        .lineLimit(2)
+                }
                 
-                Text(RelativeTimeFormatter.relativeTime(from: event.createdAt))
-                    .font(.ds.caption)
-                    .foregroundColor(.ds.textTertiary)
+                HStack(spacing: 4) {
+                    if let zapperPubkey = zapperPubkey {
+                        Text("from \(PubkeyFormatter.formatCompact(zapperPubkey))")
+                            .font(.ds.caption)
+                            .foregroundColor(.ds.textTertiary)
+                    }
+                    
+                    Text("• \(RelativeTimeFormatter.relativeTime(from: event.createdAt))")
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textTertiary)
+                }
             }
             
             Spacer()
@@ -1205,27 +1250,17 @@ struct RecentArticlePortraitCard: View {
                                 .fill(.ultraThinMaterial)
                                 .environment(\.colorScheme, .dark)
                         )
-                } else {
-                    Text(["PHILOSOPHY", "TECHNOLOGY", "SCIENCE", "CULTURE", "BITCOIN"][index % 5])
-                        .font(.ds.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white.opacity(0.9))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(
-                            Capsule()
-                                .fill(.ultraThinMaterial)
-                                .environment(\.colorScheme, .dark)
-                        )
                 }
                 
                 // Title
-                Text(article?.title ?? "Recent Article Title \(index + 1)")
-                    .font(.system(size: 28, weight: .bold, design: .default))
-                    .foregroundColor(.white)
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
+                if let article = article {
+                    Text(article.title)
+                        .font(.system(size: 28, weight: .bold, design: .default))
+                        .foregroundColor(.white)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 
                 // Summary or first highlight
                 if let article = article, let summary = article.summary {
@@ -1245,11 +1280,6 @@ struct RecentArticlePortraitCard: View {
                             .foregroundColor(.white.opacity(0.9))
                             .lineLimit(2)
                     }
-                } else {
-                    Text("This is a compelling summary that draws readers in and gives them a preview of the fascinating content within this article...")
-                        .font(.ds.body)
-                        .foregroundColor(.white.opacity(0.9))
-                        .lineLimit(2)
                 }
                 
                 // Metadata bar
@@ -1257,10 +1287,6 @@ struct RecentArticlePortraitCard: View {
                     // Reading time
                     if let article = article {
                         Label("\(article.estimatedReadingTime) min", systemImage: "clock")
-                            .font(.ds.caption)
-                            .foregroundColor(.white.opacity(0.8))
-                    } else {
-                        Label("\(5 + index) min", systemImage: "clock")
                             .font(.ds.caption)
                             .foregroundColor(.white.opacity(0.8))
                     }
