@@ -666,7 +666,7 @@ struct TrendingArticleCard: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: 100, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         case .empty, .failure:
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
                                 .fill(Color.ds.surfaceSecondary)
@@ -753,7 +753,7 @@ struct ArticleGridCard: View {
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: 120)
                                 .clipped()
-                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                         case .empty, .failure:
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
                                 .fill(Color.ds.surfaceSecondary)

@@ -26,7 +26,7 @@ struct ModernArticleListCard: View {
                                 .clipped()
                         case .failure(_), .empty:
                             Rectangle()
-                                .fill(Color.gray.opacity(0.1)
+                                .fill(Color.gray.opacity(0.1))
                                 .frame(height: 180)
                                 .overlay {
                                     Image(systemName: "photo")
@@ -145,8 +145,8 @@ struct ModernArticleFeaturedCard: View {
                                 .frame(width: 280, height: 200)
                                 .overlay {
                                     Image(systemName: "photo")
-                                        .font(.system(size: 40)
-                                        .foregroundColor(.gray.opacity(0.5)
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.gray.opacity(0.5))
                                 }
                         @unknown default:
                             EmptyView()
@@ -284,7 +284,7 @@ struct ModernArticleRowCard: View {
                         HStack(spacing: 4) {
                             ProfileImage(pubkey: article.author, size: 20)
                             
-                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author)
+                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                                 .lineLimit(1)

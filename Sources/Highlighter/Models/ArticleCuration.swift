@@ -73,7 +73,7 @@ struct ArticleCuration: Identifiable, Equatable, Hashable {
             if let timestampStr = tag.last,
                let timestamp = Int64(timestampStr),
                tag.count > 2 {
-                self.addedAt = Date(timeIntervalSince1970: TimeInterval(timestamp)
+                self.addedAt = Date(timeIntervalSince1970: TimeInterval(timestamp))
             } else {
                 self.addedAt = Date()
             }
@@ -88,7 +88,7 @@ struct ArticleCuration: Identifiable, Equatable, Hashable {
         self.id = event.id
         self.event = event
         self.author = event.pubkey
-        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt)
+        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt))
         
         // Parse d tag for identifier
         let dTag = event.tags.first { $0.first == "d" }
