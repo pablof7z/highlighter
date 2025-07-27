@@ -365,13 +365,13 @@ struct SwarmTooltipView: View {
                     Label("Add", systemImage: "plus.circle.fill")
                         .font(.ds.caption)
                 }
-                .buttonStyle(MicroButtonStyle())
+                .unifiedMicroButton()
                 
                 Button(action: { zapAll() }) {
                     Label("Zap All", systemImage: "bolt.fill")
                         .font(.ds.caption)
                 }
-                .buttonStyle(MicroButtonStyle(isPrimary: true))
+                .unifiedMicroButton(isPrimary: true)
             }
         }
         .padding(16)
@@ -597,22 +597,6 @@ class SwarmHeatmapData: ObservableObject {
     }
 }
 
-// MARK: - Micro Button Style
-struct MicroButtonStyle: ButtonStyle {
-    var isPrimary = false
-    
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isPrimary ? Color.ds.primary : Color.ds.surfaceSecondary)
-            )
-            .foregroundColor(isPrimary ? .white : .ds.text)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-    }
-}
 
 // MARK: - Extensions
 extension NSRange {

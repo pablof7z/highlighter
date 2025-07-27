@@ -427,49 +427,12 @@ struct EnhancedHighlightCardModifier: ViewModifier {
 
 // PulseModifier moved to AnimationSystem.swift
 
-// MARK: - Button Styles
-
-struct PressButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
-    }
-}
-
-// Minimal Zap Button Style
-struct EnhancedZapButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(DesignSystem.Typography.callout)
-            .fontWeight(.medium)
-            .foregroundColor(DesignSystem.Colors.primary)
-            .padding(.horizontal, DesignSystem.Spacing.medium)
-            .padding(.vertical, DesignSystem.Spacing.small)
-            .background(
-                Capsule()
-                    .fill(DesignSystem.Colors.primary.opacity(0.1))
-                    .overlay(
-                        Capsule()
-                            .stroke(DesignSystem.Colors.primary, lineWidth: 1)
-                    )
-            )
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .opacity(configuration.isPressed ? 0.8 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
-            .onChange(of: configuration.isPressed) { _, newValue in
-                if newValue {
-                    HapticManager.shared.impact(.light)
-                }
-            }
-    }
-}
 
 // MARK: - Enhanced View Extensions for Highlighter
 
 extension View {
     func enhancedZapButton() -> some View {
-        self.buttonStyle(EnhancedZapButtonStyle())
+        self.unifiedZapButton()
     }
     
     func lazyRender(threshold: CGFloat = 100) -> some View {

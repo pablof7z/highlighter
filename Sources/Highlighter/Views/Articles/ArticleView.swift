@@ -321,7 +321,7 @@ struct ArticleView: View {
         
         await loadHighlights()
         await loadAuthor()
-        estimatedReadTime = calculateReadTime()
+        estimatedReadTime = article.estimatedReadingTime
         impactMedium.prepare()
         selectionFeedback.prepare()
         
@@ -584,7 +584,7 @@ struct ArticleView: View {
                             .shadow(color: .ds.secondary.opacity(0.3), radius: 6, y: 3)
                     )
                 }
-                .buttonStyle(BounceButtonStyle())
+                .unifiedBounceButton()
                 
                 // Copy button
                 Button(action: {
@@ -606,7 +606,7 @@ struct ArticleView: View {
                             .shadow(color: .black.opacity(0.1), radius: 6, y: 3)
                     )
                 }
-                .buttonStyle(BounceButtonStyle())
+                .unifiedBounceButton()
                 
                 // Dismiss button
                 Button(action: {
@@ -655,11 +655,6 @@ struct ArticleView: View {
         selectedRange = nil
     }
     
-    private func calculateReadTime() -> Int {
-        let wordsPerMinute = 200
-        let wordCount = article.content.split(separator: " ").count
-        return max(1, wordCount / wordsPerMinute)
-    }
     
     private func calculateReadingProgress(geo: GeometryProxy, in containerGeo: GeometryProxy) {
         let totalHeight = geo.size.height
@@ -917,13 +912,6 @@ struct ReadingSettingsButton: View {
     }
 }
 
-struct BounceButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.92 : 1)
-            .animation(.spring(response: 0.2, dampingFraction: 0.6), value: configuration.isPressed)
-    }
-}
 
 // MARK: - Enhanced Supporting Components
 

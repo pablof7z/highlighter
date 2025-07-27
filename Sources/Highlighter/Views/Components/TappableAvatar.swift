@@ -150,51 +150,23 @@ struct TappableAvatar: View {
     
     @ViewBuilder
     private var placeholderAvatar: some View {
-        ZStack {
-            // Gradient background with animation
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: gradientColors(for: pubkey),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: size, height: size)
-                .overlay(
-                    Circle()
-                        .fill(
-                            RadialGradient(
-                                colors: [
-                                    Color.white.opacity(0.2),
-                                    Color.clear
-                                ],
-                                center: .topLeading,
-                                startRadius: 0,
-                                endRadius: size * 0.7
-                            )
+        AvatarUtilities.placeholderAvatar(pubkey: pubkey, size: size)
+            .overlay(
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color.white.opacity(0.2),
+                                Color.clear
+                            ],
+                            center: .topLeading,
+                            startRadius: 0,
+                            endRadius: size * 0.7
                         )
-                )
-            
-            // Initial text
-            Text(PubkeyFormatter.formatForAvatar(pubkey))
-                .font(.system(size: size * 0.4, weight: .semibold, design: .rounded))
-                .foregroundColor(.white)
-                .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
-        }
+                    )
+            )
     }
     
-    private func gradientColors(for pubkey: String) -> [Color] {
-        // Generate consistent colors based on pubkey
-        let hash = pubkey.hashValue
-        let hue1 = Double(abs(hash % 360)) / 360.0
-        let hue2 = (hue1 + 0.15).truncatingRemainder(dividingBy: 1.0)
-        
-        return [
-            Color(hue: hue1, saturation: 0.7, brightness: 0.8),
-            Color(hue: hue2, saturation: 0.8, brightness: 0.6)
-        ]
-    }
 }
 
 // MARK: - Convenience Modifier

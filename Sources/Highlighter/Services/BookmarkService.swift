@@ -57,16 +57,12 @@ class BookmarkService: ObservableObject {
     }
     
     private func addArticleBookmark(_ article: Article) async {
-        await MainActor.run {
-            bookmarkedArticles[article.id] = article
-        }
+        bookmarkedArticles[article.id] = article
         saveToLocalStorage()
     }
     
     private func removeArticleBookmark(_ articleId: String) async {
-        await MainActor.run {
-            bookmarkedArticles.removeValue(forKey: articleId)
-        }
+        bookmarkedArticles.removeValue(forKey: articleId)
         saveToLocalStorage()
     }
     
@@ -94,16 +90,12 @@ class BookmarkService: ObservableObject {
     }
     
     private func addHighlightBookmark(_ highlight: HighlightEvent) async {
-        await MainActor.run {
-            bookmarkedHighlights[highlight.id] = highlight
-        }
+        bookmarkedHighlights[highlight.id] = highlight
         saveToLocalStorage()
     }
     
     private func removeHighlightBookmark(_ highlightId: String) async {
-        await MainActor.run {
-            bookmarkedHighlights.removeValue(forKey: highlightId)
-        }
+        bookmarkedHighlights.removeValue(forKey: highlightId)
         saveToLocalStorage()
     }
     
@@ -116,7 +108,7 @@ class BookmarkService: ObservableObject {
         let tags: [[String]] = [
             ["d", "articles"], // Replaceable event identifier
             ["name", "Bookmarked Articles"],
-            ["a", "\(article.identifier)::\(article.author)", "wss://relay.damus.io", article.title]
+            ["a", "\(article.identifier ?? article.id)::\(article.author)", "wss://relay.damus.io", article.title]
         ]
         
         let contentDict: [String: Any] = [
@@ -347,11 +339,6 @@ private struct BookmarkIds: Codable {
     let highlightIds: [String]
 }
 
-// NOTE: BookmarkData is kept for future use when Article and HighlightEvent are made Codable
-// private struct BookmarkData: Codable {
-//     let articles: [Article]
-//     let highlights: [HighlightEvent]
-// }
 
 enum BookmarkError: LocalizedError {
     case notConfigured

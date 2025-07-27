@@ -129,7 +129,7 @@ struct EnhancedAsyncProfileImage: View {
     // MARK: - Subviews
     
     private var initialsView: some View {
-        Text(PubkeyFormatter.formatForAvatar(pubkey))
+        Text(AvatarUtilities.generateInitials(from: pubkey))
             .font(.system(size: size * 0.4, weight: .bold, design: .rounded))
             .foregroundColor(.white)
             .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
@@ -138,19 +138,7 @@ struct EnhancedAsyncProfileImage: View {
     // MARK: - Helper Methods
     
     private func gradientForPubkey() -> LinearGradient {
-        // Generate consistent gradient based on pubkey
-        let hash = pubkey.hashValue
-        let hue1 = Double(abs(hash % 360)) / 360.0
-        let hue2 = (hue1 + 0.1).truncatingRemainder(dividingBy: 1.0)
-        
-        return LinearGradient(
-            colors: [
-                Color(hue: hue1, saturation: 0.7, brightness: 0.8),
-                Color(hue: hue2, saturation: 0.6, brightness: 0.9)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+        AvatarUtilities.gradient(for: pubkey)
     }
     
     private func borderColors() -> [Color] {

@@ -68,9 +68,7 @@ struct Article: Identifiable, Equatable {
     }
     
     var estimatedReadingTime: Int {
-        let wordsPerMinute = 200
-        let wordCount = content.split(separator: " ").count
-        return max(1, wordCount / wordsPerMinute)
+        ArticleTimeEstimator.estimateReadingTime(for: content) ?? 1
     }
     
     // Convenience initializer for testing and UI previews

@@ -187,23 +187,11 @@ struct AuthorAvatar: View {
     }
     
     private var placeholderAvatar: some View {
-        ZStack {
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(hex: generateColorForPubkey(pubkey)),
-                            Color(hex: generateColorForPubkey(pubkey)).opacity(0.8)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-            
-            Text(avatarInitial)
-                .font(.system(size: size * 0.45, weight: .medium))
-                .foregroundColor(.white)
-        }
+        AvatarUtilities.placeholderAvatar(
+            pubkey: pubkey,
+            size: size,
+            fontSize: size * 0.45
+        )
     }
     
     private var avatarInitial: String {
@@ -211,13 +199,7 @@ struct AuthorAvatar: View {
             let name = profile.displayName ?? profile.name ?? "?"
             return String(name.prefix(1)).uppercased()
         }
-        return PubkeyFormatter.formatForAvatar(pubkey)
-    }
-    
-    private func generateColorForPubkey(_ pubkey: String) -> String {
-        let colors = ["FF6B6B", "4ECDC4", "45B7D1", "96CEB4", "FECA57", "FF9FF3", "54A0FF"]
-        let index = abs(pubkey.hashValue) % colors.count
-        return colors[index]
+        return AvatarUtilities.generateInitials(from: pubkey)
     }
 }
 

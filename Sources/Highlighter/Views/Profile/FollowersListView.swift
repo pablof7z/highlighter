@@ -144,7 +144,7 @@ struct UserRow: View {
                                 .fill(isFollowing ? Color.gray.opacity(0.2) : Color.ds.primary)
                         )
                 }
-                .buttonStyle(ScaleButtonStyle())
+                .unifiedScaleButton()
             }
         }
         .padding(.horizontal, .ds.screenPadding)

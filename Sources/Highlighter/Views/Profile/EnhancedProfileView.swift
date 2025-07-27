@@ -651,7 +651,7 @@ struct AnimatedStatCard: View {
                     )
             )
         }
-        .buttonStyle(ScaleButtonStyle())
+        .unifiedScaleButton()
         .disabled(action == nil)
         .onAppear {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2)) {
@@ -1028,13 +1028,6 @@ struct CurationCardSkeleton: View {
 
 // ModernHighlightCard is defined in UnifiedCard.swift
 
-struct ScaleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.spring(response: 0.2, dampingFraction: 0.8), value: configuration.isPressed)
-    }
-}
 
 // MARK: - Activity Cards
 

@@ -170,7 +170,7 @@ struct TimelineFeedView: View {
                         }
                     }
                 }
-                .buttonStyle(ScaleButtonStyle())
+                .unifiedScaleButton()
             }
             .padding(.horizontal, DesignSystem.Spacing.large)
             
@@ -387,7 +387,7 @@ struct FilterPill: View {
                     )
             )
         }
-        .buttonStyle(TimelineScaleButtonStyle())
+        .unifiedScaleButton()
     }
 }
 
@@ -411,7 +411,7 @@ struct TimelineEngagementButton: View {
             .padding(.horizontal, DesignSystem.Spacing.medium)
             .padding(.vertical, DesignSystem.Spacing.small)
         }
-        .buttonStyle(TimelineScaleButtonStyle(scale: 1.1))
+        .unifiedScaleButton(scale: 1.1)
     }
 }
 
@@ -640,15 +640,6 @@ struct FilterSelectionSheet: View {
 
 // MARK: - Button Styles
 
-struct TimelineScaleButtonStyle: ButtonStyle {
-    var scale: CGFloat = 0.95
-    
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? scale : 1)
-            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
-    }
-}
 
 // MARK: - Feed Data Manager
 

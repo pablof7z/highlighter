@@ -241,6 +241,91 @@ struct ButtonPressModifier: ViewModifier {
     }
 }
 
+// MARK: - Specialized Button Styles
+
+/// Micro button for small actions (e.g., in swarm heatmap)
+struct UnifiedMicroButton: ModernButtonProtocol {
+    let configuration = ButtonConfiguration.secondary
+    var isEnabled: Bool = true
+    var isPrimary: Bool = false
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(isPrimary ? Color.ds.primary : Color.ds.surfaceSecondary)
+                    .opacity(configuration.isPressed ? 0.8 : 1)
+            )
+            .foregroundColor(isPrimary ? .white : .ds.text)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1)
+            .animation(.spring(response: 0.2, dampingFraction: 0.8), value: configuration.isPressed)
+    }
+}
+
+/// Scale button for interactive elements (timeline, profile)
+struct UnifiedScaleButton: ModernButtonProtocol {
+    let configuration = ButtonConfiguration.secondary
+    var isEnabled: Bool = true
+    var scale: CGFloat = 0.95
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? scale : 1)
+            .animation(.spring(response: 0.2, dampingFraction: 0.8), value: configuration.isPressed)
+    }
+}
+
+/// Bounce button for action menus (article selection)
+struct UnifiedBounceButton: ModernButtonProtocol {
+    let configuration = ButtonConfiguration.secondary
+    var isEnabled: Bool = true
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.92 : 1)
+            .animation(.spring(response: 0.2, dampingFraction: 0.6), value: configuration.isPressed)
+    }
+}
+
+/// Enhanced zap button style
+struct UnifiedZapButton: ModernButtonProtocol {
+    let configuration = ButtonConfiguration.primary
+    var isEnabled: Bool = true
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(DesignSystem.Typography.callout)
+            .fontWeight(.medium)
+            .foregroundColor(DesignSystem.Colors.primary)
+            .padding(.horizontal, DesignSystem.Spacing.base)
+            .padding(.vertical, DesignSystem.Spacing.small)
+            .background(
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                DesignSystem.Colors.primary.opacity(configuration.isPressed ? 0.2 : 0.1),
+                                DesignSystem.Colors.primary.opacity(configuration.isPressed ? 0.15 : 0.05)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .overlay(
+                        Capsule()
+                            .strokeBorder(
+                                DesignSystem.Colors.primary.opacity(configuration.isPressed ? 0.6 : 0.3),
+                                lineWidth: 1.5
+                            )
+                    )
+            )
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
 // MARK: - Convenience Extensions
 
 extension View {
@@ -255,5 +340,25 @@ extension View {
     /// Apply unified secondary button style
     func unifiedSecondaryButton(enabled: Bool = true) -> some View {
         self.buttonStyle(UnifiedSecondaryButton(isEnabled: enabled))
+    }
+    
+    /// Apply unified micro button style
+    func unifiedMicroButton(isPrimary: Bool = false, enabled: Bool = true) -> some View {
+        self.buttonStyle(UnifiedMicroButton(isEnabled: enabled, isPrimary: isPrimary))
+    }
+    
+    /// Apply unified scale button style
+    func unifiedScaleButton(scale: CGFloat = 0.95, enabled: Bool = true) -> some View {
+        self.buttonStyle(UnifiedScaleButton(isEnabled: enabled, scale: scale))
+    }
+    
+    /// Apply unified bounce button style
+    func unifiedBounceButton(enabled: Bool = true) -> some View {
+        self.buttonStyle(UnifiedBounceButton(isEnabled: enabled))
+    }
+    
+    /// Apply unified zap button style
+    func unifiedZapButton(enabled: Bool = true) -> some View {
+        self.buttonStyle(UnifiedZapButton(isEnabled: enabled))
     }
 }
