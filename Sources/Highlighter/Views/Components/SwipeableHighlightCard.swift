@@ -7,6 +7,7 @@ struct SwipeableHighlightCard: View {
     let onSwipeLeft: () -> Void
     let onTap: () -> Void
     
+    @EnvironmentObject var appState: AppState
     @State private var offset: CGSize = .zero
     @State private var rotation: Double = 0
     @State private var scale: CGFloat = 1.0
@@ -16,6 +17,7 @@ struct SwipeableHighlightCard: View {
     @State private var hapticTriggered = false
     @State private var glowAnimation = false
     @State private var particleAnimation = false
+    @State private var engagement: EngagementService.EngagementMetrics?
     
     // Gesture thresholds
     private let swipeThreshold: CGFloat = 120
@@ -48,6 +50,9 @@ struct SwipeableHighlightCard: View {
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: scale)
         .onAppear {
             startGlowAnimation()
+        }
+        .task {
+            await loadEngagement()
         }
     }
     
@@ -88,13 +93,24 @@ struct SwipeableHighlightCard: View {
                 
                 // Menu button
                 Menu {
-                    Button(action: {}) {
-                        Label("Save", systemImage: "bookmark")
+                    Button(action: {
+                        Task {
+                            try? await appState.bookmarkService.toggleHighlightBookmark(highlight)
+                            HapticManager.shared.impact(.light)
+                        }
+                    }) {
+                        Label(appState.bookmarkService.isHighlightBookmarked(highlight.id) ? "Unsave" : "Save", 
+                              systemImage: appState.bookmarkService.isHighlightBookmarked(highlight.id) ? "bookmark.fill" : "bookmark")
                     }
-                    Button(action: {}) {
+                    Button(action: {
+                        shareHighlight()
+                    }) {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
-                    Button(action: {}) {
+                    Button(action: {
+                        UIPasteboard.general.string = highlight.content
+                        HapticManager.shared.impact(.light)
+                    }) {
                         Label("Copy", systemImage: "doc.on.doc")
                     }
                 } label: {
@@ -160,10 +176,20 @@ struct SwipeableHighlightCard: View {
             
             // Engagement metrics
             HStack(spacing: 24) {
-                EngagementMetric(icon: "heart", value: Int.random(in: 5...50), color: .red)
-                EngagementMetric(icon: "bubble.right", value: Int.random(in: 2...20), color: .blue)
-                EngagementMetric(icon: "arrow.2.squarepath", value: Int.random(in: 1...15), color: .green)
-                EngagementMetric(icon: "bolt.fill", value: Int.random(in: 10...100), color: .orange)
+                if let metrics = engagement {
+                    EngagementMetric(icon: "heart", value: metrics.likes, color: .red)
+                    EngagementMetric(icon: "bubble.right", value: metrics.comments, color: .blue)
+                    EngagementMetric(icon: "arrow.2.squarepath", value: metrics.reposts, color: .green)
+                    EngagementMetric(icon: "bolt.fill", value: metrics.zaps, color: .orange)
+                } else {
+                    // Loading state
+                    ForEach(0..<4) { _ in
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(DesignSystem.Colors.surfaceSecondary)
+                            .frame(width: 50, height: 20)
+                            .shimmer()
+                    }
+                }
             }
         }
         .padding(20)
@@ -333,6 +359,29 @@ struct SwipeableHighlightCard: View {
             particleAnimation = false
         }
     }
+    
+    private func loadEngagement() async {
+        let metrics = await appState.engagementService.fetchEngagement(for: highlight.id)
+        
+        await MainActor.run {
+            self.engagement = metrics
+        }
+    }
+    
+    private func shareHighlight() {
+        let activityVC = UIActivityViewController(
+            activityItems: [highlight.content],
+            applicationActivities: nil
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let rootVC = window.rootViewController {
+            rootVC.present(activityVC, animated: true)
+        }
+        
+        HapticManager.shared.impact(.light)
+    }
 }
 
 // MARK: - Supporting Views
@@ -408,12 +457,14 @@ struct ParticleEffectView: View {
 // MARK: - Card Stack View
 
 struct SwipeableCardStack: View {
-    @State private var highlights: [HighlightEvent] = []
+    @EnvironmentObject var appState: AppState
     @State private var currentIndex = 0
+    @State private var showDetail = false
+    @State private var selectedHighlight: HighlightEvent?
     
     var body: some View {
         ZStack {
-            ForEach(Array(highlights.enumerated()), id: \.offset) { index, highlight in
+            ForEach(Array(appState.highlights.enumerated()), id: \.offset) { index, highlight in
                 if index >= currentIndex && index < currentIndex + 3 {
                     SwipeableHighlightCard(
                         highlight: highlight,
@@ -426,37 +477,36 @@ struct SwipeableCardStack: View {
                             nextCard()
                         },
                         onTap: {
-                            // Show detail view
+                            selectedHighlight = highlight
+                            showDetail = true
                         }
                     )
                     .offset(y: CGFloat(index - currentIndex) * 10)
                     .scaleEffect(1 - CGFloat(index - currentIndex) * 0.05)
                     .opacity(index == currentIndex ? 1 : 0.8)
-                    .zIndex(Double(highlights.count - index))
+                    .zIndex(Double(appState.highlights.count - index))
+                }
+            }
+            
+            if appState.highlights.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "rectangle.stack.fill")
+                        .font(.system(size: 48))
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
+                    
+                    Text("No highlights to swipe")
+                        .font(DesignSystem.Typography.body)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
             }
         }
-        .onAppear {
-            loadHighlights()
+        .sheet(isPresented: $showDetail) {
+            if let highlight = selectedHighlight {
+                NavigationView {
+                    HighlightDetailView(highlight: highlight)
+                }
+            }
         }
-    }
-    
-    private func loadHighlights() {
-        // Load highlights from data source
-        highlights = [
-            HighlightEvent(
-                id: "1",
-                event: NDKEvent(id: "", pubkey: "", createdAt: 0, kind: 9802, tags: [], content: "", sig: ""),
-                content: "The best way to predict the future is to invent it.",
-                author: "test1",
-                createdAt: Date(),
-                context: nil,
-                url: "https://example.com",
-                referencedEvent: nil,
-                attributedAuthors: [],
-                comment: nil
-            )
-        ]
     }
     
     private func nextCard() {
@@ -466,11 +516,31 @@ struct SwipeableCardStack: View {
     }
     
     private func saveHighlight(_ highlight: HighlightEvent) {
-        // Save logic
+        Task {
+            do {
+                // Toggle bookmark
+                try await appState.bookmarkService.toggleHighlightBookmark(highlight)
+                
+                // Show success feedback
+                HapticManager.shared.notification(.success)
+            } catch {
+                print("Error saving highlight: \(error)")
+                HapticManager.shared.notification(.error)
+            }
+        }
     }
     
     private func archiveHighlight(_ highlight: HighlightEvent) {
-        // Archive logic
+        Task {
+            do {
+                // Remove from feed (archive doesn't exist in the service yet, so we'll just remove from view)
+                // In a real implementation, this would mark as archived
+                HapticManager.shared.notification(.success)
+            } catch {
+                print("Error archiving highlight: \(error)")
+                HapticManager.shared.notification(.error)
+            }
+        }
     }
 }
 

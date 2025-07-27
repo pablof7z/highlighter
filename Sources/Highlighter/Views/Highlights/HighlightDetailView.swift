@@ -19,6 +19,8 @@ struct HighlightDetailView_Legacy: View {
     @State private var showComments = false
     @State private var author: NDKUserProfile?
     @State private var showAudioPlayer = false
+    @State private var relatedHighlights: [HighlightEvent] = []
+    @State private var isLoadingRelated = false
     
     var body: some View {
         NavigationStack {
@@ -228,23 +230,36 @@ struct HighlightDetailView_Legacy: View {
                         .padding(.top)
                     
                     // Related highlights section
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Related Highlights")
-                            .font(DesignSystem.Typography.headline)
-                            .padding(.horizontal)
-                        
-                        // Placeholder for related highlights
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                ForEach(0..<3) { _ in
-                                    RelatedHighlightPlaceholder()
-                                        .frame(width: 250)
+                    if isLoadingRelated || !relatedHighlights.isEmpty {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Related Highlights")
+                                .font(DesignSystem.Typography.headline)
+                                .padding(.horizontal)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 16) {
+                                    if isLoadingRelated {
+                                        // Show placeholders while loading
+                                        ForEach(0..<3) { _ in
+                                            RelatedHighlightPlaceholder()
+                                                .frame(width: 280)
+                                        }
+                                    } else {
+                                        // Show actual related highlights
+                                        ForEach(relatedHighlights) { relatedHighlight in
+                                            NavigationLink(destination: HighlightDetailView(highlight: relatedHighlight)) {
+                                                CompactRelatedHighlightCard(highlight: relatedHighlight)
+                                                    .frame(width: 280)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                    }
                                 }
+                                .padding(.horizontal)
                             }
-                            .padding(.horizontal)
                         }
+                        .padding(.top)
                     }
-                    .padding(.top)
                 }
                 .padding(.vertical)
             }
@@ -262,6 +277,7 @@ struct HighlightDetailView_Legacy: View {
         }
         .task {
             await loadAuthorProfile()
+            await loadRelatedHighlights()
         }
         .sheet(isPresented: $showShareSheet) {
             ShareSheet(items: [highlight.content])
@@ -292,6 +308,49 @@ struct HighlightDetailView_Legacy: View {
         // This demo focuses on highlight display features
     }
     
+    private func loadRelatedHighlights() async {
+        guard let ndk = appState.ndk else { return }
+        
+        await MainActor.run {
+            isLoadingRelated = true
+        }
+        
+        // Find highlights from the same URL or by the same author
+        var relatedFilter: NDKFilter
+        
+        // If highlight has a URL, find other highlights from the same source
+        if let url = highlight.url {
+            relatedFilter = NDKFilter(kinds: [9802], limit: 20, tags: ["r": Set([url])])
+        } else {
+            // Otherwise, find other highlights by the same author
+            relatedFilter = NDKFilter(authors: [highlight.author], kinds: [9802], limit: 20)
+        }
+        
+        // Use NDK's outbox to observe events
+        let dataSource = await ndk.outbox.observe(
+            filter: relatedFilter,
+            maxAge: CachePolicies.shortTerm
+        )
+        
+        var events: [NDKEvent] = []
+        for await event in dataSource.events {
+            events.append(event)
+            if events.count >= 10 { break } // Limit to prevent excessive loading
+        }
+        
+        let related = events.compactMap { event -> HighlightEvent? in
+            guard event.id != highlight.id else { return nil } // Exclude current highlight
+            return try? HighlightEvent(from: event)
+        }
+        .sorted { $0.createdAt > $1.createdAt }
+        .prefix(6) // Limit to 6 related highlights
+        
+        await MainActor.run {
+            self.relatedHighlights = Array(related)
+            self.isLoadingRelated = false
+        }
+    }
+    
 }
 
 struct RelatedHighlightPlaceholder: View {
@@ -310,6 +369,93 @@ struct RelatedHighlightPlaceholder: View {
         .padding()
         .background(DesignSystem.Colors.surface)
         .cornerRadius(DesignSystem.CornerRadius.medium)
+    }
+}
+
+struct CompactRelatedHighlightCard: View {
+    let highlight: HighlightEvent
+    @EnvironmentObject var appState: AppState
+    @State private var author: NDKUserProfile?
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Highlight content
+            Text("\"\(String(highlight.content.prefix(100)))...\"")
+                .font(DesignSystem.Typography.body)
+                .foregroundColor(DesignSystem.Colors.text)
+                .lineLimit(3)
+                .multilineTextAlignment(.leading)
+            
+            Spacer()
+            
+            // Author info
+            HStack(spacing: 8) {
+                // Author avatar
+                Group {
+                    if let profileImage = author?.picture,
+                       let url = URL(string: profileImage) {
+                        AsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        } placeholder: {
+                            Circle()
+                                .fill(DesignSystem.Colors.primary.opacity(0.1))
+                                .overlay(
+                                    Image(systemName: "person.fill")
+                                        .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
+                                )
+                        }
+                    } else {
+                        Circle()
+                            .fill(DesignSystem.Colors.primary.opacity(0.1))
+                            .overlay(
+                                Image(systemName: "person.fill")
+                                    .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
+                            )
+                    }
+                }
+                .frame(width: 24, height: 24)
+                .clipShape(Circle())
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(author?.name ?? author?.displayName ?? "Anonymous")
+                        .font(DesignSystem.Typography.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(DesignSystem.Colors.text)
+                        .lineLimit(1)
+                    
+                    Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt))
+                        .font(.caption2)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
+                }
+                
+                Spacer()
+            }
+        }
+        .padding()
+        .frame(height: 140)
+        .background(DesignSystem.Colors.surface)
+        .cornerRadius(DesignSystem.CornerRadius.medium)
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                .stroke(DesignSystem.Colors.border, lineWidth: 0.5)
+        )
+        .shadow(color: DesignSystem.Shadow.subtle.color, radius: DesignSystem.Shadow.subtle.radius)
+        .task {
+            await loadAuthorProfile()
+        }
+    }
+    
+    private func loadAuthorProfile() async {
+        guard let ndk = appState.ndk else { return }
+        
+        for await profile in await ndk.profileManager.observe(for: highlight.author, maxAge: TimeConstants.hour) {
+            await MainActor.run {
+                self.author = profile
+            }
+            break
+        }
     }
 }
 

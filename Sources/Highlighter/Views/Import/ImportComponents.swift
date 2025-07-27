@@ -1,5 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import WebKit
 
 // MARK: - Shared Import Types
 
@@ -1032,22 +1033,162 @@ struct PopularSourceCard: View {
 
 struct ArticlePreview: View {
     let html: String
+    @State private var isLoading = true
+    @State private var estimatedHeight: CGFloat = 300
     
     var body: some View {
-        // Simplified preview - in production, use WKWebView
-        ScrollView {
-            Text(stripHTML(html))
-                .font(.ds.caption)
-                .foregroundColor(.ds.text)
-                .padding()
-        }
+        HTMLWebView(
+            html: html,
+            isLoading: $isLoading,
+            estimatedHeight: $estimatedHeight
+        )
+        .frame(height: estimatedHeight)
         .background(Color.ds.surfaceSecondary)
+        .overlay(
+            Group {
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(0.8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.ds.surfaceSecondary.opacity(0.8))
+                }
+            }
+        )
+        .cornerRadius(DesignSystem.CornerRadius.medium)
+    }
+}
+
+// MARK: - HTML WebView
+
+struct HTMLWebView: UIViewRepresentable {
+    let html: String
+    @Binding var isLoading: Bool
+    @Binding var estimatedHeight: CGFloat
+    
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.navigationDelegate = context.coordinator
+        webView.scrollView.isScrollEnabled = true
+        webView.scrollView.bounces = false
+        webView.backgroundColor = .clear
+        webView.isOpaque = false
+        
+        // Configure for better content display
+        let contentController = webView.configuration.userContentController
+        let scriptSource = """
+            var meta = document.createElement('meta');
+            meta.name = 'viewport';
+            meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+            document.getElementsByTagName('head')[0].appendChild(meta);
+        """
+        let script = WKUserScript(source: scriptSource, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        contentController.addUserScript(script)
+        
+        return webView
     }
     
-    private func stripHTML(_ html: String) -> String {
-        html.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
-            .replacingOccurrences(of: "&[^;]+;", with: " ", options: .regularExpression)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        let styledHTML = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body {
+                    font-family: -apple-system, system-ui, sans-serif;
+                    font-size: 14px;
+                    line-height: 1.6;
+                    color: \(isDarkMode ? "#E0E0E0" : "#333333");
+                    background-color: transparent;
+                    margin: 16px;
+                    padding: 0;
+                }
+                img {
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 8px;
+                }
+                a {
+                    color: \(isDarkMode ? "#6FA3F5" : "#007AFF");
+                    text-decoration: none;
+                }
+                h1, h2, h3, h4, h5, h6 {
+                    color: \(isDarkMode ? "#FFFFFF" : "#000000");
+                    margin-top: 16px;
+                    margin-bottom: 8px;
+                }
+                p {
+                    margin: 8px 0;
+                }
+                blockquote {
+                    border-left: 4px solid \(isDarkMode ? "#6FA3F5" : "#007AFF");
+                    padding-left: 16px;
+                    margin-left: 0;
+                    color: \(isDarkMode ? "#B0B0B0" : "#666666");
+                }
+                pre {
+                    background-color: \(isDarkMode ? "#2C2C2E" : "#F2F2F7");
+                    padding: 12px;
+                    border-radius: 8px;
+                    overflow-x: auto;
+                }
+                code {
+                    background-color: \(isDarkMode ? "#2C2C2E" : "#F2F2F7");
+                    padding: 2px 4px;
+                    border-radius: 4px;
+                    font-family: monospace;
+                }
+            </style>
+        </head>
+        <body>
+            \(html)
+        </body>
+        </html>
+        """
+        
+        webView.loadHTMLString(styledHTML, baseURL: nil)
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    private var isDarkMode: Bool {
+        UITraitCollection.current.userInterfaceStyle == .dark
+    }
+    
+    class Coordinator: NSObject, WKNavigationDelegate {
+        var parent: HTMLWebView
+        
+        init(_ parent: HTMLWebView) {
+            self.parent = parent
+        }
+        
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            parent.isLoading = false
+            
+            // Calculate content height
+            webView.evaluateJavaScript("document.body.scrollHeight") { height, error in
+                if let height = height as? CGFloat {
+                    DispatchQueue.main.async {
+                        self.parent.estimatedHeight = min(height + 32, 600) // Cap at 600
+                    }
+                }
+            }
+        }
+        
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            if navigationAction.navigationType == .linkActivated {
+                if let url = navigationAction.request.url {
+                    UIApplication.shared.open(url)
+                    decisionHandler(.cancel)
+                    return
+                }
+            }
+            decisionHandler(.allow)
+        }
     }
 }
 
