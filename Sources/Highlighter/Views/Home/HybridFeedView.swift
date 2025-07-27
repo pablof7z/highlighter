@@ -7,12 +7,10 @@ struct HybridFeedView: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var selectedSection: FeedSection = .forYou
     @State private var carouselOffsets: [String: CGFloat] = [:]
-    @State private var floatingHeaderOpacity: Double = 0
+    @State private var headerVisible = false
     @State private var activeHighlight: HighlightEvent?
     @State private var showingHighlightDetail = false
-    @State private var parallaxOffset: CGFloat = 0
     @State private var sectionVisibility: [String: Bool] = [:]
-    @State private var pulseAnimation = false
     @Namespace private var animation
     @Environment(\.colorScheme) var colorScheme
     
@@ -50,17 +48,16 @@ struct HybridFeedView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Background gradient with parallax
-                backgroundLayer
+                // Simple background
+                Color.ds.background
+                    .ignoresSafeArea()
                 
                 // Main content
                 ScrollViewReader { proxy in
                     ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
-                            // Hero header with parallax
+                            // Hero header
                             heroHeader
-                                .offset(y: parallaxOffset * 0.5)
-                                .opacity(1 - (abs(parallaxOffset) / 200.0))
                             
                             // Recent articles - ALWAYS shown at the top, right after greeting
                             RecentArticlesSection(dataManager: dataManager)
@@ -69,13 +66,14 @@ struct HybridFeedView: View {
                             // Sticky section tabs
                             sectionTabs
                                 .background(
-                                    HybridFeedVisualEffectBlur(blurStyle: .systemMaterial)
-                                        .opacity(floatingHeaderOpacity)
+                                    Color.ds.background
+                                        .opacity(headerVisible ? 0.95 : 0)
                                         .ignoresSafeArea()
                                 )
                                 .overlay(alignment: .bottom) {
-                                    Divider()
-                                        .opacity(floatingHeaderOpacity)
+                                    if headerVisible {
+                                        Divider()
+                                    }
                                 }
                             
                             // Content sections with carousels
@@ -100,7 +98,6 @@ struct HybridFeedView: View {
         }
         .onAppear {
             dataManager.appState = appState
-            startAnimations()
         }
         .task {
             await dataManager.startStreaming()
@@ -111,39 +108,6 @@ struct HybridFeedView: View {
                     .presentationDragIndicator(.visible)
                     .presentationDetents([.medium, .large])
             }
-        }
-    }
-    
-    // MARK: - Background Layer
-    @ViewBuilder
-    private var backgroundLayer: some View {
-        ZStack {
-            // Base gradient
-            LinearGradient(
-                colors: [
-                    Color.ds.background,
-                    Color.ds.background.opacity(0.95),
-                    selectedSection.color.opacity(0.05)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            
-            // Animated mesh gradient
-            if colorScheme == .dark {
-                MeshGradientBackground()
-                    .opacity(0.3)
-                    .ignoresSafeArea()
-                    .blur(radius: 50)
-                    .scaleEffect(1 + (pulseAnimation ? 0.1 : 0))
-            }
-            
-            // Noise texture overlay
-            NoiseTextureView()
-                .opacity(0.03)
-                .ignoresSafeArea()
-                .blendMode(.overlay)
         }
     }
     
@@ -292,18 +256,9 @@ struct HybridFeedView: View {
     // MARK: - Helper Methods
     private func handleScrollOffset(_ offset: CGFloat) {
         scrollOffset = offset
-        parallaxOffset = min(0, offset)
-        
-        withAnimation(.easeInOut(duration: 0.2)) {
-            floatingHeaderOpacity = min(1, max(0, -offset / 100))
-        }
+        headerVisible = offset < -50
     }
     
-    private func startAnimations() {
-        withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
-            pulseAnimation = true
-        }
-    }
 }
 
 // MARK: - Supporting Components
@@ -441,11 +396,6 @@ struct FeaturedHighlightCarouselCard: View {
                 isPressed = pressing
             }
         }, perform: {})
-        .onAppear {
-            withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
-                glowIntensity = 0.6
-            }
-        }
     }
 }
 
@@ -570,11 +520,6 @@ struct CurationCarouselCard: View {
         .padding(12)
         .background(Color.ds.surfaceSecondary)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .onAppear {
-            withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
-                imageOffset = CGSize(width: 10, height: -10)
-            }
-        }
     }
     
     private var gradientBackground: some View {
@@ -890,11 +835,6 @@ struct ZappedArticleCard: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .stroke(Color.yellow.opacity(0.2), lineWidth: 1)
         )
-        .onAppear {
-            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
-                lightningAnimation = true
-            }
-        }
     }
 }
 
@@ -1190,8 +1130,6 @@ struct RecentArticlePortraitCard: View {
     let highlights: [HighlightEvent]
     let index: Int
     @State private var isPressed = false
-    @State private var imageScale: CGFloat = 1.0
-    @State private var shimmerOffset: CGFloat = -200
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
@@ -1202,14 +1140,12 @@ struct RecentArticlePortraitCard: View {
                     AsyncImage(url: URL(string: imageUrl)) { phase in
                         switch phase {
                         case .empty:
-                            shimmeringGradient
+                            Color.ds.surfaceSecondary
                         case .success(let image):
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: geometry.size.width, height: geometry.size.height)
-                                .scaleEffect(imageScale)
-                                .animation(.easeInOut(duration: 20).repeatForever(autoreverses: true), value: imageScale)
                                 .clipped()
                         case .failure(_):
                             fallbackGradient
@@ -1337,44 +1273,8 @@ struct RecentArticlePortraitCard: View {
         .onTapGesture {
             HapticManager.shared.impact(.medium)
         }
-        .onAppear {
-            // Start subtle Ken Burns effect
-            withAnimation(.easeInOut(duration: 20).repeatForever(autoreverses: true)) {
-                imageScale = 1.1
-            }
-            
-            // Start shimmer animation
-            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
-                shimmerOffset = 400
-            }
-        }
     }
     
-    @ViewBuilder
-    private var shimmeringGradient: some View {
-        LinearGradient(
-            colors: [
-                Color.ds.surfaceSecondary,
-                Color.ds.surfaceSecondary.opacity(0.8)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .overlay(
-            LinearGradient(
-                colors: [
-                    Color.clear,
-                    Color.white.opacity(0.2),
-                    Color.clear
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-            .rotationEffect(.degrees(30))
-            .offset(x: shimmerOffset)
-            .blendMode(.screen)
-        )
-    }
     
     @ViewBuilder
     private var fallbackGradient: some View {

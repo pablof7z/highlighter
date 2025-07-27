@@ -454,7 +454,7 @@ struct WebImportView: View {
                             .foregroundColor(isValidURL ? .green : .ds.textTertiary)
                             .symbolEffect(.pulse, value: isValidURL)
                         
-                        TextField("https://example.com/article", text: $urlString)
+                        TextField("https://arstechnica.com/article-title", text: $urlString)
                             .textFieldStyle(.plain)
                             .font(.ds.body)
                             .keyboardType(.URL)

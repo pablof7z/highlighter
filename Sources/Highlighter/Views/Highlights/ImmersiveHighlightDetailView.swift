@@ -1003,14 +1003,14 @@ struct VisualEffectBlur: UIViewRepresentable {
         highlight: HighlightEvent(
             id: "1",
             event: NDKEvent(id: "", pubkey: "", createdAt: 0, kind: 9802, tags: [], content: "", sig: ""),
-            content: "The best way to predict the future is to invent it. Innovation comes from seeing connections where others see boundaries.",
-            author: "test",
+            content: PreviewData.highlightTexts[0],
+            author: "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m",
             createdAt: Date(),
-            context: "From Alan Kay's famous quote about the nature of innovation and technological progress.",
-            url: "https://example.com",
+            context: PreviewData.highlightContexts[0],
+            url: PreviewData.articleURLs[3],
             referencedEvent: nil,
             attributedAuthors: [],
-            comment: "This quote perfectly encapsulates the spirit of technological innovation. Kay's insight reminds us that the future isn't something that happens to us—it's something we actively create."
+            comment: "This perfectly captures the essence of ubiquitous computing. When technology becomes truly integrated into our lives, it stops being technology and becomes part of the fabric of existence."
         )
     )
     .environmentObject(AppState())

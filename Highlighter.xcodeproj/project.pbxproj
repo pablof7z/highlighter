@@ -35,6 +35,7 @@
 		4F557938220F55296A4E483F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288947C11C084EEA395DB4F3 /* ContentView.swift */; };
 		5328876790B7FC8B3F06147C /* AIHighlightEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A59DD7DD81D1FEB67B662D /* AIHighlightEngine.swift */; };
 		56884CA05833E2E75660E7E3 /* BlurHashDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A8C38CB54B7E5605AF14A /* BlurHashDecoder.swift */; };
+		56E60BD4D4C416D345463298 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E4A0B237FB9542B3652AA61 /* PreviewData.swift */; };
 		584216E80F87025A63620635 /* ButtonSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC9C86787D8110767C109BBB /* ButtonSystem.swift */; };
 		58CD029928844C6A40946A74 /* AnimationSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C88288E64D986A7B021700F9 /* AnimationSystem.swift */; };
 		592922A038AC7CEB7AAD35F7 /* SmartArticleImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C6D9AB2A21C93E8951D6E4 /* SmartArticleImportView.swift */; };
@@ -125,6 +126,7 @@
 		47D8FA7B43386CEE13EB7B18 /* DataStreamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStreamManager.swift; sourceTree = "<group>"; };
 		4CF27270F57B25E33B719EEC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4E36C3396966D42A6A522C05 /* CardSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSystem.swift; sourceTree = "<group>"; };
+		4E4A0B237FB9542B3652AA61 /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
 		4F437CC93FEF711A4B8BD328 /* ImmersiveHighlightDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveHighlightDetailView.swift; sourceTree = "<group>"; };
 		513F373BC7DB42A589AB44E8 /* CreateHighlightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateHighlightView.swift; sourceTree = "<group>"; };
 		552D71BE7E32CED89D35A278 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 				5CF1AED8601BA4581B6B85AA /* App */,
 				8EFCBA92733165A7AE1A2405 /* Design */,
 				D6A97FFD17E8ADA86E5A981C /* Models */,
+				E0615423726CDAF72D793EA0 /* Preview Content */,
 				F7E48321CF585FC04732E331 /* Services */,
 				F815E3C9708A3F35B589736E /* Utilities */,
 				8EC0E41A5D74B7C0C65A4FFC /* Views */,
@@ -481,6 +484,14 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		E0615423726CDAF72D793EA0 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				4E4A0B237FB9542B3652AA61 /* PreviewData.swift */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 		E945965052D5C559F0AA5727 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
@@ -669,6 +680,7 @@
 				D4B22C3274D4A1E3D768FD3F /* NostrWalletConnect.swift in Sources */,
 				224179F5F3F178E3DEFA54FF /* OnboardingView.swift in Sources */,
 				27E43CED07B3F0A59D94F368 /* PreferenceKeys.swift in Sources */,
+				56E60BD4D4C416D345463298 /* PreviewData.swift in Sources */,
 				A14D87798BCA853B8ADB1094 /* ProfileManager.swift in Sources */,
 				43920B59A88E931B495919A8 /* PublishingService.swift in Sources */,
 				2629890795B6D0A577BF09D3 /* SelectableMarkdownRenderer.swift in Sources */,

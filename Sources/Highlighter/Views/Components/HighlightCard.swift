@@ -269,14 +269,14 @@ struct CompactHighlightCardView: View {
             highlight: HighlightEvent(
                 id: "1",
                 event: NDKEvent(id: "", pubkey: "", createdAt: 0, kind: 9802, tags: [], content: "", sig: ""),
-                content: "The best way to predict the future is to invent it.",
-                author: "test",
+                content: PreviewData.highlightTexts[1],
+                author: "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m",
                 createdAt: Date(),
-                context: nil,
-                url: "https://example.com",
+                context: PreviewData.highlightContexts[1],
+                url: PreviewData.articleURLs[1],
                 referencedEvent: nil,
                 attributedAuthors: [],
-                comment: "A profound insight"
+                comment: "On decentralized trust models"
             )
         )
         .environmentObject(AppState())

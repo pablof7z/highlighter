@@ -354,7 +354,7 @@ struct SmartArticleImportView: View {
                         .font(.system(size: 16))
                         .foregroundColor(.ds.textTertiary)
                     
-                    TextField("https://example.com/article", text: $urlText)
+                    TextField("https://stratechery.com/2024/article-title", text: $urlText)
                         .font(.ds.body)
                         .foregroundColor(.ds.text)
                         .textFieldStyle(.plain)
