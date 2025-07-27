@@ -116,13 +116,19 @@ struct LibraryView: View {
                             Label(showStats ? "Hide Stats" : "Show Stats", systemImage: "chart.bar")
                         }
                         
-                        Button(action: {}) {
+                        Button(action: { 
+                            // Sort feature removed for now - needs implementation
+                        }) {
                             Label("Sort by Date", systemImage: "arrow.up.arrow.down")
                         }
+                        .disabled(true)
                         
-                        Button(action: {}) {
+                        Button(action: { 
+                            // Export feature removed for now - needs implementation
+                        }) {
                             Label("Export Library", systemImage: "square.and.arrow.up")
                         }
+                        .disabled(true)
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .font(.system(size: 18))
@@ -319,21 +325,24 @@ struct LibraryStatsCard: View {
                 
                 Spacer()
                 
-                // Streak indicator
-                HStack(spacing: DesignSystem.Spacing.mini) {
-                    Image(systemName: "flame.fill")
-                        .font(.system(size: 16))
-                        .foregroundColor(.orange)
-                    Text("7 day streak")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.orange)
+                // Activity indicator - removed hardcoded streak
+                if appState.highlights.count > 0 {
+                    HStack(spacing: DesignSystem.Spacing.mini) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 16))
+                            .foregroundColor(.ds.primary)
+                        Text("Active")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.ds.primary)
+                    }
+                    .padding(.horizontal, DesignSystem.Spacing.base)
+                    .padding(.vertical, DesignSystem.Spacing.mini)
+                    .background(
+                        Capsule()
+                            .fill(Color.ds.primary.opacity(0.15))
+                    )
+                    .transition(.scale.combined(with: .opacity))
                 }
-                .padding(.horizontal, DesignSystem.Spacing.base)
-                .padding(.vertical, DesignSystem.Spacing.mini)
-                .background(
-                    Capsule()
-                        .fill(Color.orange.opacity(0.15))
-                )
             }
             
             // Stats grid
@@ -355,7 +364,7 @@ struct LibraryStatsCard: View {
                 )
                 
                 LibraryStatCard(
-                    value: "\(Int.random(in: 10...50))",
+                    value: "\(appState.savedArticles.count)",
                     label: "Articles",
                     icon: "doc.text.fill",
                     color: .blue,
@@ -858,6 +867,9 @@ struct ViewAllCard: View {
 
 
 struct SavedArticlesSection: View {
+    @EnvironmentObject var appState: AppState
+    @State private var highlightCounts: [String: Int] = [:]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Saved Articles")
@@ -865,61 +877,146 @@ struct SavedArticlesSection: View {
                 .foregroundColor(.ds.text)
                 .padding(.horizontal)
             
-            LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                ForEach(0..<5, id: \.self) { _ in
-                    ArticleRow()
+            if appState.savedArticles.isEmpty {
+                ModernEmptyState(
+                    icon: "doc.text.fill",
+                    title: "No saved articles yet",
+                    message: "Save articles to read them later",
+                    action: {},
+                    actionTitle: "Discover Articles"
+                )
+                .padding(.horizontal)
+            } else {
+                LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                    ForEach(appState.savedArticles) { article in
+                        ArticleRow(
+                            article: article,
+                            highlightCount: highlightCounts[article.id] ?? 0
+                        )
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+        .onAppear {
+            loadHighlightCounts()
+        }
+    }
+    
+    private func loadHighlightCounts() {
+        Task {
+            guard let ndk = appState.ndk else { return }
+            
+            for article in appState.savedArticles {
+                let filter = NDKFilter(
+                    kinds: [9802],
+                    limit: 100,
+                    tags: ["a": ["30023:\(article.author):\(article.identifier)"]]
+                )
+                
+                let dataSource = await ndk.outbox.observe(
+                    filter: filter,
+                    maxAge: 300,
+                    cachePolicy: .cacheOnly
+                )
+                
+                var count = 0
+                for await _ in dataSource.events {
+                    count += 1
+                }
+                
+                await MainActor.run {
+                    highlightCounts[article.id] = count
                 }
             }
-            .padding(.horizontal)
         }
     }
 }
 
 struct ArticleRow: View {
+    let article: Article
+    let highlightCount: Int
+    @State private var showArticleDetail = false
+    
     var body: some View {
-        HStack(spacing: DesignSystem.Spacing.medium) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    LinearGradient(
-                        colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: 80, height: 80)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("The Future of Decentralized Social Media")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.ds.text)
-                    .lineLimit(2)
-                
-                Text("An exploration of how Nostr is changing social media")
-                    .font(.system(size: 14))
-                    .foregroundColor(.ds.textSecondary)
-                    .lineLimit(1)
-                
-                HStack(spacing: DesignSystem.Spacing.medium) {
-                    Label("5 min read", systemImage: "clock")
-                        .font(.system(size: 12))
-                        .foregroundColor(.ds.textTertiary)
-                    
-                    Label("12 highlights", systemImage: "highlighter")
-                        .font(.system(size: 12))
-                        .foregroundColor(.ds.primary)
+        Button(action: { showArticleDetail = true }) {
+            HStack(spacing: DesignSystem.Spacing.medium) {
+                // Article image or gradient
+                Group {
+                    if let imageUrl = article.image, let url = URL(string: imageUrl) {
+                        AsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } placeholder: {
+                            ArticleImagePlaceholder()
+                        }
+                        .frame(width: 80, height: 80)
+                        .clipped()
+                        .cornerRadius(12)
+                    } else {
+                        ArticleImagePlaceholder()
+                            .frame(width: 80, height: 80)
+                            .cornerRadius(12)
+                    }
                 }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(article.title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.ds.text)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    
+                    if let summary = article.summary {
+                        Text(summary)
+                            .font(.system(size: 14))
+                            .foregroundColor(.ds.textSecondary)
+                            .lineLimit(1)
+                    }
+                    
+                    HStack(spacing: DesignSystem.Spacing.medium) {
+                        if let readingTime = ArticleTimeEstimator.estimateReadingTime(for: article.content) {
+                            Label("\(readingTime) min read", systemImage: "clock")
+                                .font(.system(size: 12))
+                                .foregroundColor(.ds.textTertiary)
+                        }
+                        
+                        Label(highlightCount > 0 ? "\(highlightCount) highlights" : "No highlights", 
+                              systemImage: "highlighter")
+                            .font(.system(size: 12))
+                            .foregroundColor(highlightCount > 0 ? .ds.primary : .ds.textTertiary)
+                    }
+                }
+                
+                Spacer()
             }
-            
-            Spacer()
+            .padding(DesignSystem.Spacing.medium)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Color.ds.surface)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(Color.ds.divider, lineWidth: 1)
+            )
         }
-        .padding(DesignSystem.Spacing.medium)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.ds.surface)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.ds.divider, lineWidth: 1)
+        .buttonStyle(PlainButtonStyle())
+        .sheet(isPresented: $showArticleDetail) {
+            ArticleView(article: article)
+        }
+    }
+}
+
+struct ArticleImagePlaceholder: View {
+    var body: some View {
+        LinearGradient(
+            colors: [
+                Color.blue.opacity(0.3),
+                Color.purple.opacity(0.3)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
         )
     }
 }

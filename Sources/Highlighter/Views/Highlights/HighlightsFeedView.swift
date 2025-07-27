@@ -24,6 +24,9 @@ struct HighlightsFeedView: View {
     @State private var articleCache: [String: Article] = [:]
     @State private var articleImages: [String: UIImage] = [:]
     
+    // Comment counts cache
+    @State private var commentCounts: [String: Int] = [:]
+    
     // Animation states
     @State private var backgroundAnimation = false
     @State private var pulseAnimation = false
@@ -68,6 +71,7 @@ struct HighlightsFeedView: View {
                                         selectedHighlight = highlight
                                         showCommentSheet = true
                                     },
+                                    commentCount: commentCounts[highlight.id] ?? 0,
                                     onDoubleTap: {
                                         likeHighlight(highlight)
                                     }
@@ -179,6 +183,11 @@ struct HighlightsFeedView: View {
                             await loadReferencedArticleForHighlight(highlightEvent)
                         }
                     }
+                    
+                    // Load comment count
+                    Task {
+                        await loadCommentCount(for: highlightEvent.id)
+                    }
                 }
             }
         }
@@ -248,6 +257,7 @@ struct HighlightsFeedView: View {
             authorProfiles.removeAll()
             articleCache.removeAll()
             articleImages.removeAll()
+            commentCounts.removeAll()
             currentIndex = 0
         }
         
@@ -377,6 +387,32 @@ struct HighlightsFeedView: View {
         guard let ref = highlight.referencedEvent else { return nil }
         return articleImages[ref]
     }
+    
+    private func loadCommentCount(for highlightId: String) async {
+        guard let ndk = appState.ndk else { return }
+        
+        // Create filter for replies to this highlight (kind 1 events that tag this event)
+        let filter = NDKFilter(
+            kinds: [1], // Kind 1 = text note/comment
+            limit: 50,
+            tags: ["e": [highlightId]]
+        )
+        
+        let dataSource = await ndk.outbox.observe(
+            filter: filter,
+            maxAge: 300, // 5 minute cache
+            cachePolicy: .cacheWithNetwork
+        )
+        
+        var count = 0
+        for await _ in dataSource.events {
+            count += 1
+        }
+        
+        await MainActor.run {
+            self.commentCounts[highlightId] = count
+        }
+    }
 }
 
 // MARK: - Feed Item View
@@ -389,6 +425,7 @@ struct HighlightFeedItemView: View {
     let onZap: () -> Void
     let onShare: () -> Void
     let onComment: () -> Void
+    let commentCount: Int
     let onDoubleTap: () -> Void
     
     @State private var isLiked = false
@@ -487,22 +524,8 @@ struct HighlightFeedItemView: View {
                                 .font(.system(size: 13, weight: .regular))
                                 .foregroundColor(.white)
                             
-                            // Follow button
-                            Button(action: {}) {
-                                Text("Follow")
-                                    .font(.system(size: 12, weight: .medium))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 5)
-                                    .background(
-                                        Capsule()
-                                            .fill(Color.white.opacity(0.15))
-                                            .overlay(
-                                                Capsule()
-                                                    .strokeBorder(Color.white.opacity(0.2), lineWidth: 0.5)
-                                            )
-                                    )
-                            }
+                            // Follow button only shown if not already following
+                            // (Removed for now as it needs proper follow state management)
                         }
                         
                         Spacer()
@@ -556,25 +579,15 @@ struct HighlightFeedItemView: View {
                                     }
                                     .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
                                     
-                                    Text("5")
-                                        .font(.system(size: 11))
-                                        .foregroundColor(.white.opacity(0.8))
+                                    if commentCount > 0 {
+                                        Text("\(commentCount)")
+                                            .font(.system(size: 11))
+                                            .foregroundColor(.white.opacity(0.8))
+                                    }
                                 }
                             }
                             
-                            // Repost
-                            Button(action: {}) {
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.black.opacity(0.3))
-                                        .frame(width: 42, height: 42)
-                                    
-                                    Image(systemName: "arrow.2.squarepath")
-                                        .font(.system(size: 18))
-                                        .foregroundColor(.white)
-                                }
-                                .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
-                            }
+                            // Repost - removed for now as it needs implementation
                             
                             // Share
                             Button(action: onShare) {
