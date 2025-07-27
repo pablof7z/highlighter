@@ -144,7 +144,13 @@ struct ZapButton: View {
                     zapState = .zapped
                 }
                 
-                createParticleEffect()
+                // Use advanced particle effect for smart splits
+                if highlight != nil {
+                    createAdvancedParticleEffect(splitCount: 3) // Author, Highlighter, Platform
+                } else {
+                    createParticleEffect()
+                }
+                
                 HapticManager.shared.notification(.success)
                 
                 // Add a subtle second feedback after delay
@@ -152,15 +158,38 @@ struct ZapButton: View {
                     HapticManager.shared.impact(.light)
                 }
             }
+            
+            // Perform the actual zap with no comment for now
+            performSmartZap(amount: amount, comment: nil)
         }
     }
     
-    // Smart zap functionality will be enabled when Lightning service is integrated
-    /*
     private func performSmartZap(amount: Int, comment: String?) {
-        // Implementation pending Lightning service integration
+        Task {
+            do {
+                if let highlight = highlight {
+                    try await appState.lightningService.sendSmartZap(
+                        amount: amount,
+                        to: highlight,
+                        comment: comment
+                    )
+                    await MainActor.run {
+                        zapAmount = amount
+                        HapticManager.shared.notification(.success)
+                        onZapComplete?()
+                    }
+                } else {
+                    // For regular events, send a standard zap
+                    // This would be implemented when Lightning service supports regular zaps
+                    HapticManager.shared.notification(.warning)
+                }
+            } catch {
+                await MainActor.run {
+                    HapticManager.shared.notification(.error)
+                }
+            }
+        }
     }
-    */
     
     private func createParticleEffect() {
         particles.removeAll()
@@ -183,12 +212,33 @@ struct ZapButton: View {
         }
     }
     
-    // Advanced particle effects for smart splits
-    /*
     private func createAdvancedParticleEffect(splitCount: Int) {
-        // Implementation pending Lightning service integration
+        particles.removeAll()
+        
+        // Create particles for each split recipient
+        for i in 0..<splitCount {
+            let baseAngle = (360.0 / Double(splitCount)) * Double(i)
+            
+            // Create a burst of particles for each recipient
+            for j in 0..<3 {
+                let angleVariation = Double.random(in: -10...10)
+                let angle = baseAngle + angleVariation + (Double(j) * 5)
+                
+                let particle = ZapParticle(
+                    angle: angle,
+                    distance: CGFloat.random(in: 30...60),
+                    duration: Double.random(in: 0.8...1.2),
+                    color: [Color.orange, Color.purple, Color.blue][i % 3].opacity(0.8),
+                    size: CGFloat.random(in: 2...5)
+                )
+                particles.append(particle)
+            }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            particles.removeAll()
+        }
     }
-    */
 }
 
 struct ZapAmountSheet: View {

@@ -55,7 +55,7 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: .ds.large) {
-                    // App Icon Header
+                    // App Icon Header with enhanced animation
                     appIconHeader
                     
                     // Appearance Section

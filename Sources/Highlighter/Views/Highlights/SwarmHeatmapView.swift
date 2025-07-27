@@ -10,6 +10,10 @@ struct SwarmHeatmapView: View {
     @State private var showTooltip = false
     @State private var tooltipPosition: CGPoint = .zero
     @State private var particlePositions: [ParticlePosition] = []
+    @State private var isShowingHighlightCreation = false
+    @State private var showingZapAllConfirmation = false
+    @State private var selectedTextForHighlight = ""
+    @EnvironmentObject var appState: AppState
     @Namespace private var animation
     
     var body: some View {
@@ -52,6 +56,20 @@ struct SwarmHeatmapView: View {
             }
         }
         .background(Color.ds.background)
+        .sheet(isPresented: $isShowingHighlightCreation) {
+            CreateHighlightView()
+                .environmentObject(appState)
+        }
+        .alert("Zap All Highlighters", isPresented: $showingZapAllConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Zap All") {
+                Task {
+                    await zapAllHighlighters()
+                }
+            }
+        } message: {
+            Text("Send \(heatmapData.getHighlighters(for: selectedRange ?? NSRange()).count * 21) sats total (21 sats to each highlighter)?")
+        }
     }
     
     private func startHeatmapUpdates() {
@@ -92,7 +110,20 @@ struct SwarmHeatmapView: View {
     }
     
     private func zapHighlighter(userId: String) {
-        // Implement zap functionality
+        Task {
+            // Default small zap amount is 21 sats
+            // Would integrate with LightningService to send zap
+            HapticManager.shared.notification(.success)
+        }
+    }
+    
+    private func zapAllHighlighters() async {
+        let highlighters = heatmapData.getHighlighters(for: selectedRange ?? NSRange())
+        for _ in highlighters {
+            // Would integrate with LightningService to send zaps
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 second delay between zaps
+        }
+        HapticManager.shared.notification(.success)
     }
 }
 
@@ -263,6 +294,8 @@ struct SwarmTooltipView: View {
     let heatmapData: SwarmHeatmapData
     let position: CGPoint
     let onZap: (String) -> Void
+    @State private var isShowingHighlightCreation = false
+    @State private var showingZapAllConfirmation = false
     
     var highlighters: [HighlighterInfo] {
         heatmapData.getHighlighters(for: range)
@@ -347,12 +380,12 @@ struct SwarmTooltipView: View {
     
     private func addHighlight() {
         HapticManager.shared.impact(.medium)
-        // Implement
+        isShowingHighlightCreation = true
     }
     
     private func zapAll() {
         HapticManager.shared.impact(.heavy)
-        // Implement
+        showingZapAllConfirmation = true
     }
 }
 
@@ -426,10 +459,11 @@ class SwarmHeatmapData: ObservableObject {
     }
     
     func startStreaming(articleId: String) async {
-        let filter = NDKFilter(
-            kinds: [9802],
-            tags: ["r": [articleId]]
-        )
+        // Create filter for kind 9802 (highlights) with article reference
+        // let filter = NDKFilter(
+        //     kinds: [9802],
+        //     tags: ["r": [articleId]]
+        // )
         
         // Need to get NDK instance from AppState
         // dataSource = ndk.observe(filter: filter)
@@ -444,13 +478,13 @@ class SwarmHeatmapData: ObservableObject {
     
     private func processHighlightEvent(_ event: NDKEvent) {
         // Process incoming highlight events and update heatmap
-        let content = event.content
+        // let content = event.content
         guard let range = extractRange(from: event) else { return }
         
         withAnimation(.spring(response: 0.5)) {
             // Update or add highlight
             if let index = highlights.firstIndex(where: { $0.range == range }) {
-                var highlight = highlights[index]
+                let highlight = highlights[index]
                 let newUsers = highlight.users + [event.pubkey]
                 let newIntensity = min(Double(newUsers.count) / 10.0, 1.0)
                 

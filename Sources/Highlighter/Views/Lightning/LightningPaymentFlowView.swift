@@ -618,7 +618,34 @@ struct LightningPaymentFlowView: View {
     }
     
     private func shareTransaction() {
-        // Implement share functionality
+        guard let payment = activePayment else { return }
+        
+        let transactionSummary = """
+        ⚡️ Lightning Payment Complete!
+        
+        Total: \(payment.totalAmount) sats
+        
+        Split to:
+        \(payment.splits.map { "• \($0.recipientName): \($0.amount) sats" }.joined(separator: "\n"))
+        
+        Powered by Highlighter 🎯
+        """
+        
+        let activityVC = UIActivityViewController(
+            activityItems: [transactionSummary],
+            applicationActivities: nil
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let rootVC = window.rootViewController {
+            if let presentedVC = rootVC.presentedViewController {
+                presentedVC.present(activityVC, animated: true)
+            } else {
+                rootVC.present(activityVC, animated: true)
+            }
+        }
+        
         HapticManager.shared.impact(.medium)
     }
 }
@@ -1042,13 +1069,110 @@ struct SplitFlowVisualization: View {
     let payment: LightningService.ActivePayment?
     let animationProgress: CGFloat
     @Binding var particles: [LightningParticle]
+    @State private var pathAnimation: CGFloat = 0
     
     var body: some View {
-        // Implementation of split flow visualization
-        // This would show animated paths from the source to each recipient
-        Text("Split Flow Visualization")
-            .font(.ds.caption)
-            .foregroundColor(.ds.textSecondary)
+        GeometryReader { geometry in
+            ZStack {
+                // Center source point
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [Color.orange, Color.orange.opacity(0.3)],
+                            center: .center,
+                            startRadius: 5,
+                            endRadius: 25
+                        )
+                    )
+                    .frame(width: 50, height: 50)
+                    .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                    .overlay(
+                        Image(systemName: "bolt.fill")
+                            .foregroundColor(.white)
+                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                    )
+                
+                // Animated paths to recipients
+                if let payment = payment {
+                    ForEach(Array(payment.splits.enumerated()), id: \.element.id) { index, split in
+                        SplitPathView(
+                            split: split,
+                            index: index,
+                            totalSplits: payment.splits.count,
+                            centerPoint: CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2),
+                            geometry: geometry,
+                            animationProgress: animationProgress * pathAnimation
+                        )
+                    }
+                }
+            }
+        }
+        .frame(height: 300)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.5)) {
+                pathAnimation = 1
+            }
+        }
+    }
+}
+
+struct SplitPathView: View {
+    let split: LightningService.PaymentSplit
+    let index: Int
+    let totalSplits: Int
+    let centerPoint: CGPoint
+    let geometry: GeometryProxy
+    let animationProgress: CGFloat
+    
+    private var endPoint: CGPoint {
+        let angle = (Double(index) / Double(totalSplits)) * 2 * .pi - .pi / 2
+        let radius = min(geometry.size.width, geometry.size.height) * 0.35
+        return CGPoint(
+            x: centerPoint.x + Foundation.cos(angle) * radius,
+            y: centerPoint.y + Foundation.sin(angle) * radius
+        )
+    }
+    
+    var body: some View {
+        ZStack {
+            // Animated path
+            Path { path in
+                path.move(to: centerPoint)
+                let controlPoint = CGPoint(
+                    x: (centerPoint.x + endPoint.x) / 2,
+                    y: (centerPoint.y + endPoint.y) / 2 - 30
+                )
+                path.addQuadCurve(to: endPoint, control: controlPoint)
+            }
+            .trim(from: 0, to: animationProgress)
+            .stroke(
+                LinearGradient(
+                    colors: [split.type.color, split.type.color.opacity(0.3)],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                ),
+                style: StrokeStyle(lineWidth: 3, lineCap: .round)
+            )
+            
+            // Recipient circle
+            Circle()
+                .fill(split.type.color)
+                .frame(width: 60, height: 60)
+                .overlay(
+                    VStack(spacing: 4) {
+                        Image(systemName: split.type.icon)
+                            .font(.title3)
+                            .foregroundColor(.white)
+                        Text("\(split.amount)")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                    }
+                )
+                .position(endPoint)
+                .scaleEffect(animationProgress)
+                .opacity(animationProgress)
+        }
     }
 }
 
