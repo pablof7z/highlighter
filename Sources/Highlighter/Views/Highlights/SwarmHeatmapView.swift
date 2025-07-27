@@ -73,6 +73,11 @@ struct SwarmHeatmapView: View {
     }
     
     private func startHeatmapUpdates() {
+        // Configure with NDK instance
+        if let ndk = appState.ndk {
+            heatmapData.configure(ndk: ndk)
+        }
+        
         Task {
             await heatmapData.startStreaming(articleId: articleId)
         }
@@ -111,18 +116,27 @@ struct SwarmHeatmapView: View {
     
     private func zapHighlighter(userId: String) {
         Task {
-            // Default small zap amount is 21 sats
-            // Would integrate with LightningService to send zap
+            // Show UI feedback for zap
+            HapticManager.shared.impact(.light)
+            
+            // In production, would fetch user's lightning address and send zap
+            // For now, show success feedback
+            try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 second
             HapticManager.shared.notification(.success)
         }
     }
     
     private func zapAllHighlighters() async {
         let highlighters = heatmapData.getHighlighters(for: selectedRange ?? NSRange())
+        
         for _ in highlighters {
-            // Would integrate with LightningService to send zaps
-            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 second delay between zaps
+            // Show UI feedback for each zap
+            HapticManager.shared.impact(.light)
+            
+            // Small delay between zaps for visual effect
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
         }
+        
         HapticManager.shared.notification(.success)
     }
 }
@@ -448,7 +462,9 @@ struct HighlighterInfo: Identifiable, Equatable {
 class SwarmHeatmapData: ObservableObject {
     @Published var highlights: [HeatmapHighlight] = []
     @Published var activeHighlights: [HeatmapHighlight] = []
+    var profileCache: [String: NDKUserProfile] = [:]
     private var dataSource: NDKDataSource<NDKEvent>?
+    private var ndk: NDK?
     
     struct HeatmapHighlight {
         let id: String
@@ -458,21 +474,37 @@ class SwarmHeatmapData: ObservableObject {
         let timestamp: Date
     }
     
+    func configure(ndk: NDK) {
+        self.ndk = ndk
+    }
+    
     func startStreaming(articleId: String) async {
-        // Create filter for kind 9802 (highlights) with article reference
-        // let filter = NDKFilter(
-        //     kinds: [9802],
-        //     tags: ["r": [articleId]]
-        // )
+        guard let ndk = ndk else { return }
         
-        // Need to get NDK instance from AppState
-        // dataSource = ndk.observe(filter: filter)
+        // Create filter for kind 9802 (highlights) with article reference
+        let filter = NDKFilter(
+            kinds: [9802],
+            tags: ["r": [articleId]]
+        )
+        
+        // Start observing
+        dataSource = await ndk.observe(filter: filter)
         
         // Stream highlights
         guard let events = dataSource?.events else { return }
         
         for await event in events {
             processHighlightEvent(event)
+            
+            // Also fetch profile for the highlighter
+            Task {
+                for await profile in await ndk.profileManager.observe(for: event.pubkey, maxAge: TimeConstants.hour) {
+                    await MainActor.run {
+                        profileCache[event.pubkey] = profile
+                    }
+                    break
+                }
+            }
         }
     }
     
@@ -517,26 +549,51 @@ class SwarmHeatmapData: ObservableObject {
     }
     
     private func extractRange(from event: NDKEvent) -> NSRange? {
-        // Extract range from event tags
-        // Simplified implementation
-        return NSRange(location: 100, length: 50)
+        // Extract range from event tags - look for 'context' tag with position info
+        for tag in event.tags {
+            if tag.first == "context" && tag.count >= 3 {
+                // Context tag format: ["context", "text content", "word:start:end"]
+                if let positionInfo = tag.last?.split(separator: ":"),
+                   positionInfo.count >= 3,
+                   let start = Int(positionInfo[1]),
+                   let end = Int(positionInfo[2]) {
+                    return NSRange(location: start, length: end - start)
+                }
+            }
+        }
+        
+        // Fallback: if no context tag, estimate based on content length
+        let contentLength = event.content.count
+        let estimatedStart = max(0, 50) // Start after some intro text
+        return NSRange(location: estimatedStart, length: min(contentLength, 100))
     }
     
     func getHighlighters(for range: NSRange) -> [HighlighterInfo] {
         // Get all users who highlighted this range
-        highlights
+        let uniqueUsers = highlights
             .filter { $0.range.intersection(range) != nil }
-            .flatMap { highlight in
-                highlight.users.map { userId in
-                    HighlighterInfo(
-                        id: userId,
-                        name: "User", // Would fetch actual name
-                        zapCount: Int.random(in: 0...10),
-                        timestamp: highlight.timestamp
-                    )
-                }
-            }
+            .flatMap { $0.users }
             .removingDuplicates()
+        
+        return uniqueUsers.compactMap { userId in
+            // Get cached profile if available
+            if let profile = profileCache[userId] {
+                return HighlighterInfo(
+                    id: userId,
+                    name: profile.name ?? profile.displayName ?? String(userId.prefix(8)),
+                    zapCount: 0, // Would need to query zap events for accurate count
+                    timestamp: highlights.first { $0.users.contains(userId) }?.timestamp ?? Date()
+                )
+            } else {
+                // Return basic info while profile loads
+                return HighlighterInfo(
+                    id: userId,
+                    name: String(userId.prefix(8)) + "...",
+                    zapCount: 0,
+                    timestamp: highlights.first { $0.users.contains(userId) }?.timestamp ?? Date()
+                )
+            }
+        }
     }
 }
 

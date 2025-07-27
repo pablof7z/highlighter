@@ -373,19 +373,16 @@ struct LibraryStatsCard: View {
             }
         }
         .padding(DesignSystem.Spacing.xl)
+        .modernCard(noPadding: true)
         .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color.ds.surfaceSecondary,
-                            Color.ds.surface
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .shadow(color: Color.black.opacity(0.05), radius: 20, y: 10)
+            LinearGradient(
+                colors: [
+                    Color.ds.surfaceSecondary,
+                    Color.ds.surface
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         )
         .onAppear {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.2)) {
@@ -740,7 +737,10 @@ struct LibraryHighlightCard: View {
     @State private var isBookmarked = false
     
     var body: some View {
-        Button(action: { showDetail = true }) {
+        UnifiedCard(
+            variant: .compact,
+            action: { showDetail = true }
+        ) {
             VStack(alignment: .leading, spacing: 12) {
                 // Header with source
                 if let url = highlight.url {
@@ -793,28 +793,8 @@ struct LibraryHighlightCard: View {
                     .foregroundColor(.ds.primary)
                 }
             }
-            .padding(DesignSystem.Spacing.large)
-            .frame(width: 280, height: 180)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.ds.surface,
-                                Color.ds.surfaceSecondary
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .strokeBorder(Color.ds.divider, lineWidth: 1)
-            )
-            .shadow(color: Color.black.opacity(0.05), radius: 10, y: 5)
+            .frame(height: 140)
         }
-        .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: $showDetail) {
             HighlightDetailView(highlight: highlight)
         }
@@ -826,7 +806,10 @@ struct ViewAllCard: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        UnifiedCard(
+            variant: .placeholder,
+            action: action
+        ) {
             VStack(spacing: DesignSystem.Spacing.medium) {
                 ZStack {
                     Circle()
@@ -848,20 +831,15 @@ struct ViewAllCard: View {
                         .foregroundColor(.ds.textSecondary)
                 }
             }
-            .frame(width: 140, height: 180)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color.ds.surfaceSecondary)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .strokeBorder(
-                                style: StrokeStyle(lineWidth: 2, dash: [8])
-                            )
-                            .foregroundColor(.ds.primary.opacity(0.3))
-                    )
-            )
+            .frame(width: 100, height: 140)
         }
-        .buttonStyle(PlainButtonStyle())
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous)
+                .strokeBorder(
+                    style: StrokeStyle(lineWidth: 2, dash: [8])
+                )
+                .foregroundColor(.ds.primary.opacity(0.3))
+        )
     }
 }
 
@@ -1008,15 +986,7 @@ struct ArticleRow: View {
                 
                 Spacer()
             }
-            .padding(DesignSystem.Spacing.medium)
-            .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color.ds.surface)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(Color.ds.divider, lineWidth: 1)
-            )
+            .modernCard(noPadding: true, isInteractive: true)
             .overlay(
                 // Reading progress bar at the bottom
                 GeometryReader { geometry in
@@ -1240,15 +1210,7 @@ struct EnhancedCurationCard: View {
             .padding(DesignSystem.Spacing.medium)
         }
         .frame(width: 260)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.ds.surface)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .strokeBorder(Color.ds.divider, lineWidth: 1)
-        )
-        .shadow(color: Color.black.opacity(0.08), radius: 12, y: 6)
+        .modernCard(noPadding: true, isInteractive: true)
         .scaleEffect(isPressed ? 0.95 : 1)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPressed)
         .onLongPressGesture(minimumDuration: 0.1, maximumDistance: .infinity, pressing: { pressing in
@@ -1281,16 +1243,14 @@ struct CreateCurationCard: View {
                     .foregroundColor(.ds.text)
             }
             .frame(width: 160, height: 240)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color.purple.opacity(0.05))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .strokeBorder(
-                                style: StrokeStyle(lineWidth: 2, dash: [8])
-                            )
-                            .foregroundColor(.purple.opacity(0.3))
+            .modernCard(noPadding: true, isInteractive: true)
+            .background(Color.purple.opacity(0.05))
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium, style: .continuous)
+                    .strokeBorder(
+                        style: StrokeStyle(lineWidth: 2, dash: [8])
                     )
+                    .foregroundColor(.purple.opacity(0.3))
             )
         }
         .buttonStyle(PlainButtonStyle())

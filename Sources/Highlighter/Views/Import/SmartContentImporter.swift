@@ -796,39 +796,123 @@ class ContentImportManager: ObservableObject {
     
     private func extractFromWeb(_ url: URL) async throws -> String {
         let (data, _) = try await URLSession.shared.data(from: url)
-        if let html = String(data: data, encoding: .utf8) {
-            // Simple HTML stripping (in production, use a proper HTML parser)
-            let stripped = html
-                .replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
-                .replacingOccurrences(of: "&[^;]+;", with: " ", options: .regularExpression)
-            return stripped
+        guard let html = String(data: data, encoding: .utf8) else { return "" }
+        
+        // Use WebKit to properly parse HTML
+        return await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                let webView = WKWebView(frame: .zero)
+                webView.loadHTMLString(html, baseURL: url)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    webView.evaluateJavaScript("""
+                        (function() {
+                            // Try to find article content
+                            let article = document.querySelector('article, main, [role="main"], .content, .post, .entry-content');
+                            if (article) return article.innerText;
+                            
+                            // Remove script and style elements
+                            let scripts = document.querySelectorAll('script, style, noscript');
+                            scripts.forEach(el => el.remove());
+                            
+                            // Get body text
+                            return document.body ? document.body.innerText : document.documentElement.innerText;
+                        })()
+                    """) { result, error in
+                        if let text = result as? String {
+                            continuation.resume(returning: text.trimmingCharacters(in: .whitespacesAndNewlines))
+                        } else {
+                            // Fallback to basic stripping if JavaScript fails
+                            let basicStripped = html
+                                .replacingOccurrences(of: "<script[^>]*>.*?</script>", with: "", options: [.regularExpression, .caseInsensitive])
+                                .replacingOccurrences(of: "<style[^>]*>.*?</style>", with: "", options: [.regularExpression, .caseInsensitive])
+                                .replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
+                                .replacingOccurrences(of: "&nbsp;", with: " ")
+                                .replacingOccurrences(of: "&quot;", with: "\"")
+                                .replacingOccurrences(of: "&apos;", with: "'")
+                                .replacingOccurrences(of: "&amp;", with: "&")
+                                .replacingOccurrences(of: "&lt;", with: "<")
+                                .replacingOccurrences(of: "&gt;", with: ">")
+                                .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+                            continuation.resume(returning: basicStripped.trimmingCharacters(in: .whitespacesAndNewlines))
+                        }
+                    }
+                }
+            }
         }
-        return ""
     }
     
     private func analyzeContent(_ text: String) async -> [SuggestedHighlight] {
         // Use NaturalLanguage framework to find interesting sentences
         var suggestions: [SuggestedHighlight] = []
         
-        let tagger = NLTagger(tagSchemes: [.sentimentScore])
+        let tagger = NLTagger(tagSchemes: [.sentimentScore, .lemma, .nameType])
         tagger.string = text
         
-        let sentences = text.components(separatedBy: .newlines)
-            .flatMap { $0.components(separatedBy: ". ") }
-            .filter { !$0.isEmpty && $0.count > 20 }
+        // Split into sentences properly
+        let detector = NLTokenizer(unit: .sentence)
+        detector.string = text
         
-        for sentence in sentences.prefix(10) {
-            let confidence = Double.random(in: 0.3...1.0) // Simplified scoring
+        var sentences: [(String, Range<String.Index>)] = []
+        detector.enumerateTokens(in: text.startIndex..<text.endIndex) { range, _ in
+            let sentence = String(text[range]).trimmingCharacters(in: .whitespacesAndNewlines)
+            if sentence.count > 30 && sentence.count < 500 { // Good highlight length
+                sentences.append((sentence, range))
+            }
+            return true
+        }
+        
+        // Analyze each sentence
+        for (sentence, range) in sentences.prefix(20) {
+            var confidence: Double = 0.5 // Base score
+            var tags: [String] = []
+            
+            // Check for sentiment
+            if let sentiment = tagger.tag(at: range.lowerBound, unit: .sentence, scheme: .sentimentScore).0 {
+                let sentimentScore = abs(Double(sentiment.rawValue) ?? 0)
+                confidence += sentimentScore * 0.2
+            }
+            
+            // Check for named entities (usually important)
+            var hasNamedEntities = false
+            tagger.enumerateTags(in: range, unit: .word, scheme: .nameType) { tag, _ in
+                if let tag = tag, tag != .other {
+                    hasNamedEntities = true
+                    tags.append(tag.rawValue.lowercased())
+                }
+                return true
+            }
+            if hasNamedEntities {
+                confidence += 0.15
+            }
+            
+            // Check for quotation marks (often insightful)
+            if sentence.contains("\"") || sentence.contains("\u{201C}") || sentence.contains("\u{201D}") {
+                confidence += 0.1
+                tags.append("quote")
+            }
+            
+            // Check for emphasis words
+            let emphasisWords = ["important", "key", "critical", "essential", "fundamental", "significant", "remarkable", "extraordinary"]
+            for word in emphasisWords {
+                if sentence.lowercased().contains(word) {
+                    confidence += 0.1
+                    break
+                }
+            }
+            
+            // Ensure confidence is between 0 and 1
+            confidence = min(max(confidence, 0.0), 1.0)
             
             suggestions.append(SuggestedHighlight(
-                text: sentence.trimmingCharacters(in: .whitespacesAndNewlines),
-                context: text,
+                text: sentence,
+                context: String(text[max(text.startIndex, text.index(range.lowerBound, offsetBy: -100))..<min(text.endIndex, text.index(range.upperBound, offsetBy: 100))]),
                 confidence: confidence,
-                tags: []
+                tags: Array(Set(tags)) // Remove duplicates
             ))
         }
         
-        return suggestions.sorted { $0.confidence > $1.confidence }
+        return suggestions.sorted { $0.confidence > $1.confidence }.prefix(10).map { $0 }
     }
     
     private func extractMetadata(from text: String) -> (title: String, author: String?) {
