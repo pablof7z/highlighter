@@ -376,6 +376,46 @@ struct CurationManagementView: View {
         }
         return false
     }
+    
+    private func shareCuration(_ curation: ArticleCuration) {
+        let shareText = """
+        Check out my curation: \(curation.title ?? curation.name)
+        
+        \(curation.description ?? "A collection of articles on Nostr")
+        
+        nostr:\(curation.id)
+        """
+        
+        let activityController = UIActivityViewController(
+            activityItems: [shareText],
+            applicationActivities: nil
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let rootViewController = window.rootViewController {
+            rootViewController.present(activityController, animated: true)
+        }
+    }
+    
+    private func deleteCuration(_ curation: ArticleCuration) {
+        Task {
+            do {
+                // Delete the curation event
+                try await appState.publishingService.deleteCuration(curation)
+                
+                await MainActor.run {
+                    // Remove from selected curations if present
+                    selectedCurations.remove(curation)
+                    HapticManager.shared.notification(.success)
+                }
+            } catch {
+                await MainActor.run {
+                    HapticManager.shared.notification(.error)
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Grid View
@@ -454,8 +494,45 @@ struct GridView: View {
     }
     
     private func handleDropOnCuration(providers: [NSItemProvider], curation: ArticleCuration) -> Bool {
-        // TODO: Implement adding article to curation
+        guard let provider = providers.first,
+              provider.hasItemConformingToTypeIdentifier(DraggedArticle.typeIdentifier) else {
+            return false
+        }
+        
+        provider.loadDataRepresentation(forTypeIdentifier: DraggedArticle.typeIdentifier) { data, error in
+            guard let data = data,
+                  let draggedArticle = try? JSONDecoder().decode(DraggedArticle.self, from: data) else {
+                return
+            }
+            
+            Task {
+                await addArticleToCuration(draggedArticle, to: curation)
+            }
+        }
+        
+        HapticManager.shared.impact(.medium)
         return true
+    }
+    
+    private func addArticleToCuration(_ article: DraggedArticle, to curation: ArticleCuration) async {
+        do {
+            // Add article reference to curation
+            var updatedCuration = curation
+            if !updatedCuration.articleReferences.contains(article.identifier) {
+                updatedCuration.articleReferences.append(article.identifier)
+                
+                // Publish updated curation event
+                try await appState.publishingService.updateCuration(updatedCuration)
+                
+                await MainActor.run {
+                    HapticManager.shared.notification(.success)
+                }
+            }
+        } catch {
+            await MainActor.run {
+                HapticManager.shared.notification(.error)
+            }
+        }
     }
 }
 
@@ -530,8 +607,45 @@ struct ListView: View {
     }
     
     private func handleDropOnCuration(providers: [NSItemProvider], curation: ArticleCuration) -> Bool {
-        // TODO: Implement adding article to curation
+        guard let provider = providers.first,
+              provider.hasItemConformingToTypeIdentifier(DraggedArticle.typeIdentifier) else {
+            return false
+        }
+        
+        provider.loadDataRepresentation(forTypeIdentifier: DraggedArticle.typeIdentifier) { data, error in
+            guard let data = data,
+                  let draggedArticle = try? JSONDecoder().decode(DraggedArticle.self, from: data) else {
+                return
+            }
+            
+            Task {
+                await addArticleToCuration(draggedArticle, to: curation)
+            }
+        }
+        
+        HapticManager.shared.impact(.medium)
         return true
+    }
+    
+    private func addArticleToCuration(_ article: DraggedArticle, to curation: ArticleCuration) async {
+        do {
+            // Add article reference to curation
+            var updatedCuration = curation
+            if !updatedCuration.articleReferences.contains(article.identifier) {
+                updatedCuration.articleReferences.append(article.identifier)
+                
+                // Publish updated curation event
+                try await appState.publishingService.updateCuration(updatedCuration)
+                
+                await MainActor.run {
+                    HapticManager.shared.notification(.success)
+                }
+            }
+        } catch {
+            await MainActor.run {
+                HapticManager.shared.notification(.error)
+            }
+        }
     }
 }
 
@@ -903,7 +1017,7 @@ struct CurationContextMenu: View {
         }
         
         Button(action: { 
-            // TODO: Implement share functionality
+            shareCuration(curation)
             HapticManager.shared.impact(.light)
         }) {
             Label("Share", systemImage: "square.and.arrow.up")
@@ -912,7 +1026,7 @@ struct CurationContextMenu: View {
         Divider()
         
         Button(role: .destructive, action: {
-            // TODO: Implement delete functionality
+            deleteCuration(curation)
             HapticManager.shared.notification(.warning)
         }) {
             Label("Delete", systemImage: "trash")

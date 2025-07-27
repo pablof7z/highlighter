@@ -13,6 +13,8 @@ struct HighlightsFeedView: View {
     @State private var showHighlightDetail = false
     @State private var showCommentSheet = false
     @State private var hapticPrepared = false
+    @State private var selectedUserPubkey: String?
+    @State private var showUserProfile = false
     @Binding var tabBarVisible: Bool
     
     // Author cache
@@ -122,6 +124,13 @@ struct HighlightsFeedView: View {
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
                     .presentationBackground(.ultraThinMaterial)
+            }
+        }
+        .sheet(isPresented: $showUserProfile) {
+            if let pubkey = selectedUserPubkey {
+                NavigationStack {
+                    UserProfileView(pubkey: pubkey)
+                }
             }
         }
         .onChange(of: currentIndex) { oldValue, newValue in
@@ -248,22 +257,52 @@ struct HighlightsFeedView: View {
     }
     
     private func showProfile(for pubkey: String) {
-        // TODO: Navigate to profile
+        selectedUserPubkey = pubkey
+        showUserProfile = true
         HapticManager.shared.impact(.light)
     }
     
     private func zapHighlight(_ highlight: HighlightEvent) {
-        // TODO: Implement zapping
-        HapticManager.shared.impact(.medium)
+        Task {
+            do {
+                _ = try await appState.lightningService.sendSmartZap(
+                    amount: 1000, // Default 1000 sats
+                    to: highlight,
+                    comment: nil
+                )
+                HapticManager.shared.impact(.medium)
+            } catch {
+                // Handle zap error
+                HapticManager.shared.notification(.error)
+            }
+        }
     }
     
     private func shareHighlight(_ highlight: HighlightEvent) {
-        // TODO: Implement sharing
+        let shareText = """
+        "\(highlight.content)"
+        
+        — Highlighted on Nostr
+        nostr:\(highlight.id)
+        """
+        
+        let activityController = UIActivityViewController(
+            activityItems: [shareText],
+            applicationActivities: nil
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let rootViewController = window.rootViewController {
+            rootViewController.present(activityController, animated: true)
+        }
+        
         HapticManager.shared.impact(.light)
     }
     
     private func commentOnHighlight(_ highlight: HighlightEvent) {
-        // TODO: Implement commenting
+        selectedHighlight = highlight
+        showCommentSheet = true
         HapticManager.shared.impact(.light)
     }
     
@@ -789,7 +828,19 @@ extension HighlightsFeedView {
     
     private func likeHighlight(_ highlight: HighlightEvent) {
         impactGenerator.impactOccurred()
-        // TODO: Implement actual like functionality
+        
+        Task {
+            do {
+                // Create a reaction event (kind: 7)
+                try await appState.engagementService.react(
+                    to: highlight.id,
+                    reaction: "+"  // "+" is a like/upvote
+                )
+            } catch {
+                // Handle reaction error
+                HapticManager.shared.notification(.error)
+            }
+        }
     }
 }
 

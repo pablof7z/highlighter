@@ -375,6 +375,7 @@ struct LibraryFilterChip: View {
 }
 
 struct RecentActivitySection: View {
+    @EnvironmentObject var appState: AppState
     @State private var activities: [ActivityItem] = []
     
     struct ActivityItem: Identifiable {
@@ -433,25 +434,101 @@ struct RecentActivitySection: View {
             }
         }
         .onAppear {
-            generateMockActivities()
+            loadRecentActivities()
         }
     }
     
-    private var mockActivities: [ActivityItem] {
-        activities.isEmpty ? generateMockActivities() : activities
+    private func loadRecentActivities() {
+        Task {
+            guard let ndk = appState.ndk,
+                  let signer = appState.activeSigner else { return }
+            
+            do {
+                let pubkey = try await signer.pubkey
+                let since = Date().addingTimeInterval(-24 * 60 * 60) // Last 24 hours
+                
+                // Fetch recent activities from the user
+                let filter = NDKFilter(
+                    authors: [pubkey],
+                    kinds: [7, 9735, 9802, 30004, 30023], // reactions, zaps, highlights, curations, articles
+                    since: Int(since.timeIntervalSince1970),
+                    limit: 20
+                )
+                
+                let dataSource = await ndk.outbox.observe(filter: filter)
+                var events: [NDKEvent] = []
+                for await event in dataSource.events {
+                    events.append(event)
+                }
+                
+                var newActivities: [ActivityItem] = []
+                
+                for event in events.sorted(by: { $0.createdAt > $1.createdAt }).prefix(10) {
+                    switch event.kind {
+                    case 7: // Reaction
+                        newActivities.append(ActivityItem(
+                            type: .zap,
+                            title: "Reacted to content",
+                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                        ))
+                    case 9735: // Zap
+                        let amount = extractZapAmount(from: event) ?? 0
+                        newActivities.append(ActivityItem(
+                            type: .zap,
+                            title: "Zapped \(amount) sats",
+                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                        ))
+                    case 9802: // Highlight
+                        let preview = String(event.content.prefix(50))
+                        newActivities.append(ActivityItem(
+                            type: .highlight,
+                            title: "Highlighted: \"\(preview)...\"",
+                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                        ))
+                    case 30004: // Curation
+                        if let name = event.tags.first(where: { $0.first == "name" })?.dropFirst().first {
+                            newActivities.append(ActivityItem(
+                                type: .curation,
+                                title: "Created '\(name)'",
+                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                            ))
+                        }
+                    case 30023: // Article
+                        if let title = event.tags.first(where: { $0.first == "title" })?.dropFirst().first {
+                            newActivities.append(ActivityItem(
+                                type: .article,
+                                title: "Saved '\(title)'",
+                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                            ))
+                        }
+                    default:
+                        break
+                    }
+                }
+                
+                await MainActor.run {
+                    activities = newActivities
+                }
+            } catch {
+                // Keep empty activities on error
+            }
+        }
     }
     
-    @discardableResult
-    private func generateMockActivities() -> [ActivityItem] {
-        let newActivities = [
-            ActivityItem(type: .highlight, title: "Highlighted from 'The Future of AI'", time: Date().addingTimeInterval(-300)),
-            ActivityItem(type: .zap, title: "Zapped 1000 sats", time: Date().addingTimeInterval(-1800)),
-            ActivityItem(type: .article, title: "Saved 'Bitcoin Whitepaper'", time: Date().addingTimeInterval(-3600)),
-            ActivityItem(type: .curation, title: "Created 'Tech Insights'", time: Date().addingTimeInterval(-7200)),
-            ActivityItem(type: .highlight, title: "Highlighted from 'SwiftUI Tips'", time: Date().addingTimeInterval(-10800))
-        ]
-        activities = newActivities
-        return newActivities
+    private func extractZapAmount(from event: NDKEvent) -> Int? {
+        // Extract zap amount from bolt11 tag
+        if let bolt11Tag = event.tags.first(where: { $0.first == "bolt11" && $0.count > 1 }),
+           let bolt11 = bolt11Tag[1] as? String {
+            // Simple extraction - in production, use proper Lightning invoice parsing
+            if let range = bolt11.range(of: "lnbc"),
+               let endRange = bolt11.range(of: "1p", range: range.upperBound..<bolt11.endIndex) {
+                let amountString = String(bolt11[range.upperBound..<endRange.lowerBound])
+                if let amount = Int(amountString) {
+                    return amount / 1000 // Convert millisats to sats
+                }
+            }
+        }
+        return nil
     }
 }
 

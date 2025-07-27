@@ -219,4 +219,40 @@ class PublishingService: ObservableObject {
     var canPublish: Bool {
         return ndk != nil && signer != nil && !isPublishing
     }
+    
+    /// Update an existing curation
+    func updateCuration(_ curation: ArticleCuration) async throws {
+        guard let ndk = ndk, let signer = signer else {
+            throw AuthError.noSigner
+        }
+        
+        isPublishing = true
+        lastPublishError = nil
+        
+        do {
+            // Build updated event with same identifier
+            let event = try await ArticleCuration.create(
+                ndk: ndk,
+                name: curation.name,
+                title: curation.title ?? curation.name,
+                description: curation.description,
+                image: curation.image,
+                articles: curation.articleReferences,
+                signer: signer
+            )
+            
+            _ = try await ndk.publish(event)
+            
+        } catch {
+            lastPublishError = error
+            throw error
+        }
+        
+        isPublishing = false
+    }
+    
+    /// Delete a single curation
+    func deleteCuration(_ curation: ArticleCuration) async throws {
+        await deleteCurations([curation])
+    }
 }

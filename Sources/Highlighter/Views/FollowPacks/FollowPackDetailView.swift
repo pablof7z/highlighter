@@ -178,20 +178,65 @@ struct FollowPackDetailView: View {
         HapticManager.shared.impact(.medium)
         
         Task {
-            // TODO: Implement actual follow list update
-            // This would create/update the user's contact list event (kind 3)
-            // For now, just show success immediately
-            
-            await MainActor.run {
-                showSuccess = true
-                HapticManager.shared.notification(.success)
+            do {
+                guard let ndk = appState.ndk,
+                      let signer = appState.activeSigner else {
+                    throw AuthError.noSigner
+                }
                 
-                // Reset after delay
-                Task {
-                    try? await Task.sleep(nanoseconds: 3_000_000_000)
-                    await MainActor.run {
-                        showSuccess = false
+                // Get current contact list
+                let pubkey = try await signer.pubkey
+                let filter = NDKFilter(
+                    authors: [pubkey],
+                    kinds: [3],
+                    limit: 1
+                )
+                
+                let dataSource = await ndk.outbox.observe(filter: filter)
+                var currentFollows: Set<String> = []
+                
+                // Parse existing follows
+                for await event in dataSource.events {
+                    currentFollows = Set(event.tags
+                        .filter { $0.first == "p" && $0.count > 1 }
+                        .compactMap { $0[1] })
+                    break // Only need the first event
+                }
+                
+                // Add follow pack members to current follows
+                for pubkey in followPack.profiles {
+                    currentFollows.insert(pubkey)
+                }
+                
+                // Create new contact list event
+                var tags: [[String]] = []
+                for follow in currentFollows {
+                    tags.append(["p", follow])
+                }
+                
+                let contactEvent = try await NDKEventBuilder(ndk: ndk)
+                    .kind(3)
+                    .content("")
+                    .tags(tags)
+                    .build(signer: signer)
+                
+                _ = try await ndk.publish(contactEvent)
+                
+                await MainActor.run {
+                    showSuccess = true
+                    HapticManager.shared.notification(.success)
+                    
+                    // Reset after delay
+                    Task {
+                        try? await Task.sleep(nanoseconds: 3_000_000_000)
+                        await MainActor.run {
+                            showSuccess = false
+                        }
                     }
+                }
+            } catch {
+                await MainActor.run {
+                    HapticManager.shared.notification(.error)
                 }
             }
         }

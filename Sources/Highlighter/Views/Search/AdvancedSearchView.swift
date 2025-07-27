@@ -533,44 +533,230 @@ struct AdvancedSearchView: View {
         animateResults = false
         
         Task {
-            await MainActor.run {
-                // Mock search results
-                searchResults = SearchResults(
-                    highlights: [
-                        HighlightEvent(
-                            id: "1",
-                            event: NDKEvent(id: "", pubkey: "", createdAt: 0, kind: 9802, tags: [], content: "", sig: ""),
-                            content: "The future belongs to those who believe in the beauty of their dreams.",
-                            author: "test",
-                            createdAt: Date(),
-                            context: nil,
-                            url: "https://example.com",
-                            referencedEvent: nil,
-                            attributedAuthors: [],
-                            comment: nil
-                        )
-                    ],
-                    articles: [],
-                    users: [],
-                    curations: []
-                )
+            guard let ndk = appState.ndk, !searchText.isEmpty else {
+                await MainActor.run {
+                    isSearching = false
+                    searchResults = SearchResults()
+                }
+                return
+            }
+            
+            do {
+                var results = SearchResults()
                 
-                isSearching = false
-                animateResults = true
+                // Search based on selected category
+                switch selectedCategory {
+                case .all:
+                    // Search all types in parallel
+                    async let highlightResults = searchHighlights(ndk: ndk)
+                    async let userResults = searchUsers(ndk: ndk)
+                    async let curationResults = searchCurations(ndk: ndk)
+                    
+                    results.highlights = await highlightResults
+                    results.users = await userResults
+                    results.curations = await curationResults
+                    
+                case .highlights:
+                    results.highlights = await searchHighlights(ndk: ndk)
+                    
+                case .articles:
+                    // Search for articles (kind: 30023)
+                    let articleFilter = NDKFilter(
+                        kinds: [30023],
+                        search: searchText
+                    )
+                    let dataSource = await ndk.outbox.observe(filter: articleFilter)
+                    var articles: [Article] = []
+                    for await event in dataSource.events {
+                        if let article = Article(from: event) {
+                            articles.append(article)
+                        }
+                    }
+                    results.articles = articles
+                    
+                case .users:
+                    results.users = await searchUsers(ndk: ndk)
+                    
+                case .curations:
+                    results.curations = await searchCurations(ndk: ndk)
+                }
+                
+                await MainActor.run {
+                    searchResults = results
+                    isSearching = false
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        animateResults = true
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    isSearching = false
+                    // Handle error appropriately
+                }
             }
         }
     }
     
+    private func searchHighlights(ndk: NDK) async -> [HighlightEvent] {
+        do {
+            let filter = NDKFilter(
+                kinds: [9802],
+                search: searchText
+            )
+            let dataSource = await ndk.outbox.observe(filter: filter)
+            var highlights: [HighlightEvent] = []
+            for await event in dataSource.events {
+                if let highlight = HighlightEvent(from: event) {
+                    highlights.append(highlight)
+                }
+            }
+            return highlights
+        } catch {
+            return []
+        }
+    }
+    
+    private func searchUsers(ndk: NDK) async -> [(pubkey: String, profile: NDKUserProfile)] {
+        do {
+            // Search user metadata
+            let filter = NDKFilter(
+                kinds: [0],
+                search: searchText
+            )
+            let dataSource = await ndk.outbox.observe(filter: filter)
+            
+            var users: [(pubkey: String, profile: NDKUserProfile)] = []
+            for await event in dataSource.events {
+                if let profile = try? JSONDecoder().decode(NDKUserProfile.self, from: Data(event.content.utf8)) {
+                    users.append((event.pubkey, profile))
+                }
+            }
+            return users
+        } catch {
+            return []
+        }
+    }
+    
+    private func searchCurations(ndk: NDK) async -> [ArticleCuration] {
+        do {
+            let filter = NDKFilter(
+                kinds: [30004],
+                search: searchText
+            )
+            let dataSource = await ndk.outbox.observe(filter: filter)
+            var curations: [ArticleCuration] = []
+            for await event in dataSource.events {
+                if let curation = ArticleCuration(from: event) {
+                    curations.append(curation)
+                }
+            }
+            return curations
+        } catch {
+            return []
+        }
+    }
+    
     private func loadTrendingTopics() {
-        // Mock trending topics
-        trendingTopics = [
-            TrendingTopic(topic: "Bitcoin", count: 1523, trend: 0.8, icon: "bitcoinsign.circle"),
-            TrendingTopic(topic: "Nostr Protocol", count: 892, trend: 0.6, icon: "network"),
-            TrendingTopic(topic: "Web3", count: 654, trend: -0.2, icon: "globe"),
-            TrendingTopic(topic: "AI & ML", count: 2341, trend: 0.9, icon: "brain"),
-            TrendingTopic(topic: "Privacy", count: 445, trend: 0.3, icon: "lock.shield"),
-            TrendingTopic(topic: "Lightning", count: 778, trend: 0.5, icon: "bolt")
-        ]
+        Task {
+            guard let ndk = appState.ndk else { return }
+            
+            do {
+                // Fetch recent highlights to analyze trending topics
+                let since = Date().addingTimeInterval(-24 * 60 * 60) // Last 24 hours
+                let filter = NDKFilter(
+                    kinds: [9802],
+                    since: Int(since.timeIntervalSince1970)
+                )
+                
+                let dataSource = await ndk.outbox.observe(filter: filter)
+                var events: [NDKEvent] = []
+                for await event in dataSource.events {
+                    events.append(event)
+                }
+                
+                // Extract and count hashtags/topics from highlights
+                var topicCounts: [String: Int] = [:]
+                
+                for event in events {
+                    // Extract hashtags from tags
+                    let hashtags = event.tags
+                        .filter { $0.first == "t" }
+                        .compactMap { $0.count > 1 ? $0[1] : nil }
+                    
+                    for hashtag in hashtags {
+                        topicCounts[hashtag, default: 0] += 1
+                    }
+                    
+                    // Also extract common keywords from content
+                    let keywords = extractKeywords(from: event.content)
+                    for keyword in keywords {
+                        topicCounts[keyword, default: 0] += 1
+                    }
+                }
+                
+                // Convert to TrendingTopic objects and sort by count
+                let topics = topicCounts
+                    .sorted { $0.value > $1.value }
+                    .prefix(6)
+                    .map { topic, count in
+                        TrendingTopic(
+                            topic: topic.capitalized,
+                            count: count,
+                            trend: Double.random(in: -0.5...1.0), // Calculate real trend in production
+                            icon: iconForTopic(topic)
+                        )
+                    }
+                
+                await MainActor.run {
+                    trendingTopics = Array(topics)
+                }
+            } catch {
+                // Keep empty trending topics on error
+            }
+        }
+    }
+    
+    private func extractKeywords(from content: String) -> [String] {
+        // Simple keyword extraction - in production, use NLP
+        let commonWords = Set(["the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by", "from", "as", "is", "was", "are", "were", "been", "be", "have", "has", "had", "do", "does", "did", "will", "would", "could", "should", "may", "might", "must", "can", "this", "that", "these", "those", "i", "you", "he", "she", "it", "we", "they", "them", "their", "what", "which", "who", "when", "where", "why", "how", "not", "no", "yes"])
+        
+        let words = content.lowercased()
+            .components(separatedBy: .whitespacesAndNewlines)
+            .joined(separator: " ")
+            .components(separatedBy: .punctuationCharacters)
+            .filter { $0.count > 3 && !commonWords.contains($0) }
+        
+        // Count word frequency
+        var wordCounts: [String: Int] = [:]
+        for word in words {
+            wordCounts[word, default: 0] += 1
+        }
+        
+        // Return top keywords
+        return wordCounts
+            .sorted { $0.value > $1.value }
+            .prefix(3)
+            .map { $0.key }
+    }
+    
+    private func iconForTopic(_ topic: String) -> String {
+        let lowercased = topic.lowercased()
+        switch lowercased {
+        case let t where t.contains("bitcoin") || t.contains("btc"):
+            return "bitcoinsign.circle"
+        case let t where t.contains("lightning") || t.contains("ln"):
+            return "bolt"
+        case let t where t.contains("nostr"):
+            return "network"
+        case let t where t.contains("ai") || t.contains("ml") || t.contains("artificial"):
+            return "brain"
+        case let t where t.contains("privacy") || t.contains("security"):
+            return "lock.shield"
+        case let t where t.contains("web3") || t.contains("crypto"):
+            return "globe"
+        default:
+            return "tag"
+        }
     }
     
     private func loadRecentSearches() {
@@ -590,13 +776,33 @@ struct AdvancedSearchView: View {
     }
     
     private func generateAISuggestions() {
-        // Mock AI suggestions based on context
-        aiSuggestions = [
-            "Bitcoin price predictions 2024",
-            "Best Nostr clients for iOS",
-            "How to set up Lightning wallet",
-            "Privacy-focused social networks"
-        ]
+        // Generate contextual suggestions based on trending topics and recent searches
+        var suggestions: [String] = []
+        
+        // Add suggestions based on trending topics
+        for topic in trendingTopics.prefix(3) {
+            suggestions.append("Latest \(topic.topic) highlights")
+        }
+        
+        // Add suggestions based on partial search text
+        if !searchText.isEmpty {
+            suggestions.append("\(searchText) articles and discussions")
+            if searchText.count > 3 {
+                suggestions.append("Authors writing about \(searchText)")
+            }
+        }
+        
+        // Add general suggestions if needed
+        if suggestions.count < 4 {
+            let generalSuggestions = [
+                "Popular highlights today",
+                "Trending article collections",
+                "New voices to follow"
+            ]
+            suggestions.append(contentsOf: generalSuggestions.prefix(4 - suggestions.count))
+        }
+        
+        aiSuggestions = Array(suggestions.prefix(4))
     }
     
     private func startPulseAnimation() {
