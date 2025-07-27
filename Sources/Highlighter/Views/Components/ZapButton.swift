@@ -55,9 +55,9 @@ struct ZapButton: View {
         var color: Color {
             switch self {
             case .idle: return DesignSystem.Colors.textSecondary
-            case .zapping: return DesignSystem.Colors.primaryDark
+            case .zapping: return DesignSystem.Colors.primary.opacity(0.7)
             case .zapped: return DesignSystem.Colors.primary
-            case .failed: return .red
+            case .failed: return Color.red.opacity(0.7)
             }
         }
     }
@@ -70,26 +70,21 @@ struct ZapButton: View {
             }
             
             Button(action: handleZap) {
-                HStack(spacing: 6) {
+                HStack(spacing: 4) {
                     Image(systemName: zapState.iconName)
-                        .font(.system(size: size.iconSize, weight: .medium))
-                        .foregroundColor(.white)
-                        .scaleEffect(zapState == .zapping ? 1.3 : 1.0)
-                        .rotationEffect(zapState == .zapping ? .degrees(15) : .degrees(0))
-                        .animation(
-                            .spring(response: 0.3, dampingFraction: 0.6),
-                            value: zapState
-                        )
+                        .font(.system(size: size.iconSize, weight: zapState == .zapped ? .semibold : .regular))
+                        .foregroundColor(zapState.color)
+                        .animation(.easeInOut(duration: 0.2), value: zapState)
                     
                     if zapState == .zapped {
                         Text("\(zapAmount)")
-                            .font(.system(size: size.iconSize * 0.8, weight: .semibold, design: .rounded))
-                            .foregroundColor(.white)
-                            .transition(.scale.combined(with: .opacity))
+                            .font(.system(size: size.iconSize * 0.7, weight: .medium, design: .rounded))
+                            .foregroundColor(zapState.color)
+                            .transition(.opacity)
                     }
                 }
-                .padding(.horizontal, size.padding)
-                .padding(.vertical, size.padding * 0.75)
+                .padding(.horizontal, size.padding * 0.8)
+                .padding(.vertical, size.padding * 0.6)
             }
             .enhancedZapButton()
             .contextualFeedback(isActive: zapState == .zapping)
@@ -133,7 +128,7 @@ struct ZapButton: View {
     }
     
     private func performZap(amount: Int) {
-        guard let ndk = appState.ndk else { return }
+        guard appState.ndk != nil else { return }
         
         zapState = .zapping
         HapticManager.shared.impact(.medium)
@@ -170,17 +165,20 @@ struct ZapButton: View {
     private func createParticleEffect() {
         particles.removeAll()
         
-        for i in 0..<12 {
-            let angle = Double(i) * (360.0 / 12.0)
+        // More subtle particle effect with fewer particles
+        for i in 0..<6 {
+            let angle = Double(i) * 60.0 + Double.random(in: -15...15)
             let particle = ZapParticle(
                 angle: angle,
-                distance: CGFloat.random(in: 30...80),
-                duration: Double.random(in: 0.6...1.2)
+                distance: CGFloat.random(in: 20...40),
+                duration: Double.random(in: 0.8...1.0),
+                color: DesignSystem.Colors.primary.opacity(0.8),
+                size: 3
             )
             particles.append(particle)
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             particles.removeAll()
         }
     }
@@ -206,45 +204,11 @@ struct ZapAmountSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
-                // Enhanced lightning bolt animation
-                ZStack {
-                    // Background glow effect
-                    Circle()
-                        .fill(
-                            RadialGradient(
-                                colors: [
-                                    DesignSystem.Colors.secondary.opacity(0.3),
-                                    DesignSystem.Colors.secondary.opacity(0.1),
-                                    Color.clear
-                                ],
-                                center: .center,
-                                startRadius: 10,
-                                endRadius: 50
-                            )
-                        )
-                        .frame(width: 100, height: 100)
-                        .pulseGently()
-                    
-                    // Main lightning bolt
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: 60, weight: .medium))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [
-                                    DesignSystem.Colors.secondary,
-                                    DesignSystem.Colors.secondaryDark
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .shadow(
-                            color: DesignSystem.Colors.secondary.opacity(0.4),
-                            radius: 8,
-                            x: 0,
-                            y: 4
-                        )
-                }
+                // Simplified lightning icon
+                Image(systemName: "bolt.fill")
+                    .font(.system(size: 48, weight: .regular))
+                    .foregroundColor(DesignSystem.Colors.primary)
+                    .padding(.bottom, 8)
                 .padding(.top)
                 
                 VStack(spacing: 8) {

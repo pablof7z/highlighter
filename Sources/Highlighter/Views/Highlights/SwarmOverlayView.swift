@@ -1023,10 +1023,8 @@ struct SwarmHighlightRow: View {
                     )
                 } else {
                     // Show wallet connection UI if not connected
-                    print("Lightning wallet not connected")
                 }
             } catch {
-                print("Failed to send zap: \(error)")
                 HapticManager.shared.notification(.error)
             }
         }

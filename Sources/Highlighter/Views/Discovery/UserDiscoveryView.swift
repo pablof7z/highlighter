@@ -204,7 +204,6 @@ struct UserCard: View {
                     break
                 }
             } catch {
-                print("Failed to get current user pubkey: \(error)")
             }
         }
     }

@@ -238,7 +238,6 @@ struct EnhancedAsyncProfileImage: View {
                 }
             }
         } catch {
-            print("Failed to load profile image: \(error)")
             await MainActor.run {
                 imageState = .failed
             }

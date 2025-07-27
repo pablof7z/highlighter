@@ -3,7 +3,6 @@ import SwiftUI
 struct OnboardingView: View {
     @State private var currentPage = 0
     @State private var animateElements = false
-    @State private var particleAnimation = false
     @State private var showImportSheet = false
     @State private var privateKey = ""
     @Binding var hasCompletedOnboarding: Bool
@@ -17,9 +16,8 @@ struct OnboardingView: View {
             // Dynamic gradient background
             OnboardingGradientBackground(currentPage: currentPage)
             
-            // Floating particles
-            FloatingParticlesView(animate: $particleAnimation)
-                .opacity(0.6)
+            // Subtle ambient background
+            Color.black.opacity(0.3)
             
             VStack(spacing: 0) {
                 // Skip button
@@ -106,7 +104,6 @@ struct OnboardingView: View {
         .onAppear {
             withAnimation(.easeOut(duration: 1.0)) {
                 animateElements = true
-                particleAnimation = true
             }
         }
         .onChange(of: currentPage) { _ in
@@ -197,44 +194,26 @@ struct OnboardingPageView: View {
         VStack(spacing: 48) {
             Spacer()
             
-            // Animated icon
+            // Simplified icon
             ZStack {
-                // Glow effect
-                Circle()
-                    .fill(page.iconColor.opacity(0.3))
-                    .frame(width: 160, height: 160)
-                    .blur(radius: 40)
-                    .scaleEffect(animateIcon ? 1.2 : 0.8)
-                    .animation(
-                        .easeInOut(duration: 3)
-                        .repeatForever(autoreverses: true),
-                        value: animateIcon
-                    )
-                
-                // Icon background
+                // Subtle background
                 Circle()
                     .fill(
                         LinearGradient(
                             colors: [
-                                page.iconColor.opacity(0.3),
-                                page.iconColor.opacity(0.1)
+                                page.iconColor.opacity(0.2),
+                                page.iconColor.opacity(0.05)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                    .frame(width: 120, height: 120)
+                    .frame(width: 100, height: 100)
                 
                 // Main icon
                 Image(systemName: page.icon)
-                    .font(.system(size: 56, weight: .medium))
+                    .font(.system(size: 48, weight: .regular))
                     .foregroundColor(.white)
-                    .rotationEffect(.degrees(animateIcon ? 5 : -5))
-                    .animation(
-                        .easeInOut(duration: 4)
-                        .repeatForever(autoreverses: true),
-                        value: animateIcon
-                    )
             }
             .scaleEffect(isActive ? 1.0 : 0.8)
             .opacity(isActive ? 1.0 : 0.5)
@@ -324,12 +303,12 @@ struct OnboardingGradientBackground: View {
     
     private var gradientColors: [Color] {
         switch currentPage {
-        case 0: return [Color.orange.opacity(0.6), Color.pink.opacity(0.4)]
-        case 1: return [Color.purple.opacity(0.6), Color.blue.opacity(0.4)]
-        case 2: return [Color.blue.opacity(0.6), Color.cyan.opacity(0.4)]
-        case 3: return [Color.green.opacity(0.6), Color.teal.opacity(0.4)]
-        case 4: return [Color.purple.opacity(0.6), Color.orange.opacity(0.4)]
-        default: return [Color.orange.opacity(0.6), Color.pink.opacity(0.4)]
+        case 0: return [Color.orange.opacity(0.3), Color.pink.opacity(0.2)]
+        case 1: return [Color.purple.opacity(0.3), Color.blue.opacity(0.2)]
+        case 2: return [Color.blue.opacity(0.3), Color.cyan.opacity(0.2)]
+        case 3: return [Color.green.opacity(0.3), Color.teal.opacity(0.2)]
+        case 4: return [Color.purple.opacity(0.3), Color.orange.opacity(0.2)]
+        default: return [Color.orange.opacity(0.3), Color.pink.opacity(0.2)]
         }
     }
     
@@ -385,29 +364,10 @@ struct OnboardingActionButton: View {
                         )
                     )
                 
-                // Shimmer effect for last page
+                // Simple border for last page
                 if isLastPage {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0),
-                                    Color.white.opacity(0.3),
-                                    Color.white.opacity(0)
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .offset(x: shimmerAnimation ? 200 : -200)
-                        .animation(
-                            .linear(duration: 1.5)
-                            .repeatForever(autoreverses: false),
-                            value: shimmerAnimation
-                        )
-                        .mask(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        )
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
                 }
                 
                 // Button text
@@ -446,30 +406,7 @@ struct OnboardingActionButton: View {
     }
 }
 
-struct FloatingParticlesView: View {
-    @Binding var animate: Bool
-    let particleCount = 20
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ForEach(0..<particleCount, id: \.self) { index in
-                Circle()
-                    .fill(Color.white.opacity(0.2))
-                    .frame(width: CGFloat.random(in: 2...6))
-                    .position(
-                        x: CGFloat.random(in: 0...geometry.size.width),
-                        y: animate ? -10 : geometry.size.height + 10
-                    )
-                    .animation(
-                        .linear(duration: Double.random(in: 10...20))
-                        .repeatForever(autoreverses: false)
-                        .delay(Double(index) * 0.5),
-                        value: animate
-                    )
-            }
-        }
-    }
-}
+// Floating particles removed for cleaner UI
 
 // MARK: - Authentication Page
 
@@ -489,42 +426,24 @@ struct OnboardingAuthView: View {
             // Icon and title
             VStack(spacing: 24) {
                 ZStack {
-                    // Glow effect
-                    Circle()
-                        .fill(Color.purple.opacity(0.3))
-                        .frame(width: 160, height: 160)
-                        .blur(radius: 40)
-                        .scaleEffect(animateContent ? 1.2 : 0.8)
-                        .animation(
-                            .easeInOut(duration: 3)
-                            .repeatForever(autoreverses: true),
-                            value: animateContent
-                        )
-                    
-                    // Icon background
+                    // Subtle background
                     Circle()
                         .fill(
                             LinearGradient(
                                 colors: [
-                                    Color.purple.opacity(0.3),
-                                    Color.orange.opacity(0.2)
+                                    Color.purple.opacity(0.2),
+                                    Color.orange.opacity(0.1)
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .frame(width: 120, height: 120)
+                        .frame(width: 100, height: 100)
                     
                     // Key icon
                     Image(systemName: "key.fill")
-                        .font(.system(size: 56, weight: .medium))
+                        .font(.system(size: 48, weight: .regular))
                         .foregroundColor(.white)
-                        .rotationEffect(.degrees(animateContent ? -5 : 5))
-                        .animation(
-                            .easeInOut(duration: 4)
-                            .repeatForever(autoreverses: true),
-                            value: animateContent
-                        )
                 }
                 .scaleEffect(isActive ? 1.0 : 0.8)
                 .opacity(isActive ? 1.0 : 0.5)

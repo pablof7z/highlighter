@@ -150,7 +150,6 @@ struct EnhancedProfileView: View {
                 do {
                     currentPubkey = try await signer.pubkey
                 } catch {
-                    print("Failed to get pubkey: \(error)")
                 }
             }
             await loadUserContent()
@@ -446,7 +445,6 @@ struct EnhancedProfileView: View {
         } catch {
             await MainActor.run {
                 isLoading = false
-                print("Failed to load user content: \(error)")
             }
         }
     }

@@ -365,7 +365,6 @@ struct HighlightsFeedView: View {
                 }
             }
         } catch {
-            print("Failed to load article image: \(error)")
         }
     }
     
@@ -776,7 +775,6 @@ struct CommentSheetView: View {
             )
             dismiss()
         } catch {
-            print("Failed to post comment: \(error)")
         }
     }
 }

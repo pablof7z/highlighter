@@ -80,6 +80,15 @@ class AppState: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func configureServices(ndk: NDK, signer: NDKSigner?) {
+        dataStreamManager.configure(with: ndk)
+        profileManager.configure(with: ndk)
+        publishingService.configure(with: ndk, signer: signer)
+        bookmarkService.configure(with: ndk, signer: signer)
+        commentService.configure(with: ndk, signer: signer)
+        engagementService.configure(with: ndk, signer: signer)
+    }
+    
     func initialize() async {
         do {
             // Setup NDK with cache
@@ -90,20 +99,16 @@ class AppState: ObservableObject {
             )
             
             // Configure services with NDK instance
-            dataStreamManager.configure(with: ndk!)
-            profileManager.configure(with: ndk!)
-            publishingService.configure(with: ndk!, signer: authManager.activeSigner)
-            bookmarkService.configure(with: ndk!, signer: authManager.activeSigner)
-            commentService.configure(with: ndk!, signer: authManager.activeSigner)
-            engagementService.configure(with: ndk!, signer: authManager.activeSigner)
+            guard let ndk = ndk else { return }
+            configureServices(ndk: ndk, signer: authManager.activeSigner)
             
             // Connect to relays asynchronously
             Task {
-                await ndk?.connect()
+                await ndk.connect()
             }
             
             // Set NDK instance in auth manager
-            authManager.setNDK(ndk!)
+            authManager.setNDK(ndk)
             
             // Initialize auth manager (restores sessions automatically)
             // await authManager.initialize()
@@ -120,14 +125,6 @@ class AppState: ObservableObject {
             
             // If authenticated after restore, start services immediately
             if authManager.isAuthenticated {
-                // Update services with restored signer
-                if let signer = authManager.activeSigner {
-                    publishingService.configure(with: ndk!, signer: signer)
-                    bookmarkService.configure(with: ndk!, signer: signer)
-                    commentService.configure(with: ndk!, signer: signer)
-                    engagementService.configure(with: ndk!, signer: signer)
-                }
-                
                 // Start streaming data
                 await dataStreamManager.startAllStreams()
                 
@@ -166,10 +163,7 @@ class AppState: ObservableObject {
         try await authManager.switchToSession(session)
         
         // Update services with new signer
-        publishingService.configure(with: ndk, signer: signer)
-        bookmarkService.configure(with: ndk, signer: signer)
-        commentService.configure(with: ndk, signer: signer)
-        engagementService.configure(with: ndk, signer: signer)
+        configureServices(ndk: ndk, signer: signer)
         
         // Start streaming data
         await dataStreamManager.startAllStreams()
@@ -198,10 +192,7 @@ class AppState: ObservableObject {
         try await authManager.switchToSession(session)
         
         // Update services with new signer
-        publishingService.configure(with: ndk, signer: signer)
-        bookmarkService.configure(with: ndk, signer: signer)
-        commentService.configure(with: ndk, signer: signer)
-        engagementService.configure(with: ndk, signer: signer)
+        configureServices(ndk: ndk, signer: signer)
         
         // Start streaming data
         await dataStreamManager.startAllStreams()

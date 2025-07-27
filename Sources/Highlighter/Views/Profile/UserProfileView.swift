@@ -363,7 +363,6 @@ struct UserProfileView: View {
                     }
                 }
             } catch {
-                print("Failed to follow user: \(error)")
                 await MainActor.run {
                     isFollowing = false
                 }
@@ -415,7 +414,6 @@ struct UserProfileView: View {
                     profileManager.stats.followerCount = max(0, profileManager.stats.followerCount - 1)
                 }
             } catch {
-                print("Failed to unfollow user: \(error)")
                 await MainActor.run {
                     isFollowing = true
                 }

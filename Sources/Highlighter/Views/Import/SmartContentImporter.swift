@@ -704,7 +704,6 @@ struct CameraImportView: View {
         do {
             try requestHandler.perform([request])
         } catch {
-            print("Failed to perform OCR: \(error)")
         }
     }
 }

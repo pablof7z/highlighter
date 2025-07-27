@@ -99,14 +99,11 @@ struct HybridFeedView: View {
             .navigationBarHidden(true)
         }
         .onAppear {
-            print("🔍 HybridFeedView appeared, setting appState")
             dataManager.appState = appState
             startAnimations()
         }
         .task {
-            print("🔍 Starting data streaming...")
             await dataManager.startStreaming()
-            print("🔍 Data streaming started, articles count: \(dataManager.highlightedArticles.count)")
         }
         .sheet(isPresented: $showingHighlightDetail) {
             if let highlight = activeHighlight {

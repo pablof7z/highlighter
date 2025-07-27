@@ -441,7 +441,6 @@ struct CurationManagementView: View {
             HapticManager.shared.notification(.success)
         } catch {
             HapticManager.shared.notification(.error)
-            print("Failed to add article to curation: \(error.localizedDescription)")
         }
     }
 }

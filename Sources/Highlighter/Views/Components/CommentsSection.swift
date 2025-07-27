@@ -262,7 +262,6 @@ struct CommentsSection: View {
                     HapticManager.shared.impact(.medium)
                 }
             } catch {
-                print("Failed to post comment: \(error)")
                 await MainActor.run {
                     isPostingComment = false
                 }

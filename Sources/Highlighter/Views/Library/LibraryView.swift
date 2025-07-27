@@ -208,7 +208,6 @@ struct LibraryView: View {
                 appState.highlights = highlights.sorted { $0.createdAt > $1.createdAt }
             }
         } catch {
-            print("Failed to load highlights: \(error)")
         }
     }
     
@@ -240,7 +239,6 @@ struct LibraryView: View {
                 appState.userCurations = curations.sorted { $0.createdAt > $1.createdAt }
             }
         } catch {
-            print("Failed to load curations: \(error)")
         }
     }
     
@@ -272,7 +270,6 @@ struct LibraryView: View {
                 appState.savedArticles = articles.sorted { $0.createdAt > $1.createdAt }
             }
         } catch {
-            print("Failed to load articles: \(error)")
         }
     }
     

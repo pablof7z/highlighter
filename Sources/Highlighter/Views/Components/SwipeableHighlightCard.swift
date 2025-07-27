@@ -524,7 +524,6 @@ struct SwipeableCardStack: View {
                 // Show success feedback
                 HapticManager.shared.notification(.success)
             } catch {
-                print("Error saving highlight: \(error)")
                 HapticManager.shared.notification(.error)
             }
         }
@@ -532,14 +531,9 @@ struct SwipeableCardStack: View {
     
     private func archiveHighlight(_ highlight: HighlightEvent) {
         Task {
-            do {
-                // Remove from feed (archive doesn't exist in the service yet, so we'll just remove from view)
-                // In a real implementation, this would mark as archived
-                HapticManager.shared.notification(.success)
-            } catch {
-                print("Error archiving highlight: \(error)")
-                HapticManager.shared.notification(.error)
-            }
+            // Remove from feed (archive doesn't exist in the service yet, so we'll just remove from view)
+            // In a real implementation, this would mark as archived
+            HapticManager.shared.notification(.success)
         }
     }
 }

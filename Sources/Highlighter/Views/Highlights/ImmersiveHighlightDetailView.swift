@@ -643,7 +643,7 @@ struct ImmersiveHighlightDetailView: View {
     // MARK: - Helper Methods
     
     private func loadData() async {
-        guard let ndk = appState.ndk else { return }
+        guard appState.ndk != nil else { return }
         
         // Load author profile
         if let profile = appState.profileManager.getCachedProfile(for: highlight.author) {
@@ -746,7 +746,6 @@ struct ImmersiveHighlightDetailView: View {
             do {
                 try await appState.bookmarkService.toggleHighlightBookmark(highlight)
             } catch {
-                print("Failed to toggle bookmark: \(error)")
                 // Revert the UI state on error
                 await MainActor.run {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
@@ -778,13 +777,11 @@ struct ImmersiveHighlightDetailView: View {
                     )
                 } else {
                     // Show wallet connection UI if not connected
-                    print("Lightning wallet not connected")
                     await MainActor.run {
                         hasZapped = false
                     }
                 }
             } catch {
-                print("Failed to send zap: \(error)")
                 HapticManager.shared.notification(.error)
                 await MainActor.run {
                     hasZapped = false

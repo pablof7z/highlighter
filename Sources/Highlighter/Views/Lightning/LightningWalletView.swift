@@ -65,7 +65,6 @@ struct LightningWalletView: View {
                         do {
                             try await lightning.connectWallet(connectionString: connection)
                         } catch {
-                            print("Failed to connect: \(error)")
                         }
                     }
                 }
