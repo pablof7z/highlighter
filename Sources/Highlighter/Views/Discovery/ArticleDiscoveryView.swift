@@ -130,7 +130,7 @@ struct ArticleDiscoveryView: View {
                     .padding(.vertical, 10)
                     .background(
                         Capsule()
-                            .fill(Color.ds.primary.opacity(0.1)
+                            .fill(Color.ds.primary.opacity(0.1))
                             .overlay(
                                 Capsule()
                                     .strokeBorder(Color.ds.primary.opacity(0.2), lineWidth: 1)
@@ -159,7 +159,7 @@ struct ArticleDiscoveryView: View {
                     .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill(Color.purple.opacity(0.1)
+                            .fill(Color.purple.opacity(0.1))
                     )
             }
             .padding(.horizontal)
@@ -218,7 +218,7 @@ struct ArticleDiscoveryView: View {
             if viewModel.articles.isEmpty && !viewModel.isLoading {
                 VStack(spacing: 16) {
                     Image(systemName: "magnifyingglass")
-                        .font(.system(size: 60)
+                        .font(.system(size: 60))
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                     
                     Text("No articles found")
@@ -259,7 +259,7 @@ struct ArticleDiscoveryView: View {
                     .padding(.vertical, 16)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color.ds.primary.opacity(0.1)
+                            .fill(Color.ds.primary.opacity(0.1))
                     )
                 }
                 .padding(.horizontal)
@@ -421,7 +421,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
         var title = ""
         var summary: String?
         var image: String?
-        var publishedAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt)
+        var publishedAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt))
         var hashtags: [String] = []
         
         for tag in event.tags {
@@ -466,7 +466,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
     private func loadTrendingArticles() async {
         // For now, take top articles
         // In production, this would analyze zaps, comments, and highlights
-        trendingArticles = Array(articles.prefix(5)
+        trendingArticles = Array(articles.prefix(5))
     }
     
     private func loadFeaturedArticle(category: ArticleDiscoveryView.ArticleCategory) async {
@@ -496,7 +496,7 @@ struct CategoryChip: View {
             .padding(.vertical, 10)
             .background(
                 Capsule()
-                    .fill(isSelected ? category.color : category.color.opacity(0.1)
+                    .fill(isSelected ? category.color : category.color.opacity(0.1))
                     .overlay(
                         Capsule()
                             .strokeBorder(category.color.opacity(0.2), lineWidth: isSelected ? 0 : 1)
@@ -629,7 +629,7 @@ struct FeaturedArticleCard: View {
                                         .padding(.vertical, 4)
                                         .background(
                                             Capsule()
-                                                .fill(Color.purple.opacity(0.1)
+                                                .fill(Color.purple.opacity(0.1))
                                         )
                                 }
                             }

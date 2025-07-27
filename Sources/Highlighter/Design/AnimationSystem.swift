@@ -651,8 +651,8 @@ extension AnyTransition {
 
 // MARK: - Animated Components (From ModernAnimations.swift)
 
-// MARK: - Mesh Gradient Background
-// Note: MeshGradientBackground is defined in Views/Components/MeshGradientBackground.swift
+// MARK: - Gradient Backgrounds
+// Note: Background animations are defined in Views/Components/UnifiedGradientBackground.swift
 
 
 struct ModernProgressBar: View {

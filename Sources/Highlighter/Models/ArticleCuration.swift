@@ -115,10 +115,10 @@ struct ArticleCuration: Identifiable, Equatable, Hashable {
             case "updated_at":
                 if tag.count > 1,
                    let timestamp = Int64(tag[1]) {
-                    updatedAt = Date(timeIntervalSince1970: TimeInterval(timestamp)
+                    updatedAt = Date(timeIntervalSince1970: TimeInterval(timestamp))
                 }
             case "r", "e", "a":
-                articles.append(ArticleReference(from: tag)
+                articles.append(ArticleReference(from: tag))
             default:
                 break
             }
@@ -153,7 +153,7 @@ struct ArticleCuration: Identifiable, Equatable, Hashable {
             tags.append(["image", image])
         }
         
-        let timestamp = String(Int64(Date().timeIntervalSince1970)
+        let timestamp = String(Int64(Date().timeIntervalSince1970))
         
         for article in articles {
             switch article.type {

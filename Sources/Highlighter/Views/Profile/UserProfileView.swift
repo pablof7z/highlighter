@@ -750,7 +750,7 @@ struct UserProfileEmptyStateView: View {
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 48)
+                .font(.system(size: 48))
                 .foregroundColor(.ds.textTertiary)
             
             Text(title)

@@ -391,12 +391,12 @@ struct ErrorDetailsView: View {
                         .font(DesignSystem.Typography.body)
                         .foregroundColor(DesignSystem.Colors.text)
                     
-                    if let nsError = error as? NSError {
-                        Divider()
-                        
-                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
-                            Text("Domain: \(nsError.domain)")
-                            Text("Code: \(nsError.code)")
+                    let nsError = error as NSError
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+                        Text("Domain: \(nsError.domain)")
+                        Text("Code: \(nsError.code)")
                             
                             if !nsError.userInfo.isEmpty {
                                 Text("User Info:")
@@ -408,10 +408,9 @@ struct ErrorDetailsView: View {
                                         .foregroundColor(DesignSystem.Colors.textSecondary)
                                 }
                             }
-                        }
-                        .font(DesignSystem.Typography.footnote)
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
                     }
+                    .font(DesignSystem.Typography.footnote)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
                 .padding(DesignSystem.Spacing.large)
             }

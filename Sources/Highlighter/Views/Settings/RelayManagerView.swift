@@ -51,7 +51,7 @@ struct RelayManagerView: View {
                     HStack(spacing: 16) {
                         Button(action: refreshRelays) {
                             Image(systemName: "arrow.clockwise")
-                                .rotationEffect(.degrees(isRefreshing ? 360 : 0)
+                                .rotationEffect(.degrees(isRefreshing ? 360 : 0))
                                 .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: isRefreshing)
                         }
                         .disabled(isRefreshing)
@@ -84,7 +84,7 @@ struct RelayManagerView: View {
     private var emptyStateView: some View {
         VStack(spacing: DesignSystem.Spacing.large) {
             Image(systemName: "server.rack")
-                .font(.system(size: 60)
+                .font(.system(size: 60))
                 .foregroundColor(.ds.textTertiary)
                 .pulse(style: .standard)
             

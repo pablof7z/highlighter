@@ -94,7 +94,7 @@ struct UnifiedIcons {
 extension Image {
     static func icon(_ name: String, size: CGFloat = 16, weight: Font.Weight = .medium) -> some View {
         Image(systemName: name)
-            .font(.system(size: size, weight: weight)
+            .font(.system(size: size, weight: weight))
             .symbolRenderingMode(.hierarchical)
     }
 }
@@ -109,7 +109,7 @@ struct UnifiedIcon: View {
     
     var body: some View {
         Image(systemName: name)
-            .font(.system(size: size, weight: weight)
+            .font(.system(size: size, weight: weight))
             .foregroundColor(color)
             .symbolRenderingMode(.hierarchical)
     }

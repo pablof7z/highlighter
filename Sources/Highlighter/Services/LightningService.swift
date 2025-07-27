@@ -216,7 +216,7 @@ class LightningService: ObservableObject {
             return transaction
             
         } catch {
-            updatePendingZapStatus(pendingZap.id, status: .failed(error.localizedDescription)
+            updatePendingZapStatus(pendingZap.id, status: .failed(error.localizedDescription))
             
             // Remove failed zap after delay
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {

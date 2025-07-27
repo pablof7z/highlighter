@@ -72,13 +72,13 @@ struct ZapButton: View {
             Button(action: handleZap) {
                 HStack(spacing: 4) {
                     Image(systemName: zapState.iconName)
-                        .font(.system(size: size.iconSize, weight: zapState == .zapped ? .semibold : .regular)
+                        .font(.system(size: size.iconSize, weight: zapState == .zapped ? .semibold : .regular))
                         .foregroundColor(zapState.color)
                         .animation(.easeInOut(duration: 0.2), value: zapState)
                     
                     if zapState == .zapped {
                         Text("\(zapAmount)")
-                            .font(.system(size: size.iconSize * 0.7, weight: .medium, design: .rounded)
+                            .font(.system(size: size.iconSize * 0.7, weight: .medium, design: .rounded))
                             .foregroundColor(zapState.color)
                             .transition(.opacity)
                     }
@@ -255,7 +255,7 @@ struct ZapAmountSheet: View {
             VStack(spacing: 24) {
                 // Simplified lightning icon
                 Image(systemName: "bolt.fill")
-                    .font(.system(size: 48, weight: .regular)
+                    .font(.system(size: 48, weight: .regular))
                     .foregroundColor(DesignSystem.Colors.primary)
                     .padding(.bottom, 8)
                 .padding(.top)
@@ -295,7 +295,7 @@ struct ZapAmountSheet: View {
                 HStack {
                     TextField("Custom amount", text: $customAmount)
                         .keyboardType(.numberPad)
-                        .textFieldStyle(RoundedBorderTextFieldStyle()
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
                         .onChange(of: customAmount) { _, newValue in
                             useCustomAmount = !newValue.isEmpty
                             if let amount = Int(newValue) {

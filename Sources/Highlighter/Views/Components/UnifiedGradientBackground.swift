@@ -282,7 +282,7 @@ struct UnifiedGradientBackground: View {
 
 extension View {
     func gradientBackground(_ style: UnifiedGradientBackground.Style = .subtle) -> some View {
-        self.background(UnifiedGradientBackground(style: style)
+        self.background(UnifiedGradientBackground(style: style))
     }
 }
 

@@ -282,7 +282,7 @@ struct OnboardingPageView: View {
                 }
             }
         }
-        .onChange(of: isActive) { active in
+        .onChange(of: isActive) { _, active in
             if active {
                 animateIcon = true
                 withAnimation {
@@ -512,7 +512,7 @@ struct OnboardingAuthView: View {
                 }
             }
         }
-        .onChange(of: isActive) { active in
+        .onChange(of: isActive) { _, active in
             if active {
                 withAnimation {
                     animateContent = true

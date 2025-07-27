@@ -183,7 +183,7 @@ struct ProfileView: View {
                         .clipped()
                         .overlay(
                             LinearGradient(
-                                colors: UnifiedStyleGuide.ProfileHeader.overlayGradient,
+                                colors: DesignSystem.ProfileHeader.overlayGradient,
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
