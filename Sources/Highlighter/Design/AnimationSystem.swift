@@ -760,7 +760,7 @@ struct AnimatedCheckmark: View {
                     .transition(.scale.combined(with: .opacity))
                 
                 Image(systemName: "checkmark")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.ds.caption, weight: .bold))
                     .foregroundColor(.white)
                     .transition(.scale.combined(with: .opacity))
             }
@@ -788,7 +788,7 @@ struct AnimatedCheckmark: View {
             .padding(.horizontal, 40)
         
         AnimatedNumber(value: 42)
-            .font(.system(size: 48, weight: .bold, design: .rounded))
+            .font(.ds.bodyMedium)
         
         AnimatedCheckmark(isChecked: true)
     }

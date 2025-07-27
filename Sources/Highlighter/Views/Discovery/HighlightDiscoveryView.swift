@@ -100,12 +100,12 @@ struct DiscoveryHighlightCard: View {
                                         .clipShape(Circle())
                                 } placeholder: {
                                     Image(systemName: "person.fill")
-                                        .font(.system(size: 14))
+                                        .font(.ds.callout))
                                         .foregroundColor(.ds.primaryDark)
                                 }
                             } else {
                                 Image(systemName: "person.fill")
-                                    .font(.system(size: 14))
+                                    .font(.ds.callout))
                                     .foregroundColor(.ds.primaryDark)
                             }
                         }

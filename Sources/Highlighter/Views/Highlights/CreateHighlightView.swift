@@ -253,7 +253,7 @@ struct CreateHighlightView: View {
             
             Button(action: { showImportOptions = true }) {
                 Label("Import New Article", systemImage: "plus.circle.fill")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.ds.body, weight: .medium))
                     .foregroundColor(.ds.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
@@ -359,17 +359,17 @@ struct HighlightModeCard: View {
                         )
                     
                     Image(systemName: mode.icon)
-                        .font(.system(size: 24, weight: .semibold))
+                        .font(.ds.title2, weight: .semibold))
                         .foregroundColor(isSelected ? .white : .ds.textSecondary)
                 }
                 
                 VStack(spacing: 4) {
                     Text(mode.title)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.ds.body, weight: .semibold))
                         .foregroundColor(isSelected ? .ds.text : .ds.textSecondary)
                     
                     Text(mode.description)
-                        .font(.system(size: 12))
+                        .font(.ds.caption))
                         .foregroundColor(.ds.textTertiary)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
@@ -400,14 +400,14 @@ struct ArticleSelectionCard: View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 8) {
                 Text(article.title)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.ds.callout, weight: .semibold))
                     .foregroundColor(.ds.text)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 
                 if let summary = article.summary {
                     Text(summary)
-                        .font(.system(size: 12))
+                        .font(.ds.caption))
                         .foregroundColor(.ds.textSecondary)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
@@ -415,13 +415,13 @@ struct ArticleSelectionCard: View {
                 
                 HStack {
                     Label("\(article.estimatedReadingTime) min", systemImage: "clock")
-                        .font(.system(size: 11))
+                        .font(.ds.caption2))
                         .foregroundColor(.ds.textTertiary)
                     
                     Spacer()
                     
                     Text(article.createdAt.formatted(.relative(presentation: .named)))
-                        .font(.system(size: 11))
+                        .font(.ds.caption2))
                         .foregroundColor(.ds.textTertiary)
                 }
             }
@@ -485,7 +485,7 @@ struct ModernTextField: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.ds.body))
                 .foregroundColor(.ds.textSecondary)
                 .frame(width: 20)
             

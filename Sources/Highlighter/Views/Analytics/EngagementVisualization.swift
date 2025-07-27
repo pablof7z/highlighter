@@ -124,11 +124,11 @@ struct EngagementVisualization: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Engagement Analytics")
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .font(.ds.title, weight: .bold, design: .rounded))
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("Track your content performance")
-                        .font(.system(size: 16))
+                        .font(.ds.body))
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
                 
@@ -142,9 +142,9 @@ struct EngagementVisualization: View {
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: "lightbulb.fill")
-                            .font(.system(size: 14))
+                            .font(.ds.callout))
                         Text("Insights")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.ds.callout, weight: .medium))
                     }
                     .foregroundColor(showInsights ? .white : DesignSystem.Colors.primary)
                     .padding(.horizontal, 16)
@@ -254,11 +254,11 @@ struct EngagementVisualization: View {
                             if hoveredDataPoint?.id == dataPoint.id {
                                 VStack(spacing: 4) {
                                     Text("\(dataPoint.value(for: selectedMetric))")
-                                        .font(.system(size: 14, weight: .bold))
+                                        .font(.ds.callout, weight: .bold))
                                         .foregroundColor(selectedMetric.color)
                                     
                                     Text(dataPoint.date, style: .time)
-                                        .font(.system(size: 12))
+                                        .font(.ds.caption))
                                         .foregroundColor(DesignSystem.Colors.textSecondary)
                                 }
                                 .padding(8)
@@ -275,14 +275,14 @@ struct EngagementVisualization: View {
                     .chartXAxis {
                         AxisMarks(preset: .aligned) { value in
                             AxisValueLabel()
-                                .font(.system(size: 12))
+                                .font(.ds.caption))
                                 .foregroundStyle(DesignSystem.Colors.textSecondary)
                         }
                     }
                     .chartYAxis {
                         AxisMarks(position: .leading) { value in
                             AxisValueLabel()
-                                .font(.system(size: 12))
+                                .font(.ds.caption))
                                 .foregroundStyle(DesignSystem.Colors.textSecondary)
                             
                             AxisGridLine()
@@ -352,7 +352,7 @@ struct EngagementVisualization: View {
     private var insightsSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             Text("Engagement Insights")
-                .font(.system(size: 20, weight: .semibold))
+                .font(.ds.title3, weight: .semibold))
                 .foregroundColor(DesignSystem.Colors.text)
             
             VStack(spacing: DesignSystem.Spacing.small) {
@@ -423,14 +423,14 @@ struct EngagementVisualization: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             HStack {
                 Text("Trending Highlights")
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.ds.title2, weight: .bold))
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Spacer()
                 
                 Button(action: {}) {
                     Text("View All")
-                        .font(.system(size: 14))
+                        .font(.ds.callout))
                         .foregroundColor(DesignSystem.Colors.primary)
                 }
             }
@@ -757,7 +757,7 @@ struct TimeRangeButton: View {
     var body: some View {
         Button(action: action) {
             Text(range.rawValue)
-                .font(.system(size: 14, weight: isSelected ? .semibold : .regular))
+                .font(.ds.callout, weight: isSelected ? .semibold : .regular))
                 .foregroundColor(isSelected ? .white : DesignSystem.Colors.text)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
@@ -778,9 +778,9 @@ struct MetricButton: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: metric.icon)
-                    .font(.system(size: 14))
+                    .font(.ds.callout))
                 Text(metric.rawValue)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.ds.callout, weight: .medium))
             }
             .foregroundColor(isSelected ? .white : metric.color)
             .padding(.horizontal, 16)
@@ -812,7 +812,7 @@ struct AnimatedMetricCard: View {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                 HStack {
                     Image(systemName: icon)
-                        .font(.system(size: 20))
+                        .font(.ds.title3))
                         .foregroundColor(color)
                         .rotationEffect(.degrees(showValue ? 0 : -180))
                         .animation(.spring(response: 0.6, dampingFraction: 0.8), value: showValue)
@@ -821,22 +821,22 @@ struct AnimatedMetricCard: View {
                     
                     HStack(spacing: 4) {
                         Image(systemName: change > 0 ? "arrow.up.right" : "arrow.down.right")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.ds.caption, weight: .bold))
                         Text("\(Int(abs(change * 100)))%")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.ds.caption, weight: .bold))
                     }
                     .foregroundColor(change > 0 ? .green : .red)
                 }
                 
                 Text("\(animatedValue)")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.ds.title, weight: .bold, design: .rounded))
                     .foregroundColor(DesignSystem.Colors.text)
                     .contentTransition(.numericText())
                     .opacity(showValue ? 1 : 0)
                     .offset(y: showValue ? 0 : 20)
                 
                 Text(title)
-                    .font(.system(size: 14))
+                    .font(.ds.callout))
                     .foregroundColor(DesignSystem.Colors.textSecondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -860,7 +860,7 @@ struct InsightCard: View {
         UnifiedCard(variant: .standard) {
             HStack(spacing: DesignSystem.Spacing.medium) {
                 Image(systemName: icon)
-                    .font(.system(size: 24))
+                    .font(.ds.title2))
                     .foregroundColor(color)
                     .frame(width: 40, height: 40)
                     .background(
@@ -870,11 +870,11 @@ struct InsightCard: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.ds.body, weight: .semibold))
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text(description)
-                        .font(.system(size: 14))
+                        .font(.ds.callout))
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                         .lineLimit(2)
                 }
@@ -892,7 +892,7 @@ struct TrendingHighlightPlaceholder: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             HStack {
                 Text("#\(index + 1)")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(.ds.callout, weight: .bold, design: .rounded))
                     .foregroundColor(DesignSystem.Colors.primary)
                 
                 Spacer()
@@ -942,39 +942,39 @@ struct RealTrendingHighlightCard: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             HStack {
                 Text("#\(index + 1)")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(.ds.callout, weight: .bold, design: .rounded))
                     .foregroundColor(DesignSystem.Colors.primary)
                 
                 Spacer()
                 
                 Label("Trending", systemImage: "flame.fill")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.ds.caption, weight: .medium))
                     .foregroundColor(.orange)
             }
             
             Text(highlight.content)
-                .font(.system(size: 16, weight: .medium))
+                .font(.ds.body, weight: .medium))
                 .foregroundColor(DesignSystem.Colors.text)
                 .lineLimit(3)
                 .multilineTextAlignment(.leading)
             
             HStack {
                 Text(PubkeyFormatter.formatCompact(highlight.author))
-                    .font(.system(size: 12))
+                    .font(.ds.caption))
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Text("·")
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
                 Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
-                    .font(.system(size: 12))
+                    .font(.ds.caption))
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
                 Spacer()
                 
                 if highlight.context != nil {
                     Image(systemName: "text.bubble")
-                        .font(.system(size: 12))
+                        .font(.ds.caption))
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
             }

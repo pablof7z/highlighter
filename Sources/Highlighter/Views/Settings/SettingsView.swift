@@ -156,7 +156,7 @@ struct SettingsView: View {
                         VStack(alignment: .leading, spacing: .ds.small) {
                             HStack {
                                 Image(systemName: "bolt.circle.fill")
-                                    .font(.system(size: 20))
+                                    .font(.ds.title3)
                                     .foregroundColor(.yellow)
                                 
                                 Text("Default Zap Amount")
@@ -306,7 +306,7 @@ struct SettingsView: View {
                         Button(action: { showDeleteAccount = true }) {
                             HStack {
                                 Image(systemName: "exclamationmark.triangle")
-                                    .font(.system(size: 18))
+                                    .font(.ds.headline)
                                 Text("Delete Account")
                                     .font(.ds.bodyMedium)
                             }
@@ -399,7 +399,7 @@ struct SettingsView: View {
             }
             
             Text("Highlighter")
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(.ds.title2)
                 .foregroundColor(.ds.text)
             
             Text("Knowledge at your fingertips")
@@ -504,7 +504,7 @@ struct SettingsRow: View {
         Button(action: { action?() }) {
             HStack(spacing: .ds.medium) {
                 Image(systemName: icon)
-                    .font(.system(size: 20))
+                    .font(.ds.title3)
                     .foregroundColor(iconColor)
                     .frame(width: 32, height: 32)
                     .background(
@@ -528,7 +528,7 @@ struct SettingsRow: View {
                 
                 if action != nil {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 14))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textTertiary)
                 }
             }
@@ -548,7 +548,7 @@ struct SettingsToggle: View {
     var body: some View {
         HStack(spacing: .ds.medium) {
             Image(systemName: icon)
-                .font(.system(size: 20))
+                .font(.ds.title3))
                 .foregroundColor(.ds.primary)
                 .frame(width: 32, height: 32)
                 .background(
@@ -586,7 +586,7 @@ struct ThemeButton: View {
         Button(action: action) {
             VStack(spacing: .ds.small) {
                 Image(systemName: theme.icon)
-                    .font(.system(size: 24))
+                    .font(.ds.title2)
                     .foregroundColor(isSelected ? .white : .ds.text)
                     .frame(width: 60, height: 60)
                     .background(
@@ -622,7 +622,7 @@ struct ColorButton: View {
                     )
                     .overlay(
                         Image(systemName: "checkmark")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.ds.bodyBold)
                             .foregroundColor(.white)
                             .opacity(isSelected ? 1 : 0)
                     )
@@ -652,7 +652,7 @@ struct AboutView: View {
                         .padding(.top, 40)
                     
                     Text("Highlighter")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .font(.ds.largeTitle)
                     
                     Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")")
                         .font(.ds.body)

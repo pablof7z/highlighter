@@ -426,7 +426,7 @@ struct HighlighterAvatarView: View {
                 // Zap indicator
                 if highlighter.zapCount > 0 {
                     Text("⚡️")
-                        .font(.system(size: 10))
+                        .font(.ds.caption)
                         .offset(x: 14, y: -14)
                 }
             }

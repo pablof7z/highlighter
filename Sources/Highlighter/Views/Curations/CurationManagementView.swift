@@ -117,7 +117,7 @@ struct CurationManagementView: View {
                             HStack {
                                 Image(systemName: "magnifyingglass")
                                     .foregroundColor(DesignSystem.Colors.textSecondary)
-                                    .font(.system(size: 16))
+                                    .font(.ds.body))
                                 
                                 TextField("Search curations...", text: $searchText)
                                     .textFieldStyle(.plain)
@@ -173,7 +173,7 @@ struct CurationManagementView: View {
                                 }) {
                                     VStack(spacing: 4) {
                                         Image(systemName: mode.rawValue)
-                                            .font(.system(size: 20))
+                                            .font(.ds.title3))
                                             .foregroundColor(viewMode == mode ? .white : DesignSystem.Colors.textSecondary)
                                         
                                         Text(mode.title)

@@ -131,7 +131,7 @@ struct ModernCheckbox: View {
                             .frame(width: 20, height: 20)
                             .overlay(
                                 Image(systemName: "checkmark")
-                                    .font(.system(size: 12, weight: .bold))
+                                    .font(.ds.captionMedium)
                                     .foregroundColor(.white)
                             )
                             .transition(.scale.combined(with: .opacity))
@@ -299,7 +299,7 @@ struct ModernStepper: View {
                     }
                 } label: {
                     Image(systemName: "minus")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.ds.calloutMedium)
                         .foregroundColor(
                             value > range.lowerBound
                             ? DesignSystem.Colors.primary
@@ -328,7 +328,7 @@ struct ModernStepper: View {
                     }
                 } label: {
                     Image(systemName: "plus")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.ds.calloutMedium)
                         .foregroundColor(
                             value < range.upperBound
                             ? DesignSystem.Colors.primary

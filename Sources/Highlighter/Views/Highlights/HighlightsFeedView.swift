@@ -471,13 +471,13 @@ struct HighlightFeedItemView: View {
                     HStack {
                         HStack(spacing: 4) {
                             Text(sourceText)
-                                .font(.system(size: 13, weight: .medium))
+                                .font(.ds.footnote, weight: .medium))
                                 .foregroundColor(.white.opacity(0.8))
                             Text("·")
-                                .font(.system(size: 13, weight: .medium))
+                                .font(.ds.footnote, weight: .medium))
                                 .foregroundColor(.white.opacity(0.8))
                             Text(relativeTime(from: highlight.createdAt))
-                                .font(.system(size: 13, weight: .medium))
+                                .font(.ds.footnote, weight: .medium))
                                 .foregroundColor(.white.opacity(0.8))
                         }
                         .padding(.horizontal, 12)
@@ -500,7 +500,7 @@ struct HighlightFeedItemView: View {
                     
                     // Main Quote Block (centered vertically)
                     Text(highlight.content)
-                        .font(.system(size: 26, weight: .semibold, design: .serif))
+                        .font(.ds.bodyMedium, design: .serif))
                         .foregroundColor(.white)
                         .lineSpacing(10)
                         .multilineTextAlignment(.center)
@@ -518,12 +518,12 @@ struct HighlightFeedItemView: View {
                                 .frame(width: 32, height: 32)
                                 .overlay(
                                     Text(authorInitial)
-                                        .font(.system(size: 14, weight: .medium))
+                                        .font(.ds.callout, weight: .medium))
                                         .foregroundColor(.white)
                                 )
                             
                             Text(authorName)
-                                .font(.system(size: 13, weight: .regular))
+                                .font(.ds.footnote, weight: .regular))
                                 .foregroundColor(.white)
                             
                             // Follow button only shown if not already following
@@ -559,7 +559,7 @@ struct HighlightFeedItemView: View {
                                             .frame(width: 42, height: 42)
                                         
                                         Image(systemName: isLiked ? "heart.fill" : "heart")
-                                            .font(.system(size: 20))
+                                            .font(.ds.title3))
                                             .foregroundColor(isLiked ? .red : .white)
                                             .scaleEffect(isLiked ? 1.1 : 1.0)
                                     }
@@ -576,14 +576,14 @@ struct HighlightFeedItemView: View {
                                             .frame(width: 42, height: 42)
                                         
                                         Image(systemName: "message")
-                                            .font(.system(size: 18))
+                                            .font(.ds.headline))
                                             .foregroundColor(.white)
                                     }
                                     .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
                                     
                                     if commentCount > 0 {
                                         Text("\(commentCount)")
-                                            .font(.system(size: 11))
+                                            .font(.ds.caption2))
                                             .foregroundColor(.white.opacity(0.8))
                                     }
                                 }
@@ -601,7 +601,7 @@ struct HighlightFeedItemView: View {
                                         .frame(width: 42, height: 42)
                                     
                                     Image(systemName: "arrow.2.squarepath")
-                                        .font(.system(size: 18))
+                                        .font(.ds.headline))
                                         .foregroundColor(.white)
                                 }
                                 .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
@@ -615,7 +615,7 @@ struct HighlightFeedItemView: View {
                                         .frame(width: 42, height: 42)
                                     
                                     Image(systemName: "square.and.arrow.up")
-                                        .font(.system(size: 18))
+                                        .font(.ds.headline))
                                         .foregroundColor(.white)
                                 }
                                 .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
@@ -629,7 +629,7 @@ struct HighlightFeedItemView: View {
                 // Double tap heart animation
                 if showHeartAnimation {
                     Image(systemName: "heart.fill")
-                        .font(.system(size: 120))
+                        .font(.ds.caption0))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.red, .pink],

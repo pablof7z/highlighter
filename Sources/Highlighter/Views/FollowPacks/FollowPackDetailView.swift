@@ -76,7 +76,7 @@ struct FollowPackDetailView: View {
     private var creatorSection: some View {
         HStack {
             Image(systemName: "person.circle.fill")
-                .font(.system(size: 24))
+                .font(.ds.title2))
                 .foregroundColor(DesignSystem.Colors.primary)
             
             VStack(alignment: .leading, spacing: 2) {

@@ -193,7 +193,7 @@ struct LoadingHighlightView: View {
     @ViewBuilder
     private var loadingText: some View {
         Text(loadingMessages[loadingPhase % loadingMessages.count])
-            .font(.system(size: 22, weight: .medium, design: .rounded))
+            .font(.ds.title2)
             .foregroundStyle(
                 LinearGradient(
                     colors: [
@@ -285,7 +285,7 @@ struct LoadingHighlightView: View {
     @ViewBuilder
     private var hintText: some View {
         Text("Preparing your personalized feed")
-            .font(.system(size: 14, weight: .regular))
+            .font(.ds.callout)
             .foregroundColor(DesignSystem.Colors.textSecondary)
             .opacity(0.7 * textOpacity)
             .padding(.bottom, 50)

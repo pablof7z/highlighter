@@ -686,7 +686,7 @@ struct SwarmPopover: View {
                     .frame(width: 36, height: 36)
                 
                 Image(systemName: "chevron.down")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.ds.callout, weight: .bold))
                     .foregroundColor(.orange)
                     .rotationEffect(.degrees(isExpanded ? 180 : 0))
             }

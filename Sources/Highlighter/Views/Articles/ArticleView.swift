@@ -192,14 +192,14 @@ struct ArticleView: View {
     private func titleSection() -> some View {
         VStack(alignment: .leading, spacing: .ds.large) {
             Text(article.title)
-                .font(.system(size: 34 * fontScale, weight: .bold, design: .serif))
+                .font(.ds.largeTitle * fontScale, weight: .bold, design: .serif))
                 .foregroundColor(.ds.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .premiumEntrance(delay: 0.1)
             
             if let summary = article.summary {
                 Text(summary)
-                    .font(.system(size: 18 * fontScale, weight: .regular))
+                    .font(.ds.headline * fontScale, weight: .regular))
                     .foregroundColor(.ds.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .premiumEntrance(delay: 0.15)
@@ -217,7 +217,7 @@ struct ArticleView: View {
             
             HStack(spacing: .ds.small) {
                 Image(systemName: "clock")
-                    .font(.system(size: 12))
+                    .font(.ds.caption))
                 Text("\(estimatedReadTime) min read")
                     .font(.ds.caption)
             }
@@ -415,7 +415,7 @@ struct ArticleView: View {
                 Button(action: { dismiss() }) {
                     HStack(spacing: .ds.mini) {
                         Image(systemName: "arrow.left")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.ds.body, weight: .semibold))
                         
                         if isScrolled {
                             Text("Articles")
@@ -445,7 +445,7 @@ struct ArticleView: View {
                     Button(action: { showingSwarmOverlay = true }) {
                         ZStack(alignment: .topTrailing) {
                             Image(systemName: "sparkles")
-                                .font(.system(size: 18, weight: .medium))
+                                .font(.ds.headline, weight: .medium))
                                 .foregroundColor(.ds.primary)
                                 .frame(width: 40, height: 40)
                                 .background(
@@ -467,7 +467,7 @@ struct ArticleView: View {
                     // Text selection mode
                     Button(action: { showTextSelection = true }) {
                         Image(systemName: "highlighter")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.ds.headline, weight: .medium))
                             .foregroundColor(.ds.secondary)
                             .frame(width: 40, height: 40)
                             .background(
@@ -490,7 +490,7 @@ struct ArticleView: View {
                         }
                     }) {
                         Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.ds.headline, weight: .medium))
                             .foregroundColor(isBookmarked ? .ds.primary : .ds.text)
                             .symbolEffect(.bounce, value: isBookmarked)
                             .frame(width: 40, height: 40)
@@ -505,7 +505,7 @@ struct ArticleView: View {
                     // Share button
                     Button(action: { showShareSheet = true }) {
                         Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.ds.headline, weight: .medium))
                             .foregroundColor(.ds.text)
                             .frame(width: 40, height: 40)
                             .background(
@@ -554,9 +554,9 @@ struct ArticleView: View {
                 }) {
                     VStack(spacing: 4) {
                         Image(systemName: "highlighter")
-                            .font(.system(size: 20, weight: .medium))
+                            .font(.ds.title3, weight: .medium))
                         Text("Highlight")
-                            .font(.system(size: 10, weight: .medium))
+                            .font(.ds.caption2, weight: .medium))
                     }
                     .foregroundColor(.white)
                     .frame(width: 70, height: 50)
@@ -585,9 +585,9 @@ struct ArticleView: View {
                 }) {
                     VStack(spacing: 4) {
                         Image(systemName: "doc.on.doc")
-                            .font(.system(size: 20, weight: .medium))
+                            .font(.ds.title3, weight: .medium))
                         Text("Copy")
-                            .font(.system(size: 10, weight: .medium))
+                            .font(.ds.caption2, weight: .medium))
                     }
                     .foregroundColor(.ds.text)
                     .frame(width: 70, height: 50)
@@ -606,7 +606,7 @@ struct ArticleView: View {
                     }
                 }) {
                     Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.ds.callout, weight: .medium))
                         .foregroundColor(.ds.textSecondary)
                         .frame(width: 30, height: 30)
                         .background(
@@ -812,7 +812,7 @@ struct ReadingSettingsButton: View {
     var body: some View {
         Button(action: { showSettings = true }) {
             Image(systemName: "textformat.size")
-                .font(.system(size: 16, weight: .medium))
+                .font(.ds.body, weight: .medium))
                 .foregroundColor(.ds.text)
                 .frame(width: 32, height: 32)
                 .background(
@@ -961,7 +961,7 @@ struct RelatedArticleCard: View {
                                 .frame(height: 160)
                                 .overlay(
                                     Image(systemName: "photo")
-                                        .font(.system(size: 24))
+                                        .font(.ds.title2))
                                         .foregroundColor(.ds.textTertiary)
                                 )
                         @unknown default:
@@ -1097,7 +1097,7 @@ struct ReadingSettingsView: View {
                     }
                     
                     Text("The quick brown fox jumps over the lazy dog")
-                        .font(.system(size: 16 * fontScale))
+                        .font(.ds.body * fontScale))
                         .foregroundColor(.ds.textSecondary)
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -1142,7 +1142,7 @@ struct ArticleHighlightDetailView: View {
             VStack(alignment: .leading, spacing: .ds.large) {
                 // Highlight content
                 Text("\"\(highlight.content)\"")
-                    .font(.system(size: 20, weight: .regular, design: .serif))
+                    .font(.ds.title3, weight: .regular, design: .serif))
                     .italic()
                     .foregroundColor(.ds.text)
                     .padding()

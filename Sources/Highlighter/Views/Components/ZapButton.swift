@@ -262,10 +262,10 @@ struct ZapAmountSheet: View {
                 
                 VStack(spacing: 8) {
                     Text("Choose Amount")
-                        .font(.system(size: 24, weight: .semibold))
+                        .font(.ds.title2, weight: .semibold))
                     
                     Text("Send sats to show appreciation")
-                        .font(.system(size: 16))
+                        .font(.ds.body))
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
                 

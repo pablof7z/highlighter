@@ -2,6 +2,7 @@ import SwiftUI
 
 // MARK: - Highlighter Design System
 // Premium design system following app specification: purple (#6A1B9A) and orange (#FF9500)
+// This is the SINGLE source of truth for all UI styles in the app
 
 struct DesignSystem {
     
@@ -156,6 +157,88 @@ struct DesignSystem {
         static let compactBreakpoint: CGFloat = 400
         static let regularBreakpoint: CGFloat = 768
     }
+    
+    // MARK: - Tab/Navigation Pills
+    struct TabPill {
+        static let selectedBackground = Colors.primary
+        static let unselectedBackground = Color.clear
+        static let selectedTextColor = Color.white
+        static let unselectedTextColor = Colors.text
+        static let borderColor = Colors.primary.opacity(0.2)
+        static let cornerRadius: CGFloat = 20
+        static let horizontalPadding: CGFloat = 16
+        static let verticalPadding: CGFloat = 8
+        static let fontSize: CGFloat = 15
+        static let fontWeight: Font.Weight = .medium
+        static let borderWidth: CGFloat = 1.5
+    }
+    
+    // MARK: - Cards
+    struct Card {
+        static let backgroundColor = Colors.surface
+        static let borderColor = Colors.border
+        static let cornerRadius: CGFloat = 16
+        static let padding: CGFloat = 16
+        static let shadowColor = Color.black.opacity(0.04)
+        static let shadowRadius: CGFloat = 4
+        static let shadowY: CGFloat = 2
+        static let borderWidth: CGFloat = 1
+    }
+    
+    // MARK: - Stats Cards
+    struct StatsCard {
+        static let backgroundColor = Colors.surfaceSecondary
+        static let iconBackgroundColor = { (color: Color) in color.opacity(0.15) }
+        static let iconSize: CGFloat = 24
+        static let iconContainerSize: CGFloat = 56
+        static let valueFont = Font.system(size: 24, weight: .bold, design: .rounded)
+        static let labelFont = Font.system(size: 12, weight: .medium)
+        static let cornerRadius: CGFloat = 16
+        static let padding: CGFloat = 16
+    }
+    
+    // MARK: - Profile Header
+    struct ProfileHeader {
+        static let gradientColors = [Colors.primary.opacity(0.8), Colors.secondary.opacity(0.6)]
+        static let overlayGradient = [Color.black.opacity(0), Color.black.opacity(0.4)]
+        static let avatarSize: CGFloat = 100
+        static let avatarBorderWidth: CGFloat = 4
+        static let avatarBorderColor = Color.white
+        static let cornerRadius: CGFloat = 32
+    }
+    
+    // MARK: - Buttons
+    struct Button {
+        static let primaryBackground = Colors.primary
+        static let primaryTextColor = Color.white
+        static let secondaryBackground = Colors.primary.opacity(0.1)
+        static let secondaryTextColor = Colors.primary
+        static let cornerRadius: CGFloat = 12
+        static let horizontalPadding: CGFloat = 20
+        static let verticalPadding: CGFloat = 12
+        static let fontSize: CGFloat = 16
+        static let fontWeight: Font.Weight = .medium
+    }
+    
+    // MARK: - Section Headers
+    struct SectionHeader {
+        static let titleFont = Font.system(size: 24, weight: .bold, design: .rounded)
+        static let subtitleFont = Font.system(size: 14)
+        static let titleColor = Colors.text
+        static let subtitleColor = Colors.textSecondary
+        static let spacing: CGFloat = 4
+    }
+    
+    // MARK: - Empty States
+    struct EmptyState {
+        static let iconSize: CGFloat = 60
+        static let iconColor = Colors.textTertiary.opacity(0.5)
+        static let titleFont = Typography.title3
+        static let messageFont = Typography.body
+        static let titleColor = Colors.text
+        static let messageColor = Colors.textSecondary
+        static let spacing: CGFloat = 16
+    }
 }
 
 // MARK: - Color Hex Extension
@@ -216,6 +299,68 @@ struct TimeConstants {
     static let week: TimeInterval = 604800
     static let month: TimeInterval = 2_629_746 // Average month
     static let year: TimeInterval = 31_556_952 // Average year
+}
+
+// MARK: - Unified View Modifiers
+
+extension View {
+    // MARK: - Tab Pills
+    func unifiedTabPill(isSelected: Bool) -> some View {
+        self
+            .font(.system(size: DesignSystem.TabPill.fontSize, weight: DesignSystem.TabPill.fontWeight))
+            .foregroundColor(isSelected ? DesignSystem.TabPill.selectedTextColor : DesignSystem.TabPill.unselectedTextColor)
+            .padding(.horizontal, DesignSystem.TabPill.horizontalPadding)
+            .padding(.vertical, DesignSystem.TabPill.verticalPadding)
+            .background(
+                Capsule()
+                    .fill(isSelected ? DesignSystem.TabPill.selectedBackground : DesignSystem.TabPill.unselectedBackground)
+            )
+            .overlay(
+                Capsule()
+                    .stroke(isSelected ? Color.clear : DesignSystem.TabPill.borderColor, lineWidth: DesignSystem.TabPill.borderWidth)
+            )
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+    }
+    
+    // MARK: - Cards
+    func unifiedCard() -> some View {
+        self
+            .padding(DesignSystem.Card.padding)
+            .background(DesignSystem.Card.backgroundColor)
+            .cornerRadius(DesignSystem.Card.cornerRadius)
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignSystem.Card.cornerRadius)
+                    .stroke(DesignSystem.Card.borderColor, lineWidth: DesignSystem.Card.borderWidth)
+            )
+            .shadow(
+                color: DesignSystem.Card.shadowColor,
+                radius: DesignSystem.Card.shadowRadius,
+                x: 0,
+                y: DesignSystem.Card.shadowY
+            )
+    }
+    
+    // MARK: - Primary Button Style
+    func unifiedPrimaryButton() -> some View {
+        self
+            .font(.system(size: DesignSystem.Button.fontSize, weight: DesignSystem.Button.fontWeight))
+            .foregroundColor(DesignSystem.Button.primaryTextColor)
+            .padding(.horizontal, DesignSystem.Button.horizontalPadding)
+            .padding(.vertical, DesignSystem.Button.verticalPadding)
+            .background(DesignSystem.Button.primaryBackground)
+            .cornerRadius(DesignSystem.Button.cornerRadius)
+    }
+    
+    // MARK: - Secondary Button Style
+    func unifiedSecondaryButton() -> some View {
+        self
+            .font(.system(size: DesignSystem.Button.fontSize, weight: DesignSystem.Button.fontWeight))
+            .foregroundColor(DesignSystem.Button.secondaryTextColor)
+            .padding(.horizontal, DesignSystem.Button.horizontalPadding)
+            .padding(.vertical, DesignSystem.Button.verticalPadding)
+            .background(DesignSystem.Button.secondaryBackground)
+            .cornerRadius(DesignSystem.Button.cornerRadius)
+    }
 }
 
 // MARK: - View Extensions
@@ -465,5 +610,4 @@ struct LazyRenderModifier: ViewModifier {
 }
 
 // ModernSectionHeader is already defined in ModernViewModifiers.swift
-
 

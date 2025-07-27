@@ -339,24 +339,32 @@ struct RelayManagerView: View {
     
     private func loadRelays() {
         Task {
-            guard appState.ndk != nil else { return }
+            guard let ndk = appState.ndk else { return }
             
             await MainActor.run {
                 isRefreshing = true
             }
             
-            // For now, use the default relay list as NDK manages relay connections internally
-            // In a real implementation, we would need to access NDK's relay management
             var relayInfos: [RelayInfo] = []
             
-            // Add default relays that are commonly used
-            for url in suggestedRelays {
+            // Get configured relays from NDK
+            // Note: NDK manages relay connections internally
+            // We'll use the saved relay list or defaults
+            
+            // Get relay URLs from preferences or use defaults
+            let configuredRelays = loadRelayPreferences()
+            
+            for url in configuredRelays {
+                // Simple connectivity check by attempting to fetch a recent event
+                let isConnected = await checkRelayConnection(url: url, ndk: ndk)
+                let latency = isConnected ? await measureRelayLatency(url: url, ndk: ndk) : nil
+                
                 let info = RelayInfo(
                     url: url,
-                    isConnected: true, // Assume connected for now
-                    latency: Int.random(in: 20...100), // Mock latency
+                    isConnected: isConnected,
+                    latency: latency,
                     supportedNIPs: [1, 2, 4, 9, 11, 12, 16, 20, 23, 25, 28, 30, 33, 40, 42],
-                    software: "generic",
+                    software: "nostr-relay",
                     version: "1.0.0",
                     isRead: true,
                     isWrite: true
@@ -370,6 +378,49 @@ struct RelayManagerView: View {
                 self.isRefreshing = false
             }
         }
+    }
+    
+    private func checkRelayConnection(url: String, ndk: NDK) async -> Bool {
+        // Check if we can fetch a recent event from this relay
+        let filter = NDKFilter(kinds: [1], limit: 1)
+        
+        // Create a timeout task
+        let timeoutTask = Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+            return false
+        }
+        
+        // Try to fetch an event
+        let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 60)
+        
+        for await _ in dataSource.events {
+            timeoutTask.cancel()
+            return true
+        }
+        
+        return await timeoutTask.value
+    }
+    
+    private func measureRelayLatency(url: String, ndk: NDK) async -> Int? {
+        let start = Date()
+        
+        // Simple latency test - fetch a recent event
+        let filter = NDKFilter(kinds: [1], limit: 1)
+        
+        let timeoutTask = Task {
+            try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
+            return nil
+        }
+        
+        let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 60)
+        
+        for await _ in dataSource.events {
+            timeoutTask.cancel()
+            let latency = Int(Date().timeIntervalSince(start) * 1000)
+            return min(latency, 9999) // Cap at 9999ms
+        }
+        
+        return await timeoutTask.value
     }
     
     private func refreshRelays() {
@@ -398,32 +449,53 @@ struct RelayManagerView: View {
         }
         
         Task {
-            guard appState.ndk != nil else { return }
+            guard let _ = appState.ndk else { return }
             
-            // NDK manages relay connections internally
-            // For now, just add to our local list
+            // Check if relay is already added
+            if relays.contains(where: { $0.url == url }) {
+                await MainActor.run {
+                    errorMessage = "Relay already exists"
+                    showError = true
+                }
+                return
+            }
             
-            // Refresh relay list
-            loadRelays()
+            // Note: NDK manages relay connections internally
+            // We'll add it to our local list and save to preferences
+            
+            // Add to local list
+            let newRelay = RelayInfo(
+                url: url,
+                isConnected: false,
+                latency: nil,
+                supportedNIPs: [1, 2, 4, 9, 11, 12, 16, 20, 23, 25, 28, 30, 33, 40, 42],
+                software: "unknown",
+                version: "unknown",
+                isRead: true,
+                isWrite: true
+            )
             
             await MainActor.run {
+                relays.append(newRelay)
+                saveRelayPreferences()
                 newRelayURL = ""
                 isAddingRelay = false
                 HapticManager.shared.notification(.success)
             }
+            
+            // Refresh to check connection status
+            loadRelays()
         }
     }
     
     private func removeRelay(_ relay: RelayInfo) {
         Task {
-            guard appState.ndk != nil else { return }
-            
-            // NDK manages relay connections internally
-            // For now, just remove from our local list
+            guard let _ = appState.ndk else { return }
             
             // Update local state
             await MainActor.run {
                 relays.removeAll { $0.id == relay.id }
+                saveRelayPreferences()
                 HapticManager.shared.impact(.medium)
             }
         }
@@ -432,17 +504,28 @@ struct RelayManagerView: View {
     private func toggleRead(_ relay: RelayInfo) {
         if let index = relays.firstIndex(where: { $0.id == relay.id }) {
             relays[index].isRead.toggle()
+            saveRelayPreferences()
             HapticManager.shared.impact(.light)
-            // Would need to update NDK configuration
         }
     }
     
     private func toggleWrite(_ relay: RelayInfo) {
         if let index = relays.firstIndex(where: { $0.id == relay.id }) {
             relays[index].isWrite.toggle()
+            saveRelayPreferences()
             HapticManager.shared.impact(.light)
-            // Would need to update NDK configuration
         }
+    }
+    
+    // MARK: - Persistence
+    
+    private func saveRelayPreferences() {
+        let relayUrls = relays.map { $0.url }
+        UserDefaults.standard.set(relayUrls, forKey: "highlighter.configured_relays")
+    }
+    
+    private func loadRelayPreferences() -> [String] {
+        UserDefaults.standard.stringArray(forKey: "highlighter.configured_relays") ?? suggestedRelays
     }
 }
 

@@ -91,6 +91,7 @@ struct UnifiedStyleGuide {
 
 // MARK: - Unified View Modifiers
 
+/* Commented out to avoid conflicts with DesignSystem.swift
 extension View {
     // MARK: - Tab Pills
     func unifiedTabPill(isSelected: Bool) -> some View {
@@ -129,9 +130,11 @@ extension View {
     }
     
 }
+*/
 
 // MARK: - Unified Components
 
+/* Commented out to avoid conflicts with DesignSystem.swift
 struct UnifiedSectionHeader: View {
     let title: String
     let subtitle: String? = nil
@@ -223,3 +226,4 @@ struct UnifiedStatCard: View {
         .cornerRadius(UnifiedStyleGuide.StatsCard.cornerRadius)
     }
 }
+*/

@@ -92,7 +92,7 @@ struct CreateCurationView: View {
                             
                             Image(systemName: "paintpalette.fill")
                                 .foregroundColor(.white)
-                                .font(.system(size: 16))
+                                .font(.ds.body))
                         }
                     }
                     .scaleEffect(pulseAnimation ? 1.1 : 1.0)
@@ -105,7 +105,7 @@ struct CreateCurationView: View {
                 Button(action: { showImagePicker = true }) {
                     HStack(spacing: 8) {
                         Image(systemName: selectedImageData == nil ? "photo.badge.plus" : "photo.badge.checkmark")
-                            .font(.system(size: 20))
+                            .font(.ds.title3))
                             .symbolEffect(.bounce, value: selectedImageData != nil)
                         
                         Text(selectedImageData == nil ? "Add Cover Image" : "Change Image")
@@ -390,7 +390,7 @@ struct CreateCurationView: View {
                     
                     Image(systemName: "lightbulb.fill")
                         .foregroundColor(.white)
-                        .font(.system(size: 16))
+                        .font(.ds.body))
                 }
                 .scaleEffect(pulseAnimation ? 1.1 : 1.0)
                 
@@ -488,7 +488,7 @@ struct CreateCurationView: View {
                     
                     HStack(spacing: 8) {
                         Image(systemName: "folder.badge.plus")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.ds.headline, weight: .semibold))
                             .symbolEffect(.bounce, value: isFormValid)
                         
                         Text("Create Curation")
@@ -684,7 +684,7 @@ struct FeatureBadge: View {
                     .frame(width: 40, height: 40)
                 
                 Image(systemName: icon)
-                    .font(.system(size: 18))
+                    .font(.ds.headline))
                     .foregroundColor(color)
                     .scaleEffect(isAnimating ? 1.1 : 1.0)
             }

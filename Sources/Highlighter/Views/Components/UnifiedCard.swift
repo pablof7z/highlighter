@@ -28,7 +28,7 @@ struct UnifiedCard<Content: View>: View {
                 Button(action: action) {
                     cardContent
                 }
-                .buttonStyle(PlainButtonStyle())
+                .buttonStyle(PlainButtonStyle()
             } else {
                 cardContent
             }
@@ -41,8 +41,8 @@ struct UnifiedCard<Content: View>: View {
             .padding(variant.padding)
             .frame(maxWidth: variant.maxWidth, minHeight: variant.minHeight)
             .background(variant.backgroundView)
-            .overlay(variant.borderView(isSelected: isSelected))
-            .clipShape(RoundedRectangle(cornerRadius: variant.cornerRadius, style: .continuous))
+            .overlay(variant.borderView(isSelected: isSelected)
+            .clipShape(RoundedRectangle(cornerRadius: variant.cornerRadius, style: .continuous)
             .shadow(
                 color: variant.shadowColor(isSelected: isSelected),
                 radius: variant.shadowRadius(isSelected: isSelected),
@@ -242,10 +242,10 @@ struct ModernHighlightCard: View {
                     // Author
                     HStack(spacing: .ds.small) {
                         Image(systemName: "person.circle.fill")
-                            .font(.system(size: 20))
+                            .font(.ds.title3)
                             .foregroundColor(.ds.primary)
                         
-                        Text(author?.name ?? author?.displayName ?? String(highlight.author.prefix(8)))
+                        Text(author?.name ?? author?.displayName ?? String(highlight.author.prefix(8))
                             .font(.ds.caption)
                             .fontWeight(.medium)
                             .foregroundColor(.ds.text)
@@ -258,13 +258,13 @@ struct ModernHighlightCard: View {
                         // Zap button
                         Button(action: zapHighlight) {
                             Image(systemName: isZapped ? "bolt.fill" : "bolt")
-                                .font(.system(size: 16))
+                                .font(.ds.body)
                                 .foregroundColor(isZapped ? .ds.warning : .ds.textSecondary)
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(PlainButtonStyle()
                         
                         // Time
-                        Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
+                        Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt)
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
                     }
@@ -274,7 +274,7 @@ struct ModernHighlightCard: View {
                 if let url = highlight.url {
                     HStack(spacing: .ds.micro) {
                         Image(systemName: "link")
-                            .font(.system(size: 12))
+                            .font(.ds.caption)
                         Text(URL(string: url)?.host ?? "Source")
                             .font(.ds.caption)
                     }
@@ -331,17 +331,17 @@ struct ModernCompactHighlightCard: View {
                 
                 HStack {
                     Image(systemName: "person.circle.fill")
-                        .font(.system(size: 16))
+                        .font(.ds.body)
                         .foregroundColor(.ds.primary)
                     
-                    Text(String(highlight.author.prefix(8)))
+                    Text(String(highlight.author.prefix(8))
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                     
                     Spacer()
                     
                     Image(systemName: "bolt")
-                        .font(.system(size: 14))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textSecondary)
                 }
             }
@@ -365,7 +365,7 @@ struct PlaceholderCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(0..<lines, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(index == 0 ? 0.2 : 0.15))
+                        .fill(Color.gray.opacity(index == 0 ? 0.2 : 0.15)
                         .frame(height: 16)
                         .frame(maxWidth: index == lines - 1 ? .infinity * 0.7 : .infinity)
                 }
@@ -393,7 +393,7 @@ struct PlaceholderCard: View {
                     comment: "A profound insight about technology"
                 )
             )
-            .environmentObject(AppState())
+            .environmentObject(AppState()
             
             // Compact cards
             ScrollView(.horizontal, showsIndicators: false) {

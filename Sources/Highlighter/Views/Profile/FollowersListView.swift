@@ -153,7 +153,7 @@ struct UserRow: View {
                     
                     if profile?.nip05 != nil {
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 12))
+                            .font(.ds.caption)
                             .foregroundColor(.blue)
                     }
                 }

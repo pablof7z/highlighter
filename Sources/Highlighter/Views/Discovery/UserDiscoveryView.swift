@@ -82,12 +82,12 @@ struct UserCard: View {
                                 .clipShape(Circle())
                         } placeholder: {
                             Image(systemName: "person.fill")
-                                .font(.system(size: 24))
+                                .font(.ds.title2)
                                 .foregroundColor(.ds.primaryDark)
                         }
                     } else {
                         Image(systemName: "person.fill")
-                            .font(.system(size: 24))
+                            .font(.ds.title2)
                             .foregroundColor(.ds.primaryDark)
                     }
                 }

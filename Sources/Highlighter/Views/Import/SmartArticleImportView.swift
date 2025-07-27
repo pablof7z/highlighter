@@ -351,7 +351,7 @@ struct SmartArticleImportView: View {
             HStack(spacing: .ds.base) {
                 HStack {
                     Image(systemName: "link")
-                        .font(.system(size: 16))
+                        .font(.ds.body))
                         .foregroundColor(.ds.textTertiary)
                     
                     TextField("https://stratechery.com/2024/article-title", text: $urlText)
@@ -370,7 +370,7 @@ struct SmartArticleImportView: View {
                 
                 Button(action: importFromURL) {
                     Image(systemName: "arrow.right.circle.fill")
-                        .font(.system(size: 24))
+                        .font(.ds.title2))
                         .foregroundStyle(
                             urlText.isEmpty ? AnyShapeStyle(Color.ds.textTertiary) :
                                 AnyShapeStyle(LinearGradient(
@@ -870,7 +870,7 @@ struct QualityOptionCard: View {
                         )
                     
                     Image(systemName: quality.icon)
-                        .font(.system(size: 24, weight: .medium))
+                        .font(.ds.title2, weight: .medium))
                         .foregroundColor(isSelected ? .white : .ds.textSecondary)
                         .symbolEffect(.bounce, value: isSelected)
                 }
@@ -958,7 +958,7 @@ struct ArticleInfoCard: View {
                         .foregroundColor(.ds.primary)
                     
                     Image(systemName: "chevron.down")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.ds.caption, weight: .medium))
                         .foregroundColor(.ds.primary)
                         .rotationEffect(.degrees(showDetails ? 180 : 0))
                 }
@@ -994,7 +994,7 @@ struct MetricBadge: View {
     var body: some View {
         HStack(spacing: .ds.micro) {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .medium))
+                .font(.ds.callout, weight: .medium))
                 .foregroundColor(color)
             
             Text(value)
@@ -1043,7 +1043,7 @@ struct SuggestedHighlightCard: View {
                     
                     if isSelected {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.ds.caption, weight: .bold))
                             .foregroundColor(.white)
                             .transition(.scale.combined(with: .opacity))
                     }
@@ -1065,7 +1065,7 @@ struct SuggestedHighlightCard: View {
                         // Confidence score
                         HStack(spacing: .ds.micro) {
                             Image(systemName: "sparkles")
-                                .font(.system(size: 12))
+                                .font(.ds.caption))
                                 .foregroundColor(.orange)
                                 .symbolEffect(.pulse, value: sparkleAnimation)
                             
@@ -1089,7 +1089,7 @@ struct SuggestedHighlightCard: View {
                 // Context indicator
                 if suggestion.hasContext {
                     Image(systemName: "doc.text")
-                        .font(.system(size: 14))
+                        .font(.ds.callout))
                         .foregroundColor(.ds.textTertiary)
                 }
             }
@@ -1188,7 +1188,7 @@ struct AIThinkingAnimation: View {
             
             // Center brain
             Image(systemName: "brain")
-                .font(.system(size: 32, weight: .medium))
+                .font(.ds.largeTitle, weight: .medium))
                 .foregroundStyle(
                     LinearGradient(
                         colors: [.purple, .orange],
@@ -2022,7 +2022,7 @@ struct AnimatedMetric: View {
     var body: some View {
         VStack(spacing: .ds.micro) {
             Image(systemName: icon)
-                .font(.system(size: 24))
+                .font(.ds.title2))
                 .foregroundColor(color)
                 .symbolEffect(.bounce, value: animate)
             
@@ -2141,7 +2141,7 @@ struct SuggestionCard: View {
                 if let reason = suggestion.reason {
                     HStack(spacing: .ds.small) {
                         Image(systemName: "cpu")
-                            .font(.system(size: 12))
+                            .font(.ds.caption))
                             .foregroundColor(.purple)
                             .symbolEffect(.pulse, value: isSelected)
                         
@@ -2187,7 +2187,7 @@ struct SuggestionCard: View {
                         }
                     }) {
                         Image(systemName: "chevron.down")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.ds.caption, weight: .medium))
                             .foregroundColor(.ds.textSecondary)
                             .rotationEffect(.degrees(showInsight ? 180 : 0))
                     }
@@ -2253,7 +2253,7 @@ struct CategoryBadge: View {
     var body: some View {
         HStack(spacing: .ds.micro) {
             Image(systemName: category.icon)
-                .font(.system(size: 12, weight: .medium))
+                .font(.ds.caption, weight: .medium))
                 .symbolEffect(.pulse, value: pulseAnimation)
             
             Text(category.rawValue)

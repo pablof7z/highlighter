@@ -163,7 +163,7 @@ struct LightningWalletView: View {
             
             HStack(alignment: .firstTextBaseline, spacing: .ds.micro) {
                 Text("\(lightning.balance.formatted())")
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
+                    .font(.ds.bodyBold, design: .rounded))
                     .foregroundColor(.ds.text)
                 
                 Text("sats")
@@ -173,7 +173,7 @@ struct LightningWalletView: View {
         }
         
         let lightningIcon = Image(systemName: "bolt.fill")
-            .font(.system(size: 30))
+            .font(.ds.largeTitle))
             .foregroundColor(.orange)
         
         return VStack(spacing: .ds.medium) {
@@ -322,7 +322,7 @@ struct TransactionRow: View {
                         .frame(width: 40, height: 40)
                     
                     Image(systemName: "bolt.fill")
-                        .font(.system(size: 16))
+                        .font(.ds.body))
                         .foregroundColor(.orange)
                         .rotationEffect(.degrees(isPressed ? 360 : 0))
                 }
@@ -770,7 +770,7 @@ struct SplitDetailRow: View {
                     .frame(width: 40, height: 40)
                 
                 Image(systemName: roleIcon)
-                    .font(.system(size: 16))
+                    .font(.ds.body))
                     .foregroundColor(roleColor)
             }
             

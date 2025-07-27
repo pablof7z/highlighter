@@ -125,7 +125,7 @@ struct ProfileView: View {
                     HStack(spacing: 12) {
                         Button(action: { showEditProfile = true }) {
                             Image(systemName: "pencil.circle")
-                                .font(.system(size: 20))
+                                .font(.ds.title3))
                                 .foregroundColor(.ds.text)
                                 .symbolRenderingMode(.hierarchical)
                         }
@@ -133,7 +133,7 @@ struct ProfileView: View {
                         
                         Button(action: { showSettings = true }) {
                             Image(systemName: "gearshape")
-                                .font(.system(size: 20))
+                                .font(.ds.title3))
                                 .foregroundColor(.ds.text)
                                 .symbolRenderingMode(.hierarchical)
                         }
@@ -222,7 +222,7 @@ struct ProfileView: View {
                     // Verified badge if NIP-05
                     if appState.currentUserProfile?.nip05 != nil {
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 24))
+                            .font(.ds.title2))
                             .foregroundStyle(.white, Color.blue)
                             .background(Circle().fill(Color.white).frame(width: 28, height: 28))
                             .offset(x: 5, y: 5)
@@ -232,7 +232,7 @@ struct ProfileView: View {
                 // Name and bio
                 VStack(spacing: .ds.small) {
                     Text(appState.currentUserProfile?.displayName ?? "Anonymous")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(.ds.title, weight: .bold))
                         .foregroundColor(.white)
                     
                     if let nip05 = appState.currentUserProfile?.nip05 {
@@ -376,7 +376,7 @@ struct ProfileView: View {
                     }) {
                         HStack(spacing: 8) {
                             Image(systemName: tab.icon)
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.ds.body, weight: .medium))
                             Text(tab.rawValue)
                         }
                         .unifiedTabPill(isSelected: selectedTab == tab)
@@ -959,7 +959,7 @@ struct ZapActivityCard: View {
                     .blur(radius: lightningAnimation ? 8 : 4)
                 
                 Image(systemName: "bolt.fill")
-                    .font(.system(size: 20))
+                    .font(.ds.title3))
                     .foregroundColor(.yellow)
                     .scaleEffect(lightningAnimation ? 1.1 : 1)
             }
@@ -1025,7 +1025,7 @@ struct ReactionActivityCard: View {
         HStack(spacing: .ds.medium) {
             // Reaction icon
             Text(reactionContent)
-                .font(.system(size: 32))
+                .font(.ds.largeTitle))
                 .scaleEffect(heartScale)
             
             VStack(alignment: .leading, spacing: 4) {

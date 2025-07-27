@@ -440,7 +440,7 @@ struct LightningPaymentFlowView: View {
                     .scaleEffect(successScale)
                     .overlay(
                         Image(systemName: "checkmark")
-                            .font(.system(size: 50, weight: .bold))
+                            .font(.ds.bodyBold))
                             .foregroundColor(.white)
                             .scaleEffect(successScale)
                     )

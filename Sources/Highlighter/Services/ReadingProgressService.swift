@@ -209,7 +209,7 @@ struct ReadingStatsView: View {
                     .fontWeight(.medium)
             } icon: {
                 Image(systemName: "book.fill")
-                    .font(.system(size: 12))
+                    .font(.ds.caption))
             }
             .foregroundColor(DesignSystem.Colors.textSecondary)
             
@@ -223,7 +223,7 @@ struct ReadingStatsView: View {
                     .fontWeight(.medium)
             } icon: {
                 Image(systemName: "clock")
-                    .font(.system(size: 12))
+                    .font(.ds.caption))
             }
             .foregroundColor(DesignSystem.Colors.textSecondary)
         }

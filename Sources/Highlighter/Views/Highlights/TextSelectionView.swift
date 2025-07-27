@@ -179,7 +179,7 @@ struct TextSelectionView: View {
                                 }
                             }) {
                                 Label("Create Highlight", systemImage: "highlighter")
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .font(.ds.callout, weight: .semibold))
                                     .foregroundColor(.white)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 10)
@@ -201,7 +201,7 @@ struct TextSelectionView: View {
                                 HapticManager.shared.notification(.success)
                             }) {
                                 Image(systemName: "doc.on.doc")
-                                    .font(.system(size: 16, weight: .medium))
+                                    .font(.ds.body, weight: .medium))
                                     .foregroundColor(.white)
                                     .frame(width: 40, height: 40)
                                     .background(Circle().fill(Color.secondary.opacity(0.8)))
@@ -490,7 +490,7 @@ struct HighlightEditorView: View {
                     // Privacy toggle
                     Toggle(isOn: $isPrivate) {
                         Label("Keep Private", systemImage: isPrivate ? "lock.fill" : "lock.open")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.ds.body, weight: .medium))
                     }
                     .padding(.horizontal)
                     .tint(.orange)
@@ -506,7 +506,7 @@ struct HighlightEditorView: View {
                                 Image(systemName: "highlighter")
                                 Text("Create Highlight")
                             }
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.ds.body, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
@@ -524,7 +524,7 @@ struct HighlightEditorView: View {
                         Button("Cancel") {
                             dismiss()
                         }
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.ds.body, weight: .medium))
                         .foregroundColor(.secondary)
                     }
                     .padding(.horizontal)
@@ -563,17 +563,17 @@ struct HighlightPreviewCard: View {
             HStack(alignment: .top, spacing: 0) {
                 Text(contextBefore + " ")
                     .foregroundColor(.secondary)
-                    .font(.system(size: 15))
+                    .font(.ds.body))
                 
                 Text(text)
                     .foregroundColor(.primary)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.ds.body, weight: .semibold))
                     .underline(color: .orange)
                     .background(Color.orange.opacity(0.1))
                 
                 Text(" " + contextAfter)
                     .foregroundColor(.secondary)
-                    .font(.system(size: 15))
+                    .font(.ds.body))
             }
             
             Divider()

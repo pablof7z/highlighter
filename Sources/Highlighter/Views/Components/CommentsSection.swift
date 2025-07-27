@@ -139,7 +139,7 @@ struct CommentsSection: View {
                                                 .scaleEffect(0.6)
                                         } else {
                                             Image(systemName: "arrow.up")
-                                                .font(.system(size: 16, weight: .bold))
+                                                .font(.ds.body, weight: .bold))
                                                 .foregroundColor(.white)
                                         }
                                     }
@@ -319,17 +319,17 @@ struct EmptyCommentsView: View {
             
             VStack(spacing: 8) {
                 Text("No comments yet")
-                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                    .font(.ds.headline, weight: .semibold, design: .rounded))
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Text("Be the first to share your thoughts")
-                    .font(.system(size: 14))
+                    .font(.ds.callout))
                     .foregroundColor(DesignSystem.Colors.textSecondary)
             }
             
             Button(action: onComment) {
                 Text("Add Comment")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.ds.callout, weight: .medium))
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
@@ -380,7 +380,7 @@ struct EnhancedCommentRow: View {
                 // Author info with verified badge
                 HStack(spacing: 6) {
                     Text(authorName)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.ds.body, weight: .semibold))
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     
@@ -388,7 +388,7 @@ struct EnhancedCommentRow: View {
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     
                     Text(RelativeTimeFormatter.shortRelativeTime(from: comment.createdAt))
-                        .font(.system(size: 13))
+                        .font(.ds.footnote))
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                 }
                 .opacity(isAnimated ? 1 : 0)
@@ -396,7 +396,7 @@ struct EnhancedCommentRow: View {
                 
                 // Comment content with better typography
                 Text(comment.content)
-                    .font(.system(size: 15))
+                    .font(.ds.body))
                     .foregroundColor(DesignSystem.Colors.text)
                     .fixedSize(horizontal: false, vertical: true)
                     .opacity(isAnimated ? 1 : 0)
@@ -478,14 +478,14 @@ struct ReactionButton: View {
         }) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 14))
+                    .font(.ds.callout))
                     .foregroundColor(isActive ? activeColor : DesignSystem.Colors.textSecondary)
                     .scaleEffect(isAnimating ? 1.3 : 1)
                     .rotationEffect(.degrees(isAnimating ? 15 : 0))
                 
                 if count > 0 {
                     Text("\(count)")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.ds.caption, weight: .medium))
                         .foregroundColor(isActive ? activeColor : DesignSystem.Colors.textSecondary)
                 }
             }
@@ -609,7 +609,7 @@ struct CommentsSectionHeader: View {
         HStack {
             HStack(spacing: 8) {
                 Image(systemName: "bubble.left.and.bubble.right.fill")
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.ds.title3, weight: .semibold))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
@@ -620,12 +620,12 @@ struct CommentsSectionHeader: View {
                     .symbolEffect(.bounce, value: commentsCount)
                 
                 Text("Comments")
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.ds.title2, weight: .bold, design: .rounded))
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 if commentsCount > 0 {
                     Text("\(commentsCount)")
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(.ds.callout, weight: .medium, design: .rounded))
                         .foregroundColor(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)

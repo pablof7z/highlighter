@@ -206,7 +206,7 @@ struct EditProfileView: View {
                         .overlay(
                             VStack(spacing: 4) {
                                 Image(systemName: "camera.fill")
-                                    .font(.system(size: 24))
+                                    .font(.ds.title2)
                                 Text("Change")
                                     .font(.ds.caption)
                             }
@@ -284,7 +284,7 @@ struct EditProfileView: View {
                         .overlay(
                             VStack(spacing: 4) {
                                 Image(systemName: "photo.fill")
-                                    .font(.system(size: 24))
+                                    .font(.ds.title2)
                                 Text("Change Banner")
                                     .font(.ds.caption)
                             }

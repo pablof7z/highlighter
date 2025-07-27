@@ -108,12 +108,12 @@ struct DiscoveryCurationCard: View {
                                             .clipShape(Circle())
                                     } placeholder: {
                                         Image(systemName: "person.fill")
-                                            .font(.system(size: 12))
+                                            .font(.ds.caption))
                                             .foregroundColor(.ds.primaryDark)
                                     }
                                 } else {
                                     Image(systemName: "person.fill")
-                                        .font(.system(size: 12))
+                                        .font(.ds.caption))
                                         .foregroundColor(.ds.primaryDark)
                                 }
                             }

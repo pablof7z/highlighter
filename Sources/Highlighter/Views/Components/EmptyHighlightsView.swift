@@ -105,11 +105,11 @@ struct EmptyHighlightsView: View {
                 
                 VStack(spacing: 20) {
                     Text("Your Wisdom Awaits")
-                        .font(.system(size: 28, weight: .bold, design: .serif))
+                        .font(.ds.title)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("Transform your reading into a curated collection of insights.\nHighlight the ideas that shape your thinking.")
-                        .font(.system(size: 16, weight: .regular, design: .default))
+                        .font(.ds.body)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 320)
@@ -124,10 +124,10 @@ struct EmptyHighlightsView: View {
                 }) {
                     HStack(spacing: 12) {
                         Image(systemName: "highlighter")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.ds.headline)
                         
                         Text("Begin Highlighting")
-                            .font(.system(size: 17, weight: .semibold, design: .rounded))
+                            .font(.ds.bodyMedium)
                     }
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
@@ -177,7 +177,7 @@ struct EmptyHighlightsView: View {
                 // Enhanced bottom suggestions
                 VStack(spacing: 20) {
                     Text("Get Started")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.ds.callout)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                         .textCase(.uppercase)
                         .tracking(1)
@@ -231,10 +231,10 @@ struct ActionPill: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .semibold))
+                .font(.ds.callout)
                 .foregroundColor(isHovered ? .white : color)
             Text(text)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.ds.footnote)
                 .foregroundColor(isHovered ? .white : DesignSystem.Colors.text)
         }
         .padding(.horizontal, 16)

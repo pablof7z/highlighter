@@ -140,7 +140,7 @@ struct TimelineFeedView: View {
             HStack {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                     Text("Timeline")
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .font(.ds.bodyBold, design: .rounded))
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("Latest highlights from your network")
@@ -158,7 +158,7 @@ struct TimelineFeedView: View {
                             .frame(width: 44, height: 44)
                             .overlay(
                                 Image(systemName: "line.3.horizontal.decrease.circle")
-                                    .font(.system(size: 20, weight: .medium))
+                                    .font(.ds.title3, weight: .medium))
                                     .foregroundColor(selectedFilter.color)
                             )
                         
@@ -220,14 +220,14 @@ struct TimelineEventCard: View {
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(PubkeyFormatter.formatCompact(event.pubkey))
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.ds.body, weight: .semibold))
                             .foregroundColor(DesignSystem.Colors.text)
                         
                         HStack(spacing: 4) {
                             Image(systemName: "clock")
-                                .font(.system(size: 11))
+                                .font(.ds.caption2))
                             Text(RelativeTimeFormatter.shortRelativeTime(from: event.createdAt))
-                                .font(.system(size: 12))
+                                .font(.ds.caption))
                         }
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     }
@@ -251,7 +251,7 @@ struct TimelineEventCard: View {
                             .frame(width: 32, height: 32)
                             .overlay(
                                 Image(systemName: "ellipsis")
-                                    .font(.system(size: 14, weight: .medium))
+                                    .font(.ds.callout, weight: .medium))
                                     .foregroundColor(.primary.opacity(0.6))
                             )
                     }
@@ -261,7 +261,7 @@ struct TimelineEventCard: View {
                 // Content
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                     Text(event.content)
-                        .font(.system(size: 16))
+                        .font(.ds.body))
                         .foregroundColor(DesignSystem.Colors.text)
                         .lineLimit(isExpanded ? nil : 4)
                         .fixedSize(horizontal: false, vertical: true)
@@ -269,7 +269,7 @@ struct TimelineEventCard: View {
                     if event.content.count > 200 && !isExpanded {
                         Button(action: { withAnimation { isExpanded.toggle() } }) {
                             Text("Show more")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.ds.callout, weight: .medium))
                                 .foregroundColor(DesignSystem.Colors.primary)
                         }
                     }
@@ -308,7 +308,7 @@ struct TimelineEventCard: View {
                     // Bookmark button
                     Button(action: {}) {
                         Image(systemName: "bookmark")
-                            .font(.system(size: 16))
+                            .font(.ds.body))
                             .foregroundColor(.primary.opacity(0.6))
                     }
                     .padding(.trailing, DesignSystem.Spacing.medium)
@@ -368,9 +368,9 @@ struct FilterPill: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: filter.icon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.ds.callout, weight: .semibold))
                 Text(filter.rawValue)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.ds.callout, weight: .medium))
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
@@ -401,10 +401,10 @@ struct TimelineEngagementButton: View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 16))
+                    .font(.ds.body))
                 if count > 0 {
                     Text("\(count)")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.ds.footnote, weight: .medium))
                 }
             }
             .foregroundColor(color.opacity(0.8))
@@ -550,7 +550,7 @@ struct FilterSelectionSheet: View {
                 .padding(.top, DesignSystem.Spacing.small)
             
             Text("Filter Timeline")
-                .font(.system(size: 20, weight: .bold))
+                .font(.ds.title3, weight: .bold))
                 .padding(.top, DesignSystem.Spacing.small)
             
             VStack(spacing: DesignSystem.Spacing.small) {
@@ -562,17 +562,17 @@ struct FilterSelectionSheet: View {
                     }) {
                         HStack(spacing: DesignSystem.Spacing.medium) {
                             Image(systemName: filter.icon)
-                                .font(.system(size: 20))
+                                .font(.ds.title3))
                                 .foregroundColor(filter.color)
                                 .frame(width: 30)
                             
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(filter.rawValue)
-                                    .font(.system(size: 16, weight: .semibold))
+                                    .font(.ds.body, weight: .semibold))
                                     .foregroundColor(.primary)
                                 
                                 Text(filterDescription(for: filter))
-                                    .font(.system(size: 13))
+                                    .font(.ds.footnote))
                                     .foregroundColor(.secondary)
                             }
                             
@@ -580,7 +580,7 @@ struct FilterSelectionSheet: View {
                             
                             if selectedFilter == filter {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 20))
+                                    .font(.ds.title3))
                                     .foregroundColor(filter.color)
                             }
                         }

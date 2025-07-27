@@ -144,7 +144,7 @@ struct SimplifiedHybridFeedView: View {
     private var headerView: some View {
         HStack {
             Text("Highlighter")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .font(.ds.largeTitle, weight: .bold, design: .rounded))
                 .foregroundColor(DesignSystem.Colors.text)
             
             Spacer()
@@ -174,12 +174,12 @@ struct SimplifiedHybridFeedView: View {
                 HStack(spacing: DesignSystem.Spacing.small) {
                     if let icon = icon {
                         Image(systemName: icon)
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(.ds.title3, weight: .semibold))
                             .foregroundColor(DesignSystem.Colors.primary)
                     }
                     
                     Text(title)
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(.ds.title2, weight: .bold, design: .rounded))
                         .foregroundColor(DesignSystem.Colors.text)
                 }
                 
@@ -213,7 +213,7 @@ struct SimplifiedHybridFeedView: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                 Text("Recently Highlighted")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.ds.title, weight: .bold, design: .rounded))
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Text("Articles you might enjoy")
@@ -244,11 +244,11 @@ struct SimplifiedHybridFeedView: View {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                     HStack(spacing: DesignSystem.Spacing.small) {
                         Image(systemName: "bubble.left.and.bubble.right.fill")
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(.ds.title3, weight: .semibold))
                             .foregroundColor(DesignSystem.Colors.primary)
                         
                         Text("Active Discussions")
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .font(.ds.title2, weight: .bold, design: .rounded))
                             .foregroundColor(DesignSystem.Colors.text)
                     }
                     
@@ -300,7 +300,7 @@ struct DiscussionRow: View {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                 HStack {
                     Text(author?.displayName ?? PubkeyFormatter.formatCompact(event.pubkey))
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.ds.body, weight: .semibold))
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("·")
@@ -314,13 +314,13 @@ struct DiscussionRow: View {
                     
                     if Bool.random() {
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 14))
+                            .font(.ds.callout))
                             .foregroundColor(DesignSystem.Colors.primary)
                     }
                 }
                 
                 Text(event.content)
-                    .font(.system(size: 14))
+                    .font(.ds.callout))
                     .foregroundColor(DesignSystem.Colors.text)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -401,14 +401,14 @@ struct RecentlyHighlightedArticleCard: View {
                 // Article title
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                     Text(highlightedArticle.article.title)
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(.ds.headline, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     
                     if let summary = highlightedArticle.article.summary {
                         Text(summary)
-                            .font(.system(size: 14))
+                            .font(.ds.callout))
                             .foregroundColor(.white.opacity(0.8))
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
@@ -441,25 +441,25 @@ struct RecentlyHighlightedArticleCard: View {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                     HStack(spacing: DesignSystem.Spacing.mini) {
                         Image(systemName: "highlighter")
-                            .font(.system(size: 12))
+                            .font(.ds.caption))
                             .foregroundColor(DesignSystem.Colors.secondary)
                         
                         Text("\(highlightedArticle.highlights.count) highlight\(highlightedArticle.highlights.count == 1 ? "" : "s")")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.ds.caption, weight: .medium))
                             .foregroundColor(DesignSystem.Colors.secondary)
                         
                         Text("·")
                             .foregroundColor(DesignSystem.Colors.textTertiary)
                         
                         Text(RelativeTimeFormatter.shortRelativeTime(from: highlightedArticle.lastHighlightTime))
-                            .font(.system(size: 12))
+                            .font(.ds.caption))
                             .foregroundColor(DesignSystem.Colors.textTertiary)
                     }
                     
                     // Show a preview of the most recent highlight
                     if let latestHighlight = highlightedArticle.highlights.first {
                         Text("\"\(latestHighlight.content.prefix(80))...\"")
-                            .font(.system(size: 13, design: .serif))
+                            .font(.ds.footnote, design: .serif))
                             .italic()
                             .foregroundColor(DesignSystem.Colors.textSecondary)
                             .lineLimit(2)
@@ -518,10 +518,10 @@ struct ActivityRing: View {
             
             VStack(spacing: 0) {
                 Text("\(Int(progress * 100))")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(.ds.body, weight: .bold, design: .rounded))
                     .foregroundColor(DesignSystem.Colors.primary)
                 Text("%")
-                    .font(.system(size: 10, weight: .medium))
+                    .font(.ds.caption2, weight: .medium))
                     .foregroundColor(DesignSystem.Colors.textSecondary)
             }
         }
@@ -540,10 +540,10 @@ struct InteractionButton: View {
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.micro) {
             Image(systemName: icon)
-                .font(.system(size: 14))
+                .font(.ds.callout))
             if count > 0 {
                 Text(formatCount(count))
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.ds.caption, weight: .medium))
             }
         }
         .foregroundColor(color)
@@ -565,10 +565,10 @@ struct EngagementButton: View {
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.micro) {
             Image(systemName: icon)
-                .font(.system(size: 12))
+                .font(.ds.caption))
             if count > 0 {
                 Text("\(count)")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.ds.caption2, weight: .medium))
             }
         }
         .foregroundColor(color)
@@ -582,9 +582,9 @@ struct MetricPill: View {
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.micro) {
             Image(systemName: icon)
-                .font(.system(size: 12))
+                .font(.ds.caption))
             Text(value)
-                .font(.system(size: 12, weight: .medium))
+                .font(.ds.caption, weight: .medium))
         }
         .foregroundColor(DesignSystem.Colors.textSecondary)
         .padding(.horizontal, 8)
@@ -630,7 +630,7 @@ struct RefreshIndicatorView: View {
             
             // Center icon
             Image(systemName: "arrow.clockwise")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.ds.body, weight: .semibold))
                 .foregroundColor(DesignSystem.Colors.primary)
                 .rotationEffect(.degrees(isRefreshing ? rotation : 0))
                 .scaleEffect(isRefreshing ? 1.1 : 1.0)

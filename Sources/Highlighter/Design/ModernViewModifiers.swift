@@ -41,7 +41,7 @@ struct ModernTabItem: View {
     var body: some View {
         VStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 20, weight: .medium))
+                .font(.ds.title3)
                 .foregroundColor(isSelected ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
                 .scaleEffect(isSelected ? 1.1 : 1.0)
                 .animation(DesignSystem.Animation.springSnappy, value: isSelected)

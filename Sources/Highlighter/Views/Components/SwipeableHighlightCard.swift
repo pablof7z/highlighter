@@ -77,14 +77,14 @@ struct SwipeableHighlightCard: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(PubkeyFormatter.formatCompact(highlight.author))
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.ds.bodyMedium)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     HStack(spacing: 4) {
                         Image(systemName: "clock")
-                            .font(.system(size: 11))
+                            .font(.ds.caption)
                         Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt))
-                            .font(.system(size: 12))
+                            .font(.ds.caption)
                     }
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
@@ -115,7 +115,7 @@ struct SwipeableHighlightCard: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis")
-                        .font(.system(size: 16))
+                        .font(.ds.body))
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                         .padding(8)
                         .background(Circle().fill(DesignSystem.Colors.surfaceSecondary))
@@ -130,7 +130,7 @@ struct SwipeableHighlightCard: View {
                     .offset(x: -8, y: -20)
                 
                 Text(highlight.content)
-                    .font(.system(size: 18, weight: .medium, design: .rounded))
+                    .font(.ds.headline)
                     .foregroundColor(DesignSystem.Colors.text)
                     .lineSpacing(6)
                     .padding(.top, 8)
@@ -154,11 +154,11 @@ struct SwipeableHighlightCard: View {
             if let url = highlight.url {
                 HStack(spacing: 6) {
                     Image(systemName: "link.circle.fill")
-                        .font(.system(size: 14))
+                        .font(.ds.callout)
                         .foregroundColor(DesignSystem.Colors.primary)
                     
                     Text(ContentFormatter.extractDomain(from: url))
-                        .font(.system(size: 13))
+                        .font(.ds.footnote)
                         .foregroundColor(DesignSystem.Colors.primary)
                         .lineLimit(1)
                 }
@@ -246,7 +246,7 @@ struct SwipeableHighlightCard: View {
                         .blur(radius: 10)
                     
                     Image(systemName: "archivebox.fill")
-                        .font(.system(size: 32))
+                        .font(.ds.largeTitle)
                         .foregroundColor(Color.red)
                         .opacity(showLeftIcon ? 1 : 0)
                         .scaleEffect(showLeftIcon ? 1.2 : 0.8)
@@ -267,7 +267,7 @@ struct SwipeableHighlightCard: View {
                         .blur(radius: 10)
                     
                     Image(systemName: "bookmark.fill")
-                        .font(.system(size: 32))
+                        .font(.ds.largeTitle)
                         .foregroundColor(Color.green)
                         .opacity(showRightIcon ? 1 : 0)
                         .scaleEffect(showRightIcon ? 1.2 : 0.8)
@@ -394,11 +394,11 @@ struct EngagementMetric: View {
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.ds.body)
                 .foregroundColor(color)
             
             Text("\(value)")
-                .font(.system(size: 14, weight: .medium))
+                .font(.ds.callout)
                 .foregroundColor(DesignSystem.Colors.textSecondary)
         }
     }
