@@ -62,7 +62,7 @@ struct SmartArticleImportView: View {
         NavigationStack {
             ZStack {
                 // Animated gradient background
-                AnimatedGradientBackground()
+                UnifiedGradientBackground(style: .subtle)
                 
                 // Neural network visualization
                 NeuralNetworkVisualization(
@@ -1339,29 +1339,6 @@ struct NeuralNetworkVisualization: View {
         .onChange(of: isActive) { _, newValue in
             withAnimation {
                 pathAnimation = newValue ? 1 : 0
-            }
-        }
-    }
-}
-
-struct AnimatedGradientBackground: View {
-    @State private var animationAmount: CGFloat = 0
-    
-    var body: some View {
-        LinearGradient(
-            colors: [
-                DesignSystem.Colors.background,
-                Color.purple.opacity(0.05),
-                Color.orange.opacity(0.05),
-                DesignSystem.Colors.background
-            ],
-            startPoint: .topLeading,
-            endPoint: UnitPoint(x: 1 + animationAmount, y: 1 + animationAmount)
-        )
-        .ignoresSafeArea()
-        .onAppear {
-            withAnimation(.linear(duration: 10).repeatForever(autoreverses: true)) {
-                animationAmount = 1
             }
         }
     }

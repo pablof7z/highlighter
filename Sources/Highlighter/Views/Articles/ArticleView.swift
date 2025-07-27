@@ -61,7 +61,7 @@ struct ArticleView: View {
     private var articleViewContent: some View {
         GeometryReader { geometry in
             ZStack(alignment: .top) {
-                AmbientBackground()
+                UnifiedGradientBackground(style: .subtle)
                 mainContent(geometry: geometry)
                 enhancedFloatingNavBar(in: geometry)
             }
@@ -376,20 +376,20 @@ struct ArticleView: View {
                                 .scaleEffect(1 + (scrollOffset > 0 ? scrollOffset * 0.0005 : 0))
                         }
                     case .empty, .failure:
-                        ArticleGradientPlaceholder()
+                        UnifiedGradientBackground(style: .subtle)
                             .frame(width: geometry.size.width, height: 400)
+                            .overlay(
+                                Image(systemName: "photo")
+                                    .font(.system(size: 48))
+                                    .foregroundColor(.white.opacity(0.3))
+                            )
                     @unknown default:
                         EmptyView()
                     }
                 }
             } else {
-                if #available(iOS 18.0, *) {
-                    ArticleAnimatedGradientBackground()
-                        .frame(width: geometry.size.width, height: 400)
-                } else {
-                    ArticleGradientPlaceholder()
-                        .frame(width: geometry.size.width, height: 400)
-                }
+                UnifiedGradientBackground(style: .mesh)
+                    .frame(width: geometry.size.width, height: 400)
             }
             
             // Enhanced gradient overlay
@@ -763,86 +763,6 @@ struct ArticleView: View {
 }
 
 // MARK: - Supporting Views
-
-struct AmbientBackground: View {
-    @State private var animationPhase = 0.0
-    
-    var body: some View {
-        Canvas { context, size in
-            let colors = [
-                DesignSystem.Colors.primary.opacity(0.05),
-                DesignSystem.Colors.secondary.opacity(0.03),
-                DesignSystem.Colors.background
-            ]
-            
-            let gradient = Gradient(colors: colors)
-            
-            context.fill(
-                Path(CGRect(origin: .zero, size: size)),
-                with: .linearGradient(
-                    gradient,
-                    startPoint: .zero,
-                    endPoint: CGPoint(x: size.width, y: size.height)
-                )
-            )
-        }
-        .ignoresSafeArea()
-        .animation(.easeInOut(duration: 10).repeatForever(autoreverses: true), value: animationPhase)
-        .onAppear { animationPhase = 1 }
-    }
-}
-
-struct ArticleGradientPlaceholder: View {
-    var body: some View {
-        Rectangle()
-            .fill(
-                LinearGradient(
-                    colors: [
-                        DesignSystem.Colors.primary.opacity(0.3),
-                        DesignSystem.Colors.secondary.opacity(0.2)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .overlay(
-                Image(systemName: "photo")
-                    .font(.system(size: 48))
-                    .foregroundColor(.white.opacity(0.3))
-            )
-    }
-}
-
-@available(iOS 18.0, *)
-struct ArticleAnimatedGradientBackground: View {
-    @State private var animationPhase = 0.0
-    
-    var body: some View {
-        MeshGradient(
-            width: 3,
-            height: 3,
-            points: [
-                [0, 0], [0.5, 0], [1, 0],
-                [0, 0.5], [Float(0.5 + sin(animationPhase) * 0.1), 0.5], [1, 0.5],
-                [0, 1], [0.5, 1], [1, 1]
-            ],
-            colors: [
-                DesignSystem.Colors.primary,
-                DesignSystem.Colors.primaryLight,
-                DesignSystem.Colors.secondary,
-                DesignSystem.Colors.primaryDark,
-                DesignSystem.Colors.primary,
-                DesignSystem.Colors.secondaryLight,
-                DesignSystem.Colors.secondary,
-                DesignSystem.Colors.primaryLight,
-                DesignSystem.Colors.primary
-            ]
-        )
-        .ignoresSafeArea()
-        .animation(.easeInOut(duration: 5).repeatForever(autoreverses: true), value: animationPhase)
-        .onAppear { animationPhase = .pi * 2 }
-    }
-}
 
 struct AuthorChip: View {
     let pubkey: String

@@ -42,7 +42,7 @@ struct TimelineFeedView: View {
         NavigationStack {
             ZStack {
                 // Dynamic gradient background
-                TimelineGradientBackground()
+                UnifiedGradientBackground(style: .subtle)
                     .ignoresSafeArea()
                 
                 // Floating timeline particles
@@ -487,34 +487,6 @@ struct TimelineSkeletonCard: View {
                 shimmerOffset = 300
             }
         }
-    }
-}
-
-struct TimelineGradientBackground: View {
-    @State private var animateGradient = false
-    
-    var body: some View {
-        Rectangle()
-            .fill(
-                LinearGradient(
-                    colors: [
-                        DesignSystem.Colors.background,
-                        DesignSystem.Colors.primary.opacity(0.05),
-                        DesignSystem.Colors.secondary.opacity(0.03),
-                        DesignSystem.Colors.background
-                    ],
-                    startPoint: animateGradient ? .topLeading : .bottomLeading,
-                    endPoint: animateGradient ? .bottomTrailing : .topTrailing
-                )
-            )
-            .animation(
-                .easeInOut(duration: 8)
-                .repeatForever(autoreverses: true),
-                value: animateGradient
-            )
-            .onAppear {
-                animateGradient = true
-            }
     }
 }
 
