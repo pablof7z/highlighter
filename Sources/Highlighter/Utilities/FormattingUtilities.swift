@@ -213,7 +213,10 @@ struct RelativeTimeFormatter {
     /// - Parameter date: Date to format
     /// - Returns: Formatted date and time string
     static func exactTime(from date: Date) -> String {
-        return DateFormatters.display.string(from: date)
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
     
     /// Smart formatting that switches between relative and exact based on age
@@ -237,6 +240,16 @@ struct RelativeTimeFormatter {
     /// Ultra-compact time formatting for cards (legacy compatibility)
     static func compactTime(from timestamp: Timestamp) -> String {
         return shortRelativeTime(from: timestamp)
+    }
+    
+    /// Full date format for exports and archival purposes
+    /// - Parameter date: Date to format
+    /// - Returns: Full date string like "March 15, 2024"
+    static func fullDate(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .none
+        return formatter.string(from: date)
     }
 }
 

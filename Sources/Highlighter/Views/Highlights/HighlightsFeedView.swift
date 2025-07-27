@@ -15,7 +15,6 @@ struct HighlightsFeedView: View {
     @State private var hapticPrepared = false
     @State private var selectedUserPubkey: String?
     @State private var showUserProfile = false
-    @Binding var tabBarVisible: Bool
     
     // Author cache
     @State private var authorProfiles: [String: NDKUserProfile] = [:]
@@ -111,7 +110,6 @@ struct HighlightsFeedView: View {
             }
         }
         .onAppear {
-            tabBarVisible = true
             prepareHaptics()
             withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
                 backgroundAnimation = true
@@ -447,12 +445,12 @@ struct HighlightFeedItemView: View {
                         .blur(radius: 20) // Gaussian blur
                         .opacity(0.4) // Standardized opacity (0.3-0.5)
                 } else {
-                    // Purple-to-orange gradient fallback
+                    // Design system gradient fallback
                     LinearGradient(
                         colors: [
-                            Color(hex: "7B3FF2"), // Purple
-                            Color(hex: "E94057"), // Pink-red
-                            Color(hex: "F27121")  // Orange
+                            Color.ds.primary,      // Purple from design system
+                            Color.ds.primaryLight, // Light purple
+                            Color.ds.secondary     // Orange from design system
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -470,13 +468,13 @@ struct HighlightFeedItemView: View {
                         HStack(spacing: 4) {
                             Text(sourceText)
                                 .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(Color(hex: "CCCCCC"))
+                                .foregroundColor(.white.opacity(0.8))
                             Text("·")
                                 .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(Color(hex: "CCCCCC"))
+                                .foregroundColor(.white.opacity(0.8))
                             Text(relativeTime(from: highlight.createdAt))
                                 .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(Color(hex: "CCCCCC"))
+                                .foregroundColor(.white.opacity(0.8))
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -587,7 +585,23 @@ struct HighlightFeedItemView: View {
                                 }
                             }
                             
-                            // Repost - removed for now as it needs implementation
+                            // Repost
+                            Button(action: {
+                                Task {
+                                    await repostHighlight(highlight)
+                                }
+                            }) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.black.opacity(0.3))
+                                        .frame(width: 42, height: 42)
+                                    
+                                    Image(systemName: "arrow.2.squarepath")
+                                        .font(.system(size: 18))
+                                        .foregroundColor(.white)
+                                }
+                                .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
+                            }
                             
                             // Share
                             Button(action: onShare) {
@@ -853,9 +867,36 @@ extension HighlightsFeedView {
             }
         }
     }
+    
+    private func repostHighlight(_ highlight: HighlightEvent) async {
+        guard let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return }
+        
+        do {
+            // Create a repost event (kind: 6)
+            var event = NDKEvent(kind: 6) // Kind 6 is repost
+            event.content = highlight.id // Reference the highlight event ID
+            event.tags = [
+                ["e", highlight.id, "", "mention"],
+                ["p", highlight.author, "", "mention"]
+            ]
+            
+            // Sign and publish the repost
+            try await event.sign(using: signer)
+            try await ndk.publish(event: event)
+            
+            await MainActor.run {
+                HapticManager.shared.notification(.success)
+            }
+        } catch {
+            await MainActor.run {
+                HapticManager.shared.notification(.error)
+            }
+        }
+    }
 }
 
 #Preview {
-    HighlightsFeedView(tabBarVisible: .constant(false))
+    HighlightsFeedView()
         .environmentObject(AppState())
 }

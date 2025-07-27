@@ -82,9 +82,6 @@ struct SimplifiedHybridFeedView: View {
                                         ModernHighlightCard(highlight: highlight)
                                             .environmentObject(appState)
                                     }
-                                } else {
-                                    // Loading state with skeleton UI
-                                    carouselLoadingState(title: "Featured Highlights")
                                 }
                                 
                                 // Active Discussions
@@ -211,33 +208,6 @@ struct SimplifiedHybridFeedView: View {
         }
     }
     
-    private func carouselLoadingState(title: String) -> some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
-            Text(title)
-                .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundColor(DesignSystem.Colors.text)
-                .padding(.horizontal, DesignSystem.Spacing.large)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: DesignSystem.Spacing.large) {
-                    ForEach(0..<3, id: \.self) { index in
-                        SkeletonHighlightCard()
-                            .frame(width: 300, height: 200)
-                            .transition(.asymmetric(
-                                insertion: .scale(scale: 0.8).combined(with: .opacity),
-                                removal: .scale(scale: 1.2).combined(with: .opacity)
-                            ))
-                            .animation(
-                                .spring(response: 0.5, dampingFraction: 0.7)
-                                .delay(Double(index) * 0.1),
-                                value: dataManager.userHighlights.isEmpty
-                            )
-                    }
-                }
-                .padding(.horizontal, DesignSystem.Spacing.large)
-            }
-        }
-    }
     
     private var recentlyHighlightedSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
@@ -679,128 +649,6 @@ struct RefreshIndicatorView: View {
     }
 }
 
-struct SkeletonHighlightCard: View {
-    @State private var shimmerOffset: CGFloat = -200
-    @State private var pulseOpacity: Double = 0.5
-    
-    var body: some View {
-        ZStack {
-            // Elegant base with subtle gradient
-            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            DesignSystem.Colors.surfaceSecondary,
-                            DesignSystem.Colors.surfaceSecondary.opacity(0.95)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-                        .strokeBorder(
-                            DesignSystem.Colors.divider.opacity(0.1),
-                            lineWidth: 1
-                        )
-                )
-            
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                // Elegant header placeholder with varied widths
-                HStack(spacing: DesignSystem.Spacing.small) {
-                    Circle()
-                        .fill(DesignSystem.Colors.textTertiary.opacity(0.12))
-                        .frame(width: 32, height: 32)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Capsule()
-                            .fill(DesignSystem.Colors.textTertiary.opacity(0.15))
-                            .frame(width: 100, height: 12)
-                        
-                        Capsule()
-                            .fill(DesignSystem.Colors.textTertiary.opacity(0.1))
-                            .frame(width: 60, height: 10)
-                    }
-                    
-                    Spacer()
-                }
-                
-                // Content placeholder with natural text flow
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
-                    ForEach(0..<3) { index in
-                        Capsule()
-                            .fill(DesignSystem.Colors.textTertiary.opacity(0.12 - Double(index) * 0.02))
-                            .frame(height: 14)
-                            .frame(maxWidth: index == 2 ? 180 : .infinity)
-                    }
-                }
-                .padding(.vertical, DesignSystem.Spacing.small)
-                
-                Spacer()
-                
-                // Elegant footer with interaction hints
-                HStack {
-                    HStack(spacing: 4) {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(DesignSystem.Colors.textTertiary.opacity(0.1))
-                            .frame(width: 16, height: 16)
-                        
-                        Capsule()
-                            .fill(DesignSystem.Colors.textTertiary.opacity(0.08))
-                            .frame(width: 40, height: 12)
-                    }
-                    
-                    Spacer()
-                    
-                    HStack(spacing: DesignSystem.Spacing.small) {
-                        ForEach(0..<3, id: \.self) { index in
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(DesignSystem.Colors.textTertiary.opacity(0.1 - Double(index) * 0.02))
-                                .frame(width: 24, height: 24)
-                        }
-                    }
-                }
-            }
-            .padding(DesignSystem.Spacing.xl)
-            
-            // Subtle, elegant shimmer effect
-            LinearGradient(
-                colors: [
-                    Color.clear,
-                    DesignSystem.Colors.primary.opacity(0.05),
-                    DesignSystem.Colors.secondary.opacity(0.05),
-                    Color.clear
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-            .frame(width: 150)
-            .offset(x: shimmerOffset)
-            .blur(radius: 8)
-            .mask(
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-            )
-        }
-        .opacity(pulseOpacity)
-        .onAppear {
-            // Elegant shimmer animation
-            withAnimation(
-                .easeInOut(duration: 2.5)
-                .repeatForever(autoreverses: false)
-            ) {
-                shimmerOffset = 400
-            }
-            
-            // Subtle pulse for organic feel
-            withAnimation(
-                .easeInOut(duration: 2)
-                .repeatForever(autoreverses: true)
-            ) {
-                pulseOpacity = 0.8
-            }
-        }
-    }
-}
 
 struct ShimmeringOverlay: View {
     @State private var shimmerPosition: CGFloat = -1

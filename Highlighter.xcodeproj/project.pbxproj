@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0419F8AB6AA5C6DCBF94F7B3 /* UnifiedIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE4DE8BC3B41270109DA36DA /* UnifiedIcons.swift */; };
 		06F1FA7B9C3130D22B35D122 /* SwarmHighlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9906E08DF53F3E88E7370583 /* SwarmHighlight.swift */; };
 		07E3CDA432D5B26DF5747DDD /* TextSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340014DACEA6C5443AE37553 /* TextSelectionView.swift */; };
 		0AB8E358C4D1ED0B7B320B12 /* ImmersiveHighlightDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F437CC93FEF711A4B8BD328 /* ImmersiveHighlightDetailView.swift */; };
@@ -83,11 +84,11 @@
 		BEEFC7E63EE19685B859327B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3CDA726BB07F1F8F89ABF1C /* Assets.xcassets */; };
 		BF8BF379A7FFE947E5F3811B /* ArticleTimeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E74B3E244D7F253B507F4B6 /* ArticleTimeEstimator.swift */; };
 		C2AD1BBC79D059AF8C6F6DC9 /* SimplifiedHybridFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1770A666CC88A1326723FA2 /* SimplifiedHybridFeedView.swift */; };
-		D3BD7A0160EE2E26A8529370 /* SharedStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = D715EDA3BA34145E7508D03E /* SharedStyles.swift */; };
 		D4B22C3274D4A1E3D768FD3F /* NostrWalletConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6282146FEAFAE4EB50E8C9DF /* NostrWalletConnect.swift */; };
 		D6A56128381947ACC6639CC6 /* HighlightEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0151014CE7E449B5BE685BE8 /* HighlightEvent.swift */; };
 		D6BF6DEBA828B3B11D10832E /* CurationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D807FD00E2D24A226C0CA61A /* CurationDetailView.swift */; };
 		D9DDE855A6260257D14B363C /* TimelineFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02BF635DE3D5488C2EC049B /* TimelineFeedView.swift */; };
+		DD2DCBC0C0F38105C4BD0053 /* UnifiedStyleGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB9E8D98D72AC1442A4401A /* UnifiedStyleGuide.swift */; };
 		DDE1B699AD2C62049E2AF2E3 /* ModernViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC98504899CC29F4D15C2A92 /* ModernViewModifiers.swift */; };
 		DE72306A67DEB86D06A8878E /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8002949A23F78D10720992C /* KeychainManager.swift */; };
 		DEF4ACD6D408D383F02A9C06 /* NDKSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8F0120155B5FA6FCE7E43793 /* NDKSwift */; };
@@ -147,6 +148,7 @@
 		83206D6462CF11DCF490672D /* SwarmOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwarmOverlayView.swift; sourceTree = "<group>"; };
 		842FF8B20D37A2852B7A0ED9 /* HighlightDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightDetailView.swift; sourceTree = "<group>"; };
 		8C6C4024D5AE536DD3ADC4C4 /* HighlightsFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightsFeedView.swift; sourceTree = "<group>"; };
+		8CB9E8D98D72AC1442A4401A /* UnifiedStyleGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnifiedStyleGuide.swift; sourceTree = "<group>"; };
 		96BB1CEB6B1AF8996372B0A9 /* ModernFormComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernFormComponents.swift; sourceTree = "<group>"; };
 		978B907455CE5F514DADD37A /* LightningPaymentFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningPaymentFlowView.swift; sourceTree = "<group>"; };
 		9906E08DF53F3E88E7370583 /* SwarmHighlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwarmHighlight.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 		B4C72655D262C9FB9C686CAF /* HighlightDiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightDiscoveryView.swift; sourceTree = "<group>"; };
 		B732C4AF8ED87EBB93D6D0D5 /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
 		BDDA7CB3CCEA970A2BD052FD /* TappableAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableAvatar.swift; sourceTree = "<group>"; };
+		BE4DE8BC3B41270109DA36DA /* UnifiedIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnifiedIcons.swift; sourceTree = "<group>"; };
 		C1770A666CC88A1326723FA2 /* SimplifiedHybridFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplifiedHybridFeedView.swift; sourceTree = "<group>"; };
 		C3BA485EAC539B8495036D49 /* ArticleCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleCards.swift; sourceTree = "<group>"; };
 		C3CDA726BB07F1F8F89ABF1C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -172,7 +175,6 @@
 		CC98504899CC29F4D15C2A92 /* ModernViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernViewModifiers.swift; sourceTree = "<group>"; };
 		CC9C86787D8110767C109BBB /* ButtonSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSystem.swift; sourceTree = "<group>"; };
 		D01FA9F607102E7402D96CA8 /* FormattingUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattingUtilities.swift; sourceTree = "<group>"; };
-		D715EDA3BA34145E7508D03E /* SharedStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStyles.swift; sourceTree = "<group>"; };
 		D807FD00E2D24A226C0CA61A /* CurationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurationDetailView.swift; sourceTree = "<group>"; };
 		DA5E50C448EABA6253CB3A58 /* AvatarUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarUtilities.swift; sourceTree = "<group>"; };
 		E226564B9D8D44FE91929960 /* CommentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentService.swift; sourceTree = "<group>"; };
@@ -364,6 +366,8 @@
 				4E36C3396966D42A6A522C05 /* CardSystem.swift */,
 				1A3025E76E14FBF1C8D93736 /* DesignSystem.swift */,
 				CC98504899CC29F4D15C2A92 /* ModernViewModifiers.swift */,
+				BE4DE8BC3B41270109DA36DA /* UnifiedIcons.swift */,
+				8CB9E8D98D72AC1442A4401A /* UnifiedStyleGuide.swift */,
 			);
 			path = Design;
 			sourceTree = "<group>";
@@ -422,7 +426,6 @@
 				96BB1CEB6B1AF8996372B0A9 /* ModernFormComponents.swift */,
 				FA46623C808023B5D65EB473 /* ModernStateViews.swift */,
 				68EE862B30307430C752F295 /* SelectableMarkdownRenderer.swift */,
-				D715EDA3BA34145E7508D03E /* SharedStyles.swift */,
 				F272232DC05F56A99327CE3F /* SwipeableHighlightCard.swift */,
 				BDDA7CB3CCEA970A2BD052FD /* TappableAvatar.swift */,
 				5AFA2646020373D085219CD1 /* UnifiedCard.swift */,
@@ -678,7 +681,6 @@
 				B06661ECC0DF92E6D63812C5 /* ReadingProgressService.swift in Sources */,
 				2629890795B6D0A577BF09D3 /* SelectableMarkdownRenderer.swift in Sources */,
 				AB4EF72007DE04801039B67B /* SettingsView.swift in Sources */,
-				D3BD7A0160EE2E26A8529370 /* SharedStyles.swift in Sources */,
 				C2AD1BBC79D059AF8C6F6DC9 /* SimplifiedHybridFeedView.swift in Sources */,
 				592922A038AC7CEB7AAD35F7 /* SmartArticleImportView.swift in Sources */,
 				EDF1676E64A7D57933E21659 /* SwarmHeatmapView.swift in Sources */,
@@ -690,6 +692,8 @@
 				D9DDE855A6260257D14B363C /* TimelineFeedView.swift in Sources */,
 				A06F95F603A679D35B71830C /* UnifiedCard.swift in Sources */,
 				7241C5CEE9263C4CDD91F716 /* UnifiedGradientBackground.swift in Sources */,
+				0419F8AB6AA5C6DCBF94F7B3 /* UnifiedIcons.swift in Sources */,
+				DD2DCBC0C0F38105C4BD0053 /* UnifiedStyleGuide.swift in Sources */,
 				E3A00B68BDE7C21BA3CD80C2 /* UserDiscoveryView.swift in Sources */,
 				A529566D32F92D65708AC6EE /* UserProfileView.swift in Sources */,
 				B5E8FDE244E748C0EBA0335C /* ZapButton.swift in Sources */,

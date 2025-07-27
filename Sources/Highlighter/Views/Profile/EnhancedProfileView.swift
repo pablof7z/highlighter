@@ -183,10 +183,7 @@ struct EnhancedProfileView: View {
                         .clipped()
                         .overlay(
                             LinearGradient(
-                                colors: [
-                                    Color.black.opacity(0),
-                                    Color.black.opacity(0.6)
-                                ],
+                                colors: UnifiedStyleGuide.ProfileHeader.overlayGradient,
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
@@ -373,27 +370,27 @@ struct EnhancedProfileView: View {
     // MARK: - Tab Selector
     
     private var modernTabSelector: some View {
-        HStack(spacing: 0) {
-            ForEach(ProfileTab.allCases, id: \.self) { tab in
-                ProfileTabButton(
-                    tab: tab,
-                    isSelected: selectedTab == tab,
-                    action: {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(ProfileTab.allCases, id: \.self) { tab in
+                    Button(action: {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             selectedTab = tab
                             HapticManager.shared.impact(.light)
                         }
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: tab.icon)
+                                .font(.system(size: 16, weight: .medium))
+                            Text(tab.rawValue)
+                        }
+                        .unifiedTabPill(isSelected: selectedTab == tab)
                     }
-                )
+                    .buttonStyle(PlainButtonStyle())
+                }
             }
+            .padding(.horizontal, .ds.screenPadding)
         }
-        .padding(4)
-        .background(
-            Capsule()
-                .fill(DesignSystem.Colors.surfaceSecondary)
-                .shadow(color: .black.opacity(0.05), radius: 10, y: 5)
-        )
-        .padding(.horizontal, .ds.screenPadding)
     }
     
     // MARK: - Tab Content
@@ -613,85 +610,6 @@ struct EnhancedProfileView: View {
 
 // MARK: - Supporting Views
 
-struct AnimatedStatCard: View {
-    let value: Int
-    let label: String
-    let icon: String
-    let color: Color
-    let animate: Bool
-    var action: (() -> Void)? = nil
-    
-    @State private var displayValue: Int = 0
-    
-    var body: some View {
-        Button(action: { action?() }) {
-            VStack(spacing: .ds.small) {
-                Image(systemName: icon)
-                    .font(.system(size: 24))
-                    .foregroundColor(color)
-                    .scaleEffect(animate ? 1.0 : 0.5)
-                    .rotationEffect(.degrees(animate ? 0 : -180))
-                
-                Text("\(displayValue)")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundColor(.ds.text)
-                    .contentTransition(.numericText())
-                
-                Text(label)
-                    .font(.ds.caption)
-                    .foregroundColor(.ds.textSecondary)
-            }
-            .frame(width: 100, height: 100)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(color.opacity(0.1))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(color.opacity(0.2), lineWidth: 1)
-                    )
-            )
-        }
-        .unifiedScaleButton()
-        .disabled(action == nil)
-        .onAppear {
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2)) {
-                displayValue = value
-            }
-        }
-        .onChange(of: value) { oldValue, newValue in
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-                displayValue = newValue
-            }
-        }
-    }
-}
-
-struct ProfileTabButton: View {
-    let tab: EnhancedProfileView.ProfileTab
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 4) {
-                Image(systemName: tab.icon)
-                    .font(.system(size: 20))
-                    .symbolRenderingMode(.hierarchical)
-                
-                Text(tab.rawValue)
-                    .font(.ds.caption)
-            }
-            .foregroundColor(isSelected ? .ds.primary : .ds.textSecondary)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, .ds.small)
-            .background(
-                Capsule()
-                    .fill(isSelected ? Color.ds.primary.opacity(0.1) : Color.clear)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
-            )
-        }
-    }
-}
 
 // MARK: - Tab Views
 
@@ -1222,96 +1140,38 @@ struct ActivityCardSkeleton: View {
 
 struct HighlightsEmptyStateView: View {
     var body: some View {
-        VStack(spacing: .ds.large) {
-            Image(systemName: "highlighter")
-                .font(.system(size: 60))
-                .foregroundColor(.orange.opacity(0.5))
-                .symbolRenderingMode(.hierarchical)
-            
-            VStack(spacing: .ds.small) {
-                Text("No Highlights Yet")
-                    .font(.ds.title3)
-                    .foregroundColor(.ds.text)
-                
-                Text("Start highlighting content to build your knowledge base")
-                    .font(.ds.body)
-                    .foregroundColor(.ds.textSecondary)
-                    .multilineTextAlignment(.center)
-            }
-            
-            Button(action: {
+        UnifiedEmptyState(
+            icon: "pencil.tip",
+            title: "No Highlights Yet",
+            message: "Start highlighting content to build your knowledge base",
+            action: {
                 // Navigate to create highlight
-            }) {
-                Text("Create First Highlight")
-                    .font(.ds.bodyMedium)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color.orange)
-                    .clipShape(Capsule())
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
+            },
+            actionTitle: "Create First Highlight"
+        )
     }
 }
 
 struct CurationsEmptyStateView: View {
     var body: some View {
-        VStack(spacing: .ds.large) {
-            Image(systemName: "books.vertical")
-                .font(.system(size: 60))
-                .foregroundColor(.purple.opacity(0.5))
-                .symbolRenderingMode(.hierarchical)
-            
-            VStack(spacing: .ds.small) {
-                Text("No Curations Yet")
-                    .font(.ds.title3)
-                    .foregroundColor(.ds.text)
-                
-                Text("Create collections of your favorite articles")
-                    .font(.ds.body)
-                    .foregroundColor(.ds.textSecondary)
-                    .multilineTextAlignment(.center)
-            }
-            
-            Button(action: {
+        UnifiedEmptyState(
+            icon: "books.vertical",
+            title: "No Curations Yet",
+            message: "Create collections of your favorite articles",
+            action: {
                 // Navigate to create curation
-            }) {
-                Text("Create First Curation")
-                    .font(.ds.bodyMedium)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color.purple)
-                    .clipShape(Capsule())
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
+            },
+            actionTitle: "Create First Curation"
+        )
     }
 }
 
 struct ActivityEmptyStateView: View {
     var body: some View {
-        VStack(spacing: .ds.large) {
-            Image(systemName: "bolt.heart")
-                .font(.system(size: 60))
-                .foregroundColor(.yellow.opacity(0.5))
-                .symbolRenderingMode(.hierarchical)
-            
-            VStack(spacing: .ds.small) {
-                Text("No Activity Yet")
-                    .font(.ds.title3)
-                    .foregroundColor(.ds.text)
-                
-                Text("Zaps and reactions from other users will appear here")
-                    .font(.ds.body)
-                    .foregroundColor(.ds.textSecondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
+        UnifiedEmptyState(
+            icon: "bolt.heart",
+            title: "No Activity Yet",
+            message: "Zaps and reactions from other users will appear here"
+        )
     }
 }

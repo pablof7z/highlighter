@@ -94,6 +94,15 @@ class AppState: ObservableObject {
     
     func initialize() async {
         do {
+            // Configure logging for debugging
+            #if DEBUG
+            NDKLogger.configure(
+                logLevel: .debug,
+                enabledCategories: [.relay, .outbox, .subscription, .event, .auth],
+                logNetworkTraffic: false // Set to true to see raw network messages
+            )
+            #endif
+            
             // Setup NDK with cache
             let cache = try await NDKSQLiteCache(path: nil)
             ndk = NDK(
@@ -114,7 +123,7 @@ class AppState: ObservableObject {
             authManager.setNDK(ndk)
             
             // Initialize auth manager (restores sessions automatically)
-            // await authManager.initialize()
+            await authManager.initialize()
             
             // Set user pubkey if authenticated
             if let signer = activeSigner {
@@ -253,25 +262,42 @@ class AppState: ObservableObject {
         guard let ndk = ndk else { return }
         
         do {
-            // Create filter for kind 9802 (highlights)
-            let highlightFilter = NDKFilter(kinds: [9802])
+            // Check if relay supports NIP-77
+            let supportsNegentropy = await ndk.relaySupportsNegentropy("wss://relay.damus.io")
             
-            // Starting NIP-77 sync for highlights from relay.damus.io
-            
-            // Perform NIP-77 sync with relay.damus.io
-            _ = try await ndk.syncEvents(
-                filter: highlightFilter,
-                relay: "wss://relay.damus.io",
-                direction: .receive // Only download, don't upload
-            )
-            
-            // NIP-77 sync completed successfully
-            
-            // Let the DataStreamManager handle the highlights after sync
-            await dataStreamManager.refresh()
+            if supportsNegentropy {
+                // Create filter for kind 9802 (highlights) with time limit for efficiency
+                let weekAgo = Int64(Date().timeIntervalSince1970 - 7 * 24 * 60 * 60)
+                let highlightFilter = NDKFilter(
+                    kinds: [9802],
+                    since: Timestamp(weekAgo)
+                )
+                
+                NDKLogger.log(.info, category: .sync, "Starting NIP-77 sync for highlights from relay.damus.io")
+                
+                // Perform NIP-77 sync with relay.damus.io
+                let result = try await ndk.syncEvents(
+                    filter: highlightFilter,
+                    relay: "wss://relay.damus.io",
+                    direction: .receive // Only download, don't upload
+                )
+                
+                NDKLogger.log(.info, category: .sync, """
+                    NIP-77 sync completed:
+                    - Downloaded events: \(result.downloadedEvents.count)
+                    - Message rounds: \(result.messageRounds)
+                    - Efficiency ratio: \(result.efficiencyRatio)%
+                    - Duration: \(String(format: "%.2f", result.duration))s
+                """)
+                
+                // Let the DataStreamManager handle the highlights after sync
+                await dataStreamManager.refresh()
+            } else {
+                NDKLogger.log(.info, category: .sync, "Relay doesn't support NIP-77, using standard subscription")
+            }
             
         } catch {
-            // NIP-77 sync failed - continuing with normal operation
+            NDKLogger.log(.warning, category: .sync, "NIP-77 sync failed: \(error.localizedDescription)")
             // Don't show error to user, continue with normal operation
         }
     }
@@ -359,6 +385,47 @@ class AppState: ObservableObject {
         
         // Update local following set
         following = Set(contactList.contactPubkeys)
+    }
+    
+    // MARK: - Relay Monitoring
+    
+    /// Get current relay connection status
+    func getRelayConnectionStatus() async -> [(url: String, isConnected: Bool)] {
+        guard let ndk = ndk else { return [] }
+        
+        let allRelays = await ndk.pool.getAllRelays()
+        let connectedRelays = await ndk.pool.connectedRelays()
+        let connectedUrls = Set(connectedRelays.map { $0.url })
+        
+        return allRelays.map { relay in
+            (url: relay.url, isConnected: connectedUrls.contains(relay.url))
+        }
+    }
+    
+    /// Monitor relay selection for a specific event
+    func monitorRelaySelection(for event: NDKEvent) async {
+        guard let ndk = ndk else { return }
+        
+        let selection = await ndk.relaySelector.selectRelaysForPublishing(event: event)
+        
+        NDKLogger.log(.info, category: .outbox, """
+            Relay selection for event \(event.id):
+            - Method: \(selection.selectionMethod)
+            - Selected relays: \(selection.relays.joined(separator: ", "))
+            - Missing relay info for: \(selection.missingRelayInfoPubkeys.joined(separator: ", "))
+        """)
+    }
+    
+    /// Check if using optimized Negentropy sync is beneficial
+    func shouldUseNegentropySync() async -> Bool {
+        guard let ndk = ndk else { return false }
+        
+        // Check if we have substantial data to sync
+        let highlightCount = highlights.count
+        let curationCount = curations.count
+        
+        // Use Negentropy for large datasets
+        return (highlightCount + curationCount) > 100
     }
 }
 

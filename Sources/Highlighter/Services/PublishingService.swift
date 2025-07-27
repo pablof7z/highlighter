@@ -29,7 +29,9 @@ class PublishingService: ObservableObject {
     /// Publish a new highlight with optimistic updates
     func publishHighlight(_ highlight: HighlightEvent) async throws {
         guard let ndk = ndk, let signer = signer else {
-            throw AuthError.noSigner
+            let error = PublishingError.noSignerConfigured
+            lastPublishError = error
+            throw error
         }
         
         isPublishing = true
@@ -65,11 +67,15 @@ class PublishingService: ObservableObject {
                 .build(signer: signer)
             
             // Publish with optimistic updates
-            _ = try await ndk.publish(event)
+            let publishedRelays = try await ndk.publish(event)
+            
+            // Log relay selection info
+            NDKLogger.log(.info, category: .outbox, "Highlight published to \(publishedRelays.count) relays")
             
         } catch {
-            lastPublishError = error
-            throw error
+            let publishError = PublishingError.publishingFailed(error.localizedDescription)
+            lastPublishError = publishError
+            throw publishError
         }
         
         isPublishing = false
@@ -372,5 +378,27 @@ class PublishingService: ObservableObject {
     /// Delete a single curation
     func deleteCuration(_ curation: ArticleCuration) async throws {
         try await deleteCurations([curation])
+    }
+}
+
+// MARK: - Publishing Errors
+
+enum PublishingError: LocalizedError {
+    case noSignerConfigured
+    case invalidEventData
+    case publishingFailed(String)
+    case networkTimeout
+    
+    var errorDescription: String? {
+        switch self {
+        case .noSignerConfigured:
+            return "No signer configured. Please log in to publish content."
+        case .invalidEventData:
+            return "Invalid event data. Please check your input."
+        case .publishingFailed(let reason):
+            return "Failed to publish: \(reason)"
+        case .networkTimeout:
+            return "Network timeout. Please check your connection and try again."
+        }
     }
 }

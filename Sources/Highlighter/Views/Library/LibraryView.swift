@@ -10,6 +10,23 @@ struct LibraryView: View {
     @State private var selectedFilter = FilterTab.all
     @State private var searchText = ""
     @State private var showStats = true
+    @State private var sortOption = SortOption.newest
+    
+    enum SortOption: String, CaseIterable {
+        case newest = "Newest"
+        case oldest = "Oldest"
+        case alphabetical = "A-Z"
+        case mostHighlighted = "Most Highlighted"
+        
+        var systemImage: String {
+            switch self {
+            case .newest: return "arrow.down"
+            case .oldest: return "arrow.up"
+            case .alphabetical: return "textformat.abc"
+            case .mostHighlighted: return "star.fill"
+            }
+        }
+    }
     
     enum FilterTab: String, CaseIterable {
         case all = "All"
@@ -21,10 +38,10 @@ struct LibraryView: View {
         var icon: String {
             switch self {
             case .all: return "square.grid.2x2"
-            case .highlights: return "highlighter"
-            case .curations: return "folder.fill"
-            case .articles: return "doc.text.fill"
-            case .archived: return "archivebox.fill"
+            case .highlights: return "pencil.tip"
+            case .curations: return "books.vertical"
+            case .articles: return "doc.text"
+            case .archived: return "archivebox"
             }
         }
     }
@@ -52,16 +69,20 @@ struct LibraryView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: DesignSystem.Spacing.base) {
                                 ForEach(FilterTab.allCases, id: \.self) { tab in
-                                    LibraryFilterChip(
-                                        title: tab.rawValue,
-                                        icon: tab.icon,
-                                        isSelected: selectedFilter == tab
-                                    ) {
+                                    Button(action: {
                                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                             selectedFilter = tab
                                             HapticManager.shared.impact(.light)
                                         }
+                                    }) {
+                                        HStack(spacing: 8) {
+                                            Image(systemName: tab.icon)
+                                                .font(.system(size: 16, weight: .medium))
+                                            Text(tab.rawValue)
+                                        }
+                                        .unifiedTabPill(isSelected: selectedFilter == tab)
                                     }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
                             }
                             .padding(.horizontal)
@@ -74,16 +95,16 @@ struct LibraryView: View {
                             case .all:
                                 allContentView
                             case .highlights:
-                                EnhancedSavedHighlightsSection()
+                                EnhancedSavedHighlightsSection(sortOption: sortOption)
                             case .curations:
                                 EnhancedYourCurationsSection(
-                                    curations: appState.userCurations,
+                                    curations: sortedCurations,
                                     showCreateCuration: $showCreateCuration,
                                     selectedCuration: $selectedCuration,
                                     showCurationManagement: $showCurationManagement
                                 )
                             case .articles:
-                                SavedArticlesSection()
+                                SavedArticlesSection(sortOption: sortOption)
                             case .archived:
                                 ArchivedContentSection()
                             }
@@ -109,19 +130,26 @@ struct LibraryView: View {
                             Label(showStats ? "Hide Stats" : "Show Stats", systemImage: "chart.bar")
                         }
                         
-                        Button(action: { 
-                            // Sort feature removed for now - needs implementation
-                        }) {
-                            Label("Sort by Date", systemImage: "arrow.up.arrow.down")
+                        Menu {
+                            ForEach(SortOption.allCases, id: \.self) { option in
+                                Button(action: {
+                                    withAnimation {
+                                        sortOption = option
+                                    }
+                                    HapticManager.shared.impact(.light)
+                                }) {
+                                    Label(option.rawValue, systemImage: option.systemImage)
+                                }
+                            }
+                        } label: {
+                            Label("Sort: \(sortOption.rawValue)", systemImage: "arrow.up.arrow.down")
                         }
-                        .disabled(true)
                         
                         Button(action: { 
-                            // Export feature removed for now - needs implementation
+                            exportLibrary()
                         }) {
                             Label("Export Library", systemImage: "square.and.arrow.up")
                         }
-                        .disabled(true)
                     } label: {
                         Image(systemName: "ellipsis.circle")
                             .font(.system(size: 18))
@@ -274,6 +302,93 @@ struct LibraryView: View {
         // This method can be used for additional activity loading if needed
     }
     
+    // MARK: - Export Functions
+    
+    private func exportLibrary() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = dateFormatter.string(from: Date())
+        
+        var exportContent = "# Highlighter Library Export\n\n"
+        exportContent += "Date: \(date)\n\n"
+        
+        // Export highlights
+        exportContent += "## Highlights (\(appState.highlights.count))\n\n"
+        let sortedHighlights = appState.highlights.sorted { $0.createdAt > $1.createdAt }
+        for highlight in sortedHighlights {
+            exportContent += "### \(RelativeTimeFormatter.fullDate(from: highlight.createdAt))\n"
+            exportContent += "> \(highlight.content)\n\n"
+            if let url = highlight.url {
+                exportContent += "Source: \(url)\n\n"
+            }
+            exportContent += "---\n\n"
+        }
+        
+        // Export articles
+        exportContent += "## Saved Articles (\(appState.savedArticles.count))\n\n"
+        let sortedArticles = appState.savedArticles.sorted { $0.createdAt > $1.createdAt }
+        for article in sortedArticles {
+            exportContent += "### \(article.title)\n"
+            if let summary = article.summary {
+                exportContent += "\(summary)\n\n"
+            }
+            if let url = article.url {
+                exportContent += "Link: \(url)\n\n"
+            }
+            exportContent += "---\n\n"
+        }
+        
+        // Export curations
+        exportContent += "## Collections (\(appState.userCurations.count))\n\n"
+        for curation in appState.userCurations {
+            exportContent += "### \(curation.title)\n"
+            if let description = curation.description {
+                exportContent += "\(description)\n\n"
+            }
+            exportContent += "Articles: \(curation.articles.count)\n\n"
+            exportContent += "---\n\n"
+        }
+        
+        // Share the exported content
+        let filename = "highlighter-export-\(date).md"
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+        
+        do {
+            try exportContent.write(to: tempURL, atomically: true, encoding: .utf8)
+            
+            let activityController = UIActivityViewController(
+                activityItems: [tempURL],
+                applicationActivities: nil
+            )
+            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let rootViewController = window.rootViewController {
+                rootViewController.present(activityController, animated: true)
+            }
+            
+            HapticManager.shared.notification(.success)
+        } catch {
+            // Handle export error
+            HapticManager.shared.notification(.error)
+        }
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var sortedCurations: [ArticleCuration] {
+        switch sortOption {
+        case .newest:
+            return appState.userCurations.sorted { $0.createdAt > $1.createdAt }
+        case .oldest:
+            return appState.userCurations.sorted { $0.createdAt < $1.createdAt }
+        case .alphabetical:
+            return appState.userCurations.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
+        case .mostHighlighted:
+            return appState.userCurations.sorted { $0.articles.count > $1.articles.count }
+        }
+    }
+    
     @ViewBuilder
     private var allContentView: some View {
         VStack(spacing: DesignSystem.Spacing.xxl) {
@@ -281,11 +396,11 @@ struct LibraryView: View {
             RecentActivitySection()
             
             // Saved highlights
-            EnhancedSavedHighlightsSection()
+            EnhancedSavedHighlightsSection(sortOption: sortOption)
             
             // Your curations
             EnhancedYourCurationsSection(
-                curations: appState.userCurations,
+                curations: sortedCurations,
                 showCreateCuration: $showCreateCuration,
                 selectedCuration: $selectedCuration,
                 showCurationManagement: $showCurationManagement
@@ -336,44 +451,31 @@ struct LibraryStatsCard: View {
             }
             
             // Stats grid
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                LibraryStatCard(
+            HStack(spacing: 16) {
+                UnifiedStatCard(
                     value: "\(appState.highlights.count)",
                     label: "Highlights",
-                    icon: "highlighter",
-                    color: .ds.primary,
-                    animate: $animateStats
+                    icon: "pencil.tip",
+                    color: .ds.primary
                 )
                 
-                LibraryStatCard(
+                UnifiedStatCard(
                     value: "\(appState.curations.count)",
                     label: "Collections",
-                    icon: "folder.fill",
-                    color: .purple,
-                    animate: $animateStats
+                    icon: "books.vertical",
+                    color: .ds.primary
                 )
                 
-                LibraryStatCard(
+                UnifiedStatCard(
                     value: "\(appState.savedArticles.count)",
                     label: "Articles",
-                    icon: "doc.text.fill",
-                    color: .blue,
-                    animate: $animateStats
+                    icon: "doc.text",
+                    color: .ds.primary
                 )
             }
         }
-        .padding(DesignSystem.Spacing.xl)
-        .modernCard(noPadding: true)
-        .background(
-            LinearGradient(
-                colors: [
-                    Color.ds.surfaceSecondary,
-                    Color.ds.surface
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
+        .padding(20)
+        .unifiedCard()
         .onAppear {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.2)) {
                 animateStats = true
@@ -382,71 +484,7 @@ struct LibraryStatsCard: View {
     }
 }
 
-struct LibraryStatCard: View {
-    let value: String
-    let label: String
-    let icon: String
-    let color: Color
-    @Binding var animate: Bool
-    
-    var body: some View {
-        VStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.15))
-                    .frame(width: 56, height: 56)
-                
-                Image(systemName: icon)
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundColor(color)
-                    .scaleEffect(animate ? 1 : 0.5)
-                    .opacity(animate ? 1 : 0)
-            }
-            
-            VStack(spacing: 4) {
-                Text(value)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
-                    .foregroundColor(.ds.text)
-                
-                Text(label)
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.ds.textSecondary)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
 
-struct LibraryFilterChip: View {
-    let title: String
-    let icon: String
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: DesignSystem.Spacing.small) {
-                Image(systemName: icon)
-                    .font(.system(size: 16, weight: .medium))
-                Text(title)
-                    .font(.system(size: 15, weight: .medium))
-            }
-            .foregroundColor(isSelected ? .white : .ds.text)
-            .padding(.horizontal, DesignSystem.Spacing.medium)
-            .padding(.vertical, DesignSystem.Spacing.small + DesignSystem.Spacing.nano)
-            .background(
-                Capsule()
-                    .fill(isSelected ? Color.ds.primary : Color.ds.surfaceSecondary)
-            )
-            .overlay(
-                Capsule()
-                    .strokeBorder(isSelected ? Color.clear : Color.ds.divider, lineWidth: 1)
-            )
-        }
-        .scaleEffect(isSelected ? 1.05 : 1)
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
-    }
-}
 
 struct RecentActivitySection: View {
     @EnvironmentObject var appState: AppState
@@ -655,46 +693,17 @@ struct EnhancedSavedHighlightsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Your Highlights")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundColor(.ds.text)
-                    
-                    Text("\(appState.highlights.count) highlights saved")
-                        .font(.system(size: 14))
-                        .foregroundColor(.ds.textSecondary)
-                }
-                
-                Spacer()
-                
-                Menu {
-                    ForEach(SortOption.allCases, id: \.self) { option in
-                        Button(action: { selectedSortOption = option }) {
-                            Label(option.rawValue, systemImage: selectedSortOption == option ? "checkmark" : "")
-                        }
-                    }
-                } label: {
-                    HStack(spacing: DesignSystem.Spacing.mini) {
-                        Text(selectedSortOption.rawValue)
-                            .font(.system(size: 14, weight: .medium))
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 12))
-                    }
-                    .foregroundColor(.ds.primary)
-                    .padding(.horizontal, DesignSystem.Spacing.base)
-                    .padding(.vertical, DesignSystem.Spacing.mini)
-                    .background(
-                        Capsule()
-                            .fill(Color.ds.primary.opacity(0.1))
-                    )
-                }
-            }
+            UnifiedSectionHeader(
+                title: "Your Highlights",
+                subtitle: "\(appState.highlights.count) highlights saved",
+                action: nil,
+                actionTitle: nil
+            )
             .padding(.horizontal)
             
             if appState.highlights.isEmpty {
-                ModernEmptyState(
-                    icon: "highlighter",
+                UnifiedEmptyState(
+                    icon: "pencil.tip",
                     title: "No highlights yet",
                     message: "Start highlighting content to build your collection",
                     action: {},
@@ -717,6 +726,20 @@ struct EnhancedSavedHighlightsSection: View {
                     .padding(.horizontal)
                 }
             }
+        }
+    }
+    
+    private var sortedHighlights: [HighlightEvent] {
+        switch sortOption {
+        case .newest:
+            return appState.highlights.sorted { $0.createdAt > $1.createdAt }
+        case .oldest:
+            return appState.highlights.sorted { $0.createdAt < $1.createdAt }
+        case .alphabetical:
+            return appState.highlights.sorted { $0.content.localizedCaseInsensitiveCompare($1.content) == .orderedAscending }
+        case .mostHighlighted:
+            // For highlights, we can sort by content length as a proxy for "importance"
+            return appState.highlights.sorted { $0.content.count > $1.content.count }
         }
     }
 }
@@ -846,8 +869,8 @@ struct SavedArticlesSection: View {
                 .padding(.horizontal)
             
             if appState.savedArticles.isEmpty {
-                ModernEmptyState(
-                    icon: "doc.text.fill",
+                UnifiedEmptyState(
+                    icon: "doc.text",
                     title: "No saved articles yet",
                     message: "Save articles to read them later",
                     action: {},
@@ -896,6 +919,24 @@ struct SavedArticlesSection: View {
                 await MainActor.run {
                     highlightCounts[article.id] = count
                 }
+            }
+        }
+    }
+    
+    private var sortedArticles: [Article] {
+        switch sortOption {
+        case .newest:
+            return appState.savedArticles.sorted { $0.createdAt > $1.createdAt }
+        case .oldest:
+            return appState.savedArticles.sorted { $0.createdAt < $1.createdAt }
+        case .alphabetical:
+            return appState.savedArticles.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
+        case .mostHighlighted:
+            // Sort by highlight count, need to do it differently since we have the counts
+            return appState.savedArticles.sorted { article1, article2 in
+                let count1 = highlightCounts[article1.id] ?? 0
+                let count2 = highlightCounts[article2.id] ?? 0
+                return count1 > count2
             }
         }
     }
@@ -1031,16 +1072,12 @@ struct EnhancedYourCurationsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Your Collections")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundColor(.ds.text)
-                    
-                    Text("\(curations.count) curated collections")
-                        .font(.system(size: 14))
-                        .foregroundColor(.ds.textSecondary)
-                }
+            UnifiedSectionHeader(
+                title: "Your Collections",
+                subtitle: "\(curations.count) curated collections",
+                action: nil,
+                actionTitle: nil
+            )
                 
                 Spacer()
                 
@@ -1077,13 +1114,11 @@ struct EnhancedYourCurationsSection: View {
                             .symbolEffect(.bounce, value: showCreateCuration)
                     }
                 }
-            }
             .padding(.horizontal)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: curations.isEmpty)
             
             if curations.isEmpty {
-                ModernEmptyState(
-                    icon: "folder.badge.plus",
+                UnifiedEmptyState(
+                    icon: "books.vertical",
                     title: "No collections yet",
                     message: "Create curated collections of your favorite articles",
                     action: { showCreateCuration = true },
@@ -1260,35 +1295,16 @@ struct EnhancedFollowPacksSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Follow Packs")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundColor(.ds.text)
-                    
-                    Text("Curated lists of people to follow")
-                        .font(.system(size: 14))
-                        .foregroundColor(.ds.textSecondary)
-                }
-                
-                Spacer()
-                
-                Button(action: { showDiscoverMore = true }) {
-                    Text("Discover")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.ds.primary)
-                        .padding(.horizontal, DesignSystem.Spacing.medium)
-                        .padding(.vertical, 8)
-                        .background(
-                            Capsule()
-                                .fill(Color.ds.primary.opacity(0.1))
-                        )
-                }
-            }
+            UnifiedSectionHeader(
+                title: "Follow Packs",
+                subtitle: "Curated lists of people to follow",
+                action: { showDiscoverMore = true },
+                actionTitle: "Discover"
+            )
             .padding(.horizontal)
             
             if followPacks.isEmpty {
-                ModernEmptyState(
+                UnifiedEmptyState(
                     icon: "person.3.sequence",
                     title: "No follow packs yet",
                     message: "Discover curated lists of interesting people to follow",
@@ -1416,8 +1432,8 @@ struct ArchivedContentSection: View {
             
             if showArchivedHighlights {
                 if appState.archiveService.archivedHighlights.isEmpty {
-                    ModernEmptyState(
-                        icon: "archivebox",
+                    UnifiedEmptyState(
+                        icon: UnifiedIcons.Features.archive,
                         title: "No archived highlights",
                         message: "Swipe left on highlights to archive them for later",
                         action: {},
@@ -1434,8 +1450,8 @@ struct ArchivedContentSection: View {
                 }
             } else {
                 if appState.archiveService.archivedArticles.isEmpty {
-                    ModernEmptyState(
-                        icon: "archivebox",
+                    UnifiedEmptyState(
+                        icon: UnifiedIcons.Features.archive,
                         title: "No archived articles",
                         message: "Archive articles to declutter your library",
                         action: {},
