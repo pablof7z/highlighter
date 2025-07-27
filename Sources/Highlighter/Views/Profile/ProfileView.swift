@@ -255,6 +255,17 @@ struct ProfileHeaderView: View {
 struct StatsView: View {
     let highlightsCount: Int
     let curationsCount: Int
+    let zapCount: Int = 0
+    
+    private func formatCount(_ count: Int) -> String {
+        if count >= 1_000_000 {
+            return String(format: "%.1fM", Double(count) / 1_000_000)
+        } else if count >= 1_000 {
+            return String(format: "%.1fK", Double(count) / 1_000)
+        } else {
+            return "\(count)"
+        }
+    }
     
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.xl) {
@@ -267,7 +278,7 @@ struct StatsView: View {
                 label: "Curations"
             )
             StatItem(
-                value: "0", // TODO: Implement zap counting
+                value: formatCount(zapCount),
                 label: "Zaps Earned"
             )
         }

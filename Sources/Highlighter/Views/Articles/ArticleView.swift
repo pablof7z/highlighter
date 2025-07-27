@@ -714,25 +714,46 @@ struct ArticleView: View {
     }
     
     private func loadHighlights() async {
-        // TODO: Load real highlights from Nostr
-        // For now, generate some impressive mock highlights
-        highlights = [
-            HighlightEvent(
-                content: "This is a powerful insight that resonates deeply with the fundamental principles we've been exploring.",
-                context: "In the broader context of human knowledge and understanding...",
-                author: "mock-pubkey-1"
-            ),
-            HighlightEvent(
-                content: "The implications of this cannot be overstated, especially when we consider the long-term ramifications.",
-                context: "When we consider the full scope of what's being proposed here...",
-                author: "mock-pubkey-2"
-            ),
-            HighlightEvent(
-                content: "A brilliantly articulated point that cuts through the noise and gets to the heart of the matter.",
-                context: "This section particularly stands out for its clarity and precision...",
-                author: "mock-pubkey-3"
-            )
-        ]
+        guard let ndk = appState.ndk else { return }
+        
+        // Create filter for highlights related to this article
+        var tagsFilter: [String: Set<String>] = [:]
+        
+        // Add article event ID tag
+        tagsFilter["e"] = [article.id]
+        
+        // Also look for highlights by the same author
+        let filter = NDKFilter(
+            kinds: [9802], // NIP-84 highlight kind
+            limit: 50,
+            tags: tagsFilter
+        )
+        
+        // Fetch events using NDK's outbox
+        let dataSource = await ndk.outbox.observe(
+            filter: filter,
+            maxAge: TimeConstants.hour,
+            cachePolicy: .cacheWithNetwork
+        )
+        
+        var loadedHighlights: [HighlightEvent] = []
+        
+        for await event in dataSource.events {
+            // Extract context from tags (not needed here as HighlightEvent.init will extract it)
+            
+            // Create HighlightEvent from NDK event
+            do {
+                let highlight = try HighlightEvent(from: event)
+                loadedHighlights.append(highlight)
+            } catch {
+                // Skip invalid highlight events
+            }
+        }
+        
+        // Sort by creation date, newest first and update state
+        await MainActor.run {
+            highlights = loadedHighlights.sorted { $0.createdAt > $1.createdAt }
+        }
     }
 }
 
@@ -992,6 +1013,7 @@ struct ArticleEnhancedHighlightCard: View {
 struct EnhancedRelatedArticlesSection: View {
     let currentArticle: Article
     @State private var relatedArticles: [Article] = []
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         if !relatedArticles.isEmpty {
@@ -1013,8 +1035,72 @@ struct EnhancedRelatedArticlesSection: View {
     }
     
     private func loadRelatedArticles() {
-        // TODO: Implement AI-powered article recommendations
-        // For now, return empty
+        guard let ndk = appState.ndk else { return }
+        
+        Task {
+            // Create filter for articles from the same author or with similar tags
+            var filters: [NDKFilter] = []
+            
+            // Articles from the same author
+            filters.append(NDKFilter(
+                authors: [currentArticle.author],
+                kinds: [30023], // Long-form content
+                limit: 10
+            ))
+            
+            // Articles with similar tags
+            let articleTags = currentArticle.tags.filter { $0.count > 1 && $0[0] == "t" }.map { $0[1] }
+            if !articleTags.isEmpty {
+                var tagsFilter: [String: Set<String>] = [:]
+                tagsFilter["t"] = Set(articleTags)
+                
+                filters.append(NDKFilter(
+                    kinds: [30023],
+                    limit: 10,
+                    tags: tagsFilter
+                ))
+            }
+            
+            var allRelatedArticles: [Article] = []
+            
+            for filter in filters {
+                // Use NDK's outbox to fetch events
+                let dataSource = await ndk.outbox.observe(
+                    filter: filter,
+                    maxAge: TimeConstants.hour,
+                    cachePolicy: .cacheWithNetwork
+                )
+                
+                for await event in dataSource.events {
+                    // Skip the current article
+                    if event.id == currentArticle.id { continue }
+                    
+                    do {
+                        let relatedArticle = try Article(from: event)
+                        allRelatedArticles.append(relatedArticle)
+                    } catch {
+                        // Skip invalid articles
+                    }
+                    
+                    // Limit to prevent too many results
+                    if allRelatedArticles.count >= 20 { break }
+                }
+            }
+            
+            // Remove duplicates based on article ID and limit to 6 articles
+            var uniqueArticleIds = Set<String>()
+            let uniqueArticles = allRelatedArticles.filter { article in
+                if uniqueArticleIds.contains(article.id) {
+                    return false
+                }
+                uniqueArticleIds.insert(article.id)
+                return true
+            }.prefix(6)
+            
+            await MainActor.run {
+                relatedArticles = Array(uniqueArticles)
+            }
+        }
     }
 }
 
@@ -1162,6 +1248,7 @@ struct EnhancedCreateHighlightView: View {
     @State private var isPublic = true
     @State private var showSuccess = false
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         NavigationStack {
@@ -1266,10 +1353,10 @@ struct EnhancedCreateHighlightView: View {
             showSuccess = true
         }
         
+        // For now, create highlight without author - it will be set when published
         let highlight = HighlightEvent(
             content: selectedText,
             context: contextText,
-            author: "current-user", // TODO: Use actual user pubkey
             comment: comment.isEmpty ? nil : comment
         )
         
@@ -1389,7 +1476,7 @@ struct ArticleHighlightDetailView: View {
                             .font(.ds.footnoteMedium)
                             .foregroundColor(.ds.text)
                         
-                        Text("2 hours ago") // TODO: Use actual timestamp
+                        Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                     }

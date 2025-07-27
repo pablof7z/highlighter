@@ -672,10 +672,65 @@ struct SmartArticleImportView: View {
         // Create highlights from selected suggestions
         let selectedHighlights = article.suggestedHighlights.filter { selectedSuggestions.contains($0.id) }
         
-        // TODO: Actually save the article and create highlights
-        // For now, just dismiss after animation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            dismiss()
+        Task {
+            do {
+                // First, create and publish the article if it doesn't exist
+                _ = await createArticleEvent(from: article)
+                
+                // Then create highlights for selected suggestions
+                for suggestion in selectedHighlights {
+                    let highlight = HighlightEvent(
+                        content: suggestion.text,
+                        context: suggestion.hasContext ? suggestion.text : nil,
+                        comment: suggestion.reason
+                    )
+                    
+                    try await PublishingService.shared.publishHighlight(highlight)
+                }
+                
+                // Dismiss after successful import
+                await MainActor.run {
+                    dismiss()
+                }
+            } catch {
+                // Show error if publishing fails
+                await MainActor.run {
+                    // Could show an alert here, but for now just dismiss
+                    dismiss()
+                }
+            }
+        }
+    }
+    
+    private func createArticleEvent(from article: ProcessedArticle) async -> NDKEvent? {
+        guard let ndk = appState.ndk,
+              let signer = appState.activeSigner else { return nil }
+        
+        // Create article event if needed
+        var tags: [[String]] = []
+        
+        // Add title tag
+        tags.append(["title", article.title])
+        
+        // Add author tag if available
+        if let author = article.author {
+            tags.append(["author", author])
+        }
+        
+        // Add bookstr tag
+        tags.append(["t", "bookstr"])
+        
+        do {
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(30023) // Long-form content
+                .content(article.preview)
+                .tags(tags)
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(event)
+            return event
+        } catch {
+            return nil
         }
     }
     

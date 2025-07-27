@@ -32,7 +32,7 @@ class ProfileManager: ObservableObject {
         do {
             pubkey = try await signer.pubkey
         } catch {
-            print("Failed to get pubkey: \(error)")
+            // Failed to get pubkey
             return
         }
         

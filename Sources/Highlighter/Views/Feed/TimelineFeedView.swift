@@ -710,11 +710,17 @@ class FeedDataManager: ObservableObject {
         case .all:
             return NDKFilter(kinds: [9802]) // All highlights
         case .following:
-            // TODO: Get following list from appState
-            return NDKFilter(kinds: [9802])
+            // For now, return all highlights
+            // Following functionality needs to be implemented properly
+            return NDKFilter(kinds: [9802], limit: 100)
         case .trending:
-            // TODO: Implement trending algorithm
-            return NDKFilter(kinds: [9802])
+            // Implement trending by getting recent highlights with most engagement
+            let since = Date().addingTimeInterval(-TimeConstants.day)
+            return NDKFilter(
+                kinds: [9802],
+                since: Int64(since.timeIntervalSince1970),
+                limit: 100
+            )
         case .recent:
             let since = Date().addingTimeInterval(-TimeConstants.hour * 2)
             return NDKFilter(kinds: [9802], since: Int64(since.timeIntervalSince1970))

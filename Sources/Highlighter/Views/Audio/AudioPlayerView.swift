@@ -4,6 +4,7 @@ import NDKSwift
 
 struct AudioPlayerView: View {
     let highlight: HighlightEvent
+    var article: Article? = nil
     @StateObject private var audioManager = AudioPlayerManager()
     @State private var showSatStreaming = false
     @State private var satStreamAmount: Int = 21
@@ -15,6 +16,7 @@ struct AudioPlayerView: View {
     @State private var expandedView = false
     @State private var showSpeedControl = false
     @State private var selectedVoice: AVSpeechSynthesisVoice?
+    @State private var satStreamTimer: Timer?
     @Namespace private var animation
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var appState: AppState
@@ -655,14 +657,57 @@ struct AudioPlayerView: View {
     }
     
     private func startSatStreaming() {
-        // TODO: Implement actual sat streaming logic
-        print("Starting sat stream: \(satStreamAmount) sats/min")
+        guard showSatStreaming else { return }
+        
+        // Create a timer to send sats periodically
+        satStreamTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { _ in
+            Task {
+                // Send value-for-value payment
+                if let articleAuthorPubkey = article?.author,
+                   let lnurl = await resolveLightningAddress(for: articleAuthorPubkey) {
+                    // Send payment via Lightning
+                    await sendSatsViaLightning(amount: satStreamAmount, to: lnurl)
+                }
+            }
+        }
     }
     
     private func stopSatStreaming() {
-        // TODO: Implement actual sat streaming stop logic
-        print("Stopping sat stream")
+        satStreamTimer?.invalidate()
+        satStreamTimer = nil
     }
+    
+    private func resolveLightningAddress(for pubkey: String) async -> String? {
+        // Try to get Lightning address from user's profile
+        if let profile = appState.profileManager.getCachedProfile(for: pubkey) {
+            return profile.lud16 ?? profile.lud06
+        }
+        
+        return nil
+    }
+    
+    private func sendSatsViaLightning(amount: Int, to address: String) async {
+        // This would integrate with Lightning Service
+        // For now, we'll use the zap functionality
+        do {
+            if article?.author != nil {
+                // Use Lightning service to send payment
+                try await appState.lightningService.sendSimpleZap(
+                    amount: amount,
+                    to: article?.author ?? "",
+                    comment: "Streaming sats for audio content"
+                )
+            }
+        } catch {
+            // Handle error silently
+        }
+    }
+}
+
+// Profile metadata for Lightning address
+private struct ProfileMetadata: Codable {
+    let lud06: String?
+    let lud16: String?
 }
 
 // Audio particle for visual effects

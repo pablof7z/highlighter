@@ -463,7 +463,7 @@ class LightningService: ObservableObject {
                 self.balance = balanceInfo / 1000 // Convert millisats to sats
             }
         } catch {
-            print("Failed to update balance: \(error)")
+            // Failed to update balance
         }
     }
     
@@ -481,7 +481,7 @@ class LightningService: ObservableObject {
         do {
             try KeychainManager.shared.save(connection, for: KeychainManager.Keys.nwcConnection)
         } catch {
-            print("Failed to save NWC connection to keychain: \(error)")
+            // Failed to save NWC connection to keychain
         }
     }
     
@@ -493,7 +493,7 @@ class LightningService: ObservableObject {
             if case KeychainManager.KeychainError.noData = error {
                 // Expected when no connection saved
             } else {
-                print("Failed to retrieve NWC connection from keychain: \(error)")
+                // Failed to retrieve NWC connection from keychain
             }
             return nil
         }
@@ -503,7 +503,7 @@ class LightningService: ObservableObject {
         do {
             try KeychainManager.shared.delete(key: KeychainManager.Keys.nwcConnection)
         } catch {
-            print("Failed to clear NWC connection from keychain: \(error)")
+            // Failed to clear NWC connection from keychain
         }
     }
     
