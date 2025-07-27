@@ -34,7 +34,7 @@ struct EmptyHighlightsView: View {
                     )
                     .opacity(particlesAnimation ? 0.6 : 0)
                     .animation(
-                        .easeInOut(duration: Double.random(in: 8...12)
+                        .easeInOut(duration: Double.random(in: 8...12))
                         .repeatForever(autoreverses: true)
                         .delay(Double(index) * 0.5),
                         value: particlesAnimation

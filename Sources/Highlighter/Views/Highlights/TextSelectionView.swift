@@ -190,10 +190,10 @@ struct TextSelectionView: View {
                                             endPoint: .trailing
                                         )
                                     )
-                                    .clipShape(Capsule()
+                                    .clipShape(Capsule())
                                     .shadow(color: Color.orange.opacity(0.4), radius: 8, y: 4)
                             }
-                            .scaleEffect(buttonScale * (highlightAnimation ? 1.05 : 1.0)
+                            .scaleEffect(buttonScale * (highlightAnimation ? 1.05 : 1.0))
                             
                             // Copy button
                             Button(action: {

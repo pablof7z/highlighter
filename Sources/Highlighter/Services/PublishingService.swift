@@ -145,9 +145,9 @@ class PublishingService: ObservableObject {
             // Add the new article reference
             // If the article has a source URL, use that; otherwise use the event ID
             if let sourceUrl = article.references.first {
-                articles.append((.url, sourceUrl)
+                articles.append((.url, sourceUrl))
             } else {
-                articles.append((.event, article.id)
+                articles.append((.event, article.id))
             }
             
             // Create updated curation event

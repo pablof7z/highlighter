@@ -70,14 +70,14 @@ struct LightningPaymentFlowView: View {
                             .transition(.asymmetric(
                                 insertion: .scale(scale: 0.9).combined(with: .opacity),
                                 removal: .scale(scale: 1.1).combined(with: .opacity)
-                            )
+                            ))
                     
                     case .configureSplits:
                         splitConfigurationView
                             .transition(.asymmetric(
                                 insertion: .push(from: .trailing),
                                 removal: .push(from: .leading)
-                            )
+                            ))
                     
                     case .processingPayment:
                         processingView
@@ -92,7 +92,7 @@ struct LightningPaymentFlowView: View {
                             .transition(.asymmetric(
                                 insertion: .scale(scale: 1.2).combined(with: .opacity),
                                 removal: .scale(scale: 0.8).combined(with: .opacity)
-                            )
+                            ))
                     }
                 }
                 .animation(.spring(response: 0.6, dampingFraction: 0.8), value: currentPaymentStep)
@@ -118,8 +118,8 @@ struct LightningPaymentFlowView: View {
         ZStack {
             LinearGradient(
                 colors: [
-                    Color.ds.background,
-                    Color.ds.primary.opacity(0.05)
+                    DesignSystem.Colors.background,
+                    DesignSystem.Colors.primary.opacity(0.05)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -128,7 +128,7 @@ struct LightningPaymentFlowView: View {
             // Animated gradient overlay
             RadialGradient(
                 colors: [
-                    Color.ds.primary.opacity(glowIntensity * 0.3),
+                    DesignSystem.Colors.primary.opacity(glowIntensity * 0.3),
                     Color.clear
                 ],
                 center: .center,
@@ -166,7 +166,7 @@ struct LightningPaymentFlowView: View {
                     .blur(radius: lightningBoltAnimation ? 15 : 10)
                 
                 Image(systemName: "bolt.circle.fill")
-                    .font(.system(size: 60)
+                    .font(.system(size: 60))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [.orange, .yellow],
@@ -174,12 +174,12 @@ struct LightningPaymentFlowView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .rotationEffect(.degrees(lightningBoltAnimation ? 5 : -5)
+                    .rotationEffect(.degrees(lightningBoltAnimation ? 5 : -5))
                     .scaleEffect(lightningBoltAnimation ? 1.1 : 1)
             }
             
             Text("Lightning Payment")
-                .font(.ds.title2)
+                .font(DesignSystem.Typography.title2)
                 .fontWeight(.bold)
             
             // Balance display
@@ -188,17 +188,17 @@ struct LightningPaymentFlowView: View {
                     Image(systemName: "bitcoinsign.circle.fill")
                         .foregroundColor(.orange)
                     Text("\(lightningService.balance) sats")
-                        .font(.ds.callout)
+                        .font(DesignSystem.Typography.callout)
                         .monospacedDigit()
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
                     Capsule()
-                        .fill(Color.ds.backgroundSecondary)
+                        .fill(DesignSystem.Colors.surfaceSecondary)
                         .overlay(
                             Capsule()
-                                .strokeBorder(Color.ds.border, lineWidth: 1)
+                                .strokeBorder(DesignSystem.Colors.border, lineWidth: 1)
                         )
                 )
             }
@@ -211,8 +211,8 @@ struct LightningPaymentFlowView: View {
     private var amountSelectionView: some View {
         VStack(spacing: 24) {
             Text("Select Amount")
-                .font(.ds.headline)
-                .foregroundColor(.ds.textSecondary)
+                .font(DesignSystem.Typography.headline)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
             
             // Predefined amounts grid
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
@@ -234,8 +234,8 @@ struct LightningPaymentFlowView: View {
             // Custom amount input
             VStack(spacing: 12) {
                 Text("Or enter custom amount")
-                    .font(.ds.caption)
-                    .foregroundColor(.ds.textSecondary)
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 HStack {
                     TextField("Amount in sats", text: $customAmount)
@@ -248,14 +248,14 @@ struct LightningPaymentFlowView: View {
                         }
                     
                     Text("sats")
-                        .font(.ds.callout)
-                        .foregroundColor(.ds.textSecondary)
+                        .font(DesignSystem.Typography.callout)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.ds.backgroundSecondary)
+                    .fill(DesignSystem.Colors.surfaceSecondary)
             )
         }
         .padding(.vertical)
@@ -266,8 +266,8 @@ struct LightningPaymentFlowView: View {
     private var splitConfigurationView: some View {
         VStack(spacing: 24) {
             Text("Configure Payment Splits")
-                .font(.ds.headline)
-                .foregroundColor(.ds.textSecondary)
+                .font(DesignSystem.Typography.headline)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
             
             // Split configuration options
             VStack(spacing: 12) {
@@ -314,7 +314,7 @@ struct LightningPaymentFlowView: View {
             animatedLightningBolt
             
             Text("Processing Payment")
-                .font(.ds.title3)
+                .font(DesignSystem.Typography.title3)
                 .fontWeight(.semibold)
             
             if let payment = activePayment {
@@ -345,17 +345,17 @@ struct LightningPaymentFlowView: View {
     private func animatedCircle(for index: Int) -> some View {
         Circle()
             .stroke(lightningGradient, lineWidth: 2)
-            .frame(width: circleSize(for: index), height: circleSize(for: index)
+            .frame(width: circleSize(for: index), height: circleSize(for: index))
             .scaleEffect(flowAnimation)
-            .opacity(Double(1 - (flowAnimation * 0.3))
+            .opacity(Double(1 - (flowAnimation * 0.3)))
             .animation(circleAnimation(for: index), value: flowAnimation)
     }
     
     private var lightningBoltIcon: some View {
         Image(systemName: "bolt.circle.fill")
-            .font(.system(size: 80)
+            .font(.system(size: 80))
             .foregroundStyle(lightningGradient)
-            .rotationEffect(.degrees(rotationAngle)
+            .rotationEffect(.degrees(rotationAngle))
     }
     
     private var lightningGradient: LinearGradient {
@@ -381,7 +381,7 @@ struct LightningPaymentFlowView: View {
     private var splitVisualizationView: some View {
         VStack(spacing: 32) {
             Text("Splitting Payment")
-                .font(.ds.title3)
+                .font(DesignSystem.Typography.title3)
                 .fontWeight(.semibold)
             
             // Animated split visualization
@@ -409,7 +409,7 @@ struct LightningPaymentFlowView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.ds.backgroundSecondary)
+                        .fill(DesignSystem.Colors.surfaceSecondary)
                 )
             }
         }
@@ -440,14 +440,15 @@ struct LightningPaymentFlowView: View {
                     .scaleEffect(successScale)
                     .overlay(
                         Image(systemName: "checkmark")
-                            .font(.ds.bodyBold)
+                            .font(DesignSystem.Typography.body)
+                            .fontWeight(.bold)
                             .foregroundColor(.white)
                             .scaleEffect(successScale)
                     )
             }
             
             Text("Payment Complete!")
-                .font(.ds.title2)
+                .font(DesignSystem.Typography.title2)
                 .fontWeight(.bold)
             
             // Transaction summary
@@ -666,23 +667,23 @@ struct AmountButton: View {
                     .foregroundColor(isSelected ? .white : .orange)
                 
                 Text("\(amount)")
-                    .font(.ds.headline)
+                    .font(DesignSystem.Typography.headline)
                     .monospacedDigit()
-                    .foregroundColor(isSelected ? .white : .ds.text)
+                    .foregroundColor(isSelected ? .white : DesignSystem.Colors.text)
                 
                 Text("sats")
-                    .font(.ds.caption)
-                    .foregroundColor(isSelected ? .white.opacity(0.8) : .ds.textSecondary)
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundColor(isSelected ? .white.opacity(0.8) : DesignSystem.Colors.textSecondary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.ds.primary : Color.ds.backgroundSecondary)
+                    .fill(isSelected ? Color.ds.primary : DesignSystem.Colors.surfaceSecondary)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .strokeBorder(
-                                isSelected ? Color.clear : Color.ds.border,
+                                isSelected ? Color.clear : DesignSystem.Colors.border,
                                 lineWidth: 1
                             )
                     )
@@ -714,8 +715,8 @@ struct SplitConfigurationCard: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text(title)
-                        .font(.ds.headline)
-                        .foregroundColor(isSelected ? .white : .ds.text)
+                        .font(DesignSystem.Typography.headline)
+                        .foregroundColor(isSelected ? .white : DesignSystem.Colors.text)
                     
                     Spacer()
                     
@@ -766,18 +767,18 @@ struct SplitConfigurationCard: View {
                     }
                 } else {
                     Text("Tap to customize split percentages")
-                        .font(.ds.caption)
-                        .foregroundColor(isSelected ? .white.opacity(0.8) : .ds.textSecondary)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(isSelected ? .white.opacity(0.8) : DesignSystem.Colors.textSecondary)
                 }
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(isSelected ? Color.ds.primary : Color.ds.backgroundSecondary)
+                    .fill(isSelected ? Color.ds.primary : DesignSystem.Colors.surfaceSecondary)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .strokeBorder(
-                                isSelected ? Color.clear : Color.ds.border,
+                                isSelected ? Color.clear : DesignSystem.Colors.border,
                                 lineWidth: 1
                             )
                     )
@@ -803,21 +804,21 @@ struct SplitRow: View {
                 .frame(width: 20)
             
             Text(label)
-                .font(.ds.caption)
-                .foregroundColor(isSelected ? .white : .ds.text)
+                .font(DesignSystem.Typography.caption)
+                .foregroundColor(isSelected ? .white : DesignSystem.Colors.text)
             
             Spacer()
             
             Text("\(Int(percentage * 100))%")
-                .font(.ds.caption.monospacedDigit()
-                .foregroundColor(isSelected ? .white.opacity(0.8) : .ds.textSecondary)
+                .font(DesignSystem.Typography.caption.monospacedDigit())
+                .foregroundColor(isSelected ? .white.opacity(0.8) : DesignSystem.Colors.textSecondary)
             
             Text("·")
-                .foregroundColor(isSelected ? .white.opacity(0.5) : .ds.textTertiary)
+                .foregroundColor(isSelected ? .white.opacity(0.5) : DesignSystem.Colors.textTertiary)
             
             Text("\(amount) sats")
-                .font(.ds.caption.monospacedDigit()
-                .foregroundColor(isSelected ? .white : .ds.text)
+                .font(DesignSystem.Typography.caption.monospacedDigit())
+                .foregroundColor(isSelected ? .white : DesignSystem.Colors.text)
         }
     }
 }
@@ -832,10 +833,10 @@ struct SplitPreviewVisualization: View {
             ZStack {
                 // Background circle
                 Circle()
-                    .fill(Color.ds.backgroundSecondary)
+                    .fill(DesignSystem.Colors.surfaceSecondary)
                     .overlay(
                         Circle()
-                            .strokeBorder(Color.ds.border, lineWidth: 1)
+                            .strokeBorder(DesignSystem.Colors.border, lineWidth: 1)
                     )
                 
                 // Split segments
@@ -878,12 +879,12 @@ struct SplitPreviewVisualization: View {
                 // Center total
                 VStack {
                     Text("\(totalAmount)")
-                        .font(.ds.title2)
+                        .font(DesignSystem.Typography.title2)
                         .fontWeight(.bold)
                         .monospacedDigit()
                     Text("sats")
-                        .font(.ds.caption)
-                        .foregroundColor(.ds.textSecondary)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
                 .scaleEffect(animationProgress)
             }
@@ -917,7 +918,7 @@ struct SplitSegment: View {
                 )
                 path.closeSubpath()
             }
-            .fill(color.opacity(0.8)
+            .fill(color.opacity(0.8))
             .overlay(
                 Path { path in
                     path.move(to: center)
@@ -947,13 +948,13 @@ struct PaymentStatusIndicator: View {
                     .scaleEffect(pulseAnimation ? 1.2 : 1)
                 
                 Text(statusText)
-                    .font(.ds.callout)
-                    .foregroundColor(.ds.textSecondary)
+                    .font(DesignSystem.Typography.callout)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
             }
             
             if case .processing = payment.status {
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle()
+                    .progressViewStyle(CircularProgressViewStyle())
                     .tint(.orange)
             }
         }
@@ -1189,12 +1190,12 @@ struct SplitProgressRow: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(split.recipientName)
-                    .font(.ds.callout)
+                    .font(DesignSystem.Typography.callout)
                     .fontWeight(.medium)
                 
                 Text("\(split.amount) sats (\(Int(split.percentage * 100))%)")
-                    .font(.ds.caption)
-                    .foregroundColor(.ds.textSecondary)
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
             }
             
             Spacer()
@@ -1204,7 +1205,7 @@ struct SplitProgressRow: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.ds.surface.opacity(0.5)
+                .fill(DesignSystem.Colors.surface.opacity(0.5))
                 .opacity(animationProgress)
         )
     }
@@ -1217,7 +1218,7 @@ struct SplitProgressRow: View {
                 .foregroundColor(.orange)
         case .sending:
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle()
+                .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(0.8)
         case .completed:
             Image(systemName: "checkmark.circle.fill")
@@ -1236,14 +1237,14 @@ struct TransactionSummaryCard: View {
         VStack(spacing: 16) {
             HStack {
                 Text("Transaction Summary")
-                    .font(.ds.headline)
+                    .font(DesignSystem.Typography.headline)
                     .fontWeight(.semibold)
                 
                 Spacer()
                 
-                Text(payment.timestamp.formatted(.relative(presentation: .named))
-                    .font(.ds.caption)
-                    .foregroundColor(.ds.textSecondary)
+                Text(payment.timestamp.formatted(.relative(presentation: .named)))
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
             }
             
             Divider()
@@ -1251,13 +1252,13 @@ struct TransactionSummaryCard: View {
             // Total amount
             HStack {
                 Text("Total Amount")
-                    .font(.ds.callout)
-                    .foregroundColor(.ds.textSecondary)
+                    .font(DesignSystem.Typography.callout)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Spacer()
                 
                 Text("\(payment.totalAmount) sats")
-                    .font(.ds.callout)
+                    .font(DesignSystem.Typography.callout)
                     .fontWeight(.medium)
                     .monospacedDigit()
             }
@@ -1271,13 +1272,13 @@ struct TransactionSummaryCard: View {
                             .foregroundColor(split.type.color)
                         
                         Text(split.recipientName)
-                            .font(.ds.caption)
+                            .font(DesignSystem.Typography.caption)
                     }
                     
                     Spacer()
                     
                     Text("\(split.amount) sats")
-                        .font(.ds.caption)
+                        .font(DesignSystem.Typography.caption)
                         .monospacedDigit()
                 }
             }
@@ -1285,7 +1286,7 @@ struct TransactionSummaryCard: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.ds.backgroundSecondary)
+                .fill(DesignSystem.Colors.surfaceSecondary)
         )
     }
 }
@@ -1311,7 +1312,7 @@ struct ConfettiParticle: View {
                     .frame(width: size, height: size * 0.6)
             }
         }
-        .rotationEffect(.degrees(rotation)
+        .rotationEffect(.degrees(rotation))
         .offset(offset)
         .opacity(opacity)
         .onAppear {
@@ -1430,13 +1431,13 @@ struct SliderRow: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(label)
-                    .font(.ds.callout)
+                    .font(DesignSystem.Typography.callout)
                     .fontWeight(.medium)
                 
                 Spacer()
                 
                 Text("\(Int(value))%")
-                    .font(.ds.callout.monospacedDigit()
+                    .font(.ds.callout.monospacedDigit())
                     .fontWeight(.bold)
                     .foregroundColor(color)
             }

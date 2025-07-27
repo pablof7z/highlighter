@@ -41,8 +41,8 @@ struct UnifiedCard<Content: View>: View {
             .padding(variant.padding)
             .frame(maxWidth: variant.maxWidth, minHeight: variant.minHeight)
             .background(variant.backgroundView)
-            .overlay(variant.borderView(isSelected: isSelected)
-            .clipShape(RoundedRectangle(cornerRadius: variant.cornerRadius, style: .continuous)
+            .overlay(variant.borderView(isSelected: isSelected))
+            .clipShape(RoundedRectangle(cornerRadius: variant.cornerRadius, style: .continuous))
             .shadow(
                 color: variant.shadowColor(isSelected: isSelected),
                 radius: variant.shadowRadius(isSelected: isSelected),
@@ -245,7 +245,7 @@ struct HighlightCard: View {
                             .font(.ds.title3)
                             .foregroundColor(.ds.primary)
                         
-                        Text(author?.name ?? author?.displayName ?? String(highlight.author.prefix(8))
+                        Text(author?.name ?? author?.displayName ?? String(highlight.author.prefix(8)))
                             .font(.ds.caption)
                             .fontWeight(.medium)
                             .foregroundColor(.ds.text)
@@ -264,7 +264,7 @@ struct HighlightCard: View {
                         .buttonStyle(PlainButtonStyle())
                         
                         // Time
-                        Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt)
+                        Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
                     }
@@ -334,7 +334,7 @@ struct CompactHighlightCard: View {
                         .font(.ds.body)
                         .foregroundColor(.ds.primary)
                     
-                    Text(String(highlight.author.prefix(8))
+                    Text(String(highlight.author.prefix(8)))
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                     

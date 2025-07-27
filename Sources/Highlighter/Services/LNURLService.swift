@@ -112,12 +112,12 @@ class LNURLService {
         if let comment = comment,
            let commentAllowed = payResponse.commentAllowed,
            commentAllowed > 0 {
-            let trimmedComment = String(comment.prefix(commentAllowed)
-            queryItems.append(URLQueryItem(name: "comment", value: trimmedComment)
+            let trimmedComment = String(comment.prefix(commentAllowed))
+            queryItems.append(URLQueryItem(name: "comment", value: trimmedComment))
         }
         
         if let zapRequest = zapRequest {
-            queryItems.append(URLQueryItem(name: "nostr", value: zapRequest)
+            queryItems.append(URLQueryItem(name: "nostr", value: zapRequest))
         }
         
         components.queryItems = queryItems

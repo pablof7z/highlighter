@@ -362,7 +362,7 @@ private func parseBolt11Amount(_ invoice: String) -> Int? {
     }
     
     // Remove the prefix
-    let withoutPrefix = String(invoice.dropFirst(prefix.count)
+    let withoutPrefix = String(invoice.dropFirst(prefix.count))
     
     // Handle edge case: invoice without amount (0-value invoices)
     if withoutPrefix.isEmpty || withoutPrefix.first == "1" {

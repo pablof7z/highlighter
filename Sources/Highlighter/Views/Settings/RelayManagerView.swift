@@ -290,7 +290,7 @@ struct RelayManagerView: View {
                                         .padding(.vertical, 6)
                                         .background(
                                             Capsule()
-                                                .fill(DesignSystem.Colors.primary.opacity(0.1)
+                                                .fill(DesignSystem.Colors.primary.opacity(0.1))
                                         )
                                         .foregroundColor(.ds.primary)
                                 }
@@ -407,7 +407,7 @@ struct RelayManagerView: View {
         // Simple latency test - fetch a recent event
         let filter = NDKFilter(kinds: [1], limit: 1)
         
-        let timeoutTask = Task {
+        let timeoutTask = Task { () -> Int? in
             try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
             return nil
         }
@@ -677,7 +677,7 @@ struct FlowLayout: Layout {
                     lineHeight = 0
                 }
                 
-                positions.append(CGPoint(x: currentX, y: currentY)
+                positions.append(CGPoint(x: currentX, y: currentY))
                 lineHeight = max(lineHeight, size.height)
                 currentX += size.width + spacing
                 maxWidth = max(maxWidth, currentX)

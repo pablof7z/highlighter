@@ -96,14 +96,9 @@ struct CurationDetailView: View {
                         
                         Button(action: toggleFollow) {
                             Text(isFollowing ? "Following" : "Follow")
-                                .font(DesignSystem.Typography.caption)
-                                .fontWeight(.medium)
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 10)
-                                .background(isFollowing ? DesignSystem.Colors.textTertiary : DesignSystem.Colors.primary)
-                                .foregroundColor(.white)
-                                .cornerRadius(DesignSystem.CornerRadius.xl)
+                                .font(.ds.footnoteMedium)
                         }
+                        .unifiedPrimaryButton(enabled: true, variant: isFollowing ? .secondary : .primary)
                     }
                     .padding(.horizontal)
                     
@@ -121,13 +116,10 @@ struct CurationDetailView: View {
                         if let userPubkey = currentUserPubkey, curation.author == userPubkey {
                             Button(action: { showAddArticle = true }) {
                                 Label("Add Article", systemImage: "plus.circle")
-                                    .font(DesignSystem.Typography.caption)
+                                    .font(.ds.footnoteMedium)
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
-                                    .background(DesignSystem.Colors.primary)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(DesignSystem.CornerRadius.medium)
                             }
+                            .unifiedPrimaryButton()
                         }
                     }
                     .padding(.horizontal)
@@ -299,14 +291,13 @@ struct CurationDetailView: View {
                             !(tag.first == "p" && tag[safe: 1] == curation.author)
                         }
                         
-                        let newEvent = try await ndk.createEvent(
-                            kind: 3,
-                            content: contactListEvent.content,
-                            tags: tags
-                        )
+                        let newEvent = try await NDKEventBuilder(ndk: ndk)
+                            .kind(3)
+                            .content(contactListEvent.content)
+                            .tags(tags)
+                            .build(signer: signer)
                         
-                        try await newEvent.sign(using: signer)
-                        try await ndk.publish(event: newEvent)
+                        try await ndk.publish(newEvent)
                         break
                     }
                 } else {
@@ -330,14 +321,13 @@ struct CurationDetailView: View {
                     // Add new follow
                     tags.append(["p", curation.author])
                     
-                    let newEvent = try await ndk.createEvent(
-                        kind: 3,
-                        content: content,
-                        tags: tags
-                    )
+                    let newEvent = try await NDKEventBuilder(ndk: ndk)
+                        .kind(3)
+                        .content(content)
+                        .tags(tags)
+                        .build(signer: signer)
                     
-                    try await newEvent.sign(using: signer)
-                    try await ndk.publish(event: newEvent)
+                    try await ndk.publish(newEvent)
                 }
                 
                 await MainActor.run {
@@ -390,36 +380,62 @@ struct ArticleCard: View {
     let article: ArticleCuration.ArticleReference
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if let url = article.url {
-                HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(URL(string: url)?.host ?? "Article")
-                            .font(DesignSystem.Typography.caption)
-                            .foregroundColor(DesignSystem.Colors.primary)
-                        
-                        Text(url)
-                            .font(DesignSystem.Typography.body)
-                            .lineLimit(2)
-                            .foregroundColor(DesignSystem.Colors.text)
-                        
-                        Text("Added \(relativeTime(from: article.addedAt))")
-                            .font(DesignSystem.Typography.caption)
-                            .foregroundColor(DesignSystem.Colors.textSecondary)
-                    }
-                    
-                    Spacer()
-                    
-                    Image(systemName: "arrow.up.right")
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
-                }
-                .modernCard()
-                .onTapGesture {
+        if let url = article.url {
+            UnifiedCard(
+                variant: .standard,
+                action: {
                     if let url = URL(string: url) {
+                        HapticManager.shared.impact(.light)
                         UIApplication.shared.open(url)
                     }
                 }
+            ) {
+                HStack {
+                    VStack(alignment: .leading, spacing: .ds.small) {
+                        // Domain indicator with icon
+                        HStack(spacing: .ds.micro) {
+                            Image(systemName: "link.circle.fill")
+                                .font(.ds.micro)
+                                .foregroundColor(.ds.primary.opacity(0.8))
+                            
+                            Text(URL(string: url)?.host ?? "Article")
+                                .font(.ds.caption)
+                                .foregroundColor(.ds.primary)
+                        }
+                        
+                        // URL preview
+                        Text(url)
+                            .font(.ds.body)
+                            .lineLimit(2)
+                            .foregroundColor(.ds.text)
+                            .multilineTextAlignment(.leading)
+                        
+                        // Time with icon
+                        HStack(spacing: .ds.micro) {
+                            Image(systemName: "clock")
+                                .font(.ds.micro)
+                                .foregroundColor(.ds.textTertiary)
+                            
+                            Text("Added \(relativeTime(from: article.addedAt))")
+                                .font(.ds.caption)
+                                .foregroundColor(.ds.textSecondary)
+                        }
+                    }
+                    
+                    Spacer(minLength: .ds.base)
+                    
+                    // Action indicator
+                    Image(systemName: "arrow.up.right.circle.fill")
+                        .font(.ds.title3)
+                        .foregroundColor(.ds.primary.opacity(0.3))
+                        .background(
+                            Circle()
+                                .fill(.ds.primary.opacity(0.05))
+                                .frame(width: 32, height: 32)
+                        )
+                }
             }
+            .premiumCardInteraction()
         }
     }
     
@@ -431,25 +447,89 @@ struct ArticleCard: View {
 }
 
 struct EmptyArticlesView: View {
+    @State private var iconRotation: Double = 0
+    @State private var pulseScale: CGFloat = 1.0
+    
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "doc.text.magnifyingglass")
-                .font(.system(size: 48))
-                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
+        VStack(spacing: .ds.large) {
+            // Animated icon container
+            ZStack {
+                // Background circle with gradient
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                .ds.primary.opacity(0.1),
+                                .ds.secondary.opacity(0.05)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 100, height: 100)
+                    .scaleEffect(pulseScale)
+                    .blur(radius: 10)
+                
+                // Icon with subtle animation
+                Image(systemName: "doc.text.magnifyingglass")
+                    .font(.system(size: 48, weight: .light, design: .rounded))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.ds.primary, .ds.secondary],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .rotationEffect(.degrees(iconRotation))
+            }
+            .onAppear {
+                withAnimation(.easeInOut(duration: 4).repeatForever(autoreverses: true)) {
+                    iconRotation = 5
+                }
+                withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
+                    pulseScale = 1.1
+                }
+            }
             
-            Text("No articles yet")
-                .font(DesignSystem.Typography.body)
-                .foregroundColor(DesignSystem.Colors.textSecondary)
-            
-            Text("Articles added to this curation will appear here")
-                .font(DesignSystem.Typography.caption)
-                .foregroundColor(DesignSystem.Colors.textSecondary)
-                .multilineTextAlignment(.center)
+            VStack(spacing: .ds.small) {
+                Text("No articles yet")
+                    .font(.ds.title3)
+                    .foregroundColor(.ds.text)
+                
+                Text("Articles added to this curation will appear here")
+                    .font(.ds.callout)
+                    .foregroundColor(.ds.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
-        .background(DesignSystem.Colors.surface.opacity(0.5))
-        .cornerRadius(DesignSystem.CornerRadius.medium)
+        .padding(.vertical, .ds.xxl)
+        .padding(.horizontal, .ds.large)
+        .background(
+            RoundedRectangle(cornerRadius: .ds.large, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: .ds.large, style: .continuous)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    .ds.border.opacity(0.5),
+                                    .ds.border.opacity(0.1)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                )
+        )
+        .shadow(
+            color: .ds.primary.opacity(0.05),
+            radius: 20,
+            x: 0,
+            y: 10
+        )
     }
 }
 
@@ -457,71 +537,146 @@ struct LoadedArticleCard: View {
     let article: Article
     @State private var showArticleView = false
     @State private var author: NDKUserProfile?
+    @State private var isPressed = false
     @EnvironmentObject var appState: AppState
     
     var body: some View {
-        Button(action: { showArticleView = true }) {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .top, spacing: 12) {
-                    // Article image thumbnail
+        UnifiedCard(
+            variant: .elevated,
+            isSelected: isPressed,
+            action: {
+                HapticManager.shared.impact(.light)
+                showArticleView = true
+            }
+        ) {
+            HStack(alignment: .top, spacing: .ds.medium) {
+                // Article image thumbnail with loading state
+                Group {
                     if let imageUrl = article.image, let url = URL(string: imageUrl) {
-                        AsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                        } placeholder: {
-                            Rectangle()
-                                .fill(DesignSystem.Colors.surface)
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            case .failure(_):
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: .ds.small, style: .continuous)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [.ds.primary.opacity(0.1), .ds.secondary.opacity(0.05)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                    Image(systemName: "photo")
+                                        .font(.ds.title3)
+                                        .foregroundColor(.ds.textTertiary)
+                                }
+                            case .empty:
+                                RoundedRectangle(cornerRadius: .ds.small, style: .continuous)
+                                    .fill(.ds.surfaceSecondary)
+                                    .overlay(
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                    )
+                            @unknown default:
+                                EmptyView()
+                            }
                         }
                         .frame(width: 80, height: 80)
-                        .cornerRadius(DesignSystem.CornerRadius.small)
+                        .cornerRadius(.ds.small)
                         .clipped()
+                    } else {
+                        // No image placeholder
+                        ZStack {
+                            RoundedRectangle(cornerRadius: .ds.small, style: .continuous)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [.ds.primary.opacity(0.05), .ds.secondary.opacity(0.03)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                            
+                            Image(systemName: "doc.richtext")
+                                .font(.ds.title2)
+                                .foregroundColor(.ds.primary.opacity(0.3))
+                        }
+                        .frame(width: 80, height: 80)
                     }
+                }
+                
+                VStack(alignment: .leading, spacing: .ds.small) {
+                    // Title with better typography
+                    Text(article.title)
+                        .font(.ds.headline)
+                        .foregroundColor(.ds.text)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(article.title)
-                            .font(DesignSystem.Typography.body)
-                            .fontWeight(.medium)
-                            .foregroundColor(DesignSystem.Colors.text)
+                    // Summary if available
+                    if let summary = article.summary {
+                        Text(summary)
+                            .font(.ds.callout)
+                            .foregroundColor(.ds.textSecondary)
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
-                        
-                        if let summary = article.summary {
-                            Text(summary)
-                                .font(DesignSystem.Typography.caption)
-                                .foregroundColor(DesignSystem.Colors.textSecondary)
-                                .lineLimit(2)
-                        }
-                        
-                        HStack(spacing: 8) {
-                            if let author = author {
-                                Text(author.name ?? author.displayName ?? "Anonymous")
-                                    .font(DesignSystem.Typography.caption)
-                                    .foregroundColor(DesignSystem.Colors.primary)
+                    }
+                    
+                    // Metadata row with icons
+                    HStack(spacing: .ds.small) {
+                        // Author with icon
+                        if let author = author {
+                            HStack(spacing: .ds.micro) {
+                                Image(systemName: "person.circle.fill")
+                                    .font(.ds.micro)
+                                    .foregroundColor(.ds.primary.opacity(0.6))
+                                
+                                Text(author.displayName ?? author.name ?? "Anonymous")
+                                    .font(.ds.footnoteMedium)
+                                    .foregroundColor(.ds.primary)
+                                    .lineLimit(1)
                             }
                             
                             Text("•")
-                                .foregroundColor(DesignSystem.Colors.textSecondary)
+                                .font(.ds.caption)
+                                .foregroundColor(.ds.textTertiary)
+                        }
+                        
+                        // Time with icon
+                        HStack(spacing: .ds.micro) {
+                            Image(systemName: "clock")
+                                .font(.ds.micro)
+                                .foregroundColor(.ds.textTertiary)
                             
                             Text(RelativeTimeFormatter.relativeTime(from: article.createdAt))
-                                .font(DesignSystem.Typography.caption)
-                                .foregroundColor(DesignSystem.Colors.textSecondary)
-                            
-                            Text("•")
-                                .foregroundColor(DesignSystem.Colors.textSecondary)
-                            
-                            Text("\(article.estimatedReadingTime) min read")
-                                .font(DesignSystem.Typography.caption)
-                                .foregroundColor(DesignSystem.Colors.textSecondary)
+                                .font(.ds.caption)
+                                .foregroundColor(.ds.textSecondary)
                         }
+                        
+                        // Reading time
+                        HStack(spacing: .ds.micro) {
+                            Image(systemName: "book")
+                                .font(.ds.micro)
+                                .foregroundColor(.ds.textTertiary)
+                            
+                            Text("\(article.estimatedReadingTime) min")
+                                .font(.ds.caption)
+                                .foregroundColor(.ds.textSecondary)
+                        }
+                        
+                        Spacer()
                     }
-                    
-                    Spacer()
                 }
-                .modernCard()
+                
+                Spacer(minLength: 0)
             }
         }
-        .buttonStyle(PlainButtonStyle())
+        .pressEvents(
+            onPress: { isPressed = true },
+            onRelease: { isPressed = false }
+        )
         .sheet(isPresented: $showArticleView) {
             ArticleView(article: article)
                 .environmentObject(appState)
@@ -557,34 +712,87 @@ struct AddArticleSheet: View {
     @State private var articleUrl = ""
     @State private var showError = false
     @State private var errorMessage = ""
+    @State private var isLoading = false
+    @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 24) {
-                Text("Add Article")
-                    .font(DesignSystem.Typography.headline)
-                
-                Text("Add an article URL to your curation")
-                    .font(DesignSystem.Typography.body)
-                    .foregroundColor(DesignSystem.Colors.textSecondary)
-                
-                TextField("https://...", text: $articleUrl)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                
-                Button(action: addArticle) {
+            VStack(alignment: .leading, spacing: .ds.large) {
+                // Header section
+                VStack(alignment: .leading, spacing: .ds.small) {
                     HStack {
-                        Image(systemName: "plus.circle")
+                        Image(systemName: "link.badge.plus")
+                            .font(.ds.largeTitle)
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [.ds.primary, .ds.secondary],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                        
+                        Spacer()
+                    }
+                    
+                    Text("Add Article")
+                        .font(.ds.largeTitle)
+                        .foregroundColor(.ds.text)
+                    
+                    Text("Add an article URL to your curation")
+                        .font(.ds.body)
+                        .foregroundColor(.ds.textSecondary)
+                }
+                .padding(.bottom, .ds.medium)
+                
+                // URL Input field with modern styling
+                VStack(alignment: .leading, spacing: .ds.small) {
+                    HStack {
+                        Image(systemName: "link")
+                            .font(.ds.callout)
+                            .foregroundColor(.ds.textSecondary)
+                        
+                        TextField("https://example.com/article", text: $articleUrl)
+                            .font(.ds.body)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .keyboardType(.URL)
+                            .focused($isTextFieldFocused)
+                    }
+                    .padding(.ds.base)
+                    .background(
+                        RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                            .fill(.ds.surfaceSecondary)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                                    .strokeBorder(
+                                        isTextFieldFocused ? .ds.primary : .ds.border,
+                                        lineWidth: isTextFieldFocused ? 2 : 1
+                                    )
+                            )
+                    )
+                    .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isTextFieldFocused)
+                }
+                
+                Spacer()
+                
+                // Action button
+                Button(action: addArticle) {
+                    HStack(spacing: .ds.small) {
+                        if isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "plus.circle.fill")
+                        }
                         Text("Add Article")
+                            .fontWeight(.medium)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(DesignSystem.Colors.primary)
-                    .foregroundColor(.white)
-                    .cornerRadius(DesignSystem.CornerRadius.medium)
                 }
-                .disabled(articleUrl.isEmpty)
+                .unifiedPrimaryButton()
+                .disabled(articleUrl.isEmpty || isLoading)
+                .opacity(articleUrl.isEmpty ? 0.6 : 1.0)
                 
                 Spacer()
             }
@@ -611,6 +819,7 @@ struct AddArticleSheet: View {
               let signer = appState.activeSigner else { return }
         
         HapticManager.shared.impact(.light)
+        isLoading = true
         
         Task {
             do {
@@ -646,14 +855,13 @@ struct AddArticleSheet: View {
                 }
                 
                 // Create updated curation event
-                let updatedEvent = try await ndk.createEvent(
-                    kind: 30004,
-                    content: curation.event.content,
-                    tags: tags
-                )
+                let updatedEvent = try await NDKEventBuilder(ndk: ndk)
+                    .kind(30004)
+                    .content(curation.event.content)
+                    .tags(tags)
+                    .build(signer: signer)
                 
-                try await updatedEvent.sign(using: signer)
-                try await ndk.publish(event: updatedEvent)
+                try await ndk.publish(updatedEvent)
                 
                 await MainActor.run {
                     HapticManager.shared.notification(.success)
@@ -661,6 +869,7 @@ struct AddArticleSheet: View {
                 }
             } catch {
                 await MainActor.run {
+                    isLoading = false
                     errorMessage = "Failed to add article: \(error.localizedDescription)"
                     showError = true
                     HapticManager.shared.notification(.error)

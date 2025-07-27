@@ -71,7 +71,7 @@ struct UserCard: View {
         HStack(spacing: 16) {
             // Profile picture
             Circle()
-                .fill(Color.ds.primaryDark.opacity(0.2))
+                .fill(DesignSystem.Colors.primary.opacity(0.2))
                 .frame(width: 56, height: 56)
                 .overlay {
                     if let picture = profile.picture, let url = URL(string: picture) {
@@ -82,21 +82,21 @@ struct UserCard: View {
                                 .clipShape(Circle())
                         } placeholder: {
                             Image(systemName: "person.fill")
-                                .font(.ds.title2)
-                                .foregroundColor(.ds.primaryDark)
+                                .font(DesignSystem.Typography.title2)
+                                .foregroundColor(DesignSystem.Colors.primary)
                         }
                     } else {
                         Image(systemName: "person.fill")
-                            .font(.ds.title2)
-                            .foregroundColor(.ds.primaryDark)
+                            .font(DesignSystem.Typography.title2)
+                            .foregroundColor(DesignSystem.Colors.primary)
                     }
                 }
             
             VStack(alignment: .leading, spacing: 4) {
                 // Name
                 Text(profile.displayName ?? profile.name ?? PubkeyFormatter.formatShort(pubkey))
-                    .font(.ds.headline)
-                    .foregroundColor(.ds.text)
+                    .font(DesignSystem.Typography.headline)
+                    .foregroundColor(DesignSystem.Colors.text)
                     .lineLimit(1)
                 
                 // Username if different from display name
@@ -104,29 +104,29 @@ struct UserCard: View {
                    let displayName = profile.displayName,
                    name != displayName {
                     Text("@\(name)")
-                        .font(.ds.caption)
-                        .foregroundColor(.ds.textSecondary)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                         .lineLimit(1)
                 }
                 
                 // About
                 if let about = profile.about {
                     Text(about)
-                        .font(.ds.caption)
-                        .foregroundColor(.ds.textSecondary)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                         .lineLimit(2)
                 }
                 
                 // Stats
                 HStack(spacing: 12) {
                     Label("\(highlightCount)", systemImage: "highlighter")
-                        .font(.ds.caption)
-                        .foregroundColor(.ds.textSecondary)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                     
                     if profile.lud16 != nil || profile.lud06 != nil {
                         Image(systemName: "bolt.fill")
-                            .font(.ds.caption)
-                            .foregroundColor(.ds.secondary)
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundColor(DesignSystem.Colors.secondary)
                     }
                 }
             }
@@ -140,7 +140,7 @@ struct UserCard: View {
                 }
             } label: {
                 Text(isFollowing ? "Following" : "Follow")
-                    .font(.ds.footnoteMedium)
+                    .font(DesignSystem.Typography.footnoteMedium)
             }
             .unifiedPrimaryButton(enabled: true, variant: isFollowing ? .standard : .compact)
         }
@@ -200,20 +200,5 @@ struct UserCard: View {
         } catch {
             isFollowing = false
         }
-    }
-}
-
-// Type-erasing wrapper for button styles
-struct AnyButtonStyle: ButtonStyle {
-    private let _makeBody: (Configuration) -> AnyView
-    
-    init<S: ButtonStyle>(_ style: S) {
-        _makeBody = { configuration in
-            AnyView(style.makeBody(configuration: configuration))
-        }
-    }
-    
-    func makeBody(configuration: Configuration) -> some View {
-        _makeBody(configuration)
     }
 }

@@ -218,7 +218,7 @@ struct ReadingStatsView: View {
             
             // Reading time
             Label {
-                Text(formatReadingTime(progress.totalReadingTime)
+                Text(formatReadingTime(progress.totalReadingTime))
                     .font(.ds.caption)
                     .fontWeight(.medium)
             } icon: {
