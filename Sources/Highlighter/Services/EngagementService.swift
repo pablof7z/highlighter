@@ -103,12 +103,19 @@ class EngagementService: ObservableObject {
                     cachePolicy: .cacheOnly
                 )
                 
-                for await _ in zapSource.events {
+                for await event in zapSource.events {
                     await MainActor.run {
                         metrics.zaps += 1
-                        // TODO: Parse zap amount from bolt11 invoice
-                        // For now, estimate 1000 sats per zap
-                        metrics.zapAmount += 1000
+                        
+                        // Parse zap amount from bolt11 invoice
+                        if let bolt11Tag = event.tags.first(where: { $0.count >= 2 && $0[0] == "bolt11" }),
+                           let invoice = bolt11Tag[safe: 1] {
+                            let amount = parseBolt11Amount(invoice) ?? 1000
+                            metrics.zapAmount += amount
+                        } else {
+                            // Fallback to 1000 sats if no bolt11 tag
+                            metrics.zapAmount += 1000
+                        }
                     }
                 }
             }
@@ -224,7 +231,16 @@ class EngagementService: ObservableObject {
                        eventIdSet.contains(eTag) {
                         await MainActor.run {
                             metricsMap[eTag]?.zaps += 1
-                            metricsMap[eTag]?.zapAmount += 1000 // Estimated
+                            
+                            // Parse zap amount from bolt11 invoice
+                            if let bolt11Tag = event.tags.first(where: { $0.count >= 2 && $0[0] == "bolt11" }),
+                               let invoice = bolt11Tag[safe: 1] {
+                                let amount = parseBolt11Amount(invoice) ?? 1000
+                                metricsMap[eTag]?.zapAmount += amount
+                            } else {
+                                // Fallback to 1000 sats if no bolt11 tag
+                                metricsMap[eTag]?.zapAmount += 1000
+                            }
                         }
                     }
                 }
@@ -318,6 +334,54 @@ enum EngagementError: LocalizedError {
         case .notConfigured:
             return "Engagement service not properly configured"
         }
+    }
+}
+
+// MARK: - Bolt11 Parsing
+
+private func parseBolt11Amount(_ invoice: String) -> Int? {
+    // Basic bolt11 parsing - extract amount in satoshis
+    // Bolt11 format: lnbc<amount><multiplier>...
+    // where multiplier can be m (milli), u (micro), n (nano), p (pico)
+    
+    let invoice = invoice.lowercased()
+    guard invoice.hasPrefix("lnbc") || invoice.hasPrefix("lntb") || invoice.hasPrefix("lnbcrt") else {
+        return nil
+    }
+    
+    // Remove the prefix
+    let withoutPrefix = invoice.dropFirst(4)
+    
+    // Find where the amount ends (first non-digit/multiplier character)
+    var amountString = ""
+    var multiplierChar: Character?
+    
+    for char in withoutPrefix {
+        if char.isNumber {
+            amountString.append(char)
+        } else if ["m", "u", "n", "p"].contains(char) && multiplierChar == nil {
+            multiplierChar = char
+        } else {
+            break
+        }
+    }
+    
+    guard let amount = Int(amountString), amount > 0 else {
+        return nil
+    }
+    
+    // Convert to satoshis based on multiplier
+    switch multiplierChar {
+    case "m": // milli-bitcoin (0.001 BTC)
+        return amount * 100_000
+    case "u": // micro-bitcoin (0.000001 BTC)
+        return amount * 100
+    case "n": // nano-bitcoin (0.000000001 BTC)
+        return amount / 10
+    case "p": // pico-bitcoin (0.000000000001 BTC)
+        return amount / 10_000
+    default: // No multiplier means BTC
+        return amount * 100_000_000
     }
 }
 

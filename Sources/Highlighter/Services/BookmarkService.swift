@@ -11,6 +11,8 @@ class BookmarkService: ObservableObject {
     private var signer: NDKSigner?
     private var currentUserPubkey: String?
     private var loadingTask: Task<Void, Never>?
+    private var cachedBookmarkIds: BookmarkIds?
+    private var bookmarkEventIds: [String: String] = [:] // Maps content ID to bookmark event ID
     
     // MARK: - Configuration
     
@@ -130,6 +132,9 @@ class BookmarkService: ObservableObject {
             .build(signer: signer)
         
         _ = try await ndk.publish(event)
+        
+        // Track the bookmark event ID
+        bookmarkEventIds[article.id] = event.id
     }
     
     private func publishHighlightBookmark(_ highlight: HighlightEvent) async throws {
@@ -154,6 +159,9 @@ class BookmarkService: ObservableObject {
             .build(signer: signer)
         
         _ = try await ndk.publish(event)
+        
+        // Track the bookmark event ID
+        bookmarkEventIds[highlight.id] = event.id
     }
     
     private func publishDeletionEvent(for eventId: String) async throws {
@@ -245,6 +253,9 @@ class BookmarkService: ObservableObject {
                 createdAt: event.createdAt
             )
             
+            // Track the bookmark event ID for this article
+            bookmarkEventIds[articleId] = event.id
+            
             await addArticleBookmark(article)
         }
     }
@@ -255,6 +266,9 @@ class BookmarkService: ObservableObject {
         
         for tag in highlightTags where tag.count >= 2 {
             let highlightId = tag[1]
+            
+            // Track the bookmark event ID for this highlight
+            bookmarkEventIds[highlightId] = event.id
             
             // Fetch the actual highlight event
             if let ndk = ndk {
@@ -303,29 +317,26 @@ class BookmarkService: ObservableObject {
     }
     
     private func loadFromLocalStorage() {
+        // Don't clear bookmarks here - they will be populated from the network
+        // The local storage is just for offline reference of bookmark IDs
         guard let data = UserDefaults.standard.data(forKey: "highlighter.bookmarks.ids"),
-              let _ = try? JSONDecoder().decode(BookmarkIds.self, from: data) else {
+              let bookmarkIds = try? JSONDecoder().decode(BookmarkIds.self, from: data) else {
             return
         }
         
-        // We'll need to fetch the actual events from the network
-        // For now, just clear the local cache since we can't deserialize the full objects
-        bookmarkedArticles.removeAll()
-        bookmarkedHighlights.removeAll()
-        
-        // TODO: Implement fetching bookmarked items from network using saved IDs
+        // Store the IDs for reference while we fetch from network
+        // The actual bookmark objects will be populated by loadBookmarks()
+        self.cachedBookmarkIds = bookmarkIds
     }
     
     // MARK: - Helpers
     
     private func findBookmarkEventId(for articleId: String) -> String? {
-        // This would need to track event IDs when loading bookmarks
-        // For now, return nil
-        return nil
+        return bookmarkEventIds[articleId]
     }
     
     private func findHighlightBookmarkEventId(for highlightId: String) -> String? {
-        return nil
+        return bookmarkEventIds[highlightId]
     }
 }
 
