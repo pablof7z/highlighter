@@ -639,35 +639,6 @@ struct ColorButton: View {
 
 // MARK: - Placeholder Views
 
-struct RelayManagerView: View {
-    @Environment(\.dismiss) var dismiss
-    
-    var body: some View {
-        NavigationStack {
-            VStack {
-                Text("Relay Manager")
-                    .font(.ds.title2)
-                    .padding()
-                
-                Text("Manage your Nostr relay connections")
-                    .font(.ds.body)
-                    .foregroundColor(.ds.textSecondary)
-                
-                Spacer()
-            }
-            .navigationTitle("Relay Manager")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
-
 struct AboutView: View {
     @Environment(\.dismiss) var dismiss
     

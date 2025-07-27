@@ -833,7 +833,7 @@ struct CommunityHighlightsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: .ds.large) {
-            ModernSectionHeader(title: "Community Highlights")
+            UnifiedSectionHeader(title: "Community Highlights")
             
             VStack(spacing: .ds.base) {
                 ForEach(highlights.prefix(5), id: \.id) { highlight in
@@ -853,7 +853,7 @@ struct RelatedArticlesSection: View {
     var body: some View {
         if !relatedArticles.isEmpty {
             VStack(alignment: .leading, spacing: .ds.large) {
-                ModernSectionHeader(title: "You Might Also Like")
+                UnifiedSectionHeader(title: "You Might Also Like")
                     .padding(.horizontal, .ds.screenPadding)
                 
                 ScrollView(.horizontal, showsIndicators: false) {

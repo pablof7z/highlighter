@@ -128,26 +128,6 @@ extension View {
             )
     }
     
-    // MARK: - Buttons
-    func unifiedPrimaryButton() -> some View {
-        self
-            .font(.system(size: UnifiedStyleGuide.Button.fontSize, weight: UnifiedStyleGuide.Button.fontWeight))
-            .foregroundColor(UnifiedStyleGuide.Button.primaryTextColor)
-            .padding(.horizontal, UnifiedStyleGuide.Button.horizontalPadding)
-            .padding(.vertical, UnifiedStyleGuide.Button.verticalPadding)
-            .background(UnifiedStyleGuide.Button.primaryBackground)
-            .cornerRadius(UnifiedStyleGuide.Button.cornerRadius)
-    }
-    
-    func unifiedSecondaryButton() -> some View {
-        self
-            .font(.system(size: UnifiedStyleGuide.Button.fontSize, weight: UnifiedStyleGuide.Button.fontWeight))
-            .foregroundColor(UnifiedStyleGuide.Button.secondaryTextColor)
-            .padding(.horizontal, UnifiedStyleGuide.Button.horizontalPadding)
-            .padding(.vertical, UnifiedStyleGuide.Button.verticalPadding)
-            .background(UnifiedStyleGuide.Button.secondaryBackground)
-            .cornerRadius(UnifiedStyleGuide.Button.cornerRadius)
-    }
 }
 
 // MARK: - Unified Components
@@ -188,38 +168,26 @@ struct UnifiedEmptyState: View {
     let icon: String
     let title: String
     let message: String
-    let action: (() -> Void)? = nil
-    let actionTitle: String? = nil
     
     var body: some View {
         VStack(spacing: UnifiedStyleGuide.EmptyState.spacing) {
             Image(systemName: icon)
                 .font(.system(size: UnifiedStyleGuide.EmptyState.iconSize))
                 .foregroundColor(UnifiedStyleGuide.EmptyState.iconColor)
-                .symbolRenderingMode(.hierarchical)
             
-            VStack(spacing: 8) {
-                Text(title)
-                    .font(UnifiedStyleGuide.EmptyState.titleFont)
-                    .foregroundColor(UnifiedStyleGuide.EmptyState.titleColor)
-                
-                Text(message)
-                    .font(UnifiedStyleGuide.EmptyState.messageFont)
-                    .foregroundColor(UnifiedStyleGuide.EmptyState.messageColor)
-                    .multilineTextAlignment(.center)
-            }
+            Text(title)
+                .font(UnifiedStyleGuide.EmptyState.titleFont)
+                .foregroundColor(UnifiedStyleGuide.EmptyState.titleColor)
             
-            if let action = action, let actionTitle = actionTitle {
-                Button(action: action) {
-                    Text(actionTitle)
-                        .unifiedPrimaryButton()
-                }
-                .padding(.top, 8)
-            }
+            Text(message)
+                .font(UnifiedStyleGuide.EmptyState.messageFont)
+                .foregroundColor(UnifiedStyleGuide.EmptyState.messageColor)
+                .multilineTextAlignment(.center)
         }
-        .padding(32)
+        .padding()
     }
 }
+
 
 struct UnifiedStatCard: View {
     let value: String

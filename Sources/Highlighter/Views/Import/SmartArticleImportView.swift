@@ -1543,27 +1543,91 @@ class SmartImportManager: ObservableObject {
     private func extractTextFromHTML(_ html: String) -> String {
         var processedHTML = html
         
-        // Remove script and style content first
-        let scriptPattern = "<script[^>]*>[\\s\\S]*?</script>"
-        processedHTML = processedHTML.replacingOccurrences(of: scriptPattern, with: "", options: [.regularExpression, .caseInsensitive])
+        // Remove various noise elements that should not be included in article text
+        let noisePatterns = [
+            "<script[^>]*>[\\s\\S]*?</script>",
+            "<style[^>]*>[\\s\\S]*?</style>",
+            "<noscript[^>]*>[\\s\\S]*?</noscript>",
+            "<!--[\\s\\S]*?-->",
+            "<svg[^>]*>[\\s\\S]*?</svg>",
+            "<iframe[^>]*>[\\s\\S]*?</iframe>"
+        ]
         
-        let stylePattern = "<style[^>]*>[\\s\\S]*?</style>"
-        processedHTML = processedHTML.replacingOccurrences(of: stylePattern, with: "", options: [.regularExpression, .caseInsensitive])
+        for pattern in noisePatterns {
+            processedHTML = processedHTML.replacingOccurrences(
+                of: pattern,
+                with: "",
+                options: [.regularExpression, .caseInsensitive]
+            )
+        }
         
-        // Convert common block elements to line breaks for better formatting
-        let blockElements = ["</p>", "</div>", "</h1>", "</h2>", "</h3>", "</h4>", "</h5>", "</h6>", "</li>", "</br>", "<br>", "<br/>", "</tr>"]
-        for element in blockElements {
-            processedHTML = processedHTML.replacingOccurrences(of: element, with: "\n", options: .caseInsensitive)
+        // Try to extract main content areas (common article containers)
+        let contentPatterns = [
+            "<article[^>]*>([\\s\\S]*?)</article>",
+            "<main[^>]*>([\\s\\S]*?)</main>",
+            "<div[^>]*class=[\"'][^\"']*content[^\"']*[\"'][^>]*>([\\s\\S]*?)</div>",
+            "<div[^>]*class=[\"'][^\"']*article[^\"']*[\"'][^>]*>([\\s\\S]*?)</div>"
+        ]
+        
+        var mainContent: String?
+        for pattern in contentPatterns {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]),
+               let match = regex.firstMatch(in: processedHTML, options: [], range: NSRange(location: 0, length: processedHTML.count)),
+               match.numberOfRanges > 1 {
+                let contentRange = match.range(at: 1)
+                if let range = Range(contentRange, in: processedHTML) {
+                    mainContent = String(processedHTML[range])
+                    break
+                }
+            }
+        }
+        
+        // Use main content if found, otherwise process full HTML
+        if let content = mainContent {
+            processedHTML = content
+        }
+        
+        // Preserve structure with proper spacing
+        let blockReplacements: [(pattern: String, replacement: String)] = [
+            ("</p>", "\n\n"),
+            ("</div>", "\n"),
+            ("</h[1-6]>", "\n\n"),
+            ("<h[1-6][^>]*>", "\n\n"),
+            ("</li>", "\n"),
+            ("<br[^>]*>", "\n"),
+            ("</tr>", "\n"),
+            ("</blockquote>", "\n\n")
+        ]
+        
+        for (pattern, replacement) in blockReplacements {
+            if pattern.contains("[") {
+                // Use regex for patterns with character classes
+                processedHTML = processedHTML.replacingOccurrences(
+                    of: pattern,
+                    with: replacement,
+                    options: [.regularExpression, .caseInsensitive]
+                )
+            } else {
+                processedHTML = processedHTML.replacingOccurrences(
+                    of: pattern,
+                    with: replacement,
+                    options: .caseInsensitive
+                )
+            }
         }
         
         // Convert list items to bullets
-        processedHTML = processedHTML.replacingOccurrences(of: "<li>", with: "\n• ", options: .caseInsensitive)
+        processedHTML = processedHTML.replacingOccurrences(
+            of: "<li[^>]*>",
+            with: "\n• ",
+            options: [.regularExpression, .caseInsensitive]
+        )
         
         // Remove all remaining HTML tags
         let tagPattern = "<[^>]+>"
         let stripped = processedHTML.replacingOccurrences(of: tagPattern, with: "", options: .regularExpression)
         
-        // Decode common HTML entities
+        // Comprehensive HTML entity decoding
         let entities = [
             ("&nbsp;", " "),
             ("&amp;", "&"),
@@ -1574,14 +1638,29 @@ class SmartImportManager: ObservableObject {
             ("&apos;", "'"),
             ("&mdash;", "—"),
             ("&ndash;", "–"),
-            ("&hellip;", "..."),
+            ("&hellip;", "…"),
             ("&copy;", "©"),
             ("&reg;", "®"),
             ("&trade;", "™"),
             ("&euro;", "€"),
             ("&pound;", "£"),
             ("&cent;", "¢"),
-            ("&yen;", "¥")
+            ("&yen;", "¥"),
+            ("&sect;", "§"),
+            ("&deg;", "°"),
+            ("&plusmn;", "±"),
+            ("&frac14;", "¼"),
+            ("&frac12;", "½"),
+            ("&frac34;", "¾"),
+            ("&times;", "×"),
+            ("&divide;", "÷"),
+            ("&laquo;", "«"),
+            ("&raquo;", "»"),
+            ("&ldquo;", "“"),
+            ("&rdquo;", "”"),
+            ("&lsquo;", "‘"),
+            ("&rsquo;", "’"),
+            ("&bull;", "•")
         ]
         
         var decoded = stripped
@@ -1589,20 +1668,29 @@ class SmartImportManager: ObservableObject {
             decoded = decoded.replacingOccurrences(of: entity, with: replacement)
         }
         
-        // Decode numeric entities
-        let numericPattern = "&#(\\d+);"
-        if let regex = try? NSRegularExpression(pattern: numericPattern, options: []) {
-            let matches = regex.matches(in: decoded, options: [], range: NSRange(decoded.startIndex..., in: decoded))
-            var result = decoded
-            for match in matches.reversed() {
-                if let range = Range(match.range, in: decoded),
-                   let codeRange = Range(match.range(at: 1), in: decoded),
-                   let code = Int(decoded[codeRange]),
-                   let scalar = UnicodeScalar(code) {
-                    result.replaceSubrange(range, with: String(Character(scalar)))
+        // Decode numeric entities (both decimal and hex)
+        let numericPatterns = [
+            ("&#(\\d+);", 10),  // Decimal entities
+            ("&#x([0-9A-Fa-f]+);", 16)  // Hex entities
+        ]
+        
+        for (pattern, radix) in numericPatterns {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
+                let matches = regex.matches(in: decoded, options: [], range: NSRange(decoded.startIndex..., in: decoded))
+                var result = decoded
+                
+                // Process matches in reverse order to maintain string indices
+                for match in matches.reversed() {
+                    if let range = Range(match.range, in: result),
+                       let codeRange = Range(match.range(at: 1), in: result),
+                       let code = Int(result[codeRange], radix: radix),
+                       code > 0 && code <= 0x10FFFF,  // Valid Unicode range
+                       let scalar = UnicodeScalar(code) {
+                        result.replaceSubrange(range, with: String(Character(scalar)))
+                    }
                 }
+                decoded = result
             }
-            decoded = result
         }
         
         // Clean up excessive whitespace

@@ -54,32 +54,6 @@ struct ModernTabItem: View {
     }
 }
 
-// MARK: - Modern Section Header
-struct ModernSectionHeader: View {
-    let title: String
-    var action: (() -> Void)? = nil
-    var actionTitle: String? = nil
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .font(Font.ds.title3)
-                .foregroundColor(.ds.text)
-            
-            Spacer()
-            
-            if let action = action, let actionTitle = actionTitle {
-                Button(action: action) {
-                    Text(actionTitle)
-                        .font(Font.ds.footnoteMedium)
-                        .foregroundColor(Color.ds.primary)
-                }
-            }
-        }
-        .padding(.horizontal, .ds.screenPadding)
-        .padding(.vertical, .ds.small)
-    }
-}
 
 // MARK: - Highlight Effect (Subtle)
 struct ModernHighlight: ViewModifier {
@@ -130,41 +104,3 @@ extension View {
     }
 }
 
-// MARK: - Modern Empty State
-struct ModernEmptyState: View {
-    let icon: String
-    let title: String
-    let message: String
-    var action: (() -> Void)? = nil
-    var actionTitle: String? = nil
-    
-    var body: some View {
-        VStack(spacing: .ds.medium) {
-            Image(systemName: icon)
-                .font(.system(size: 48, weight: .light))
-                .foregroundColor(Color.ds.textTertiary)
-            
-            VStack(spacing: .ds.small) {
-                Text(title)
-                    .font(.ds.headline)
-                    .foregroundColor(.ds.text)
-                
-                Text(message)
-                    .font(.ds.body)
-                    .foregroundColor(.ds.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            
-            if let action = action, let actionTitle = actionTitle {
-                Button(action: action) {
-                    Text(actionTitle)
-                }
-                .unifiedPrimaryButton()
-                .padding(.top, .ds.small)
-            }
-        }
-        .padding(.ds.xxl)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}

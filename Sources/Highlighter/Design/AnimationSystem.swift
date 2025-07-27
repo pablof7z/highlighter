@@ -654,38 +654,6 @@ extension AnyTransition {
 // MARK: - Mesh Gradient Background
 // Note: MeshGradientBackground is defined in Views/Components/MeshGradientBackground.swift
 
-struct ModernLoadingIndicator: View {
-    @State private var rotation = 0.0
-    
-    var body: some View {
-        ZStack {
-            ForEach(0..<3) { index in
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                DesignSystem.Colors.primary,
-                                DesignSystem.Colors.secondary
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(width: 15, height: 15)
-                    .offset(y: -25)
-                    .rotationEffect(.degrees(rotation + Double(index * 120)))
-                    .animation(
-                        .linear(duration: 1.2)
-                        .repeatForever(autoreverses: false),
-                        value: rotation
-                    )
-            }
-        }
-        .onAppear {
-            rotation = 360
-        }
-    }
-}
 
 struct ModernProgressBar: View {
     let progress: CGFloat
@@ -740,15 +708,17 @@ struct ModernProgressBar: View {
 struct AnimatedNumber: View {
     let value: Int
     let duration: Double
+    let suffix: String
     @State private var displayValue: Int = 0
     
-    init(value: Int, duration: Double = 0.5) {
+    init(value: Int, duration: Double = 0.5, suffix: String = "") {
         self.value = value
         self.duration = duration
+        self.suffix = suffix
     }
     
     var body: some View {
-        Text("\(displayValue)")
+        Text("\(displayValue)\(suffix)")
             .contentTransition(.numericText(countsDown: value < displayValue))
             .onAppear {
                 animate()
@@ -812,7 +782,7 @@ struct AnimatedCheckmark: View {
             .frame(width: 200, height: 100)
             .morphingCard(isExpanded: true)
         
-        ModernLoadingIndicator()
+        ModernLoadingView()
         
         ModernProgressBar(progress: 0.7)
             .padding(.horizontal, 40)

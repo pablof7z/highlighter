@@ -73,16 +73,9 @@ struct AdvancedSearchView: View {
         NavigationStack {
             ZStack {
                 // Animated gradient background
-                LinearGradient(
-                    colors: [
-                        DesignSystem.Colors.background,
-                        selectedCategory.color.opacity(0.05)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
-                .animation(.easeInOut(duration: 0.8), value: selectedCategory)
+                UnifiedGradientBackground(style: .subtle)
+                    .ignoresSafeArea()
+                    .animation(.easeInOut(duration: 0.8), value: selectedCategory)
                 
                 ScrollView {
                     VStack(spacing: 0) {

@@ -340,48 +340,104 @@ enum EngagementError: LocalizedError {
 // MARK: - Bolt11 Parsing
 
 private func parseBolt11Amount(_ invoice: String) -> Int? {
-    // Basic bolt11 parsing - extract amount in satoshis
-    // Bolt11 format: lnbc<amount><multiplier>...
+    // Enhanced bolt11 parsing with better error handling and edge case support
+    // Bolt11 format: ln[tb]c<amount><multiplier>1<bech32data>
     // where multiplier can be m (milli), u (micro), n (nano), p (pico)
     
-    let invoice = invoice.lowercased()
-    guard invoice.hasPrefix("lnbc") || invoice.hasPrefix("lntb") || invoice.hasPrefix("lnbcrt") else {
-        return nil
-    }
+    let invoice = invoice.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     
-    // Remove the prefix
-    let withoutPrefix = invoice.dropFirst(4)
+    // Support various network prefixes
+    let prefixes = ["lnbc", "lntb", "lnbcrt", "lnsb", "lntbs"]
+    var matchedPrefix: String?
     
-    // Find where the amount ends (first non-digit/multiplier character)
-    var amountString = ""
-    var multiplierChar: Character?
-    
-    for char in withoutPrefix {
-        if char.isNumber {
-            amountString.append(char)
-        } else if ["m", "u", "n", "p"].contains(char) && multiplierChar == nil {
-            multiplierChar = char
-        } else {
+    for prefix in prefixes {
+        if invoice.hasPrefix(prefix) {
+            matchedPrefix = prefix
             break
         }
     }
     
-    guard let amount = Int(amountString), amount > 0 else {
+    guard let prefix = matchedPrefix else {
         return nil
     }
     
-    // Convert to satoshis based on multiplier
+    // Remove the prefix
+    let withoutPrefix = String(invoice.dropFirst(prefix.count))
+    
+    // Handle edge case: invoice without amount (0-value invoices)
+    if withoutPrefix.isEmpty || withoutPrefix.first == "1" {
+        return 0
+    }
+    
+    // Extract amount and multiplier
+    var amountString = ""
+    var multiplierChar: Character?
+    var foundMultiplier = false
+    
+    for (index, char) in withoutPrefix.enumerated() {
+        if char.isNumber && !foundMultiplier {
+            amountString.append(char)
+        } else if ["m", "u", "n", "p"].contains(char) && !foundMultiplier {
+            multiplierChar = char
+            foundMultiplier = true
+            // Check if there are more digits after multiplier (invalid format)
+            if index + 1 < withoutPrefix.count {
+                let nextChar = withoutPrefix[withoutPrefix.index(withoutPrefix.startIndex, offsetBy: index + 1)]
+                if nextChar.isNumber {
+                    return nil // Invalid format
+                }
+            }
+        } else if char == "1" || (!char.isNumber && !char.isLetter) {
+            // Hit the bech32 separator or invalid character
+            break
+        } else if !foundMultiplier && char.isLetter {
+            // Letter that's not a multiplier - invalid
+            return nil
+        }
+    }
+    
+    // Handle case where amount is specified but no digits found
+    if amountString.isEmpty && multiplierChar != nil {
+        return nil
+    }
+    
+    // Parse amount with better error handling
+    let amount: Int64
+    if amountString.isEmpty {
+        // No amount specified means 0
+        amount = 0
+    } else {
+        guard let parsedAmount = Int64(amountString), parsedAmount >= 0 else {
+            return nil
+        }
+        amount = parsedAmount
+    }
+    
+    // Convert to satoshis based on multiplier with overflow protection
+    let satoshis: Int64
     switch multiplierChar {
     case "m": // milli-bitcoin (0.001 BTC)
-        return amount * 100_000
-    case "u": // micro-bitcoin (0.000001 BTC)
-        return amount * 100
+        satoshis = amount.multipliedReportingOverflow(by: 100_000).partialValue
+    case "u": // micro-bitcoin (0.000001 BTC)  
+        satoshis = amount.multipliedReportingOverflow(by: 100).partialValue
     case "n": // nano-bitcoin (0.000000001 BTC)
-        return amount / 10
+        // Ensure we don't lose precision with integer division
+        satoshis = amount % 10 == 0 ? amount / 10 : (amount * 10) / 100
     case "p": // pico-bitcoin (0.000000000001 BTC)
-        return amount / 10_000
+        // Most pico amounts will be 0 satoshis due to rounding
+        satoshis = amount / 10_000
     default: // No multiplier means BTC
-        return amount * 100_000_000
+        if amountString.isEmpty {
+            return 0 // Empty amount with no multiplier
+        }
+        satoshis = amount.multipliedReportingOverflow(by: 100_000_000).partialValue
     }
+    
+    // Ensure result fits in Int and is reasonable
+    guard satoshis >= 0 && satoshis <= Int64(Int.max) else {
+        return nil
+    }
+    
+    return Int(satoshis)
 }
 

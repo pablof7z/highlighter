@@ -351,31 +351,50 @@ struct EngagementVisualization: View {
     
     private var insightsSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            Text("AI-Powered Insights")
+            Text("Engagement Insights")
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(DesignSystem.Colors.text)
             
             VStack(spacing: DesignSystem.Spacing.small) {
-                InsightCard(
-                    icon: "lightbulb.fill",
-                    title: "Peak Engagement Times",
-                    description: "Your highlights get 3x more engagement when posted between 2-4 PM EST",
-                    color: .yellow
-                )
+                // Peak engagement time based on actual data
+                if let peakHour = calculatePeakEngagementHour() {
+                    InsightCard(
+                        icon: "lightbulb.fill",
+                        title: "Peak Engagement Time",
+                        description: "Your highlights get the most engagement around \(formatHour(peakHour))",
+                        color: .yellow
+                    )
+                }
                 
-                InsightCard(
-                    icon: "person.2.fill",
-                    title: "Top Audience",
-                    description: "Tech enthusiasts and Bitcoin community members engage most with your content",
-                    color: .blue
-                )
+                // Average engagement metrics
+                if averageEngagement > 0 {
+                    InsightCard(
+                        icon: "chart.bar.fill",
+                        title: "Average Engagement",
+                        description: "Each highlight receives an average of \(averageEngagement) interactions",
+                        color: .blue
+                    )
+                }
                 
-                InsightCard(
-                    icon: "quote.bubble.fill",
-                    title: "Content Recommendation",
-                    description: "Philosophical quotes receive 45% more zaps than technical content",
-                    color: .purple
-                )
+                // Growth trend
+                if growthRate != 0 {
+                    InsightCard(
+                        icon: growthRate > 0 ? "arrow.up.right.circle.fill" : "arrow.down.right.circle.fill",
+                        title: "Engagement Trend",
+                        description: growthRate > 0 ? "Your engagement is up \(abs(growthRate))% compared to the previous period" : "Your engagement is down \(abs(growthRate))% compared to the previous period",
+                        color: growthRate > 0 ? .green : .orange
+                    )
+                }
+                
+                // Best performing content type (if we have enough data)
+                if bestPerformingCount > 0 {
+                    InsightCard(
+                        icon: "trophy.fill",
+                        title: "High Performers",
+                        description: "\(bestPerformingCount) of your highlights performed exceptionally well",
+                        color: .purple
+                    )
+                }
             }
         }
         .padding(DesignSystem.Spacing.large)
@@ -474,6 +493,28 @@ struct EngagementVisualization: View {
     }
     
     // MARK: - Helper Methods
+    
+    private func calculatePeakEngagementHour() -> Int? {
+        guard !engagementData.isEmpty else { return nil }
+        
+        // Group engagement by hour of day
+        var hourlyEngagement: [Int: Int] = [:]
+        
+        for dataPoint in engagementData {
+            let hour = Calendar.current.component(.hour, from: dataPoint.date)
+            hourlyEngagement[hour, default: 0] += dataPoint.total
+        }
+        
+        // Find the hour with maximum engagement
+        return hourlyEngagement.max(by: { $0.value < $1.value })?.key
+    }
+    
+    private func formatHour(_ hour: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h a"
+        let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: Date())!
+        return formatter.string(from: date)
+    }
     
     private func loadEngagementData() {
         Task {

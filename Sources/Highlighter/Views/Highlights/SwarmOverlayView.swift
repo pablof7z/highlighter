@@ -272,32 +272,54 @@ struct SwarmOverlayView: View {
     }
     
     private func simulateLiveActivity() {
-        // Only show subtle activity hint when there's no real activity
-        // This helps users understand the feature is working even with low activity
-        let hasRealActivity = !swarmManager.swarmHighlights.isEmpty
-        let shouldSimulate = !hasRealActivity && Bool.random(probability: 0.2) // 20% chance
+        // Update activity level based on real swarm data
+        updateRealTimeActivity()
+    }
+    
+    private func updateRealTimeActivity() {
+        // Calculate activity level based on recent highlights
+        let now = Date()
+        let recentHighlights = swarmManager.swarmHighlights.filter { highlight in
+            // Check if any highlight was created in the last hour
+            highlight.highlights.contains { info in
+                let timeSince = now.timeIntervalSince(info.createdAt)
+                return timeSince < 3600 // 1 hour
+            }
+        }
         
-        if shouldSimulate && swarmActivityLevel == 0 {
-            withAnimation(.easeInOut(duration: 1.0)) {
-                swarmActivityLevel = .random(in: 0.1...0.2) // Very subtle
+        // Calculate activity level (0.0 to 1.0)
+        let newActivityLevel = min(Double(recentHighlights.count) / 10.0, 1.0)
+        
+        // Update with animation if changed
+        if abs(newActivityLevel - swarmActivityLevel) > 0.01 {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                swarmActivityLevel = newActivityLevel
             }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                withAnimation(.easeOut(duration: 1.5)) {
-                    swarmActivityLevel = 0
+        }
+        
+        // Show activity indicators for very recent highlights (last 5 minutes)
+        let veryRecentHighlights = swarmManager.swarmHighlights.filter { highlight in
+            highlight.highlights.contains { info in
+                let timeSince = now.timeIntervalSince(info.createdAt)
+                return timeSince < 300 // 5 minutes
+            }
+        }
+        
+        // Add ripple effects for very recent activity
+        if !veryRecentHighlights.isEmpty && Bool.random(probability: 0.3) {
+            if let highlight = veryRecentHighlights.randomElement() {
+                // Position ripple near the highlight location
+                let baseX = CGFloat(highlight.range.location) * 10
+                let ripple = SwarmRippleEffect(
+                    x: min(max(baseX, 50), UIScreen.main.bounds.width - 50),
+                    y: 50 + .random(in: -20...20)
+                )
+                rippleEffects.append(ripple)
+                
+                // Remove ripple after animation completes
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                    rippleEffects.removeAll { $0.id == ripple.id }
                 }
-            }
-            
-            // Add subtle ripple effect
-            let ripple = SwarmRippleEffect(
-                x: .random(in: 100...300),
-                y: .random(in: 100...400)
-            )
-            rippleEffects.append(ripple)
-            
-            // Remove ripple after animation
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                rippleEffects.removeAll { $0.id == ripple.id }
             }
         }
     }
@@ -632,7 +654,7 @@ struct SwarmPopover: View {
                     .font(.caption)
                     .foregroundColor(.orange)
                     .symbolEffect(.pulse, value: pulseScale)
-                AnimatedCounter(value: highlight.totalHighlighters, suffix: " highlighters")
+                AnimatedNumber(value: highlight.totalHighlighters, duration: 0.8, suffix: " highlighters")
                     .font(.caption.weight(.medium))
             }
             
@@ -642,7 +664,7 @@ struct SwarmPopover: View {
                         .font(.caption)
                         .foregroundColor(.orange)
                         .symbolEffect(.bounce, value: pulseScale)
-                    AnimatedCounter(value: highlight.totalZaps, suffix: " zaps")
+                    AnimatedNumber(value: highlight.totalZaps, duration: 0.8, suffix: " zaps")
                         .font(.caption.weight(.medium))
                 }
             }
@@ -796,26 +818,6 @@ struct SwarmPopover: View {
     }
 }
 
-// Animated counter component
-struct AnimatedCounter: View {
-    let value: Int
-    let suffix: String
-    @State private var displayValue: Int = 0
-    
-    var body: some View {
-        Text("\(displayValue)\(suffix)")
-            .onAppear {
-                withAnimation(.easeOut(duration: 0.8)) {
-                    displayValue = value
-                }
-            }
-            .onChange(of: value) { _, newValue in
-                withAnimation(.easeOut(duration: 0.5)) {
-                    displayValue = newValue
-                }
-            }
-    }
-}
 
 struct SwarmHighlightRow: View {
     let info: SwarmHighlight.HighlightInfo
@@ -895,24 +897,8 @@ struct SwarmHighlightRow: View {
                     
                     Spacer()
                     
-                    // Enhanced zap counter with live animation
-                    if info.zapCount > 0 {
-                        HStack(spacing: 3) {
-                            Image(systemName: "bolt.fill")
-                                .font(.caption2)
-                                .foregroundColor(.orange)
-                                .symbolEffect(.bounce, value: info.zapCount)
-                            Text("\(info.zapCount)")
-                                .font(.caption2.monospacedDigit())
-                                .foregroundColor(.orange)
-                        }
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(
-                            Capsule()
-                                .fill(Color.orange.opacity(0.1))
-                        )
-                    }
+                    // Real-time zap counter
+                    ZapCountView(highlightInfo: info)
                     
                     Text(info.createdAt.formatted(.relative(presentation: .named)))
                         .font(.caption2)
@@ -1430,6 +1416,88 @@ struct ActivityTimelineView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Zap Count View with Real Data
+
+struct ZapCountView: View {
+    let highlightInfo: SwarmHighlight.HighlightInfo
+    @EnvironmentObject var appState: AppState
+    @State private var realZapCount: Int = 0
+    @State private var isLoading = true
+    
+    var body: some View {
+        Group {
+            if realZapCount > 0 || highlightInfo.zapCount > 0 {
+                HStack(spacing: 3) {
+                    Image(systemName: "bolt.fill")
+                        .font(.caption2)
+                        .foregroundColor(.orange)
+                        .symbolEffect(.bounce, value: realZapCount)
+                    
+                    if isLoading && highlightInfo.zapCount > 0 {
+                        // Show stored count while loading real data
+                        Text("\(highlightInfo.zapCount)")
+                            .font(.caption2.monospacedDigit())
+                            .foregroundColor(.orange)
+                    } else {
+                        // Show real count
+                        Text("\(realZapCount)")
+                            .font(.caption2.monospacedDigit())
+                            .foregroundColor(.orange)
+                            .contentTransition(.numericText())
+                    }
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(
+                    Capsule()
+                        .fill(Color.orange.opacity(0.1))
+                )
+            }
+        }
+        .onAppear {
+            fetchRealZapCount()
+        }
+    }
+    
+    private func fetchRealZapCount() {
+        Task {
+            guard let ndk = appState.ndk else { return }
+            
+            // Create filter for zap receipts
+            var tagsFilter: [String: Set<String>] = [:]
+            tagsFilter["p"] = [highlightInfo.author.pubkey]
+            
+            let zapFilter = NDKFilter(
+                kinds: [9735], // Zap receipts
+                since: Timestamp(highlightInfo.createdAt.addingTimeInterval(-60).timeIntervalSince1970), // Look for zaps shortly after the highlight
+                limit: 100,
+                tags: tagsFilter
+            )
+            
+            let dataSource = await ndk.outbox.observe(
+                filter: zapFilter,
+                maxAge: 300,
+                cachePolicy: .cacheWithNetwork
+            )
+            
+            var count = 0
+            for await event in dataSource.events {
+                // Verify this zap is related to the highlight
+                if event.createdAt >= Timestamp(highlightInfo.createdAt.timeIntervalSince1970) {
+                    count += 1
+                }
+            }
+            
+            await MainActor.run {
+                withAnimation(.easeOut(duration: 0.5)) {
+                    self.realZapCount = count
+                    self.isLoading = false
                 }
             }
         }

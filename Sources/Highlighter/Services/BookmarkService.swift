@@ -35,7 +35,7 @@ class BookmarkService: ObservableObject {
     }
     
     func toggleArticleBookmark(_ article: Article) async throws {
-        guard let ndk = ndk, let _ = signer else {
+        guard let _ = ndk, let _ = signer else {
             throw BookmarkError.notConfigured
         }
         
@@ -73,7 +73,7 @@ class BookmarkService: ObservableObject {
     }
     
     func toggleHighlightBookmark(_ highlight: HighlightEvent) async throws {
-        guard let ndk = ndk, let _ = signer else {
+        guard let _ = ndk, let _ = signer else {
             throw BookmarkError.notConfigured
         }
         
@@ -102,7 +102,7 @@ class BookmarkService: ObservableObject {
     // MARK: - Nostr Publishing
     
     private func publishArticleBookmark(_ article: Article) async throws {
-        guard let ndk = ndk, let _ = signer else { return }
+        guard let _ = ndk, let _ = signer else { return }
         
         // Create bookmark list event (NIP-51, kind 30001)
         let tags: [[String]] = [
@@ -130,7 +130,7 @@ class BookmarkService: ObservableObject {
     }
     
     private func publishHighlightBookmark(_ highlight: HighlightEvent) async throws {
-        guard let ndk = ndk, let _ = signer else { return }
+        guard let _ = ndk, let _ = signer else { return }
         
         let tags: [[String]] = [
             ["d", "highlights"],
@@ -157,7 +157,7 @@ class BookmarkService: ObservableObject {
     }
     
     private func publishDeletionEvent(for eventId: String) async throws {
-        guard let ndk = ndk, let _ = signer else { return }
+        guard let _ = ndk, let _ = signer else { return }
         
         let event = try await NDKEventBuilder(ndk: ndk)
             .kind(5) // Deletion
