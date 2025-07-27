@@ -164,7 +164,7 @@ struct ImmersiveHighlightDetailView: View {
                 
                 // Author info
                 HStack(spacing: DesignSystem.Spacing.medium) {
-                    EnhancedAsyncProfileImage(pubkey: highlight.author, size: 60)
+                    ProfileImage(pubkey: highlight.author, size: 60)
                         .overlay(
                             Circle()
                                 .stroke(Color.white.opacity(0.8), lineWidth: 3)
@@ -445,7 +445,7 @@ struct ImmersiveHighlightDetailView: View {
     private func authorNoteSection(comment: String) -> some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             HStack {
-                EnhancedAsyncProfileImage(pubkey: highlight.author, size: 32)
+                ProfileImage(pubkey: highlight.author, size: 32)
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Author's Note")
@@ -896,7 +896,7 @@ struct RelatedHighlightCard: View {
                 .multilineTextAlignment(.leading)
             
             HStack {
-                EnhancedAsyncProfileImage(pubkey: highlight.author, size: 24)
+                ProfileImage(pubkey: highlight.author, size: 24)
                 
                 Text(PubkeyFormatter.formatCompact(highlight.author))
                     .font(.system(size: 14))

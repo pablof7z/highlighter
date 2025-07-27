@@ -1,9 +1,7 @@
 import SwiftUI
 import NDKSwift
 
-// MARK: - Enhanced Async Profile Image with Blur Hash Support
-
-struct EnhancedAsyncProfileImage: View {
+struct ProfileImage: View {
     let pubkey: String
     let size: CGFloat
     
@@ -284,7 +282,7 @@ struct ProfileImageGrid: View {
     var body: some View {
         HStack(spacing: -size * 0.3) {
             ForEach(Array(pubkeys.prefix(maxCount).enumerated()), id: \.element) { index, pubkey in
-                EnhancedAsyncProfileImage(pubkey: pubkey, size: size)
+                ProfileImage(pubkey: pubkey, size: size)
                     .zIndex(Double(maxCount - index))
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.8).combined(with: .opacity),
@@ -323,10 +321,10 @@ struct ProfileImageGrid: View {
     VStack(spacing: 40) {
         // Different sizes
         HStack(spacing: 20) {
-            EnhancedAsyncProfileImage(pubkey: "test1", size: 80)
-            EnhancedAsyncProfileImage(pubkey: "test2", size: 60)
-            EnhancedAsyncProfileImage(pubkey: "test3", size: 40)
-            EnhancedAsyncProfileImage(pubkey: "test4", size: 32)
+            ProfileImage(pubkey: "test1", size: 80)
+            ProfileImage(pubkey: "test2", size: 60)
+            ProfileImage(pubkey: "test3", size: 40)
+            ProfileImage(pubkey: "test4", size: 32)
         }
         
         // Profile grid

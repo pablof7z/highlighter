@@ -73,6 +73,9 @@ struct HighlightsFeedView: View {
                                     commentCount: commentCounts[highlight.id] ?? 0,
                                     onDoubleTap: {
                                         likeHighlight(highlight)
+                                    },
+                                    onRepost: {
+                                        await repostHighlight(highlight)
                                     }
                                 )
                                 .scaleEffect(index == currentIndex ? 1 : 0.95)
@@ -425,6 +428,7 @@ struct HighlightFeedItemView: View {
     let onComment: () -> Void
     let commentCount: Int
     let onDoubleTap: () -> Void
+    let onRepost: () async -> Void
     
     @State private var isLiked = false
     @State private var showingActions = false
@@ -588,7 +592,7 @@ struct HighlightFeedItemView: View {
                             // Repost
                             Button(action: {
                                 Task {
-                                    await repostHighlight(highlight)
+                                    await onRepost()
                                 }
                             }) {
                                 ZStack {
@@ -874,16 +878,17 @@ extension HighlightsFeedView {
         
         do {
             // Create a repost event (kind: 6)
-            var event = NDKEvent(kind: 6) // Kind 6 is repost
-            event.content = highlight.id // Reference the highlight event ID
-            event.tags = [
-                ["e", highlight.id, "", "mention"],
-                ["p", highlight.author, "", "mention"]
-            ]
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(6) // Repost
+                .content(highlight.id)
+                .tags([
+                    ["e", highlight.id, "", "mention"],
+                    ["p", highlight.author, "", "mention"]
+                ])
+                .build(signer: signer)
             
-            // Sign and publish the repost
-            try await event.sign(using: signer)
-            try await ndk.publish(event: event)
+            // Publish the repost
+            _ = try await ndk.publish(event)
             
             await MainActor.run {
                 HapticManager.shared.notification(.success)

@@ -142,7 +142,7 @@ struct UserRow: View {
     var body: some View {
         HStack(spacing: .ds.medium) {
             // Avatar
-            EnhancedAsyncProfileImage(pubkey: pubkey, size: 48)
+            ProfileImage(pubkey: pubkey, size: 48)
             
             // User info
             VStack(alignment: .leading, spacing: 4) {

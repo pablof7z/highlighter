@@ -58,7 +58,7 @@ struct ModernArticleListCard: View {
                     HStack {
                         // Author
                         HStack(spacing: DesignSystem.Spacing.mini) {
-                            EnhancedAsyncProfileImage(pubkey: article.author, size: 24)
+                            ProfileImage(pubkey: article.author, size: 24)
                             
                             Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
                                 .font(DesignSystem.Typography.caption)
@@ -177,7 +177,7 @@ struct ModernArticleFeaturedCard: View {
                     HStack {
                         // Author
                         HStack(spacing: DesignSystem.Spacing.mini) {
-                            EnhancedAsyncProfileImage(pubkey: article.author, size: 24)
+                            ProfileImage(pubkey: article.author, size: 24)
                             
                             Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
                                 .font(DesignSystem.Typography.caption)
@@ -282,7 +282,7 @@ struct ModernArticleRowCard: View {
                     HStack(spacing: DesignSystem.Spacing.small) {
                         // Author
                         HStack(spacing: 4) {
-                            EnhancedAsyncProfileImage(pubkey: article.author, size: 20)
+                            ProfileImage(pubkey: article.author, size: 20)
                             
                             Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
                                 .font(DesignSystem.Typography.caption)

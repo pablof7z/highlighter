@@ -99,13 +99,6 @@ class HomeDataManager: ObservableObject {
     
     /// Fetch recently highlighted articles using highlights from DataStreamManager
     private func fetchRecentlyHighlightedArticles(ndk: NDK) async {
-        // Wait for DataStreamManager to load some highlights
-        var attempts = 0
-        while highlights.isEmpty && attempts < 10 {
-            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
-            attempts += 1
-        }
-        
         // Use highlights from DataStreamManager
         let sevenDaysAgo = Date().addingTimeInterval(-7 * 24 * 60 * 60)
         let recentHighlights = highlights.filter { $0.createdAt > sevenDaysAgo }

@@ -63,14 +63,14 @@ struct ArticleView: View {
             ZStack(alignment: .top) {
                 UnifiedGradientBackground(style: .subtle)
                 mainContent(geometry: geometry)
-                enhancedFloatingNavBar(in: geometry)
+                floatingNavBar(in: geometry)
             }
         }
     }
     
     // MARK: - Sheet Views
     private var highlightCreatorSheet: some View {
-        EnhancedCreateHighlightView(
+        CreateHighlightView(
             articleId: article.id,
             articleTitle: article.title,
             selectedText: selectedText,
@@ -178,7 +178,7 @@ struct ArticleView: View {
                 Divider()
                     .padding(.horizontal, .ds.screenPadding)
                 
-                EnhancedCommunityHighlightsSection(
+                CommunityHighlightsSection(
                     highlights: highlights,
                     onHighlightTap: { highlight in
                         selectedHighlight = highlight
@@ -188,7 +188,7 @@ struct ArticleView: View {
                 .padding(.horizontal, .ds.screenPadding)
             }
             
-            EnhancedRelatedArticlesSection(currentArticle: article)
+            RelatedArticlesSection(currentArticle: article)
                 .padding(.top, .ds.sectionSpacing)
             
             ArticleFooter(article: article)
@@ -415,7 +415,7 @@ struct ArticleView: View {
         .clipped()
     }
     
-    private func enhancedFloatingNavBar(in geometry: GeometryProxy) -> some View {
+    private func floatingNavBar(in geometry: GeometryProxy) -> some View {
         let isScrolled = scrollOffset < -50
         
         return VStack(spacing: 0) {
@@ -553,7 +553,7 @@ struct ArticleView: View {
         .animation(.spring(response: 0.3), value: isScrolled)
     }
     
-    private var enhancedSelectionToolbar: some View {
+    private var selectionToolbar: some View {
         VStack(spacing: .ds.small) {
             HStack(spacing: .ds.small) {
                 // Highlight button
@@ -835,9 +835,7 @@ struct ReadingSettingsButton: View {
 
 // MARK: - Enhanced Supporting Components
 
-// Removed EnhancedSelectableMarkdownRenderer - no longer needed
-
-struct EnhancedCommunityHighlightsSection: View {
+struct CommunityHighlightsSection: View {
     let highlights: [HighlightEvent]
     let onHighlightTap: (HighlightEvent) -> Void
     @EnvironmentObject var appState: AppState
@@ -856,9 +854,7 @@ struct EnhancedCommunityHighlightsSection: View {
     }
 }
 
-// ArticleEnhancedHighlightCard removed - now using UnifiedCard system (ModernHighlightCard)
-
-struct EnhancedRelatedArticlesSection: View {
+struct RelatedArticlesSection: View {
     let currentArticle: Article
     @State private var relatedArticles: [Article] = []
     @EnvironmentObject var appState: AppState
@@ -872,7 +868,7 @@ struct EnhancedRelatedArticlesSection: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: .ds.medium) {
                         ForEach(relatedArticles, id: \.id) { article in
-                            EnhancedRelatedArticleCard(article: article)
+                            RelatedArticleCard(article: article)
                                 .frame(width: 300)
                         }
                     }
@@ -952,7 +948,7 @@ struct EnhancedRelatedArticlesSection: View {
     }
 }
 
-struct EnhancedRelatedArticleCard: View {
+struct RelatedArticleCard: View {
     let article: Article
     
     var body: some View {
@@ -1085,7 +1081,7 @@ struct ArticleFooter: View {
 
 // MARK: - Sheet Views
 
-struct EnhancedCreateHighlightView: View {
+struct CreateHighlightView: View {
     let articleId: String
     let articleTitle: String
     let selectedText: String

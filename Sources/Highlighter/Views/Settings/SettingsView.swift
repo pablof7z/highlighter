@@ -212,7 +212,7 @@ struct SettingsView: View {
                             iconColor: .yellow,
                             action: {
                                 HapticManager.shared.impact(.light)
-                                // Lightning wallet configuration will be available in future update
+                                showLightningWallet()
                             }
                         )
                     }
@@ -235,7 +235,7 @@ struct SettingsView: View {
                             icon: "tray.and.arrow.up",
                             action: {
                                 HapticManager.shared.impact(.light)
-                                // Outbox configuration will be available in future update
+                                showOutboxSettings()
                             }
                         )
                     }
@@ -274,7 +274,7 @@ struct SettingsView: View {
                     SettingsSection(title: "About", icon: "info.circle") {
                         SettingsRow(
                             title: "Version",
-                            subtitle: "1.0.0 (Build 42)",
+                            subtitle: getVersionString(),
                             icon: "app.badge"
                         )
                         
@@ -296,7 +296,7 @@ struct SettingsView: View {
                             subtitle: "Share your feedback",
                             icon: "star",
                             action: {
-                                // Open App Store review
+                                openAppStoreReview()
                             }
                         )
                     }
@@ -413,9 +413,20 @@ struct SettingsView: View {
     
     private func clearCache() {
         Task {
-            // Clear cache implementation
-            await MainActor.run {
-                HapticManager.shared.notification(.success)
+            // Clear NDK cache
+            if let cache = appState.ndk?.cache {
+                do {
+                    try await cache.clear()
+                    await MainActor.run {
+                        HapticManager.shared.notification(.success)
+                        appState.errorMessage = "Cache cleared successfully"
+                    }
+                } catch {
+                    await MainActor.run {
+                        HapticManager.shared.notification(.error)
+                        appState.errorMessage = "Failed to clear cache: \(error.localizedDescription)"
+                    }
+                }
             }
         }
     }
@@ -424,6 +435,29 @@ struct SettingsView: View {
         Task {
             await appState.logout()
             // Additional cleanup
+        }
+    }
+    
+    private func getVersionString() -> String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        return "\(version) (Build \(build))"
+    }
+    
+    private func showLightningWallet() {
+        // This will show a coming soon alert for now
+        appState.errorMessage = "Lightning wallet configuration coming soon!"
+    }
+    
+    private func showOutboxSettings() {
+        // This will show a coming soon alert for now
+        appState.errorMessage = "Outbox settings coming soon!"
+    }
+    
+    private func openAppStoreReview() {
+        guard let url = URL(string: "https://apps.apple.com/app/idYOUR_APP_ID?action=write-review") else { return }
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
         }
     }
 }
@@ -649,7 +683,7 @@ struct AboutView: View {
                     Text("Highlighter")
                         .font(.system(size: 32, weight: .bold, design: .rounded))
                     
-                    Text("Version 1.0.0")
+                    Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")")
                         .font(.ds.body)
                         .foregroundColor(.ds.textSecondary)
                     

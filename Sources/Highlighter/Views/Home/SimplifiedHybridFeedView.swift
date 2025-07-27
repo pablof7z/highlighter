@@ -296,7 +296,7 @@ struct EnhancedDiscussionRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             // Avatar
-            EnhancedAsyncProfileImage(pubkey: event.pubkey, size: 44)
+            ProfileImage(pubkey: event.pubkey, size: 44)
             
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                 HStack {
@@ -424,7 +424,7 @@ struct RecentlyHighlightedArticleCard: View {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.base) {
                 // Author and time
                 HStack(spacing: DesignSystem.Spacing.small) {
-                    EnhancedAsyncProfileImage(pubkey: highlightedArticle.article.author, size: 24)
+                    ProfileImage(pubkey: highlightedArticle.article.author, size: 24)
                     
                     Text(PubkeyFormatter.formatCompact(highlightedArticle.article.author))
                         .font(.ds.caption)
@@ -679,7 +679,7 @@ struct ShimmeringOverlay: View {
     }
 }
 
-// EnhancedAsyncProfileImage is now in its own file
+// ProfileImage is now in its own file
 
 #Preview {
     SimplifiedHybridFeedView()

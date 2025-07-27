@@ -62,7 +62,7 @@ struct SwipeableHighlightCard: View {
         VStack(alignment: .leading, spacing: 16) {
             // Header with author info
             HStack(spacing: 12) {
-                EnhancedAsyncProfileImage(pubkey: highlight.author, size: 44)
+                ProfileImage(pubkey: highlight.author, size: 44)
                     .overlay(
                         Circle()
                             .stroke(

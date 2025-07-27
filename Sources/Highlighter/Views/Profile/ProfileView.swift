@@ -2,7 +2,7 @@ import SwiftUI
 import NDKSwift
 import PhotosUI
 
-struct EnhancedProfileView: View {
+struct ProfileView: View {
     @EnvironmentObject var appState: AppState
     @State private var selectedTab = ProfileTab.highlights
     @State private var userHighlights: [HighlightEvent] = []
@@ -316,46 +316,41 @@ struct EnhancedProfileView: View {
     private var animatedStatsView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: .ds.medium) {
-                AnimatedStatCard(
-                    value: statsValues.highlights,
+                UnifiedStatCard(
+                    value: "\(statsValues.highlights)",
                     label: "Highlights",
                     icon: "highlighter",
-                    color: .orange,
-                    animate: animateStats
+                    color: .orange
                 )
                 
-                AnimatedStatCard(
-                    value: statsValues.curations,
+                UnifiedStatCard(
+                    value: "\(statsValues.curations)",
                     label: "Curations",
                     icon: "books.vertical.fill",
-                    color: .purple,
-                    animate: animateStats
+                    color: .purple
                 )
                 
-                AnimatedStatCard(
-                    value: statsValues.followers,
+                UnifiedStatCard(
+                    value: "\(statsValues.followers)",
                     label: "Followers",
                     icon: "person.2.fill",
-                    color: .blue,
-                    animate: animateStats,
-                    action: { showFollowers = true }
+                    color: .blue
                 )
+                .onTapGesture { showFollowers = true }
                 
-                AnimatedStatCard(
-                    value: statsValues.following,
+                UnifiedStatCard(
+                    value: "\(statsValues.following)",
                     label: "Following",
                     icon: "person.2.fill",
-                    color: .green,
-                    animate: animateStats,
-                    action: { showFollowing = true }
+                    color: .green
                 )
+                .onTapGesture { showFollowing = true }
                 
-                AnimatedStatCard(
-                    value: statsValues.zapsReceived,
+                UnifiedStatCard(
+                    value: "\(statsValues.zapsReceived)",
                     label: "Zaps",
                     icon: "bolt.fill",
-                    color: .yellow,
-                    animate: animateStats
+                    color: .yellow
                 )
             }
             .padding(.horizontal, .ds.screenPadding)
@@ -1143,11 +1138,7 @@ struct HighlightsEmptyStateView: View {
         UnifiedEmptyState(
             icon: "pencil.tip",
             title: "No Highlights Yet",
-            message: "Start highlighting content to build your knowledge base",
-            action: {
-                // Navigate to create highlight
-            },
-            actionTitle: "Create First Highlight"
+            message: "Start highlighting content to build your knowledge base"
         )
     }
 }
@@ -1157,11 +1148,7 @@ struct CurationsEmptyStateView: View {
         UnifiedEmptyState(
             icon: "books.vertical",
             title: "No Curations Yet",
-            message: "Create collections of your favorite articles",
-            action: {
-                // Navigate to create curation
-            },
-            actionTitle: "Create First Curation"
+            message: "Create collections of your favorite articles"
         )
     }
 }

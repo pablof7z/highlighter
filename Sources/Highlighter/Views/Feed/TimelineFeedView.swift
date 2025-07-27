@@ -216,7 +216,7 @@ struct TimelineEventCard: View {
             VStack(alignment: .leading, spacing: 0) {
                 // Header with author info
                 HStack(spacing: DesignSystem.Spacing.small) {
-                    EnhancedAsyncProfileImage(pubkey: event.pubkey, size: 42)
+                    ProfileImage(pubkey: event.pubkey, size: 42)
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(PubkeyFormatter.formatCompact(event.pubkey))

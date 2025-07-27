@@ -1,7 +1,7 @@
 import SwiftUI
 import NDKSwift
 
-struct EnhancedArticleDiscoveryView: View {
+struct ArticleDiscoveryView: View {
     @EnvironmentObject var appState: AppState
     @StateObject private var viewModel = ArticleDiscoveryViewModel()
     let searchText: String
@@ -285,7 +285,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
         self.ndk = ndk
     }
     
-    func loadArticles(category: EnhancedArticleDiscoveryView.ArticleCategory, searchText: String) async {
+    func loadArticles(category: ArticleDiscoveryView.ArticleCategory, searchText: String) async {
         guard let ndk = ndk else { return }
         
         isLoading = true
@@ -331,7 +331,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
         await loadFeaturedArticle(category: category)
     }
     
-    func searchArticles(query: String, category: EnhancedArticleDiscoveryView.ArticleCategory) async {
+    func searchArticles(query: String, category: ArticleDiscoveryView.ArticleCategory) async {
         guard !query.isEmpty else {
             await loadArticles(category: category, searchText: "")
             return
@@ -467,7 +467,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
         trendingArticles = Array(articles.prefix(5))
     }
     
-    private func loadFeaturedArticle(category: EnhancedArticleDiscoveryView.ArticleCategory) async {
+    private func loadFeaturedArticle(category: ArticleDiscoveryView.ArticleCategory) async {
         // For now, pick a random article
         // In production, this would use AI to recommend based on user preferences
         featuredArticle = articles.randomElement()
@@ -477,7 +477,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
 // MARK: - Card Components
 
 struct CategoryChip: View {
-    let category: EnhancedArticleDiscoveryView.ArticleCategory
+    let category: ArticleDiscoveryView.ArticleCategory
     let isSelected: Bool
     let action: () -> Void
     

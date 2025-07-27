@@ -48,7 +48,7 @@ struct CreateHighlightView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                CreateHighlightGradientBackground(animating: animateBackground)
+                UnifiedGradientBackground(style: .mesh)
                 
                 ScrollView {
                     VStack(spacing: 24) {
@@ -476,37 +476,6 @@ struct ArticlePlaceholderCard: View {
     }
 }
 
-struct CreateHighlightGradientBackground: View {
-    let animating: Bool
-    
-    var body: some View {
-        if #available(iOS 18.0, *) {
-            MeshGradient(
-                width: 3,
-                height: 3,
-                points: [
-                    [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
-                    [0.0, 0.5], [animating ? 0.6 : 0.4, 0.5], [1.0, 0.5],
-                    [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
-                ],
-                colors: [
-                    .purple.opacity(0.1), .pink.opacity(0.05), .purple.opacity(0.1),
-                    .pink.opacity(0.05), .clear, .purple.opacity(0.05),
-                    .purple.opacity(0.1), .pink.opacity(0.05), .purple.opacity(0.1)
-                ]
-            )
-            .ignoresSafeArea()
-        } else {
-            // Fallback for iOS 17
-            LinearGradient(
-                colors: [.purple.opacity(0.1), .pink.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-        }
-    }
-}
 
 struct ModernTextField: View {
     let icon: String

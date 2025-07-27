@@ -73,7 +73,7 @@ struct CommentsSection: View {
                 }
                 
                 HStack(spacing: 12) {
-                    EnhancedAsyncProfileImage(pubkey: currentUserPubkey, size: 36)
+                    ProfileImage(pubkey: currentUserPubkey, size: 36)
                         .overlay(
                             Circle()
                                 .stroke(
@@ -368,7 +368,7 @@ struct EnhancedCommentRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             // Enhanced author avatar
-            EnhancedAsyncProfileImage(pubkey: comment.author, size: 36)
+            ProfileImage(pubkey: comment.author, size: 36)
                 .overlay(
                     Circle()
                         .stroke(DesignSystem.Colors.divider, lineWidth: 0.5)
@@ -648,7 +648,7 @@ struct CommentsSectionHeader: View {
     }
 }
 
-// AsyncProfileImage has been replaced with EnhancedAsyncProfileImage
+// AsyncProfileImage has been replaced with ProfileImage
 
 // Extension to handle reactions
 extension CommentsSection {

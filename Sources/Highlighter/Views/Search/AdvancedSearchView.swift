@@ -1049,7 +1049,7 @@ struct SearchResultHighlightCard: View {
                 )
             
             HStack {
-                EnhancedAsyncProfileImage(pubkey: highlight.author, size: 20)
+                ProfileImage(pubkey: highlight.author, size: 20)
                 
                 Text(PubkeyFormatter.formatCompact(highlight.author))
                     .font(.system(size: 14))
@@ -1145,7 +1145,7 @@ struct SearchResultUserCard: View {
     
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.medium) {
-            EnhancedAsyncProfileImage(pubkey: pubkey, size: 50)
+            ProfileImage(pubkey: pubkey, size: 50)
             
             VStack(alignment: .leading, spacing: 4) {
                 HStack {

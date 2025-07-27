@@ -95,7 +95,7 @@ struct LibraryView: View {
                             case .all:
                                 allContentView
                             case .highlights:
-                                EnhancedSavedHighlightsSection(sortOption: sortOption)
+                                EnhancedSavedHighlightsSection()
                             case .curations:
                                 EnhancedYourCurationsSection(
                                     curations: sortedCurations,
@@ -332,9 +332,6 @@ struct LibraryView: View {
             if let summary = article.summary {
                 exportContent += "\(summary)\n\n"
             }
-            if let url = article.url {
-                exportContent += "Link: \(url)\n\n"
-            }
             exportContent += "---\n\n"
         }
         
@@ -377,7 +374,7 @@ struct LibraryView: View {
     // MARK: - Computed Properties
     
     private var sortedCurations: [ArticleCuration] {
-        switch sortOption {
+        switch selectedSortOption {
         case .newest:
             return appState.userCurations.sorted { $0.createdAt > $1.createdAt }
         case .oldest:
@@ -396,7 +393,7 @@ struct LibraryView: View {
             RecentActivitySection()
             
             // Saved highlights
-            EnhancedSavedHighlightsSection(sortOption: sortOption)
+            EnhancedSavedHighlightsSection()
             
             // Your curations
             EnhancedYourCurationsSection(
@@ -695,9 +692,7 @@ struct EnhancedSavedHighlightsSection: View {
         VStack(alignment: .leading, spacing: 20) {
             UnifiedSectionHeader(
                 title: "Your Highlights",
-                subtitle: "\(appState.highlights.count) highlights saved",
-                action: nil,
-                actionTitle: nil
+                subtitle: "\(appState.highlights.count) highlights saved"
             )
             .padding(.horizontal)
             
@@ -705,9 +700,7 @@ struct EnhancedSavedHighlightsSection: View {
                 UnifiedEmptyState(
                     icon: "pencil.tip",
                     title: "No highlights yet",
-                    message: "Start highlighting content to build your collection",
-                    action: {},
-                    actionTitle: "Create Highlight"
+                    message: "Start highlighting content to build your collection"
                 )
                 .padding(.horizontal)
             } else {
@@ -730,7 +723,7 @@ struct EnhancedSavedHighlightsSection: View {
     }
     
     private var sortedHighlights: [HighlightEvent] {
-        switch sortOption {
+        switch selectedSortOption {
         case .newest:
             return appState.highlights.sorted { $0.createdAt > $1.createdAt }
         case .oldest:
@@ -872,9 +865,7 @@ struct SavedArticlesSection: View {
                 UnifiedEmptyState(
                     icon: "doc.text",
                     title: "No saved articles yet",
-                    message: "Save articles to read them later",
-                    action: {},
-                    actionTitle: "Discover Articles"
+                    message: "Save articles to read them later"
                 )
                 .padding(.horizontal)
             } else {
@@ -924,7 +915,7 @@ struct SavedArticlesSection: View {
     }
     
     private var sortedArticles: [Article] {
-        switch sortOption {
+        switch selectedSortOption {
         case .newest:
             return appState.savedArticles.sorted { $0.createdAt > $1.createdAt }
         case .oldest:
@@ -1074,9 +1065,7 @@ struct EnhancedYourCurationsSection: View {
         VStack(alignment: .leading, spacing: 20) {
             UnifiedSectionHeader(
                 title: "Your Collections",
-                subtitle: "\(curations.count) curated collections",
-                action: nil,
-                actionTitle: nil
+                subtitle: "\(curations.count) curated collections"
             )
                 
                 Spacer()
@@ -1120,10 +1109,9 @@ struct EnhancedYourCurationsSection: View {
                 UnifiedEmptyState(
                     icon: "books.vertical",
                     title: "No collections yet",
-                    message: "Create curated collections of your favorite articles",
-                    action: { showCreateCuration = true },
-                    actionTitle: "Create First Collection"
+                    message: "Create curated collections of your favorite articles"
                 )
+                .onTapGesture { showCreateCuration = true }
                 .padding(.horizontal)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -1297,9 +1285,7 @@ struct EnhancedFollowPacksSection: View {
         VStack(alignment: .leading, spacing: 20) {
             UnifiedSectionHeader(
                 title: "Follow Packs",
-                subtitle: "Curated lists of people to follow",
-                action: { showDiscoverMore = true },
-                actionTitle: "Discover"
+                subtitle: "Curated lists of people to follow"
             )
             .padding(.horizontal)
             
@@ -1307,10 +1293,9 @@ struct EnhancedFollowPacksSection: View {
                 UnifiedEmptyState(
                     icon: "person.3.sequence",
                     title: "No follow packs yet",
-                    message: "Discover curated lists of interesting people to follow",
-                    action: { showDiscoverMore = true },
-                    actionTitle: "Explore Packs"
+                    message: "Discover curated lists of interesting people to follow"
                 )
+                .onTapGesture { showDiscoverMore = true }
                 .padding(.horizontal)
             } else {
                 LazyVStack(spacing: 12) {
@@ -1435,9 +1420,7 @@ struct ArchivedContentSection: View {
                     UnifiedEmptyState(
                         icon: UnifiedIcons.Features.archive,
                         title: "No archived highlights",
-                        message: "Swipe left on highlights to archive them for later",
-                        action: {},
-                        actionTitle: "Browse Highlights"
+                        message: "Swipe left on highlights to archive them for later"
                     )
                     .padding(.horizontal)
                 } else {
@@ -1453,9 +1436,7 @@ struct ArchivedContentSection: View {
                     UnifiedEmptyState(
                         icon: UnifiedIcons.Features.archive,
                         title: "No archived articles",
-                        message: "Archive articles to declutter your library",
-                        action: {},
-                        actionTitle: "Browse Articles"
+                        message: "Archive articles to declutter your library"
                     )
                     .padding(.horizontal)
                 } else {

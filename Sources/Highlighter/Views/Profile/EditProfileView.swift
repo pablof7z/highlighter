@@ -3,7 +3,7 @@ import PhotosUI
 import NDKSwift
 
 struct EditProfileView: View {
-    @Binding var profile: EnhancedProfileView.EditableProfile
+    @Binding var profile: ProfileView.EditableProfile
     let onSave: () -> Void
     @Environment(\.dismiss) var dismiss
     

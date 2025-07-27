@@ -48,7 +48,7 @@ struct ContentView: View {
                     }
                     .tag(Tab.library)
                 
-                EnhancedProfileView()
+                ProfileView()
                     .tabItem {
                         Image(systemName: selectedTab == .profile ? "person.fill" : "person")
                         Text("Profile")

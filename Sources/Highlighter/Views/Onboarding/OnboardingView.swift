@@ -14,7 +14,7 @@ struct OnboardingView: View {
     var body: some View {
         ZStack {
             // Dynamic gradient background
-            OnboardingGradientBackground(currentPage: currentPage)
+            UnifiedGradientBackground(style: currentPage == 0 ? .subtle : (currentPage == 1 ? .mesh : (currentPage == 2 ? .immersive : .glow)))
             
             // Subtle ambient background
             Color.black.opacity(0.3)
@@ -297,31 +297,6 @@ struct OnboardingPageView: View {
 }
 
 // MARK: - Components
-
-struct OnboardingGradientBackground: View {
-    let currentPage: Int
-    
-    private var gradientColors: [Color] {
-        switch currentPage {
-        case 0: return [Color.orange.opacity(0.3), Color.pink.opacity(0.2)]
-        case 1: return [Color.purple.opacity(0.3), Color.blue.opacity(0.2)]
-        case 2: return [Color.blue.opacity(0.3), Color.cyan.opacity(0.2)]
-        case 3: return [Color.green.opacity(0.3), Color.teal.opacity(0.2)]
-        case 4: return [Color.purple.opacity(0.3), Color.orange.opacity(0.2)]
-        default: return [Color.orange.opacity(0.3), Color.pink.opacity(0.2)]
-        }
-    }
-    
-    var body: some View {
-        LinearGradient(
-            colors: gradientColors + [Color.black],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .animation(.easeInOut(duration: 0.8), value: currentPage)
-        .ignoresSafeArea()
-    }
-}
 
 struct OnboardingPageIndicator: View {
     let isActive: Bool
