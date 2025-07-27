@@ -70,14 +70,14 @@ struct LightningPaymentFlowView: View {
                             .transition(.asymmetric(
                                 insertion: .scale(scale: 0.9).combined(with: .opacity),
                                 removal: .scale(scale: 1.1).combined(with: .opacity)
-                            ))
+                            )
                     
                     case .configureSplits:
                         splitConfigurationView
                             .transition(.asymmetric(
                                 insertion: .push(from: .trailing),
                                 removal: .push(from: .leading)
-                            ))
+                            )
                     
                     case .processingPayment:
                         processingView
@@ -92,7 +92,7 @@ struct LightningPaymentFlowView: View {
                             .transition(.asymmetric(
                                 insertion: .scale(scale: 1.2).combined(with: .opacity),
                                 removal: .scale(scale: 0.8).combined(with: .opacity)
-                            ))
+                            )
                     }
                 }
                 .animation(.spring(response: 0.6, dampingFraction: 0.8), value: currentPaymentStep)
@@ -166,7 +166,7 @@ struct LightningPaymentFlowView: View {
                     .blur(radius: lightningBoltAnimation ? 15 : 10)
                 
                 Image(systemName: "bolt.circle.fill")
-                    .font(.system(size: 60))
+                    .font(.system(size: 60)
                     .foregroundStyle(
                         LinearGradient(
                             colors: [.orange, .yellow],
@@ -174,7 +174,7 @@ struct LightningPaymentFlowView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .rotationEffect(.degrees(lightningBoltAnimation ? 5 : -5))
+                    .rotationEffect(.degrees(lightningBoltAnimation ? 5 : -5)
                     .scaleEffect(lightningBoltAnimation ? 1.1 : 1)
             }
             
@@ -345,17 +345,17 @@ struct LightningPaymentFlowView: View {
     private func animatedCircle(for index: Int) -> some View {
         Circle()
             .stroke(lightningGradient, lineWidth: 2)
-            .frame(width: circleSize(for: index), height: circleSize(for: index))
+            .frame(width: circleSize(for: index), height: circleSize(for: index)
             .scaleEffect(flowAnimation)
-            .opacity(Double(1 - (flowAnimation * 0.3)))
+            .opacity(Double(1 - (flowAnimation * 0.3))
             .animation(circleAnimation(for: index), value: flowAnimation)
     }
     
     private var lightningBoltIcon: some View {
         Image(systemName: "bolt.circle.fill")
-            .font(.system(size: 80))
+            .font(.system(size: 80)
             .foregroundStyle(lightningGradient)
-            .rotationEffect(.degrees(rotationAngle))
+            .rotationEffect(.degrees(rotationAngle)
     }
     
     private var lightningGradient: LinearGradient {
@@ -440,7 +440,7 @@ struct LightningPaymentFlowView: View {
                     .scaleEffect(successScale)
                     .overlay(
                         Image(systemName: "checkmark")
-                            .font(.ds.bodyBold))
+                            .font(.ds.bodyBold)
                             .foregroundColor(.white)
                             .scaleEffect(successScale)
                     )
@@ -809,14 +809,14 @@ struct SplitRow: View {
             Spacer()
             
             Text("\(Int(percentage * 100))%")
-                .font(.ds.caption.monospacedDigit())
+                .font(.ds.caption.monospacedDigit()
                 .foregroundColor(isSelected ? .white.opacity(0.8) : .ds.textSecondary)
             
             Text("·")
                 .foregroundColor(isSelected ? .white.opacity(0.5) : .ds.textTertiary)
             
             Text("\(amount) sats")
-                .font(.ds.caption.monospacedDigit())
+                .font(.ds.caption.monospacedDigit()
                 .foregroundColor(isSelected ? .white : .ds.text)
         }
     }
@@ -917,7 +917,7 @@ struct SplitSegment: View {
                 )
                 path.closeSubpath()
             }
-            .fill(color.opacity(0.8))
+            .fill(color.opacity(0.8)
             .overlay(
                 Path { path in
                     path.move(to: center)
@@ -953,7 +953,7 @@ struct PaymentStatusIndicator: View {
             
             if case .processing = payment.status {
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
+                    .progressViewStyle(CircularProgressViewStyle()
                     .tint(.orange)
             }
         }
@@ -1204,7 +1204,7 @@ struct SplitProgressRow: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.ds.surface.opacity(0.5))
+                .fill(Color.ds.surface.opacity(0.5)
                 .opacity(animationProgress)
         )
     }
@@ -1217,7 +1217,7 @@ struct SplitProgressRow: View {
                 .foregroundColor(.orange)
         case .sending:
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
+                .progressViewStyle(CircularProgressViewStyle()
                 .scaleEffect(0.8)
         case .completed:
             Image(systemName: "checkmark.circle.fill")
@@ -1241,7 +1241,7 @@ struct TransactionSummaryCard: View {
                 
                 Spacer()
                 
-                Text(payment.timestamp.formatted(.relative(presentation: .named)))
+                Text(payment.timestamp.formatted(.relative(presentation: .named))
                     .font(.ds.caption)
                     .foregroundColor(.ds.textSecondary)
             }
@@ -1311,7 +1311,7 @@ struct ConfettiParticle: View {
                     .frame(width: size, height: size * 0.6)
             }
         }
-        .rotationEffect(.degrees(rotation))
+        .rotationEffect(.degrees(rotation)
         .offset(offset)
         .opacity(opacity)
         .onAppear {
@@ -1436,7 +1436,7 @@ struct SliderRow: View {
                 Spacer()
                 
                 Text("\(Int(value))%")
-                    .font(.ds.callout.monospacedDigit())
+                    .font(.ds.callout.monospacedDigit()
                     .fontWeight(.bold)
                     .foregroundColor(color)
             }

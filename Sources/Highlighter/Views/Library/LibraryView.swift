@@ -62,7 +62,7 @@ struct LibraryView: View {
                                 .transition(.asymmetric(
                                     insertion: .push(from: .top).combined(with: .opacity),
                                     removal: .push(from: .bottom).combined(with: .opacity)
-                                ))
+                                )
                         }
                         
                         // Filter tabs
@@ -77,7 +77,7 @@ struct LibraryView: View {
                                     }) {
                                         HStack(spacing: 8) {
                                             Image(systemName: tab.icon)
-                                                .font(.ds.body, weight: .medium))
+                                                .font(.ds.body).fontWeight(.medium)
                                             Text(tab.rawValue)
                                         }
                                         .unifiedTabPill(isSelected: selectedFilter == tab)
@@ -152,7 +152,7 @@ struct LibraryView: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
-                            .font(.ds.headline))
+                            .font(.ds.headline)
                             .foregroundColor(.ds.text)
                             .frame(width: 44, height: 44)
                     }
@@ -307,7 +307,7 @@ struct LibraryView: View {
     private func exportLibrary() {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        let date = dateFormatter.string(from: Date())
+        let date = dateFormatter.string(from: Date()
         
         var exportContent = "# Highlighter Library Export\n\n"
         exportContent += "Date: \(date)\n\n"
@@ -422,7 +422,7 @@ struct LibraryStatsCard: View {
         VStack(spacing: DesignSystem.Spacing.large) {
             HStack {
                 Text("Your Library")
-                    .font(.ds.title, weight: .bold, design: .rounded))
+                    .font(.ds.title, weight: .bold, design: .rounded)
                     .foregroundColor(.ds.text)
                 
                 Spacer()
@@ -431,19 +431,19 @@ struct LibraryStatsCard: View {
                 if appState.highlights.count > 0 {
                     HStack(spacing: DesignSystem.Spacing.mini) {
                         Image(systemName: "sparkles")
-                            .font(.ds.body))
+                            .font(.ds.body)
                             .foregroundColor(.ds.primary)
                         Text("Active")
-                            .font(.ds.callout, weight: .medium))
+                            .font(.ds.callout).fontWeight(.medium)
                             .foregroundColor(.ds.primary)
                     }
                     .padding(.horizontal, DesignSystem.Spacing.base)
                     .padding(.vertical, DesignSystem.Spacing.mini)
                     .background(
                         Capsule()
-                            .fill(Color.ds.primary.opacity(0.15))
+                            .fill(Color.ds.primary.opacity(0.15)
                     )
-                    .transition(.scale.combined(with: .opacity))
+                    .transition(.scale.combined(with: .opacity)
                 }
             }
             
@@ -520,14 +520,14 @@ struct RecentActivitySection: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Label("Recent Activity", systemImage: "clock.arrow.circlepath")
-                    .font(.ds.title3, weight: .bold, design: .rounded))
+                    .font(.ds.title3, weight: .bold, design: .rounded)
                     .foregroundColor(.ds.text)
                 
                 Spacer()
                 
                 Button(action: {}) {
                     Text("View All")
-                        .font(.ds.callout, weight: .medium))
+                        .font(.ds.callout).fontWeight(.medium)
                         .foregroundColor(.ds.primary)
                 }
             }
@@ -578,37 +578,37 @@ struct RecentActivitySection: View {
                         newActivities.append(ActivityItem(
                             type: .zap,
                             title: "Reacted to content",
-                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
-                        ))
+                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
+                        )
                     case 9735: // Zap
                         let amount = extractZapAmount(from: event) ?? 0
                         newActivities.append(ActivityItem(
                             type: .zap,
                             title: "Zapped \(amount) sats",
-                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
-                        ))
+                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
+                        )
                     case 9802: // Highlight
-                        let preview = String(event.content.prefix(50))
+                        let preview = String(event.content.prefix(50)
                         newActivities.append(ActivityItem(
                             type: .highlight,
                             title: "Highlighted: \"\(preview)...\"",
-                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
-                        ))
+                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
+                        )
                     case 30004: // Curation
                         if let name = event.tags.first(where: { $0.first == "name" })?.dropFirst().first {
                             newActivities.append(ActivityItem(
                                 type: .curation,
                                 title: "Created '\(name)'",
-                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
-                            ))
+                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
+                            )
                         }
                     case 30023: // Article
                         if let title = event.tags.first(where: { $0.first == "title" })?.dropFirst().first {
                             newActivities.append(ActivityItem(
                                 type: .article,
                                 title: "Saved '\(title)'",
-                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
-                            ))
+                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
+                            )
                         }
                     default:
                         break
@@ -649,22 +649,22 @@ struct ActivityCard: View {
         HStack(spacing: DesignSystem.Spacing.base) {
             ZStack {
                 Circle()
-                    .fill(activity.type.color.opacity(0.15))
+                    .fill(activity.type.color.opacity(0.15)
                     .frame(width: 44, height: 44)
                 
                 Image(systemName: activity.type.icon)
-                    .font(.ds.title3, weight: .medium))
+                    .font(.ds.title3).fontWeight(.medium)
                     .foregroundColor(activity.type.color)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(activity.title)
-                    .font(.ds.callout, weight: .medium))
+                    .font(.ds.callout).fontWeight(.medium)
                     .foregroundColor(.ds.text)
                     .lineLimit(1)
                 
-                Text(RelativeTimeFormatter.shortRelativeTime(from: activity.time))
-                    .font(.ds.caption))
+                Text(RelativeTimeFormatter.shortRelativeTime(from: activity.time)
+                    .font(.ds.caption)
                     .foregroundColor(.ds.textSecondary)
             }
         }
@@ -686,11 +686,11 @@ struct SavedHighlightsSection: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Your Highlights")
-                        .font(.ds.title3, weight: .bold, design: .rounded))
+                        .font(.ds.title3, weight: .bold, design: .rounded)
                         .foregroundColor(.ds.text)
                     
                     Text("\(appState.highlights.count) highlights saved")
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textSecondary)
                 }
                 Spacer()
@@ -744,11 +744,11 @@ struct LibraryHighlightCard: View {
                 if let url = highlight.url {
                     HStack(spacing: DesignSystem.Spacing.small) {
                         Image(systemName: "link.circle.fill")
-                            .font(.ds.callout))
+                            .font(.ds.callout)
                             .foregroundColor(.ds.primary)
                         
-                        Text(ContentFormatter.extractDomain(from: url))
-                            .font(.ds.caption, weight: .medium))
+                        Text(ContentFormatter.extractDomain(from: url)
+                            .font(.ds.caption).fontWeight(.medium)
                             .foregroundColor(.ds.primary)
                         
                         Spacer()
@@ -758,7 +758,7 @@ struct LibraryHighlightCard: View {
                             HapticManager.shared.impact(.light)
                         }) {
                             Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                                .font(.ds.callout))
+                                .font(.ds.callout)
                                 .foregroundColor(isBookmarked ? .ds.primary : .ds.textTertiary)
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -767,7 +767,7 @@ struct LibraryHighlightCard: View {
                 
                 // Quote
                 Text("\"\(highlight.content)\"")
-                    .font(.ds.body, weight: .medium))
+                    .font(.ds.body).fontWeight(.medium)
                     .foregroundColor(.ds.text)
                     .lineLimit(4)
                     .multilineTextAlignment(.leading)
@@ -776,17 +776,17 @@ struct LibraryHighlightCard: View {
                 
                 // Footer
                 HStack {
-                    Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
-                        .font(.ds.caption))
+                    Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt)
+                        .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                     
                     Spacer()
                     
                     HStack(spacing: DesignSystem.Spacing.micro) {
                         Image(systemName: "arrow.right.circle")
-                            .font(.ds.body))
+                            .font(.ds.body)
                         Text("View")
-                            .font(.ds.caption, weight: .medium))
+                            .font(.ds.caption).fontWeight(.medium)
                     }
                     .foregroundColor(.ds.primary)
                 }
@@ -811,21 +811,21 @@ struct ViewAllCard: View {
             VStack(spacing: DesignSystem.Spacing.medium) {
                 ZStack {
                     Circle()
-                        .fill(Color.ds.primary.opacity(0.1))
+                        .fill(Color.ds.primary.opacity(0.1)
                         .frame(width: 64, height: 64)
                     
                     Image(systemName: "arrow.right.circle.fill")
-                        .font(.ds.largeTitle))
+                        .font(.ds.largeTitle)
                         .foregroundColor(.ds.primary)
                 }
                 
                 VStack(spacing: 4) {
                     Text("View All")
-                        .font(.ds.body, weight: .semibold))
+                        .font(.ds.body).fontWeight(.semibold)
                         .foregroundColor(.ds.text)
                     
                     Text("+\(count) more")
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textSecondary)
                 }
             }
@@ -836,7 +836,7 @@ struct ViewAllCard: View {
                 .strokeBorder(
                     style: StrokeStyle(lineWidth: 2, dash: [8])
                 )
-                .foregroundColor(.ds.primary.opacity(0.3))
+                .foregroundColor(.ds.primary.opacity(0.3)
         )
     }
 }
@@ -850,7 +850,7 @@ struct SavedArticlesSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Saved Articles")
-                .font(.ds.title2, weight: .bold, design: .rounded))
+                .font(.ds.title2, weight: .bold, design: .rounded)
                 .foregroundColor(.ds.text)
                 .padding(.horizontal)
             
@@ -948,14 +948,14 @@ struct ArticleRow: View {
                 
                 VStack(alignment: .leading, spacing: 8) {
                     Text(article.title)
-                        .font(.ds.body, weight: .semibold))
+                        .font(.ds.body).fontWeight(.semibold)
                         .foregroundColor(.ds.text)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     
                     if let summary = article.summary {
                         Text(summary)
-                            .font(.ds.callout))
+                            .font(.ds.callout)
                             .foregroundColor(.ds.textSecondary)
                             .lineLimit(1)
                     }
@@ -963,7 +963,7 @@ struct ArticleRow: View {
                     HStack(spacing: DesignSystem.Spacing.medium) {
                         if let readingTime = ArticleTimeEstimator.estimateReadingTime(for: article.content) {
                             Label("\(readingTime) min read", systemImage: "clock")
-                                .font(.ds.caption))
+                                .font(.ds.caption)
                                 .foregroundColor(.ds.textTertiary)
                         }
                         
@@ -971,17 +971,17 @@ struct ArticleRow: View {
                         if let progress = readingProgress, progress.progress > 0 {
                             HStack(spacing: 4) {
                                 Image(systemName: progress.progress >= 1.0 ? "checkmark.circle.fill" : "book.fill")
-                                    .font(.ds.caption2))
+                                    .font(.ds.caption2)
                                     .foregroundColor(progress.progress >= 1.0 ? .green : .ds.primary)
                                 Text(progress.progress >= 1.0 ? "Completed" : "\(Int(progress.progress * 100))%")
-                                    .font(.ds.caption, weight: .medium))
+                                    .font(.ds.caption).fontWeight(.medium)
                                     .foregroundColor(progress.progress >= 1.0 ? .green : .ds.primary)
                             }
                         }
                         
                         Label(highlightCount > 0 ? "\(highlightCount) highlights" : "No highlights", 
                               systemImage: "highlighter")
-                            .font(.ds.caption))
+                            .font(.ds.caption)
                             .foregroundColor(highlightCount > 0 ? .ds.primary : .ds.textTertiary)
                     }
                 }
@@ -1046,11 +1046,11 @@ struct YourCurationsSection: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Your Collections")
-                        .font(.ds.title3, weight: .bold, design: .rounded))
+                        .font(.ds.title3, weight: .bold, design: .rounded)
                         .foregroundColor(.ds.text)
                     
                     Text("\(curations.count) curated collections")
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textSecondary)
                 }
                 Spacer()
@@ -1062,20 +1062,20 @@ struct YourCurationsSection: View {
                     if !curations.isEmpty {
                         Button(action: { showCurationManagement = true }) {
                             Image(systemName: "folder.badge.gearshape")
-                                .font(.ds.body))
+                                .font(.ds.body)
                                 .foregroundColor(.purple)
                                 .frame(width: 36, height: 36)
                                 .background(
                                     Circle()
-                                        .fill(Color.purple.opacity(0.1))
+                                        .fill(Color.purple.opacity(0.1)
                                 )
                         }
-                        .transition(.scale.combined(with: .opacity))
+                        .transition(.scale.combined(with: .opacity)
                     }
                     
                     Button(action: { showCreateCuration = true }) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.ds.largeTitle))
+                            .font(.ds.largeTitle)
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: [.purple, .purple.opacity(0.8)],
@@ -1159,16 +1159,16 @@ struct CurationCard: View {
                 // Article count badge
                 HStack(spacing: DesignSystem.Spacing.micro) {
                     Image(systemName: "doc.stack.fill")
-                        .font(.ds.caption))
+                        .font(.ds.caption)
                     Text("\(curation.articles.count)")
-                        .font(.ds.callout, weight: .bold))
+                        .font(.ds.callout).fontWeight(.bold)
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, DesignSystem.Spacing.base)
                 .padding(.vertical, DesignSystem.Spacing.mini)
                 .background(
                     Capsule()
-                        .fill(Color.black.opacity(0.6))
+                        .fill(Color.black.opacity(0.6)
                         .background(.ultraThinMaterial)
                 )
                 .padding(12)
@@ -1176,18 +1176,18 @@ struct CurationCard: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(curation.title)
-                    .font(.ds.headline, weight: .bold))
+                    .font(.ds.headline).fontWeight(.bold)
                     .foregroundColor(.ds.text)
                     .lineLimit(1)
                 
                 if let description = curation.description {
                     Text(description)
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textSecondary)
                         .lineLimit(2)
                 } else {
                     Text("A curated collection")
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textSecondary)
                         .italic()
                 }
@@ -1195,13 +1195,13 @@ struct CurationCard: View {
                 // Article count indicator
                 HStack(spacing: DesignSystem.Spacing.small) {
                     Label("\(curation.articles.count) articles", systemImage: "doc.text")
-                        .font(.ds.caption, weight: .medium))
+                        .font(.ds.caption).fontWeight(.medium)
                         .foregroundColor(.purple)
                     
                     Spacer()
                     
-                    Text(RelativeTimeFormatter.shortRelativeTime(from: curation.updatedAt))
-                        .font(.ds.caption2))
+                    Text(RelativeTimeFormatter.shortRelativeTime(from: curation.updatedAt)
+                        .font(.ds.caption2)
                         .foregroundColor(.ds.textTertiary)
                 }
                 .padding(.top, 4)
@@ -1229,27 +1229,27 @@ struct CreateCurationCard: View {
                         .strokeBorder(
                             style: StrokeStyle(lineWidth: 2, dash: [8])
                         )
-                        .foregroundColor(.purple.opacity(0.5))
+                        .foregroundColor(.purple.opacity(0.5)
                         .frame(width: 64, height: 64)
                     
                     Image(systemName: "plus")
-                        .font(.ds.title, weight: .medium))
+                        .font(.ds.title).fontWeight(.medium)
                         .foregroundColor(.purple)
                 }
                 
                 Text("New Collection")
-                    .font(.ds.body, weight: .semibold))
+                    .font(.ds.body).fontWeight(.semibold)
                     .foregroundColor(.ds.text)
             }
             .frame(width: 160, height: 240)
             .modernCard(noPadding: true, isInteractive: true)
-            .background(Color.purple.opacity(0.05))
+            .background(Color.purple.opacity(0.05)
             .overlay(
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium, style: .continuous)
                     .strokeBorder(
                         style: StrokeStyle(lineWidth: 2, dash: [8])
                     )
-                    .foregroundColor(.purple.opacity(0.3))
+                    .foregroundColor(.purple.opacity(0.3)
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -1272,11 +1272,11 @@ struct FollowPacksSection: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Follow Packs")
-                        .font(.ds.title3, weight: .bold, design: .rounded))
+                        .font(.ds.title3, weight: .bold, design: .rounded)
                         .foregroundColor(.ds.text)
                     
                     Text("Curated lists of people to follow")
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textSecondary)
                 }
                 Spacer()
@@ -1329,11 +1329,11 @@ struct FollowPackRow: View {
                         )
                         .frame(width: 40, height: 40)
                         .overlay(
-                            Text(String(followPack.profiles[index].prefix(1)))
-                                .font(.ds.body, weight: .bold))
+                            Text(String(followPack.profiles[index].prefix(1))
+                                .font(.ds.body).fontWeight(.bold)
                                 .foregroundColor(.white)
                         )
-                        .offset(x: CGFloat(index * 15))
+                        .offset(x: CGFloat(index * 15)
                 }
                 
                 if followPack.profiles.count > 3 {
@@ -1342,7 +1342,7 @@ struct FollowPackRow: View {
                         .frame(width: 40, height: 40)
                         .overlay(
                             Text("+\(followPack.profiles.count - 3)")
-                                .font(.ds.callout, weight: .bold))
+                                .font(.ds.callout).fontWeight(.bold)
                                 .foregroundColor(.ds.text)
                         )
                         .offset(x: 45)
@@ -1352,17 +1352,17 @@ struct FollowPackRow: View {
             
             VStack(alignment: .leading, spacing: 6) {
                 Text(followPack.title)
-                    .font(.ds.body, weight: .semibold))
+                    .font(.ds.body).fontWeight(.semibold)
                     .foregroundColor(.ds.text)
                 
                 HStack(spacing: DesignSystem.Spacing.medium) {
                     Label("\(followPack.profiles.count) people", systemImage: "person.2")
-                        .font(.ds.footnote))
+                        .font(.ds.footnote)
                         .foregroundColor(.ds.textSecondary)
                     
                     if let description = followPack.description {
                         Text(description)
-                            .font(.ds.footnote))
+                            .font(.ds.footnote)
                             .foregroundColor(.ds.textSecondary)
                             .lineLimit(1)
                     }
@@ -1372,7 +1372,7 @@ struct FollowPackRow: View {
             Spacer()
             
             Image(systemName: "chevron.right")
-                .font(.ds.callout))
+                .font(.ds.callout)
                 .foregroundColor(.ds.textTertiary)
         }
         .padding(DesignSystem.Spacing.large)
@@ -1397,7 +1397,7 @@ struct ArchivedContentSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Archived Content")
-                .font(.ds.title2, weight: .bold, design: .rounded))
+                .font(.ds.title2, weight: .bold, design: .rounded)
                 .foregroundColor(.ds.text)
                 .padding(.horizontal)
             
@@ -1406,7 +1406,7 @@ struct ArchivedContentSection: View {
                 Text("Highlights").tag(true)
                 Text("Articles").tag(false)
             }
-            .pickerStyle(SegmentedPickerStyle())
+            .pickerStyle(SegmentedPickerStyle()
             .padding(.horizontal)
             
             if showArchivedHighlights {
@@ -1458,7 +1458,7 @@ struct ArchivedHighlightCard: View {
                 VStack(alignment: .leading, spacing: 8) {
                     // Quote content
                     Text("\"\(highlight.content)\"")
-                        .font(.ds.body, weight: .medium))
+                        .font(.ds.body).fontWeight(.medium)
                         .foregroundColor(.ds.text)
                         .lineLimit(isExpanded ? nil : 3)
                     
@@ -1466,18 +1466,18 @@ struct ArchivedHighlightCard: View {
                     if let url = highlight.url {
                         HStack(spacing: 6) {
                             Image(systemName: "link.circle.fill")
-                                .font(.ds.caption))
+                                .font(.ds.caption)
                                 .foregroundColor(.ds.primary)
                             
-                            Text(ContentFormatter.extractDomain(from: url))
-                                .font(.ds.caption))
+                            Text(ContentFormatter.extractDomain(from: url)
+                                .font(.ds.caption)
                                 .foregroundColor(.ds.primary)
                         }
                     }
                     
                     // Timestamp
                     Text("Archived \(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))")
-                        .font(.ds.caption))
+                        .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                 }
                 
@@ -1512,13 +1512,13 @@ struct ArchivedHighlightCard: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                        .font(.ds.body))
+                        .font(.ds.body)
                         .foregroundColor(.ds.textSecondary)
                 }
             }
         }
         .padding()
-        .background(Color.ds.surface.opacity(0.5))
+        .background(Color.ds.surface.opacity(0.5)
         .cornerRadius(DesignSystem.CornerRadius.medium)
         .overlay(
             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
@@ -1545,19 +1545,19 @@ struct ArchivedArticleCard: View {
             // Article info
             VStack(alignment: .leading, spacing: 8) {
                 Text(article.title)
-                    .font(.ds.body, weight: .semibold))
+                    .font(.ds.body).fontWeight(.semibold)
                     .foregroundColor(.ds.text)
                     .lineLimit(2)
                 
                 if let summary = article.summary {
                     Text(summary)
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textSecondary)
                         .lineLimit(2)
                 }
                 
                 Text("Archived \(RelativeTimeFormatter.relativeTime(from: article.publishedAt ?? Date()))")
-                    .font(.ds.caption))
+                    .font(.ds.caption)
                     .foregroundColor(.ds.textTertiary)
             }
             
@@ -1592,12 +1592,12 @@ struct ArchivedArticleCard: View {
                 }
             } label: {
                 Image(systemName: "ellipsis.circle")
-                    .font(.ds.body))
+                    .font(.ds.body)
                     .foregroundColor(.ds.textSecondary)
             }
         }
         .padding()
-        .background(Color.ds.surface.opacity(0.5))
+        .background(Color.ds.surface.opacity(0.5)
         .cornerRadius(DesignSystem.CornerRadius.medium)
         .overlay(
             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)

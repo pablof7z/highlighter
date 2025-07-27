@@ -73,7 +73,7 @@ struct TimelineFeedView: View {
                                     .transition(.asymmetric(
                                         insertion: .push(from: .bottom).combined(with: .opacity),
                                         removal: .push(from: .top).combined(with: .opacity)
-                                    ))
+                                    )
                                     .id(event.id)
                                 }
                                 
@@ -94,7 +94,7 @@ struct TimelineFeedView: View {
                     .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
                         scrollOffset = value
                         // Calculate header scale based on scroll
-                        let scale = min(1.0, max(0.8, (100 + value) / 100))
+                        let scale = min(1.0, max(0.8, (100 + value) / 100)
                         withAnimation(.easeOut(duration: 0.2)) {
                             headerScale = scale
                         }
@@ -140,7 +140,7 @@ struct TimelineFeedView: View {
             HStack {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                     Text("Timeline")
-                        .font(.ds.bodyBold, design: .rounded))
+                        .font(.ds.bodyBold, design: .rounded)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("Latest highlights from your network")
@@ -158,7 +158,7 @@ struct TimelineFeedView: View {
                             .frame(width: 44, height: 44)
                             .overlay(
                                 Image(systemName: "line.3.horizontal.decrease.circle")
-                                    .font(.ds.title3, weight: .medium))
+                                    .font(.ds.title3).fontWeight(.medium)
                                     .foregroundColor(selectedFilter.color)
                             )
                         
@@ -219,15 +219,15 @@ struct TimelineEventCard: View {
                     ProfileImage(pubkey: event.pubkey, size: 42)
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(PubkeyFormatter.formatCompact(event.pubkey))
-                            .font(.ds.body, weight: .semibold))
+                        Text(PubkeyFormatter.formatCompact(event.pubkey)
+                            .font(.ds.body).fontWeight(.semibold)
                             .foregroundColor(DesignSystem.Colors.text)
                         
                         HStack(spacing: 4) {
                             Image(systemName: "clock")
-                                .font(.ds.caption2))
-                            Text(RelativeTimeFormatter.shortRelativeTime(from: event.createdAt))
-                                .font(.ds.caption))
+                                .font(.ds.caption2)
+                            Text(RelativeTimeFormatter.shortRelativeTime(from: event.createdAt)
+                                .font(.ds.caption)
                         }
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     }
@@ -247,12 +247,12 @@ struct TimelineEventCard: View {
                         }
                     } label: {
                         Circle()
-                            .fill(Color.primary.opacity(0.05))
+                            .fill(Color.primary.opacity(0.05)
                             .frame(width: 32, height: 32)
                             .overlay(
                                 Image(systemName: "ellipsis")
-                                    .font(.ds.callout, weight: .medium))
-                                    .foregroundColor(.primary.opacity(0.6))
+                                    .font(.ds.callout).fontWeight(.medium)
+                                    .foregroundColor(.primary.opacity(0.6)
                             )
                     }
                 }
@@ -261,7 +261,7 @@ struct TimelineEventCard: View {
                 // Content
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                     Text(event.content)
-                        .font(.ds.body))
+                        .font(.ds.body)
                         .foregroundColor(DesignSystem.Colors.text)
                         .lineLimit(isExpanded ? nil : 4)
                         .fixedSize(horizontal: false, vertical: true)
@@ -269,7 +269,7 @@ struct TimelineEventCard: View {
                     if event.content.count > 200 && !isExpanded {
                         Button(action: { withAnimation { isExpanded.toggle() } }) {
                             Text("Show more")
-                                .font(.ds.callout, weight: .medium))
+                                .font(.ds.callout).fontWeight(.medium)
                                 .foregroundColor(DesignSystem.Colors.primary)
                         }
                     }
@@ -308,8 +308,8 @@ struct TimelineEventCard: View {
                     // Bookmark button
                     Button(action: {}) {
                         Image(systemName: "bookmark")
-                            .font(.ds.body))
-                            .foregroundColor(.primary.opacity(0.6))
+                            .font(.ds.body)
+                            .foregroundColor(.primary.opacity(0.6)
                     }
                     .padding(.trailing, DesignSystem.Spacing.medium)
                 }
@@ -368,15 +368,15 @@ struct FilterPill: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: filter.icon)
-                    .font(.ds.callout, weight: .semibold))
+                    .font(.ds.callout).fontWeight(.semibold)
                 Text(filter.rawValue)
-                    .font(.ds.callout, weight: .medium))
+                    .font(.ds.callout).fontWeight(.medium)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
             .background(
                 Capsule()
-                    .fill(isSelected ? filter.color : Color.primary.opacity(0.08))
+                    .fill(isSelected ? filter.color : Color.primary.opacity(0.08)
             )
             .foregroundColor(isSelected ? .white : .primary)
             .overlay(
@@ -401,13 +401,13 @@ struct TimelineEngagementButton: View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.ds.body))
+                    .font(.ds.body)
                 if count > 0 {
                     Text("\(count)")
-                        .font(.ds.footnote, weight: .medium))
+                        .font(.ds.footnote).fontWeight(.medium)
                 }
             }
-            .foregroundColor(color.opacity(0.8))
+            .foregroundColor(color.opacity(0.8)
             .padding(.horizontal, DesignSystem.Spacing.medium)
             .padding(.vertical, DesignSystem.Spacing.small)
         }
@@ -423,16 +423,16 @@ struct TimelineSkeletonCard: View {
             // Header skeleton
             HStack(spacing: DesignSystem.Spacing.small) {
                 Circle()
-                    .fill(Color.primary.opacity(0.1))
+                    .fill(Color.primary.opacity(0.1)
                     .frame(width: 42, height: 42)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.primary.opacity(0.1))
+                        .fill(Color.primary.opacity(0.1)
                         .frame(width: 120, height: 14)
                     
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.primary.opacity(0.08))
+                        .fill(Color.primary.opacity(0.08)
                         .frame(width: 80, height: 12)
                 }
                 
@@ -443,7 +443,7 @@ struct TimelineSkeletonCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(0..<3, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.primary.opacity(0.08))
+                        .fill(Color.primary.opacity(0.08)
                         .frame(height: 16)
                         .frame(maxWidth: index == 2 ? 200 : .infinity)
                 }
@@ -453,7 +453,7 @@ struct TimelineSkeletonCard: View {
             HStack(spacing: DesignSystem.Spacing.large) {
                 ForEach(0..<4, id: \.self) { _ in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.primary.opacity(0.06))
+                        .fill(Color.primary.opacity(0.06)
                         .frame(width: 40, height: 20)
                 }
             }
@@ -461,7 +461,7 @@ struct TimelineSkeletonCard: View {
         .padding(DesignSystem.Spacing.medium)
         .background(
             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-                .fill(Color.primary.opacity(0.03))
+                .fill(Color.primary.opacity(0.03)
         )
         .overlay(
             LinearGradient(
@@ -497,7 +497,7 @@ struct TimelineParticles: View {
         GeometryReader { geometry in
             ForEach(particles) { particle in
                 Circle()
-                    .fill(particle.color.opacity(particle.opacity))
+                    .fill(particle.color.opacity(particle.opacity)
                     .frame(width: particle.size, height: particle.size)
                     .blur(radius: particle.blur)
                     .position(x: particle.x, y: particle.y)
@@ -545,12 +545,12 @@ struct FilterSelectionSheet: View {
         VStack(spacing: DesignSystem.Spacing.large) {
             // Handle
             Capsule()
-                .fill(Color.primary.opacity(0.2))
+                .fill(Color.primary.opacity(0.2)
                 .frame(width: 40, height: 4)
                 .padding(.top, DesignSystem.Spacing.small)
             
             Text("Filter Timeline")
-                .font(.ds.title3, weight: .bold))
+                .font(.ds.title3).fontWeight(.bold)
                 .padding(.top, DesignSystem.Spacing.small)
             
             VStack(spacing: DesignSystem.Spacing.small) {
@@ -562,17 +562,17 @@ struct FilterSelectionSheet: View {
                     }) {
                         HStack(spacing: DesignSystem.Spacing.medium) {
                             Image(systemName: filter.icon)
-                                .font(.ds.title3))
+                                .font(.ds.title3)
                                 .foregroundColor(filter.color)
                                 .frame(width: 30)
                             
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(filter.rawValue)
-                                    .font(.ds.body, weight: .semibold))
+                                    .font(.ds.body).fontWeight(.semibold)
                                     .foregroundColor(.primary)
                                 
-                                Text(filterDescription(for: filter))
-                                    .font(.ds.footnote))
+                                Text(filterDescription(for: filter)
+                                    .font(.ds.footnote)
                                     .foregroundColor(.secondary)
                             }
                             
@@ -580,14 +580,14 @@ struct FilterSelectionSheet: View {
                             
                             if selectedFilter == filter {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .font(.ds.title3))
+                                    .font(.ds.title3)
                                     .foregroundColor(filter.color)
                             }
                         }
                         .padding(DesignSystem.Spacing.medium)
                         .background(
                             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
-                                .fill(selectedFilter == filter ? filter.color.opacity(0.1) : Color.primary.opacity(0.05))
+                                .fill(selectedFilter == filter ? filter.color.opacity(0.1) : Color.primary.opacity(0.05)
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
@@ -597,7 +597,7 @@ struct FilterSelectionSheet: View {
             
             Spacer()
         }
-        .background(Color(UIColor.systemBackground))
+        .background(Color(UIColor.systemBackground)
     }
     
     private func filterDescription(for filter: TimelineFeedView.FeedFilter) -> String {
@@ -705,7 +705,7 @@ class FeedDataManager: ObservableObject {
             )
         case .recent:
             let since = Date().addingTimeInterval(-TimeConstants.hour * 2)
-            return NDKFilter(kinds: [9802], since: Int64(since.timeIntervalSince1970))
+            return NDKFilter(kinds: [9802], since: Int64(since.timeIntervalSince1970)
         }
     }
     
@@ -752,7 +752,7 @@ class FeedDataManager: ObservableObject {
             
             // Keep max 100 events
             if timelineEvents.count > 100 {
-                timelineEvents = Array(timelineEvents.prefix(100))
+                timelineEvents = Array(timelineEvents.prefix(100)
             }
         }
     }

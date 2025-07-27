@@ -70,7 +70,7 @@ struct CreateCurationView: View {
                     .transition(.asymmetric(
                         insertion: .scale.combined(with: .opacity),
                         removal: .opacity
-                    ))
+                    )
             }
             
             // Interactive overlay
@@ -92,7 +92,7 @@ struct CreateCurationView: View {
                             
                             Image(systemName: "paintpalette.fill")
                                 .foregroundColor(.white)
-                                .font(.ds.body))
+                                .font(.ds.body)
                         }
                     }
                     .scaleEffect(pulseAnimation ? 1.1 : 1.0)
@@ -105,11 +105,11 @@ struct CreateCurationView: View {
                 Button(action: { showImagePicker = true }) {
                     HStack(spacing: 8) {
                         Image(systemName: selectedImageData == nil ? "photo.badge.plus" : "photo.badge.checkmark")
-                            .font(.ds.title3))
+                            .font(.ds.title3)
                             .symbolEffect(.bounce, value: selectedImageData != nil)
                         
                         Text(selectedImageData == nil ? "Add Cover Image" : "Change Image")
-                            .font(DesignSystem.Typography.body.weight(.medium))
+                            .font(DesignSystem.Typography.body.weight(.medium)
                     }
                     .foregroundColor(.white)
                     .padding(.horizontal, DesignSystem.Spacing.large)
@@ -164,7 +164,7 @@ struct CreateCurationView: View {
             .transition(.asymmetric(
                 insertion: .move(edge: .top).combined(with: .opacity),
                 removal: .move(edge: .top).combined(with: .opacity)
-            ))
+            )
         }
     }
     
@@ -193,7 +193,7 @@ struct CreateCurationView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Curation ID", systemImage: "number.square.fill")
-                    .font(DesignSystem.Typography.caption.weight(.medium))
+                    .font(DesignSystem.Typography.caption.weight(.medium)
                     .foregroundColor(nameFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
                 
                 Spacer()
@@ -214,7 +214,7 @@ struct CreateCurationView: View {
                     .onTapGesture { nameFieldFocused = true }
                     .onChange(of: curationName) { _, newValue in
                         if newValue.count > 50 {
-                            curationName = String(newValue.prefix(50))
+                            curationName = String(newValue.prefix(50)
                         }
                     }
                 
@@ -222,7 +222,7 @@ struct CreateCurationView: View {
                     Button(action: { curationName = "" }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(DesignSystem.Colors.textSecondary)
-                            .transition(.scale.combined(with: .opacity))
+                            .transition(.scale.combined(with: .opacity)
                     }
                 }
             }
@@ -249,7 +249,7 @@ struct CreateCurationView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Title", systemImage: "textformat.alt")
-                    .font(DesignSystem.Typography.caption.weight(.medium))
+                    .font(DesignSystem.Typography.caption.weight(.medium)
                     .foregroundColor(titleFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
                 
                 Spacer()
@@ -268,7 +268,7 @@ struct CreateCurationView: View {
                     .onTapGesture { titleFieldFocused = true }
                     .onChange(of: curationTitle) { _, newValue in
                         if newValue.count > 100 {
-                            curationTitle = String(newValue.prefix(100))
+                            curationTitle = String(newValue.prefix(100)
                         }
                     }
                 
@@ -276,7 +276,7 @@ struct CreateCurationView: View {
                     Button(action: { curationTitle = "" }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(DesignSystem.Colors.textSecondary)
-                            .transition(.scale.combined(with: .opacity))
+                            .transition(.scale.combined(with: .opacity)
                     }
                 }
             }
@@ -303,7 +303,7 @@ struct CreateCurationView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Description", systemImage: "text.quote")
-                    .font(DesignSystem.Typography.caption.weight(.medium))
+                    .font(DesignSystem.Typography.caption.weight(.medium)
                     .foregroundColor(descriptionFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
                 
                 Spacer()
@@ -317,7 +317,7 @@ struct CreateCurationView: View {
             ZStack(alignment: .topLeading) {
                 if description.isEmpty {
                     Text("Describe your curation...")
-                        .foregroundColor(.gray.opacity(0.5))
+                        .foregroundColor(.gray.opacity(0.5)
                         .padding(.horizontal, DesignSystem.Spacing.micro)
                         .padding(.vertical, DesignSystem.Spacing.small)
                 }
@@ -351,7 +351,7 @@ struct CreateCurationView: View {
     private var imageUrlField: some View {
         VStack(alignment: .leading, spacing: 10) {
             Label("Or use image URL", systemImage: "link.circle.fill")
-                .font(DesignSystem.Typography.caption.weight(.medium))
+                .font(DesignSystem.Typography.caption.weight(.medium)
                 .foregroundColor(DesignSystem.Colors.textSecondary)
             
             TextField("https://...", text: $imageUrl)
@@ -390,13 +390,13 @@ struct CreateCurationView: View {
                     
                     Image(systemName: "lightbulb.fill")
                         .foregroundColor(.white)
-                        .font(.ds.body))
+                        .font(.ds.body)
                 }
                 .scaleEffect(pulseAnimation ? 1.1 : 1.0)
                 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("What are Article Curations?")
-                        .font(DesignSystem.Typography.body.weight(.semibold))
+                        .font(DesignSystem.Typography.body.weight(.semibold)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("Create themed collections of articles, highlights, and content. Perfect for organizing your reading lists, research topics, or sharing knowledge with others.")
@@ -488,11 +488,11 @@ struct CreateCurationView: View {
                     
                     HStack(spacing: 8) {
                         Image(systemName: "folder.badge.plus")
-                            .font(.ds.headline, weight: .semibold))
+                            .font(.ds.headline).fontWeight(.semibold)
                             .symbolEffect(.bounce, value: isFormValid)
                         
                         Text("Create Curation")
-                            .font(DesignSystem.Typography.body.weight(.semibold))
+                            .font(DesignSystem.Typography.body.weight(.semibold)
                     }
                     .foregroundColor(.white)
                 }
@@ -558,7 +558,7 @@ struct CreateCurationView: View {
                     }
                 }
             }
-            .background(DesignSystem.Colors.background.ignoresSafeArea())
+            .background(DesignSystem.Colors.background.ignoresSafeArea()
             .navigationTitle("New Curation")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -661,7 +661,7 @@ struct ProgressIndicatorView: View {
         HStack(spacing: 8) {
             ForEach(0..<totalSteps, id: \.self) { step in
                 Capsule()
-                    .fill(step <= currentStep ? DesignSystem.Colors.primary : Color.gray.opacity(0.3))
+                    .fill(step <= currentStep ? DesignSystem.Colors.primary : Color.gray.opacity(0.3)
                     .frame(height: 4)
                     .animation(.spring(response: 0.4, dampingFraction: 0.8), value: currentStep)
             }
@@ -680,11 +680,11 @@ struct FeatureBadge: View {
         VStack(spacing: 6) {
             ZStack {
                 Circle()
-                    .fill(color.opacity(0.15))
+                    .fill(color.opacity(0.15)
                     .frame(width: 40, height: 40)
                 
                 Image(systemName: icon)
-                    .font(.ds.headline))
+                    .font(.ds.headline)
                     .foregroundColor(color)
                     .scaleEffect(isAnimating ? 1.1 : 1.0)
             }
@@ -728,7 +728,7 @@ struct AnimatedBackgroundView: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-            .rotationEffect(.degrees(gradientRotation))
+            .rotationEffect(.degrees(gradientRotation)
             .onAppear {
                 withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
                     gradientRotation = 360

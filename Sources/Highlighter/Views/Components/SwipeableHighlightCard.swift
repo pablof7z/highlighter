@@ -115,7 +115,7 @@ struct SwipeableHighlightCard: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis")
-                        .font(.ds.body))
+                        .font(.ds.body)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                         .padding(8)
                         .background(Circle().fill(DesignSystem.Colors.surfaceSecondary))

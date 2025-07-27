@@ -117,7 +117,7 @@ struct CurationManagementView: View {
                             HStack {
                                 Image(systemName: "magnifyingglass")
                                     .foregroundColor(DesignSystem.Colors.textSecondary)
-                                    .font(.ds.body))
+                                    .font(.ds.body)
                                 
                                 TextField("Search curations...", text: $searchText)
                                     .textFieldStyle(.plain)
@@ -126,7 +126,7 @@ struct CurationManagementView: View {
                                     Button(action: { searchText = "" }) {
                                         Image(systemName: "xmark.circle.fill")
                                             .foregroundColor(DesignSystem.Colors.textSecondary)
-                                            .transition(.scale.combined(with: .opacity))
+                                            .transition(.scale.combined(with: .opacity)
                                     }
                                 }
                             }
@@ -173,7 +173,7 @@ struct CurationManagementView: View {
                                 }) {
                                     VStack(spacing: 4) {
                                         Image(systemName: mode.rawValue)
-                                            .font(.ds.title3))
+                                            .font(.ds.title3)
                                             .foregroundColor(viewMode == mode ? .white : DesignSystem.Colors.textSecondary)
                                         
                                         Text(mode.title)
@@ -223,7 +223,7 @@ struct CurationManagementView: View {
                             .transition(.asymmetric(
                                 insertion: .move(edge: .leading).combined(with: .opacity),
                                 removal: .move(edge: .trailing).combined(with: .opacity)
-                            ))
+                            )
                             
                         case .list:
                             ListView(
@@ -240,7 +240,7 @@ struct CurationManagementView: View {
                             .transition(.asymmetric(
                                 insertion: .scale(scale: 0.9).combined(with: .opacity),
                                 removal: .scale(scale: 1.1).combined(with: .opacity)
-                            ))
+                            )
                             
                         case .carousel:
                             CarouselView(
@@ -250,7 +250,7 @@ struct CurationManagementView: View {
                             .transition(.asymmetric(
                                 insertion: .move(edge: .trailing).combined(with: .opacity),
                                 removal: .move(edge: .leading).combined(with: .opacity)
-                            ))
+                            )
                         }
                     }
                     .opacity(appearAnimation ? 1 : 0)
@@ -259,7 +259,7 @@ struct CurationManagementView: View {
                     // Empty state
                     if filteredCurations.isEmpty {
                         EmptyStateView(searchText: searchText)
-                            .transition(.scale.combined(with: .opacity))
+                            .transition(.scale.combined(with: .opacity)
                     }
                 }
             }
@@ -580,7 +580,7 @@ struct ListView: View {
             isEditMode: isEditMode,
             isHovered: isHovered
         )
-        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
         .listRowBackground(Color.clear)
         .onTapGesture {
             handleTap(curation: curation)
@@ -659,11 +659,11 @@ struct CarouselView: View {
                         currentIndex: currentIndex,
                         totalCount: curations.count
                     )
-                    .offset(x: cardOffset(index: index, geometry: geometry))
+                    .offset(x: cardOffset(index: index, geometry: geometry)
                     .offset(x: dragOffset.width)
-                    .scaleEffect(cardScale(index: index))
-                    .opacity(cardOpacity(index: index))
-                    .zIndex(Double(curations.count - abs(index - currentIndex)))
+                    .scaleEffect(cardScale(index: index)
+                    .opacity(cardOpacity(index: index)
+                    .zIndex(Double(curations.count - abs(index - currentIndex))
                     .onTapGesture {
                         if index == currentIndex {
                             curationToEdit = curation
@@ -683,7 +683,7 @@ struct CarouselView: View {
                     HStack(spacing: 8) {
                         ForEach(0..<curations.count, id: \.self) { index in
                             Circle()
-                                .fill(index == currentIndex ? DesignSystem.Colors.primary : Color.gray.opacity(0.3))
+                                .fill(index == currentIndex ? DesignSystem.Colors.primary : Color.gray.opacity(0.3)
                                 .frame(width: 8, height: 8)
                                 .scaleEffect(index == currentIndex ? 1.2 : 1)
                                 .animation(DesignSystem.Animation.springSnappy, value: currentIndex)
@@ -770,8 +770,8 @@ struct CurationGridItem: View {
                         .frame(height: 120)
                         .overlay(
                             Image(systemName: "folder.fill")
-                                .font(.system(size: 40))
-                                .foregroundColor(.white.opacity(0.8))
+                                .font(.system(size: 40)
+                                .foregroundColor(.white.opacity(0.8)
                         )
                 }
                 
@@ -791,7 +791,7 @@ struct CurationGridItem: View {
                 if isHovered {
                     RoundedRectangle(cornerRadius: 0)
                         .stroke(DesignSystem.Colors.primary, lineWidth: 3)
-                        .background(DesignSystem.Colors.primary.opacity(0.1))
+                        .background(DesignSystem.Colors.primary.opacity(0.1)
                         .scaleEffect(animateHover ? 1.05 : 1)
                 }
             }
@@ -800,7 +800,7 @@ struct CurationGridItem: View {
             // Content section
             VStack(alignment: .leading, spacing: 6) {
                 Text(curation.title)
-                    .font(DesignSystem.Typography.body.weight(.medium))
+                    .font(DesignSystem.Typography.body.weight(.medium)
                     .lineLimit(1)
                 
                 HStack {
@@ -810,7 +810,7 @@ struct CurationGridItem: View {
                     
                     Spacer()
                     
-                    Text(RelativeTimeFormatter.relativeTime(from: curation.updatedAt))
+                    Text(RelativeTimeFormatter.relativeTime(from: curation.updatedAt)
                         .font(.ds.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
@@ -871,14 +871,14 @@ struct CurationListRow: View {
                     .frame(width: 60, height: 60)
                     .overlay(
                         Image(systemName: "folder.fill")
-                            .foregroundColor(.white.opacity(0.8))
+                            .foregroundColor(.white.opacity(0.8)
                     )
             }
             
             // Content
             VStack(alignment: .leading, spacing: 4) {
                 Text(curation.title)
-                    .font(DesignSystem.Typography.body.weight(.medium))
+                    .font(DesignSystem.Typography.body.weight(.medium)
                     .lineLimit(1)
                 
                 if let description = curation.description {
@@ -893,7 +893,7 @@ struct CurationListRow: View {
                         .font(.ds.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                     
-                    Text(RelativeTimeFormatter.relativeTime(from: curation.updatedAt))
+                    Text(RelativeTimeFormatter.relativeTime(from: curation.updatedAt)
                         .font(.ds.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
@@ -950,8 +950,8 @@ struct CurationManagementCarouselCard: View {
                     )
                     
                     Image(systemName: "folder.fill")
-                        .font(.system(size: 80))
-                        .foregroundColor(.white.opacity(0.8))
+                        .font(.system(size: 80)
+                        .foregroundColor(.white.opacity(0.8)
                 }
                 .frame(height: geometry.size.height * 0.5)
             }
@@ -979,7 +979,7 @@ struct CurationManagementCarouselCard: View {
                     
                     Spacer()
                     
-                    Text(RelativeTimeFormatter.relativeTime(from: curation.updatedAt))
+                    Text(RelativeTimeFormatter.relativeTime(from: curation.updatedAt)
                         .font(DesignSystem.Typography.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
@@ -1034,8 +1034,8 @@ struct EmptyStateView: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: searchText.isEmpty ? "folder.badge.plus" : "magnifyingglass")
-                .font(.system(size: 60))
-                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
+                .font(.system(size: 60)
+                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5)
                 .scaleEffect(animateIcon ? 1.1 : 1)
                 .onAppear {
                     withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
@@ -1065,7 +1065,7 @@ struct ShimmerView: View {
     var body: some View {
         GeometryReader { geometry in
             Rectangle()
-                .fill(Color.gray.opacity(0.3))
+                .fill(Color.gray.opacity(0.3)
                 .overlay(
                     Rectangle()
                         .fill(
@@ -1094,7 +1094,7 @@ struct ShimmerView: View {
 
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
+        clipShape(RoundedCorner(radius: radius, corners: corners)
     }
 }
 

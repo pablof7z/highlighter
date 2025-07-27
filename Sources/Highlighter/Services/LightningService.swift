@@ -181,7 +181,7 @@ class LightningService: ObservableObject {
                         role: split.role,
                         paymentHash: paymentHash,
                         timestamp: Date()
-                    ))
+                    )
                 }
             }
             
@@ -216,7 +216,7 @@ class LightningService: ObservableObject {
             return transaction
             
         } catch {
-            updatePendingZapStatus(pendingZap.id, status: .failed(error.localizedDescription))
+            updatePendingZapStatus(pendingZap.id, status: .failed(error.localizedDescription)
             
             // Remove failed zap after delay
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
@@ -292,7 +292,7 @@ class LightningService: ObservableObject {
             amount: highlighterAmount,
             role: .highlighter,
             isOriginal: true
-        ))
+        )
         
         // Pay author if different from highlighter
         if let authorPubkey = authorPubkey, authorPubkey != highlighterPubkey {
@@ -302,7 +302,7 @@ class LightningService: ObservableObject {
                 amount: authorAmount,
                 role: .author,
                 isOriginal: false
-            ))
+            )
         } else {
             // If highlighter is the author, give them the author portion too
             let extraAmount = Int(Double(totalAmount) * splitConfig.authorPercentage)
@@ -321,7 +321,7 @@ class LightningService: ObservableObject {
                 amount: curatorAmount,
                 role: .curator,
                 isOriginal: false
-            ))
+            )
         } else {
             // Distribute curator portion to highlighter
             let extraAmount = Int(Double(totalAmount) * splitConfig.curatorPercentage)

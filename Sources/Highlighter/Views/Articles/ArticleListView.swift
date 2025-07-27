@@ -81,7 +81,7 @@ struct ArticleListView: View {
     private var emptyState: some View {
         VStack(spacing: DesignSystem.Spacing.large) {
             Image(systemName: "doc.text")
-                .font(.system(size: 60))
+                .font(.system(size: 60)
                 .foregroundColor(DesignSystem.Colors.textSecondary)
             
             Text("No articles yet")

@@ -64,7 +64,7 @@ struct ArticleDiscoveryView: View {
                         .transition(.asymmetric(
                             insertion: .push(from: .bottom).combined(with: .opacity),
                             removal: .push(from: .top).combined(with: .opacity)
-                        ))
+                        )
                 }
                 
                 // Trending articles
@@ -124,13 +124,13 @@ struct ArticleDiscoveryView: View {
                         Image(systemName: "line.3.horizontal.decrease.circle")
                         Text("Filters")
                     }
-                    .font(.ds.callout, weight: .medium))
+                    .font(.ds.calloutMedium)
                     .foregroundColor(.ds.primary)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
                     .background(
                         Capsule()
-                            .fill(Color.ds.primary.opacity(0.1))
+                            .fill(Color.ds.primary.opacity(0.1)
                             .overlay(
                                 Capsule()
                                     .strokeBorder(Color.ds.primary.opacity(0.2), lineWidth: 1)
@@ -146,19 +146,20 @@ struct ArticleDiscoveryView: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Label("Featured Article", systemImage: "star.fill")
-                    .font(.ds.headline, weight: .bold))
+                    .font(.ds.headline)
+                    .fontWeight(.bold)
                     .foregroundColor(.ds.text)
                 
                 Spacer()
                 
                 Text("AI Recommended")
-                    .font(.ds.caption, weight: .medium))
+                    .font(.ds.captionMedium)
                     .foregroundColor(.purple)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill(Color.purple.opacity(0.1))
+                            .fill(Color.purple.opacity(0.1)
                     )
             }
             .padding(.horizontal)
@@ -174,13 +175,13 @@ struct ArticleDiscoveryView: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Label("Trending Now", systemImage: "flame.fill")
-                    .font(.ds.headline, weight: .bold))
+                    .font(.ds.headline)
                     .foregroundColor(.ds.text)
                 
                 Spacer()
                 
                 Text("\(viewModel.trendingArticles.count) articles")
-                    .font(.ds.callout))
+                    .font(.ds.callout)
                     .foregroundColor(.ds.textSecondary)
             }
             .padding(.horizontal)
@@ -201,7 +202,8 @@ struct ArticleDiscoveryView: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text("Discover Articles")
-                    .font(.ds.title2, weight: .bold))
+                    .font(.ds.title2)
+                    .fontWeight(.bold)
                     .foregroundColor(.ds.text)
                 
                 Spacer()
@@ -216,7 +218,7 @@ struct ArticleDiscoveryView: View {
             if viewModel.articles.isEmpty && !viewModel.isLoading {
                 VStack(spacing: 16) {
                     Image(systemName: "magnifyingglass")
-                        .font(.system(size: 60))
+                        .font(.system(size: 60)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                     
                     Text("No articles found")
@@ -225,7 +227,7 @@ struct ArticleDiscoveryView: View {
                     
                     Text("Try adjusting your search terms")
                         .font(DesignSystem.Typography.body)
-                        .foregroundColor(DesignSystem.Colors.textSecondary.opacity(0.7))
+                        .foregroundColor(DesignSystem.Colors.textSecondary.opacity(0.7)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
@@ -251,13 +253,13 @@ struct ArticleDiscoveryView: View {
                         Text("Load More")
                         Image(systemName: "arrow.down.circle")
                     }
-                    .font(.ds.body, weight: .medium))
+                    .font(.ds.bodyMedium)
                     .foregroundColor(.ds.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color.ds.primary.opacity(0.1))
+                            .fill(Color.ds.primary.opacity(0.1)
                     )
                 }
                 .padding(.horizontal)
@@ -419,7 +421,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
         var title = ""
         var summary: String?
         var image: String?
-        var publishedAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+        var publishedAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt)
         var hashtags: [String] = []
         
         for tag in event.tags {
@@ -464,7 +466,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
     private func loadTrendingArticles() async {
         // For now, take top articles
         // In production, this would analyze zaps, comments, and highlights
-        trendingArticles = Array(articles.prefix(5))
+        trendingArticles = Array(articles.prefix(5)
     }
     
     private func loadFeaturedArticle(category: ArticleDiscoveryView.ArticleCategory) async {
@@ -485,16 +487,16 @@ struct CategoryChip: View {
         Button(action: action) {
             HStack(spacing: 8) {
                 Image(systemName: category.icon)
-                    .font(.ds.body))
+                    .font(.ds.body)
                 Text(category.rawValue)
-                    .font(.ds.body, weight: .medium))
+                    .font(.ds.bodyMedium)
             }
             .foregroundColor(isSelected ? .white : category.color)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(
                 Capsule()
-                    .fill(isSelected ? category.color : category.color.opacity(0.1))
+                    .fill(isSelected ? category.color : category.color.opacity(0.1)
                     .overlay(
                         Capsule()
                             .strokeBorder(category.color.opacity(0.2), lineWidth: isSelected ? 0 : 1)
@@ -560,7 +562,8 @@ struct FeaturedArticleCard: View {
                     
                     // Title on image
                     Text(article.title)
-                        .font(.ds.title2, weight: .bold))
+                        .font(.ds.title2)
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
                         .lineLimit(2)
                         .padding()
@@ -570,7 +573,7 @@ struct FeaturedArticleCard: View {
                 VStack(alignment: .leading, spacing: 12) {
                     if let summary = article.summary {
                         Text(summary)
-                            .font(.ds.body))
+                            .font(.ds.body)
                             .foregroundColor(.ds.textSecondary)
                             .lineLimit(3)
                     }
@@ -583,12 +586,12 @@ struct FeaturedArticleCard: View {
                                 .frame(width: 28, height: 28)
                                 .overlay(
                                     Text(PubkeyFormatter.formatForAvatar(article.author))
-                                        .font(.ds.caption, weight: .medium))
+                                        .font(.ds.captionMedium)
                                         .foregroundColor(.ds.text)
                                 )
                             
                             Text(PubkeyFormatter.formatShort(article.author))
-                                .font(.ds.callout))
+                                .font(.ds.callout)
                                 .foregroundColor(.ds.textSecondary)
                         }
                         
@@ -597,7 +600,7 @@ struct FeaturedArticleCard: View {
                         // Actions
                         HStack(spacing: 16) {
                             Label("\(article.estimatedReadingTime) min", systemImage: "clock")
-                                .font(.ds.footnote))
+                                .font(.ds.footnote)
                                 .foregroundColor(.ds.textTertiary)
                             
                             Button(action: {
@@ -608,7 +611,7 @@ struct FeaturedArticleCard: View {
                                 }
                             }) {
                                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                                    .font(.ds.headline))
+                                    .font(.ds.headline)
                                     .foregroundColor(isBookmarked ? .ds.primary : .ds.textSecondary)
                             }
                         }
@@ -620,13 +623,13 @@ struct FeaturedArticleCard: View {
                             HStack(spacing: 8) {
                                 ForEach(article.hashtags.prefix(5), id: \.self) { tag in
                                     Text("#\(tag)")
-                                        .font(.ds.caption, weight: .medium))
+                                        .font(.ds.captionMedium)
                                         .foregroundColor(.purple)
                                         .padding(.horizontal, 10)
                                         .padding(.vertical, 4)
                                         .background(
                                             Capsule()
-                                                .fill(Color.purple.opacity(0.1))
+                                                .fill(Color.purple.opacity(0.1)
                                         )
                                 }
                             }
@@ -663,7 +666,7 @@ struct TrendingArticleCard: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: 100, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous)
                         case .empty, .failure:
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
                                 .fill(Color.ds.surfaceSecondary)
@@ -691,14 +694,14 @@ struct TrendingArticleCard: View {
                 // Content
                 VStack(alignment: .leading, spacing: 8) {
                     Text(article.title)
-                        .font(.ds.body, weight: .semibold))
+                        .font(.ds.bodyMedium)
                         .foregroundColor(.ds.text)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     
                     if let summary = article.summary {
                         Text(summary)
-                            .font(.ds.callout))
+                            .font(.ds.callout)
                             .foregroundColor(.ds.textSecondary)
                             .lineLimit(2)
                     }
@@ -707,13 +710,13 @@ struct TrendingArticleCard: View {
                     
                     HStack {
                         Label("\(article.estimatedReadingTime) min", systemImage: "clock")
-                            .font(.ds.caption))
+                            .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                         
                         Spacer()
                         
                         Image(systemName: "flame.fill")
-                            .font(.ds.callout))
+                            .font(.ds.callout)
                             .foregroundColor(.orange)
                     }
                 }
@@ -750,14 +753,14 @@ struct ArticleGridCard: View {
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: 120)
                                 .clipped()
-                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous)
                         case .empty, .failure:
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
                                 .fill(Color.ds.surfaceSecondary)
                                 .frame(height: 120)
                                 .overlay(
                                     Image(systemName: "doc.text")
-                                        .font(.ds.title2))
+                                        .font(.ds.title2)
                                         .foregroundColor(.ds.textTertiary)
                                 )
                         @unknown default:
@@ -782,14 +785,14 @@ struct ArticleGridCard: View {
                 // Content
                 VStack(alignment: .leading, spacing: 8) {
                     Text(article.title)
-                        .font(.ds.body, weight: .semibold))
+                        .font(.ds.bodyMedium)
                         .foregroundColor(.ds.text)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     
                     HStack {
                         Label("\(article.estimatedReadingTime) min", systemImage: "clock")
-                            .font(.ds.caption2))
+                            .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                         
                         Spacer()
@@ -802,7 +805,7 @@ struct ArticleGridCard: View {
                             }
                         }) {
                             Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                                .font(.ds.callout))
+                                .font(.ds.callout)
                                 .foregroundColor(isBookmarked ? .ds.primary : .ds.textTertiary)
                         }
                         .buttonStyle(PlainButtonStyle())

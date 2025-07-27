@@ -35,7 +35,7 @@ struct ProfileImage: View {
         ZStack {
             // Background gradient placeholder
             Circle()
-                .fill(gradientForPubkey())
+                .fill(gradientForPubkey()
                 .overlay(
                     // Shimmer effect while loading
                     Circle()
@@ -53,7 +53,7 @@ struct ProfileImage: View {
                         .offset(x: shimmerOffset)
                         .opacity(imageState == .loading ? 1 : 0)
                 )
-                .mask(Circle())
+                .mask(Circle()
             
             // Content based on state
             switch imageState {
@@ -64,7 +64,7 @@ struct ProfileImage: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: size, height: size)
-                        .clipShape(Circle())
+                        .clipShape(Circle()
                         .blur(radius: 10)
                         .transition(.opacity)
                 } else {
@@ -78,11 +78,11 @@ struct ProfileImage: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: size, height: size)
-                    .clipShape(Circle())
+                    .clipShape(Circle()
                     .transition(.asymmetric(
                         insertion: .scale(scale: 1.1).combined(with: .opacity),
                         removal: .scale(scale: 0.9).combined(with: .opacity)
-                    ))
+                    )
                 
             case .failed, .placeholder:
                 initialsView
@@ -127,8 +127,8 @@ struct ProfileImage: View {
     // MARK: - Subviews
     
     private var initialsView: some View {
-        Text(AvatarUtilities.generateInitials(from: pubkey))
-            .font(.system(size: size * 0.4, weight: .bold, design: .rounded))
+        Text(AvatarUtilities.generateInitials(from: pubkey)
+            .font(.system(size: size * 0.4, weight: .bold, design: .rounded)
             .foregroundColor(.white)
             .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
     }
@@ -215,7 +215,7 @@ struct ProfileImage: View {
                 await MainActor.run {
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                         profileImage = Image(uiImage: uiImage)
-                        imageState = .loaded(Image(uiImage: uiImage))
+                        imageState = .loaded(Image(uiImage: uiImage)
                     }
                 }
             } else {
@@ -257,7 +257,7 @@ extension View {
     func profileImageStyle(size: CGFloat) -> some View {
         self
             .frame(width: size, height: size)
-            .clipShape(Circle())
+            .clipShape(Circle()
             .overlay(
                 Circle()
                     .stroke(Color.white.opacity(0.2), lineWidth: 1)
@@ -283,11 +283,11 @@ struct ProfileImageGrid: View {
         HStack(spacing: -size * 0.3) {
             ForEach(Array(pubkeys.prefix(maxCount).enumerated()), id: \.element) { index, pubkey in
                 ProfileImage(pubkey: pubkey, size: size)
-                    .zIndex(Double(maxCount - index))
+                    .zIndex(Double(maxCount - index)
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.8).combined(with: .opacity),
                         removal: .scale(scale: 1.2).combined(with: .opacity)
-                    ))
+                    )
                     .animation(
                         .spring(response: 0.4, dampingFraction: 0.7)
                         .delay(Double(index) * 0.05),
@@ -301,7 +301,7 @@ struct ProfileImageGrid: View {
                     .frame(width: size, height: size)
                     .overlay(
                         Text("+\(pubkeys.count - maxCount)")
-                            .font(.system(size: size * 0.35, weight: .semibold))
+                            .font(.system(size: size * 0.35, weight: .semibold)
                             .foregroundColor(DesignSystem.Colors.textSecondary)
                     )
                     .overlay(

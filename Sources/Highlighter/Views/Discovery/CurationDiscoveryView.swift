@@ -97,7 +97,7 @@ struct DiscoveryCurationCard: View {
                 HStack {
                     HStack(spacing: 8) {
                         Circle()
-                            .fill(Color.ds.primaryDark.opacity(0.2))
+                            .fill(Color.ds.primaryDark.opacity(0.2)
                             .frame(width: 24, height: 24)
                             .overlay {
                                 if let picture = curator?.picture, let url = URL(string: picture) {
@@ -105,20 +105,20 @@ struct DiscoveryCurationCard: View {
                                         image
                                             .resizable()
                                             .scaledToFill()
-                                            .clipShape(Circle())
+                                            .clipShape(Circle()
                                     } placeholder: {
                                         Image(systemName: "person.fill")
-                                            .font(.ds.caption))
+                                            .font(.ds.caption)
                                             .foregroundColor(.ds.primaryDark)
                                     }
                                 } else {
                                     Image(systemName: "person.fill")
-                                        .font(.ds.caption))
+                                        .font(.ds.caption)
                                         .foregroundColor(.ds.primaryDark)
                                 }
                             }
                         
-                        Text(curator?.displayName ?? PubkeyFormatter.formatShort(curation.author))
+                        Text(curator?.displayName ?? PubkeyFormatter.formatShort(curation.author)
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
                     }
@@ -152,8 +152,8 @@ struct DiscoveryCurationCard: View {
         .frame(height: 150)
         .overlay {
             Image(systemName: "folder.fill")
-                .font(.system(size: 40))
-                .foregroundColor(.white.opacity(0.5))
+                .font(.system(size: 40)
+                .foregroundColor(.white.opacity(0.5)
         }
     }
     

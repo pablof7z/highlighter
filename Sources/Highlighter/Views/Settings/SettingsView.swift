@@ -194,7 +194,7 @@ struct SettingsView: View {
                                                 .padding(.vertical, 6)
                                                 .background(
                                                     Capsule()
-                                                        .fill(defaultZapAmount == amount ? Color.yellow : Color.gray.opacity(0.2))
+                                                        .fill(defaultZapAmount == amount ? Color.yellow : Color.gray.opacity(0.2)
                                                 )
                                         }
                                     }
@@ -315,7 +315,7 @@ struct SettingsView: View {
                             .padding()
                             .background(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(Color.red.opacity(0.1))
+                                    .fill(Color.red.opacity(0.1)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                                             .stroke(Color.red.opacity(0.3), lineWidth: 1)
@@ -385,12 +385,12 @@ struct SettingsView: View {
                     .blur(radius: 20)
                 
                 Image(systemName: "highlighter")
-                    .font(.system(size: 40))
+                    .font(.system(size: 40)
                     .foregroundColor(highlightColor.color)
                     .frame(width: 80, height: 80)
                     .background(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(highlightColor.color.opacity(0.1))
+                            .fill(highlightColor.color.opacity(0.1)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
@@ -445,20 +445,31 @@ struct SettingsView: View {
     }
     
     private func showLightningWallet() {
-        // This will show a coming soon alert for now
-        appState.errorMessage = "Lightning wallet configuration coming soon!"
+        // Show Lightning wallet configuration
+        showRelayManager = false // Close other sheets first
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let rootVC = windowScene.windows.first?.rootViewController {
+                let lightningWalletView = LightningWalletView()
+                    .environmentObject(appState)
+                let hostingController = UIHostingController(rootView: lightningWalletView)
+                rootVC.present(hostingController, animated: true)
+            }
+        }
     }
     
     private func showOutboxSettings() {
-        // This will show a coming soon alert for now
-        appState.errorMessage = "Outbox settings coming soon!"
+        // Show Outbox configuration
+        showRelayManager = false // Close other sheets first
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            showRelayManager = true // Relay manager includes outbox settings
+        }
     }
     
     private func openAppStoreReview() {
-        guard let url = URL(string: "https://apps.apple.com/app/idYOUR_APP_ID?action=write-review") else { return }
-        if UIApplication.shared.canOpenURL(url) {
-            UIApplication.shared.open(url)
-        }
+        // For now, show a thank you message since we don't have an app ID yet
+        HapticManager.shared.notification(.success)
+        appState.errorMessage = "Thank you for your interest in rating Highlighter! We'll be on the App Store soon."
     }
 }
 
@@ -509,7 +520,7 @@ struct SettingsRow: View {
                     .frame(width: 32, height: 32)
                     .background(
                         Circle()
-                            .fill(iconColor.opacity(0.1))
+                            .fill(iconColor.opacity(0.1)
                     )
                 
                 VStack(alignment: .leading, spacing: 2) {
@@ -548,12 +559,12 @@ struct SettingsToggle: View {
     var body: some View {
         HStack(spacing: .ds.medium) {
             Image(systemName: icon)
-                .font(.ds.title3))
+                .font(.ds.title3)
                 .foregroundColor(.ds.primary)
                 .frame(width: 32, height: 32)
                 .background(
                     Circle()
-                        .fill(Color.ds.primary.opacity(0.1))
+                        .fill(Color.ds.primary.opacity(0.1)
                 )
             
             VStack(alignment: .leading, spacing: 2) {
@@ -591,7 +602,7 @@ struct ThemeButton: View {
                     .frame(width: 60, height: 60)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(isSelected ? Color.ds.primary : Color.gray.opacity(0.1))
+                            .fill(isSelected ? Color.ds.primary : Color.gray.opacity(0.1)
                     )
                 
                 Text(theme.rawValue)
@@ -647,7 +658,7 @@ struct AboutView: View {
             ScrollView {
                 VStack(spacing: .ds.large) {
                     Image(systemName: "highlighter")
-                        .font(.system(size: 60))
+                        .font(.system(size: 60)
                         .foregroundColor(.orange)
                         .padding(.top, 40)
                     

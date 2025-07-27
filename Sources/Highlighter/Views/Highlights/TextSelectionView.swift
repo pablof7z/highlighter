@@ -179,7 +179,7 @@ struct TextSelectionView: View {
                                 }
                             }) {
                                 Label("Create Highlight", systemImage: "highlighter")
-                                    .font(.ds.callout, weight: .semibold))
+                                    .font(.ds.callout).fontWeight(.semibold)
                                     .foregroundColor(.white)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 10)
@@ -190,10 +190,10 @@ struct TextSelectionView: View {
                                             endPoint: .trailing
                                         )
                                     )
-                                    .clipShape(Capsule())
+                                    .clipShape(Capsule()
                                     .shadow(color: Color.orange.opacity(0.4), radius: 8, y: 4)
                             }
-                            .scaleEffect(buttonScale * (highlightAnimation ? 1.05 : 1.0))
+                            .scaleEffect(buttonScale * (highlightAnimation ? 1.05 : 1.0)
                             
                             // Copy button
                             Button(action: {
@@ -201,10 +201,10 @@ struct TextSelectionView: View {
                                 HapticManager.shared.notification(.success)
                             }) {
                                 Image(systemName: "doc.on.doc")
-                                    .font(.ds.body, weight: .medium))
+                                    .font(.ds.body).fontWeight(.medium)
                                     .foregroundColor(.white)
                                     .frame(width: 40, height: 40)
-                                    .background(Circle().fill(Color.secondary.opacity(0.8)))
+                                    .background(Circle().fill(Color.secondary.opacity(0.8))
                             }
                         }
                         .position(x: selectionRect.midX, y: selectionRect.maxY + 50)
@@ -271,7 +271,7 @@ struct TextSelectionView: View {
         let beforeStart = max(0, range.location - contextLength)
         let beforeLength = range.location - beforeStart
         if beforeLength > 0 {
-            contextBefore = nsString.substring(with: NSRange(location: beforeStart, length: beforeLength))
+            contextBefore = nsString.substring(with: NSRange(location: beforeStart, length: beforeLength)
             // Find the last sentence boundary
             if let lastPeriod = contextBefore.lastIndex(of: ".") {
                 contextBefore = String(contextBefore[contextBefore.index(after: lastPeriod)...]).trimmingCharacters(in: .whitespacesAndNewlines)
@@ -282,7 +282,7 @@ struct TextSelectionView: View {
         let afterStart = range.location + range.length
         let afterLength = min(contextLength, nsString.length - afterStart)
         if afterLength > 0 {
-            contextAfter = nsString.substring(with: NSRange(location: afterStart, length: afterLength))
+            contextAfter = nsString.substring(with: NSRange(location: afterStart, length: afterLength)
             // Find the first sentence boundary
             if let firstPeriod = contextAfter.firstIndex(of: ".") {
                 contextAfter = String(contextAfter[...firstPeriod])
@@ -490,7 +490,7 @@ struct HighlightEditorView: View {
                     // Privacy toggle
                     Toggle(isOn: $isPrivate) {
                         Label("Keep Private", systemImage: isPrivate ? "lock.fill" : "lock.open")
-                            .font(.ds.body, weight: .medium))
+                            .font(.ds.body).fontWeight(.medium)
                     }
                     .padding(.horizontal)
                     .tint(.orange)
@@ -506,7 +506,7 @@ struct HighlightEditorView: View {
                                 Image(systemName: "highlighter")
                                 Text("Create Highlight")
                             }
-                            .font(.ds.body, weight: .semibold))
+                            .font(.ds.body).fontWeight(.semibold)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
@@ -517,14 +517,14 @@ struct HighlightEditorView: View {
                                     endPoint: .trailing
                                 )
                             )
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipShape(RoundedRectangle(cornerRadius: 12)
                             .shadow(color: Color.orange.opacity(0.3), radius: 8, y: 4)
                         }
                         
                         Button("Cancel") {
                             dismiss()
                         }
-                        .font(.ds.body, weight: .medium))
+                        .font(.ds.body).fontWeight(.medium)
                         .foregroundColor(.secondary)
                     }
                     .padding(.horizontal)
@@ -563,17 +563,17 @@ struct HighlightPreviewCard: View {
             HStack(alignment: .top, spacing: 0) {
                 Text(contextBefore + " ")
                     .foregroundColor(.secondary)
-                    .font(.ds.body))
+                    .font(.ds.body)
                 
                 Text(text)
                     .foregroundColor(.primary)
-                    .font(.ds.body, weight: .semibold))
+                    .font(.ds.body).fontWeight(.semibold)
                     .underline(color: .orange)
-                    .background(Color.orange.opacity(0.1))
+                    .background(Color.orange.opacity(0.1)
                 
                 Text(" " + contextAfter)
                     .foregroundColor(.secondary)
-                    .font(.ds.body))
+                    .font(.ds.body)
             }
             
             Divider()
@@ -602,7 +602,7 @@ struct HighlightPreviewCard: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(uiColor: .secondarySystemBackground))
+                .fill(Color(uiColor: .secondarySystemBackground)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)

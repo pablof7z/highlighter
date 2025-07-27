@@ -122,7 +122,7 @@ struct ArticleView: View {
                     readingProgressBar(geometry: geometry)
                     articleContentSection()
                 }
-                .background(scrollTracker(geometry: geometry))
+                .background(scrollTracker(geometry: geometry)
             }
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
@@ -192,14 +192,14 @@ struct ArticleView: View {
     private func titleSection() -> some View {
         VStack(alignment: .leading, spacing: .ds.large) {
             Text(article.title)
-                .font(.ds.largeTitle * fontScale, weight: .bold, design: .serif))
+                .font(.ds.largeTitle * fontScale, weight: .bold, design: .serif)
                 .foregroundColor(.ds.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .premiumEntrance(delay: 0.1)
             
             if let summary = article.summary {
                 Text(summary)
-                    .font(.ds.headline * fontScale, weight: .regular))
+                    .font(.ds.headline * fontScale, weight: .regular)
                     .foregroundColor(.ds.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .premiumEntrance(delay: 0.15)
@@ -217,7 +217,7 @@ struct ArticleView: View {
             
             HStack(spacing: .ds.small) {
                 Image(systemName: "clock")
-                    .font(.ds.caption))
+                    .font(.ds.caption)
                 Text("\(estimatedReadTime) min read")
                     .font(.ds.caption)
             }
@@ -251,7 +251,7 @@ struct ArticleView: View {
                     handleTextSelection(text: text, context: context, range: range)
                 }
             )
-            .markdownStyle(createArticleMarkdownStyle(fontScale: fontScale))
+            .markdownStyle(createArticleMarkdownStyle(fontScale: fontScale)
             .onMentionTap { mention in
                 // Handle mention tap if needed
             }
@@ -274,7 +274,7 @@ struct ArticleView: View {
     private func emptyContentView() -> some View {
         VStack(spacing: 16) {
             Image(systemName: "doc.text")
-                .font(.system(size: 48))
+                .font(.system(size: 48)
                 .foregroundColor(.ds.textTertiary)
             
             Text("No content available")
@@ -361,18 +361,18 @@ struct ArticleView: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: geometry.size.width - 40, height: 320)
-                                .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous)
                                 .shadow(color: .black.opacity(0.2), radius: 20, y: 10)
                                 .offset(y: scrollOffset * 0.5)
-                                .scaleEffect(1 + (scrollOffset > 0 ? scrollOffset * 0.0005 : 0))
+                                .scaleEffect(1 + (scrollOffset > 0 ? scrollOffset * 0.0005 : 0)
                         }
                     case .empty, .failure:
                         UnifiedGradientBackground(style: .subtle)
                             .frame(width: geometry.size.width, height: 400)
                             .overlay(
                                 Image(systemName: "photo")
-                                    .font(.system(size: 48))
-                                    .foregroundColor(.white.opacity(0.3))
+                                    .font(.system(size: 48)
+                                    .foregroundColor(.white.opacity(0.3)
                             )
                     @unknown default:
                         EmptyView()
@@ -415,7 +415,7 @@ struct ArticleView: View {
                 Button(action: { dismiss() }) {
                     HStack(spacing: .ds.mini) {
                         Image(systemName: "arrow.left")
-                            .font(.ds.body, weight: .semibold))
+                            .font(.ds.body).fontWeight(.semibold)
                         
                         if isScrolled {
                             Text("Articles")
@@ -423,7 +423,7 @@ struct ArticleView: View {
                                 .transition(.asymmetric(
                                     insertion: .push(from: .leading),
                                     removal: .push(from: .trailing)
-                                ))
+                                )
                         }
                     }
                     .foregroundColor(.ds.text)
@@ -431,7 +431,7 @@ struct ArticleView: View {
                     .padding(.vertical, .ds.small)
                     .background(
                         Capsule()
-                            .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8))
+                            .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8)
                             .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                     )
                 }
@@ -445,12 +445,12 @@ struct ArticleView: View {
                     Button(action: { showingSwarmOverlay = true }) {
                         ZStack(alignment: .topTrailing) {
                             Image(systemName: "sparkles")
-                                .font(.ds.headline, weight: .medium))
+                                .font(.ds.headline).fontWeight(.medium)
                                 .foregroundColor(.ds.primary)
                                 .frame(width: 40, height: 40)
                                 .background(
                                     Circle()
-                                        .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8))
+                                        .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8)
                                         .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                                 )
                             
@@ -467,12 +467,12 @@ struct ArticleView: View {
                     // Text selection mode
                     Button(action: { showTextSelection = true }) {
                         Image(systemName: "highlighter")
-                            .font(.ds.headline, weight: .medium))
+                            .font(.ds.headline).fontWeight(.medium)
                             .foregroundColor(.ds.secondary)
                             .frame(width: 40, height: 40)
                             .background(
                                 Circle()
-                                    .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8))
+                                    .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8)
                                     .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                             )
                     }
@@ -490,13 +490,13 @@ struct ArticleView: View {
                         }
                     }) {
                         Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                            .font(.ds.headline, weight: .medium))
+                            .font(.ds.headline).fontWeight(.medium)
                             .foregroundColor(isBookmarked ? .ds.primary : .ds.text)
                             .symbolEffect(.bounce, value: isBookmarked)
                             .frame(width: 40, height: 40)
                             .background(
                                 Circle()
-                                    .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8))
+                                    .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8)
                                     .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                             )
                     }
@@ -505,12 +505,12 @@ struct ArticleView: View {
                     // Share button
                     Button(action: { showShareSheet = true }) {
                         Image(systemName: "square.and.arrow.up")
-                            .font(.ds.headline, weight: .medium))
+                            .font(.ds.headline).fontWeight(.medium)
                             .foregroundColor(.ds.text)
                             .frame(width: 40, height: 40)
                             .background(
                                 Circle()
-                                    .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8))
+                                    .fill(DesignSystem.Colors.surface.opacity(isScrolled ? 0.95 : 0.8)
                                     .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                             )
                     }
@@ -532,14 +532,14 @@ struct ArticleView: View {
                     .transition(.asymmetric(
                         insertion: .push(from: .top).combined(with: .opacity),
                         removal: .push(from: .bottom).combined(with: .opacity)
-                    ))
+                    )
             }
         }
         .background(
             DesignSystem.Colors.background
                 .opacity(isScrolled ? 0.95 : 0)
                 .ignoresSafeArea()
-                .background(.ultraThinMaterial.opacity(isScrolled ? 1 : 0))
+                .background(.ultraThinMaterial.opacity(isScrolled ? 1 : 0)
         )
         .animation(.spring(response: 0.3), value: isScrolled)
     }
@@ -554,9 +554,9 @@ struct ArticleView: View {
                 }) {
                     VStack(spacing: 4) {
                         Image(systemName: "highlighter")
-                            .font(.ds.title3, weight: .medium))
+                            .font(.ds.title3).fontWeight(.medium)
                         Text("Highlight")
-                            .font(.ds.caption2, weight: .medium))
+                            .font(.ds.caption2).fontWeight(.medium)
                     }
                     .foregroundColor(.white)
                     .frame(width: 70, height: 50)
@@ -585,9 +585,9 @@ struct ArticleView: View {
                 }) {
                     VStack(spacing: 4) {
                         Image(systemName: "doc.on.doc")
-                            .font(.ds.title3, weight: .medium))
+                            .font(.ds.title3).fontWeight(.medium)
                         Text("Copy")
-                            .font(.ds.caption2, weight: .medium))
+                            .font(.ds.caption2).fontWeight(.medium)
                     }
                     .foregroundColor(.ds.text)
                     .frame(width: 70, height: 50)
@@ -606,7 +606,7 @@ struct ArticleView: View {
                     }
                 }) {
                     Image(systemName: "xmark")
-                        .font(.ds.callout, weight: .medium))
+                        .font(.ds.callout).fontWeight(.medium)
                         .foregroundColor(.ds.textSecondary)
                         .frame(width: 30, height: 30)
                         .background(
@@ -627,7 +627,7 @@ struct ArticleView: View {
                 .frame(maxWidth: 250)
                 .background(
                     RoundedRectangle(cornerRadius: .ds.small, style: .continuous)
-                        .fill(DesignSystem.Colors.surface.opacity(0.9))
+                        .fill(DesignSystem.Colors.surface.opacity(0.9)
                 )
         }
     }
@@ -771,7 +771,7 @@ struct AuthorChip: View {
                         Circle()
                             .fill(DesignSystem.Colors.surfaceSecondary)
                             .overlay(
-                                Text(displayName.prefix(1).uppercased())
+                                Text(displayName.prefix(1).uppercased()
                                     .font(.ds.captionMedium)
                                     .foregroundColor(.ds.text)
                             )
@@ -780,14 +780,14 @@ struct AuthorChip: View {
                     Circle()
                         .fill(DesignSystem.Colors.surfaceSecondary)
                         .overlay(
-                            Text(displayName.prefix(1).uppercased())
+                            Text(displayName.prefix(1).uppercased()
                                 .font(.ds.captionMedium)
                                 .foregroundColor(.ds.text)
                         )
                 }
             }
             .frame(width: 28, height: 28)
-            .clipShape(Circle())
+            .clipShape(Circle()
             
             Text(displayName)
                 .font(.ds.footnoteMedium)
@@ -797,7 +797,7 @@ struct AuthorChip: View {
         .padding(.vertical, .ds.mini)
         .background(
             Capsule()
-                .fill(DesignSystem.Colors.surfaceSecondary.opacity(0.5))
+                .fill(DesignSystem.Colors.surfaceSecondary.opacity(0.5)
         )
     }
     
@@ -812,12 +812,12 @@ struct ReadingSettingsButton: View {
     var body: some View {
         Button(action: { showSettings = true }) {
             Image(systemName: "textformat.size")
-                .font(.ds.body, weight: .medium))
+                .font(.ds.body).fontWeight(.medium)
                 .foregroundColor(.ds.text)
                 .frame(width: 32, height: 32)
                 .background(
                     Circle()
-                        .fill(DesignSystem.Colors.surfaceSecondary.opacity(0.5))
+                        .fill(DesignSystem.Colors.surfaceSecondary.opacity(0.5)
                 )
         }
     }
@@ -881,7 +881,7 @@ struct RelatedArticlesSection: View {
                 authors: [currentArticle.author],
                 kinds: [30023], // Long-form content
                 limit: 10
-            ))
+            )
             
             // Articles with similar tags
             let articleTags = currentArticle.tags.filter { $0.count > 1 && $0[0] == "t" }.map { $0[1] }
@@ -893,7 +893,7 @@ struct RelatedArticlesSection: View {
                     kinds: [30023],
                     limit: 10,
                     tags: tagsFilter
-                ))
+                )
             }
             
             var allRelatedArticles: [Article] = []
@@ -954,14 +954,14 @@ struct RelatedArticleCard: View {
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: 160)
                                 .clipped()
-                                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
                         case .empty, .failure:
                             RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
                                 .fill(DesignSystem.Colors.surfaceSecondary)
                                 .frame(height: 160)
                                 .overlay(
                                     Image(systemName: "photo")
-                                        .font(.ds.title2))
+                                        .font(.ds.title2)
                                         .foregroundColor(.ds.textTertiary)
                                 )
                         @unknown default:
@@ -986,7 +986,7 @@ struct RelatedArticleCard: View {
                     }
                     
                     HStack {
-                        Text(PubkeyFormatter.formatShort(article.author))
+                        Text(PubkeyFormatter.formatShort(article.author)
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                         
@@ -1060,7 +1060,7 @@ struct ArticleFooter: View {
                                 .padding(.vertical, .ds.micro)
                                 .background(
                                     Capsule()
-                                        .fill(DesignSystem.Colors.primary.opacity(0.1))
+                                        .fill(DesignSystem.Colors.primary.opacity(0.1)
                                 )
                         }
                     }
@@ -1097,7 +1097,7 @@ struct ReadingSettingsView: View {
                     }
                     
                     Text("The quick brown fox jumps over the lazy dog")
-                        .font(.ds.body * fontScale))
+                        .font(.ds.body * fontScale)
                         .foregroundColor(.ds.textSecondary)
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -1142,7 +1142,7 @@ struct ArticleHighlightDetailView: View {
             VStack(alignment: .leading, spacing: .ds.large) {
                 // Highlight content
                 Text("\"\(highlight.content)\"")
-                    .font(.ds.title3, weight: .regular, design: .serif))
+                    .font(.ds.title3, weight: .regular, design: .serif)
                     .italic()
                     .foregroundColor(.ds.text)
                     .padding()
@@ -1170,17 +1170,17 @@ struct ArticleHighlightDetailView: View {
                         .fill(DesignSystem.Colors.surfaceSecondary)
                         .frame(width: 40, height: 40)
                         .overlay(
-                            Text(PubkeyFormatter.formatForAvatar(highlight.author))
+                            Text(PubkeyFormatter.formatForAvatar(highlight.author)
                                 .font(.ds.footnoteMedium)
                                 .foregroundColor(.ds.text)
                         )
                     
                     VStack(alignment: .leading) {
-                        Text(PubkeyFormatter.formatCompact(highlight.author))
+                        Text(PubkeyFormatter.formatCompact(highlight.author)
                             .font(.ds.footnoteMedium)
                             .foregroundColor(.ds.text)
                         
-                        Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
+                        Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt)
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                     }

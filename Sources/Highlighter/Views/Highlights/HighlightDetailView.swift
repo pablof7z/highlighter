@@ -13,12 +13,12 @@ struct RelatedHighlightPlaceholder: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.gray.opacity(0.2))
+                .fill(Color.gray.opacity(0.2)
                 .frame(height: 60)
                 .shimmer()
             
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.gray.opacity(0.2))
+                .fill(Color.gray.opacity(0.2)
                 .frame(height: 20)
                 .shimmer()
         }
@@ -56,23 +56,23 @@ struct CompactRelatedHighlightCard: View {
                                 .scaledToFill()
                         } placeholder: {
                             Circle()
-                                .fill(DesignSystem.Colors.primary.opacity(0.1))
+                                .fill(DesignSystem.Colors.primary.opacity(0.1)
                                 .overlay(
                                     Image(systemName: "person.fill")
-                                        .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
+                                        .foregroundColor(DesignSystem.Colors.primary.opacity(0.5)
                                 )
                         }
                     } else {
                         Circle()
-                            .fill(DesignSystem.Colors.primary.opacity(0.1))
+                            .fill(DesignSystem.Colors.primary.opacity(0.1)
                             .overlay(
                                 Image(systemName: "person.fill")
-                                    .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
+                                    .foregroundColor(DesignSystem.Colors.primary.opacity(0.5)
                             )
                     }
                 }
                 .frame(width: 24, height: 24)
-                .clipShape(Circle())
+                .clipShape(Circle()
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(author?.name ?? author?.displayName ?? "Anonymous")
@@ -81,7 +81,7 @@ struct CompactRelatedHighlightCard: View {
                         .foregroundColor(DesignSystem.Colors.text)
                         .lineLimit(1)
                     
-                    Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt))
+                    Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt)
                         .font(.caption2)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }

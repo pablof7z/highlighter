@@ -210,7 +210,7 @@ actor AIHighlightEngine {
         tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { range, _ in
             let sentence = String(text[range])
             let nsRange = NSRange(range, in: text)
-            sentences.append((sentence, nsRange))
+            sentences.append((sentence, nsRange)
             return true
         }
         
@@ -271,10 +271,10 @@ actor AIHighlightEngine {
         let words = text.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
         let wordCount = words.count
         let uniqueWords = Set(words.map { $0.lowercased() })
-        let uniqueWordRatio = Double(uniqueWords.count) / Double(max(1, wordCount))
+        let uniqueWordRatio = Double(uniqueWords.count) / Double(max(1, wordCount)
         
         // Position metrics
-        let sentencePosition = Double(sentenceIndex) / Double(max(1, totalSentences - 1))
+        let sentencePosition = Double(sentenceIndex) / Double(max(1, totalSentences - 1)
         let paragraphPosition = calculateParagraphPosition(for: text, in: fullText)
         
         // Named entities
@@ -365,7 +365,7 @@ actor AIHighlightEngine {
             }
         }
         
-        return Double(keywordCount) / Double(max(1, words.count))
+        return Double(keywordCount) / Double(max(1, words.count)
     }
     
     private func analyzeSentiment(_ text: String) async -> Double {
@@ -373,7 +373,7 @@ actor AIHighlightEngine {
     }
     
     private func calculateReadability(text: String, wordCount: Int) -> Double {
-        let sentences = text.components(separatedBy: CharacterSet(charactersIn: ".!?"))
+        let sentences = text.components(separatedBy: CharacterSet(charactersIn: ".!?")
             .filter { !$0.isEmpty }
         let sentenceCount = max(1, sentences.count)
         
@@ -610,7 +610,7 @@ actor AIHighlightEngine {
     private func findRelatedTopics(in text: String, from topics: [String]) -> [String] {
         let lowerText = text.lowercased()
         return topics.filter { topic in
-            lowerText.contains(topic.lowercased())
+            lowerText.contains(topic.lowercased()
         }.prefix(3).map { $0 }
     }
     
@@ -663,7 +663,7 @@ actor AIHighlightEngine {
         }
         
         // Ensure confidence is between 0 and 1
-        return min(1.0, max(0.0, confidence))
+        return min(1.0, max(0.0, confidence)
     }
     
     // MARK: - Document Analysis
@@ -673,11 +673,11 @@ actor AIHighlightEngine {
         let totalWords = words.count
         let totalSentences = sentences.count
         
-        let averageSentenceLength = Double(totalWords) / Double(max(1, totalSentences))
+        let averageSentenceLength = Double(totalWords) / Double(max(1, totalSentences)
         
         // Lexical diversity (unique words / total words)
         let uniqueWords = Set(words.map { $0.lowercased() })
-        let lexicalDiversity = Double(uniqueWords.count) / Double(max(1, totalWords))
+        let lexicalDiversity = Double(uniqueWords.count) / Double(max(1, totalWords)
         
         // Readability score (simplified)
         let readabilityScore = calculateOverallReadability(
@@ -689,7 +689,7 @@ actor AIHighlightEngine {
         let technicalWords = words.filter { word in
             word.count > 8 || countTechnicalTerms(in: [word]) > 0
         }
-        let technicalDensity = Double(technicalWords.count) / Double(max(1, totalWords))
+        let technicalDensity = Double(technicalWords.count) / Double(max(1, totalWords)
         
         // Top keywords
         let topKeywords = await keywordExtractor.extractTopKeywords(from: text, count: 10)
@@ -723,7 +723,7 @@ actor AIHighlightEngine {
             score *= 0.8
         }
         
-        return min(1.0, max(0.0, score))
+        return min(1.0, max(0.0, score)
     }
     
     private func identifyKeyTopics(from text: String) async -> [String] {
@@ -760,7 +760,7 @@ actor AIHighlightEngine {
         // Inverse readability contributes to complexity
         score += (1.0 - metrics.readabilityScore) * 0.1
         
-        return min(1.0, max(0.0, score))
+        return min(1.0, max(0.0, score)
     }
 }
 
@@ -780,7 +780,7 @@ actor NLPProcessor {
             if let tag = tag,
                tag == .personalName || tag == .placeName || tag == .organizationName {
                 let entity = String(text[tokenRange])
-                entities.append((entity, tag))
+                entities.append((entity, tag)
             }
             return true
         }
@@ -826,7 +826,7 @@ actor KeywordExtractor {
         let filteredWords = wordFrequencies.filter { !stopwords.contains($0.key) }
         
         // Sort by frequency and return top N
-        return Array(filteredWords.sorted { $0.value > $1.value }.prefix(count))
+        return Array(filteredWords.sorted { $0.value > $1.value }.prefix(count)
     }
 }
 
@@ -888,6 +888,6 @@ struct ImportanceCalculator {
         }
         
         // Normalize score
-        return min(1.0, max(0.0, score))
+        return min(1.0, max(0.0, score)
     }
 }

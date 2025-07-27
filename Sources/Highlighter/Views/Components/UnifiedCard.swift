@@ -28,7 +28,7 @@ struct UnifiedCard<Content: View>: View {
                 Button(action: action) {
                     cardContent
                 }
-                .buttonStyle(PlainButtonStyle()
+                .buttonStyle(PlainButtonStyle())
             } else {
                 cardContent
             }
@@ -261,7 +261,7 @@ struct ModernHighlightCard: View {
                                 .font(.ds.body)
                                 .foregroundColor(isZapped ? .ds.warning : .ds.textSecondary)
                         }
-                        .buttonStyle(PlainButtonStyle()
+                        .buttonStyle(PlainButtonStyle())
                         
                         // Time
                         Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt)

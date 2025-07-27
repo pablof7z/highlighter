@@ -209,7 +209,7 @@ struct ReadingStatsView: View {
                     .fontWeight(.medium)
             } icon: {
                 Image(systemName: "book.fill")
-                    .font(.ds.caption))
+                    .font(.ds.caption)
             }
             .foregroundColor(DesignSystem.Colors.textSecondary)
             
@@ -218,12 +218,12 @@ struct ReadingStatsView: View {
             
             // Reading time
             Label {
-                Text(formatReadingTime(progress.totalReadingTime))
+                Text(formatReadingTime(progress.totalReadingTime)
                     .font(.ds.caption)
                     .fontWeight(.medium)
             } icon: {
                 Image(systemName: "clock")
-                    .font(.ds.caption))
+                    .font(.ds.caption)
             }
             .foregroundColor(DesignSystem.Colors.textSecondary)
         }

@@ -26,7 +26,7 @@ struct ModernArticleListCard: View {
                                 .clipped()
                         case .failure(_), .empty:
                             Rectangle()
-                                .fill(Color.gray.opacity(0.1))
+                                .fill(Color.gray.opacity(0.1)
                                 .frame(height: 180)
                                 .overlay {
                                     Image(systemName: "photo")
@@ -60,7 +60,7 @@ struct ModernArticleListCard: View {
                         HStack(spacing: DesignSystem.Spacing.mini) {
                             ProfileImage(pubkey: article.author, size: 24)
                             
-                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
+                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author)
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                         }
@@ -76,7 +76,7 @@ struct ModernArticleListCard: View {
                         if let publishedAt = article.publishedAt {
                             Text("•")
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
-                            Text(publishedAt.formatted(.relative(presentation: .named)))
+                            Text(publishedAt.formatted(.relative(presentation: .named))
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                         }
@@ -145,8 +145,8 @@ struct ModernArticleFeaturedCard: View {
                                 .frame(width: 280, height: 200)
                                 .overlay {
                                     Image(systemName: "photo")
-                                        .font(.system(size: 40))
-                                        .foregroundColor(.gray.opacity(0.5))
+                                        .font(.system(size: 40)
+                                        .foregroundColor(.gray.opacity(0.5)
                                 }
                         @unknown default:
                             EmptyView()
@@ -179,7 +179,7 @@ struct ModernArticleFeaturedCard: View {
                         HStack(spacing: DesignSystem.Spacing.mini) {
                             ProfileImage(pubkey: article.author, size: 24)
                             
-                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
+                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author)
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                                 .lineLimit(1)
@@ -234,7 +234,7 @@ struct ModernArticleRowCard: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: 100, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .clipShape(RoundedRectangle(cornerRadius: 12)
                         case .failure(_), .empty:
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(
@@ -250,7 +250,7 @@ struct ModernArticleRowCard: View {
                                 .frame(width: 100, height: 100)
                                 .overlay {
                                     Image(systemName: "photo")
-                                        .foregroundColor(.gray.opacity(0.5))
+                                        .foregroundColor(.gray.opacity(0.5)
                                 }
                         @unknown default:
                             EmptyView()
@@ -284,7 +284,7 @@ struct ModernArticleRowCard: View {
                         HStack(spacing: 4) {
                             ProfileImage(pubkey: article.author, size: 20)
                             
-                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
+                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author)
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                                 .lineLimit(1)
@@ -302,7 +302,7 @@ struct ModernArticleRowCard: View {
                             if let publishedAt = article.publishedAt {
                                 Text("•")
                                     .foregroundColor(DesignSystem.Colors.textSecondary)
-                                Text(RelativeTimeFormatter.relativeTime(from: publishedAt))
+                                Text(RelativeTimeFormatter.relativeTime(from: publishedAt)
                                     .font(DesignSystem.Typography.caption)
                                     .foregroundColor(DesignSystem.Colors.textSecondary)
                                     .lineLimit(1)

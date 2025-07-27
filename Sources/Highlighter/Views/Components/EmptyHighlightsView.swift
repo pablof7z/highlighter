@@ -26,7 +26,7 @@ struct EmptyHighlightsView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .frame(width: CGFloat.random(in: 40...80))
+                    .frame(width: CGFloat.random(in: 40...80)
                     .blur(radius: 10)
                     .offset(
                         x: particlesAnimation ? CGFloat.random(in: -150...150) : 0,
@@ -34,7 +34,7 @@ struct EmptyHighlightsView: View {
                     )
                     .opacity(particlesAnimation ? 0.6 : 0)
                     .animation(
-                        .easeInOut(duration: Double.random(in: 8...12))
+                        .easeInOut(duration: Double.random(in: 8...12)
                         .repeatForever(autoreverses: true)
                         .delay(Double(index) * 0.5),
                         value: particlesAnimation
@@ -89,7 +89,7 @@ struct EmptyHighlightsView: View {
                         )
                     
                     Image(systemName: "highlighter")
-                        .font(.system(size: 40, weight: .light))
+                        .font(.system(size: 40, weight: .light)
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [
@@ -100,7 +100,7 @@ struct EmptyHighlightsView: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .rotationEffect(.degrees(iconRotation))
+                        .rotationEffect(.degrees(iconRotation)
                 }
                 
                 VStack(spacing: 20) {
@@ -266,7 +266,7 @@ struct ActionPill: View {
                 }
             }
         )
-        .scaleEffect(isPressed ? 0.92 : (isHovered ? 1.08 : 1))
+        .scaleEffect(isPressed ? 0.92 : (isHovered ? 1.08 : 1)
         .onHover { hovering in
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                 isHovered = hovering

@@ -149,7 +149,7 @@ class SwarmHighlightManager: ObservableObject {
         for highlight in swarmHighlights {
             if let range = text.range(of: highlight.text) {
                 let nsRange = NSRange(range, in: text)
-                results.append((nsRange, highlight))
+                results.append((nsRange, highlight)
             }
         }
         

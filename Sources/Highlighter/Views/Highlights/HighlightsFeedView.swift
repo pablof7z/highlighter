@@ -41,7 +41,7 @@ struct HighlightsFeedView: View {
                 
                 if highlights.isEmpty {
                     EmptyHighlightsView()
-                        .transition(.scale.combined(with: .opacity))
+                        .transition(.scale.combined(with: .opacity)
                 } else {
                     // Wrap in ScrollView for pull-to-refresh
                     ScrollView(.vertical, showsIndicators: false) {
@@ -87,7 +87,7 @@ struct HighlightsFeedView: View {
                             }
                         }
                     }
-                    .gesture(createDragGesture())
+                    .gesture(createDragGesture()
                     .frame(width: geometry.size.width, height: geometry.size.height)
                 }
                 .refreshable {
@@ -106,7 +106,7 @@ struct HighlightsFeedView: View {
                         
                         Spacer()
                     }
-                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .transition(.move(edge: .top).combined(with: .opacity)
                     .allowsHitTesting(false)
                 }
             }
@@ -471,20 +471,20 @@ struct HighlightFeedItemView: View {
                     HStack {
                         HStack(spacing: 4) {
                             Text(sourceText)
-                                .font(.ds.footnote, weight: .medium))
-                                .foregroundColor(.white.opacity(0.8))
+                                .font(.ds.footnote).fontWeight(.medium)
+                                .foregroundColor(.white.opacity(0.8)
                             Text("·")
-                                .font(.ds.footnote, weight: .medium))
-                                .foregroundColor(.white.opacity(0.8))
-                            Text(relativeTime(from: highlight.createdAt))
-                                .font(.ds.footnote, weight: .medium))
-                                .foregroundColor(.white.opacity(0.8))
+                                .font(.ds.footnote).fontWeight(.medium)
+                                .foregroundColor(.white.opacity(0.8)
+                            Text(relativeTime(from: highlight.createdAt)
+                                .font(.ds.footnote).fontWeight(.medium)
+                                .foregroundColor(.white.opacity(0.8)
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
                         .background(
                             Capsule()
-                                .fill(Color.black.opacity(0.3))
+                                .fill(Color.black.opacity(0.3)
                                 .overlay(
                                     Capsule()
                                         .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
@@ -500,7 +500,7 @@ struct HighlightFeedItemView: View {
                     
                     // Main Quote Block (centered vertically)
                     Text(highlight.content)
-                        .font(.ds.bodyMedium, design: .serif))
+                        .font(.ds.bodyMedium, design: .serif)
                         .foregroundColor(.white)
                         .lineSpacing(10)
                         .multilineTextAlignment(.center)
@@ -514,16 +514,16 @@ struct HighlightFeedItemView: View {
                         HStack(spacing: 10) {
                             // Small avatar or placeholder
                             Circle()
-                                .fill(Color.white.opacity(0.2))
+                                .fill(Color.white.opacity(0.2)
                                 .frame(width: 32, height: 32)
                                 .overlay(
                                     Text(authorInitial)
-                                        .font(.ds.callout, weight: .medium))
+                                        .font(.ds.callout).fontWeight(.medium)
                                         .foregroundColor(.white)
                                 )
                             
                             Text(authorName)
-                                .font(.ds.footnote, weight: .regular))
+                                .font(.ds.footnote).fontWeight(.regular)
                                 .foregroundColor(.white)
                             
                             // Follow button only shown if not already following
@@ -555,11 +555,11 @@ struct HighlightFeedItemView: View {
                                 VStack(spacing: 4) {
                                     ZStack {
                                         Circle()
-                                            .fill(Color.black.opacity(0.3))
+                                            .fill(Color.black.opacity(0.3)
                                             .frame(width: 42, height: 42)
                                         
                                         Image(systemName: isLiked ? "heart.fill" : "heart")
-                                            .font(.ds.title3))
+                                            .font(.ds.title3)
                                             .foregroundColor(isLiked ? .red : .white)
                                             .scaleEffect(isLiked ? 1.1 : 1.0)
                                     }
@@ -572,19 +572,19 @@ struct HighlightFeedItemView: View {
                                 VStack(spacing: 4) {
                                     ZStack {
                                         Circle()
-                                            .fill(Color.black.opacity(0.3))
+                                            .fill(Color.black.opacity(0.3)
                                             .frame(width: 42, height: 42)
                                         
                                         Image(systemName: "message")
-                                            .font(.ds.headline))
+                                            .font(.ds.headline)
                                             .foregroundColor(.white)
                                     }
                                     .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
                                     
                                     if commentCount > 0 {
                                         Text("\(commentCount)")
-                                            .font(.ds.caption2))
-                                            .foregroundColor(.white.opacity(0.8))
+                                            .font(.ds.caption2)
+                                            .foregroundColor(.white.opacity(0.8)
                                     }
                                 }
                             }
@@ -597,11 +597,11 @@ struct HighlightFeedItemView: View {
                             }) {
                                 ZStack {
                                     Circle()
-                                        .fill(Color.black.opacity(0.3))
+                                        .fill(Color.black.opacity(0.3)
                                         .frame(width: 42, height: 42)
                                     
                                     Image(systemName: "arrow.2.squarepath")
-                                        .font(.ds.headline))
+                                        .font(.ds.headline)
                                         .foregroundColor(.white)
                                 }
                                 .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
@@ -611,11 +611,11 @@ struct HighlightFeedItemView: View {
                             Button(action: onShare) {
                                 ZStack {
                                     Circle()
-                                        .fill(Color.black.opacity(0.3))
+                                        .fill(Color.black.opacity(0.3)
                                         .frame(width: 42, height: 42)
                                     
                                     Image(systemName: "square.and.arrow.up")
-                                        .font(.ds.headline))
+                                        .font(.ds.headline)
                                         .foregroundColor(.white)
                                 }
                                 .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
@@ -629,7 +629,7 @@ struct HighlightFeedItemView: View {
                 // Double tap heart animation
                 if showHeartAnimation {
                     Image(systemName: "heart.fill")
-                        .font(.ds.caption0))
+                        .font(.ds.caption0)
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.red, .pink],
@@ -683,7 +683,7 @@ struct HighlightFeedItemView: View {
         if let name = author?.name ?? author?.displayName {
             return name.count > 20 ? String(name.prefix(17)) + "..." : name
         } else {
-            return String(highlight.author.prefix(8))
+            return String(highlight.author.prefix(8)
         }
     }
     
@@ -694,7 +694,7 @@ struct HighlightFeedItemView: View {
     private func relativeTime(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
+        return formatter.localizedString(for: date, relativeTo: Date()
     }
 }
 struct HighlightProgressIndicator: View {
@@ -706,7 +706,7 @@ struct HighlightProgressIndicator: View {
         HStack(spacing: 4) {
             ForEach(0..<total, id: \.self) { index in
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(index == currentIndex ? Color.white : Color.white.opacity(0.3))
+                    .fill(index == currentIndex ? Color.white : Color.white.opacity(0.3)
                     .frame(height: 3)
                     .scaleEffect(x: index == currentIndex ? animatedProgress : 1, y: 1, anchor: .leading)
             }

@@ -61,8 +61,8 @@ struct SwarmOverlayView: View {
                     opacity: heatmapOpacity
                 )
                 .allowsHitTesting(false)
-                .blur(radius: 6 + (swarmActivityLevel * 4))
-                .scaleEffect(1 + (swarmActivityLevel * 0.05))
+                .blur(radius: 6 + (swarmActivityLevel * 4)
+                .scaleEffect(1 + (swarmActivityLevel * 0.05)
                 
                 // Connection paths between highlights
                 if highlightPath.isEmpty == false {
@@ -137,7 +137,7 @@ struct SwarmOverlayView: View {
                 .transition(.asymmetric(
                     insertion: .scale(scale: 0.8).combined(with: .opacity),
                     removal: .scale(scale: 0.9).combined(with: .opacity)
-                ))
+                )
                 .zIndex(1000)
             }
         }
@@ -401,10 +401,10 @@ struct ParticleView: View {
             )
             .frame(width: 10 * particle.scale, height: 10 * particle.scale)
             .position(x: particle.x + offset.width, y: particle.y + offset.height)
-            .rotationEffect(.degrees(rotation))
+            .rotationEffect(.degrees(rotation)
             .onAppear {
                 withAnimation(
-                    .easeInOut(duration: .random(in: 3...6))
+                    .easeInOut(duration: .random(in: 3...6)
                     .repeatForever(autoreverses: true)
                 ) {
                     offset = CGSize(
@@ -449,7 +449,7 @@ struct SwarmTextView: UIViewRepresentable {
             .foregroundColor: UIColor.label,
             .paragraphStyle: paragraphStyle,
             .kern: 0.2
-        ], range: NSRange(location: 0, length: text.count))
+        ], range: NSRange(location: 0, length: text.count)
         
         // Apply swarm highlights with advanced visual effects
         for (range, highlight) in swarmHighlights {
@@ -458,11 +458,11 @@ struct SwarmTextView: UIViewRepresentable {
             
             // Dynamic color based on intensity and animation state
             let baseAlpha = isNewHighlight ? 0.8 : 0.3
-            let underlineColor = UIColor.systemOrange.withAlphaComponent(baseAlpha + (intensity * 0.7))
+            let underlineColor = UIColor.systemOrange.withAlphaComponent(baseAlpha + (intensity * 0.7)
             
             // Multi-layer background effect
             let backgroundAlpha = isNewHighlight ? 0.2 : 0.05
-            let backgroundColor = UIColor.systemOrange.withAlphaComponent(backgroundAlpha + (intensity * 0.15))
+            let backgroundColor = UIColor.systemOrange.withAlphaComponent(backgroundAlpha + (intensity * 0.15)
             
             // Apply attributes with animation consideration
             var attributes: [NSAttributedString.Key: Any] = [
@@ -630,7 +630,7 @@ struct SwarmPopover: View {
                 
                 // Quoted text
                 Text("\"\(highlight.text)\"")
-                    .font(.footnote.italic())
+                    .font(.footnote.italic()
                     .foregroundColor(.secondary)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -655,7 +655,7 @@ struct SwarmPopover: View {
                     .foregroundColor(.orange)
                     .symbolEffect(.pulse, value: pulseScale)
                 AnimatedNumber(value: highlight.totalHighlighters, duration: 0.8, suffix: " highlighters")
-                    .font(.caption.weight(.medium))
+                    .font(.caption.weight(.medium)
             }
             
             if highlight.totalZaps > 0 {
@@ -665,7 +665,7 @@ struct SwarmPopover: View {
                         .foregroundColor(.orange)
                         .symbolEffect(.bounce, value: pulseScale)
                     AnimatedNumber(value: highlight.totalZaps, duration: 0.8, suffix: " zaps")
-                        .font(.caption.weight(.medium))
+                        .font(.caption.weight(.medium)
                 }
             }
         }
@@ -682,13 +682,13 @@ struct SwarmPopover: View {
         }) {
             ZStack {
                 Circle()
-                    .fill(Color.orange.opacity(0.1))
+                    .fill(Color.orange.opacity(0.1)
                     .frame(width: 36, height: 36)
                 
                 Image(systemName: "chevron.down")
-                    .font(.ds.callout, weight: .bold))
+                    .font(.ds.calloutMedium)
                     .foregroundColor(.orange)
-                    .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                    .rotationEffect(.degrees(isExpanded ? 180 : 0)
             }
         }
         .scaleEffect(pulseScale)
@@ -719,7 +719,7 @@ struct SwarmPopover: View {
             )
             .opacity(glowIntensity)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 16)
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .strokeBorder(
@@ -760,7 +760,7 @@ struct SwarmPopover: View {
         ZStack {
             // Main background
             RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? Color.ds.background.opacity(0.95) : Color.ds.surface.opacity(0.98))
+                .fill(colorScheme == .dark ? Color.ds.background.opacity(0.95) : Color.ds.surface.opacity(0.98)
             
             // Animated shadow layers
             ForEach(0..<3) { i in
@@ -873,14 +873,14 @@ struct SwarmHighlightRow: View {
                                 )
                             )
                             .overlay(
-                                Text(String(info.profile?.name?.first ?? "?"))
-                                    .font(.caption.weight(.bold))
+                                Text(String(info.profile?.name?.first ?? "?")
+                                    .font(.caption.weight(.bold)
                                     .foregroundColor(.orange)
                             )
                     }
                 }
                 .frame(width: 32, height: 32)
-                .clipShape(Circle())
+                .clipShape(Circle()
                 .overlay(
                     Circle()
                         .stroke(Color.orange.opacity(0.2), lineWidth: 1)
@@ -892,7 +892,7 @@ struct SwarmHighlightRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(info.profile?.displayName ?? info.profile?.name ?? "Anonymous")
-                        .font(.footnote.weight(.semibold))
+                        .font(.footnote.weight(.semibold)
                         .foregroundColor(isHovered ? .orange : .primary)
                     
                     Spacer()
@@ -900,7 +900,7 @@ struct SwarmHighlightRow: View {
                     // Real-time zap counter
                     ZapCountView(highlightInfo: info)
                     
-                    Text(info.createdAt.formatted(.relative(presentation: .named)))
+                    Text(info.createdAt.formatted(.relative(presentation: .named))
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
@@ -954,7 +954,7 @@ struct SwarmHighlightRow: View {
                                     AnyShapeStyle(Color.orange)
                             )
                             .scaleEffect(showZapAnimation ? 1.3 : 1.0)
-                            .rotationEffect(.degrees(showZapAnimation ? 360 : 0))
+                            .rotationEffect(.degrees(showZapAnimation ? 360 : 0)
                     }
                 }
                 .buttonStyle(.plain)
@@ -1085,8 +1085,8 @@ struct CosmicBackgroundView: View {
                 let time = timeline.date.timeIntervalSinceReferenceDate
                 
                 for particle in particles {
-                    let x = particle.x + cos(particle.angle * .pi / 180) * particle.speed * CGFloat(time.truncatingRemainder(dividingBy: 20))
-                    let y = particle.y + sin(particle.angle * .pi / 180) * particle.speed * CGFloat(time.truncatingRemainder(dividingBy: 20))
+                    let x = particle.x + cos(particle.angle * .pi / 180) * particle.speed * CGFloat(time.truncatingRemainder(dividingBy: 20)
+                    let y = particle.y + sin(particle.angle * .pi / 180) * particle.speed * CGFloat(time.truncatingRemainder(dividingBy: 20)
                     
                     let wrappedX = x.truncatingRemainder(dividingBy: size.width + 100) - 50
                     let wrappedY = y.truncatingRemainder(dividingBy: size.height + 100) - 50
@@ -1146,7 +1146,7 @@ struct LiveSwarmActivityIndicator: View {
                     .fill(Color.orange)
                     .frame(width: 4, height: 4)
                     .offset(x: 15)
-                    .rotationEffect(.degrees(Double(index) * 45 + rotationAngle))
+                    .rotationEffect(.degrees(Double(index) * 45 + rotationAngle)
                     .opacity(activityLevel > Double(index) / 8 ? 1 : 0.3)
                     .scaleEffect(isPulsing && activityLevel > Double(index) / 8 ? 1.2 : 1)
             }
@@ -1320,7 +1320,7 @@ struct IntensityMeterView: View {
                 ZStack(alignment: .leading) {
                     // Background
                     Capsule()
-                        .fill(Color.ds.textTertiary.opacity(0.2))
+                        .fill(Color.ds.textTertiary.opacity(0.2)
                         .frame(height: 20)
                     
                     // Intensity bar
@@ -1368,7 +1368,7 @@ struct StatCard: View {
                 .scaleEffect(scaleEffect)
             
             Text("\(value)")
-                .font(.title3.bold().monospacedDigit())
+                .font(.title3.bold().monospacedDigit()
                 .foregroundColor(.primary)
             
             Text(label)
@@ -1379,7 +1379,7 @@ struct StatCard: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(color.opacity(0.1))
+                .fill(color.opacity(0.1)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(color.opacity(0.3), lineWidth: 1)
@@ -1411,8 +1411,8 @@ struct ActivityTimelineView: View {
                                 .fill(Color.orange)
                                 .frame(width: 8, height: 8)
                             
-                            Text(info.createdAt.formatted(.dateTime.hour().minute()))
-                                .font(.system(size: 8))
+                            Text(info.createdAt.formatted(.dateTime.hour().minute())
+                                .font(.system(size: 8)
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -1442,21 +1442,21 @@ struct ZapCountView: View {
                     if isLoading && highlightInfo.zapCount > 0 {
                         // Show stored count while loading real data
                         Text("\(highlightInfo.zapCount)")
-                            .font(.caption2.monospacedDigit())
+                            .font(.caption2.monospacedDigit()
                             .foregroundColor(.orange)
                     } else {
                         // Show real count
                         Text("\(realZapCount)")
-                            .font(.caption2.monospacedDigit())
+                            .font(.caption2.monospacedDigit()
                             .foregroundColor(.orange)
-                            .contentTransition(.numericText())
+                            .contentTransition(.numericText()
                     }
                 }
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(
                     Capsule()
-                        .fill(Color.orange.opacity(0.1))
+                        .fill(Color.orange.opacity(0.1)
                 )
             }
         }

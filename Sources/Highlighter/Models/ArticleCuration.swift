@@ -73,7 +73,7 @@ struct ArticleCuration: Identifiable, Equatable, Hashable {
             if let timestampStr = tag.last,
                let timestamp = Int64(timestampStr),
                tag.count > 2 {
-                self.addedAt = Date(timeIntervalSince1970: TimeInterval(timestamp))
+                self.addedAt = Date(timeIntervalSince1970: TimeInterval(timestamp)
             } else {
                 self.addedAt = Date()
             }
@@ -88,7 +88,7 @@ struct ArticleCuration: Identifiable, Equatable, Hashable {
         self.id = event.id
         self.event = event
         self.author = event.pubkey
-        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt)
         
         // Parse d tag for identifier
         let dTag = event.tags.first { $0.first == "d" }
@@ -115,10 +115,10 @@ struct ArticleCuration: Identifiable, Equatable, Hashable {
             case "updated_at":
                 if tag.count > 1,
                    let timestamp = Int64(tag[1]) {
-                    updatedAt = Date(timeIntervalSince1970: TimeInterval(timestamp))
+                    updatedAt = Date(timeIntervalSince1970: TimeInterval(timestamp)
                 }
             case "r", "e", "a":
-                articles.append(ArticleReference(from: tag))
+                articles.append(ArticleReference(from: tag)
             default:
                 break
             }
@@ -153,7 +153,7 @@ struct ArticleCuration: Identifiable, Equatable, Hashable {
             tags.append(["image", image])
         }
         
-        let timestamp = String(Int64(Date().timeIntervalSince1970))
+        let timestamp = String(Int64(Date().timeIntervalSince1970)
         
         for article in articles {
             switch article.type {

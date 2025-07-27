@@ -117,7 +117,7 @@ class ImageUploadService {
         return await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
                 UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
-                image.draw(in: CGRect(origin: .zero, size: newSize))
+                image.draw(in: CGRect(origin: .zero, size: newSize)
                 let resizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? image
                 UIGraphicsEndImageContext()
                 continuation.resume(returning: resizedImage)

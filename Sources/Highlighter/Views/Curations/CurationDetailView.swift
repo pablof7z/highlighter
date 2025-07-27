@@ -70,7 +70,7 @@ struct CurationDetailView: View {
                             if let description = curation.description {
                                 Text(description)
                                     .font(DesignSystem.Typography.body)
-                                    .foregroundColor(.white.opacity(0.9))
+                                    .foregroundColor(.white.opacity(0.9)
                                     .lineLimit(2)
                             }
                         }
@@ -80,7 +80,7 @@ struct CurationDetailView: View {
                     // Curator info
                     HStack {
                         Image(systemName: "person.circle.fill")
-                            .font(.system(size: 44))
+                            .font(.system(size: 44)
                             .foregroundColor(DesignSystem.Colors.primary)
                         
                         VStack(alignment: .leading, spacing: 4) {
@@ -217,7 +217,7 @@ struct CurationDetailView: View {
                         kind: kind,
                         pubkey: String(parts[1]),
                         identifier: String(parts[2])
-                    ))
+                    )
                 }
             }
         }
@@ -294,7 +294,7 @@ struct CurationDetailView: View {
     private func relativeTime(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
+        return formatter.localizedString(for: date, relativeTo: Date()
     }
 }
 
@@ -338,7 +338,7 @@ struct ArticleCard: View {
     private func relativeTime(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
+        return formatter.localizedString(for: date, relativeTo: Date()
     }
 }
 
@@ -346,8 +346,8 @@ struct EmptyArticlesView: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "doc.text.magnifyingglass")
-                .font(.system(size: 48))
-                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
+                .font(.system(size: 48)
+                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5)
             
             Text("No articles yet")
                 .font(DesignSystem.Typography.body)
@@ -360,7 +360,7 @@ struct EmptyArticlesView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
-        .background(DesignSystem.Colors.surface.opacity(0.5))
+        .background(DesignSystem.Colors.surface.opacity(0.5)
         .cornerRadius(DesignSystem.CornerRadius.medium)
     }
 }
@@ -415,7 +415,7 @@ struct LoadedArticleCard: View {
                             Text("•")
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                             
-                            Text(relativeTime(from: article.createdAt))
+                            Text(relativeTime(from: article.createdAt)
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                             
@@ -457,7 +457,7 @@ struct LoadedArticleCard: View {
     private func relativeTime(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
+        return formatter.localizedString(for: date, relativeTo: Date()
     }
 }
 
@@ -481,7 +481,7 @@ struct AddArticleSheet: View {
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 TextField("https://...", text: $articleUrl)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .textFieldStyle(RoundedBorderTextFieldStyle()
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                 

@@ -147,7 +147,7 @@ struct UserRow: View {
             // User info
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(profile?.displayName ?? profile?.name ?? PubkeyFormatter.formatShort(pubkey))
+                    Text(profile?.displayName ?? profile?.name ?? PubkeyFormatter.formatShort(pubkey)
                         .font(.ds.bodyMedium)
                         .foregroundColor(.ds.text)
                     
@@ -212,7 +212,7 @@ struct UserRow: View {
             )
             .frame(width: 48, height: 48)
             .overlay(
-                Text(String((profile?.displayName ?? profile?.name ?? "A").prefix(1)))
+                Text(String((profile?.displayName ?? profile?.name ?? "A").prefix(1))
                     .font(.ds.bodyMedium)
                     .foregroundColor(.white)
             )
@@ -246,7 +246,7 @@ struct LoadingView: View {
     var body: some View {
         VStack(spacing: .ds.large) {
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .ds.primary))
+                .progressViewStyle(CircularProgressViewStyle(tint: .ds.primary)
                 .scaleEffect(1.2)
             
             Text("Loading...")
@@ -267,8 +267,8 @@ struct FollowersEmptyStateView: View {
     var body: some View {
         VStack(spacing: .ds.large) {
             Image(systemName: icon)
-                .font(.system(size: 60))
-                .foregroundColor(.ds.primary.opacity(0.5))
+                .font(.system(size: 60)
+                .foregroundColor(.ds.primary.opacity(0.5)
                 .symbolRenderingMode(.hierarchical)
             
             VStack(spacing: .ds.small) {

@@ -163,7 +163,7 @@ struct LightningWalletView: View {
             
             HStack(alignment: .firstTextBaseline, spacing: .ds.micro) {
                 Text("\(lightning.balance.formatted())")
-                    .font(.ds.bodyBold, design: .rounded))
+                    .font(.ds.bodyBold, design: .rounded)
                     .foregroundColor(.ds.text)
                 
                 Text("sats")
@@ -173,7 +173,7 @@ struct LightningWalletView: View {
         }
         
         let lightningIcon = Image(systemName: "bolt.fill")
-            .font(.ds.largeTitle))
+            .font(.ds.largeTitle)
             .foregroundColor(.orange)
         
         return VStack(spacing: .ds.medium) {
@@ -196,7 +196,7 @@ struct LightningWalletView: View {
                 endPoint: .bottomTrailing
             )
         )
-        .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous)
         .modernCard()
     }
     
@@ -286,9 +286,9 @@ struct SplitIndicator: View {
                 
                 Circle()
                     .trim(from: 0, to: animatedPercentage)
-                    .stroke(color, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .stroke(color, style: StrokeStyle(lineWidth: 4, lineCap: .round)
                     .frame(width: 60, height: 60)
-                    .rotationEffect(.degrees(-90))
+                    .rotationEffect(.degrees(-90)
                 
                 Text("\(Int(percentage * 100))%")
                     .font(.ds.captionMedium)
@@ -318,13 +318,13 @@ struct TransactionRow: View {
                 // Icon with animation
                 ZStack {
                     Circle()
-                        .fill(Color.orange.opacity(0.1))
+                        .fill(Color.orange.opacity(0.1)
                         .frame(width: 40, height: 40)
                     
                     Image(systemName: "bolt.fill")
-                        .font(.ds.body))
+                        .font(.ds.body)
                         .foregroundColor(.orange)
-                        .rotationEffect(.degrees(isPressed ? 360 : 0))
+                        .rotationEffect(.degrees(isPressed ? 360 : 0)
                 }
                 
                 VStack(alignment: .leading, spacing: .ds.micro) {
@@ -343,7 +343,7 @@ struct TransactionRow: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: .ds.micro) {
-                    Text(transaction.timestamp.formatted(.relative(presentation: .named)))
+                    Text(transaction.timestamp.formatted(.relative(presentation: .named))
                         .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                     
@@ -362,7 +362,7 @@ struct TransactionRow: View {
             }
             .padding(.ds.base)
             .background(Color.ds.surfaceSecondary)
-            .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
             .scaleEffect(isPressed ? 0.98 : 1)
         }
         .buttonStyle(PlainButtonStyle())
@@ -401,7 +401,7 @@ struct ConnectWalletSheet: View {
                         .frame(width: 120, height: 120)
                     
                     Image(systemName: "bolt.circle.fill")
-                        .font(.system(size: 60))
+                        .font(.system(size: 60)
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.orange, .yellow],
@@ -447,7 +447,7 @@ struct ConnectWalletSheet: View {
                     }
                     .padding(.ds.base)
                     .background(Color.ds.surfaceSecondary)
-                    .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
                 }
                 
                 HStack(spacing: .ds.medium) {
@@ -488,7 +488,7 @@ struct ConnectWalletSheet: View {
                         .frame(maxWidth: .infinity)
                 }
                 .unifiedPrimaryButton()
-                .disabled(connectionString.isEmpty || !connectionString.hasPrefix("nostr+walletconnect://"))
+                .disabled(connectionString.isEmpty || !connectionString.hasPrefix("nostr+walletconnect://")
             }
             .padding(.horizontal, .ds.screenPadding)
             .navigationTitle("Connect Wallet")
@@ -572,11 +572,11 @@ struct SplitConfigurationSheet: View {
                     Text("\(Int(totalPercentage * 100))%")
                         .font(.ds.bodyMedium)
                         .foregroundColor(isValid ? .green : .red)
-                        .contentTransition(.numericText())
+                        .contentTransition(.numericText()
                 }
                 .padding()
                 .background(Color.ds.surfaceSecondary)
-                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
                 
                 if !isValid {
                     HStack {
@@ -644,7 +644,7 @@ struct SplitSlider: View {
                 Text("\(Int(value * 100))%")
                     .font(.ds.bodyMedium)
                     .foregroundColor(.ds.text)
-                    .contentTransition(.numericText())
+                    .contentTransition(.numericText()
             }
             
             Slider(value: $value, in: 0...1, step: 0.05) {
@@ -679,7 +679,7 @@ struct TransactionDetailSheet: View {
                                 .frame(width: 100, height: 100)
                             
                             Image(systemName: "bolt.fill")
-                                .font(.system(size: 40))
+                                .font(.system(size: 40)
                                 .foregroundStyle(
                                     LinearGradient(
                                         colors: [.orange, .yellow],
@@ -693,7 +693,7 @@ struct TransactionDetailSheet: View {
                             .font(.ds.largeTitle)
                             .foregroundColor(.ds.text)
                         
-                        Text(transaction.timestamp.formatted(.dateTime))
+                        Text(transaction.timestamp.formatted(.dateTime)
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
                     }
@@ -711,7 +711,7 @@ struct TransactionDetailSheet: View {
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .background(Color.ds.surfaceSecondary)
-                                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
                         }
                     }
                     
@@ -766,11 +766,11 @@ struct SplitDetailRow: View {
         HStack {
             ZStack {
                 Circle()
-                    .fill(roleColor.opacity(0.1))
+                    .fill(roleColor.opacity(0.1)
                     .frame(width: 40, height: 40)
                 
                 Image(systemName: roleIcon)
-                    .font(.ds.body))
+                    .font(.ds.body)
                     .foregroundColor(roleColor)
             }
             
@@ -780,11 +780,11 @@ struct SplitDetailRow: View {
                     .foregroundColor(.ds.text)
                 
                 if let profile = profiles[split.recipientPubkey] {
-                    Text(profile.displayName ?? PubkeyFormatter.formatShort(split.recipientPubkey))
+                    Text(profile.displayName ?? PubkeyFormatter.formatShort(split.recipientPubkey)
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                 } else {
-                    Text(PubkeyFormatter.formatShort(split.recipientPubkey))
+                    Text(PubkeyFormatter.formatShort(split.recipientPubkey)
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                 }
@@ -798,7 +798,7 @@ struct SplitDetailRow: View {
         }
         .padding(.ds.base)
         .background(Color.ds.surfaceSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
     }
 }
 

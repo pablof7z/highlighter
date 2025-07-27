@@ -17,7 +17,7 @@ struct ContentView: View {
                 .transition(.asymmetric(
                     insertion: .opacity,
                     removal: .move(edge: .leading).combined(with: .opacity)
-                ))
+                )
         } else {
             TabView(selection: $selectedTab) {
                 SimplifiedHybridFeedView()

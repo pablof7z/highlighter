@@ -36,7 +36,7 @@ struct TappableAvatar: View {
             ZStack {
                 // Main avatar
                 avatarView
-                    .scaleEffect(isPressed ? 0.92 : (isHovering && enableHoverEffect ? 1.05 : 1.0))
+                    .scaleEffect(isPressed ? 0.92 : (isHovering && enableHoverEffect ? 1.05 : 1.0)
                     .animation(AnimationSystem.Curves.springBouncy, value: isPressed)
                     .animation(AnimationSystem.Curves.springSmooth, value: isHovering)
                     .shadow(
@@ -97,7 +97,7 @@ struct TappableAvatar: View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: size, height: size)
-                        .clipShape(Circle())
+                        .clipShape(Circle()
                         .overlay(
                             Circle()
                                 .strokeBorder(
@@ -112,13 +112,13 @@ struct TappableAvatar: View {
                                     lineWidth: 1
                                 )
                         )
-                        .transition(.opacity.combined(with: .scale))
+                        .transition(.opacity.combined(with: .scale)
                 case .failure(_):
                     placeholderAvatar
                         .overlay(
                             Image(systemName: "exclamationmark.triangle.fill")
-                                .font(.system(size: size * 0.3))
-                                .foregroundColor(.white.opacity(0.8))
+                                .font(.system(size: size * 0.3)
+                                .foregroundColor(.white.opacity(0.8)
                         )
                 case .empty:
                     ZStack {
@@ -132,7 +132,7 @@ struct TappableAvatar: View {
                                 style: StrokeStyle(lineWidth: 2, lineCap: .round)
                             )
                             .frame(width: size - 4, height: size - 4)
-                            .rotationEffect(.degrees(-90))
+                            .rotationEffect(.degrees(-90)
                             .onAppear {
                                 withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: false)) {
                                     loadingProgress = 1
@@ -218,6 +218,6 @@ private struct PressEventsModifier: ViewModifier {
 
 extension View {
     func pressEvents(onPress: @escaping () -> Void, onRelease: @escaping () -> Void) -> some View {
-        self.modifier(PressEventsModifier(onPress: onPress, onRelease: onRelease))
+        self.modifier(PressEventsModifier(onPress: onPress, onRelease: onRelease)
     }
 }

@@ -22,7 +22,7 @@ struct ArticleTimeEstimator {
         let minutes = Double(words) / wordsPerMinute
         
         // Round up to nearest minute, minimum 1 minute
-        return max(1, Int(ceil(minutes)))
+        return max(1, Int(ceil(minutes))
     }
     
     /// Format reading time for display

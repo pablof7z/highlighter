@@ -307,7 +307,7 @@ extension View {
     // MARK: - Tab Pills
     func unifiedTabPill(isSelected: Bool) -> some View {
         self
-            .font(.system(size: DesignSystem.TabPill.fontSize, weight: DesignSystem.TabPill.fontWeight))
+            .font(.system(size: DesignSystem.TabPill.fontSize, weight: DesignSystem.TabPill.fontWeight)
             .foregroundColor(isSelected ? DesignSystem.TabPill.selectedTextColor : DesignSystem.TabPill.unselectedTextColor)
             .padding(.horizontal, DesignSystem.TabPill.horizontalPadding)
             .padding(.vertical, DesignSystem.TabPill.verticalPadding)
@@ -396,25 +396,25 @@ extension View {
     
     
     func pulseGently() -> some View {
-        self.modifier(GentlePulseModifier())
+        self.modifier(GentlePulseModifier()
     }
     
     func contextualFeedback(isActive: Bool) -> some View {
-        self.modifier(ContextualFeedbackModifier(isActive: isActive))
+        self.modifier(ContextualFeedbackModifier(isActive: isActive)
     }
     
     func highlightText(_ isHighlighted: Bool, color: Color = DesignSystem.Colors.secondary) -> some View {
-        self.modifier(HighlightTextEffect(isHighlighted: isHighlighted, highlightColor: color))
+        self.modifier(HighlightTextEffect(isHighlighted: isHighlighted, highlightColor: color)
     }
     
     func highlightCard(isSelected: Bool = false, isHighlighted: Bool = false) -> some View {
-        self.modifier(HighlightCardModifier(isSelected: isSelected, isHighlighted: isHighlighted))
+        self.modifier(HighlightCardModifier(isSelected: isSelected, isHighlighted: isHighlighted)
     }
     
     func rotateAndScale(isActive: Bool) -> some View {
         self
             .scaleEffect(isActive ? 1.2 : 1.0)
-            .rotationEffect(isActive ? .degrees(15) : .degrees(0))
+            .rotationEffect(isActive ? .degrees(15) : .degrees(0)
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isActive)
     }
     
@@ -581,7 +581,7 @@ extension View {
     }
     
     func lazyRender(threshold: CGFloat = 100) -> some View {
-        self.modifier(LazyRenderModifier(threshold: threshold))
+        self.modifier(LazyRenderModifier(threshold: threshold)
     }
     
     // modernCard, modernListItem and modernPlaceholder are defined in ModernViewModifiers.swift

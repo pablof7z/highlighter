@@ -30,7 +30,7 @@ struct CommentsSection: View {
                     .transition(.asymmetric(
                         insertion: .push(from: .bottom).combined(with: .opacity),
                         removal: .scale.combined(with: .opacity)
-                    ))
+                    )
             } else {
                 CommentsList(
                     comments: comments,
@@ -66,10 +66,10 @@ struct CommentsSection: View {
                     .padding(.vertical, 8)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(DesignSystem.Colors.primary.opacity(0.1))
+                            .fill(DesignSystem.Colors.primary.opacity(0.1)
                     )
                     .padding(.horizontal)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .transition(.move(edge: .top).combined(with: .opacity)
                 }
                 
                 HStack(spacing: 12) {
@@ -135,17 +135,17 @@ struct CommentsSection: View {
                                         
                                         if isPostingComment {
                                             ProgressView()
-                                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                                .progressViewStyle(CircularProgressViewStyle(tint: .white)
                                                 .scaleEffect(0.6)
                                         } else {
                                             Image(systemName: "arrow.up")
-                                                .font(.ds.body, weight: .bold))
+                                                .font(.ds.body).fontWeight(.bold)
                                                 .foregroundColor(.white)
                                         }
                                     }
                                 }
                                 .disabled(isPostingComment || newCommentText.isEmpty)
-                                .transition(.scale.combined(with: .opacity))
+                                .transition(.scale.combined(with: .opacity)
                             }
                         }
                         .padding(.horizontal, 16)
@@ -280,7 +280,7 @@ struct EmptyCommentsView: View {
             ZStack {
                 // Animated background circles
                 Circle()
-                    .fill(DesignSystem.Colors.primary.opacity(0.1))
+                    .fill(DesignSystem.Colors.primary.opacity(0.1)
                     .frame(width: 100, height: 100)
                     .scaleEffect(bubbleScale)
                     .animation(
@@ -290,7 +290,7 @@ struct EmptyCommentsView: View {
                     )
                 
                 Circle()
-                    .fill(DesignSystem.Colors.secondary.opacity(0.1))
+                    .fill(DesignSystem.Colors.secondary.opacity(0.1)
                     .frame(width: 80, height: 80)
                     .scaleEffect(bubbleScale * 0.8)
                     .animation(
@@ -301,7 +301,7 @@ struct EmptyCommentsView: View {
                     )
                 
                 Image(systemName: "bubble.left.and.bubble.right")
-                    .font(.system(size: 48))
+                    .font(.system(size: 48)
                     .foregroundStyle(
                         LinearGradient(
                             colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
@@ -309,7 +309,7 @@ struct EmptyCommentsView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .rotationEffect(.degrees(bubbleRotation))
+                    .rotationEffect(.degrees(bubbleRotation)
                     .animation(
                         .spring(response: 0.5, dampingFraction: 0.6)
                         .repeatForever(autoreverses: true),
@@ -319,17 +319,17 @@ struct EmptyCommentsView: View {
             
             VStack(spacing: 8) {
                 Text("No comments yet")
-                    .font(.ds.headline, weight: .semibold, design: .rounded))
+                    .font(.ds.headline, weight: .semibold, design: .rounded)
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Text("Be the first to share your thoughts")
-                    .font(.ds.callout))
+                    .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
             }
             
             Button(action: onComment) {
                 Text("Add Comment")
-                    .font(.ds.callout, weight: .medium))
+                    .font(.ds.callout).fontWeight(.medium)
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
@@ -340,7 +340,7 @@ struct EmptyCommentsView: View {
                             endPoint: .trailing
                         )
                     )
-                    .clipShape(Capsule())
+                    .clipShape(Capsule()
                     .shadow(color: DesignSystem.Colors.primary.opacity(0.3), radius: 8, y: 4)
             }
         }
@@ -380,15 +380,15 @@ struct EnhancedCommentRow: View {
                 // Author info with verified badge
                 HStack(spacing: 6) {
                     Text(authorName)
-                        .font(.ds.body, weight: .semibold))
+                        .font(.ds.body).fontWeight(.semibold)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     
                     Text("·")
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     
-                    Text(RelativeTimeFormatter.shortRelativeTime(from: comment.createdAt))
-                        .font(.ds.footnote))
+                    Text(RelativeTimeFormatter.shortRelativeTime(from: comment.createdAt)
+                        .font(.ds.footnote)
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                 }
                 .opacity(isAnimated ? 1 : 0)
@@ -396,7 +396,7 @@ struct EnhancedCommentRow: View {
                 
                 // Comment content with better typography
                 Text(comment.content)
-                    .font(.ds.body))
+                    .font(.ds.body)
                     .foregroundColor(DesignSystem.Colors.text)
                     .fixedSize(horizontal: false, vertical: true)
                     .opacity(isAnimated ? 1 : 0)
@@ -478,14 +478,14 @@ struct ReactionButton: View {
         }) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.ds.callout))
+                    .font(.ds.callout)
                     .foregroundColor(isActive ? activeColor : DesignSystem.Colors.textSecondary)
                     .scaleEffect(isAnimating ? 1.3 : 1)
-                    .rotationEffect(.degrees(isAnimating ? 15 : 0))
+                    .rotationEffect(.degrees(isAnimating ? 15 : 0)
                 
                 if count > 0 {
                     Text("\(count)")
-                        .font(.ds.caption, weight: .medium))
+                        .font(.ds.caption).fontWeight(.medium)
                         .foregroundColor(isActive ? activeColor : DesignSystem.Colors.textSecondary)
                 }
             }
@@ -586,7 +586,7 @@ struct CommentRowWrapper: View {
             .transition(.asymmetric(
                 insertion: .push(from: .bottom).combined(with: .opacity),
                 removal: .push(from: .top).combined(with: .opacity)
-            ))
+            )
             .onAppear {
                 withAnimation(.spring(response: 0.5, dampingFraction: 0.7).delay(Double(index) * 0.05)) {
                     _ = animatedCommentIds.insert(comment.id)
@@ -595,7 +595,7 @@ struct CommentRowWrapper: View {
             
             if !isLast {
                 Divider()
-                    .background(DesignSystem.Colors.divider.opacity(0.3))
+                    .background(DesignSystem.Colors.divider.opacity(0.3)
                     .padding(.leading, 48)
             }
         }
@@ -609,7 +609,7 @@ struct CommentsSectionHeader: View {
         HStack {
             HStack(spacing: 8) {
                 Image(systemName: "bubble.left.and.bubble.right.fill")
-                    .font(.ds.title3, weight: .semibold))
+                    .font(.ds.title3).fontWeight(.semibold)
                     .foregroundStyle(
                         LinearGradient(
                             colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
@@ -620,12 +620,12 @@ struct CommentsSectionHeader: View {
                     .symbolEffect(.bounce, value: commentsCount)
                 
                 Text("Comments")
-                    .font(.ds.title2, weight: .bold, design: .rounded))
+                    .font(.ds.title2, weight: .bold, design: .rounded)
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 if commentsCount > 0 {
                     Text("\(commentsCount)")
-                        .font(.ds.callout, weight: .medium, design: .rounded))
+                        .font(.ds.callout, weight: .medium, design: .rounded)
                         .foregroundColor(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -639,7 +639,7 @@ struct CommentsSectionHeader: View {
                                     )
                                 )
                         )
-                        .transition(.scale.combined(with: .opacity))
+                        .transition(.scale.combined(with: .opacity)
                 }
             }
             

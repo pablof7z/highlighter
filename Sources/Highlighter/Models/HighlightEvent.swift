@@ -62,7 +62,7 @@ struct HighlightEvent: Identifiable, Equatable {
         self.event = event
         self.content = event.content
         self.author = event.pubkey
-        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt)
         
         // Parse NIP-84 tags
         var context: String?

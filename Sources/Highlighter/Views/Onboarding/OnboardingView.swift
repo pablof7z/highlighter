@@ -106,7 +106,7 @@ struct OnboardingView: View {
                 animateElements = true
             }
         }
-        .onChange(of: currentPage) { _ in
+        .onChange(of: currentPage) { _, _ in
             HapticManager.shared.impact(.light)
         }
     }
@@ -223,7 +223,7 @@ struct OnboardingPageView: View {
             VStack(spacing: 24) {
                 // Title
                 Text(page.title)
-                    .font(.ds.bodyBold, design: .rounded))
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
@@ -246,7 +246,7 @@ struct OnboardingPageView: View {
                     ForEach(Array(page.features.enumerated()), id: \.offset) { index, feature in
                         HStack(spacing: 16) {
                             Image(systemName: feature.icon)
-                                .font(.ds.title3))
+                                .font(.ds.title3)
                                 .foregroundColor(page.iconColor)
                                 .frame(width: 32, height: 32)
                                 .background(
@@ -426,7 +426,7 @@ struct OnboardingAuthView: View {
                 
                 VStack(spacing: 16) {
                     Text("Ready to\nGet Started")
-                        .font(.ds.bodyBold, design: .rounded))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .opacity(animateContent ? 1 : 0)
@@ -450,7 +450,7 @@ struct OnboardingAuthView: View {
                 Button(action: createAccount) {
                     HStack {
                         Image(systemName: "sparkles")
-                            .font(.ds.title3, weight: .medium))
+                            .font(.ds.title3)
                         Text("Create Account")
                             .font(.ds.bodyMedium)
                     }
@@ -590,7 +590,7 @@ struct OnboardingImportSheet: View {
                     // Header
                     VStack(spacing: 16) {
                         Image(systemName: "key.horizontal.fill")
-                            .font(.ds.bodyMedium))
+                            .font(.ds.bodyMedium)
                             .foregroundColor(.white)
                             .padding()
                             .background(
@@ -599,7 +599,7 @@ struct OnboardingImportSheet: View {
                             )
                         
                         Text("Import Your Account")
-                            .font(.ds.title, weight: .bold, design: .rounded))
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
                         
                         Text("Enter your private key to sign in")
@@ -689,7 +689,7 @@ struct OnboardingImportSheet: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.ds.title2))
+                            .font(.ds.title2)
                             .foregroundColor(.white.opacity(0.3))
                             .background(
                                 Circle()

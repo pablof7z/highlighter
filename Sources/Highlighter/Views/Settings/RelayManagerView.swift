@@ -51,7 +51,7 @@ struct RelayManagerView: View {
                     HStack(spacing: 16) {
                         Button(action: refreshRelays) {
                             Image(systemName: "arrow.clockwise")
-                                .rotationEffect(.degrees(isRefreshing ? 360 : 0))
+                                .rotationEffect(.degrees(isRefreshing ? 360 : 0)
                                 .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: isRefreshing)
                         }
                         .disabled(isRefreshing)
@@ -84,7 +84,7 @@ struct RelayManagerView: View {
     private var emptyStateView: some View {
         VStack(spacing: DesignSystem.Spacing.large) {
             Image(systemName: "server.rack")
-                .font(.system(size: 60))
+                .font(.system(size: 60)
                 .foregroundColor(.ds.textTertiary)
                 .pulse(style: .standard)
             
@@ -290,7 +290,7 @@ struct RelayManagerView: View {
                                         .padding(.vertical, 6)
                                         .background(
                                             Capsule()
-                                                .fill(DesignSystem.Colors.primary.opacity(0.1))
+                                                .fill(DesignSystem.Colors.primary.opacity(0.1)
                                         )
                                         .foregroundColor(.ds.primary)
                                 }
@@ -677,7 +677,7 @@ struct FlowLayout: Layout {
                     lineHeight = 0
                 }
                 
-                positions.append(CGPoint(x: currentX, y: currentY))
+                positions.append(CGPoint(x: currentX, y: currentY)
                 lineHeight = max(lineHeight, size.height)
                 currentX += size.width + spacing
                 maxWidth = max(maxWidth, currentX)

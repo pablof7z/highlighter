@@ -137,7 +137,8 @@ struct AdvancedSearchView: View {
         VStack(spacing: DesignSystem.Spacing.medium) {
             HStack {
                 Text("Discover")
-                    .font(.ds.bodyBold, design: .rounded))
+                    .font(.ds.bodyMedium)
+                    .fontWeight(.bold)
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Spacer()
@@ -154,16 +155,16 @@ struct AdvancedSearchView: View {
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "brain")
-                            .font(.ds.body))
+                            .font(.ds.body)
                         Text("AI")
-                            .font(.ds.callout, weight: .medium))
+                            .font(.ds.callout).fontWeight(.medium)
                     }
                     .foregroundColor(showAISuggestions ? .white : DesignSystem.Colors.primary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(
                         Capsule()
-                            .fill(showAISuggestions ? DesignSystem.Colors.primary : DesignSystem.Colors.primary.opacity(0.1))
+                            .fill(showAISuggestions ? DesignSystem.Colors.primary : DesignSystem.Colors.primary.opacity(0.1)
                     )
                     .overlay(
                         Capsule()
@@ -180,9 +181,9 @@ struct AdvancedSearchView: View {
                     }
                 }) {
                     Image(systemName: "slider.horizontal.3")
-                        .font(.ds.title3))
+                        .font(.ds.title3)
                         .foregroundColor(DesignSystem.Colors.primary)
-                        .rotationEffect(.degrees(showFilters ? 90 : 0))
+                        .rotationEffect(.degrees(showFilters ? 90 : 0)
                         .scaleEffect(showFilters ? 1.1 : 1.0)
                 }
             }
@@ -190,13 +191,13 @@ struct AdvancedSearchView: View {
             // Sophisticated search field
             HStack(spacing: DesignSystem.Spacing.medium) {
                 Image(systemName: "magnifyingglass")
-                    .font(.ds.headline))
+                    .font(.ds.headline)
                     .foregroundColor(isSearchFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
-                    .rotationEffect(.degrees(isSearchFieldFocused ? 360 : 0))
+                    .rotationEffect(.degrees(isSearchFieldFocused ? 360 : 0)
                     .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isSearchFieldFocused)
                 
                 TextField("Search highlights, articles, users...", text: $searchText)
-                    .font(.ds.body))
+                    .font(.ds.body)
                     .foregroundColor(DesignSystem.Colors.text)
                     .focused($isSearchFieldFocused)
                     .onSubmit {
@@ -213,9 +214,9 @@ struct AdvancedSearchView: View {
                         }
                     }) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.ds.headline))
+                            .font(.ds.headline)
                             .foregroundColor(DesignSystem.Colors.textSecondary)
-                            .transition(.scale.combined(with: .opacity))
+                            .transition(.scale.combined(with: .opacity)
                     }
                 }
             }
@@ -272,12 +273,12 @@ struct AdvancedSearchView: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             HStack {
                 Image(systemName: "brain")
-                    .font(.ds.title3))
+                    .font(.ds.title3)
                     .foregroundColor(DesignSystem.Colors.primary)
                     .symbolEffect(.pulse)
                 
                 Text("AI Suggestions")
-                    .font(.ds.title3, weight: .semibold))
+                    .font(.ds.title3).fontWeight(.semibold)
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Spacer()
@@ -297,13 +298,13 @@ struct AdvancedSearchView: View {
                         .transition(.asymmetric(
                             insertion: .scale(scale: 0.8).combined(with: .opacity),
                             removal: .scale(scale: 1.2).combined(with: .opacity)
-                        ))
+                        )
                     }
                 }
                 .padding(.horizontal, DesignSystem.Spacing.large)
             }
         }
-        .transition(.move(edge: .top).combined(with: .opacity))
+        .transition(.move(edge: .top).combined(with: .opacity)
     }
     
     // MARK: - Trending Section
@@ -311,13 +312,13 @@ struct AdvancedSearchView: View {
     private var trendingSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             Text("Trending Now")
-                .font(.ds.title2, weight: .bold))
+                .font(.ds.title2).fontWeight(.bold)
                 .foregroundColor(DesignSystem.Colors.text)
                 .padding(.horizontal, DesignSystem.Spacing.large)
             
             LazyVGrid(columns: [
                 GridItem(.flexible()),
-                GridItem(.flexible())
+                GridItem(.flexible()
             ], spacing: DesignSystem.Spacing.medium) {
                 ForEach(trendingTopics) { topic in
                     TrendingCard(topic: topic) {
@@ -337,7 +338,7 @@ struct AdvancedSearchView: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             HStack {
                 Text("Recent Searches")
-                    .font(.ds.title3, weight: .semibold))
+                    .font(.ds.title3).fontWeight(.semibold)
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Spacer()
@@ -348,7 +349,7 @@ struct AdvancedSearchView: View {
                         UserDefaults.standard.removeObject(forKey: "recentSearches")
                     }
                 }
-                .font(.ds.callout))
+                .font(.ds.callout)
                 .foregroundColor(DesignSystem.Colors.primary)
             }
             .padding(.horizontal, DesignSystem.Spacing.large)
@@ -373,7 +374,7 @@ struct AdvancedSearchView: View {
                 // Results header with count
                 HStack {
                     Text("\(searchResults.totalCount) Results")
-                        .font(.ds.title3, weight: .semibold))
+                        .font(.ds.title3).fontWeight(.semibold)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Spacer()
@@ -386,9 +387,9 @@ struct AdvancedSearchView: View {
                     } label: {
                         HStack(spacing: 4) {
                             Text("Sort")
-                                .font(.ds.callout))
+                                .font(.ds.callout)
                             Image(systemName: "chevron.down")
-                                .font(.ds.caption))
+                                .font(.ds.caption)
                         }
                         .foregroundColor(DesignSystem.Colors.primary)
                     }
@@ -459,7 +460,7 @@ struct AdvancedSearchView: View {
                 ForEach(0..<3) { index in
                     Circle()
                         .stroke(DesignSystem.Colors.primary.opacity(0.3 - Double(index) * 0.1), lineWidth: 2)
-                        .frame(width: 80 + CGFloat(index * 20), height: 80 + CGFloat(index * 20))
+                        .frame(width: 80 + CGFloat(index * 20), height: 80 + CGFloat(index * 20)
                         .scaleEffect(animateResults ? 1.2 : 0.8)
                         .opacity(animateResults ? 0 : 1)
                         .animation(
@@ -471,9 +472,9 @@ struct AdvancedSearchView: View {
                 }
                 
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 40))
+                    .font(.system(size: 40)
                     .foregroundColor(DesignSystem.Colors.primary)
-                    .rotationEffect(.degrees(animateResults ? 360 : 0))
+                    .rotationEffect(.degrees(animateResults ? 360 : 0)
                     .animation(
                         .linear(duration: 2)
                         .repeatForever(autoreverses: false),
@@ -482,7 +483,7 @@ struct AdvancedSearchView: View {
             }
             
             Text("Searching...")
-                .font(.ds.headline, weight: .medium))
+                .font(.ds.headline).fontWeight(.medium)
                 .foregroundColor(DesignSystem.Colors.textSecondary)
                 .opacity(animateResults ? 1 : 0.5)
                 .animation(
@@ -501,17 +502,17 @@ struct AdvancedSearchView: View {
     private var emptySearchState: some View {
         VStack(spacing: DesignSystem.Spacing.large) {
             Image(systemName: "magnifyingglass.circle")
-                .font(.system(size: 80))
+                .font(.system(size: 80)
                 .foregroundColor(DesignSystem.Colors.textTertiary)
                 .symbolRenderingMode(.hierarchical)
             
             VStack(spacing: DesignSystem.Spacing.small) {
                 Text("No results found")
-                    .font(.ds.title2, weight: .semibold))
+                    .font(.ds.title2).fontWeight(.semibold)
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Text("Try adjusting your search or filters")
-                    .font(.ds.body))
+                    .font(.ds.body)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
             }
         }
@@ -631,7 +632,7 @@ struct AdvancedSearchView: View {
                    (profile.name ?? "").localizedCaseInsensitiveContains(searchText) ||
                    (profile.displayName ?? "").localizedCaseInsensitiveContains(searchText) ||
                    (profile.about ?? "").localizedCaseInsensitiveContains(searchText) {
-                    users.append((event.pubkey, profile))
+                    users.append((event.pubkey, profile)
                 }
             }
         }
@@ -801,10 +802,10 @@ struct AdvancedSearchView: View {
                 "Trending article collections",
                 "New voices to follow"
             ]
-            suggestions.append(contentsOf: generalSuggestions.prefix(4 - suggestions.count))
+            suggestions.append(contentsOf: generalSuggestions.prefix(4 - suggestions.count)
         }
         
-        aiSuggestions = Array(suggestions.prefix(4))
+        aiSuggestions = Array(suggestions.prefix(4)
     }
     
     private func startPulseAnimation() {
@@ -828,17 +829,17 @@ struct SearchCategoryChip: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: category.icon)
-                    .font(.ds.body))
+                    .font(.ds.body)
                 
                 Text(category.rawValue)
-                    .font(.ds.body, weight: .medium))
+                    .font(.ds.body).fontWeight(.medium)
             }
             .foregroundColor(isSelected ? .white : category.color)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(
                 Capsule()
-                    .fill(isSelected ? category.color : category.color.opacity(0.1))
+                    .fill(isSelected ? category.color : category.color.opacity(0.1)
                     .overlay(
                         Capsule()
                             .stroke(category.color, lineWidth: isSelected ? 0 : 1)
@@ -864,7 +865,7 @@ struct TrendingCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Image(systemName: topic.icon)
-                        .font(.ds.title2))
+                        .font(.ds.title2)
                         .foregroundColor(DesignSystem.Colors.primary)
                     
                     Spacer()
@@ -872,19 +873,19 @@ struct TrendingCard: View {
                     // Trend indicator
                     HStack(spacing: 2) {
                         Image(systemName: topic.trend > 0 ? "arrow.up.right" : "arrow.down.right")
-                            .font(.ds.caption, weight: .bold))
+                            .font(.ds.caption).fontWeight(.bold)
                         Text("\(Int(abs(topic.trend * 100)))%")
-                            .font(.ds.caption, weight: .semibold))
+                            .font(.ds.caption).fontWeight(.semibold)
                     }
                     .foregroundColor(topic.trend > 0 ? .green : .red)
                 }
                 
                 Text(topic.topic)
-                    .font(.ds.body, weight: .semibold))
+                    .font(.ds.body).fontWeight(.semibold)
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Text("\(topic.count) highlights")
-                    .font(.ds.callout))
+                    .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
             }
             .padding(16)
@@ -909,11 +910,11 @@ struct AISuggestionCard: View {
         Button(action: action) {
             HStack(spacing: 8) {
                 Image(systemName: "sparkle")
-                    .font(.ds.callout))
+                    .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.primary)
                 
                 Text(suggestion)
-                    .font(.ds.callout, weight: .medium))
+                    .font(.ds.callout).fontWeight(.medium)
                     .foregroundColor(DesignSystem.Colors.text)
                     .lineLimit(1)
             }
@@ -970,17 +971,17 @@ struct RecentSearchRow: View {
         Button(action: action) {
             HStack {
                 Image(systemName: "clock.arrow.circlepath")
-                    .font(.ds.body))
+                    .font(.ds.body)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Text(search)
-                    .font(.ds.body))
+                    .font(.ds.body)
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Spacer()
                 
                 Image(systemName: "arrow.up.left")
-                    .font(.ds.callout))
+                    .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textTertiary)
             }
             .padding(.horizontal, DesignSystem.Spacing.large)
@@ -1002,15 +1003,15 @@ struct ResultSection<Content: View>: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             HStack {
                 Image(systemName: icon)
-                    .font(.ds.title3))
+                    .font(.ds.title3)
                     .foregroundColor(color)
                 
                 Text(title)
-                    .font(.ds.title3, weight: .semibold))
+                    .font(.ds.title3).fontWeight(.semibold)
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Text("(\(count))")
-                    .font(.ds.body))
+                    .font(.ds.body)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Spacer()
@@ -1031,28 +1032,28 @@ struct SearchResultHighlightCard: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             // Quote with highlight effect
             Text(highlight.content)
-                .font(.ds.body, weight: .medium))
+                .font(.ds.body).fontWeight(.medium)
                 .foregroundColor(DesignSystem.Colors.text)
                 .lineLimit(3)
                 .padding(.horizontal, 4)
                 .background(
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(DesignSystem.Colors.highlightSubtle.opacity(0.3))
+                        .fill(DesignSystem.Colors.highlightSubtle.opacity(0.3)
                         .padding(.horizontal, -4)
                 )
             
             HStack {
                 ProfileImage(pubkey: highlight.author, size: 20)
                 
-                Text(PubkeyFormatter.formatCompact(highlight.author))
-                    .font(.ds.callout))
+                Text(PubkeyFormatter.formatCompact(highlight.author)
+                    .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Text("·")
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
-                Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt))
-                    .font(.ds.callout))
+                Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt)
+                    .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
                 Spacer()
@@ -1090,33 +1091,33 @@ struct SearchResultArticleCard: View {
                 .frame(width: 60, height: 60)
                 .overlay(
                     Image(systemName: "doc.text")
-                        .font(.ds.title2))
+                        .font(.ds.title2)
                         .foregroundColor(.white)
                 )
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(article.title)
-                    .font(.ds.body, weight: .semibold))
+                    .font(.ds.body).fontWeight(.semibold)
                     .foregroundColor(DesignSystem.Colors.text)
                     .lineLimit(1)
                 
                 if let summary = article.summary {
                     Text(summary)
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                         .lineLimit(2)
                 }
                 
                 HStack(spacing: 8) {
                     Image(systemName: "clock")
-                        .font(.ds.caption))
+                        .font(.ds.caption)
                     Text("\(article.estimatedReadingTime) min")
-                        .font(.ds.caption))
+                        .font(.ds.caption)
                     
                     Image(systemName: "highlighter")
-                        .font(.ds.caption))
+                        .font(.ds.caption)
                     Text("\(Int.random(in: 5...25))")
-                        .font(.ds.caption))
+                        .font(.ds.caption)
                 }
                 .foregroundColor(DesignSystem.Colors.textTertiary)
             }
@@ -1143,19 +1144,19 @@ struct SearchResultUserCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(user.displayName ?? "Anonymous")
-                        .font(.ds.body, weight: .semibold))
+                        .font(.ds.body).fontWeight(.semibold)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     if user.nip05 != nil {
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.ds.callout))
+                            .font(.ds.callout)
                             .foregroundColor(DesignSystem.Colors.primary)
                     }
                 }
                 
                 if let about = user.about {
                     Text(about)
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                         .lineLimit(2)
                 }
@@ -1165,12 +1166,12 @@ struct SearchResultUserCard: View {
             
             Button(action: {}) {
                 Text("Follow")
-                    .font(.ds.callout, weight: .medium))
+                    .font(.ds.callout).fontWeight(.medium)
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(DesignSystem.Colors.primary)
-                    .clipShape(Capsule())
+                    .clipShape(Capsule()
             }
         }
         .padding(DesignSystem.Spacing.medium)
@@ -1186,7 +1187,7 @@ struct SearchResultUserCard: View {
 
 extension View {
     func searchPremiumEntrance() -> some View {
-        self.modifier(SearchPremiumEntranceModifier())
+        self.modifier(SearchPremiumEntranceModifier()
     }
 }
 

@@ -103,7 +103,7 @@ struct EditProfileView: View {
                                     .padding()
                                     .background(
                                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                            .fill(Color.red.opacity(0.1))
+                                            .fill(Color.red.opacity(0.1)
                                     )
                             }
                             
@@ -120,7 +120,7 @@ struct EditProfileView: View {
                     .padding(.horizontal, .ds.screenPadding)
                     .padding(.vertical, .ds.small)
                     .background(DesignSystem.Colors.surfaceSecondary)
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .padding(.horizontal, .ds.screenPadding)
                 }
                 .padding(.vertical, .ds.large)
@@ -181,17 +181,17 @@ struct EditProfileView: View {
                 ZStack {
                     if isLoadingPhoto {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle())
+                            .progressViewStyle(CircularProgressViewStyle()
                             .frame(width: 120, height: 120)
                             .background(DesignSystem.Colors.surfaceSecondary)
-                            .clipShape(Circle())
+                            .clipShape(Circle()
                     } else if !profile.picture.isEmpty, let url = URL(string: profile.picture) {
                         AsyncImage(url: url) { image in
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: 120, height: 120)
-                                .clipShape(Circle())
+                                .clipShape(Circle()
                         } placeholder: {
                             profilePlaceholder
                         }
@@ -201,7 +201,7 @@ struct EditProfileView: View {
                     
                     // Edit overlay
                     Circle()
-                        .fill(Color.black.opacity(0.4))
+                        .fill(Color.black.opacity(0.4)
                         .frame(width: 120, height: 120)
                         .overlay(
                             VStack(spacing: 4) {
@@ -235,7 +235,7 @@ struct EditProfileView: View {
             .frame(width: 120, height: 120)
             .overlay(
                 Image(systemName: "person.fill")
-                    .font(.system(size: 40))
+                    .font(.system(size: 40)
                     .foregroundColor(.ds.textSecondary)
             )
     }
@@ -256,11 +256,11 @@ struct EditProfileView: View {
                 ZStack {
                     if isLoadingBanner {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle())
+                            .progressViewStyle(CircularProgressViewStyle()
                             .frame(height: 150)
                             .frame(maxWidth: .infinity)
                             .background(DesignSystem.Colors.surfaceSecondary)
-                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous)
                     } else if !profile.banner.isEmpty, let url = URL(string: profile.banner) {
                         AsyncImage(url: url) { image in
                             image
@@ -269,7 +269,7 @@ struct EditProfileView: View {
                                 .frame(height: 150)
                                 .frame(maxWidth: .infinity)
                                 .clipped()
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous)
                         } placeholder: {
                             bannerPlaceholder
                         }
@@ -279,7 +279,7 @@ struct EditProfileView: View {
                     
                     // Edit overlay
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.black.opacity(0.4))
+                        .fill(Color.black.opacity(0.4)
                         .frame(height: 150)
                         .overlay(
                             VStack(spacing: 4) {
@@ -314,7 +314,7 @@ struct EditProfileView: View {
             .frame(height: 150)
             .overlay(
                 Image(systemName: "photo")
-                    .font(.system(size: 40))
+                    .font(.system(size: 40)
                     .foregroundColor(.ds.textSecondary)
             )
     }
@@ -509,7 +509,7 @@ struct FormField: View {
             )
             .onChange(of: text) { newValue in
                 if let maxLength = maxLength, newValue.count > maxLength {
-                    text = String(newValue.prefix(maxLength))
+                    text = String(newValue.prefix(maxLength)
                 }
             }
             

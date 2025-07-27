@@ -87,7 +87,7 @@ struct UnifiedGradientBackground: View {
                             gradient,
                             startPoint: CGPoint(x: 0, y: 0),
                             endPoint: CGPoint(x: 1, y: 1)
-                        ))
+                        )
                     }
                 }
             }
@@ -282,7 +282,7 @@ struct UnifiedGradientBackground: View {
 
 extension View {
     func gradientBackground(_ style: UnifiedGradientBackground.Style = .subtle) -> some View {
-        self.background(UnifiedGradientBackground(style: style))
+        self.background(UnifiedGradientBackground(style: style)
     }
 }
 

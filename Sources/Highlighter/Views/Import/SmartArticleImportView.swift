@@ -1,6 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 import NDKSwift
+import PDFKit
 
 struct SmartArticleImportView: View {
     @EnvironmentObject var appState: AppState
@@ -89,19 +90,19 @@ struct SmartArticleImportView: View {
                                 .transition(.asymmetric(
                                     insertion: .scale(scale: 0.8).combined(with: .opacity),
                                     removal: .scale(scale: 1.1).combined(with: .opacity)
-                                ))
+                                )
                         }
                         
                         // Processing animation
                         if importManager.isProcessing {
                             processingSection
-                                .transition(.scale.combined(with: .opacity))
+                                .transition(.scale.combined(with: .opacity)
                         }
                         
                         // Results section
                         if let article = importManager.processedArticle {
                             resultsSection(article: article)
-                                .transition(.push(from: .bottom).combined(with: .opacity))
+                                .transition(.push(from: .bottom).combined(with: .opacity)
                         }
                     }
                     .padding(.horizontal, .ds.screenPadding)
@@ -169,7 +170,7 @@ struct SmartArticleImportView: View {
                 
                 // Brain icon with neural connections
                 Image(systemName: "brain")
-                    .font(.system(size: 56, weight: .light))
+                    .font(.system(size: 56, weight: .light)
                     .foregroundStyle(
                         LinearGradient(
                             colors: [.purple, .orange],
@@ -179,7 +180,7 @@ struct SmartArticleImportView: View {
                     )
                     .symbolEffect(.pulse, options: .repeating, value: aiThinkingAnimation)
                     .scaleEffect(1 + floatingOffset / 100)
-                    .rotationEffect(.degrees(Foundation.sin(brainWaveAnimation * .pi) * 5))
+                    .rotationEffect(.degrees(Foundation.sin(brainWaveAnimation * .pi) * 5)
                 
                 // Neural sparkles
                 ForEach(0..<6) { index in
@@ -187,7 +188,7 @@ struct SmartArticleImportView: View {
                         .fill(Color.orange)
                         .frame(width: 4, height: 4)
                         .offset(x: 35)
-                        .rotationEffect(.degrees(Double(index) * 60 + rotationAngle))
+                        .rotationEffect(.degrees(Double(index) * 60 + rotationAngle)
                         .opacity(importManager.isProcessing ? 1 : 0.3)
                         .scaleEffect(importManager.isProcessing ? 1.2 : 1)
                 }
@@ -229,7 +230,7 @@ struct SmartArticleImportView: View {
                     .transition(.asymmetric(
                         insertion: .push(from: .top).combined(with: .opacity),
                         removal: .push(from: .bottom).combined(with: .opacity)
-                    ))
+                    )
             }
         }
     }
@@ -295,14 +296,14 @@ struct SmartArticleImportView: View {
                     startRadius: 0,
                     endRadius: 150
                 )
-                .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous)
                 .blur(radius: 20)
             }
             
             // Content
             VStack(spacing: .ds.medium) {
                 Image(systemName: "doc.text.magnifyingglass")
-                    .font(.system(size: 48, weight: .light))
+                    .font(.system(size: 48, weight: .light)
                     .foregroundStyle(
                         LinearGradient(
                             colors: isDragging ? [.purple, .orange] : [.ds.textTertiary],
@@ -351,7 +352,7 @@ struct SmartArticleImportView: View {
             HStack(spacing: .ds.base) {
                 HStack {
                     Image(systemName: "link")
-                        .font(.ds.body))
+                        .font(.ds.body)
                         .foregroundColor(.ds.textTertiary)
                     
                     TextField("https://stratechery.com/2024/article-title", text: $urlText)
@@ -366,18 +367,18 @@ struct SmartArticleImportView: View {
                 .padding(.horizontal, .ds.base)
                 .padding(.vertical, .ds.small)
                 .background(DesignSystem.Colors.surfaceSecondary)
-                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
                 
                 Button(action: importFromURL) {
                     Image(systemName: "arrow.right.circle.fill")
-                        .font(.ds.title2))
+                        .font(.ds.title2)
                         .foregroundStyle(
                             urlText.isEmpty ? AnyShapeStyle(Color.ds.textTertiary) :
                                 AnyShapeStyle(LinearGradient(
                                     colors: [.purple, .orange],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
-                                ))
+                                )
                         )
                 }
                 .disabled(urlText.isEmpty)
@@ -409,7 +410,7 @@ struct SmartArticleImportView: View {
         }
         .padding(.ds.medium)
         .background(DesignSystem.Colors.surfaceSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
     }
     
     // MARK: - Processing Section
@@ -577,7 +578,7 @@ struct SmartArticleImportView: View {
                     .padding(.bottom, 100)
                 }
                 .frame(width: geometry.size.width * 0.4)
-                .background(DesignSystem.Colors.surfaceSecondary.opacity(0.3))
+                .background(DesignSystem.Colors.surfaceSecondary.opacity(0.3)
             }
         }
     }
@@ -870,7 +871,7 @@ struct QualityOptionCard: View {
                         )
                     
                     Image(systemName: quality.icon)
-                        .font(.ds.title2, weight: .medium))
+                        .font(.ds.title2).fontWeight(.medium)
                         .foregroundColor(isSelected ? .white : .ds.textSecondary)
                         .symbolEffect(.bounce, value: isSelected)
                 }
@@ -942,7 +943,7 @@ struct ArticleInfoCard: View {
                     .font(.ds.callout)
                     .foregroundColor(.ds.textSecondary)
                     .lineLimit(4)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .transition(.move(edge: .top).combined(with: .opacity)
             }
             
             // Expand button
@@ -958,9 +959,9 @@ struct ArticleInfoCard: View {
                         .foregroundColor(.ds.primary)
                     
                     Image(systemName: "chevron.down")
-                        .font(.ds.caption, weight: .medium))
+                        .font(.ds.caption).fontWeight(.medium)
                         .foregroundColor(.ds.primary)
-                        .rotationEffect(.degrees(showDetails ? 180 : 0))
+                        .rotationEffect(.degrees(showDetails ? 180 : 0)
                 }
             }
         }
@@ -994,7 +995,7 @@ struct MetricBadge: View {
     var body: some View {
         HStack(spacing: .ds.micro) {
             Image(systemName: icon)
-                .font(.ds.callout, weight: .medium))
+                .font(.ds.callout).fontWeight(.medium)
                 .foregroundColor(color)
             
             Text(value)
@@ -1005,7 +1006,7 @@ struct MetricBadge: View {
         .padding(.vertical, .ds.micro)
         .background(
             Capsule()
-                .fill(color.opacity(0.1))
+                .fill(color.opacity(0.1)
         )
     }
 }
@@ -1043,9 +1044,9 @@ struct SuggestedHighlightCard: View {
                     
                     if isSelected {
                         Image(systemName: "checkmark")
-                            .font(.ds.caption, weight: .bold))
+                            .font(.ds.caption).fontWeight(.bold)
                             .foregroundColor(.white)
-                            .transition(.scale.combined(with: .opacity))
+                            .transition(.scale.combined(with: .opacity)
                     }
                 }
                 .scaleEffect(isHovered ? 1.1 : 1)
@@ -1065,7 +1066,7 @@ struct SuggestedHighlightCard: View {
                         // Confidence score
                         HStack(spacing: .ds.micro) {
                             Image(systemName: "sparkles")
-                                .font(.ds.caption))
+                                .font(.ds.caption)
                                 .foregroundColor(.orange)
                                 .symbolEffect(.pulse, value: sparkleAnimation)
                             
@@ -1089,7 +1090,7 @@ struct SuggestedHighlightCard: View {
                 // Context indicator
                 if suggestion.hasContext {
                     Image(systemName: "doc.text")
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(.ds.textTertiary)
                 }
             }
@@ -1142,8 +1143,8 @@ struct AIThinkingAnimation: View {
                     let x2 = cos(angle2) * radius
                     let y2 = sin(angle2) * radius
                     
-                    path.move(to: CGPoint(x: x1, y: y1))
-                    path.addLine(to: CGPoint(x: x2, y: y2))
+                    path.move(to: CGPoint(x: x1, y: y1)
+                    path.addLine(to: CGPoint(x: x2, y: y2)
                 }
                 .stroke(
                     LinearGradient(
@@ -1188,7 +1189,7 @@ struct AIThinkingAnimation: View {
             
             // Center brain
             Image(systemName: "brain")
-                .font(.ds.largeTitle, weight: .medium))
+                .font(.system(size: 40, weight: .medium)
                 .foregroundStyle(
                     LinearGradient(
                         colors: [.purple, .orange],
@@ -1272,7 +1273,7 @@ struct ImportParticleView: View {
                 } else {
                     // Floating animation
                     withAnimation(
-                        .easeInOut(duration: Double.random(in: 3...6))
+                        .easeInOut(duration: Double.random(in: 3...6)
                         .repeatForever(autoreverses: true)
                     ) {
                         offset = CGSize(
@@ -1303,7 +1304,7 @@ struct NeuralNetworkVisualization: View {
         ZStack {
             ForEach(paths) { path in
                 Path { p in
-                    p.move(to: CGPoint(x: path.startX, y: path.startY))
+                    p.move(to: CGPoint(x: path.startX, y: path.startY)
                     p.addQuadCurve(
                         to: CGPoint(x: path.endX, y: path.endY),
                         control: CGPoint(
@@ -1415,10 +1416,25 @@ class SmartImportManager: ObservableObject {
                 let data = try Data(contentsOf: url)
                 
                 if url.pathExtension.lowercased() == "pdf" {
-                    // Handle PDF files - would need PDFKit import
+                    // Handle PDF files using PDFKit
                     processingStatus = "Extracting text from PDF..."
-                    // For now, just show error
-                    throw ImportError.unsupportedFormat("PDF extraction not yet implemented")
+                    
+                    guard let pdfText = extractTextFromPDF(at: url) else {
+                        throw ImportError.unsupportedFormat("Failed to extract text from PDF")
+                    }
+                    
+                    let title = url.deletingPathExtension().lastPathComponent
+                    
+                    currentContent = ImportedContent(
+                        text: pdfText,
+                        title: title,
+                        author: nil,
+                        url: url.absoluteString
+                    )
+                    
+                    await MainActor.run {
+                        self.processContent()
+                    }
                 } else if let text = String(data: data, encoding: .utf8) {
                     // Plain text or markdown file
                     let title = url.deletingPathExtension().lastPathComponent
@@ -1676,7 +1692,7 @@ class SmartImportManager: ObservableObject {
         
         for (pattern, radix) in numericPatterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
-                let matches = regex.matches(in: decoded, options: [], range: NSRange(decoded.startIndex..., in: decoded))
+                let matches = regex.matches(in: decoded, options: [], range: NSRange(decoded.startIndex..., in: decoded)
                 var result = decoded
                 
                 // Process matches in reverse order to maintain string indices
@@ -1686,7 +1702,7 @@ class SmartImportManager: ObservableObject {
                        let code = Int(result[codeRange], radix: radix),
                        code > 0 && code <= 0x10FFFF,  // Valid Unicode range
                        let scalar = UnicodeScalar(code) {
-                        result.replaceSubrange(range, with: String(Character(scalar)))
+                        result.replaceSubrange(range, with: String(Character(scalar))
                     }
                 }
                 decoded = result
@@ -1759,6 +1775,38 @@ class SmartImportManager: ObservableObject {
         }
         
         return nil
+    }
+    
+    private func extractTextFromPDF(at url: URL) -> String? {
+        guard let pdfDocument = PDFDocument(url: url) else {
+            return nil
+        }
+        
+        var fullText = ""
+        let pageCount = pdfDocument.pageCount
+        
+        for pageIndex in 0..<pageCount {
+            guard let page = pdfDocument.page(at: pageIndex) else { continue }
+            guard let pageText = page.string else { continue }
+            
+            // Add page text with proper separation
+            if !pageText.isEmpty {
+                fullText += pageText
+                if pageIndex < pageCount - 1 {
+                    fullText += "\n\n" // Separate pages with double newline
+                }
+            }
+        }
+        
+        // Clean up the extracted text
+        let cleanedText = fullText
+            .replacingOccurrences(of: "\r\n", with: "\n") // Normalize line endings
+            .replacingOccurrences(of: "\r", with: "\n")
+            .replacingOccurrences(of: "[ ]{2,}", with: " ", options: .regularExpression) // Multiple spaces to single
+            .replacingOccurrences(of: "\n{3,}", with: "\n\n", options: .regularExpression) // Multiple newlines to double
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        return cleanedText.isEmpty ? nil : cleanedText
     }
     
     // MARK: - Errors
@@ -2022,12 +2070,12 @@ struct AnimatedMetric: View {
     var body: some View {
         VStack(spacing: .ds.micro) {
             Image(systemName: icon)
-                .font(.ds.title2))
+                .font(.ds.title2)
                 .foregroundColor(color)
                 .symbolEffect(.bounce, value: animate)
             
             Text("\(displayValue)")
-                .font(.ds.title2.monospacedDigit())
+                .font(.ds.title2.monospacedDigit()
                 .foregroundColor(.ds.text)
             
             Text(unit)
@@ -2053,7 +2101,7 @@ struct AnimatedMetric: View {
         
         for i in 0...steps {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * stepDuration) {
-                displayValue = Int(Double(value) * (Double(i) / Double(steps)))
+                displayValue = Int(Double(value) * (Double(i) / Double(steps))
             }
         }
     }
@@ -2072,7 +2120,7 @@ struct ComplexityVisualization: View {
                     startPoint: .leading,
                     endPoint: .trailing
                 )
-                .clipShape(Capsule())
+                .clipShape(Capsule()
                 .opacity(0.3)
                 
                 // Filled portion
@@ -2081,7 +2129,7 @@ struct ComplexityVisualization: View {
                     startPoint: .leading,
                     endPoint: .trailing
                 )
-                .clipShape(Capsule())
+                .clipShape(Capsule()
                 .frame(width: geometry.size.width * animatedScore)
                 
                 // Indicator
@@ -2141,14 +2189,14 @@ struct SuggestionCard: View {
                 if let reason = suggestion.reason {
                     HStack(spacing: .ds.small) {
                         Image(systemName: "cpu")
-                            .font(.ds.caption))
+                            .font(.ds.caption)
                             .foregroundColor(.purple)
                             .symbolEffect(.pulse, value: isSelected)
                         
                         Text(reason)
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
-                            .transition(.push(from: .bottom).combined(with: .opacity))
+                            .transition(.push(from: .bottom).combined(with: .opacity)
                     }
                 }
                 
@@ -2187,9 +2235,9 @@ struct SuggestionCard: View {
                         }
                     }) {
                         Image(systemName: "chevron.down")
-                            .font(.ds.caption, weight: .medium))
+                            .font(.ds.caption).fontWeight(.medium)
                             .foregroundColor(.ds.textSecondary)
-                            .rotationEffect(.degrees(showInsight ? 180 : 0))
+                            .rotationEffect(.degrees(showInsight ? 180 : 0)
                     }
                 }
             }
@@ -2253,18 +2301,18 @@ struct CategoryBadge: View {
     var body: some View {
         HStack(spacing: .ds.micro) {
             Image(systemName: category.icon)
-                .font(.ds.caption, weight: .medium))
+                .font(.ds.caption).fontWeight(.medium)
                 .symbolEffect(.pulse, value: pulseAnimation)
             
             Text(category.rawValue)
-                .font(.ds.caption.weight(.medium))
+                .font(.ds.caption.weight(.medium)
         }
         .foregroundColor(category.color)
         .padding(.horizontal, .ds.small)
         .padding(.vertical, .ds.micro)
         .background(
             Capsule()
-                .fill(category.color.opacity(0.15))
+                .fill(category.color.opacity(0.15)
                 .overlay(
                     Capsule()
                         .stroke(category.color.opacity(0.3), lineWidth: 1)

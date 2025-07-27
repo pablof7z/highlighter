@@ -83,7 +83,7 @@ struct ProfileView: View {
                                     .transition(.asymmetric(
                                         insertion: .push(from: .trailing).combined(with: .opacity),
                                         removal: .push(from: .leading).combined(with: .opacity)
-                                    ))
+                                    )
                             }
                             .padding(.top, .ds.medium)
                             .background(
@@ -125,7 +125,7 @@ struct ProfileView: View {
                     HStack(spacing: 12) {
                         Button(action: { showEditProfile = true }) {
                             Image(systemName: "pencil.circle")
-                                .font(.ds.title3))
+                                .font(.ds.title3)
                                 .foregroundColor(.ds.text)
                                 .symbolRenderingMode(.hierarchical)
                         }
@@ -133,7 +133,7 @@ struct ProfileView: View {
                         
                         Button(action: { showSettings = true }) {
                             Image(systemName: "gearshape")
-                                .font(.ds.title3))
+                                .font(.ds.title3)
                                 .foregroundColor(.ds.text)
                                 .symbolRenderingMode(.hierarchical)
                         }
@@ -206,7 +206,7 @@ struct ProfileView: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: 100, height: 100)
-                                .clipShape(Circle())
+                                .clipShape(Circle()
                                 .overlay(
                                     Circle()
                                         .stroke(Color.white, lineWidth: 4)
@@ -222,9 +222,9 @@ struct ProfileView: View {
                     // Verified badge if NIP-05
                     if appState.currentUserProfile?.nip05 != nil {
                         Image(systemName: "checkmark.seal.fill")
-                            .font(.ds.title2))
+                            .font(.ds.title2)
                             .foregroundStyle(.white, Color.blue)
-                            .background(Circle().fill(Color.white).frame(width: 28, height: 28))
+                            .background(Circle().fill(Color.white).frame(width: 28, height: 28)
                             .offset(x: 5, y: 5)
                     }
                 }
@@ -232,19 +232,19 @@ struct ProfileView: View {
                 // Name and bio
                 VStack(spacing: .ds.small) {
                     Text(appState.currentUserProfile?.displayName ?? "Anonymous")
-                        .font(.ds.title, weight: .bold))
+                        .font(.ds.title).fontWeight(.bold)
                         .foregroundColor(.white)
                     
                     if let nip05 = appState.currentUserProfile?.nip05 {
                         Label(nip05, systemImage: "checkmark.seal")
                             .font(.ds.callout)
-                            .foregroundColor(.white.opacity(0.9))
+                            .foregroundColor(.white.opacity(0.9)
                     }
                     
                     if let about = appState.currentUserProfile?.about {
                         Text(about)
                             .font(.ds.body)
-                            .foregroundColor(.white.opacity(0.8))
+                            .foregroundColor(.white.opacity(0.8)
                             .multilineTextAlignment(.center)
                             .lineLimit(3)
                             .padding(.horizontal, .ds.large)
@@ -271,7 +271,7 @@ struct ProfileView: View {
             GeometryReader { geo in
                 ForEach(0..<5) { i in
                     Circle()
-                        .fill(Color.white.opacity(0.1))
+                        .fill(Color.white.opacity(0.1)
                         .frame(width: 150, height: 150)
                         .offset(
                             x: CGFloat.random(in: 0...geo.size.width),
@@ -279,7 +279,7 @@ struct ProfileView: View {
                         )
                         .blur(radius: 30)
                         .animation(
-                            .easeInOut(duration: Double.random(in: 10...20))
+                            .easeInOut(duration: Double.random(in: 10...20)
                             .repeatForever(autoreverses: true),
                             value: animateStats
                         )
@@ -301,7 +301,7 @@ struct ProfileView: View {
             .frame(width: 100, height: 100)
             .overlay(
                 Image(systemName: "person.fill")
-                    .font(.system(size: 40))
+                    .font(.system(size: 40)
                     .foregroundColor(.white)
             )
             .overlay(
@@ -376,7 +376,7 @@ struct ProfileView: View {
                     }) {
                         HStack(spacing: 8) {
                             Image(systemName: tab.icon)
-                                .font(.ds.body, weight: .medium))
+                                .font(.ds.body).fontWeight(.medium)
                             Text(tab.rawValue)
                         }
                         .unifiedTabPill(isSelected: selectedTab == tab)
@@ -789,16 +789,16 @@ struct HighlightCardSkeleton: View {
             // Header skeleton
             HStack {
                 Circle()
-                    .fill(Color.gray.opacity(0.3))
+                    .fill(Color.gray.opacity(0.3)
                     .frame(width: 40, height: 40)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.gray.opacity(0.3)
                         .frame(width: 120, height: 14)
                     
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.gray.opacity(0.3)
                         .frame(width: 80, height: 12)
                 }
                 
@@ -808,15 +808,15 @@ struct HighlightCardSkeleton: View {
             // Content skeleton
             VStack(alignment: .leading, spacing: 8) {
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.gray.opacity(0.3))
+                    .fill(Color.gray.opacity(0.3)
                     .frame(height: 16)
                 
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.gray.opacity(0.3))
+                    .fill(Color.gray.opacity(0.3)
                     .frame(height: 16)
                 
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.gray.opacity(0.3))
+                    .fill(Color.gray.opacity(0.3)
                     .frame(width: 200, height: 16)
             }
             
@@ -824,13 +824,13 @@ struct HighlightCardSkeleton: View {
             HStack {
                 ForEach(0..<4, id: \.self) { _ in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.gray.opacity(0.3)
                         .frame(width: 60, height: 28)
                 }
             }
         }
         .padding()
-        .background(Color.gray.opacity(0.1))
+        .background(Color.gray.opacity(0.1)
         .cornerRadius(.ds.medium)
         .overlay(
             GeometryReader { geometry in
@@ -868,43 +868,43 @@ struct CurationCardSkeleton: View {
         VStack(alignment: .leading, spacing: 0) {
             // Image skeleton
             Rectangle()
-                .fill(Color.gray.opacity(0.3))
+                .fill(Color.gray.opacity(0.3)
                 .frame(height: 150)
             
             VStack(alignment: .leading, spacing: .ds.small) {
                 // Title skeleton
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.gray.opacity(0.3))
+                    .fill(Color.gray.opacity(0.3)
                     .frame(height: 20)
                 
                 // Description skeleton
                 VStack(alignment: .leading, spacing: 6) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.gray.opacity(0.3)
                         .frame(height: 14)
                     
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.gray.opacity(0.3)
                         .frame(width: 180, height: 14)
                 }
                 
                 // Stats skeleton
                 HStack {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.gray.opacity(0.3)
                         .frame(width: 80, height: 12)
                     
                     Spacer()
                     
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.gray.opacity(0.3)
                         .frame(width: 60, height: 12)
                 }
                 .padding(.top, .ds.small)
             }
             .padding()
         }
-        .background(Color.gray.opacity(0.1))
+        .background(Color.gray.opacity(0.1)
         .cornerRadius(.ds.medium)
         .overlay(
             GeometryReader { geometry in
@@ -954,12 +954,12 @@ struct ZapActivityCard: View {
             // Lightning icon
             ZStack {
                 Circle()
-                    .fill(Color.yellow.opacity(0.2))
+                    .fill(Color.yellow.opacity(0.2)
                     .frame(width: 44, height: 44)
                     .blur(radius: lightningAnimation ? 8 : 4)
                 
                 Image(systemName: "bolt.fill")
-                    .font(.ds.title3))
+                    .font(.ds.title3)
                     .foregroundColor(.yellow)
                     .scaleEffect(lightningAnimation ? 1.1 : 1)
             }
@@ -972,7 +972,7 @@ struct ZapActivityCard: View {
                     
                     Spacer()
                     
-                    Text(RelativeTimeFormatter.relativeTime(from: event.createdAt))
+                    Text(RelativeTimeFormatter.relativeTime(from: event.createdAt)
                         .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                 }
@@ -982,7 +982,7 @@ struct ZapActivityCard: View {
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                     
-                    Text(PubkeyFormatter.formatCompact(event.pubkey))
+                    Text(PubkeyFormatter.formatCompact(event.pubkey)
                         .font(.ds.caption)
                         .foregroundColor(.ds.primary)
                 }
@@ -999,7 +999,7 @@ struct ZapActivityCard: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
-                .fill(Color.yellow.opacity(0.05))
+                .fill(Color.yellow.opacity(0.05)
                 .overlay(
                     RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
                         .stroke(Color.yellow.opacity(0.2), lineWidth: 1)
@@ -1025,7 +1025,7 @@ struct ReactionActivityCard: View {
         HStack(spacing: .ds.medium) {
             // Reaction icon
             Text(reactionContent)
-                .font(.ds.largeTitle))
+                .font(.ds.largeTitle)
                 .scaleEffect(heartScale)
             
             VStack(alignment: .leading, spacing: 4) {
@@ -1036,7 +1036,7 @@ struct ReactionActivityCard: View {
                     
                     Spacer()
                     
-                    Text(RelativeTimeFormatter.relativeTime(from: event.createdAt))
+                    Text(RelativeTimeFormatter.relativeTime(from: event.createdAt)
                         .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                 }
@@ -1046,7 +1046,7 @@ struct ReactionActivityCard: View {
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                     
-                    Text(PubkeyFormatter.formatCompact(event.pubkey))
+                    Text(PubkeyFormatter.formatCompact(event.pubkey)
                         .font(.ds.caption)
                         .foregroundColor(.ds.primary)
                 }
@@ -1056,7 +1056,7 @@ struct ReactionActivityCard: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
-                .fill(Color.pink.opacity(0.05))
+                .fill(Color.pink.opacity(0.05)
                 .overlay(
                     RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
                         .stroke(Color.pink.opacity(0.2), lineWidth: 1)
@@ -1082,25 +1082,25 @@ struct ActivityCardSkeleton: View {
         HStack(spacing: .ds.medium) {
             // Icon skeleton
             Circle()
-                .fill(Color.gray.opacity(0.3))
+                .fill(Color.gray.opacity(0.3)
                 .frame(width: 44, height: 44)
             
             VStack(alignment: .leading, spacing: 8) {
                 // Title skeleton
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.gray.opacity(0.3))
+                    .fill(Color.gray.opacity(0.3)
                     .frame(width: 180, height: 16)
                 
                 // Subtitle skeleton
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.gray.opacity(0.3))
+                    .fill(Color.gray.opacity(0.3)
                     .frame(width: 120, height: 12)
             }
             
             Spacer()
         }
         .padding()
-        .background(Color.gray.opacity(0.1))
+        .background(Color.gray.opacity(0.1)
         .cornerRadius(.ds.medium)
         .overlay(
             GeometryReader { geometry in

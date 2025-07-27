@@ -130,7 +130,7 @@ struct UserProfileView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: 100, height: 100)
-                            .clipShape(Circle())
+                            .clipShape(Circle()
                     case .failure(_), .empty:
                         avatarPlaceholder
                     @unknown default:
@@ -150,7 +150,7 @@ struct UserProfileView: View {
                         .foregroundColor(.ds.text)
                 }
                 
-                Text(formatNpub(pubkey))
+                Text(formatNpub(pubkey)
                     .font(.ds.caption)
                     .foregroundColor(.ds.textSecondary)
                     .textSelection(.enabled)
@@ -212,7 +212,7 @@ struct UserProfileView: View {
                 )
                 .frame(width: 100, height: 100)
             
-            Text(PubkeyFormatter.formatForAvatar(pubkey))
+            Text(PubkeyFormatter.formatForAvatar(pubkey)
                 .font(.ds.bodyMedium)
                 .foregroundColor(.white)
         }
@@ -661,7 +661,7 @@ struct CommentCard: View {
                 .lineLimit(3)
             
             HStack {
-                Text(RelativeTimeFormatter.relativeTime(from: comment.createdAt))
+                Text(RelativeTimeFormatter.relativeTime(from: comment.createdAt)
                     .font(.ds.caption)
                     .foregroundColor(.ds.textTertiary)
                 
@@ -697,7 +697,7 @@ struct CollectionCard: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: 60, height: 60)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .clipShape(RoundedRectangle(cornerRadius: 8)
                         default:
                             RoundedRectangle(cornerRadius: 8)
                                 .fill(Color.ds.surfaceSecondary)
@@ -726,7 +726,7 @@ struct CollectionCard: View {
                         
                         Spacer()
                         
-                        Text(RelativeTimeFormatter.relativeTime(from: collection.updatedAt))
+                        Text(RelativeTimeFormatter.relativeTime(from: collection.updatedAt)
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                     }
@@ -750,7 +750,7 @@ struct UserProfileEmptyStateView: View {
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 48))
+                .font(.system(size: 48)
                 .foregroundColor(.ds.textTertiary)
             
             Text(title)

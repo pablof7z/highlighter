@@ -55,7 +55,7 @@ struct CreateHighlightView: View {
                         // Mode Selection
                         VStack(spacing: 16) {
                             Text("Create Highlight")
-                                .font(.largeTitle.weight(.bold))
+                                .font(.largeTitle.weight(.bold)
                                 .foregroundColor(.ds.text)
                             
                             HStack(spacing: 12) {
@@ -87,7 +87,7 @@ struct CreateHighlightView: View {
                         .transition(.asymmetric(
                             insertion: .push(from: .trailing).combined(with: .opacity),
                             removal: .push(from: .leading).combined(with: .opacity)
-                        ))
+                        )
                         
                         // Save Button
                         Button(action: saveHighlight) {
@@ -98,7 +98,7 @@ struct CreateHighlightView: View {
                                 .padding(.vertical, 16)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                        .fill(isReadyToSave ? Color.ds.primary : Color.secondary.opacity(0.3))
+                                        .fill(isReadyToSave ? Color.ds.primary : Color.secondary.opacity(0.3)
                                 )
                                 .foregroundColor(.white)
                                 .scaleEffect(isSaving ? 0.95 : 1.0)
@@ -253,13 +253,13 @@ struct CreateHighlightView: View {
             
             Button(action: { showImportOptions = true }) {
                 Label("Import New Article", systemImage: "plus.circle.fill")
-                    .font(.ds.body, weight: .medium))
+                    .font(.ds.body).fontWeight(.medium)
                     .foregroundColor(.ds.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color.ds.primary.opacity(0.1))
+                            .fill(Color.ds.primary.opacity(0.1)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                                     .strokeBorder(Color.ds.primary.opacity(0.3), lineWidth: 1)
@@ -359,17 +359,17 @@ struct HighlightModeCard: View {
                         )
                     
                     Image(systemName: mode.icon)
-                        .font(.ds.title2, weight: .semibold))
+                        .font(.ds.title2).fontWeight(.semibold)
                         .foregroundColor(isSelected ? .white : .ds.textSecondary)
                 }
                 
                 VStack(spacing: 4) {
                     Text(mode.title)
-                        .font(.ds.body, weight: .semibold))
+                        .font(.ds.body).fontWeight(.semibold)
                         .foregroundColor(isSelected ? .ds.text : .ds.textSecondary)
                     
                     Text(mode.description)
-                        .font(.ds.caption))
+                        .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
@@ -400,14 +400,14 @@ struct ArticleSelectionCard: View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 8) {
                 Text(article.title)
-                    .font(.ds.callout, weight: .semibold))
+                    .font(.ds.callout).fontWeight(.semibold)
                     .foregroundColor(.ds.text)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 
                 if let summary = article.summary {
                     Text(summary)
-                        .font(.ds.caption))
+                        .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
@@ -415,13 +415,13 @@ struct ArticleSelectionCard: View {
                 
                 HStack {
                     Label("\(article.estimatedReadingTime) min", systemImage: "clock")
-                        .font(.ds.caption2))
+                        .font(.ds.caption2)
                         .foregroundColor(.ds.textTertiary)
                     
                     Spacer()
                     
-                    Text(article.createdAt.formatted(.relative(presentation: .named)))
-                        .font(.ds.caption2))
+                    Text(article.createdAt.formatted(.relative(presentation: .named))
+                        .font(.ds.caption2)
                         .foregroundColor(.ds.textTertiary)
                 }
             }
@@ -444,8 +444,8 @@ struct ArticlePlaceholderCard: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "doc.text.magnifyingglass")
-                .font(.system(size: 48))
-                .foregroundColor(.orange.opacity(0.6))
+                .font(.system(size: 48)
+                .foregroundColor(.orange.opacity(0.6)
             
             VStack(spacing: 8) {
                 Text("No articles yet")
@@ -467,7 +467,7 @@ struct ArticlePlaceholderCard: View {
         .padding(.horizontal, 24)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.orange.opacity(0.05))
+                .fill(Color.orange.opacity(0.05)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -485,7 +485,7 @@ struct ModernTextField: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.ds.body))
+                .font(.ds.body)
                 .foregroundColor(.ds.textSecondary)
                 .frame(width: 20)
             

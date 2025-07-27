@@ -96,7 +96,7 @@ extension View {
     // MARK: - Tab Pills
     func unifiedTabPill(isSelected: Bool) -> some View {
         self
-            .font(.system(size: UnifiedStyleGuide.TabPill.fontSize, weight: UnifiedStyleGuide.TabPill.fontWeight))
+            .font(.system(size: UnifiedStyleGuide.TabPill.fontSize, weight: UnifiedStyleGuide.TabPill.fontWeight)
             .foregroundColor(isSelected ? UnifiedStyleGuide.TabPill.selectedTextColor : UnifiedStyleGuide.TabPill.unselectedTextColor)
             .padding(.horizontal, UnifiedStyleGuide.TabPill.horizontalPadding)
             .padding(.vertical, UnifiedStyleGuide.TabPill.verticalPadding)
@@ -175,7 +175,7 @@ struct UnifiedEmptyState: View {
     var body: some View {
         VStack(spacing: UnifiedStyleGuide.EmptyState.spacing) {
             Image(systemName: icon)
-                .font(.system(size: UnifiedStyleGuide.EmptyState.iconSize))
+                .font(.system(size: UnifiedStyleGuide.EmptyState.iconSize)
                 .foregroundColor(UnifiedStyleGuide.EmptyState.iconColor)
             
             Text(title)
@@ -202,11 +202,11 @@ struct UnifiedStatCard: View {
         VStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(UnifiedStyleGuide.StatsCard.iconBackgroundColor(color))
+                    .fill(UnifiedStyleGuide.StatsCard.iconBackgroundColor(color)
                     .frame(width: UnifiedStyleGuide.StatsCard.iconContainerSize, height: UnifiedStyleGuide.StatsCard.iconContainerSize)
                 
                 Image(systemName: icon)
-                    .font(.system(size: UnifiedStyleGuide.StatsCard.iconSize, weight: .semibold))
+                    .font(.system(size: UnifiedStyleGuide.StatsCard.iconSize, weight: .semibold)
                     .foregroundColor(color)
             }
             

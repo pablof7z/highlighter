@@ -46,7 +46,7 @@ struct SwarmHeatmapView: View {
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.8).combined(with: .opacity),
                         removal: .scale(scale: 0.95).combined(with: .opacity)
-                    ))
+                    )
                     .zIndex(100)
                 }
             }
@@ -99,7 +99,7 @@ struct SwarmHeatmapView: View {
                     start: position,
                     end: position.applying(.init(translationX: .random(in: -50...50), y: -100)),
                     startTime: Date()
-                ))
+                )
             }
         }
         
@@ -127,7 +127,7 @@ struct SwarmHeatmapView: View {
     }
     
     private func zapAllHighlighters() async {
-        let highlighters = heatmapData.getHighlighters(for: selectedRange ?? NSRange())
+        let highlighters = heatmapData.getHighlighters(for: selectedRange ?? NSRange()
         
         for _ in highlighters {
             // Show UI feedback for each zap
@@ -250,7 +250,7 @@ class HeatmapTextUIView: UITextView {
         layoutManager.enumerateEnclosingRects(forGlyphRange: glyphRange,
                                             withinSelectedGlyphRange: NSRange(location: NSNotFound, length: 0),
                                             in: textContainer) { rect, _ in
-            rects.append(rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top))
+            rects.append(rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
         }
         
         return rects
@@ -287,7 +287,7 @@ struct HeatmapParticleView: View {
                 colors: [Color.ds.primary, Color.ds.primary.opacity(0.3)],
                 startPoint: .top,
                 endPoint: .bottom
-            ))
+            )
             .frame(width: 6, height: 6)
             .scaleEffect(scale)
             .opacity(opacity)
@@ -353,7 +353,7 @@ struct SwarmTooltipView: View {
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(Color.ds.surfaceSecondary)
-                            .clipShape(Capsule())
+                            .clipShape(Capsule()
                             .padding(.leading, 8)
                     }
                 }
@@ -417,7 +417,7 @@ struct HighlighterAvatarView: View {
                     .fill(Color.ds.surfaceSecondary)
                     .frame(width: 40, height: 40)
                     .overlay(
-                        Text(highlighter.name.prefix(2).uppercased())
+                        Text(highlighter.name.prefix(2).uppercased()
                             .font(.ds.caption)
                             .fontWeight(.bold)
                             .foregroundColor(.ds.primary)
@@ -565,7 +565,7 @@ class SwarmHeatmapData: ObservableObject {
         // Fallback: if no context tag, estimate based on content length
         let contentLength = event.content.count
         let estimatedStart = max(0, 50) // Start after some intro text
-        return NSRange(location: estimatedStart, length: min(contentLength, 100))
+        return NSRange(location: estimatedStart, length: min(contentLength, 100)
     }
     
     func getHighlighters(for range: NSRange) -> [HighlighterInfo] {

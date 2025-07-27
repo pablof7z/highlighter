@@ -28,17 +28,17 @@ struct AudioPlayerView: View {
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.95).combined(with: .opacity),
                         removal: .scale(scale: 0.95).combined(with: .opacity)
-                    ))
+                    )
             } else {
                 compactPlayer
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.95).combined(with: .opacity),
                         removal: .scale(scale: 0.95).combined(with: .opacity)
-                    ))
+                    )
             }
         }
         .background(playerBackground)
-        .clipShape(RoundedRectangle(cornerRadius: expandedView ? 24 : 16))
+        .clipShape(RoundedRectangle(cornerRadius: expandedView ? 24 : 16)
         .overlay(
             RoundedRectangle(cornerRadius: expandedView ? 24 : 16)
                 .stroke(
@@ -97,7 +97,7 @@ struct AudioPlayerView: View {
                         .frame(width: 3, height: waveformAnimation[index] * 30)
                         .animation(
                             audioManager.isPlaying ?
-                                .easeInOut(duration: Double.random(in: 0.3...0.6))
+                                .easeInOut(duration: Double.random(in: 0.3...0.6)
                                 .repeatForever(autoreverses: true) :
                                 .easeOut(duration: 0.3),
                             value: waveformAnimation[index]
@@ -116,7 +116,7 @@ struct AudioPlayerView: View {
                 }
             }) {
                 Label("\(String(format: "%.1fx", audioManager.speechRate))", systemImage: "gauge")
-                    .font(.caption.weight(.medium))
+                    .font(.caption.weight(.medium)
                     .foregroundColor(.orange)
             }
             
@@ -128,11 +128,11 @@ struct AudioPlayerView: View {
                 }
             }) {
                 Image(systemName: "arrow.up.left.and.arrow.down.right")
-                    .font(.caption.weight(.bold))
+                    .font(.caption.weight(.bold)
                     .foregroundColor(.orange)
                     .padding(8)
-                    .background(Color.orange.opacity(0.1))
-                    .clipShape(Circle())
+                    .background(Color.orange.opacity(0.1)
+                    .clipShape(Circle()
             }
         }
         .padding(.horizontal, 16)
@@ -143,7 +143,7 @@ struct AudioPlayerView: View {
                 .transition(.asymmetric(
                     insertion: .push(from: .top).combined(with: .opacity),
                     removal: .push(from: .bottom).combined(with: .opacity)
-                ))
+                )
         }
     }
     
@@ -169,11 +169,11 @@ struct AudioPlayerView: View {
                     }
                 }) {
                     Image(systemName: "arrow.down.right.and.arrow.up.left")
-                        .font(.caption.weight(.bold))
+                        .font(.caption.weight(.bold)
                         .foregroundColor(.orange)
                         .padding(8)
-                        .background(Color.orange.opacity(0.1))
-                        .clipShape(Circle())
+                        .background(Color.orange.opacity(0.1)
+                        .clipShape(Circle()
                 }
             }
             .padding(.horizontal, 20)
@@ -284,7 +284,7 @@ struct AudioPlayerView: View {
                 
                 // Icon
                 Image(systemName: audioManager.isPlaying ? "pause.fill" : "play.fill")
-                    .font(.system(size: size * 0.4, weight: .bold))
+                    .font(.system(size: size * 0.4, weight: .bold)
                     .foregroundColor(.white)
                     .offset(x: audioManager.isPlaying ? 0 : 2)
             }
@@ -297,14 +297,14 @@ struct AudioPlayerView: View {
         VStack(spacing: 8) {
             // Time labels
             HStack {
-                Text(formatTime(audioManager.currentTime))
-                    .font(.caption.monospacedDigit())
+                Text(formatTime(audioManager.currentTime)
+                    .font(.caption.monospacedDigit()
                     .foregroundColor(.secondary)
                 
                 Spacer()
                 
-                Text(formatTime(audioManager.duration))
-                    .font(.caption.monospacedDigit())
+                Text(formatTime(audioManager.duration)
+                    .font(.caption.monospacedDigit()
                     .foregroundColor(.secondary)
             }
             
@@ -313,7 +313,7 @@ struct AudioPlayerView: View {
                 ZStack(alignment: .leading) {
                     // Background track
                     Capsule()
-                        .fill(Color.gray.opacity(0.2))
+                        .fill(Color.gray.opacity(0.2)
                         .frame(height: 4)
                     
                     // Progress fill
@@ -329,7 +329,7 @@ struct AudioPlayerView: View {
                     
                     // Glow effect
                     Capsule()
-                        .fill(Color.orange.opacity(0.5))
+                        .fill(Color.orange.opacity(0.5)
                         .frame(width: geometry.size.width * audioManager.progress, height: 4)
                         .blur(radius: 4)
                     
@@ -375,7 +375,7 @@ struct AudioPlayerView: View {
                     .frame(width: 4, height: waveformAnimation[index] * 60)
                     .animation(
                         audioManager.isPlaying ?
-                            .easeInOut(duration: Double.random(in: 0.3...0.6))
+                            .easeInOut(duration: Double.random(in: 0.3...0.6)
                             .repeatForever(autoreverses: true) :
                             .easeOut(duration: 0.3),
                         value: waveformAnimation[index]
@@ -389,13 +389,13 @@ struct AudioPlayerView: View {
         VStack(spacing: 8) {
             HStack {
                 Text("Playback Speed")
-                    .font(.caption.weight(.medium))
+                    .font(.caption.weight(.medium)
                     .foregroundColor(.secondary)
                 
                 Spacer()
                 
                 Text("\(String(format: "%.1fx", audioManager.speechRate))")
-                    .font(.caption.weight(.bold).monospacedDigit())
+                    .font(.caption.weight(.bold).monospacedDigit()
                     .foregroundColor(.orange)
             }
             
@@ -403,16 +403,16 @@ struct AudioPlayerView: View {
                 ForEach([0.5, 0.75, 1.0, 1.25, 1.5, 2.0], id: \.self) { speed in
                     Button(action: {
                         HapticManager.shared.impact(.light)
-                        audioManager.setSpeechRate(Float(speed))
+                        audioManager.setSpeechRate(Float(speed)
                     }) {
                         Text("\(String(format: "%.1fx", speed))")
-                            .font(.caption.weight(.medium))
+                            .font(.caption.weight(.medium)
                             .foregroundColor(audioManager.speechRate == Float(speed) ? .white : .orange)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .background(
                                 Capsule()
-                                    .fill(audioManager.speechRate == Float(speed) ? Color.orange : Color.orange.opacity(0.1))
+                                    .fill(audioManager.speechRate == Float(speed) ? Color.orange : Color.orange.opacity(0.1)
                             )
                     }
                 }
@@ -421,7 +421,7 @@ struct AudioPlayerView: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.1))
+                .fill(Color.gray.opacity(0.1)
         )
     }
     
@@ -430,13 +430,13 @@ struct AudioPlayerView: View {
         VStack(spacing: 8) {
             HStack {
                 Text("Voice")
-                    .font(.caption.weight(.medium))
+                    .font(.caption.weight(.medium)
                     .foregroundColor(.secondary)
                 
                 Spacer()
                 
                 Text(selectedVoice?.name ?? "Default")
-                    .font(.caption.weight(.medium))
+                    .font(.caption.weight(.medium)
                     .foregroundColor(.orange)
             }
             
@@ -460,7 +460,7 @@ struct AudioPlayerView: View {
                             .frame(width: 60, height: 60)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(selectedVoice?.identifier == voice.identifier ? Color.orange : Color.orange.opacity(0.1))
+                                    .fill(selectedVoice?.identifier == voice.identifier ? Color.orange : Color.orange.opacity(0.1)
                             )
                         }
                     }
@@ -470,7 +470,7 @@ struct AudioPlayerView: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.1))
+                .fill(Color.gray.opacity(0.1)
         )
     }
     
@@ -479,13 +479,13 @@ struct AudioPlayerView: View {
         VStack(spacing: 12) {
             HStack {
                 Label("Sat Streaming", systemImage: "bolt.fill")
-                    .font(.caption.weight(.medium))
+                    .font(.caption.weight(.medium)
                     .foregroundColor(.orange)
                 
                 Spacer()
                 
                 Toggle("", isOn: $showSatStreaming)
-                    .toggleStyle(SwitchToggleStyle(tint: .orange))
+                    .toggleStyle(SwitchToggleStyle(tint: .orange)
                     .scaleEffect(0.8)
             }
             
@@ -499,7 +499,7 @@ struct AudioPlayerView: View {
                         Spacer()
                         
                         Text("\(satStreamAmount) sats/min")
-                            .font(.caption.weight(.bold).monospacedDigit())
+                            .font(.caption.weight(.bold).monospacedDigit()
                             .foregroundColor(.orange)
                     }
                     
@@ -510,13 +510,13 @@ struct AudioPlayerView: View {
                                 satStreamAmount = amount
                             }) {
                                 Text("\(amount)")
-                                    .font(.caption.weight(.medium))
+                                    .font(.caption.weight(.medium)
                                     .foregroundColor(satStreamAmount == amount ? .white : .orange)
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 6)
                                     .background(
                                         Capsule()
-                                            .fill(satStreamAmount == amount ? Color.orange : Color.orange.opacity(0.1))
+                                            .fill(satStreamAmount == amount ? Color.orange : Color.orange.opacity(0.1)
                                     )
                             }
                         }
@@ -538,20 +538,20 @@ struct AudioPlayerView: View {
                         .padding(8)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.orange.opacity(0.1))
+                                .fill(Color.orange.opacity(0.1)
                         )
                     }
                 }
                 .transition(.asymmetric(
                     insertion: .push(from: .top).combined(with: .opacity),
                     removal: .push(from: .bottom).combined(with: .opacity)
-                ))
+                )
             }
         }
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.1))
+                .fill(Color.gray.opacity(0.1)
         )
     }
     
@@ -761,7 +761,7 @@ struct AudioParticleView: View {
     
     private func animateParticle() {
         withAnimation(
-            .easeInOut(duration: Double.random(in: 3...6))
+            .easeInOut(duration: Double.random(in: 3...6)
             .repeatForever(autoreverses: true)
         ) {
             offset = CGSize(

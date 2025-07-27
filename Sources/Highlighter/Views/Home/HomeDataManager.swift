@@ -228,11 +228,11 @@ class HomeDataManager: ObservableObject {
                         authors: [String(parts[1])],
                         kinds: [kind],
                         tags: ["d": Set([dTag])]
-                    ))
+                    )
                 }
             } else {
                 // This is an "e" tag reference (event ID)
-                articleFilters.append(NDKFilter(ids: [reference]))
+                articleFilters.append(NDKFilter(ids: [reference])
             }
         }
         
@@ -271,7 +271,7 @@ class HomeDataManager: ObservableObject {
                                     
                                     // Limit to top 10 most recently highlighted articles
                                     if highlightedArticles.count > 10 {
-                                        highlightedArticles = Array(highlightedArticles.prefix(10))
+                                        highlightedArticles = Array(highlightedArticles.prefix(10)
                                     }
                                 }
                             }
@@ -330,7 +330,7 @@ class HomeDataManager: ObservableObject {
         for await event in profileSource.events {
             if event.kind == 0,
                let profile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
-                profilesWithPubkeys.append((profile: profile, pubkey: event.pubkey))
+                profilesWithPubkeys.append((profile: profile, pubkey: event.pubkey)
             }
         }
         

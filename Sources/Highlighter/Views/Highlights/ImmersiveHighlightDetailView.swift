@@ -124,7 +124,7 @@ struct ImmersiveHighlightDetailView: View {
                         )
                         .opacity(floatingElementsAnimation ? 0.8 : 0.3)
                         .animation(
-                            .easeInOut(duration: Double.random(in: 15...25))
+                            .easeInOut(duration: Double.random(in: 15...25)
                             .repeatForever(autoreverses: true)
                             .delay(Double(index) * 0.5),
                             value: floatingElementsAnimation
@@ -174,14 +174,14 @@ struct ImmersiveHighlightDetailView: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text(author?.displayName ?? PubkeyFormatter.formatCompact(highlight.author))
-                            .font(.ds.title3, weight: .semibold))
+                            .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.white)
                         
                         HStack(spacing: 4) {
                             Image(systemName: "clock")
-                                .font(.ds.caption))
+                                .font(.ds.caption)
                             Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
-                                .font(.ds.callout))
+                                .font(.ds.callout)
                         }
                         .foregroundColor(.white.opacity(0.8))
                     }
@@ -221,7 +221,7 @@ struct ImmersiveHighlightDetailView: View {
                 ForEach(0..<20) { index in
                     Circle()
                         .fill(Color.white.opacity(0.05))
-                        .frame(width: CGFloat.random(in: 20...60))
+                        .frame(width: CGFloat.random(in: 20...60)
                         .position(
                             x: CGFloat.random(in: 0...geometry.size.width),
                             y: CGFloat.random(in: 0...geometry.size.height)
@@ -311,7 +311,7 @@ struct ImmersiveHighlightDetailView: View {
             
             // Highlighted text with selection effect
             Text(highlight.content)
-                .font(.ds.title2, weight: .medium, design: .rounded))
+                .font(.system(size: 20, weight: .medium, design: .rounded))
                 .foregroundColor(DesignSystem.Colors.text)
                 .lineSpacing(8)
                 .fixedSize(horizontal: false, vertical: true)
@@ -425,11 +425,11 @@ struct ImmersiveHighlightDetailView: View {
     private func contextSection(context: String) -> some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             Label("Context", systemImage: "text.alignleft")
-                .font(.ds.headline, weight: .semibold))
+                .font(.ds.headline)
                 .foregroundColor(DesignSystem.Colors.text)
             
             Text(context)
-                .font(.ds.body))
+                .font(.ds.body)
                 .foregroundColor(DesignSystem.Colors.textSecondary)
                 .lineSpacing(4)
         }
@@ -449,23 +449,23 @@ struct ImmersiveHighlightDetailView: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Author's Note")
-                        .font(.ds.body, weight: .semibold))
+                        .font(.ds.bodyMedium)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text(author?.displayName ?? "Author")
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
                 
                 Spacer()
                 
                 Image(systemName: "quote.bubble.fill")
-                    .font(.ds.title3))
+                    .font(.ds.title3)
                     .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
             }
             
             Text(comment)
-                .font(.ds.body))
+                .font(.ds.body)
                 .foregroundColor(DesignSystem.Colors.text)
                 .lineSpacing(4)
         }
@@ -494,7 +494,7 @@ struct ImmersiveHighlightDetailView: View {
     private var relatedHighlightsSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             Text("Related Highlights")
-                .font(.ds.title2, weight: .bold))
+                .font(.system(size: 20, weight: .bold))
                 .foregroundColor(DesignSystem.Colors.text)
                 .padding(.horizontal, DesignSystem.Spacing.large)
             
@@ -560,7 +560,7 @@ struct ImmersiveHighlightDetailView: View {
             HStack {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
-                        .font(.ds.title3, weight: .semibold))
+                        .font(.ds.title3)
                         .foregroundColor(scrollOffset < -50 ? DesignSystem.Colors.text : .white)
                         .padding(12)
                         .background(
@@ -574,7 +574,7 @@ struct ImmersiveHighlightDetailView: View {
                 
                 if scrollOffset < -100 {
                     Text("Highlight")
-                        .font(.ds.headline, weight: .semibold))
+                        .font(.ds.headline)
                         .foregroundColor(DesignSystem.Colors.text)
                         .transition(.opacity)
                 }
@@ -590,7 +590,7 @@ struct ImmersiveHighlightDetailView: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis")
-                        .font(.ds.title3, weight: .semibold))
+                        .font(.ds.title3)
                         .foregroundColor(scrollOffset < -50 ? DesignSystem.Colors.text : .white)
                         .padding(12)
                         .background(
@@ -809,18 +809,18 @@ struct MetricView: View {
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.ds.title2))
+                .font(.ds.title2)
                 .foregroundColor(color)
                 .scaleEffect(animatedValue > 0 ? 1.1 : 1.0)
                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animatedValue)
             
             Text("\(animatedValue)")
-                .font(.ds.headline, weight: .bold, design: .rounded))
+                .font(.system(size: 16, weight: .bold, design: .rounded)
                 .foregroundColor(DesignSystem.Colors.text)
                 .contentTransition(.numericText())
             
             Text(label)
-                .font(.ds.caption))
+                .font(.ds.caption)
                 .foregroundColor(DesignSystem.Colors.textSecondary)
         }
         .onAppear {
@@ -857,14 +857,14 @@ struct ImmersiveFloatingActionButton: View {
                     )
                     .overlay(
                         Image(systemName: icon)
-                            .font(.ds.title2))
+                            .font(.ds.title2)
                             .foregroundColor(isActive ? .white : color)
                     )
                     .scaleEffect(isPressed ? 0.9 : 1.0)
                 
                 if let badge = badge {
                     Text(badge)
-                        .font(.ds.caption, weight: .bold))
+                        .font(.ds.captionMedium)
                         .foregroundColor(.white)
                         .padding(4)
                         .background(Circle().fill(Color.red))
@@ -890,7 +890,7 @@ struct RelatedHighlightCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(highlight.content)
-                .font(.ds.body, weight: .medium))
+                .font(.ds.bodyMedium)
                 .foregroundColor(DesignSystem.Colors.text)
                 .lineLimit(3)
                 .multilineTextAlignment(.leading)
@@ -899,13 +899,13 @@ struct RelatedHighlightCard: View {
                 ProfileImage(pubkey: highlight.author, size: 24)
                 
                 Text(PubkeyFormatter.formatCompact(highlight.author))
-                    .font(.ds.callout))
+                    .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Spacer()
                 
                 Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt))
-                    .font(.ds.caption))
+                    .font(.ds.caption)
                     .foregroundColor(DesignSystem.Colors.textTertiary)
             }
         }
@@ -932,9 +932,9 @@ struct FollowButton: View {
                         .scaleEffect(0.8)
                 } else {
                     Image(systemName: isFollowing ? "person.fill.checkmark" : "person.fill.badge.plus")
-                        .font(.ds.callout))
+                        .font(.ds.callout)
                     Text(isFollowing ? "Following" : "Follow")
-                        .font(.ds.callout, weight: .medium))
+                        .font(.ds.calloutMedium)
                 }
             }
             .foregroundColor(.white)
