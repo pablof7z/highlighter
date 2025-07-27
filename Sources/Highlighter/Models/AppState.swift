@@ -294,14 +294,8 @@ class AppState: ObservableObject {
         
         let userToFollow = NDKUser(pubkey: pubkey)
         
-        // Get or create contact list
-        let contactList = try await ndk.fetchContactList() ?? NDKContactList(ndk: ndk)
-        
-        // Add user to contact list
-        contactList.addContact(user: userToFollow)
-        
-        // Publish updated contact list
-        try await ndk.publishContactList(contactList)
+        // Use NDK's built-in follow method
+        try await ndk.follow(userToFollow)
         
         // Update local following set
         following.insert(pubkey)
@@ -315,17 +309,8 @@ class AppState: ObservableObject {
         
         let userToUnfollow = NDKUser(pubkey: pubkey)
         
-        // Get existing contact list
-        guard let contactList = try await ndk.fetchContactList() else {
-            // No contact list to update
-            return
-        }
-        
-        // Remove user from contact list
-        contactList.removeContact(user: userToUnfollow)
-        
-        // Publish updated contact list
-        try await ndk.publishContactList(contactList)
+        // Use NDK's built-in unfollow method
+        try await ndk.unfollow(userToUnfollow)
         
         // Update local following set
         following.remove(pubkey)

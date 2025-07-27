@@ -1007,9 +1007,15 @@ struct NoiseTextureView: View {
 
 struct RecentArticlesSection: View {
     @ObservedObject var dataManager: HomeDataManager
+    @EnvironmentObject var appState: AppState
     @State private var currentPage = 0
     @State private var selectedArticle: Article?
     @State private var showingArticleDetail = false
+    
+    var recentArticles: [Article] {
+        // Get recent articles from DataStreamManager
+        Array(appState.articles.prefix(5))
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -1023,9 +1029,9 @@ struct RecentArticlesSection: View {
                 Spacer()
                 
                 // Page indicators
-                if !dataManager.highlightedArticles.isEmpty {
+                if !recentArticles.isEmpty {
                     HStack(spacing: 6) {
-                        ForEach(0..<min(dataManager.highlightedArticles.count, 5), id: \.self) { index in
+                        ForEach(0..<recentArticles.count, id: \.self) { index in
                             Circle()
                                 .fill(currentPage == index ? Color.ds.primary : Color.ds.textTertiary.opacity(0.3))
                                 .frame(width: 6, height: 6)
@@ -1038,18 +1044,18 @@ struct RecentArticlesSection: View {
             .padding(.horizontal, 16)
             
             // Portrait article cards carousel
-            if !dataManager.highlightedArticles.isEmpty {
+            if !recentArticles.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: 12) {
-                        ForEach(Array(dataManager.highlightedArticles.prefix(5).enumerated()), id: \.element.article.id) { index, highlightedArticle in
+                        ForEach(Array(recentArticles.enumerated()), id: \.element.id) { index, article in
                             Button(action: {
-                                selectedArticle = highlightedArticle.article
+                                selectedArticle = article
                                 showingArticleDetail = true
                                 HapticManager.shared.impact(.medium)
                             }) {
                                 RecentArticlePortraitCard(
-                                    article: highlightedArticle.article,
-                                    highlights: highlightedArticle.highlights,
+                                    article: article,
+                                    highlights: [],
                                     index: index
                                 )
                                 .frame(width: 280)
@@ -1080,7 +1086,7 @@ struct RecentArticlesSection: View {
 }
 
 struct RecentArticlePortraitCard: View {
-    let article: Article?
+    let article: Article
     let highlights: [HighlightEvent]
     let index: Int
     @State private var isPressed = false
@@ -1089,7 +1095,7 @@ struct RecentArticlePortraitCard: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             // Background image or gradient
-            if let article = article, let imageUrl = article.image {
+            if let imageUrl = article.image {
                 GeometryReader { geometry in
                     AsyncImage(url: URL(string: imageUrl)) { phase in
                         switch phase {
@@ -1128,7 +1134,7 @@ struct RecentArticlePortraitCard: View {
                 Spacer()
                 
                 // Category/Topic badge
-                if let article = article, let firstTag = article.hashtags.first {
+                if let firstTag = article.hashtags.first {
                     Text(firstTag.uppercased())
                         .font(.ds.caption)
                         .fontWeight(.semibold)
@@ -1143,17 +1149,15 @@ struct RecentArticlePortraitCard: View {
                 }
                 
                 // Title
-                if let article = article {
-                    Text(article.title)
-                        .font(.system(size: 28, weight: .bold, design: .default))
-                        .foregroundColor(.white)
-                        .lineLimit(3)
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                Text(article.title)
+                    .font(.system(size: 28, weight: .bold, design: .default))
+                    .foregroundColor(.white)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 // Summary or first highlight
-                if let article = article, let summary = article.summary {
+                if let summary = article.summary {
                     Text(summary)
                         .font(.ds.body)
                         .foregroundColor(.white.opacity(0.9))
@@ -1175,11 +1179,9 @@ struct RecentArticlePortraitCard: View {
                 // Metadata bar
                 HStack(spacing: 16) {
                     // Reading time
-                    if let article = article {
-                        Label("\(article.estimatedReadingTime) min", systemImage: "clock")
-                            .font(.ds.caption)
-                            .foregroundColor(.white.opacity(0.8))
-                    }
+                    Label("\(article.estimatedReadingTime) min", systemImage: "clock")
+                        .font(.ds.caption)
+                        .foregroundColor(.white.opacity(0.8))
                     
                     // Highlights count
                     Label("\(highlights.count)", systemImage: "highlighter")
@@ -1189,14 +1191,12 @@ struct RecentArticlePortraitCard: View {
                     Spacer()
                     
                     // Author avatar and time
-                    if let article = article {
-                        HStack(spacing: 8) {
-                            TappableAvatar(pubkey: article.author, size: 24)
-                            
-                            Text(PubkeyFormatter.formatCompact(article.author))
-                                .font(.ds.caption)
-                                .foregroundColor(.white.opacity(0.8))
-                        }
+                    HStack(spacing: 8) {
+                        TappableAvatar(pubkey: article.author, size: 24)
+                        
+                        Text(PubkeyFormatter.formatCompact(article.author))
+                            .font(.ds.caption)
+                            .foregroundColor(.white.opacity(0.8))
                     }
                 }
             }
