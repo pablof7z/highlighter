@@ -30,7 +30,7 @@ struct SimplifiedHybridFeedView: View {
         let eventIds = dataManager.discussions.prefix(10).map { $0.id }
         guard !eventIds.isEmpty else { return }
         
-        _ = await appState.engagementService.fetchEngagementBatch(for: eventIds)
+        let engagements = await appState.engagementService.fetchEngagementBatch(for: eventIds)
         await MainActor.run {
             discussionEngagements = engagements
         }

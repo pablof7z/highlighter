@@ -46,6 +46,7 @@
 		6B3A6908C6C27D35E9C37F28 /* FormattingUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = D01FA9F607102E7402D96CA8 /* FormattingUtilities.swift */; };
 		73EF0B3EADF9149125478230 /* CreateCurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE479875030C79E23CEC371 /* CreateCurationView.swift */; };
 		7686328E9D95E29C8EA0B48F /* CurationDiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B251BEAE7C275E85EB1BC1 /* CurationDiscoveryView.swift */; };
+		774DFC26E3EABD648687B248 /* ArticleCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BA485EAC539B8495036D49 /* ArticleCards.swift */; };
 		7C85339864BF38DD2C701BA2 /* SwipeableHighlightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F272232DC05F56A99327CE3F /* SwipeableHighlightCard.swift */; };
 		7FE69D4234C9337807120935 /* CommentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E226564B9D8D44FE91929960 /* CommentService.swift */; };
 		827B3C3EA3D94EABD1690B6D /* CommentsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7CB442B1CBDC62436052A8 /* CommentsSection.swift */; };
@@ -71,6 +72,7 @@
 		B06661ECC0DF92E6D63812C5 /* ReadingProgressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 244A38BDC30B8AFB74E55CF6 /* ReadingProgressService.swift */; };
 		B27F8ADE7A1BC93C9447C110 /* LightningWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38C2252299BA0F18F563B8D8 /* LightningWalletView.swift */; };
 		B5E8FDE244E748C0EBA0335C /* ZapButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5A696D9CC2601B91DA0191 /* ZapButton.swift */; };
+		B87E912787A0E6B865950080 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B56CB2E8AEBE60C92B68BB /* Comment.swift */; };
 		B8F2CAB48D17A44B82271ACA /* AdvancedSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3DC62588BEBADA506749EE /* AdvancedSearchView.swift */; };
 		BAE0C8B86EFE9D1FE13AA1DB /* TappableAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDDA7CB3CCEA970A2BD052FD /* TappableAvatar.swift */; };
 		BB60DB5A67DACB9C750CA1D2 /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1218D531D7715736DC097843 /* Article.swift */; };
@@ -168,6 +170,7 @@
 		B732C4AF8ED87EBB93D6D0D5 /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
 		BDDA7CB3CCEA970A2BD052FD /* TappableAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableAvatar.swift; sourceTree = "<group>"; };
 		C1770A666CC88A1326723FA2 /* SimplifiedHybridFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplifiedHybridFeedView.swift; sourceTree = "<group>"; };
+		C3BA485EAC539B8495036D49 /* ArticleCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleCards.swift; sourceTree = "<group>"; };
 		C3CDA726BB07F1F8F89ABF1C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C698E368C385A545D9B0F4C2 /* ModernAuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernAuthenticationView.swift; sourceTree = "<group>"; };
 		C88288E64D986A7B021700F9 /* AnimationSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationSystem.swift; sourceTree = "<group>"; };
@@ -187,6 +190,7 @@
 		F3319498B3CFE8B8270ACBCC /* HybridFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HybridFeedView.swift; sourceTree = "<group>"; };
 		F6C338502340BD8BE768794B /* HomeDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDataManager.swift; sourceTree = "<group>"; };
 		F72B83ED7201352D81B038D4 /* FollowingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingListView.swift; sourceTree = "<group>"; };
+		F8B56CB2E8AEBE60C92B68BB /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		FA46623C808023B5D65EB473 /* ModernStateViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernStateViews.swift; sourceTree = "<group>"; };
 		FC1A44A034DF17AF520B0742 /* Highlighter.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Highlighter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD69175DE127E1B1E7016D16 /* HighlighterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlighterApp.swift; sourceTree = "<group>"; };
@@ -208,6 +212,7 @@
 		19F0228E7B8B298952560FB4 /* Articles */ = {
 			isa = PBXGroup;
 			children = (
+				C3BA485EAC539B8495036D49 /* ArticleCards.swift */,
 				A89145FF0C6BCD85C2ADB6B0 /* ArticleListView.swift */,
 				71A83CD10503C7B187BEE747 /* ArticleView.swift */,
 			);
@@ -478,6 +483,7 @@
 				5E06D1E90D26910A32BBA586 /* AppState.swift */,
 				1218D531D7715736DC097843 /* Article.swift */,
 				A2CDAC5B2099CFF6ED8BE9AE /* ArticleCuration.swift */,
+				F8B56CB2E8AEBE60C92B68BB /* Comment.swift */,
 				03DEF9DECD6C6F4D9AF8C400 /* FollowPack.swift */,
 				0151014CE7E449B5BE685BE8 /* HighlightEvent.swift */,
 				9906E08DF53F3E88E7370583 /* SwarmHighlight.swift */,
@@ -624,6 +630,7 @@
 				58CD029928844C6A40946A74 /* AnimationSystem.swift in Sources */,
 				218363F8C03885960CF5D248 /* AppState.swift in Sources */,
 				BB60DB5A67DACB9C750CA1D2 /* Article.swift in Sources */,
+				774DFC26E3EABD648687B248 /* ArticleCards.swift in Sources */,
 				3DDAE1A8FD5B8746688B9D12 /* ArticleCuration.swift in Sources */,
 				1B99932C8DCDEBA4FB239749 /* ArticleListView.swift in Sources */,
 				BF8BF379A7FFE947E5F3811B /* ArticleTimeEstimator.swift in Sources */,
@@ -633,6 +640,7 @@
 				BD0BB9E711D36C0B505058F6 /* BookmarkService.swift in Sources */,
 				584216E80F87025A63620635 /* ButtonSystem.swift in Sources */,
 				31CEBD7F410053E533CDE2BA /* CardSystem.swift in Sources */,
+				B87E912787A0E6B865950080 /* Comment.swift in Sources */,
 				7FE69D4234C9337807120935 /* CommentService.swift in Sources */,
 				2CC38B572930D776402F8720 /* CommentView.swift in Sources */,
 				827B3C3EA3D94EABD1690B6D /* CommentsSection.swift in Sources */,
@@ -718,7 +726,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 456SHKPP26;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -753,7 +761,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 456SHKPP26;
 				ENABLE_PREVIEWS = YES;

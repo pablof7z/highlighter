@@ -7,15 +7,15 @@ struct DesignSystem {
     
     // MARK: - Colors
     enum Colors {
-        // Primary - Sophisticated dark blue/indigo
-        static let primary = Color(hex: "1A237E")
-        static let primaryLight = Color(hex: "3949AB") 
-        static let primaryDark = Color(hex: "0D1551")
+        // Primary - Deep purple (Nostr-inspired)
+        static let primary = Color(hex: "6A1B9A")
+        static let primaryLight = Color(hex: "8E44AD") 
+        static let primaryDark = Color(hex: "4A148C")
         
-        // Secondary - Elegant sage green for subtle accents
-        static let secondary = Color(hex: "4A5F4E")
-        static let secondaryLight = Color(hex: "6B7B6F")
-        static let secondaryDark = Color(hex: "2F3F32")
+        // Secondary - Warm orange (Bitcoin/Lightning-inspired)
+        static let secondary = Color(hex: "FF9500")
+        static let secondaryLight = Color(hex: "FFA726")
+        static let secondaryDark = Color(hex: "F57C00")
         
         // Semantic Colors
         static let text = Color.primary
@@ -42,9 +42,9 @@ struct DesignSystem {
         static let divider = Color.primary.opacity(0.08)
         static let border = Color.primary.opacity(0.12)
         
-        // Interactive States - subtle highlights
-        static let highlight = primary.opacity(0.8)
-        static let highlightSubtle = primary.opacity(0.05)
+        // Interactive States - orange highlights to match spec
+        static let highlight = secondary.opacity(0.8)
+        static let highlightSubtle = secondary.opacity(0.1)
     }
     
     // MARK: - Typography
