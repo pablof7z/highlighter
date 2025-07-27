@@ -658,9 +658,54 @@ struct ImmersiveHighlightDetailView: View {
             self.engagementMetrics = metrics[highlight.id] ?? EngagementService.EngagementMetrics()
         }
         
-        // Load related highlights (mock for now)
-        await MainActor.run {
-            self.relatedHighlights = Array(repeating: highlight, count: 5)
+        // Load related highlights from the same source
+        if let sourceUrl = highlight.source, let ndk = appState.ndk {
+            // Fetch highlights from the same source
+            let filter = NDKFilter(
+                kinds: [9802], // NIP-84 highlights
+                tags: ["r": Set([sourceUrl])]
+            )
+            
+            var relatedEvents: [NDKEvent] = []
+            let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            
+            for await event in dataSource.events {
+                relatedEvents.append(event)
+                if relatedEvents.count >= 10 { break } // Limit to prevent excessive loading
+            }
+            
+            let related = relatedEvents
+                .compactMap { try? HighlightEvent(from: $0) }
+                .filter { $0.id != highlight.id } // Exclude current highlight
+                .prefix(5)
+            
+            await MainActor.run {
+                self.relatedHighlights = Array(related)
+            }
+        } else if let ndk = appState.ndk {
+            // If no source, fetch recent highlights by the same author
+            let filter = NDKFilter(
+                authors: [highlight.pubkey],
+                kinds: [9802], // NIP-84 highlights
+                limit: 6
+            )
+            
+            var authorHighlights: [NDKEvent] = []
+            let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            
+            for await event in dataSource.events {
+                authorHighlights.append(event)
+                if authorHighlights.count >= 6 { break }
+            }
+            
+            let related = authorHighlights
+                .compactMap { try? HighlightEvent(from: $0) }
+                .filter { $0.id != highlight.id } // Exclude current highlight
+                .prefix(5)
+            
+            await MainActor.run {
+                self.relatedHighlights = Array(related)
+            }
         }
     }
     
@@ -698,8 +743,18 @@ struct ImmersiveHighlightDetailView: View {
         HapticManager.shared.impact(.medium)
         
         Task {
-            // TODO: Implement bookmark toggle
-            // await appState.bookmarkService.toggleBookmark(for: highlight)
+            do {
+                try await appState.bookmarkService.toggleHighlightBookmark(highlight)
+            } catch {
+                print("Failed to toggle bookmark: \(error)")
+                // Revert the UI state on error
+                await MainActor.run {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                        isBookmarked.toggle()
+                    }
+                }
+                HapticManager.shared.notification(.error)
+            }
         }
     }
     
@@ -712,8 +767,29 @@ struct ImmersiveHighlightDetailView: View {
         
         // Trigger zap flow
         Task {
-            // TODO: Implement zap functionality
-            // await appState.lightningService.zapEvent(highlight.id, amount: 21)
+            do {
+                if appState.lightningService.isConnected {
+                    // Use smart zap for highlights to split payments
+                    _ = try await appState.lightningService.sendSmartZap(
+                        amount: 21, // Default zap amount
+                        to: highlight,
+                        article: nil, // No article context in this view
+                        comment: "⚡ Zapped via Highlighter"
+                    )
+                } else {
+                    // Show wallet connection UI if not connected
+                    print("Lightning wallet not connected")
+                    await MainActor.run {
+                        hasZapped = false
+                    }
+                }
+            } catch {
+                print("Failed to send zap: \(error)")
+                HapticManager.shared.notification(.error)
+                await MainActor.run {
+                    hasZapped = false
+                }
+            }
         }
         
         // Reset animation

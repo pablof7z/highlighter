@@ -801,6 +801,7 @@ struct SwarmHighlightRow: View {
     @State private var isHovered = false
     @State private var zapParticles: [SwarmZapParticle] = []
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -1011,7 +1012,24 @@ struct SwarmHighlightRow: View {
             zapParticles.removeAll()
         }
         
-        // TODO: Implement actual zap functionality
+        // Send actual zap
+        Task {
+            do {
+                if appState.lightningService.isConnected {
+                    try await appState.lightningService.sendSimpleZap(
+                        amount: 21, // Default zap amount
+                        to: info.author.pubkey,
+                        comment: "⚡ Zapped via Highlighter"
+                    )
+                } else {
+                    // Show wallet connection UI if not connected
+                    print("Lightning wallet not connected")
+                }
+            } catch {
+                print("Failed to send zap: \(error)")
+                HapticManager.shared.notification(.error)
+            }
+        }
     }
 }
 

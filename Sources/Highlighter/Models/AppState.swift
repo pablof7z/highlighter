@@ -17,6 +17,7 @@ class AppState: ObservableObject {
     @Published private(set) var bookmarkService = BookmarkService()
     @Published private(set) var commentService = CommentService()
     @Published private(set) var engagementService = EngagementService()
+    @Published private(set) var lightningService = LightningService()
     
     // Computed Content State (from services)
     var highlights: [HighlightEvent] { dataStreamManager.highlights }

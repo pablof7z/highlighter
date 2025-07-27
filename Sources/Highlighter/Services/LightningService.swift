@@ -528,40 +528,6 @@ class LightningService: ObservableObject {
         }
     }
     
-    // MARK: - Mock Payment Generation
-    
-    func generateMockPayment() async -> ActivePayment {
-        let mockSplits = [
-            PaymentSplit(
-                recipientPubkey: "mock_highlighter_pubkey",
-                amount: 300,
-                role: .highlighter,
-                isOriginal: true
-            ),
-            PaymentSplit(
-                recipientPubkey: "mock_author_pubkey",
-                amount: 500,
-                role: .author,
-                isOriginal: false
-            ),
-            PaymentSplit(
-                recipientPubkey: "mock_curator_pubkey",
-                amount: 200,
-                role: .curator,
-                isOriginal: false
-            )
-        ]
-        
-        return ActivePayment(
-            id: UUID(),
-            totalAmount: 1000,
-            splits: mockSplits,
-            highlightId: "mock_highlight_id",
-            comment: "Mock payment for testing",
-            status: .pending,
-            timestamp: Date()
-        )
-    }
     
     // MARK: - Nested Types
     
@@ -715,8 +681,8 @@ class LightningService: ObservableObject {
     }
 }
 
-// MARK: - Mock NWC Implementation
+// MARK: - NWC Implementation
 
-/// Simplified NWC implementation for the example
+/// Simplified NWC implementation
 // NostrWalletConnect implementation has been moved to its own file
 // See NostrWalletConnect.swift for the full implementation

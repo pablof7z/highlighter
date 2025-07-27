@@ -535,9 +535,39 @@ struct LightningPaymentFlowView: View {
     
     private func processPayment() {
         Task {
-            // Create mock payment
-            _ = selectedSplitConfiguration == 3 ? customSplitConfig : splitConfigurations[selectedSplitConfiguration].1
-            let payment = await lightningService.generateMockPayment()
+            // Create payment with actual splits
+            let splits = selectedSplitConfiguration == 3 ? customSplitConfig : splitConfigurations[selectedSplitConfiguration].1
+            
+            let paymentSplits = [
+                LightningService.PaymentSplit(
+                    recipientPubkey: highlight.pubkey,
+                    amount: Int(Double(selectedAmount) * splits.highlighterPercentage),
+                    role: .highlighter,
+                    isOriginal: true
+                ),
+                LightningService.PaymentSplit(
+                    recipientPubkey: highlight.author ?? highlight.pubkey,
+                    amount: Int(Double(selectedAmount) * splits.authorPercentage),
+                    role: .author,
+                    isOriginal: false
+                ),
+                LightningService.PaymentSplit(
+                    recipientPubkey: highlight.pubkey, // Use highlight pubkey as fallback
+                    amount: Int(Double(selectedAmount) * splits.curatorPercentage),
+                    role: .curator,
+                    isOriginal: false
+                )
+            ].filter { $0.amount > 0 }
+            
+            let payment = LightningService.ActivePayment(
+                id: UUID(),
+                totalAmount: selectedAmount,
+                splits: paymentSplits,
+                highlightId: highlight.id,
+                comment: nil,
+                status: .pending,
+                timestamp: Date()
+            )
             
             await MainActor.run {
                 activePayment = payment
