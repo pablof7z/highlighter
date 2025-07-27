@@ -25,7 +25,7 @@ struct ArticleListView: View {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: DesignSystem.Spacing.medium) {
                                         ForEach(featuredArticles.prefix(3)) { article in
-                                            ModernArticleFeaturedCard(article: article)
+                                            ArticleFeaturedCard(article: article)
                                                 .onTapGesture {
                                                     selectedArticle = article
                                                     HapticManager.shared.impact(.light)
@@ -50,7 +50,7 @@ struct ArticleListView: View {
                                 ForEach(articles.filter { article in
                                     !featuredArticles.contains(where: { $0.id == article.id })
                                 }) { article in
-                                    ModernArticleRowCard(article: article)
+                                    ArticleRowCard(article: article)
                                         .onTapGesture {
                                             selectedArticle = article
                                             HapticManager.shared.impact(.light)

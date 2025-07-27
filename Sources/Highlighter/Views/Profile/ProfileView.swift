@@ -623,7 +623,7 @@ struct HighlightsTabView: View {
                 .padding(.top, 40)
             } else {
                 ForEach(highlights, id: \.id) { highlight in
-                    ModernHighlightCard(highlight: highlight)
+                    HighlightCard(highlight: highlight)
                         .premiumEntrance()
                 }
             }
@@ -939,7 +939,7 @@ struct CurationCardSkeleton: View {
 
 // EmptyStateView is defined in CurationManagementView.swift
 
-// ModernHighlightCard is defined in UnifiedCard.swift
+// HighlightCard is defined in UnifiedCard.swift
 
 
 // MARK: - Activity Cards

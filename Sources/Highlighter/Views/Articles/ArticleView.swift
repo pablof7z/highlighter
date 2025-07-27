@@ -833,11 +833,13 @@ struct CommunityHighlightsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: .ds.large) {
-            UnifiedSectionHeader(title: "Community Highlights")
+            Text("Community Highlights")
+                .font(.ds.headline)
+                .foregroundColor(.ds.text)
             
             VStack(spacing: .ds.base) {
                 ForEach(highlights.prefix(5), id: \.id) { highlight in
-                    ModernHighlightCard(highlight: highlight)
+                    HighlightCard(highlight: highlight)
                         .environmentObject(appState)
                 }
             }
@@ -853,7 +855,9 @@ struct RelatedArticlesSection: View {
     var body: some View {
         if !relatedArticles.isEmpty {
             VStack(alignment: .leading, spacing: .ds.large) {
-                UnifiedSectionHeader(title: "You Might Also Like")
+                Text("You Might Also Like")
+                    .font(.ds.headline)
+                    .foregroundColor(.ds.text)
                     .padding(.horizontal, .ds.screenPadding)
                 
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -986,7 +990,7 @@ struct RelatedArticleCard: View {
                     }
                     
                     HStack {
-                        Text(PubkeyFormatter.formatShort(article.author)
+                        Text(PubkeyFormatter.formatShort(article.author))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                         
@@ -1097,7 +1101,7 @@ struct ReadingSettingsView: View {
                     }
                     
                     Text("The quick brown fox jumps over the lazy dog")
-                        .font(.ds.body * fontScale)
+                        .font(.ds.body)
                         .foregroundColor(.ds.textSecondary)
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -1142,7 +1146,7 @@ struct ArticleHighlightDetailView: View {
             VStack(alignment: .leading, spacing: .ds.large) {
                 // Highlight content
                 Text("\"\(highlight.content)\"")
-                    .font(.ds.title3, weight: .regular, design: .serif)
+                    .font(.ds.title3)
                     .italic()
                     .foregroundColor(.ds.text)
                     .padding()

@@ -2,7 +2,7 @@ import SwiftUI
 import NDKSwift
 
 // MARK: - Article List Card using UnifiedCard
-struct ModernArticleListCard: View {
+struct ArticleListCard: View {
     let article: Article
     @State private var author: NDKUserProfile?
     @EnvironmentObject var appState: AppState
@@ -109,7 +109,7 @@ struct ModernArticleListCard: View {
 }
 
 // MARK: - Featured Article Card using UnifiedCard
-struct ModernArticleFeaturedCard: View {
+struct ArticleFeaturedCard: View {
     let article: Article
     @State private var author: NDKUserProfile?
     @EnvironmentObject var appState: AppState
@@ -215,7 +215,7 @@ struct ModernArticleFeaturedCard: View {
 }
 
 // MARK: - Row Article Card using UnifiedCard
-struct ModernArticleRowCard: View {
+struct ArticleRowCard: View {
     let article: Article
     @State private var author: NDKUserProfile?
     @EnvironmentObject var appState: AppState

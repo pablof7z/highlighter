@@ -205,7 +205,7 @@ enum CardVariant {
 // MARK: - Specialized Card Components
 
 // Highlight Card using the unified system
-struct ModernHighlightCard: View {
+struct HighlightCard: View {
     let highlight: HighlightEvent
     @EnvironmentObject var appState: AppState
     @State private var author: NDKUserProfile?
@@ -311,7 +311,7 @@ struct ModernHighlightCard: View {
 }
 
 // Compact Highlight Card using the unified system
-struct ModernCompactHighlightCard: View {
+struct CompactHighlightCard: View {
     let highlight: HighlightEvent
     @State private var showDetail = false
     
@@ -379,7 +379,7 @@ struct PlaceholderCard: View {
     ScrollView {
         VStack(spacing: 16) {
             // Standard cards
-            ModernHighlightCard(
+            HighlightCard(
                 highlight: HighlightEvent(
                     id: "1",
                     event: NDKEvent(id: "", pubkey: "", createdAt: 0, kind: 9802, tags: [], content: "", sig: ""),
@@ -399,7 +399,7 @@ struct PlaceholderCard: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(0..<3) { _ in
-                        ModernCompactHighlightCard(
+                        CompactHighlightCard(
                             highlight: HighlightEvent(
                                 id: "2",
                                 event: NDKEvent(id: "", pubkey: "", createdAt: 0, kind: 9802, tags: [], content: "", sig: ""),

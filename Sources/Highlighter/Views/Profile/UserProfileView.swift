@@ -580,7 +580,7 @@ struct HighlightsListView: View {
                 .padding(.vertical, 40)
             } else {
                 ForEach(highlights, id: \.id) { highlight in
-                    ModernHighlightCard(highlight: highlight)
+                    HighlightCard(highlight: highlight)
                 }
             }
         }
@@ -601,7 +601,7 @@ struct ArticlesListView: View {
                 .padding(.vertical, 40)
             } else {
                 ForEach(articles, id: \.id) { article in
-                    ModernArticleRowCard(article: article)
+                    ArticleRowCard(article: article)
                 }
             }
         }

@@ -79,7 +79,7 @@ struct SimplifiedHybridFeedView: View {
                                         items: dataManager.userHighlights,
                                         icon: "sparkle"
                                     ) { highlight in
-                                        ModernHighlightCard(highlight: highlight)
+                                        HighlightCard(highlight: highlight)
                                             .environmentObject(appState)
                                     }
                                 }
