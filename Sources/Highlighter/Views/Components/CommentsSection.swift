@@ -4,14 +4,14 @@ import NDKSwift
 struct CommentsSection: View {
     let highlightId: String
     @EnvironmentObject var appState: AppState
-    @State private var comments: [CommentEvent] = []
+    @State private var comments: [Comment] = []
     // No loading states - stream progressively
     @State private var newCommentText = ""
     @State private var isPostingComment = false
     @State private var commentAuthors: [String: NDKUserProfile] = [:]
     @State private var showComposer = false
     @State private var animatedCommentIds = Set<String>()
-    @State private var replyingTo: CommentEvent?
+    @State private var replyingTo: Comment?
     @State private var commentReactions: [String: CommentReactions] = [:]
     @State private var currentUserPubkey: String = ""
     
@@ -189,7 +189,7 @@ struct CommentsSection: View {
             }
             
             if isReplyToHighlight,
-               let comment = try? CommentEvent(from: event) {
+               let comment = try? Comment(from: event) {
                 await MainActor.run {
                     if !comments.contains(where: { $0.id == comment.id }) {
                         comments.append(comment)
@@ -355,7 +355,7 @@ struct EmptyCommentsView: View {
 
 // Enhanced comment row with animations and interactions
 struct EnhancedCommentRow: View {
-    let comment: CommentEvent
+    let comment: Comment
     let author: NDKUserProfile?
     let reactions: CommentReactions
     let isAnimated: Bool
@@ -494,22 +494,6 @@ struct ReactionButton: View {
     }
 }
 
-// Comment event model
-struct CommentEvent: Identifiable {
-    let id: String
-    let event: NDKEvent
-    let content: String
-    let author: String
-    let createdAt: Date
-    
-    init(from event: NDKEvent) throws {
-        self.id = event.id
-        self.event = event
-        self.content = event.content
-        self.author = event.pubkey
-        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt))
-    }
-}
 
 // Comment reactions model
 struct CommentReactions {
@@ -547,12 +531,12 @@ struct LoadingDots: View {
 // MARK: - Subcomponents
 
 struct CommentsList: View {
-    let comments: [CommentEvent]
+    let comments: [Comment]
     let commentAuthors: [String: NDKUserProfile]
     let commentReactions: [String: CommentReactions]
     @Binding var animatedCommentIds: Set<String>
-    let onReply: (CommentEvent) -> Void
-    let onReact: (CommentEvent, String) -> Void
+    let onReply: (Comment) -> Void
+    let onReact: (Comment, String) -> Void
     
     var body: some View {
         ScrollView {
@@ -578,15 +562,15 @@ struct CommentsList: View {
 
 // Simplified wrapper to reduce complexity
 struct CommentRowWrapper: View {
-    let comment: CommentEvent
+    let comment: Comment
     let author: NDKUserProfile?
     let reactions: CommentReactions
     let isAnimated: Bool
     let index: Int
     let isLast: Bool
     @Binding var animatedCommentIds: Set<String>
-    let onReply: (CommentEvent) -> Void
-    let onReact: (CommentEvent, String) -> Void
+    let onReply: (Comment) -> Void
+    let onReact: (Comment, String) -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -668,7 +652,7 @@ struct CommentsSectionHeader: View {
 
 // Extension to handle reactions
 extension CommentsSection {
-    private func handleReaction(comment: CommentEvent, reaction: String) {
+    private func handleReaction(comment: Comment, reaction: String) {
         var reactions = commentReactions[comment.id] ?? CommentReactions()
         
         switch reaction {

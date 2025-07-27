@@ -110,24 +110,13 @@ class CommentService: ObservableObject {
         // Publish the comment
         _ = try await ndk.publish(event)
         
-        // Create local comment object
-        let comment = Comment(
-            id: event.id,
-            author: event.pubkey,
-            content: content,
-            createdAt: event.createdAt,
-            highlightId: highlightId,
-            replyToId: replyingTo?.id,
-            likes: 0,
-            isLiked: false
-        )
+        // The comment will be received through the subscription and added automatically
         
-        // Add to local state immediately for better UX
-        await MainActor.run {
-            if self.comments[highlightId] == nil {
-                self.comments[highlightId] = []
+        // Clear reply target if this was a reply
+        if replyingTo != nil {
+            await MainActor.run {
+                self.replyingTo = nil
             }
-            self.comments[highlightId]!.insert(comment, at: 0)
         }
         
         HapticManager.shared.notification(.success)
@@ -220,24 +209,15 @@ class CommentService: ObservableObject {
         // Filter out deletions and other non-comment events
         guard event.kind == 1 else { return nil }
         
-        // Extract reply-to if exists
-        let replyTag = event.tags.first { $0.count >= 4 && $0[0] == "e" && $0[3] == "reply" }
-        let replyToId = replyTag?[1]
+        // Try to create Comment from event
+        if var comment = try? Comment(from: event) {
+            // Update engagement metrics
+            comment.likes = await countReactions(for: event.id)
+            comment.isLiked = await checkIfLiked(event.id)
+            return comment
+        }
         
-        // Count existing reactions for this comment
-        let reactionCount = await countReactions(for: event.id)
-        let isLiked = await checkIfLiked(event.id)
-        
-        return Comment(
-            id: event.id,
-            author: event.pubkey,
-            content: event.content,
-            createdAt: event.createdAt,
-            highlightId: highlightId,
-            replyToId: replyToId,
-            likes: reactionCount,
-            isLiked: isLiked
-        )
+        return nil
     }
     
     private func countReactions(for eventId: String) async -> Int {
@@ -291,38 +271,15 @@ class CommentService: ObservableObject {
 
 // MARK: - Supporting Types
 
-struct Comment: Identifiable, Equatable {
-    let id: String
-    let author: String
-    let content: String
-    let createdAt: Timestamp
-    let highlightId: String
-    let replyToId: String?
-    var likes: Int
-    var isLiked: Bool
-    
-    var isReply: Bool {
-        replyToId != nil
-    }
-    
-    var formattedTime: String {
-        RelativeTimeFormatter.relativeTime(from: createdAt)
-    }
-}
-
-enum CommentError: LocalizedError {
-    case notConfigured
-    case notAuthor
-    case publishFailed
-    
+extension CommentError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .notConfigured:
             return "Comment service not configured"
         case .notAuthor:
             return "You can only delete your own comments"
-        case .publishFailed:
-            return "Failed to publish comment"
+        case .invalidHighlightReference:
+            return "Invalid highlight reference in comment"
         }
     }
 }

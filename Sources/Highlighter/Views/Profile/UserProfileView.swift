@@ -601,7 +601,7 @@ struct ArticlesListView: View {
                 .padding(.vertical, 40)
             } else {
                 ForEach(articles, id: \.id) { article in
-                    ArticleRowCard(article: article)
+                    ModernArticleRowCard(article: article)
                 }
             }
         }

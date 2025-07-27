@@ -1089,7 +1089,6 @@ struct RecentArticlePortraitCard: View {
     let article: Article
     let highlights: [HighlightEvent]
     let index: Int
-    @State private var isPressed = false
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
@@ -1130,7 +1129,7 @@ struct RecentArticlePortraitCard: View {
             )
             
             // Content overlay
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
                 Spacer()
                 
                 // Category/Topic badge
@@ -1150,7 +1149,7 @@ struct RecentArticlePortraitCard: View {
                 
                 // Title
                 Text(article.title)
-                    .font(.system(size: 28, weight: .bold, design: .default))
+                    .font(.system(size: 24, weight: .bold, design: .default))
                     .foregroundColor(.white)
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
@@ -1200,9 +1199,9 @@ struct RecentArticlePortraitCard: View {
                     }
                 }
             }
-            .padding(20)
+            .padding(16)
         }
-        .frame(height: 420)
+        .frame(height: 357)
         .background(Color.ds.surfaceSecondary)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .shadow(
@@ -1210,19 +1209,6 @@ struct RecentArticlePortraitCard: View {
             radius: 20,
             x: 0,
             y: 10
-        )
-        .scaleEffect(isPressed ? 0.96 : 1)
-        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isPressed)
-        .onLongPressGesture(
-            minimumDuration: 0,
-            maximumDistance: .infinity,
-            pressing: { pressing in
-                isPressed = pressing
-                if pressing {
-                    HapticManager.shared.impact(.light)
-                }
-            },
-            perform: {}
         )
     }
     
