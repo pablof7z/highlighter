@@ -536,7 +536,7 @@ struct SwipeableCardStack: View {
                 HapticManager.shared.notification(.success)
             } catch {
                 HapticManager.shared.notification(.error)
-                print("Failed to archive highlight: \(error)")
+                // Archive failed - error feedback provided via haptics
             }
         }
     }

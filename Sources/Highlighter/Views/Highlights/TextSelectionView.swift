@@ -94,9 +94,9 @@ struct TextSelectionView: View {
                 
                 Spacer()
                 
-                // Placeholder for balance
-                Text("Cancel")
-                    .foregroundColor(.clear)
+                // Invisible spacing for visual balance
+                Color.clear
+                    .frame(width: 44, height: 20)
             }
             .padding()
             

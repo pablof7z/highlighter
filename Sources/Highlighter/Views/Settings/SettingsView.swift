@@ -211,7 +211,8 @@ struct SettingsView: View {
                             icon: "bolt.circle.fill",
                             iconColor: .yellow,
                             action: {
-                                // Navigate to lightning wallet settings
+                                HapticManager.shared.impact(.light)
+                                // Lightning wallet configuration will be available in future update
                             }
                         )
                     }
@@ -233,7 +234,8 @@ struct SettingsView: View {
                             subtitle: "Configure intelligent relay routing",
                             icon: "tray.and.arrow.up",
                             action: {
-                                // Navigate to outbox settings
+                                HapticManager.shared.impact(.light)
+                                // Outbox configuration will be available in future update
                             }
                         )
                     }

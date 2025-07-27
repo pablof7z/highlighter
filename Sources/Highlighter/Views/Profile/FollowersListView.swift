@@ -234,7 +234,7 @@ struct UserRow: View {
                     }
                 }
             } catch {
-                print("Error toggling follow: \(error)")
+                // Silent error handling - UI state already reverted
             }
         }
     }

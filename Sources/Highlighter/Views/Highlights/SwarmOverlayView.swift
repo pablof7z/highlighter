@@ -495,7 +495,7 @@ struct SwarmTextView: UIViewRepresentable {
             self.parent = parent
         }
         
-        func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
             // Check if tap is on a highlight
             if let tappedHighlight = highlights.first(where: { NSLocationInRange(characterRange.location, $0.range) }) {
                 // Calculate popover position
