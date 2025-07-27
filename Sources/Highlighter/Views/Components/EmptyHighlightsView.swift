@@ -2,6 +2,9 @@ import SwiftUI
 
 struct EmptyHighlightsView: View {
     @State private var isPressed = false
+    @State private var iconRotation: Double = 0
+    @State private var glowAnimation = false
+    @State private var particlesAnimation = false
     let onCreateHighlight: (() -> Void)?
     
     init(onCreateHighlight: (() -> Void)? = nil) {
@@ -10,23 +13,94 @@ struct EmptyHighlightsView: View {
     
     var body: some View {
         ZStack {
+            // Subtle animated particles
+            ForEach(0..<6, id: \.self) { index in
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                DesignSystem.Colors.primary.opacity(0.15),
+                                DesignSystem.Colors.secondary.opacity(0.1)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: CGFloat.random(in: 40...80))
+                    .blur(radius: 10)
+                    .offset(
+                        x: particlesAnimation ? CGFloat.random(in: -150...150) : 0,
+                        y: particlesAnimation ? CGFloat.random(in: -200...200) : 0
+                    )
+                    .opacity(particlesAnimation ? 0.6 : 0)
+                    .animation(
+                        .easeInOut(duration: Double.random(in: 8...12))
+                        .repeatForever(autoreverses: true)
+                        .delay(Double(index) * 0.5),
+                        value: particlesAnimation
+                    )
+            }
             
             VStack(spacing: 40) {
                 Spacer()
                 
-                // Simple icon
+                // Enhanced animated icon
                 ZStack {
+                    // Outer glow ring
                     Circle()
-                        .fill(DesignSystem.Colors.surfaceSecondary)
+                        .fill(
+                            RadialGradient(
+                                colors: [
+                                    DesignSystem.Colors.primary.opacity(0.1),
+                                    Color.clear
+                                ],
+                                center: .center,
+                                startRadius: 45,
+                                endRadius: 90
+                            )
+                        )
+                        .frame(width: 180, height: 180)
+                        .scaleEffect(glowAnimation ? 1.1 : 0.9)
+                        .opacity(glowAnimation ? 1 : 0.7)
+                    
+                    // Main circle with glass effect
+                    Circle()
+                        .fill(.ultraThinMaterial)
                         .frame(width: 90, height: 90)
                         .overlay(
                             Circle()
-                                .stroke(DesignSystem.Colors.border, lineWidth: 1)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [
+                                            DesignSystem.Colors.primary.opacity(0.8),
+                                            DesignSystem.Colors.secondary.opacity(0.6)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 2
+                                )
+                        )
+                        .shadow(
+                            color: DesignSystem.Colors.primary.opacity(0.3),
+                            radius: 20,
+                            x: 0,
+                            y: 10
                         )
                     
                     Image(systemName: "highlighter")
                         .font(.system(size: 40, weight: .light))
-                        .foregroundColor(DesignSystem.Colors.primary)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    DesignSystem.Colors.primary,
+                                    DesignSystem.Colors.secondary
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .rotationEffect(.degrees(iconRotation))
                 }
                 
                 VStack(spacing: 20) {
@@ -43,7 +117,7 @@ struct EmptyHighlightsView: View {
                         .opacity(0.9)
                 }
                 
-                // Simple CTA Button
+                // Enhanced CTA Button with gradient
                 Button(action: {
                     HapticManager.shared.impact(.medium)
                     onCreateHighlight?()
@@ -60,13 +134,35 @@ struct EmptyHighlightsView: View {
                     .padding(.vertical, 14)
                     .background(
                         Capsule()
-                            .fill(DesignSystem.Colors.primary)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        DesignSystem.Colors.primary,
+                                        DesignSystem.Colors.primary.opacity(0.8)
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .overlay(
+                                Capsule()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [
+                                                Color.white.opacity(0.3),
+                                                Color.clear
+                                            ],
+                                            startPoint: .top,
+                                            endPoint: .center
+                                        )
+                                    )
+                            )
                     )
                     .shadow(
-                        color: DesignSystem.Colors.primary.opacity(0.2),
-                        radius: 8,
+                        color: DesignSystem.Colors.primary.opacity(0.4),
+                        radius: 12,
                         x: 0,
-                        y: 4
+                        y: 6
                     )
                 }
                 .scaleEffect(isPressed ? 0.95 : 1.0)
@@ -106,6 +202,20 @@ struct EmptyHighlightsView: View {
                 }
                 .padding(.bottom, 50)
                 .opacity(0.9)
+            }
+        }
+        .onAppear {
+            // Start animations
+            withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
+                glowAnimation = true
+            }
+            
+            withAnimation(.easeInOut(duration: 0.8)) {
+                particlesAnimation = true
+            }
+            
+            withAnimation(.easeInOut(duration: 20).repeatForever(autoreverses: true)) {
+                iconRotation = 10
             }
         }
     }

@@ -44,6 +44,7 @@
 		65B0F76A54167561B653A458 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B732C4AF8ED87EBB93D6D0D5 /* EditProfileView.swift */; };
 		6972D167F453E975971B28E6 /* SwarmOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83206D6462CF11DCF490672D /* SwarmOverlayView.swift */; };
 		6B3A6908C6C27D35E9C37F28 /* FormattingUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = D01FA9F607102E7402D96CA8 /* FormattingUtilities.swift */; };
+		7241C5CEE9263C4CDD91F716 /* UnifiedGradientBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 391584B128618FB87B5160CB /* UnifiedGradientBackground.swift */; };
 		73EF0B3EADF9149125478230 /* CreateCurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE479875030C79E23CEC371 /* CreateCurationView.swift */; };
 		7686328E9D95E29C8EA0B48F /* CurationDiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B251BEAE7C275E85EB1BC1 /* CurationDiscoveryView.swift */; };
 		774DFC26E3EABD648687B248 /* ArticleCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BA485EAC539B8495036D49 /* ArticleCards.swift */; };
@@ -81,12 +82,10 @@
 		BEEFC7E63EE19685B859327B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3CDA726BB07F1F8F89ABF1C /* Assets.xcassets */; };
 		BF8BF379A7FFE947E5F3811B /* ArticleTimeEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E74B3E244D7F253B507F4B6 /* ArticleTimeEstimator.swift */; };
 		C2AD1BBC79D059AF8C6F6DC9 /* SimplifiedHybridFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1770A666CC88A1326723FA2 /* SimplifiedHybridFeedView.swift */; };
-		D20F6E78AD2F5EF5E0D3E7CC /* MeshGradientBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06EC35345A13411260DCEEF7 /* MeshGradientBackground.swift */; };
 		D3BD7A0160EE2E26A8529370 /* SharedStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = D715EDA3BA34145E7508D03E /* SharedStyles.swift */; };
 		D4B22C3274D4A1E3D768FD3F /* NostrWalletConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6282146FEAFAE4EB50E8C9DF /* NostrWalletConnect.swift */; };
 		D6A56128381947ACC6639CC6 /* HighlightEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0151014CE7E449B5BE685BE8 /* HighlightEvent.swift */; };
 		D6BF6DEBA828B3B11D10832E /* CurationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D807FD00E2D24A226C0CA61A /* CurationDetailView.swift */; };
-		D7D3ED9497108FC2E332162C /* ImmersiveGradientBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6251BFC91A9CE5996EB363C1 /* ImmersiveGradientBackground.swift */; };
 		D9DDE855A6260257D14B363C /* TimelineFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02BF635DE3D5488C2EC049B /* TimelineFeedView.swift */; };
 		DDE1B699AD2C62049E2AF2E3 /* ModernViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC98504899CC29F4D15C2A92 /* ModernViewModifiers.swift */; };
 		DE72306A67DEB86D06A8878E /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8002949A23F78D10720992C /* KeychainManager.swift */; };
@@ -102,7 +101,6 @@
 		0151014CE7E449B5BE685BE8 /* HighlightEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightEvent.swift; sourceTree = "<group>"; };
 		01F9CBDB1F581FAFF82499ED /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		03DEF9DECD6C6F4D9AF8C400 /* FollowPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowPack.swift; sourceTree = "<group>"; };
-		06EC35345A13411260DCEEF7 /* MeshGradientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshGradientBackground.swift; sourceTree = "<group>"; };
 		08C9371F823E831254881AA4 /* FollowersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowersListView.swift; sourceTree = "<group>"; };
 		0986709D8D575050D8063F5D /* EmptyHighlightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHighlightsView.swift; sourceTree = "<group>"; };
 		0CD20236BF86EF8694B01BCB /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
@@ -121,6 +119,7 @@
 		361A54288A443FAC2E4515E8 /* EngagementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngagementService.swift; sourceTree = "<group>"; };
 		374EC425180288ED47940087 /* UserDiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDiscoveryView.swift; sourceTree = "<group>"; };
 		38C2252299BA0F18F563B8D8 /* LightningWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningWalletView.swift; sourceTree = "<group>"; };
+		391584B128618FB87B5160CB /* UnifiedGradientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnifiedGradientBackground.swift; sourceTree = "<group>"; };
 		39B251BEAE7C275E85EB1BC1 /* CurationDiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurationDiscoveryView.swift; sourceTree = "<group>"; };
 		4065018869D27C2992BD8E09 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		47D8FA7B43386CEE13EB7B18 /* DataStreamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStreamManager.swift; sourceTree = "<group>"; };
@@ -136,7 +135,6 @@
 		5C9A8C38CB54B7E5605AF14A /* BlurHashDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurHashDecoder.swift; sourceTree = "<group>"; };
 		5D42BFB31D49E39DB2B64A3A /* UserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileView.swift; sourceTree = "<group>"; };
 		5E06D1E90D26910A32BBA586 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		6251BFC91A9CE5996EB363C1 /* ImmersiveGradientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveGradientBackground.swift; sourceTree = "<group>"; };
 		6282146FEAFAE4EB50E8C9DF /* NostrWalletConnect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrWalletConnect.swift; sourceTree = "<group>"; };
 		62A24BA9AAF6CD7CBED4A5EB /* VisualEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffects.swift; sourceTree = "<group>"; };
 		68EE862B30307430C752F295 /* SelectableMarkdownRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableMarkdownRenderer.swift; sourceTree = "<group>"; };
@@ -330,17 +328,9 @@
 			path = Feed;
 			sourceTree = "<group>";
 		};
-		8ABF125189E0C40627D3EAF7 /* AIAnalysis */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = AIAnalysis;
-			sourceTree = "<group>";
-		};
 		8EC0E41A5D74B7C0C65A4FFC /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				8ABF125189E0C40627D3EAF7 /* AIAnalysis */,
 				E945965052D5C559F0AA5727 /* Analytics */,
 				19F0228E7B8B298952560FB4 /* Articles */,
 				5B7B339EEBD21CB543AA2E53 /* Audio */,
@@ -428,9 +418,7 @@
 				0986709D8D575050D8063F5D /* EmptyHighlightsView.swift */,
 				B1A668315DD1D30882E006A8 /* EnhancedAsyncProfileImage.swift */,
 				2BA80D19BCF63972B50EDAD4 /* EnhancedTabBar.swift */,
-				6251BFC91A9CE5996EB363C1 /* ImmersiveGradientBackground.swift */,
 				A91029F50FE713C2BA3272F5 /* LoadingHighlightView.swift */,
-				06EC35345A13411260DCEEF7 /* MeshGradientBackground.swift */,
 				96BB1CEB6B1AF8996372B0A9 /* ModernFormComponents.swift */,
 				FA46623C808023B5D65EB473 /* ModernStateViews.swift */,
 				68EE862B30307430C752F295 /* SelectableMarkdownRenderer.swift */,
@@ -438,6 +426,7 @@
 				F272232DC05F56A99327CE3F /* SwipeableHighlightCard.swift */,
 				BDDA7CB3CCEA970A2BD052FD /* TappableAvatar.swift */,
 				5AFA2646020373D085219CD1 /* UnifiedCard.swift */,
+				391584B128618FB87B5160CB /* UnifiedGradientBackground.swift */,
 				5C5A696D9CC2601B91DA0191 /* ZapButton.swift */,
 			);
 			path = Components;
@@ -663,7 +652,6 @@
 				91774403D5A6E567EB9879C6 /* HighlighterApp.swift in Sources */,
 				BE7B648769FD679A8E81418A /* HighlightsFeedView.swift in Sources */,
 				34DF18AC7EC3EE0F46E1A1A3 /* HomeDataManager.swift in Sources */,
-				D7D3ED9497108FC2E332162C /* ImmersiveGradientBackground.swift in Sources */,
 				0AB8E358C4D1ED0B7B320B12 /* ImmersiveHighlightDetailView.swift in Sources */,
 				DE72306A67DEB86D06A8878E /* KeychainManager.swift in Sources */,
 				FD019527E54BE2174506C28F /* LNURLService.swift in Sources */,
@@ -672,7 +660,6 @@
 				0CAD93077385698E44D03486 /* LightningService.swift in Sources */,
 				B27F8ADE7A1BC93C9447C110 /* LightningWalletView.swift in Sources */,
 				1F8DBCE1121AC3831365569B /* LoadingHighlightView.swift in Sources */,
-				D20F6E78AD2F5EF5E0D3E7CC /* MeshGradientBackground.swift in Sources */,
 				9D8D0E11AFFAEBF826CA8C35 /* ModernAuthenticationView.swift in Sources */,
 				981A640F5DAAE1DC2566BE65 /* ModernFormComponents.swift in Sources */,
 				410141EDC0B7B0D01CCE3452 /* ModernStateViews.swift in Sources */,
@@ -697,6 +684,7 @@
 				07E3CDA432D5B26DF5747DDD /* TextSelectionView.swift in Sources */,
 				D9DDE855A6260257D14B363C /* TimelineFeedView.swift in Sources */,
 				A06F95F603A679D35B71830C /* UnifiedCard.swift in Sources */,
+				7241C5CEE9263C4CDD91F716 /* UnifiedGradientBackground.swift in Sources */,
 				E3A00B68BDE7C21BA3CD80C2 /* UserDiscoveryView.swift in Sources */,
 				A529566D32F92D65708AC6EE /* UserProfileView.swift in Sources */,
 				8EE197235B1A83A04B155F56 /* VisualEffects.swift in Sources */,

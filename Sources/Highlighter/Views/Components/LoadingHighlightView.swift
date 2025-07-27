@@ -29,7 +29,7 @@ struct LoadingHighlightView: View {
     
     @ViewBuilder
     private var backgroundView: some View {
-        MeshGradientBackground()
+        UnifiedGradientBackground(style: .mesh)
             .opacity(0.3)
             .ignoresSafeArea()
     }

@@ -42,7 +42,7 @@ struct LightningWalletView: View {
             .background(
                 ZStack {
                     DesignSystem.Colors.background
-                    MeshGradientBackground()
+                    UnifiedGradientBackground(style: .mesh)
                         .opacity(0.3)
                         .ignoresSafeArea()
                 }

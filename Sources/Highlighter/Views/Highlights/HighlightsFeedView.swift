@@ -38,7 +38,7 @@ struct HighlightsFeedView: View {
         GeometryReader { geometry in
             ZStack {
                 // Enhanced animated background
-                ImmersiveGradientBackground(animate: $backgroundAnimation)
+                UnifiedGradientBackground(style: .immersive)
                 
                 if highlights.isEmpty {
                     EmptyHighlightsView()
