@@ -160,7 +160,7 @@ struct ModernEmptyState: View {
                 Button(action: action) {
                     Text(actionTitle)
                 }
-                .buttonStyle(ModernPrimaryButton())
+                .unifiedPrimaryButton()
                 .padding(.top, .ds.small)
             }
         }

@@ -459,7 +459,7 @@ struct LightningPaymentFlowView: View {
             Button(action: shareTransaction) {
                 Label("Share Transaction", systemImage: "square.and.arrow.up")
             }
-            .buttonStyle(ModernSecondaryButton())
+            .unifiedSecondaryButton()
         }
         .padding(.vertical)
         .onAppear {
@@ -479,7 +479,7 @@ struct LightningPaymentFlowView: View {
                     HapticManager.shared.impact(.light)
                     dismiss()
                 }
-                .buttonStyle(ModernSecondaryButton())
+                .unifiedSecondaryButton()
             }
             
             switch currentPaymentStep {
@@ -491,7 +491,7 @@ struct LightningPaymentFlowView: View {
                     }
                     HapticManager.shared.impact(.medium)
                 }
-                .buttonStyle(ModernPrimaryButton())
+                .unifiedPrimaryButton()
                 .disabled(selectedAmount < 1)
             
             case .configureSplits:
@@ -501,7 +501,7 @@ struct LightningPaymentFlowView: View {
                     }
                     HapticManager.shared.impact(.medium)
                 }
-                .buttonStyle(ModernPrimaryButton())
+                .unifiedPrimaryButton()
             
             case .processingPayment, .visualizingSplits:
                 EmptyView()
@@ -511,7 +511,7 @@ struct LightningPaymentFlowView: View {
                     HapticManager.shared.impact(.light)
                     dismiss()
                 }
-                .buttonStyle(ModernPrimaryButton())
+                .unifiedPrimaryButton()
             }
         }
         .padding(.vertical)

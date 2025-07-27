@@ -525,7 +525,7 @@ struct SmartZapSheet: View {
                         }
                         .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(ModernPrimaryButton())
+                    .unifiedPrimaryButton()
                 }
                 .padding(.horizontal, .ds.screenPadding)
                 .padding(.bottom, .ds.large)

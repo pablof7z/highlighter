@@ -51,13 +51,13 @@ struct ModernAuthenticationView: View {
                             }
                             .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(ModernPrimaryButton())
+                        .unifiedPrimaryButton()
                         
                         Button(action: { showImportSheet = true }) {
                             Text("I have an account")
                                 .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(ModernSecondaryButton())
+                        .unifiedSecondaryButton()
                     }
                     .padding(.horizontal, .ds.xxl)
                     .opacity(viewAppeared ? 1 : 0)
@@ -157,13 +157,13 @@ struct ModernImportSheet: View {
                         Text("Import Account")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(ModernPrimaryButton())
+                    .unifiedPrimaryButton()
                     .disabled(privateKey.isEmpty)
                     
                     Button("Cancel") {
                         dismiss()
                     }
-                    .buttonStyle(ModernGhostButton())
+                    .unifiedSecondaryButton()
                 }
             }
             .padding(.ds.large)

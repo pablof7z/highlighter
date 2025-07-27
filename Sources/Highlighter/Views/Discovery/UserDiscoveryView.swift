@@ -143,7 +143,7 @@ struct UserCard: View {
                 Text(isFollowing ? "Following" : "Follow")
                     .font(.ds.footnoteMedium)
             }
-            .buttonStyle(isFollowing ? AnyButtonStyle(ModernSecondaryButton()) : AnyButtonStyle(ModernPrimaryButton(variant: .compact)))
+            .unifiedPrimaryButton(enabled: true, variant: isFollowing ? .standard : .compact)
         }
         .padding()
         .modernCard()

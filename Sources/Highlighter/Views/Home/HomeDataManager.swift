@@ -78,7 +78,6 @@ class HomeDataManager: ObservableObject {
     
     /// Fetch recently highlighted articles - waits for EOSE then fetches articles
     private func fetchRecentlyHighlightedArticles(ndk: NDK) async {
-        print("DEBUG: Fetching recently highlighted articles")
         
         // Create subscription for recent highlights
         let sevenDaysAgo = Timestamp(Date().addingTimeInterval(-7 * 24 * 60 * 60).timeIntervalSince1970)
@@ -113,12 +112,10 @@ class HomeDataManager: ObservableObject {
                     } else {
                         highlightsByArticle[ref] = [highlight]
                     }
-                    print("DEBUG: Found highlight for article: \(ref)")
                 }
             }
         }
         
-        print("DEBUG: Collected \(allHighlights.count) highlights referencing \(articleReferences.count) unique articles")
         
         // Now fetch the referenced articles
         if !articleReferences.isEmpty {
@@ -132,7 +129,6 @@ class HomeDataManager: ObservableObject {
     
     private func streamHighlights(ndk: NDK) async {
         let task = Task {
-            print("DEBUG: Starting to stream highlights")
             let highlightSource = await ndk.outbox.observe(
                 filter: NDKFilter(kinds: [9802], limit: 50),
                 maxAge: CachePolicies.shortTerm,
@@ -156,7 +152,6 @@ class HomeDataManager: ObservableObject {
                                     userHighlights.sort { $0.createdAt > $1.createdAt }
                                 }
                                 
-                                print("DEBUG: Added highlight: \(highlight.content.prefix(50))")
                                 
                                 // Track article references for highlighted articles
                                 if let ref = highlight.referencedEvent {
@@ -166,7 +161,6 @@ class HomeDataManager: ObservableObject {
                                     } else {
                                         highlightsByArticle[ref] = [highlight]
                                     }
-                                    print("DEBUG: Added highlight reference: \(ref)")
                                 }
                             }
                         }
@@ -214,7 +208,6 @@ class HomeDataManager: ObservableObject {
                     }
                 }
             } catch {
-                print("Failed to get user pubkey: \(error)")
             }
         }
         streamingTasks.append(task)
@@ -285,12 +278,10 @@ class HomeDataManager: ObservableObject {
                         kinds: [kind],
                         tags: ["d": Set([dTag])]
                     ))
-                    print("DEBUG: Creating filter for article - kind: \(kind), author: \(parts[1]), d-tag: \(dTag)")
                 }
             } else {
                 // This is an "e" tag reference (event ID)
                 articleFilters.append(NDKFilter(ids: [reference]))
-                print("DEBUG: Creating filter for event ID: \(reference)")
             }
         }
         
@@ -311,9 +302,6 @@ class HomeDataManager: ObservableObject {
                     let aTagReference = "\(event.kind):\(event.pubkey):\(article.identifier ?? "")"
                     let highlights = highlightsByArticle[event.id] ?? highlightsByArticle[aTagReference]
                     
-                    print("DEBUG: Found article - ID: \(event.id), identifier: \(article.identifier ?? "nil"), aTagReference: \(aTagReference)")
-                    print("DEBUG: Looking for highlights with keys: \(event.id) or \(aTagReference)")
-                    print("DEBUG: Available highlight keys: \(highlightsByArticle.keys)")
                     
                     if let highlights = highlights {
                         let lastHighlight = highlights.max(by: { $0.createdAt < $1.createdAt })

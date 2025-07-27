@@ -501,7 +501,7 @@ struct WebImportView: View {
                             }
                             .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(ModernSecondaryButton())
+                        .unifiedSecondaryButton()
                         
                         if showPreview, let html = previewHTML {
                             ArticlePreview(html: html)

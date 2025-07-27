@@ -325,10 +325,28 @@ struct CurationManagementView: View {
     }
     
     private func deleteCurations() {
-        // TODO: Implement deletion through appState/publishingService
-        HapticManager.shared.notification(.success)
-        selectedCurations.removeAll()
-        isEditMode = false
+        Task {
+            do {
+                // Convert Set to Array for the deletion
+                let curationsToDelete = Array(selectedCurations)
+                
+                // Publish deletion events
+                try await appState.publishingService.deleteCurations(curationsToDelete)
+                
+                // Remove from local state
+                appState.userCurations.removeAll { curation in
+                    selectedCurations.contains(curation)
+                }
+                
+                HapticManager.shared.notification(.success)
+                selectedCurations.removeAll()
+                isEditMode = false
+                
+            } catch {
+                HapticManager.shared.notification(.error)
+                // Could show an error alert here
+            }
+        }
     }
     
     private func handleDrop(providers: [NSItemProvider]) -> Bool {

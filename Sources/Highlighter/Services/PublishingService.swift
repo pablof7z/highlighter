@@ -172,6 +172,42 @@ class PublishingService: ObservableObject {
         isPublishing = false
     }
     
+    /// Delete curations by publishing deletion events
+    func deleteCurations(_ curations: [ArticleCuration]) async throws {
+        guard let ndk = ndk, let signer = signer else {
+            throw AuthError.noSigner
+        }
+        
+        isPublishing = true
+        lastPublishError = nil
+        
+        do {
+            // Create deletion tags for each curation
+            var deletionTags: [[String]] = []
+            
+            for curation in curations {
+                // Add "a" tag for the curation (kind:pubkey:d-tag format)
+                let pubkey = try await signer.pubkey
+                deletionTags.append(["a", "\(30004):\(pubkey):\(curation.name)"])
+            }
+            
+            // Build deletion event
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(5) // Deletion event
+                .content("Deleted curations")
+                .tags(deletionTags)
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(event)
+            
+        } catch {
+            lastPublishError = error
+            throw error
+        }
+        
+        isPublishing = false
+    }
+    
     // MARK: - State Management
     
     /// Clear the last publish error

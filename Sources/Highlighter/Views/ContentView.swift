@@ -39,7 +39,7 @@ struct ContentView: View {
                             case .feed:
                                 HighlightsFeedView(tabBarVisible: $tabBarVisible)
                             case .discover:
-                                SearchView()
+                                AdvancedSearchView()
                             case .library:
                                 LibraryView()
                             case .profile:

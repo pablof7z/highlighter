@@ -313,14 +313,7 @@ struct ArticleView: View {
     
     // MARK: - Initialize Article
     private func initializeArticle() async {
-        // Debug article content
-        print("ArticleView DEBUG:")
-        print("- Title: \(article.title)")
-        print("- Author: \(article.author)")
-        print("- Content length: \(article.content.count)")
-        print("- Content preview: \(String(article.content.prefix(200)))")
-        print("- Event ID: \(article.id)")
-        print("- All tags: \(article.tags)")
+        // Initialize article
         
         await loadHighlights()
         await loadAuthor()

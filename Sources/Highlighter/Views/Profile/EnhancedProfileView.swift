@@ -698,7 +698,160 @@ struct ActivityTabView: View {
 }
 
 // MARK: - Skeleton Views
-// Skeleton views are defined in LoadingEffects.swift
+
+struct HighlightCardSkeleton: View {
+    @State private var shimmerOffset: CGFloat = -200
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: .ds.base) {
+            // Header skeleton
+            HStack {
+                Circle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 40, height: 40)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 120, height: 14)
+                    
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 80, height: 12)
+                }
+                
+                Spacer()
+            }
+            
+            // Content skeleton
+            VStack(alignment: .leading, spacing: 8) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 16)
+                
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 16)
+                
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 200, height: 16)
+            }
+            
+            // Footer skeleton
+            HStack {
+                ForEach(0..<4, id: \.self) { _ in
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 60, height: 28)
+                }
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(.ds.medium)
+        .overlay(
+            GeometryReader { geometry in
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(0),
+                        Color.white.opacity(0.3),
+                        Color.white.opacity(0)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .frame(width: 100)
+                .offset(x: shimmerOffset)
+                .onAppear {
+                    withAnimation(
+                        .linear(duration: 1.5)
+                        .repeatForever(autoreverses: false)
+                    ) {
+                        shimmerOffset = geometry.size.width + 100
+                    }
+                }
+            }
+            .mask(
+                RoundedRectangle(cornerRadius: .ds.medium)
+            )
+        )
+    }
+}
+
+struct CurationCardSkeleton: View {
+    @State private var shimmerOffset: CGFloat = -200
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Image skeleton
+            Rectangle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(height: 150)
+            
+            VStack(alignment: .leading, spacing: .ds.small) {
+                // Title skeleton
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 20)
+                
+                // Description skeleton
+                VStack(alignment: .leading, spacing: 6) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(height: 14)
+                    
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 180, height: 14)
+                }
+                
+                // Stats skeleton
+                HStack {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 80, height: 12)
+                    
+                    Spacer()
+                    
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 60, height: 12)
+                }
+                .padding(.top, .ds.small)
+            }
+            .padding()
+        }
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(.ds.medium)
+        .overlay(
+            GeometryReader { geometry in
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(0),
+                        Color.white.opacity(0.3),
+                        Color.white.opacity(0)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .frame(width: 100)
+                .offset(x: shimmerOffset)
+                .onAppear {
+                    withAnimation(
+                        .linear(duration: 1.5)
+                        .repeatForever(autoreverses: false)
+                    ) {
+                        shimmerOffset = geometry.size.width + 100
+                    }
+                }
+            }
+            .mask(
+                RoundedRectangle(cornerRadius: .ds.medium)
+            )
+        )
+    }
+}
 
 // MARK: - Helper Views
 

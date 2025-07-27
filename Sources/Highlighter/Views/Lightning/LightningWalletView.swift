@@ -137,7 +137,7 @@ struct LightningWalletView: View {
                     )
                     .font(.ds.footnoteMedium)
                 }
-                .buttonStyle(ModernSecondaryButton())
+                .unifiedSecondaryButton()
             }
             
             if let error = lightning.connectionError {
@@ -466,7 +466,7 @@ struct ConnectWalletSheet: View {
                         Label("Paste", systemImage: showPasteAnimation ? "checkmark" : "doc.on.clipboard")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(ModernSecondaryButton())
+                    .unifiedSecondaryButton()
                     .disabled(UIPasteboard.general.string == nil)
                     
                     Button(action: {
@@ -476,7 +476,7 @@ struct ConnectWalletSheet: View {
                         Label("Scan QR", systemImage: "qrcode.viewfinder")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(ModernSecondaryButton())
+                    .unifiedSecondaryButton()
                 }
                 
                 Spacer()
@@ -488,7 +488,7 @@ struct ConnectWalletSheet: View {
                     Text("Connect Wallet")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(ModernPrimaryButton())
+                .unifiedPrimaryButton()
                 .disabled(connectionString.isEmpty || !connectionString.hasPrefix("nostr+walletconnect://"))
             }
             .padding(.horizontal, .ds.screenPadding)
@@ -604,7 +604,7 @@ struct SplitConfigurationSheet: View {
                     Text("Save Configuration")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(ModernPrimaryButton())
+                .unifiedPrimaryButton()
                 .disabled(!isValid)
             }
             .padding(.horizontal, .ds.screenPadding)

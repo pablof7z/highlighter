@@ -300,7 +300,7 @@ struct ModernEmptyStateView: View {
                     Text(actionTitle)
                         .frame(minWidth: 120)
                 }
-                .modernSecondaryButton()
+                .unifiedSecondaryButton()
             }
         }
         .padding(DesignSystem.Spacing.xl)
@@ -361,13 +361,13 @@ struct ModernErrorStateView: View {
             VStack(spacing: DesignSystem.Spacing.base) {
                 if let retryAction = retryAction {
                     Button("Try Again", action: retryAction)
-                        .modernPrimaryButton()
+                        .unifiedPrimaryButton()
                 }
                 
                 Button("Show Details") {
                     showDetails.toggle()
                 }
-                .modernGhostButton()
+                .unifiedSecondaryButton()
             }
         }
         .padding(DesignSystem.Spacing.xl)
