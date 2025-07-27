@@ -13,30 +13,15 @@ struct SimplifiedHybridFeedView: View {
     @State private var discussionEngagements: [String: EngagementService.EngagementMetrics] = [:]
     @State private var isRefreshing = false
     @State private var refreshProgress: CGFloat = 0
-    @State private var showFloatingElements = true
     @State private var contentAppeared = false
     
-    // Dynamic gradient colors that shift based on time of day
-    private var gradientColors: [Color] {
-        let hour = Calendar.current.component(.hour, from: Date())
-        switch hour {
-        case 5..<12: // Morning - warm orange tones
-            return [DesignSystem.Colors.secondary.opacity(0.2), DesignSystem.Colors.secondaryLight.opacity(0.1)]
-        case 12..<17: // Afternoon - purple to orange blend
-            return [DesignSystem.Colors.primary.opacity(0.15), DesignSystem.Colors.secondary.opacity(0.1)]
-        case 17..<21: // Evening - deeper purple tones
-            return [DesignSystem.Colors.primary.opacity(0.2), DesignSystem.Colors.primaryDark.opacity(0.15)]
-        default: // Night - subtle dark purple
-            return [DesignSystem.Colors.primaryDark.opacity(0.15), DesignSystem.Colors.primary.opacity(0.08)]
-        }
-    }
     
     // MARK: - Engagement Fetching
     private func fetchHighlightEngagements() async {
         let eventIds = dataManager.userHighlights.map { $0.id }
         guard !eventIds.isEmpty else { return }
         
-        let engagements = await appState.engagementService.fetchEngagementBatch(for: eventIds)
+        _ = await appState.engagementService.fetchEngagementBatch(for: eventIds)
         await MainActor.run {
         }
     }
@@ -45,7 +30,7 @@ struct SimplifiedHybridFeedView: View {
         let eventIds = dataManager.discussions.prefix(10).map { $0.id }
         guard !eventIds.isEmpty else { return }
         
-        let engagements = await appState.engagementService.fetchEngagementBatch(for: eventIds)
+        _ = await appState.engagementService.fetchEngagementBatch(for: eventIds)
         await MainActor.run {
             discussionEngagements = engagements
         }
@@ -54,25 +39,13 @@ struct SimplifiedHybridFeedView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
-                // Animated gradient background with floating elements
-                ZStack {
-                    LinearGradient(
-                        colors: gradientColors,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .ignoresSafeArea()
-                    .opacity(0.3)
-                    .animation(.easeInOut(duration: 3), value: gradientColors)
-                    
-                    // Floating ambient elements
-                    if showFloatingElements {
-                        FloatingAmbientView()
-                            .ignoresSafeArea()
-                            .opacity(contentAppeared ? 1 : 0)
-                            .animation(.easeIn(duration: 1.5), value: contentAppeared)
-                    }
-                }
+                // Subtle gradient background
+                LinearGradient(
+                    colors: [DesignSystem.Colors.background, DesignSystem.Colors.backgroundSecondary],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
                 
                 // Custom refresh indicator
                 RefreshIndicatorView(progress: refreshProgress, isRefreshing: isRefreshing)
@@ -658,59 +631,6 @@ struct MetricPill: View {
 
 // MARK: - Custom Components
 
-struct FloatingAmbientView: View {
-    @State private var particles: [FloatingParticle] = []
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ForEach(particles) { particle in
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                DesignSystem.Colors.primary.opacity(particle.opacity),
-                                DesignSystem.Colors.primary.opacity(0)
-                            ],
-                            center: .center,
-                            startRadius: 0,
-                            endRadius: particle.size / 2
-                        )
-                    )
-                    .frame(width: particle.size, height: particle.size)
-                    .position(x: particle.x, y: particle.y)
-                    .blur(radius: particle.blur)
-                    .animation(
-                        .linear(duration: particle.duration).repeatForever(autoreverses: false),
-                        value: particle.y
-                    )
-            }
-        }
-        .onAppear {
-            generateParticles()
-        }
-    }
-    
-    private func generateParticles() {
-        particles = (0..<8).map { _ in
-            FloatingParticle(
-                size: CGFloat.random(in: 40...120),
-                opacity: Double.random(in: 0.05...0.15),
-                blur: CGFloat.random(in: 5...15),
-                duration: Double.random(in: 20...40)
-            )
-        }
-    }
-}
-
-struct FloatingParticle: Identifiable {
-    let id = UUID()
-    let size: CGFloat
-    let opacity: Double
-    let blur: CGFloat
-    let duration: Double
-    var x: CGFloat = CGFloat.random(in: 0...UIScreen.main.bounds.width)
-    var y: CGFloat = CGFloat.random(in: 0...UIScreen.main.bounds.height)
-}
 
 struct RefreshIndicatorView: View {
     let progress: CGFloat
