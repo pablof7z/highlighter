@@ -531,9 +531,13 @@ struct SwipeableCardStack: View {
     
     private func archiveHighlight(_ highlight: HighlightEvent) {
         Task {
-            // Remove from feed (archive doesn't exist in the service yet, so we'll just remove from view)
-            // In a real implementation, this would mark as archived
-            HapticManager.shared.notification(.success)
+            do {
+                try await appState.archiveService.archiveHighlight(highlight)
+                HapticManager.shared.notification(.success)
+            } catch {
+                HapticManager.shared.notification(.error)
+                print("Failed to archive highlight: \(error)")
+            }
         }
     }
 }

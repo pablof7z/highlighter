@@ -17,6 +17,7 @@ struct LibraryView: View {
         case highlights = "Highlights"
         case curations = "Collections"
         case articles = "Articles"
+        case archived = "Archived"
         
         var icon: String {
             switch self {
@@ -24,6 +25,7 @@ struct LibraryView: View {
             case .highlights: return "highlighter"
             case .curations: return "folder.fill"
             case .articles: return "doc.text.fill"
+            case .archived: return "archivebox.fill"
             }
         }
     }
@@ -93,6 +95,8 @@ struct LibraryView: View {
                                 )
                             case .articles:
                                 SavedArticlesSection()
+                            case .archived:
+                                ArchivedContentSection()
                             }
                         }
                         .padding(.bottom, DesignSystem.Spacing.xxl)
@@ -889,7 +893,7 @@ struct SavedArticlesSection: View {
                 let filter = NDKFilter(
                     kinds: [9802],
                     limit: 100,
-                    tags: ["a": ["30023:\(article.author):\(article.identifier)"]]
+                    tags: ["a": ["30023:\(article.author):\(article.identifier ?? "")"]]
                 )
                 
                 let dataSource = await ndk.outbox.observe(
@@ -1412,6 +1416,232 @@ struct EnhancedFollowPackRow: View {
                 .strokeBorder(Color.ds.divider, lineWidth: 1)
         )
         .shadow(color: Color.black.opacity(0.05), radius: 8, y: 4)
+    }
+}
+
+// MARK: - Archived Content Section
+
+struct ArchivedContentSection: View {
+    @EnvironmentObject var appState: AppState
+    @State private var showArchivedHighlights = true
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Archived Content")
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundColor(.ds.text)
+                .padding(.horizontal)
+            
+            // Toggle between highlights and articles
+            Picker("Content Type", selection: $showArchivedHighlights) {
+                Text("Highlights").tag(true)
+                Text("Articles").tag(false)
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding(.horizontal)
+            
+            if showArchivedHighlights {
+                if appState.archiveService.archivedHighlights.isEmpty {
+                    ModernEmptyState(
+                        icon: "archivebox",
+                        title: "No archived highlights",
+                        message: "Swipe left on highlights to archive them for later",
+                        action: {},
+                        actionTitle: "Browse Highlights"
+                    )
+                    .padding(.horizontal)
+                } else {
+                    LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                        ForEach(Array(appState.archiveService.archivedHighlights.values)) { highlight in
+                            ArchivedHighlightCard(highlight: highlight)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            } else {
+                if appState.archiveService.archivedArticles.isEmpty {
+                    ModernEmptyState(
+                        icon: "archivebox",
+                        title: "No archived articles",
+                        message: "Archive articles to declutter your library",
+                        action: {},
+                        actionTitle: "Browse Articles"
+                    )
+                    .padding(.horizontal)
+                } else {
+                    LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                        ForEach(Array(appState.archiveService.archivedArticles.values)) { article in
+                            ArchivedArticleCard(article: article)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            }
+        }
+    }
+}
+
+struct ArchivedHighlightCard: View {
+    let highlight: HighlightEvent
+    @EnvironmentObject var appState: AppState
+    @State private var showDetail = false
+    @State private var isExpanded = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    // Quote content
+                    Text("\"\(highlight.content)\"")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.ds.text)
+                        .lineLimit(isExpanded ? nil : 3)
+                    
+                    // Source
+                    if let url = highlight.url {
+                        HStack(spacing: 6) {
+                            Image(systemName: "link.circle.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(.ds.primary)
+                            
+                            Text(ContentFormatter.extractDomain(from: url))
+                                .font(.system(size: 12))
+                                .foregroundColor(.ds.primary)
+                        }
+                    }
+                    
+                    // Timestamp
+                    Text("Archived \(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))")
+                        .font(.system(size: 12))
+                        .foregroundColor(.ds.textSecondary)
+                }
+                
+                Spacer()
+                
+                // Actions
+                Menu {
+                    Button(action: {
+                        Task {
+                            try? await appState.archiveService.unarchiveHighlight(highlight.id)
+                            HapticManager.shared.impact(.light)
+                        }
+                    }) {
+                        Label("Unarchive", systemImage: "arrow.uturn.backward")
+                    }
+                    
+                    Button(action: {
+                        showDetail = true
+                    }) {
+                        Label("View Details", systemImage: "eye")
+                    }
+                    
+                    Button(role: .destructive, action: {
+                        Task {
+                            // For now, just remove from archive
+                            // TODO: Implement proper deletion via NIP-09
+                            try? await appState.archiveService.unarchiveHighlight(highlight.id)
+                        }
+                    }) {
+                        Label("Remove", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .font(.system(size: 16))
+                        .foregroundColor(.ds.textSecondary)
+                }
+            }
+        }
+        .padding()
+        .background(Color.ds.surface.opacity(0.5))
+        .cornerRadius(DesignSystem.CornerRadius.medium)
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                .stroke(Color.ds.border, lineWidth: 1)
+        )
+        .onTapGesture {
+            withAnimation {
+                isExpanded.toggle()
+            }
+        }
+        .sheet(isPresented: $showDetail) {
+            HighlightDetailView(highlight: highlight)
+        }
+    }
+}
+
+struct ArchivedArticleCard: View {
+    let article: Article
+    @EnvironmentObject var appState: AppState
+    @State private var showDetail = false
+    
+    var body: some View {
+        HStack(spacing: DesignSystem.Spacing.medium) {
+            // Article info
+            VStack(alignment: .leading, spacing: 8) {
+                Text(article.title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.ds.text)
+                    .lineLimit(2)
+                
+                if let summary = article.summary {
+                    Text(summary)
+                        .font(.system(size: 14))
+                        .foregroundColor(.ds.textSecondary)
+                        .lineLimit(2)
+                }
+                
+                Text("Archived \(RelativeTimeFormatter.relativeTime(from: article.publishedAt ?? Date()))")
+                    .font(.system(size: 12))
+                    .foregroundColor(.ds.textTertiary)
+            }
+            
+            Spacer()
+            
+            // Actions
+            Menu {
+                Button(action: {
+                    Task {
+                        try? await appState.archiveService.unarchiveArticle(article.id)
+                        HapticManager.shared.impact(.light)
+                    }
+                }) {
+                    Label("Unarchive", systemImage: "arrow.uturn.backward")
+                }
+                
+                Button(action: {
+                    showDetail = true
+                }) {
+                    Label("Read", systemImage: "book")
+                }
+                
+                Button(role: .destructive, action: {
+                    Task {
+                        // For now, just remove from archive
+                        // TODO: Implement proper deletion via NIP-09
+                        try? await appState.archiveService.unarchiveArticle(article.id)
+                    }
+                }) {
+                    Label("Remove", systemImage: "trash")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.system(size: 16))
+                    .foregroundColor(.ds.textSecondary)
+            }
+        }
+        .padding()
+        .background(Color.ds.surface.opacity(0.5))
+        .cornerRadius(DesignSystem.CornerRadius.medium)
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                .stroke(Color.ds.border, lineWidth: 1)
+        )
+        .onTapGesture {
+            showDetail = true
+        }
+        .sheet(isPresented: $showDetail) {
+            ArticleView(article: article)
+        }
     }
 }
 

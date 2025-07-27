@@ -27,6 +27,7 @@
 		34F2C17976BE7FE897C7E57E /* EmptyHighlightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0986709D8D575050D8063F5D /* EmptyHighlightsView.swift */; };
 		39ED8F05509F9A4FFF466557 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D71BE7E32CED89D35A278 /* LibraryView.swift */; };
 		3A1255EBF3357C89B1E648F6 /* HighlightDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842FF8B20D37A2852B7A0ED9 /* HighlightDetailView.swift */; };
+		3C95FEC783CEA9A64C3C06D4 /* ArchiveService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82739C9409C5B3FEA0DE9D7F /* ArchiveService.swift */; };
 		3DDAE1A8FD5B8746688B9D12 /* ArticleCuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2CDAC5B2099CFF6ED8BE9AE /* ArticleCuration.swift */; };
 		3DFA64BB9C00F7D7EDBB3E38 /* AudioPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321C2E8C6CB80D3B280CC5CA /* AudioPlayerView.swift */; };
 		410141EDC0B7B0D01CCE3452 /* ModernStateViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA46623C808023B5D65EB473 /* ModernStateViews.swift */; };
@@ -142,6 +143,7 @@
 		7542540C7ACFB260E24E01B2 /* PublishingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishingService.swift; sourceTree = "<group>"; };
 		7557E38E531DE0B78A14909E /* AnimationExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationExtensions.swift; sourceTree = "<group>"; };
 		7D7CB442B1CBDC62436052A8 /* CommentsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsSection.swift; sourceTree = "<group>"; };
+		82739C9409C5B3FEA0DE9D7F /* ArchiveService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchiveService.swift; sourceTree = "<group>"; };
 		83206D6462CF11DCF490672D /* SwarmOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwarmOverlayView.swift; sourceTree = "<group>"; };
 		842FF8B20D37A2852B7A0ED9 /* HighlightDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightDetailView.swift; sourceTree = "<group>"; };
 		8C6C4024D5AE536DD3ADC4C4 /* HighlightsFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightsFeedView.swift; sourceTree = "<group>"; };
@@ -490,6 +492,7 @@
 			isa = PBXGroup;
 			children = (
 				A9A59DD7DD81D1FEB67B662D /* AIHighlightEngine.swift */,
+				82739C9409C5B3FEA0DE9D7F /* ArchiveService.swift */,
 				E38C4DFEFB7576650F14C1E2 /* BookmarkService.swift */,
 				E226564B9D8D44FE91929960 /* CommentService.swift */,
 				47D8FA7B43386CEE13EB7B18 /* DataStreamManager.swift */,
@@ -609,6 +612,7 @@
 				FFD8561B2EB92A93B7D780C6 /* AnimationExtensions.swift in Sources */,
 				58CD029928844C6A40946A74 /* AnimationSystem.swift in Sources */,
 				218363F8C03885960CF5D248 /* AppState.swift in Sources */,
+				3C95FEC783CEA9A64C3C06D4 /* ArchiveService.swift in Sources */,
 				BB60DB5A67DACB9C750CA1D2 /* Article.swift in Sources */,
 				774DFC26E3EABD648687B248 /* ArticleCards.swift in Sources */,
 				3DDAE1A8FD5B8746688B9D12 /* ArticleCuration.swift in Sources */,
