@@ -6,6 +6,7 @@ struct UnifiedGradientBackground: View {
         case mesh
         case immersive
         case subtle
+        case glow
     }
     
     let style: Style
@@ -26,6 +27,8 @@ struct UnifiedGradientBackground: View {
                 immersiveGradient
             case .subtle:
                 subtleGradient
+            case .glow:
+                glowGradient
             }
         }
         .ignoresSafeArea()
@@ -211,6 +214,28 @@ struct UnifiedGradientBackground: View {
         }
     }
     
+    // MARK: - Glow Gradient (For ambient glow effects)
+    
+    private var glowGradient: some View {
+        ZStack {
+            Color.clear
+            
+            // Central glow effect
+            RadialGradient(
+                colors: [
+                    DesignSystem.Colors.primary.opacity(0.3 * (0.5 + sin(animationPhase) * 0.5)),
+                    DesignSystem.Colors.secondary.opacity(0.2 * (0.5 + sin(animationPhase) * 0.5)),
+                    Color.clear
+                ],
+                center: .center,
+                startRadius: 50,
+                endRadius: 200
+            )
+            .blur(radius: 50)
+            .scaleEffect(1.0 + sin(animationPhase * 0.5) * 0.1)
+        }
+    }
+    
     // MARK: - Helper Methods
     
     private func meshPoint(row: Int, col: Int, spacing: CGFloat, time: TimeInterval) -> CGPoint {
@@ -263,16 +288,24 @@ extension View {
 
 #Preview {
     VStack {
-        Text("Subtle")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .gradientBackground(.subtle)
+        HStack {
+            Text("Subtle")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .gradientBackground(.subtle)
+            
+            Text("Mesh")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .gradientBackground(.mesh)
+        }
         
-        Text("Mesh")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .gradientBackground(.mesh)
-        
-        Text("Immersive")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .gradientBackground(.immersive)
+        HStack {
+            Text("Immersive")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .gradientBackground(.immersive)
+            
+            Text("Glow")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .gradientBackground(.glow)
+        }
     }
 }

@@ -767,43 +767,39 @@ struct AnimatedMetricCard: View {
     @State private var showValue = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.system(size: 20))
-                    .foregroundColor(color)
-                    .rotationEffect(.degrees(showValue ? 0 : -180))
-                    .animation(.spring(response: 0.6, dampingFraction: 0.8), value: showValue)
-                
-                Spacer()
-                
-                HStack(spacing: 4) {
-                    Image(systemName: change > 0 ? "arrow.up.right" : "arrow.down.right")
-                        .font(.system(size: 12, weight: .bold))
-                    Text("\(Int(abs(change * 100)))%")
-                        .font(.system(size: 12, weight: .bold))
+        UnifiedCard(variant: .standard) {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+                HStack {
+                    Image(systemName: icon)
+                        .font(.system(size: 20))
+                        .foregroundColor(color)
+                        .rotationEffect(.degrees(showValue ? 0 : -180))
+                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: showValue)
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: change > 0 ? "arrow.up.right" : "arrow.down.right")
+                            .font(.system(size: 12, weight: .bold))
+                        Text("\(Int(abs(change * 100)))%")
+                            .font(.system(size: 12, weight: .bold))
+                    }
+                    .foregroundColor(change > 0 ? .green : .red)
                 }
-                .foregroundColor(change > 0 ? .green : .red)
+                
+                Text("\(animatedValue)")
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundColor(DesignSystem.Colors.text)
+                    .contentTransition(.numericText())
+                    .opacity(showValue ? 1 : 0)
+                    .offset(y: showValue ? 0 : 20)
+                
+                Text(title)
+                    .font(.system(size: 14))
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
             }
-            
-            Text("\(animatedValue)")
-                .font(.system(size: 28, weight: .bold, design: .rounded))
-                .foregroundColor(DesignSystem.Colors.text)
-                .contentTransition(.numericText())
-                .opacity(showValue ? 1 : 0)
-                .offset(y: showValue ? 0 : 20)
-            
-            Text(title)
-                .font(.system(size: 14))
-                .foregroundColor(DesignSystem.Colors.textSecondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(DesignSystem.Spacing.medium)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(DesignSystem.Colors.surface)
-                .shadow(color: DesignSystem.Shadow.small.color, radius: DesignSystem.Shadow.small.radius)
-        )
         .onAppear {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
                 animatedValue = value
@@ -820,34 +816,31 @@ struct InsightCard: View {
     let color: Color
     
     var body: some View {
-        HStack(spacing: DesignSystem.Spacing.medium) {
-            Image(systemName: icon)
-                .font(.system(size: 24))
-                .foregroundColor(color)
-                .frame(width: 40, height: 40)
-                .background(
-                    Circle()
-                        .fill(color.opacity(0.1))
-                )
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(DesignSystem.Colors.text)
+        UnifiedCard(variant: .standard) {
+            HStack(spacing: DesignSystem.Spacing.medium) {
+                Image(systemName: icon)
+                    .font(.system(size: 24))
+                    .foregroundColor(color)
+                    .frame(width: 40, height: 40)
+                    .background(
+                        Circle()
+                            .fill(color.opacity(0.1))
+                    )
                 
-                Text(description)
-                    .font(.system(size: 14))
-                    .foregroundColor(DesignSystem.Colors.textSecondary)
-                    .lineLimit(2)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(DesignSystem.Colors.text)
+                    
+                    Text(description)
+                        .font(.system(size: 14))
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
+                        .lineLimit(2)
+                }
+                
+                Spacer()
             }
-            
-            Spacer()
         }
-        .padding(DesignSystem.Spacing.medium)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(DesignSystem.Colors.surface)
-        )
     }
 }
 

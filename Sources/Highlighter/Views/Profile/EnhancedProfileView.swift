@@ -1301,11 +1301,11 @@ struct ActivityEmptyStateView: View {
                 .symbolRenderingMode(.hierarchical)
             
             VStack(spacing: .ds.small) {
-                Text("Activity Coming Soon")
+                Text("No Activity Yet")
                     .font(.ds.title3)
                     .foregroundColor(.ds.text)
                 
-                Text("See your zaps, reactions, and engagement metrics")
+                Text("Zaps and reactions from other users will appear here")
                     .font(.ds.body)
                     .foregroundColor(.ds.textSecondary)
                     .multilineTextAlignment(.center)

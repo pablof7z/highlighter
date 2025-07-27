@@ -10,7 +10,6 @@ struct LibraryView: View {
     @State private var selectedFilter = FilterTab.all
     @State private var searchText = ""
     @State private var showStats = true
-    @State private var animateGradient = false
     
     enum FilterTab: String, CaseIterable {
         case all = "All"
@@ -33,18 +32,8 @@ struct LibraryView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Animated gradient background
-                LinearGradient(
-                    colors: [
-                        Color.ds.primary.opacity(0.05),
-                        Color.ds.secondary.opacity(0.03),
-                        Color.clear
-                    ],
-                    startPoint: animateGradient ? .topLeading : .bottomTrailing,
-                    endPoint: animateGradient ? .bottomTrailing : .topLeading
-                )
-                .ignoresSafeArea()
-                .animation(.easeInOut(duration: 10).repeatForever(autoreverses: true), value: animateGradient)
+                // Unified gradient background
+                UnifiedGradientBackground(style: .subtle)
                 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -141,9 +130,6 @@ struct LibraryView: View {
                     }
                 }
             }
-        }
-        .onAppear {
-            animateGradient = true
         }
         .sheet(isPresented: $showCreateCuration) {
             CreateCurationView()
@@ -1262,20 +1248,8 @@ struct CreateCurationCard: View {
 }
 
 struct GradientPlaceholder: View {
-    @State private var animateGradient = false
-    
     var body: some View {
-        LinearGradient(
-            colors: [
-                Color.purple.opacity(0.6),
-                Color.blue.opacity(0.4),
-                Color.purple.opacity(0.6)
-            ],
-            startPoint: animateGradient ? .topLeading : .bottomTrailing,
-            endPoint: animateGradient ? .bottomTrailing : .topLeading
-        )
-        .animation(.easeInOut(duration: 3).repeatForever(autoreverses: true), value: animateGradient)
-        .onAppear { animateGradient = true }
+        UnifiedGradientBackground(style: .immersive)
     }
 }
 

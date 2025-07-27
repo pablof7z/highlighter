@@ -365,15 +365,22 @@ struct EditProfileView: View {
         
         do {
             if let data = try await item.loadTransferable(type: Data.self) {
-                // Image upload functionality would go here
-                // Currently not implemented - requires image hosting service
+                // Upload image to hosting service
+                let imageUrl = try await ImageUploadService.shared.uploadImageWithFallback(
+                    data,
+                    type: .profile
+                )
+                
                 await MainActor.run {
+                    profile.picture = imageUrl
                     isLoadingPhoto = false
                 }
             }
         } catch {
             await MainActor.run {
                 isLoadingPhoto = false
+                // Show error to user
+                print("Failed to upload profile image: \(error.localizedDescription)")
             }
         }
     }
@@ -385,15 +392,22 @@ struct EditProfileView: View {
         
         do {
             if let data = try await item.loadTransferable(type: Data.self) {
-                // Image upload functionality would go here
-                // Currently not implemented - requires image hosting service
+                // Upload image to hosting service
+                let imageUrl = try await ImageUploadService.shared.uploadImageWithFallback(
+                    data,
+                    type: .banner
+                )
+                
                 await MainActor.run {
+                    profile.banner = imageUrl
                     isLoadingBanner = false
                 }
             }
         } catch {
             await MainActor.run {
                 isLoadingBanner = false
+                // Show error to user
+                print("Failed to upload banner image: \(error.localizedDescription)")
             }
         }
     }
