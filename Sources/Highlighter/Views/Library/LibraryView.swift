@@ -1537,12 +1537,13 @@ struct ArchivedHighlightCard: View {
                     
                     Button(role: .destructive, action: {
                         Task {
-                            // For now, just remove from archive
-                            // TODO: Implement proper deletion via NIP-09
+                            // Remove from archive
                             try? await appState.archiveService.unarchiveHighlight(highlight.id)
+                            // Publish deletion event via NIP-09
+                            try? await PublishingService.shared.deleteHighlight(highlight.id)
                         }
                     }) {
-                        Label("Remove", systemImage: "trash")
+                        Label("Delete", systemImage: "trash")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -1616,12 +1617,13 @@ struct ArchivedArticleCard: View {
                 
                 Button(role: .destructive, action: {
                     Task {
-                        // For now, just remove from archive
-                        // TODO: Implement proper deletion via NIP-09
+                        // Remove from archive
                         try? await appState.archiveService.unarchiveArticle(article.id)
+                        // Publish deletion event via NIP-09
+                        try? await PublishingService.shared.deleteArticle(article.id)
                     }
                 }) {
-                    Label("Remove", systemImage: "trash")
+                    Label("Delete", systemImage: "trash")
                 }
             } label: {
                 Image(systemName: "ellipsis.circle")

@@ -116,11 +116,11 @@ struct SwarmHeatmapView: View {
     
     private func zapHighlighter(userId: String) {
         Task {
-            // Show UI feedback for zap
             HapticManager.shared.impact(.light)
             
-            // In production, would fetch user's lightning address and send zap
-            // For now, show success feedback
+            // Zap functionality is implemented via LightningService
+            // This UI is ready for integration with the sendSmartZap method
+            // For now, we simulate the UI feedback
             try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 second
             HapticManager.shared.notification(.success)
         }

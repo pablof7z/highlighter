@@ -275,6 +275,60 @@ class PublishingService: ObservableObject {
         return ndk != nil && signer != nil && !isPublishing
     }
     
+    /// Delete a highlight by publishing a deletion event (NIP-09)
+    func deleteHighlight(_ highlightId: String) async throws {
+        guard let ndk = ndk, let signer = signer else {
+            throw AuthError.noSigner
+        }
+        
+        isPublishing = true
+        lastPublishError = nil
+        
+        do {
+            // Create deletion event (NIP-09)
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(5) // Deletion event
+                .content("Deleted highlight")
+                .tags([["e", highlightId]])
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(event)
+            
+        } catch {
+            lastPublishError = error
+            throw error
+        }
+        
+        isPublishing = false
+    }
+    
+    /// Delete an article by publishing a deletion event (NIP-09)
+    func deleteArticle(_ articleId: String) async throws {
+        guard let ndk = ndk, let signer = signer else {
+            throw AuthError.noSigner
+        }
+        
+        isPublishing = true
+        lastPublishError = nil
+        
+        do {
+            // Create deletion event (NIP-09)
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(5) // Deletion event
+                .content("Deleted article")
+                .tags([["e", articleId]])
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(event)
+            
+        } catch {
+            lastPublishError = error
+            throw error
+        }
+        
+        isPublishing = false
+    }
+    
     /// Update an existing curation
     func updateCuration(_ curation: ArticleCuration) async throws {
         guard let ndk = ndk, let signer = signer else {

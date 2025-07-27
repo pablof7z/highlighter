@@ -679,7 +679,7 @@ struct SwarmPopover: View {
             LinearGradient(
                 colors: [
                     colorScheme == .dark ? Color.black : Color.white,
-                    colorScheme == .dark ? Color.black.opacity(0.8) : Color.white.opacity(0.95)
+                    colorScheme == .dark ? Color.ds.background.opacity(0.8) : Color.ds.surface.opacity(0.95)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -738,7 +738,7 @@ struct SwarmPopover: View {
         ZStack {
             // Main background
             RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? Color.black.opacity(0.95) : Color.white.opacity(0.98))
+                .fill(colorScheme == .dark ? Color.ds.background.opacity(0.95) : Color.ds.surface.opacity(0.98))
             
             // Animated shadow layers
             ForEach(0..<3) { i in
@@ -982,8 +982,8 @@ struct SwarmHighlightRow: View {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(
                         colorScheme == .dark ?
-                            Color.white.opacity(isHovered ? 0.08 : 0.04) :
-                            Color.black.opacity(isHovered ? 0.04 : 0.02)
+                            Color.ds.text.opacity(isHovered ? 0.08 : 0.04) :
+                            Color.ds.text.opacity(isHovered ? 0.04 : 0.02)
                     )
                 
                 // Hover glow
@@ -1334,7 +1334,7 @@ struct IntensityMeterView: View {
                 ZStack(alignment: .leading) {
                     // Background
                     Capsule()
-                        .fill(Color.gray.opacity(0.2))
+                        .fill(Color.ds.textTertiary.opacity(0.2))
                         .frame(height: 20)
                     
                     // Intensity bar

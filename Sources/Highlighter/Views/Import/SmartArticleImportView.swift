@@ -1564,37 +1564,135 @@ class SmartImportManager: ObservableObject {
     // MARK: - Helper Methods
     
     private func extractTextFromHTML(_ html: String) -> String {
-        // Simple HTML text extraction - in production, use a proper HTML parser
-        let pattern = "<[^>]+>"
-        let stripped = html.replacingOccurrences(of: pattern, with: "", options: .regularExpression)
+        var processedHTML = html
         
-        // Decode HTML entities
-        let decoded = stripped
-            .replacingOccurrences(of: "&nbsp;", with: " ")
-            .replacingOccurrences(of: "&amp;", with: "&")
-            .replacingOccurrences(of: "&lt;", with: "<")
-            .replacingOccurrences(of: "&gt;", with: ">")
-            .replacingOccurrences(of: "&quot;", with: "\"")
-            .replacingOccurrences(of: "&#39;", with: "'")
-            .replacingOccurrences(of: "&apos;", with: "'")
+        // Remove script and style content first
+        let scriptPattern = "<script[^>]*>[\\s\\S]*?</script>"
+        processedHTML = processedHTML.replacingOccurrences(of: scriptPattern, with: "", options: [.regularExpression, .caseInsensitive])
         
-        // Clean up whitespace
+        let stylePattern = "<style[^>]*>[\\s\\S]*?</style>"
+        processedHTML = processedHTML.replacingOccurrences(of: stylePattern, with: "", options: [.regularExpression, .caseInsensitive])
+        
+        // Convert common block elements to line breaks for better formatting
+        let blockElements = ["</p>", "</div>", "</h1>", "</h2>", "</h3>", "</h4>", "</h5>", "</h6>", "</li>", "</br>", "<br>", "<br/>", "</tr>"]
+        for element in blockElements {
+            processedHTML = processedHTML.replacingOccurrences(of: element, with: "\n", options: .caseInsensitive)
+        }
+        
+        // Convert list items to bullets
+        processedHTML = processedHTML.replacingOccurrences(of: "<li>", with: "\n• ", options: .caseInsensitive)
+        
+        // Remove all remaining HTML tags
+        let tagPattern = "<[^>]+>"
+        let stripped = processedHTML.replacingOccurrences(of: tagPattern, with: "", options: .regularExpression)
+        
+        // Decode common HTML entities
+        let entities = [
+            ("&nbsp;", " "),
+            ("&amp;", "&"),
+            ("&lt;", "<"),
+            ("&gt;", ">"),
+            ("&quot;", "\""),
+            ("&#39;", "'"),
+            ("&apos;", "'"),
+            ("&mdash;", "—"),
+            ("&ndash;", "–"),
+            ("&hellip;", "..."),
+            ("&copy;", "©"),
+            ("&reg;", "®"),
+            ("&trade;", "™"),
+            ("&euro;", "€"),
+            ("&pound;", "£"),
+            ("&cent;", "¢"),
+            ("&yen;", "¥")
+        ]
+        
+        var decoded = stripped
+        for (entity, replacement) in entities {
+            decoded = decoded.replacingOccurrences(of: entity, with: replacement)
+        }
+        
+        // Decode numeric entities
+        let numericPattern = "&#(\\d+);"
+        if let regex = try? NSRegularExpression(pattern: numericPattern, options: []) {
+            let matches = regex.matches(in: decoded, options: [], range: NSRange(decoded.startIndex..., in: decoded))
+            var result = decoded
+            for match in matches.reversed() {
+                if let range = Range(match.range, in: decoded),
+                   let codeRange = Range(match.range(at: 1), in: decoded),
+                   let code = Int(decoded[codeRange]),
+                   let scalar = UnicodeScalar(code) {
+                    result.replaceSubrange(range, with: String(Character(scalar)))
+                }
+            }
+            decoded = result
+        }
+        
+        // Clean up excessive whitespace
         let lines = decoded.components(separatedBy: .newlines)
-        let cleanedLines = lines.map { $0.trimmingCharacters(in: .whitespaces) }
+        let cleanedLines = lines.map { line in
+            // Replace multiple spaces with single space
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            return trimmed.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+        }
         let filtered = cleanedLines.filter { !$0.isEmpty }
         
+        // Join with proper paragraph separation
         return filtered.joined(separator: "\n\n")
     }
     
     private func extractTitleFromHTML(_ html: String) -> String? {
-        // Extract title from HTML
-        if let titleRange = html.range(of: "<title>.*?</title>", options: .regularExpression) {
+        // Try multiple methods to extract title
+        
+        // Method 1: Standard <title> tag
+        if let titleRange = html.range(of: "<title[^>]*>(.*?)</title>", options: [.regularExpression, .caseInsensitive]) {
             let titleTag = String(html[titleRange])
-            return titleTag
-                .replacingOccurrences(of: "<title>", with: "")
-                .replacingOccurrences(of: "</title>", with: "")
+            let cleanTitle = titleTag
+                .replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
                 .trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            // Decode HTML entities in title
+            let decodedTitle = cleanTitle
+                .replacingOccurrences(of: "&amp;", with: "&")
+                .replacingOccurrences(of: "&lt;", with: "<")
+                .replacingOccurrences(of: "&gt;", with: ">")
+                .replacingOccurrences(of: "&quot;", with: "\"")
+                .replacingOccurrences(of: "&#39;", with: "'")
+                .replacingOccurrences(of: "&apos;", with: "'")
+            
+            if !decodedTitle.isEmpty {
+                return decodedTitle
+            }
         }
+        
+        // Method 2: Try og:title meta tag (common in modern websites)
+        if let metaRange = html.range(of: "<meta[^>]*property=[\"']og:title[\"'][^>]*content=[\"']([^\"']+)[\"'][^>]*>", options: [.regularExpression, .caseInsensitive]) {
+            let metaTag = String(html[metaRange])
+            if let contentRange = metaTag.range(of: "content=[\"']([^\"']+)[\"']", options: .regularExpression) {
+                let content = String(metaTag[contentRange])
+                let cleanContent = content
+                    .replacingOccurrences(of: "content=[\"']", with: "", options: .regularExpression)
+                    .replacingOccurrences(of: "[\"']$", with: "", options: .regularExpression)
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                if !cleanContent.isEmpty {
+                    return cleanContent
+                }
+            }
+        }
+        
+        // Method 3: Try first h1 tag
+        if let h1Range = html.range(of: "<h1[^>]*>(.*?)</h1>", options: [.regularExpression, .caseInsensitive]) {
+            let h1Tag = String(html[h1Range])
+            let cleanH1 = h1Tag
+                .replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            if !cleanH1.isEmpty && cleanH1.count < 200 { // Reasonable title length
+                return cleanH1
+            }
+        }
+        
         return nil
     }
     

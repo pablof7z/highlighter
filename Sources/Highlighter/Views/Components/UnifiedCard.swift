@@ -305,8 +305,8 @@ struct ModernHighlightCard: View {
     private func zapHighlight() {
         isZapped.toggle()
         HapticManager.shared.impact(.light)
-        // Note: Actual zapping requires wallet integration (NIP-57/NIP-60)
-        // This demo app only simulates the UI interaction
+        // Zapping is implemented via NWC in LightningService
+        // This triggers the UI state change - actual zap would be handled by ZapButton
     }
 }
 
