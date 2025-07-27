@@ -213,7 +213,7 @@ struct UserProfileView: View {
                 .frame(width: 100, height: 100)
             
             Text(PubkeyFormatter.formatForAvatar(pubkey))
-                .font(.ds.bodyMedium))
+                .font(.ds.bodyMedium)
                 .foregroundColor(.white)
         }
     }

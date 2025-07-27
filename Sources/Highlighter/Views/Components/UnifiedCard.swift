@@ -393,7 +393,7 @@ struct PlaceholderCard: View {
                     comment: "A profound insight about technology"
                 )
             )
-            .environmentObject(AppState()
+            .environmentObject(AppState())
             
             // Compact cards
             ScrollView(.horizontal, showsIndicators: false) {
