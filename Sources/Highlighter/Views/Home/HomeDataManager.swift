@@ -1,24 +1,32 @@
 import SwiftUI
 import NDKSwift
 
-/// Manages data streaming and state for the Home view
-/// This class follows SRP by focusing solely on data management and streaming
+/// Manages home-specific data streaming and state, composing with DataStreamManager
+/// This class focuses on home view specific data while delegating common data to DataStreamManager
 @MainActor
 class HomeDataManager: ObservableObject {
     // MARK: - Published State
-    @Published var highlights: [HighlightEvent] = []
+    // Home-specific data only
     @Published var highlightedArticles: [HighlightedArticle] = []
     @Published var discussions: [NDKEvent] = []
     @Published var zappedArticles: [NDKEvent] = []
     @Published var userHighlights: [HighlightEvent] = []
-    @Published var curations: [ArticleCuration] = []
     @Published var suggestedUsers: [NDKUserProfile] = []
     @Published var suggestedUserPubkeys: [String] = []
     @Published var isRefreshing = false
     
+    // Common data from DataStreamManager
+    var highlights: [HighlightEvent] { appState?.highlights ?? [] }
+    var curations: [ArticleCuration] { appState?.curations ?? [] }
+    
     // MARK: - Private Properties
     private var streamingTasks: [Task<Void, Never>] = []
-    var appState: AppState? // Made non-weak and internal for setting from view
+    var appState: AppState? { // Made non-weak and internal for setting from view
+        didSet {
+            // Set up bindings to DataStreamManager when appState is set
+            setupDataStreamBindings()
+        }
+    }
     
     // MARK: - Models
     struct HighlightedArticle {
@@ -32,22 +40,26 @@ class HomeDataManager: ObservableObject {
         // AppState will be set by the view that creates this manager
     }
     
+    private func setupDataStreamBindings() {
+        // DataStreamManager already handles highlights and curations
+        // We only need to manage home-specific data
+    }
+    
     // MARK: - Public Methods
     
-    /// Start streaming all data sources
+    /// Start streaming home-specific data sources
     func startStreaming() async {
         guard let ndk = appState?.ndk else { return }
         
         stopAllStreams()
         
-        // Start all streams concurrently
+        // Start home-specific streams only
+        // Common data (highlights, curations) is handled by DataStreamManager
         await withTaskGroup(of: Void.self) { group in
             group.addTask { await self.fetchRecentlyHighlightedArticles(ndk: ndk) }
-            group.addTask { await self.streamHighlights(ndk: ndk) }
             group.addTask { await self.streamUserHighlights(ndk: ndk) }
             group.addTask { await self.streamDiscussions(ndk: ndk) }
             group.addTask { await self.streamZappedArticles(ndk: ndk) }
-            group.addTask { await self.streamCurations(ndk: ndk) }
             group.addTask { await self.fetchSuggestedUsers(ndk: ndk) }
         }
     }
@@ -57,17 +69,18 @@ class HomeDataManager: ObservableObject {
         isRefreshing = true
         HapticManager.shared.impact(HapticManager.ImpactStyle.light)
         
-        // Clear all data
-        highlights.removeAll()
+        // Clear home-specific data only
         highlightedArticles.removeAll()
         discussions.removeAll()
         zappedArticles.removeAll()
         userHighlights.removeAll()
-        curations.removeAll()
         suggestedUsers.removeAll()
         suggestedUserPubkeys.removeAll()
         
-        // Restart streaming
+        // Trigger refresh on DataStreamManager for common data
+        await appState?.dataStreamManager.refresh()
+        
+        // Restart home-specific streaming
         await startStreaming()
         
         HapticManager.shared.notification(.success)
@@ -84,46 +97,34 @@ class HomeDataManager: ObservableObject {
     
     // MARK: - Private Streaming Methods
     
-    /// Fetch recently highlighted articles - waits for EOSE then fetches articles
+    /// Fetch recently highlighted articles using highlights from DataStreamManager
     private func fetchRecentlyHighlightedArticles(ndk: NDK) async {
+        // Wait for DataStreamManager to load some highlights
+        var attempts = 0
+        while highlights.isEmpty && attempts < 10 {
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+            attempts += 1
+        }
         
-        // Create subscription for recent highlights
-        let sevenDaysAgo = Timestamp(Date().addingTimeInterval(-7 * 24 * 60 * 60).timeIntervalSince1970)
-        let highlightFilter = NDKFilter(
-            kinds: [9802],
-            since: sevenDaysAgo,
-            limit: 100
-        )
-        
-        let dataSource = NDKDataSource(
-            ndk: ndk,
-            filter: highlightFilter,
-            maxAge: 0,
-            cachePolicy: .networkOnly,
-            closeOnEose: true
-        )
+        // Use highlights from DataStreamManager
+        let sevenDaysAgo = Date().addingTimeInterval(-7 * 24 * 60 * 60)
+        let recentHighlights = highlights.filter { $0.createdAt > sevenDaysAgo }
         
         var articleReferences: Set<String> = []
         var highlightsByArticle: [String: [HighlightEvent]] = [:]
-        var allHighlights: [HighlightEvent] = []
         
-        // Collect all highlights until EOSE
-        for await event in dataSource.events {
-            if let highlight = try? HighlightEvent(from: event) {
-                allHighlights.append(highlight)
-                
-                // Track article references
-                if let ref = highlight.referencedEvent {
-                    articleReferences.insert(ref)
-                    if highlightsByArticle[ref] != nil {
-                        highlightsByArticle[ref]?.append(highlight)
-                    } else {
-                        highlightsByArticle[ref] = [highlight]
-                    }
+        // Process recent highlights
+        for highlight in recentHighlights {
+            // Track article references
+            if let ref = highlight.referencedEvent {
+                articleReferences.insert(ref)
+                if highlightsByArticle[ref] != nil {
+                    highlightsByArticle[ref]?.append(highlight)
+                } else {
+                    highlightsByArticle[ref] = [highlight]
                 }
             }
         }
-        
         
         // Now fetch the referenced articles
         if !articleReferences.isEmpty {
@@ -135,58 +136,7 @@ class HomeDataManager: ObservableObject {
         }
     }
     
-    private func streamHighlights(ndk: NDK) async {
-        let task = Task {
-            let highlightSource = await ndk.outbox.observe(
-                filter: NDKFilter(kinds: [9802], limit: 50),
-                maxAge: CachePolicies.shortTerm,
-                cachePolicy: .cacheWithNetwork
-            )
-            
-            var articleReferences: Set<String> = []
-            var highlightsByArticle: [String: [HighlightEvent]] = [:]
-            
-            for await event in highlightSource.events {
-                if let highlight = try? HighlightEvent(from: event) {
-                    await MainActor.run {
-                        withAnimation(DesignSystem.Animation.quick) {
-                            if !highlights.contains(where: { $0.id == highlight.id }) {
-                                highlights.append(highlight)
-                                highlights.sort { $0.createdAt > $1.createdAt }
-                                
-                                // Also add to userHighlights for display
-                                if !userHighlights.contains(where: { $0.id == highlight.id }) {
-                                    userHighlights.append(highlight)
-                                    userHighlights.sort { $0.createdAt > $1.createdAt }
-                                }
-                                
-                                
-                                // Track article references for highlighted articles
-                                if let ref = highlight.referencedEvent {
-                                    articleReferences.insert(ref)
-                                    if highlightsByArticle[ref] != nil {
-                                        highlightsByArticle[ref]?.append(highlight)
-                                    } else {
-                                        highlightsByArticle[ref] = [highlight]
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Fetch referenced articles if any
-            if !articleReferences.isEmpty {
-                await fetchHighlightedArticles(
-                    ndk: ndk,
-                    references: Array(articleReferences),
-                    highlightsByArticle: highlightsByArticle
-                )
-            }
-        }
-        streamingTasks.append(task)
-    }
+    // Removed streamHighlights - now handled by DataStreamManager
     
     private func streamUserHighlights(ndk: NDK) async {
         guard let signer = appState?.activeSigner else { return }
@@ -339,34 +289,7 @@ class HomeDataManager: ObservableObject {
         }
     }
     
-    private func streamCurations(ndk: NDK) async {
-        let task = Task {
-            let curationSource = await ndk.outbox.observe(
-                filter: NDKFilter(kinds: [30004], limit: 20),
-                maxAge: CachePolicies.mediumTerm,
-                cachePolicy: .cacheWithNetwork
-            )
-            
-            for await event in curationSource.events {
-                if let curation = try? ArticleCuration(from: event) {
-                    await MainActor.run {
-                        withAnimation(DesignSystem.Animation.quick) {
-                            if !curations.contains(where: { $0.id == curation.id }) {
-                                curations.append(curation)
-                                // Sort by creation date, newest first
-                                curations.sort { $0.createdAt > $1.createdAt }
-                                // Keep top 10 curations
-                                if curations.count > 10 {
-                                    curations = Array(curations.prefix(10))
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        streamingTasks.append(task)
-    }
+    // Removed streamCurations - now handled by DataStreamManager
     
     private func fetchSuggestedUsers(ndk: NDK) async {
         // Fetch users who are actively creating highlights

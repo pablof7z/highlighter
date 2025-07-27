@@ -328,37 +328,4 @@ struct CommentInputField: View {
     }
 }
 
-// MARK: - Profile Cache Manager
-
-@MainActor
-class ProfileCacheManager: ObservableObject {
-    @Published var profiles: [String: NDKUserProfile] = [:]
-    
-    func loadProfiles(for pubkeys: [String], using ndk: NDK?) async {
-        guard let ndk = ndk else { return }
-        
-        let unknownPubkeys = pubkeys.filter { profiles[$0] == nil }
-        guard !unknownPubkeys.isEmpty else { return }
-        
-        let filter = NDKFilter(
-            authors: unknownPubkeys,
-            kinds: [0]
-        )
-        
-        let dataSource = await ndk.outbox.observe(
-            filter: filter,
-            maxAge: 3600,
-            cachePolicy: .cacheWithNetwork
-        )
-        
-        for await event in dataSource.events {
-            if let profile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
-                await MainActor.run {
-                    self.profiles[event.pubkey] = profile
-                }
-            }
-        }
-    }
-}
-
 

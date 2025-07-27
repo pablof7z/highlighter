@@ -4,7 +4,12 @@ import NDKSwift
 struct UserProfileView: View {
     let pubkey: String
     @EnvironmentObject var appState: AppState
-    @StateObject private var profileManager = UserProfileManager()
+    @State private var profile: NDKUserProfile?
+    @State private var highlights: [HighlightEvent] = []
+    @State private var articles: [Article] = []
+    @State private var comments: [NDKEvent] = []
+    @State private var collections: [ArticleCuration] = []
+    @State private var stats = ProfileStats()
     @State private var selectedTab = ProfileTab.highlights
     @State private var showingFollowConfirmation = false
     @State private var isFollowing = false
@@ -13,6 +18,13 @@ struct UserProfileView: View {
         // Convert hex pubkey to npub using proper bech32 encoding
         let user = NDKUser(pubkey: pubkey)
         return user.npub
+    }
+    
+    struct ProfileStats {
+        var highlightCount = 0
+        var articleCount = 0
+        var followerCount = 0
+        var followingCount = 0
     }
     
     enum ProfileTab: String, CaseIterable {
@@ -81,11 +93,26 @@ struct UserProfileView: View {
                 }
             }
         }
-        .onAppear {
-            profileManager.appState = appState
+        .task {
+            // Start streaming profile updates
+            appState.profileManager.streamProfile(for: pubkey)
+            
+            // Load profile data
+            await loadProfileData()
+            checkFollowStatus()
+        }
+        .onChange(of: pubkey) { _, newPubkey in
             Task {
-                await profileManager.loadProfile(pubkey: pubkey)
+                // Start streaming profile updates for new pubkey
+                appState.profileManager.streamProfile(for: newPubkey)
+                await loadProfileData()
                 checkFollowStatus()
+            }
+        }
+        .onReceive(appState.profileManager.$cachedProfiles) { profiles in
+            // Update profile when it changes in the cache
+            if let updatedProfile = profiles[pubkey] {
+                self.profile = updatedProfile
             }
         }
     }
@@ -95,7 +122,7 @@ struct UserProfileView: View {
     private var profileHeader: some View {
         VStack(spacing: 16) {
             // Avatar
-            if let picture = profileManager.profile?.picture, let url = URL(string: picture) {
+            if let picture = profile?.picture, let url = URL(string: picture) {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .success(let image):
@@ -116,7 +143,7 @@ struct UserProfileView: View {
             
             // Name and username
             VStack(spacing: 8) {
-                if let name = profileManager.profile?.name {
+                if let name = profile?.name {
                     Text(name)
                         .font(.ds.title2)
                         .fontWeight(.bold)
@@ -130,7 +157,7 @@ struct UserProfileView: View {
             }
             
             // Bio
-            if let about = profileManager.profile?.about {
+            if let about = profile?.about {
                 Text(about)
                     .font(.ds.body)
                     .foregroundColor(.ds.text)
@@ -196,7 +223,7 @@ struct UserProfileView: View {
     private var statsBar: some View {
         HStack(spacing: 0) {
             ProfileStatItem(
-                value: "\(profileManager.stats.highlightCount)",
+                value: "\(stats.highlightCount)",
                 label: "Highlights",
                 color: .orange
             )
@@ -205,7 +232,7 @@ struct UserProfileView: View {
                 .frame(height: 40)
             
             ProfileStatItem(
-                value: "\(profileManager.stats.articleCount)",
+                value: "\(stats.articleCount)",
                 label: "Articles",
                 color: .blue
             )
@@ -214,7 +241,7 @@ struct UserProfileView: View {
                 .frame(height: 40)
             
             ProfileStatItem(
-                value: "\(profileManager.stats.followerCount)",
+                value: "\(stats.followerCount)",
                 label: "Followers",
                 color: .purple
             )
@@ -223,7 +250,7 @@ struct UserProfileView: View {
                 .frame(height: 40)
             
             ProfileStatItem(
-                value: "\(profileManager.stats.followingCount)",
+                value: "\(stats.followingCount)",
                 label: "Following",
                 color: .green
             )
@@ -260,23 +287,23 @@ struct UserProfileView: View {
     private var tabContent: some View {
         switch selectedTab {
         case .highlights:
-            HighlightsListView(highlights: profileManager.highlights)
+            HighlightsListView(highlights: highlights)
         case .articles:
-            ArticlesListView(articles: profileManager.articles)
+            ArticlesListView(articles: articles)
         case .comments:
-            CommentsListView(comments: profileManager.comments)
+            CommentsListView(comments: comments)
         case .collections:
-            CollectionsListView(collections: profileManager.collections)
+            CollectionsListView(collections: collections)
         }
     }
     
     // MARK: - Helper Methods
     private func countForTab(_ tab: ProfileTab) -> Int {
         switch tab {
-        case .highlights: return profileManager.highlights.count
-        case .articles: return profileManager.articles.count
-        case .comments: return profileManager.comments.count
-        case .collections: return profileManager.collections.count
+        case .highlights: return highlights.count
+        case .articles: return articles.count
+        case .comments: return comments.count
+        case .collections: return collections.count
         }
     }
     
@@ -359,7 +386,7 @@ struct UserProfileView: View {
                     
                     await MainActor.run {
                         isFollowing = true
-                        profileManager.stats.followerCount += 1
+                        stats.followerCount += 1
                     }
                 }
             } catch {
@@ -411,7 +438,7 @@ struct UserProfileView: View {
                 
                 await MainActor.run {
                     isFollowing = false
-                    profileManager.stats.followerCount = max(0, profileManager.stats.followerCount - 1)
+                    stats.followerCount = max(0, stats.followerCount - 1)
                 }
             } catch {
                 await MainActor.run {
@@ -430,6 +457,144 @@ struct UserProfileView: View {
         if !npub.isEmpty {
             UIPasteboard.general.string = npub
             HapticManager.shared.notification(.success)
+        }
+    }
+    
+    // MARK: - Data Loading
+    
+    private func loadProfileData() async {
+        guard let ndk = appState.ndk else { return }
+        
+        // Get cached profile immediately if available
+        if let cachedProfile = appState.profileManager.getCachedProfile(for: pubkey) {
+            self.profile = cachedProfile
+        }
+        
+        // Load all content in parallel
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { await self.loadHighlights(pubkey: pubkey, ndk: ndk) }
+            group.addTask { await self.loadArticles(pubkey: pubkey, ndk: ndk) }
+            group.addTask { await self.loadComments(pubkey: pubkey, ndk: ndk) }
+            group.addTask { await self.loadCollections(pubkey: pubkey, ndk: ndk) }
+            group.addTask { await self.loadStats(pubkey: pubkey, ndk: ndk) }
+        }
+    }
+    
+    private func loadHighlights(pubkey: String, ndk: NDK) async {
+        let filter = NDKFilter(
+            authors: [pubkey],
+            kinds: [9802],
+            limit: 50
+        )
+        
+        var events: Set<NDKEvent> = []
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        for await event in dataSource.events {
+            events.insert(event)
+            if events.count >= 50 { break }
+        }
+        let highlights = events.compactMap { try? HighlightEvent(from: $0) }
+        await MainActor.run {
+            self.highlights = highlights.sorted { $0.createdAt > $1.createdAt }
+            self.stats.highlightCount = highlights.count
+        }
+    }
+    
+    private func loadArticles(pubkey: String, ndk: NDK) async {
+        let filter = NDKFilter(
+            authors: [pubkey],
+            kinds: [30023],
+            limit: 50
+        )
+        
+        var events: Set<NDKEvent> = []
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        for await event in dataSource.events {
+            events.insert(event)
+            if events.count >= 50 { break }
+        }
+        if !events.isEmpty {
+            let articles = events.compactMap { try? Article(from: $0) }
+            await MainActor.run {
+                self.articles = articles.sorted { $0.publishedAt ?? $0.createdAt > $1.publishedAt ?? $1.createdAt }
+                self.stats.articleCount = articles.count
+            }
+        }
+    }
+    
+    private func loadComments(pubkey: String, ndk: NDK) async {
+        // NIP-22 comments on articles
+        let filter = NDKFilter(
+            authors: [pubkey],
+            kinds: [1111],
+            tags: ["K": Set(["30023"])]
+        )
+        
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        var collectedEvents: [NDKEvent] = []
+        for await event in dataSource.events {
+            collectedEvents.append(event)
+        }
+        if !collectedEvents.isEmpty {
+            let sortedEvents = collectedEvents.sorted { $0.createdAt > $1.createdAt }
+            await MainActor.run {
+                self.comments = sortedEvents.prefix(50).map { $0 }
+            }
+        }
+    }
+    
+    private func loadCollections(pubkey: String, ndk: NDK) async {
+        let filter = NDKFilter(
+            authors: [pubkey],
+            kinds: [30004],
+            limit: 50
+        )
+        
+        var events: Set<NDKEvent> = []
+        let dataSource = await ndk.outbox.observe(filter: filter)
+        for await event in dataSource.events {
+            events.insert(event)
+            if events.count >= 50 { break }
+        }
+        if !events.isEmpty {
+            let collections = events.compactMap { try? ArticleCuration(from: $0) }
+            await MainActor.run {
+                self.collections = collections.sorted { $0.createdAt > $1.createdAt }
+            }
+        }
+    }
+    
+    private func loadStats(pubkey: String, ndk: NDK) async {
+        // Load follow stats
+        let followFilter = NDKFilter(
+            kinds: [3],
+            tags: ["p": Set([pubkey])]
+        )
+        
+        var followerCount = 0
+        let dataSource = await ndk.outbox.observe(filter: followFilter)
+        for await _ in dataSource.events {
+            followerCount += 1
+        }
+        
+        // Load following count from contact list
+        let followingFilter = NDKFilter(
+            authors: [pubkey],
+            kinds: [3],
+            limit: 1
+        )
+        
+        var followingCount = 0
+        let followingDataSource = await ndk.outbox.observe(filter: followingFilter)
+        for await event in followingDataSource.events {
+            // Count the "p" tags in the contact list
+            followingCount = event.tags.filter { $0.count >= 2 && $0[0] == "p" }.count
+            break // Only need first contact list
+        }
+        
+        await MainActor.run {
+            self.stats.followerCount = followerCount
+            self.stats.followingCount = followingCount
         }
     }
 }
@@ -699,165 +864,6 @@ struct UserProfileEmptyStateView: View {
     }
 }
 
-// MARK: - Profile Manager
-
-class UserProfileManager: ObservableObject {
-    @Published var profile: NDKUserProfile?
-    @Published var highlights: [HighlightEvent] = []
-    @Published var articles: [Article] = []
-    @Published var comments: [NDKEvent] = []
-    @Published var collections: [ArticleCuration] = []
-    @Published var stats = ProfileStats()
-    
-    weak var appState: AppState?
-    
-    struct ProfileStats {
-        var highlightCount = 0
-        var articleCount = 0
-        var followerCount = 0
-        var followingCount = 0
-    }
-    
-    func loadProfile(pubkey: String) async {
-        guard let ndk = await appState?.ndk else { return }
-        
-        // Load user profile using profile manager
-        for await userProfile in await ndk.profileManager.observe(for: pubkey, maxAge: 300) {
-            await MainActor.run {
-                self.profile = userProfile
-            }
-            break // Just get the first result
-        }
-        
-        // Load all content in parallel
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask { await self.loadHighlights(pubkey: pubkey, ndk: ndk) }
-            group.addTask { await self.loadArticles(pubkey: pubkey, ndk: ndk) }
-            group.addTask { await self.loadComments(pubkey: pubkey, ndk: ndk) }
-            group.addTask { await self.loadCollections(pubkey: pubkey, ndk: ndk) }
-            group.addTask { await self.loadStats(pubkey: pubkey, ndk: ndk) }
-        }
-    }
-    
-    private func loadHighlights(pubkey: String, ndk: NDK) async {
-        let filter = NDKFilter(
-            authors: [pubkey],
-            kinds: [9802],
-            limit: 50
-        )
-        
-        var events: Set<NDKEvent> = []
-        let dataSource = await ndk.outbox.observe(filter: filter)
-        for await event in dataSource.events {
-            events.insert(event)
-            if events.count >= 50 { break }
-        }
-        let highlights = events.compactMap { try? HighlightEvent(from: $0) }
-        await MainActor.run {
-            self.highlights = highlights.sorted { $0.createdAt > $1.createdAt }
-            self.stats.highlightCount = highlights.count
-        }
-    }
-    
-    private func loadArticles(pubkey: String, ndk: NDK) async {
-        let filter = NDKFilter(
-            authors: [pubkey],
-            kinds: [30023],
-            limit: 50
-        )
-        
-        var events: Set<NDKEvent> = []
-        let dataSource = await ndk.outbox.observe(filter: filter)
-        for await event in dataSource.events {
-            events.insert(event)
-            if events.count >= 50 { break }
-        }
-        if !events.isEmpty {
-            let articles = events.compactMap { try? Article(from: $0) }
-            await MainActor.run {
-                self.articles = articles.sorted { $0.publishedAt ?? $0.createdAt > $1.publishedAt ?? $1.createdAt }
-                self.stats.articleCount = articles.count
-            }
-        }
-    }
-    
-    private func loadComments(pubkey: String, ndk: NDK) async {
-        // NIP-22 comments on articles
-        let filter = NDKFilter(
-            authors: [pubkey],
-            kinds: [1111],
-            tags: ["K": Set(["30023"])]
-        )
-        
-        let dataSource = await ndk.outbox.observe(filter: filter)
-        var collectedEvents: [NDKEvent] = []
-        for await event in dataSource.events {
-            collectedEvents.append(event)
-        }
-        if !collectedEvents.isEmpty {
-            let sortedEvents = collectedEvents.sorted { $0.createdAt > $1.createdAt }
-            await MainActor.run {
-                self.comments = sortedEvents
-            }
-        }
-    }
-    
-    private func loadCollections(pubkey: String, ndk: NDK) async {
-        let filter = NDKFilter(
-            authors: [pubkey],
-            kinds: [30001],
-            limit: 20
-        )
-        
-        var events: Set<NDKEvent> = []
-        let dataSource = await ndk.outbox.observe(filter: filter)
-        for await event in dataSource.events {
-            events.insert(event)
-            if events.count >= 20 { break }
-        }
-        if !events.isEmpty {
-            let collections = events.compactMap { try? ArticleCuration(from: $0) }
-            await MainActor.run {
-                self.collections = collections.sorted { $0.updatedAt > $1.updatedAt }
-            }
-        }
-    }
-    
-    private func loadStats(pubkey: String, ndk: NDK) async {
-        // Load follower count
-        let followerFilter = NDKFilter(kinds: [3], tags: ["p": Set([pubkey])])
-        
-        let followerDataSource = await ndk.outbox.observe(filter: followerFilter)
-        var count = 0
-        for await _ in followerDataSource.events {
-            count += 1
-        }
-        let finalCount = count
-        await MainActor.run {
-            self.stats.followerCount = finalCount
-        }
-        
-        // Load following count
-        let followingFilter = NDKFilter(
-            authors: [pubkey],
-            kinds: [3],
-            limit: 1
-        )
-        
-        var followingEvents: Set<NDKEvent> = []
-        let followingDataSource = await ndk.outbox.observe(filter: followingFilter)
-        for await event in followingDataSource.events {
-            followingEvents.insert(event)
-            break // Only need first contact list
-        }
-        if let contactList = followingEvents.first {
-            let followingCount = contactList.tags.filter { $0.count >= 2 && $0[0] == "p" }.count
-            await MainActor.run {
-                self.stats.followingCount = followingCount
-            }
-        }
-    }
-}
 
 // MARK: - Preview
 
