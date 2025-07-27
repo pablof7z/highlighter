@@ -602,7 +602,7 @@ struct ThemeButton: View {
                     .frame(width: 60, height: 60)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(isSelected ? Color.ds.primary : Color.gray.opacity(0.1)
+                            .fill(isSelected ? Color.ds.primary : Color.gray.opacity(0.1))
                     )
                 
                 Text(theme.rawValue)

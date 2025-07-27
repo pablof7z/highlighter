@@ -32,9 +32,9 @@ struct FollowersListView: View {
         NavigationStack {
             Group {
                 if isLoading {
-                    LoadingView()
+                    ModernLoadingView(message: "Loading followers...", style: .dots)
                 } else if followers.isEmpty {
-                    FollowersEmptyStateView(
+                    ModernEmptyStateView(
                         icon: "person.2",
                         title: "No Followers Yet",
                         subtitle: "Share great content to build your following"
@@ -240,49 +240,3 @@ struct UserRow: View {
     }
 }
 
-// MARK: - Loading View
-
-struct LoadingView: View {
-    var body: some View {
-        VStack(spacing: .ds.large) {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .ds.primary)
-                .scaleEffect(1.2)
-            
-            Text("Loading...")
-                .font(.ds.body)
-                .foregroundColor(.ds.textSecondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
-// MARK: - Empty State View
-
-struct FollowersEmptyStateView: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    
-    var body: some View {
-        VStack(spacing: .ds.large) {
-            Image(systemName: icon)
-                .font(.system(size: 60)
-                .foregroundColor(.ds.primary.opacity(0.5)
-                .symbolRenderingMode(.hierarchical)
-            
-            VStack(spacing: .ds.small) {
-                Text(title)
-                    .font(.ds.title3)
-                    .foregroundColor(.ds.text)
-                
-                Text(subtitle)
-                    .font(.ds.body)
-                    .foregroundColor(.ds.textSecondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
-    }
-}

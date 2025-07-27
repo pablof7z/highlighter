@@ -192,45 +192,14 @@ struct SwipeableHighlightCard: View {
                 }
             }
         }
-        .padding(20)
-        .background(
-            ZStack {
-                // Base background
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(DesignSystem.Colors.surface)
-                
-                // Gradient overlay
-                LinearGradient(
-                    colors: [
-                        DesignSystem.Colors.primary.opacity(0.05),
-                        DesignSystem.Colors.secondary.opacity(0.03),
-                        Color.clear
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-                
-                // Border gradient
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.5),
-                                Color.white.opacity(0.1)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-            }
-        )
+        .modernCard(isInteractive: true)
+        .scaleEffect(isDragging ? 1.05 : 1.0)
         .shadow(
-            color: isDragging ? DesignSystem.Colors.primary.opacity(0.3) : DesignSystem.Shadow.large.color,
-            radius: isDragging ? 30 : DesignSystem.Shadow.large.radius,
-            y: isDragging ? 15 : DesignSystem.Shadow.large.y
+            color: isDragging ? DesignSystem.Colors.primary.opacity(0.3) : Color.clear,
+            radius: isDragging ? 20 : 0,
+            y: isDragging ? 10 : 0
         )
+        .animation(DesignSystem.Animation.springSnappy, value: isDragging)
     }
     
     // MARK: - Swipe Indicators

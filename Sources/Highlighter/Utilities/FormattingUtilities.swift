@@ -18,8 +18,8 @@ struct PubkeyFormatter {
             return pubkey
         }
         
-        let prefix = String(pubkey.prefix(prefixLength)
-        let suffix = String(pubkey.suffix(suffixLength)
+        let prefix = String(pubkey.prefix(prefixLength))
+        let suffix = String(pubkey.suffix(suffixLength))
         return "\(prefix)...\(suffix)"
     }
     

@@ -45,7 +45,7 @@ struct UserDiscoveryView: View {
             if let profile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
                 await MainActor.run {
                     if !users.contains(where: { $0.pubkey == event.pubkey }) {
-                        users.append((pubkey: event.pubkey, profile: profile)
+                        users.append((pubkey: event.pubkey, profile: profile))
                         // Sort by display name
                         users.sort { 
                             ($0.profile.displayName ?? $0.profile.name ?? "") < 
@@ -71,7 +71,7 @@ struct UserCard: View {
         HStack(spacing: 16) {
             // Profile picture
             Circle()
-                .fill(Color.ds.primaryDark.opacity(0.2)
+                .fill(Color.ds.primaryDark.opacity(0.2))
                 .frame(width: 56, height: 56)
                 .overlay {
                     if let picture = profile.picture, let url = URL(string: picture) {
@@ -79,7 +79,7 @@ struct UserCard: View {
                             image
                                 .resizable()
                                 .scaledToFill()
-                                .clipShape(Circle()
+                                .clipShape(Circle())
                         } placeholder: {
                             Image(systemName: "person.fill")
                                 .font(.ds.title2)
@@ -94,7 +94,7 @@ struct UserCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 // Name
-                Text(profile.displayName ?? profile.name ?? PubkeyFormatter.formatShort(pubkey)
+                Text(profile.displayName ?? profile.name ?? PubkeyFormatter.formatShort(pubkey))
                     .font(.ds.headline)
                     .foregroundColor(.ds.text)
                     .lineLimit(1)
@@ -209,7 +209,7 @@ struct AnyButtonStyle: ButtonStyle {
     
     init<S: ButtonStyle>(_ style: S) {
         _makeBody = { configuration in
-            AnyView(style.makeBody(configuration: configuration)
+            AnyView(style.makeBody(configuration: configuration))
         }
     }
     

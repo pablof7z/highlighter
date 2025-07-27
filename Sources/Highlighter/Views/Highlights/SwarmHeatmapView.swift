@@ -463,6 +463,7 @@ class SwarmHeatmapData: ObservableObject {
     @Published var highlights: [HeatmapHighlight] = []
     @Published var activeHighlights: [HeatmapHighlight] = []
     var profileCache: [String: NDKUserProfile] = [:]
+    var zapCounts: [String: Int] = [:]
     private var dataSource: NDKDataSource<NDKEvent>?
     private var ndk: NDK?
     
@@ -480,6 +481,11 @@ class SwarmHeatmapData: ObservableObject {
     
     func startStreaming(articleId: String) async {
         guard let ndk = ndk else { return }
+        
+        // Start fetching zap counts for users
+        Task {
+            await fetchZapCounts(articleId: articleId)
+        }
         
         // Create filter for kind 9802 (highlights) with article reference
         let filter = NDKFilter(
@@ -565,7 +571,7 @@ class SwarmHeatmapData: ObservableObject {
         // Fallback: if no context tag, estimate based on content length
         let contentLength = event.content.count
         let estimatedStart = max(0, 50) // Start after some intro text
-        return NSRange(location: estimatedStart, length: min(contentLength, 100)
+        return NSRange(location: estimatedStart, length: min(contentLength, 100))
     }
     
     func getHighlighters(for range: NSRange) -> [HighlighterInfo] {
@@ -581,7 +587,7 @@ class SwarmHeatmapData: ObservableObject {
                 return HighlighterInfo(
                     id: userId,
                     name: profile.name ?? profile.displayName ?? String(userId.prefix(8)),
-                    zapCount: 0, // Would need to query zap events for accurate count
+                    zapCount: zapCounts[userId] ?? 0,
                     timestamp: highlights.first { $0.users.contains(userId) }?.timestamp ?? Date()
                 )
             } else {
@@ -589,9 +595,37 @@ class SwarmHeatmapData: ObservableObject {
                 return HighlighterInfo(
                     id: userId,
                     name: String(userId.prefix(8)) + "...",
-                    zapCount: 0,
+                    zapCount: zapCounts[userId] ?? 0,,
                     timestamp: highlights.first { $0.users.contains(userId) }?.timestamp ?? Date()
                 )
+            }
+        }
+    }
+    
+    private func fetchZapCounts(articleId: String) async {
+        guard let ndk = ndk else { return }
+        
+        // Fetch zap events (kind 9735) for highlights on this article
+        let zapFilter = NDKFilter(
+            kinds: [9735], // Zap receipts
+            tags: ["a": [articleId]]
+        )
+        
+        let zapDataSource = await ndk.outbox.observe(
+            filter: zapFilter,
+            maxAge: 300 // 5 minute cache
+        )
+        
+        for await event in zapDataSource.events {
+            // Extract recipient from zap event
+            if let recipientTag = event.tags.first(where: { $0.first == "p" }),
+               recipientTag.count > 1 {
+                let recipientPubkey = recipientTag[1]
+                
+                // Count zaps per user
+                await MainActor.run {
+                    zapCounts[recipientPubkey, default: 0] += 1
+                }
             }
         }
     }

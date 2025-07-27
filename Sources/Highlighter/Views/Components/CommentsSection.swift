@@ -503,31 +503,6 @@ struct CommentReactions {
     var userZapped: Bool = false
 }
 
-// Loading dots animation
-struct LoadingDots: View {
-    @State private var currentDot = 0
-    
-    var body: some View {
-        HStack(spacing: 4) {
-            ForEach(0..<3) { index in
-                Circle()
-                    .fill(DesignSystem.Colors.primary)
-                    .frame(width: 6, height: 6)
-                    .scaleEffect(currentDot == index ? 1.2 : 0.8)
-                    .opacity(currentDot == index ? 1 : 0.5)
-            }
-        }
-        .onAppear {
-            withAnimation(
-                .easeInOut(duration: 0.6)
-                .repeatForever()
-            ) {
-                currentDot = 2
-            }
-        }
-    }
-}
-
 // MARK: - Subcomponents
 
 struct CommentsList: View {

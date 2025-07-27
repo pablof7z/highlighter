@@ -36,7 +36,7 @@ struct ModernArticleListCard: View {
                             EmptyView()
                         }
                     }
-                    .cornerRadius(12)
+                    .cornerRadius(DesignSystem.CornerRadius.medium)
                 }
                 
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
@@ -234,9 +234,9 @@ struct ModernArticleRowCard: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: 100, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .clipShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium))
                         case .failure(_), .empty:
-                            RoundedRectangle(cornerRadius: 12)
+                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
                                 .fill(
                                     LinearGradient(
                                         colors: [

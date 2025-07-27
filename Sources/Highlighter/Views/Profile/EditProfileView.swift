@@ -256,11 +256,11 @@ struct EditProfileView: View {
                 ZStack {
                     if isLoadingBanner {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle()
+                            .progressViewStyle(CircularProgressViewStyle())
                             .frame(height: 150)
                             .frame(maxWidth: .infinity)
                             .background(DesignSystem.Colors.surfaceSecondary)
-                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     } else if !profile.banner.isEmpty, let url = URL(string: profile.banner) {
                         AsyncImage(url: url) { image in
                             image

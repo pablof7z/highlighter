@@ -589,23 +589,23 @@ extension View {
     }
     
     func floating(amplitude: CGFloat = 3, duration: Double = 3.0) -> some View {
-        modifier(FloatingModifier(amplitude: amplitude, duration: duration)
+        modifier(FloatingModifier(amplitude: amplitude, duration: duration))
     }
     
     func shimmer(duration: Double = 1.5, brightness: Double = 0.6) -> some View {
-        modifier(ShimmerModifier(duration: duration, brightness: brightness)
+        modifier(ShimmerModifier(duration: duration, brightness: brightness))
     }
     
     func glow(color: Color = DesignSystem.Colors.secondary, radius: CGFloat = 8, isActive: Bool = true) -> some View {
-        modifier(GlowModifier(color: color, radius: radius, isActive: isActive)
+        modifier(GlowModifier(color: color, radius: radius, isActive: isActive))
     }
     
     func pulse(style: PulseModifier.PulseStyle = .standard) -> some View {
-        modifier(PulseModifier(style: style)
+        modifier(PulseModifier(style: style))
     }
     
     func magneticHover() -> some View {
-        modifier(MagneticHover()
+        modifier(MagneticHover())
     }
     
     // Convenience methods

@@ -235,6 +235,13 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		337DB7F1A9C10223E911919E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		39FEB9D7BEBF39D76C295F55 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -337,6 +344,7 @@
 				19F0228E7B8B298952560FB4 /* Articles */,
 				5B7B339EEBD21CB543AA2E53 /* Audio */,
 				90C93336BA03E29727F3F41E /* Auth */,
+				337DB7F1A9C10223E911919E /* Common */,
 				BAA23907C66EADBD8573C18D /* Components */,
 				B3034590C7DD7082D45C3E05 /* Curations */,
 				4782E11285C89DBB8E6C72D5 /* Discovery */,

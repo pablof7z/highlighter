@@ -181,7 +181,7 @@ class LightningService: ObservableObject {
                         role: split.role,
                         paymentHash: paymentHash,
                         timestamp: Date()
-                    )
+                    ))
                 }
             }
             

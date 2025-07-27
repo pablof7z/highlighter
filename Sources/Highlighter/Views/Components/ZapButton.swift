@@ -331,7 +331,7 @@ struct ZapAmountSheet: View {
                         )
                     )
                     .foregroundColor(.white)
-                    .cornerRadius(12)
+                    .cornerRadius(DesignSystem.CornerRadius.medium)
                 }
                 .padding(.horizontal)
                 .padding(.bottom)
