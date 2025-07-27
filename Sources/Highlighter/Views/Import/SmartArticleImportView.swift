@@ -1379,14 +1379,53 @@ class SmartImportManager: ObservableObject {
     @Published var processingQuality: SmartArticleImportView.ImportQuality = .balanced
     
     private let aiEngine = AIHighlightEngine()
+    var currentContent: ImportedContent?
+    
+    struct ImportedContent {
+        let text: String
+        let title: String?
+        let author: String?
+        let url: String?
+    }
     
     func importFromURL(_ urlString: String) {
         isProcessing = true
         processingStatus = "Fetching article..."
         
-        // Simulate processing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.processContent()
+        Task {
+            do {
+                // Fetch content from URL
+                guard let url = URL(string: urlString) else {
+                    throw ImportError.invalidURL
+                }
+                
+                processingStatus = "Downloading content..."
+                let (data, _) = try await URLSession.shared.data(from: url)
+                
+                if let htmlString = String(data: data, encoding: .utf8) {
+                    // Extract text content from HTML
+                    let text = extractTextFromHTML(htmlString)
+                    let title = extractTitleFromHTML(htmlString)
+                    
+                    currentContent = ImportedContent(
+                        text: text,
+                        title: title,
+                        author: nil,
+                        url: urlString
+                    )
+                    
+                    await MainActor.run {
+                        self.processContent()
+                    }
+                } else {
+                    throw ImportError.invalidContent
+                }
+            } catch {
+                await MainActor.run {
+                    self.processingStatus = "Failed to fetch article"
+                    self.isProcessing = false
+                }
+            }
         }
     }
     
@@ -1394,9 +1433,38 @@ class SmartImportManager: ObservableObject {
         isProcessing = true
         processingStatus = "Reading file..."
         
-        // Simulate processing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.processContent()
+        Task {
+            do {
+                let data = try Data(contentsOf: url)
+                
+                if url.pathExtension.lowercased() == "pdf" {
+                    // Handle PDF files - would need PDFKit import
+                    processingStatus = "Extracting text from PDF..."
+                    // For now, just show error
+                    throw ImportError.unsupportedFormat("PDF extraction not yet implemented")
+                } else if let text = String(data: data, encoding: .utf8) {
+                    // Plain text or markdown file
+                    let title = url.deletingPathExtension().lastPathComponent
+                    
+                    currentContent = ImportedContent(
+                        text: text,
+                        title: title,
+                        author: nil,
+                        url: url.absoluteString
+                    )
+                    
+                    await MainActor.run {
+                        self.processContent()
+                    }
+                } else {
+                    throw ImportError.invalidContent
+                }
+            } catch {
+                await MainActor.run {
+                    self.processingStatus = "Failed to read file: \(error.localizedDescription)"
+                    self.isProcessing = false
+                }
+            }
         }
     }
     
@@ -1404,10 +1472,14 @@ class SmartImportManager: ObservableObject {
         isProcessing = true
         processingStatus = "Processing text..."
         
-        // Simulate processing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.processContent()
-        }
+        currentContent = ImportedContent(
+            text: text,
+            title: nil,
+            author: nil,
+            url: nil
+        )
+        
+        processContent()
     }
     
     private func processContent() {
@@ -1418,20 +1490,12 @@ class SmartImportManager: ObservableObject {
     
     @MainActor
     private func performAIAnalysis() async {
-        // For demo purposes, using sample text. In production, this would be the actual content
-        let sampleText = """
-        The future of knowledge sharing lies in decentralized networks that empower users to own their data and insights. This paradigm shift represents a fundamental change in how we think about information ownership and distribution.
-        
-        Traditional centralized platforms have dominated the knowledge-sharing landscape for decades, creating walled gardens where user-generated content becomes the property of corporations. However, a new wave of decentralized technologies is challenging this model.
-        
-        Studies show that collaborative highlighting increases retention by 40% compared to solo reading. This finding has profound implications for educational technology and the design of reading applications.
-        
-        The swarm intelligence approach treats every reader as a potential curator, creating emergent patterns of importance. When thousands of readers highlight the same passage, it signals something deeply resonant about that particular insight.
-        
-        By combining AI suggestions with human curation, we achieve a balance between efficiency and nuance. Artificial intelligence can process vast amounts of text quickly, but human judgment remains essential for contextual understanding.
-        
-        The most valuable highlights are often those that spark the most discussion and engagement. This social layer transforms passive reading into an active, community-driven experience.
-        """
+        // Use the actual content provided to the import manager
+        guard let content = currentContent else {
+            processingStatus = "No content to analyze"
+            isProcessing = false
+            return
+        }
         
         do {
             // Map quality to analysis mode
@@ -1445,8 +1509,8 @@ class SmartImportManager: ObservableObject {
                 analysisMode = .thorough
             }
             
-            // Perform AI analysis
-            let result = try await aiEngine.analyzeText(sampleText, mode: analysisMode)
+            // Perform AI analysis on actual content
+            let result = try await aiEngine.analyzeText(content.text, mode: analysisMode)
             
             // Convert AI suggestions to article highlights
             let suggestions = result.suggestions.map { suggestion in
@@ -1459,18 +1523,18 @@ class SmartImportManager: ObservableObject {
                 )
             }
             
-            // Create processed article with real AI results
+            // Create processed article with real content and AI results
             processedArticle = ProcessedArticle(
-                title: "The Evolution of Digital Knowledge Sharing",
-                author: "Dr. Sarah Chen",
-                preview: "An exploration of how decentralized networks and AI are transforming the way we discover, share, and retain knowledge in the digital age.",
+                title: content.title ?? "Untitled Article",
+                author: content.author,
+                preview: String(content.text.prefix(200)) + "...",
+                fullText: content.text,
                 suggestedHighlights: suggestions
             )
             
             isProcessing = false
         } catch {
-            // Handle error - for now just use fallback
-            processingStatus = "Error analyzing content"
+            processingStatus = "Error analyzing content: \(error.localizedDescription)"
             isProcessing = false
         }
     }
@@ -1496,6 +1560,65 @@ class SmartImportManager: ObservableObject {
         // This is now handled by performAIAnalysis
         // The method is kept for compatibility with the UI flow
     }
+    
+    // MARK: - Helper Methods
+    
+    private func extractTextFromHTML(_ html: String) -> String {
+        // Simple HTML text extraction - in production, use a proper HTML parser
+        let pattern = "<[^>]+>"
+        let stripped = html.replacingOccurrences(of: pattern, with: "", options: .regularExpression)
+        
+        // Decode HTML entities
+        let decoded = stripped
+            .replacingOccurrences(of: "&nbsp;", with: " ")
+            .replacingOccurrences(of: "&amp;", with: "&")
+            .replacingOccurrences(of: "&lt;", with: "<")
+            .replacingOccurrences(of: "&gt;", with: ">")
+            .replacingOccurrences(of: "&quot;", with: "\"")
+            .replacingOccurrences(of: "&#39;", with: "'")
+            .replacingOccurrences(of: "&apos;", with: "'")
+        
+        // Clean up whitespace
+        let lines = decoded.components(separatedBy: .newlines)
+        let cleanedLines = lines.map { $0.trimmingCharacters(in: .whitespaces) }
+        let filtered = cleanedLines.filter { !$0.isEmpty }
+        
+        return filtered.joined(separator: "\n\n")
+    }
+    
+    private func extractTitleFromHTML(_ html: String) -> String? {
+        // Extract title from HTML
+        if let titleRange = html.range(of: "<title>.*?</title>", options: .regularExpression) {
+            let titleTag = String(html[titleRange])
+            return titleTag
+                .replacingOccurrences(of: "<title>", with: "")
+                .replacingOccurrences(of: "</title>", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        return nil
+    }
+    
+    // MARK: - Errors
+    
+    enum ImportError: LocalizedError {
+        case invalidURL
+        case invalidContent
+        case unsupportedFormat(String)
+        case networkError(String)
+        
+        var errorDescription: String? {
+            switch self {
+            case .invalidURL:
+                return "Invalid URL provided"
+            case .invalidContent:
+                return "Unable to process the content"
+            case .unsupportedFormat(let format):
+                return "Unsupported format: \(format)"
+            case .networkError(let message):
+                return "Network error: \(message)"
+            }
+        }
+    }
 }
 
 struct ProcessedArticle {
@@ -1503,6 +1626,7 @@ struct ProcessedArticle {
     let title: String
     let author: String?
     let preview: String
+    let fullText: String
     let suggestedHighlights: [ArticleSuggestedHighlight]
 }
 
@@ -1604,15 +1728,13 @@ struct LiveArticlePreview: View {
     }
     
     private func generateContentParagraphs() -> [String] {
-        // This would be replaced with actual article content
-        return [
-            "The future of knowledge sharing lies in decentralized networks that empower users to own their data and insights. This paradigm shift represents a fundamental change in how we think about information ownership and distribution.",
-            "Traditional centralized platforms have dominated the knowledge-sharing landscape for decades, creating walled gardens where user-generated content becomes the property of corporations. However, a new wave of decentralized technologies is challenging this model.",
-            "Studies show that collaborative highlighting increases retention by 40% compared to solo reading. This finding has profound implications for educational technology and the design of reading applications.",
-            "The swarm intelligence approach treats every reader as a potential curator, creating emergent patterns of importance. When thousands of readers highlight the same passage, it signals something deeply resonant about that particular insight.",
-            "By combining AI suggestions with human curation, we achieve a balance between efficiency and nuance. Artificial intelligence can process vast amounts of text quickly, but human judgment remains essential for contextual understanding.",
-            "The most valuable highlights are often those that spark the most discussion and engagement. This social layer transforms passive reading into an active, community-driven experience."
-        ]
+        // Split the article's full text into paragraphs
+        let paragraphs = article.fullText
+            .components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        
+        return paragraphs.isEmpty ? ["No content available"] : paragraphs
     }
     
     private func findHighlightsInParagraph(_ paragraph: String) -> [ArticleSuggestedHighlight] {

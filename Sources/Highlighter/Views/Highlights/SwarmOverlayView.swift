@@ -1,6 +1,12 @@
 import SwiftUI
 import NDKSwift
 
+extension Bool {
+    static func random(probability: Double) -> Bool {
+        return Double.random(in: 0...1) < probability
+    }
+}
+
 struct SwarmOverlayView: View {
     let text: String
     @ObservedObject var swarmManager: SwarmHighlightManager
@@ -146,7 +152,7 @@ struct SwarmOverlayView: View {
             updateSwarmActivity(oldCount: oldValue.count, newCount: newValue.count)
             calculateHighlightPaths()
         }
-        .onReceive(Timer.publish(every: 3, on: .main, in: .common).autoconnect()) { _ in
+        .onReceive(Timer.publish(every: 10, on: .main, in: .common).autoconnect()) { _ in
             simulateLiveActivity()
         }
     }
@@ -266,16 +272,32 @@ struct SwarmOverlayView: View {
     }
     
     private func simulateLiveActivity() {
-        // Simulate random live activity for demo purposes
-        if Bool.random() && swarmActivityLevel < 0.3 {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                swarmActivityLevel = .random(in: 0.3...0.6)
+        // Only show subtle activity hint when there's no real activity
+        // This helps users understand the feature is working even with low activity
+        let hasRealActivity = !swarmManager.swarmHighlights.isEmpty
+        let shouldSimulate = !hasRealActivity && Bool.random(probability: 0.2) // 20% chance
+        
+        if shouldSimulate && swarmActivityLevel == 0 {
+            withAnimation(.easeInOut(duration: 1.0)) {
+                swarmActivityLevel = .random(in: 0.1...0.2) // Very subtle
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                withAnimation(.easeOut(duration: 1)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                withAnimation(.easeOut(duration: 1.5)) {
                     swarmActivityLevel = 0
                 }
+            }
+            
+            // Add subtle ripple effect
+            let ripple = SwarmRippleEffect(
+                x: .random(in: 100...300),
+                y: .random(in: 100...400)
+            )
+            rippleEffects.append(ripple)
+            
+            // Remove ripple after animation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                rippleEffects.removeAll { $0.id == ripple.id }
             }
         }
     }
