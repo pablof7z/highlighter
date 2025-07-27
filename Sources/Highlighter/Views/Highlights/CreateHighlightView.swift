@@ -13,7 +13,6 @@ struct CreateHighlightView: View {
     @State private var showImportOptions = false
     @State private var isImporting = false
     @State private var animateBackground = false
-    @State private var showSmartImporter = false
     @State private var commentText = ""
     @State private var contextText = ""
     @Environment(\.dismiss) var dismiss
@@ -121,9 +120,6 @@ struct CreateHighlightView: View {
                 }
             }
             .sheet(isPresented: $showImportOptions) {
-                SmartContentImporter()
-            }
-            .fullScreenCover(isPresented: $showSmartImporter) {
                 SmartArticleImportView()
             }
         }

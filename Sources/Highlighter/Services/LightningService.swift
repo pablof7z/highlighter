@@ -658,7 +658,6 @@ class LightningService: ObservableObject {
         case signerNotAvailable
         case invalidConnectionString
         case noLightningAddress
-        case lnurlNotImplemented
         case insufficientBalance
         case paymentFailed(String)
         
@@ -674,8 +673,6 @@ class LightningService: ObservableObject {
                 return "Invalid NWC connection string"
             case .noLightningAddress:
                 return "Recipient has no Lightning address"
-            case .lnurlNotImplemented:
-                return "LNURL support not yet implemented"
             case .insufficientBalance:
                 return "Insufficient balance"
             case .paymentFailed(let reason):

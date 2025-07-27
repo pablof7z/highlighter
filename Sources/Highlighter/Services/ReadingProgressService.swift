@@ -151,7 +151,7 @@ class ReadingProgressService: ObservableObject {
             let data = try encoder.encode(progressByArticle)
             UserDefaults.standard.set(data, forKey: progressKey)
         } catch {
-            print("Failed to save reading progress: \(error)")
+            // Silently fail - reading progress is not critical
         }
     }
     
@@ -162,7 +162,7 @@ class ReadingProgressService: ObservableObject {
             let decoder = JSONDecoder()
             progressByArticle = try decoder.decode([String: ArticleProgress].self, from: data)
         } catch {
-            print("Failed to load reading progress: \(error)")
+            // Silently fail - reading progress is not critical
         }
     }
 }
