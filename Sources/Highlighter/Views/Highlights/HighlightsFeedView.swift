@@ -749,7 +749,7 @@ struct CommentSheetView: View {
                         .lineLimit(3)
                         .padding()
                         .background(DesignSystem.Colors.surface)
-                        .cornerRadius(12)
+                        .cornerRadius(DesignSystem.CornerRadius.medium)
                 }
                 .padding(.horizontal)
                 
@@ -763,7 +763,7 @@ struct CommentSheetView: View {
                     TextEditor(text: $commentText)
                         .padding(8)
                         .background(DesignSystem.Colors.surface)
-                        .cornerRadius(12)
+                        .cornerRadius(DesignSystem.CornerRadius.medium)
                         .frame(minHeight: 100)
                         .focused($isCommentFieldFocused)
                         .padding(.horizontal)

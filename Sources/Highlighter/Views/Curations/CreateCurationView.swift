@@ -193,7 +193,7 @@ struct CreateCurationView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Curation ID", systemImage: "number.square.fill")
-                    .font(DesignSystem.Typography.caption.weight(.medium)
+                    .font(DesignSystem.Typography.caption.weight(.medium))
                     .foregroundColor(nameFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
                 
                 Spacer()
@@ -214,7 +214,7 @@ struct CreateCurationView: View {
                     .onTapGesture { nameFieldFocused = true }
                     .onChange(of: curationName) { _, newValue in
                         if newValue.count > 50 {
-                            curationName = String(newValue.prefix(50)
+                            curationName = String(newValue.prefix(50))
                         }
                     }
                 
@@ -222,7 +222,7 @@ struct CreateCurationView: View {
                     Button(action: { curationName = "" }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(DesignSystem.Colors.textSecondary)
-                            .transition(.scale.combined(with: .opacity)
+                            .transition(.scale.combined(with: .opacity))
                     }
                 }
             }
@@ -249,7 +249,7 @@ struct CreateCurationView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Title", systemImage: "textformat.alt")
-                    .font(DesignSystem.Typography.caption.weight(.medium)
+                    .font(DesignSystem.Typography.caption.weight(.medium))
                     .foregroundColor(titleFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
                 
                 Spacer()
@@ -268,7 +268,7 @@ struct CreateCurationView: View {
                     .onTapGesture { titleFieldFocused = true }
                     .onChange(of: curationTitle) { _, newValue in
                         if newValue.count > 100 {
-                            curationTitle = String(newValue.prefix(100)
+                            curationTitle = String(newValue.prefix(100))
                         }
                     }
                 
@@ -276,7 +276,7 @@ struct CreateCurationView: View {
                     Button(action: { curationTitle = "" }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(DesignSystem.Colors.textSecondary)
-                            .transition(.scale.combined(with: .opacity)
+                            .transition(.scale.combined(with: .opacity))
                     }
                 }
             }
@@ -303,7 +303,7 @@ struct CreateCurationView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Description", systemImage: "text.quote")
-                    .font(DesignSystem.Typography.caption.weight(.medium)
+                    .font(DesignSystem.Typography.caption.weight(.medium))
                     .foregroundColor(descriptionFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
                 
                 Spacer()
@@ -351,7 +351,7 @@ struct CreateCurationView: View {
     private var imageUrlField: some View {
         VStack(alignment: .leading, spacing: 10) {
             Label("Or use image URL", systemImage: "link.circle.fill")
-                .font(DesignSystem.Typography.caption.weight(.medium)
+                .font(DesignSystem.Typography.caption.weight(.medium))
                 .foregroundColor(DesignSystem.Colors.textSecondary)
             
             TextField("https://...", text: $imageUrl)
@@ -396,7 +396,7 @@ struct CreateCurationView: View {
                 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("What are Article Curations?")
-                        .font(DesignSystem.Typography.body.weight(.semibold)
+                        .font(DesignSystem.Typography.body.weight(.semibold))
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("Create themed collections of articles, highlights, and content. Perfect for organizing your reading lists, research topics, or sharing knowledge with others.")
@@ -680,7 +680,7 @@ struct FeatureBadge: View {
         VStack(spacing: 6) {
             ZStack {
                 Circle()
-                    .fill(color.opacity(0.15)
+                    .fill(color.opacity(0.15))
                     .frame(width: 40, height: 40)
                 
                 Image(systemName: icon)
@@ -728,7 +728,7 @@ struct AnimatedBackgroundView: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-            .rotationEffect(.degrees(gradientRotation)
+            .rotationEffect(.degrees(gradientRotation))
             .onAppear {
                 withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
                     gradientRotation = 360

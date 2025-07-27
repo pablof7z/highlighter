@@ -73,7 +73,7 @@ struct CreateHighlightView: View {
                                 }
                             }
                         }
-                        .padding(.top, 40)
+                        .padding(.top, DesignSystem.Spacing.huge)
                         
                         // Content Input
                         Group {
@@ -95,7 +95,7 @@ struct CreateHighlightView: View {
                                   systemImage: isSaving ? "arrow.circlepath" : "checkmark.circle.fill")
                                 .font(.headline)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
+                                .padding(.vertical, DesignSystem.Spacing.medium)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                                         .fill(isReadyToSave ? Color.ds.primary : Color.secondary.opacity(0.3)
@@ -105,9 +105,9 @@ struct CreateHighlightView: View {
                         }
                         .disabled(!isReadyToSave || isSaving)
                         .buttonStyle(.plain)
-                        .padding(.bottom, 40)
+                        .padding(.bottom, DesignSystem.Spacing.huge)
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, DesignSystem.Spacing.screenPadding)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -151,7 +151,7 @@ struct CreateHighlightView: View {
                 
                 TextEditor(text: $pastedText)
                     .frame(minHeight: 150)
-                    .padding(12)
+                    .padding(DesignSystem.Spacing.base)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .fill(Color.ds.surfaceSecondary)
@@ -165,19 +165,19 @@ struct CreateHighlightView: View {
             
             // Source Information
             VStack(spacing: 12) {
-                ModernTextField(
+                IconTextField(
                     icon: "book",
                     placeholder: "Source Title (optional)",
                     text: $sourceTitle
                 )
                 
-                ModernTextField(
+                IconTextField(
                     icon: "person",
                     placeholder: "Author (optional)",
                     text: $sourceAuthor
                 )
                 
-                ModernTextField(
+                IconTextField(
                     icon: "link",
                     placeholder: "Source URL (optional)",
                     text: $sourceURL
@@ -192,7 +192,7 @@ struct CreateHighlightView: View {
                 
                 TextEditor(text: $contextText)
                     .frame(minHeight: 80)
-                    .padding(12)
+                    .padding(DesignSystem.Spacing.base)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .fill(Color.ds.surfaceSecondary)
@@ -212,7 +212,7 @@ struct CreateHighlightView: View {
                 
                 TextEditor(text: $commentText)
                     .frame(minHeight: 80)
-                    .padding(12)
+                    .padding(DesignSystem.Spacing.base)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .fill(Color.ds.surfaceSecondary)
@@ -247,7 +247,7 @@ struct CreateHighlightView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 2)
+                    .padding(.horizontal, DesignSystem.Spacing.nano)
                 }
             }
             
@@ -256,7 +256,7 @@ struct CreateHighlightView: View {
                     .font(.ds.body).fontWeight(.medium)
                     .foregroundColor(.ds.primary)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, DesignSystem.Spacing.base)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .fill(Color.ds.primary.opacity(0.1)
@@ -376,8 +376,8 @@ struct HighlightModeCard: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 20)
-            .padding(.horizontal, 16)
+            .padding(.vertical, DesignSystem.Spacing.large)
+            .padding(.horizontal, DesignSystem.Spacing.medium)
             .background(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .fill(isSelected ? Color.ds.primary.opacity(0.08) : Color.ds.surfaceSecondary)
@@ -444,7 +444,7 @@ struct ArticlePlaceholderCard: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "doc.text.magnifyingglass")
-                .font(.system(size: 48)
+                .font(DesignSystem.Typography.largeTitle.weight(.regular))
                 .foregroundColor(.orange.opacity(0.6)
             
             VStack(spacing: 8) {
@@ -463,8 +463,8 @@ struct ArticlePlaceholderCard: View {
                 .foregroundColor(.orange)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
-        .padding(.horizontal, 24)
+        .padding(.vertical, DesignSystem.Spacing.huge)
+        .padding(.horizontal, DesignSystem.Spacing.xl)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(Color.orange.opacity(0.05)
@@ -477,7 +477,7 @@ struct ArticlePlaceholderCard: View {
 }
 
 
-struct ModernTextField: View {
+struct IconTextField: View {
     let icon: String
     let placeholder: String
     @Binding var text: String
@@ -492,8 +492,8 @@ struct ModernTextField: View {
             TextField(placeholder, text: $text)
                 .font(.body)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.horizontal, DesignSystem.Spacing.medium)
+        .padding(.vertical, DesignSystem.Spacing.medium - 2)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(Color.ds.surfaceSecondary)

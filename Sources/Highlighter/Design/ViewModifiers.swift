@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - Modern View Modifiers
+// MARK: - View Modifiers
 // Clean, sophisticated components without excessive effects
 
 // MARK: - Card Styles
@@ -8,10 +8,10 @@ import SwiftUI
 // Use .modernCard(), .modernCardSelected(), .glassCard(), or .compactCard() modifiers
 
 // MARK: - Button Styles
-// Note: Primary button styles are now defined in ModernButtonStyles.swift to avoid duplication
+// Note: Primary button styles are now defined in ButtonStyles.swift to avoid duplication
 
 // MARK: - List Item Style
-struct ModernListItem: ViewModifier {
+struct ListItemModifier: ViewModifier {
     var showDivider: Bool = true
     
     func body(content: Content) -> some View {
@@ -30,10 +30,10 @@ struct ModernListItem: ViewModifier {
 }
 
 // MARK: - Input Styles
-// Note: ModernTextField is now defined in ModernFormComponents.swift to avoid duplication
+// Note: TextField styles are now defined in FormComponents.swift to avoid duplication
 
-// MARK: - Modern Tab Bar Item
-struct ModernTabItem: View {
+// MARK: - Tab Bar Item
+struct TabItem: View {
     let icon: String
     let title: String
     let isSelected: Bool
@@ -56,7 +56,7 @@ struct ModernTabItem: View {
 
 
 // MARK: - Highlight Effect (Subtle)
-struct ModernHighlight: ViewModifier {
+struct HighlightModifier: ViewModifier {
     let isHighlighted: Bool
     
     func body(content: Content) -> some View {
@@ -70,7 +70,7 @@ struct ModernHighlight: ViewModifier {
 }
 
 // MARK: - Loading Placeholder
-struct ModernPlaceholder: ViewModifier {
+struct PlaceholderModifier: ViewModifier {
     @State private var opacity: Double = 0.5
     
     func body(content: Content) -> some View {
@@ -89,18 +89,18 @@ struct ModernPlaceholder: ViewModifier {
 extension View {
     // Card modifiers are now defined in CardSystem.swift
     
-    func modernListItem(showDivider: Bool = true) -> some View {
-        self.modifier(ModernListItem(showDivider: showDivider))
+    func listItem(showDivider: Bool = true) -> some View {
+        self.modifier(ListItemModifier(showDivider: showDivider))
     }
     
-    // modernTextField() extension is now in ModernFormComponents.swift
+    // textField() extensions are now in FormComponents.swift
     
-    func modernHighlight(_ isHighlighted: Bool) -> some View {
-        self.modifier(ModernHighlight(isHighlighted: isHighlighted))
+    func highlight(_ isHighlighted: Bool) -> some View {
+        self.modifier(HighlightModifier(isHighlighted: isHighlighted))
     }
     
-    func modernPlaceholder() -> some View {
-        self.modifier(ModernPlaceholder())
+    func placeholder() -> some View {
+        self.modifier(PlaceholderModifier())
     }
 }
 

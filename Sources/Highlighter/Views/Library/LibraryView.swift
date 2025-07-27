@@ -938,11 +938,11 @@ struct ArticleRow: View {
                         }
                         .frame(width: 80, height: 80)
                         .clipped()
-                        .cornerRadius(12)
+                        .cornerRadius(DesignSystem.CornerRadius.medium)
                     } else {
                         ArticleImagePlaceholder()
                             .frame(width: 80, height: 80)
-                            .cornerRadius(12)
+                            .cornerRadius(DesignSystem.CornerRadius.medium)
                     }
                 }
                 

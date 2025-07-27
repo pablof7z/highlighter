@@ -130,12 +130,12 @@ struct CurationManagementView: View {
                                     }
                                 }
                             }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 10)
+                            .padding(.horizontal, DesignSystem.Spacing.base)
+                            .padding(.vertical, DesignSystem.Spacing.small + 2)
                             .background(DesignSystem.Colors.surface)
                             .cornerRadius(DesignSystem.CornerRadius.medium)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12)
+                                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
                                     .stroke(DesignSystem.Colors.border, lineWidth: 1)
                             )
                             
@@ -158,7 +158,7 @@ struct CurationManagementView: View {
                                     .symbolEffect(.bounce, value: sortOption)
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, DesignSystem.Spacing.screenPadding)
                         .opacity(headerAnimation ? 1 : 0)
                         .offset(y: headerAnimation ? 0 : -20)
                         
@@ -181,11 +181,11 @@ struct CurationManagementView: View {
                                             .foregroundColor(viewMode == mode ? .white : DesignSystem.Colors.textSecondary)
                                     }
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 8)
+                                    .padding(.vertical, DesignSystem.Spacing.small)
                                     .background(
                                         ZStack {
                                             if viewMode == mode {
-                                                RoundedRectangle(cornerRadius: 10)
+                                                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small + 2)
                                                     .fill(DesignSystem.Colors.primary)
                                                     .matchedGeometryEffect(id: "viewMode", in: animation)
                                             }
@@ -195,15 +195,15 @@ struct CurationManagementView: View {
                                 .buttonStyle(PlainButtonStyle())
                             }
                         }
-                        .padding(4)
+                        .padding(DesignSystem.Spacing.micro)
                         .background(DesignSystem.Colors.surface)
-                        .cornerRadius(14)
-                        .padding(.horizontal)
+                        .cornerRadius(DesignSystem.CornerRadius.medium + 2)
+                        .padding(.horizontal, DesignSystem.Spacing.screenPadding)
                         .opacity(headerAnimation ? 1 : 0)
                         .offset(y: headerAnimation ? 0 : -20)
                     }
-                    .padding(.top, 16)
-                    .padding(.bottom, 20)
+                    .padding(.top, DesignSystem.Spacing.medium)
+                    .padding(.bottom, DesignSystem.Spacing.large)
                     
                     // Content area with transitions
                     ZStack {
@@ -258,7 +258,7 @@ struct CurationManagementView: View {
                     
                     // Empty state
                     if filteredCurations.isEmpty {
-                        EmptyStateView(searchText: searchText)
+                        CurationEmptyStateView(searchText: searchText)
                             .transition(.scale.combined(with: .opacity)
                     }
                 }
@@ -472,7 +472,7 @@ struct GridView: View {
                     gridItem(for: curation)
                 }
             }
-            .padding()
+            .padding(DesignSystem.Spacing.screenPadding)
         }
     }
     
@@ -689,7 +689,7 @@ struct CarouselView: View {
                                 .animation(DesignSystem.Animation.springSnappy, value: currentIndex)
                         }
                     }
-                    .padding(.bottom, 20)
+                    .padding(.bottom, DesignSystem.Spacing.large)
                 }
             }
             .gesture(
@@ -713,7 +713,7 @@ struct CarouselView: View {
                     }
             )
         }
-        .padding(.vertical, 40)
+        .padding(.vertical, DesignSystem.Spacing.huge)
     }
     
     private func cardOffset(index: Int, geometry: GeometryProxy) -> CGFloat {
@@ -770,7 +770,7 @@ struct CurationGridItem: View {
                         .frame(height: 120)
                         .overlay(
                             Image(systemName: "folder.fill")
-                                .font(.system(size: 40)
+                                .font(.system(size: 40, weight: .regular, design: .default)
                                 .foregroundColor(.white.opacity(0.8)
                         )
                 }
@@ -782,7 +782,7 @@ struct CurationGridItem: View {
                             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                                 .font(.title2)
                                 .foregroundColor(.white)
-                                .padding(8),
+                                .padding(DesignSystem.Spacing.small),
                             alignment: .topTrailing
                         )
                 }
@@ -795,7 +795,7 @@ struct CurationGridItem: View {
                         .scaleEffect(animateHover ? 1.05 : 1)
                 }
             }
-            .cornerRadius(12, corners: [.topLeft, .topRight])
+            .cornerRadius(DesignSystem.CornerRadius.medium, corners: [.topLeft, .topRight])
             
             // Content section
             VStack(alignment: .leading, spacing: 6) {
@@ -815,8 +815,8 @@ struct CurationGridItem: View {
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
             }
-            .padding(.horizontal, 12)
-            .padding(.bottom, 12)
+            .padding(.horizontal, DesignSystem.Spacing.base)
+            .padding(.bottom, DesignSystem.Spacing.base)
         }
         .modernCard()
         .scaleEffect(isSelected || isHovered ? 0.95 : 1)
@@ -858,9 +858,9 @@ struct CurationListRow: View {
                     ShimmerView()
                 }
                 .frame(width: 60, height: 60)
-                .cornerRadius(10)
+                .cornerRadius(DesignSystem.CornerRadius.small + 2)
             } else {
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small + 2)
                     .fill(
                         LinearGradient(
                             colors: [DesignSystem.Colors.primary, DesignSystem.Colors.primary.opacity(0.7)],
@@ -909,10 +909,10 @@ struct CurationListRow: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
                 .fill(DesignSystem.Colors.surface)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
                         .stroke(isHovered ? DesignSystem.Colors.primary : Color.clear, lineWidth: 2)
                 )
         )
@@ -950,7 +950,7 @@ struct CurationManagementCarouselCard: View {
                     )
                     
                     Image(systemName: "folder.fill")
-                        .font(.system(size: 80)
+                        .font(.system(size: 80, weight: .regular, design: .default)
                         .foregroundColor(.white.opacity(0.8)
                 }
                 .frame(height: geometry.size.height * 0.5)
@@ -984,12 +984,12 @@ struct CurationManagementCarouselCard: View {
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
             }
-            .padding(20)
+            .padding(DesignSystem.Spacing.large)
             .frame(maxHeight: .infinity)
         }
         .frame(width: geometry.size.width * 0.8)
         .background(DesignSystem.Colors.surface)
-        .cornerRadius(20)
+        .cornerRadius(DesignSystem.CornerRadius.xl)
         .shadow(
             color: .black.opacity(index == currentIndex ? 0.2 : 0.1),
             radius: index == currentIndex ? 20 : 10,
@@ -1027,14 +1027,14 @@ struct CurationContextMenu: View {
     }
 }
 
-struct EmptyStateView: View {
+struct CurationEmptyStateView: View {
     let searchText: String
     @State private var animateIcon = false
     
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: searchText.isEmpty ? "folder.badge.plus" : "magnifyingglass")
-                .font(.system(size: 60)
+                .font(.system(size: 60, weight: .regular, design: .default)
                 .foregroundColor(DesignSystem.Colors.primary.opacity(0.5)
                 .scaleEffect(animateIcon ? 1.1 : 1)
                 .onAppear {
@@ -1055,7 +1055,7 @@ struct EmptyStateView: View {
                 .foregroundColor(DesignSystem.Colors.textSecondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(40)
+        .padding(DesignSystem.Spacing.huge)
     }
 }
 

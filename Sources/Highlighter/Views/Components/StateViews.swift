@@ -1,9 +1,9 @@
 import SwiftUI
 
-// MARK: - Modern State Views
+// MARK: - State Views
 
-/// Modern loading view with elegant animations
-struct ModernLoadingView: View {
+/// Loading view with elegant animations
+struct LoadingView: View {
     let message: String?
     let style: LoadingStyle
     @State private var animateGradient = false
@@ -220,8 +220,8 @@ struct ModernLoadingView: View {
     }
 }
 
-/// Modern empty state view with illustration and actions
-struct ModernEmptyStateView: View {
+/// Empty state view with illustration and actions
+struct EmptyStateView: View {
     let icon: String
     let title: String
     let subtitle: String?
@@ -308,8 +308,8 @@ struct ModernEmptyStateView: View {
     }
 }
 
-/// Modern error state view with retry functionality
-struct ModernErrorStateView: View {
+/// Error state view with retry functionality
+struct ErrorStateView: View {
     let error: Error
     let title: String?
     let subtitle: String?
@@ -455,12 +455,12 @@ struct ContentStateView<Content: View, LoadedContent: View>: View {
         case .loading(let message):
             content()
                 .overlay(
-                    ModernLoadingView(message: message)
+                    LoadingView(message: message)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(DesignSystem.Colors.background.opacity(0.8))
                 )
         case .empty(let icon, let title, let subtitle, let actionTitle, let action):
-            ModernEmptyStateView(
+            EmptyStateView(
                 icon: icon,
                 title: title,
                 subtitle: subtitle,
@@ -469,7 +469,7 @@ struct ContentStateView<Content: View, LoadedContent: View>: View {
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .error(let error, let retryAction):
-            ModernErrorStateView(
+            ErrorStateView(
                 error: error,
                 retryAction: retryAction
             )
@@ -500,7 +500,7 @@ extension View {
         self.overlay(
             Group {
                 if isLoading {
-                    ModernLoadingView(message: message)
+                    LoadingView(message: message)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(DesignSystem.Colors.background.opacity(0.8))
                 }
@@ -514,13 +514,13 @@ extension View {
 #Preview("Loading States") {
     ScrollView {
         VStack(spacing: DesignSystem.Spacing.xl) {
-            ModernLoadingView(message: "Loading your highlights...", style: .dots)
+            LoadingView(message: "Loading your highlights...", style: .dots)
             
-            ModernLoadingView(style: .spinner)
+            LoadingView(style: .spinner)
             
-            ModernLoadingView(style: .skeleton)
+            LoadingView(style: .skeleton)
             
-            ModernLoadingView(style: .pulse)
+            LoadingView(style: .pulse)
         }
         .padding(DesignSystem.Spacing.large)
     }
@@ -530,7 +530,7 @@ extension View {
 #Preview("Empty States") {
     ScrollView {
         VStack(spacing: DesignSystem.Spacing.xl) {
-            ModernEmptyStateView(
+            EmptyStateView(
                 icon: "highlighter",
                 title: "No Highlights Yet",
                 subtitle: "Start highlighting interesting content to see it here",
@@ -538,7 +538,7 @@ extension View {
                 action: {}
             )
             
-            ModernEmptyStateView(
+            EmptyStateView(
                 icon: "books.vertical",
                 title: "No Books Found",
                 subtitle: "Try adjusting your search criteria",
@@ -557,7 +557,7 @@ struct SampleError: LocalizedError {
 }
 
 #Preview("Error State") {
-    ModernErrorStateView(
+    ErrorStateView(
         error: SampleError(),
         retryAction: {}
     )

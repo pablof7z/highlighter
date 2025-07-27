@@ -72,10 +72,10 @@ struct DiscoveryCurationCard: View {
                 } placeholder: {
                     gradientPlaceholder
                 }
-                .cornerRadius(8)
+                .cornerRadius(DesignSystem.CornerRadius.small)
             } else {
                 gradientPlaceholder
-                    .cornerRadius(8)
+                    .cornerRadius(DesignSystem.CornerRadius.small)
             }
             
             VStack(alignment: .leading, spacing: 8) {

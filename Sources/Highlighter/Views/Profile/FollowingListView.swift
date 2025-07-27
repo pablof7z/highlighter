@@ -12,9 +12,9 @@ struct FollowingListView: View {
         NavigationStack {
             Group {
                 if isLoading {
-                    ModernLoadingView(message: "Loading following...", style: .dots)
+                    LoadingView(message: "Loading following...", style: .dots)
                 } else if following.isEmpty {
-                    ModernEmptyStateView(
+                    EmptyStateView(
                         icon: "person.2",
                         title: "Not Following Anyone",
                         subtitle: "This user hasn't followed anyone yet"

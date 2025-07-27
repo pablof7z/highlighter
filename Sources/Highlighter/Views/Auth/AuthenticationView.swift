@@ -1,7 +1,7 @@
 import SwiftUI
 import NDKSwift
 
-struct ModernAuthenticationView: View {
+struct AuthenticationView: View {
     @EnvironmentObject var appState: AppState
     @State private var showImportSheet = false
     @State private var privateKey = ""

@@ -32,9 +32,9 @@ struct FollowersListView: View {
         NavigationStack {
             Group {
                 if isLoading {
-                    ModernLoadingView(message: "Loading followers...", style: .dots)
+                    LoadingView(message: "Loading followers...", style: .dots)
                 } else if followers.isEmpty {
-                    ModernEmptyStateView(
+                    EmptyStateView(
                         icon: "person.2",
                         title: "No Followers Yet",
                         subtitle: "Share great content to build your following"

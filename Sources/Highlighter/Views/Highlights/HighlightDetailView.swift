@@ -132,7 +132,7 @@ struct ReplyComposerView: View {
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(DesignSystem.Colors.surface)
-                    .cornerRadius(8)
+                    .cornerRadius(DesignSystem.CornerRadius.small)
                     .padding(.horizontal)
                 
                 // Reply input
@@ -140,7 +140,7 @@ struct ReplyComposerView: View {
                     .font(DesignSystem.Typography.body)
                     .padding(8)
                     .background(DesignSystem.Colors.surface)
-                    .cornerRadius(8)
+                    .cornerRadius(DesignSystem.CornerRadius.small)
                     .padding(.horizontal)
                 
                 Spacer()

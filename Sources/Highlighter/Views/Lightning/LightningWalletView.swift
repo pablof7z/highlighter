@@ -693,7 +693,7 @@ struct TransactionDetailSheet: View {
                             .font(.ds.largeTitle)
                             .foregroundColor(.ds.text)
                         
-                        Text(transaction.timestamp.formatted(.dateTime)
+                        Text(transaction.timestamp.formatted(.dateTime))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
                     }
@@ -780,11 +780,11 @@ struct SplitDetailRow: View {
                     .foregroundColor(.ds.text)
                 
                 if let profile = profiles[split.recipientPubkey] {
-                    Text(profile.displayName ?? PubkeyFormatter.formatShort(split.recipientPubkey)
+                    Text(profile.displayName ?? PubkeyFormatter.formatShort(split.recipientPubkey))
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                 } else {
-                    Text(PubkeyFormatter.formatShort(split.recipientPubkey)
+                    Text(PubkeyFormatter.formatShort(split.recipientPubkey))
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                 }

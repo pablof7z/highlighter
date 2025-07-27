@@ -782,7 +782,7 @@ struct AnimatedCheckmark: View {
             .frame(width: 200, height: 100)
             .morphingCard(isExpanded: true)
         
-        ModernLoadingView()
+        LoadingView()
         
         ModernProgressBar(progress: 0.7)
             .padding(.horizontal, 40)

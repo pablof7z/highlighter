@@ -32,7 +32,7 @@ struct OnboardingView: View {
                         }
                         .font(.ds.bodyMedium)
                         .foregroundColor(.white.opacity(0.8))
-                        .padding()
+                        .padding(DesignSystem.Spacing.screenPadding)
                         .transition(.opacity)
                     }
                 }
@@ -79,7 +79,7 @@ struct OnboardingView: View {
                             }
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, DesignSystem.Spacing.screenPadding)
                     
                     // Action button (hide on auth page)
                     if currentPage < pages.count {
@@ -96,7 +96,7 @@ struct OnboardingView: View {
                         .padding(.horizontal, DesignSystem.Spacing.huge)
                     }
                 }
-                .padding(.bottom, 50)
+                .padding(.bottom, DesignSystem.Spacing.huge + 10)
             }
         }
         .ignoresSafeArea()
@@ -212,7 +212,7 @@ struct OnboardingPageView: View {
                 
                 // Main icon
                 Image(systemName: page.icon)
-                    .font(.system(size: 48, weight: .regular))
+                    .font(DesignSystem.Typography.largeTitle.weight(.regular))
                     .foregroundColor(.white)
             }
             .scaleEffect(isActive ? 1.0 : 0.8)
@@ -223,7 +223,7 @@ struct OnboardingPageView: View {
             VStack(spacing: 24) {
                 // Title
                 Text(page.title)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(DesignSystem.Typography.title.weight(.bold))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
@@ -269,7 +269,7 @@ struct OnboardingPageView: View {
                         )
                     }
                 }
-                .padding(.horizontal, DesignSystem.Spacing.huge * 1.5)
+                .padding(.horizontal, DesignSystem.Spacing.huge + DesignSystem.Spacing.large)
             }
             
             Spacer()
@@ -417,7 +417,7 @@ struct OnboardingAuthView: View {
                     
                     // Key icon
                     Image(systemName: "key.fill")
-                        .font(.system(size: 48, weight: .regular))
+                        .font(DesignSystem.Typography.largeTitle.weight(.regular))
                         .foregroundColor(.white)
                 }
                 .scaleEffect(isActive ? 1.0 : 0.8)
@@ -426,7 +426,7 @@ struct OnboardingAuthView: View {
                 
                 VStack(spacing: 16) {
                     Text("Ready to\nGet Started")
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .font(DesignSystem.Typography.title.weight(.bold))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .opacity(animateContent ? 1 : 0)
@@ -592,21 +592,21 @@ struct OnboardingImportSheet: View {
                         Image(systemName: "key.horizontal.fill")
                             .font(.ds.bodyMedium)
                             .foregroundColor(.white)
-                            .padding()
+                            .padding(DesignSystem.Spacing.screenPadding)
                             .background(
                                 Circle()
                                     .fill(Color.white.opacity(0.15))
                             )
                         
                         Text("Import Your Account")
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .font(DesignSystem.Typography.title.weight(.bold))
                             .foregroundColor(.white)
                         
                         Text("Enter your private key to sign in")
                             .font(.ds.body)
                             .foregroundColor(.white.opacity(0.8))
                     }
-                    .padding(.top, 32)
+                    .padding(.top, DesignSystem.Spacing.xxl)
                     
                     // Input section
                     VStack(alignment: .leading, spacing: 12) {
@@ -616,7 +616,7 @@ struct OnboardingImportSheet: View {
                         
                         SecureField("nsec1...", text: $privateKey)
                             .font(.system(.body, design: .monospaced))
-                            .padding()
+                            .padding(DesignSystem.Spacing.screenPadding)
                             .background(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                                     .fill(Color.white.opacity(0.1))
@@ -679,7 +679,7 @@ struct OnboardingImportSheet: View {
                         .frame(height: 44)
                     }
                     .padding(.horizontal, DesignSystem.Spacing.xl)
-                    .padding(.bottom, 32)
+                    .padding(.bottom, DesignSystem.Spacing.xxl)
                 }
             }
             .preferredColorScheme(.dark)

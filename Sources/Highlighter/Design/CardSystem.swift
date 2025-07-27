@@ -77,8 +77,8 @@ struct CardConfiguration {
     )
 }
 
-// MARK: - Modern Card View Modifier (Consolidated)
-struct ModernCardModifier: ViewModifier {
+// MARK: - Card View Modifier (Consolidated)
+struct CardModifier: ViewModifier {
     let configuration: CardConfiguration
     let isInteractive: Bool
     @State private var isPressed = false
@@ -145,12 +145,12 @@ extension View {
                 shadow: config.shadow
             )
         }
-        return self.modifier(ModernCardModifier(configuration: config, isInteractive: isInteractive))
+        return self.modifier(CardModifier(configuration: config, isInteractive: isInteractive))
     }
     
     /// Apply modern card styling with selection state
     func modernCardSelected(_ isSelected: Bool) -> some View {
-        self.modifier(ModernCardModifier(
+        self.modifier(CardModifier(
             configuration: isSelected ? .selected : .standard,
             isInteractive: true
         ))
@@ -160,12 +160,12 @@ extension View {
     
     /// Apply glass card styling
     func glassCard() -> some View {
-        self.modifier(ModernCardModifier(configuration: .glass))
+        self.modifier(CardModifier(configuration: .glass))
     }
     
     /// Apply compact card styling
     func compactCard() -> some View {
-        self.modifier(ModernCardModifier(configuration: .compact))
+        self.modifier(CardModifier(configuration: .compact))
     }
 }
 

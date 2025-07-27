@@ -584,7 +584,7 @@ extension View {
         self.modifier(LazyRenderModifier(threshold: threshold))
     }
     
-    // modernCard, modernListItem and modernPlaceholder are defined in ModernViewModifiers.swift
+    // Card modifiers, listItem and placeholder are defined in ViewModifiers.swift
 }
 
 // MARK: - Additional View Modifiers for Highlighter
@@ -609,5 +609,5 @@ struct LazyRenderModifier: ViewModifier {
     }
 }
 
-// ModernSectionHeader is already defined in ModernViewModifiers.swift
+// SectionHeader is defined in ViewModifiers.swift
 

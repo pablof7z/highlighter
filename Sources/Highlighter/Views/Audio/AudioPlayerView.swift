@@ -28,13 +28,13 @@ struct AudioPlayerView: View {
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.95).combined(with: .opacity),
                         removal: .scale(scale: 0.95).combined(with: .opacity)
-                    )
+                    ))
             } else {
                 compactPlayer
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.95).combined(with: .opacity),
                         removal: .scale(scale: 0.95).combined(with: .opacity)
-                    )
+                    ))
             }
         }
         .background(playerBackground)
@@ -97,7 +97,7 @@ struct AudioPlayerView: View {
                         .frame(width: 3, height: waveformAnimation[index] * 30)
                         .animation(
                             audioManager.isPlaying ?
-                                .easeInOut(duration: Double.random(in: 0.3...0.6)
+                                .easeInOut(duration: Double.random(in: 0.3...0.6))
                                 .repeatForever(autoreverses: true) :
                                 .easeOut(duration: 0.3),
                             value: waveformAnimation[index]
@@ -128,11 +128,11 @@ struct AudioPlayerView: View {
                 }
             }) {
                 Image(systemName: "arrow.up.left.and.arrow.down.right")
-                    .font(.caption.weight(.bold)
+                    .font(.caption.weight(.bold))
                     .foregroundColor(.orange)
                     .padding(8)
-                    .background(Color.orange.opacity(0.1)
-                    .clipShape(Circle()
+                    .background(Color.orange.opacity(0.1))
+                    .clipShape(Circle())
             }
         }
         .padding(.horizontal, 16)
@@ -143,7 +143,7 @@ struct AudioPlayerView: View {
                 .transition(.asymmetric(
                     insertion: .push(from: .top).combined(with: .opacity),
                     removal: .push(from: .bottom).combined(with: .opacity)
-                )
+                ))
         }
     }
     
@@ -421,7 +421,7 @@ struct AudioPlayerView: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.1)
+                .fill(Color.gray.opacity(0.1))
         )
     }
     
@@ -460,7 +460,7 @@ struct AudioPlayerView: View {
                             .frame(width: 60, height: 60)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(selectedVoice?.identifier == voice.identifier ? Color.orange : Color.orange.opacity(0.1)
+                                    .fill(selectedVoice?.identifier == voice.identifier ? Color.orange : Color.orange.opacity(0.1))
                             )
                         }
                     }
@@ -470,7 +470,7 @@ struct AudioPlayerView: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.1)
+                .fill(Color.gray.opacity(0.1))
         )
     }
     
@@ -538,20 +538,20 @@ struct AudioPlayerView: View {
                         .padding(8)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.orange.opacity(0.1)
+                                .fill(Color.orange.opacity(0.1))
                         )
                     }
                 }
                 .transition(.asymmetric(
                     insertion: .push(from: .top).combined(with: .opacity),
                     removal: .push(from: .bottom).combined(with: .opacity)
-                )
+                ))
             }
         }
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.1)
+                .fill(Color.gray.opacity(0.1))
         )
     }
     
