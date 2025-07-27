@@ -931,47 +931,81 @@ struct RefreshIndicatorView: View {
 
 struct SkeletonHighlightCard: View {
     @State private var shimmerOffset: CGFloat = -200
+    @State private var pulseOpacity: Double = 0.5
     
     var body: some View {
         ZStack {
+            // Elegant base with subtle gradient
             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-                .fill(DesignSystem.Colors.surfaceSecondary)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            DesignSystem.Colors.surfaceSecondary,
+                            DesignSystem.Colors.surfaceSecondary.opacity(0.95)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
+                        .strokeBorder(
+                            DesignSystem.Colors.divider.opacity(0.1),
+                            lineWidth: 1
+                        )
+                )
             
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                // Mock header
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                    .fill(DesignSystem.Colors.textTertiary.opacity(0.2))
-                    .frame(width: 120, height: 16)
-                
-                // Mock content lines
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                        .fill(DesignSystem.Colors.textTertiary.opacity(0.15))
-                        .frame(height: 20)
+                // Elegant header placeholder with varied widths
+                HStack(spacing: DesignSystem.Spacing.small) {
+                    Circle()
+                        .fill(DesignSystem.Colors.textTertiary.opacity(0.12))
+                        .frame(width: 32, height: 32)
                     
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                        .fill(DesignSystem.Colors.textTertiary.opacity(0.15))
-                        .frame(height: 20)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Capsule()
+                            .fill(DesignSystem.Colors.textTertiary.opacity(0.15))
+                            .frame(width: 100, height: 12)
+                        
+                        Capsule()
+                            .fill(DesignSystem.Colors.textTertiary.opacity(0.1))
+                            .frame(width: 60, height: 10)
+                    }
                     
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                        .fill(DesignSystem.Colors.textTertiary.opacity(0.15))
-                        .frame(width: 200, height: 20)
+                    Spacer()
                 }
+                
+                // Content placeholder with natural text flow
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+                    ForEach(0..<3) { index in
+                        Capsule()
+                            .fill(DesignSystem.Colors.textTertiary.opacity(0.12 - Double(index) * 0.02))
+                            .frame(height: 14)
+                            .frame(maxWidth: index == 2 ? 180 : .infinity)
+                    }
+                }
+                .padding(.vertical, DesignSystem.Spacing.small)
                 
                 Spacer()
                 
-                // Mock footer
+                // Elegant footer with interaction hints
                 HStack {
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                        .fill(DesignSystem.Colors.textTertiary.opacity(0.2))
-                        .frame(width: 80, height: 14)
+                    HStack(spacing: 4) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(DesignSystem.Colors.textTertiary.opacity(0.1))
+                            .frame(width: 16, height: 16)
+                        
+                        Capsule()
+                            .fill(DesignSystem.Colors.textTertiary.opacity(0.08))
+                            .frame(width: 40, height: 12)
+                    }
                     
                     Spacer()
                     
                     HStack(spacing: DesignSystem.Spacing.small) {
-                        ForEach(0..<3, id: \.self) { _ in
-                            Circle()
-                                .fill(DesignSystem.Colors.textTertiary.opacity(0.2))
+                        ForEach(0..<3, id: \.self) { index in
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(DesignSystem.Colors.textTertiary.opacity(0.1 - Double(index) * 0.02))
                                 .frame(width: 24, height: 24)
                         }
                     }
@@ -979,28 +1013,40 @@ struct SkeletonHighlightCard: View {
             }
             .padding(DesignSystem.Spacing.xl)
             
-            // Shimmer effect
+            // Subtle, elegant shimmer effect
             LinearGradient(
                 colors: [
                     Color.clear,
-                    Color.white.opacity(0.3),
+                    DesignSystem.Colors.primary.opacity(0.05),
+                    DesignSystem.Colors.secondary.opacity(0.05),
                     Color.clear
                 ],
                 startPoint: .leading,
                 endPoint: .trailing
             )
-            .frame(width: 100)
+            .frame(width: 150)
             .offset(x: shimmerOffset)
+            .blur(radius: 8)
             .mask(
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
             )
         }
+        .opacity(pulseOpacity)
         .onAppear {
+            // Elegant shimmer animation
             withAnimation(
-                .linear(duration: 1.5)
+                .easeInOut(duration: 2.5)
                 .repeatForever(autoreverses: false)
             ) {
-                shimmerOffset = 300
+                shimmerOffset = 400
+            }
+            
+            // Subtle pulse for organic feel
+            withAnimation(
+                .easeInOut(duration: 2)
+                .repeatForever(autoreverses: true)
+            ) {
+                pulseOpacity = 0.8
             }
         }
     }

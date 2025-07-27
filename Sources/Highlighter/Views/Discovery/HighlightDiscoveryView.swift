@@ -62,7 +62,7 @@ struct DiscoveryHighlightCard: View {
         VStack(alignment: .leading, spacing: 12) {
             // Highlight content with quote styling
             Text(highlight.content)
-                .font(.ds.highlighterQuote)
+                .font(DesignSystem.Typography.highlighterQuote)
                 .foregroundColor(.ds.text)
                 .lineLimit(6)
                 .multilineTextAlignment(.leading)

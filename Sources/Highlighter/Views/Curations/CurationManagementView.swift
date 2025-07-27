@@ -100,9 +100,9 @@ struct CurationManagementView: View {
                 // Background gradient
                 LinearGradient(
                     colors: [
-                        Color.highlighterBackground,
-                        Color.highlighterPurple.opacity(0.03),
-                        Color.highlighterOrange.opacity(0.02)
+                        DesignSystem.Colors.background,
+                        DesignSystem.Colors.primary.opacity(0.03),
+                        DesignSystem.Colors.secondary.opacity(0.02)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -116,7 +116,7 @@ struct CurationManagementView: View {
                         HStack(spacing: 12) {
                             HStack {
                                 Image(systemName: "magnifyingglass")
-                                    .foregroundColor(.highlighterSecondaryText)
+                                    .foregroundColor(DesignSystem.Colors.textSecondary)
                                     .font(.system(size: 16))
                                 
                                 TextField("Search curations...", text: $searchText)
@@ -125,7 +125,7 @@ struct CurationManagementView: View {
                                 if !searchText.isEmpty {
                                     Button(action: { searchText = "" }) {
                                         Image(systemName: "xmark.circle.fill")
-                                            .foregroundColor(.highlighterSecondaryText)
+                                            .foregroundColor(DesignSystem.Colors.textSecondary)
                                             .transition(.scale.combined(with: .opacity))
                                     }
                                 }
@@ -154,7 +154,7 @@ struct CurationManagementView: View {
                             } label: {
                                 Image(systemName: "arrow.up.arrow.down.circle.fill")
                                     .font(.title2)
-                                    .foregroundColor(.highlighterPurple)
+                                    .foregroundColor(DesignSystem.Colors.primary)
                                     .symbolEffect(.bounce, value: sortOption)
                             }
                         }
@@ -174,11 +174,11 @@ struct CurationManagementView: View {
                                     VStack(spacing: 4) {
                                         Image(systemName: mode.rawValue)
                                             .font(.system(size: 20))
-                                            .foregroundColor(viewMode == mode ? .white : .highlighterSecondaryText)
+                                            .foregroundColor(viewMode == mode ? .white : DesignSystem.Colors.textSecondary)
                                         
                                         Text(mode.title)
                                             .font(.caption2)
-                                            .foregroundColor(viewMode == mode ? .white : .highlighterSecondaryText)
+                                            .foregroundColor(viewMode == mode ? .white : DesignSystem.Colors.textSecondary)
                                     }
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 8)
@@ -186,7 +186,7 @@ struct CurationManagementView: View {
                                         ZStack {
                                             if viewMode == mode {
                                                 RoundedRectangle(cornerRadius: 10)
-                                                    .fill(Color.highlighterPurple)
+                                                    .fill(DesignSystem.Colors.primary)
                                                     .matchedGeometryEffect(id: "viewMode", in: animation)
                                             }
                                         }
@@ -271,7 +271,7 @@ struct CurationManagementView: View {
                         HapticManager.shared.impact(.light)
                         dismiss()
                     }
-                    .foregroundColor(.highlighterPurple)
+                    .foregroundColor(DesignSystem.Colors.primary)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -287,14 +287,14 @@ struct CurationManagementView: View {
                                 HapticManager.shared.impact(.light)
                             }) {
                                 Text(isEditMode ? "Done" : "Edit")
-                                    .foregroundColor(.highlighterPurple)
+                                    .foregroundColor(DesignSystem.Colors.primary)
                             }
                         }
                         
                         Button(action: { showCreateCuration = true }) {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title2)
-                                .foregroundColor(.highlighterPurple)
+                                .foregroundColor(DesignSystem.Colors.primary)
                                 .symbolEffect(.bounce, value: showCreateCuration)
                         }
                     }
@@ -683,7 +683,7 @@ struct CarouselView: View {
                     HStack(spacing: 8) {
                         ForEach(0..<curations.count, id: \.self) { index in
                             Circle()
-                                .fill(index == currentIndex ? Color.highlighterPurple : Color.gray.opacity(0.3))
+                                .fill(index == currentIndex ? DesignSystem.Colors.primary : Color.gray.opacity(0.3))
                                 .frame(width: 8, height: 8)
                                 .scaleEffect(index == currentIndex ? 1.2 : 1)
                                 .animation(DesignSystem.Animation.springSnappy, value: currentIndex)
@@ -762,7 +762,7 @@ struct CurationGridItem: View {
                     RoundedRectangle(cornerRadius: 0)
                         .fill(
                             LinearGradient(
-                                colors: [.highlighterPurple, .highlighterPurple.opacity(0.7)],
+                                colors: [DesignSystem.Colors.primary, DesignSystem.Colors.primary.opacity(0.7)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -790,8 +790,8 @@ struct CurationGridItem: View {
                 // Drop indicator
                 if isHovered {
                     RoundedRectangle(cornerRadius: 0)
-                        .stroke(Color.highlighterPurple, lineWidth: 3)
-                        .background(Color.highlighterPurple.opacity(0.1))
+                        .stroke(DesignSystem.Colors.primary, lineWidth: 3)
+                        .background(DesignSystem.Colors.primary.opacity(0.1))
                         .scaleEffect(animateHover ? 1.05 : 1)
                 }
             }
@@ -800,19 +800,19 @@ struct CurationGridItem: View {
             // Content section
             VStack(alignment: .leading, spacing: 6) {
                 Text(curation.title)
-                    .font(.highlighterBody.weight(.medium))
+                    .font(DesignSystem.Typography.body.weight(.medium))
                     .lineLimit(1)
                 
                 HStack {
                     Label("\(curation.articles.count)", systemImage: "doc.text")
-                        .font(.highlighterCaption)
-                        .foregroundColor(.highlighterSecondaryText)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                     
                     Spacer()
                     
                     Text(RelativeTimeFormatter.relativeTime(from: curation.updatedAt))
                         .font(.ds.caption)
-                        .foregroundColor(.highlighterSecondaryText)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
             }
             .padding(.horizontal, 12)
@@ -844,7 +844,7 @@ struct CurationListRow: View {
             if isEditMode {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundColor(isSelected ? .highlighterPurple : .gray)
+                    .foregroundColor(isSelected ? DesignSystem.Colors.primary : .gray)
                     .animation(DesignSystem.Animation.springSnappy, value: isSelected)
             }
             
@@ -863,7 +863,7 @@ struct CurationListRow: View {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(
                         LinearGradient(
-                            colors: [.highlighterPurple, .highlighterPurple.opacity(0.7)],
+                            colors: [DesignSystem.Colors.primary, DesignSystem.Colors.primary.opacity(0.7)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -878,24 +878,24 @@ struct CurationListRow: View {
             // Content
             VStack(alignment: .leading, spacing: 4) {
                 Text(curation.title)
-                    .font(.highlighterBody.weight(.medium))
+                    .font(DesignSystem.Typography.body.weight(.medium))
                     .lineLimit(1)
                 
                 if let description = curation.description {
                     Text(description)
-                        .font(.highlighterCaption)
-                        .foregroundColor(.highlighterSecondaryText)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                         .lineLimit(2)
                 }
                 
                 HStack(spacing: 12) {
                     Label("\(curation.articles.count) articles", systemImage: "doc.text")
                         .font(.ds.caption)
-                        .foregroundColor(.highlighterSecondaryText)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                     
                     Text(RelativeTimeFormatter.relativeTime(from: curation.updatedAt))
                         .font(.ds.caption)
-                        .foregroundColor(.highlighterSecondaryText)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
             }
             
@@ -904,7 +904,7 @@ struct CurationListRow: View {
             if !isEditMode {
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundColor(.highlighterSecondaryText)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
             }
         }
         .padding()
@@ -913,7 +913,7 @@ struct CurationListRow: View {
                 .fill(DesignSystem.Colors.surface)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(isHovered ? Color.highlighterPurple : Color.clear, lineWidth: 2)
+                        .stroke(isHovered ? DesignSystem.Colors.primary : Color.clear, lineWidth: 2)
                 )
         )
         .scaleEffect(isHovered ? 1.02 : 1)
@@ -944,7 +944,7 @@ struct CurationManagementCarouselCard: View {
             } else {
                 ZStack {
                     LinearGradient(
-                        colors: [.highlighterPurple, .highlighterOrange],
+                        colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -965,8 +965,8 @@ struct CurationManagementCarouselCard: View {
                 
                 if let description = curation.description {
                     Text(description)
-                        .font(.highlighterBody)
-                        .foregroundColor(.highlighterSecondaryText)
+                        .font(DesignSystem.Typography.body)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                         .lineLimit(3)
                 }
                 
@@ -974,14 +974,14 @@ struct CurationManagementCarouselCard: View {
                 
                 HStack {
                     Label("\(curation.articles.count) articles", systemImage: "doc.text")
-                        .font(.highlighterCaption)
-                        .foregroundColor(.highlighterSecondaryText)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                     
                     Spacer()
                     
                     Text(RelativeTimeFormatter.relativeTime(from: curation.updatedAt))
-                        .font(.highlighterCaption)
-                        .foregroundColor(.highlighterSecondaryText)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
             }
             .padding(20)
@@ -1035,7 +1035,7 @@ struct EmptyStateView: View {
         VStack(spacing: 20) {
             Image(systemName: searchText.isEmpty ? "folder.badge.plus" : "magnifyingglass")
                 .font(.system(size: 60))
-                .foregroundColor(.highlighterPurple.opacity(0.5))
+                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
                 .scaleEffect(animateIcon ? 1.1 : 1)
                 .onAppear {
                     withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
@@ -1046,13 +1046,13 @@ struct EmptyStateView: View {
             Text(searchText.isEmpty ? "No curations yet" : "No results found")
                 .font(.ds.title3)
                 .fontWeight(.medium)
-                .foregroundColor(.highlighterText)
+                .foregroundColor(DesignSystem.Colors.text)
             
             Text(searchText.isEmpty ? 
                  "Create your first curation to organize articles" : 
                  "Try adjusting your search terms")
-                .font(.highlighterBody)
-                .foregroundColor(.highlighterSecondaryText)
+                .font(DesignSystem.Typography.body)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .padding(40)

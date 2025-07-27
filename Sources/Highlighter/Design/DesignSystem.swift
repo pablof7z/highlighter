@@ -189,29 +189,10 @@ extension Color {
 // MARK: - Convenience extensions
 extension Color {
     static let ds = DesignSystem.Colors.self
-    
-    // Legacy color names for backward compatibility
-    static let highlighterPurple = DesignSystem.Colors.primary
-    static let highlighterOrange = DesignSystem.Colors.secondary
-    static let highlighterBackground = DesignSystem.Colors.background
-    static let highlighterCardBackground = DesignSystem.Colors.surface
-    static let highlighterText = DesignSystem.Colors.text
-    static let highlighterSecondaryText = DesignSystem.Colors.textSecondary
-    static let highlighterDivider = DesignSystem.Colors.divider
 }
 
 extension Font {
     static let ds = DesignSystem.Typography.self
-    
-    // Legacy font names for backward compatibility
-    static let highlighterTitle = DesignSystem.Typography.title
-    static let highlighterTitle2 = DesignSystem.Typography.title2
-    static let highlighterTitle3 = DesignSystem.Typography.title3
-    static let highlighterHeadline = DesignSystem.Typography.headline
-    static let highlighterBody = DesignSystem.Typography.body
-    static let highlighterCaption = DesignSystem.Typography.caption
-    static let highlighterQuote = DesignSystem.Typography.highlighterQuote
-    static let highlighterMicro = DesignSystem.Typography.micro
 }
 
 extension CGFloat {

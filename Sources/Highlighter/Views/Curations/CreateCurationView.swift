@@ -24,7 +24,7 @@ struct CreateCurationView: View {
     @State private var animateForm = false
     @State private var pulseAnimation = false
     @State private var particleAnimation = false
-    @State private var selectedColor = Color.highlighterPurple
+    @State private var selectedColor = DesignSystem.Colors.primary
     @State private var showColorPicker = false
     @State private var nameFieldFocused = false
     @State private var titleFieldFocused = false
@@ -32,7 +32,7 @@ struct CreateCurationView: View {
     @Namespace private var animation
     
     let gradientColors: [[Color]] = [
-        [Color.highlighterPurple, Color.highlighterOrange],
+        [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
         [Color.blue, Color.purple],
         [Color.pink, Color.orange],
         [Color.green, Color.blue],
@@ -109,7 +109,7 @@ struct CreateCurationView: View {
                             .symbolEffect(.bounce, value: selectedImageData != nil)
                         
                         Text(selectedImageData == nil ? "Add Cover Image" : "Change Image")
-                            .font(.highlighterBody.weight(.medium))
+                            .font(DesignSystem.Typography.body.weight(.medium))
                     }
                     .foregroundColor(.white)
                     .padding(.horizontal, DesignSystem.Spacing.large)
@@ -138,7 +138,7 @@ struct CreateCurationView: View {
                     ForEach(0..<gradientColors.count, id: \.self) { index in
                         Button(action: {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                selectedColor = gradientColors[index].first ?? .highlighterPurple
+                                selectedColor = gradientColors[index].first ?? DesignSystem.Colors.primary
                             }
                             HapticManager.shared.impact(.light)
                         }) {
@@ -193,15 +193,15 @@ struct CreateCurationView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Curation ID", systemImage: "number.square.fill")
-                    .font(.highlighterCaption.weight(.medium))
-                    .foregroundColor(nameFieldFocused ? .highlighterPurple : .highlighterSecondaryText)
+                    .font(DesignSystem.Typography.caption.weight(.medium))
+                    .foregroundColor(nameFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
                 
                 Spacer()
                 
                 if !curationName.isEmpty {
                     Text("\(curationName.count)/50")
                         .font(.ds.footnote)
-                        .foregroundColor(curationName.count > 50 ? .red : .highlighterSecondaryText)
+                        .foregroundColor(curationName.count > 50 ? .red : DesignSystem.Colors.textSecondary)
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: nameFieldFocused)
@@ -221,7 +221,7 @@ struct CreateCurationView: View {
                 if !curationName.isEmpty {
                     Button(action: { curationName = "" }) {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.highlighterSecondaryText)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
                             .transition(.scale.combined(with: .opacity))
                     }
                 }
@@ -229,11 +229,11 @@ struct CreateCurationView: View {
             .padding(DesignSystem.Spacing.base + DesignSystem.Spacing.nano)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.highlighterCardBackground)
+                    .fill(DesignSystem.Colors.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(
-                                nameFieldFocused ? Color.highlighterPurple : Color.gray.opacity(0.2),
+                                nameFieldFocused ? DesignSystem.Colors.primary : Color.gray.opacity(0.2),
                                 lineWidth: nameFieldFocused ? 2 : 1
                             )
                     )
@@ -249,15 +249,15 @@ struct CreateCurationView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Title", systemImage: "textformat.alt")
-                    .font(.highlighterCaption.weight(.medium))
-                    .foregroundColor(titleFieldFocused ? .highlighterPurple : .highlighterSecondaryText)
+                    .font(DesignSystem.Typography.caption.weight(.medium))
+                    .foregroundColor(titleFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
                 
                 Spacer()
                 
                 if !curationTitle.isEmpty {
                     Text("\(curationTitle.count)/100")
                         .font(.ds.footnote)
-                        .foregroundColor(curationTitle.count > 100 ? .red : .highlighterSecondaryText)
+                        .foregroundColor(curationTitle.count > 100 ? .red : DesignSystem.Colors.textSecondary)
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: titleFieldFocused)
@@ -275,7 +275,7 @@ struct CreateCurationView: View {
                 if !curationTitle.isEmpty {
                     Button(action: { curationTitle = "" }) {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.highlighterSecondaryText)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
                             .transition(.scale.combined(with: .opacity))
                     }
                 }
@@ -283,11 +283,11 @@ struct CreateCurationView: View {
             .padding(DesignSystem.Spacing.base + DesignSystem.Spacing.nano)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.highlighterCardBackground)
+                    .fill(DesignSystem.Colors.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(
-                                titleFieldFocused ? Color.highlighterPurple : Color.gray.opacity(0.2),
+                                titleFieldFocused ? DesignSystem.Colors.primary : Color.gray.opacity(0.2),
                                 lineWidth: titleFieldFocused ? 2 : 1
                             )
                     )
@@ -303,14 +303,14 @@ struct CreateCurationView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Description", systemImage: "text.quote")
-                    .font(.highlighterCaption.weight(.medium))
-                    .foregroundColor(descriptionFieldFocused ? .highlighterPurple : .highlighterSecondaryText)
+                    .font(DesignSystem.Typography.caption.weight(.medium))
+                    .foregroundColor(descriptionFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
                 
                 Spacer()
                 
                 Text("Optional")
                     .font(.ds.footnote)
-                    .foregroundColor(.highlighterSecondaryText)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
             }
             .animation(.easeInOut(duration: 0.2), value: descriptionFieldFocused)
             
@@ -323,7 +323,7 @@ struct CreateCurationView: View {
                 }
                 
                 TextEditor(text: $description)
-                    .font(.highlighterBody)
+                    .font(DesignSystem.Typography.body)
                     .scrollContentBackground(.hidden)
                     .background(Color.clear)
                     .onTapGesture { descriptionFieldFocused = true }
@@ -332,11 +332,11 @@ struct CreateCurationView: View {
             .frame(minHeight: 120)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.highlighterCardBackground)
+                    .fill(DesignSystem.Colors.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(
-                                descriptionFieldFocused ? Color.highlighterPurple : Color.gray.opacity(0.2),
+                                descriptionFieldFocused ? DesignSystem.Colors.primary : Color.gray.opacity(0.2),
                                 lineWidth: descriptionFieldFocused ? 2 : 1
                             )
                     )
@@ -351,8 +351,8 @@ struct CreateCurationView: View {
     private var imageUrlField: some View {
         VStack(alignment: .leading, spacing: 10) {
             Label("Or use image URL", systemImage: "link.circle.fill")
-                .font(.highlighterCaption.weight(.medium))
-                .foregroundColor(.highlighterSecondaryText)
+                .font(DesignSystem.Typography.caption.weight(.medium))
+                .foregroundColor(DesignSystem.Colors.textSecondary)
             
             TextField("https://...", text: $imageUrl)
                 .textFieldStyle(.plain)
@@ -361,7 +361,7 @@ struct CreateCurationView: View {
                 .padding(DesignSystem.Spacing.base + DesignSystem.Spacing.nano)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.highlighterCardBackground)
+                        .fill(DesignSystem.Colors.surface)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(Color.gray.opacity(0.2), lineWidth: 1)
@@ -381,7 +381,7 @@ struct CreateCurationView: View {
                     Circle()
                         .fill(
                             LinearGradient(
-                                colors: [.highlighterPurple, .highlighterPurple.opacity(0.7)],
+                                colors: [DesignSystem.Colors.primary, DesignSystem.Colors.primary.opacity(0.7)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -396,12 +396,12 @@ struct CreateCurationView: View {
                 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("What are Article Curations?")
-                        .font(.highlighterBody.weight(.semibold))
-                        .foregroundColor(.highlighterText)
+                        .font(DesignSystem.Typography.body.weight(.semibold))
+                        .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("Create themed collections of articles, highlights, and content. Perfect for organizing your reading lists, research topics, or sharing knowledge with others.")
-                        .font(.highlighterCaption)
-                        .foregroundColor(.highlighterSecondaryText)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 
@@ -410,8 +410,8 @@ struct CreateCurationView: View {
             
             // Feature highlights
             HStack(spacing: 16) {
-                FeatureBadge(icon: "folder.fill", text: "Organize", color: .highlighterPurple)
-                FeatureBadge(icon: "square.and.arrow.up", text: "Share", color: .highlighterOrange)
+                FeatureBadge(icon: "folder.fill", text: "Organize", color: DesignSystem.Colors.primary)
+                FeatureBadge(icon: "square.and.arrow.up", text: "Share", color: DesignSystem.Colors.secondary)
                 FeatureBadge(icon: "sparkles", text: "Discover", color: .blue)
             }
         }
@@ -423,7 +423,7 @@ struct CreateCurationView: View {
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(
                             LinearGradient(
-                                colors: [.highlighterPurple.opacity(0.3), .highlighterOrange.opacity(0.3)],
+                                colors: [DesignSystem.Colors.primary.opacity(0.3), DesignSystem.Colors.secondary.opacity(0.3)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
@@ -447,7 +447,7 @@ struct CreateCurationView: View {
                         .fill(
                             LinearGradient(
                                 colors: isFormValid ? 
-                                    [.highlighterPurple, .highlighterPurple.opacity(0.8)] :
+                                    [DesignSystem.Colors.primary, DesignSystem.Colors.primary.opacity(0.8)] :
                                     [.gray.opacity(0.3), .gray.opacity(0.2)],
                                 startPoint: .leading,
                                 endPoint: .trailing
@@ -492,7 +492,7 @@ struct CreateCurationView: View {
                             .symbolEffect(.bounce, value: isFormValid)
                         
                         Text("Create Curation")
-                            .font(.highlighterBody.weight(.semibold))
+                            .font(DesignSystem.Typography.body.weight(.semibold))
                     }
                     .foregroundColor(.white)
                 }
@@ -503,8 +503,8 @@ struct CreateCurationView: View {
             }
             
             Text("You can add articles and highlights after creating")
-                .font(.highlighterCaption)
-                .foregroundColor(.highlighterSecondaryText)
+                .font(DesignSystem.Typography.caption)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
         }
         .padding(.horizontal)
         .padding(.bottom, 32)
@@ -558,7 +558,7 @@ struct CreateCurationView: View {
                     }
                 }
             }
-            .background(Color.highlighterBackground.ignoresSafeArea())
+            .background(DesignSystem.Colors.background.ignoresSafeArea())
             .navigationTitle("New Curation")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -567,7 +567,7 @@ struct CreateCurationView: View {
                         HapticManager.shared.impact(.light)
                         dismiss()
                     }
-                    .foregroundColor(.highlighterPurple)
+                    .foregroundColor(DesignSystem.Colors.primary)
                 }
             }
             .photosPicker(
@@ -661,7 +661,7 @@ struct ProgressIndicatorView: View {
         HStack(spacing: 8) {
             ForEach(0..<totalSteps, id: \.self) { step in
                 Capsule()
-                    .fill(step <= currentStep ? Color.highlighterPurple : Color.gray.opacity(0.3))
+                    .fill(step <= currentStep ? DesignSystem.Colors.primary : Color.gray.opacity(0.3))
                     .frame(height: 4)
                     .animation(.spring(response: 0.4, dampingFraction: 0.8), value: currentStep)
             }
@@ -691,7 +691,7 @@ struct FeatureBadge: View {
             
             Text(text)
                 .font(.ds.footnote)
-                .foregroundColor(.highlighterSecondaryText)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
@@ -710,9 +710,9 @@ struct AnimatedBackgroundView: View {
             // Base gradient
             LinearGradient(
                 colors: [
-                    Color.highlighterBackground,
-                    Color.highlighterPurple.opacity(0.05),
-                    Color.highlighterOrange.opacity(0.03)
+                    DesignSystem.Colors.background,
+                    DesignSystem.Colors.primary.opacity(0.05),
+                    DesignSystem.Colors.secondary.opacity(0.03)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -721,9 +721,9 @@ struct AnimatedBackgroundView: View {
             // Animated gradient overlay
             LinearGradient(
                 colors: [
-                    Color.highlighterPurple.opacity(0.03),
+                    DesignSystem.Colors.primary.opacity(0.03),
                     Color.clear,
-                    Color.highlighterOrange.opacity(0.03)
+                    DesignSystem.Colors.secondary.opacity(0.03)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing

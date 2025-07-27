@@ -347,7 +347,7 @@ struct EmptyArticlesView: View {
         VStack(spacing: 16) {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 48))
-                .foregroundColor(.highlighterPurple.opacity(0.5))
+                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
             
             Text("No articles yet")
                 .font(DesignSystem.Typography.body)
