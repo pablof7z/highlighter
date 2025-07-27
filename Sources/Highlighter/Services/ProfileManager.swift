@@ -111,6 +111,17 @@ class ProfileManager: ObservableObject {
         return cachedProfiles[pubkey] != nil
     }
     
+    /// Invalidate cache for a specific user (useful after profile updates)
+    func invalidateCacheForUser(_ pubkey: String) {
+        cachedProfiles.removeValue(forKey: pubkey)
+        // If this is the current user, clear their profile immediately
+        if currentUserProfile != nil {
+            // Simply clear if any profile is being invalidated
+            // The profile will be reloaded when needed
+            currentUserProfile = nil
+        }
+    }
+    
     // MARK: - Cleanup
     deinit {
         // Tasks will be automatically cancelled when the instance is deallocated

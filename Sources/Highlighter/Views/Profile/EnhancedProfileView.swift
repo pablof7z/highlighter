@@ -542,13 +542,71 @@ struct EnhancedProfileView: View {
     }
     
     private func saveProfile() {
-        // Save profile implementation
         Task {
-            // Update profile metadata
-            guard appState.ndk != nil, appState.activeSigner != nil else { return }
+            guard let ndk = appState.ndk, let signer = appState.activeSigner else { return }
             
-            // Create metadata event (kind 0)
-            // Implementation would go here
+            do {
+                // Create profile metadata
+                var metadata: [String: String] = [:]
+                
+                if !editedProfile.displayName.isEmpty {
+                    metadata["display_name"] = editedProfile.displayName
+                    metadata["name"] = editedProfile.displayName
+                }
+                
+                if !editedProfile.about.isEmpty {
+                    metadata["about"] = editedProfile.about
+                }
+                
+                if !editedProfile.picture.isEmpty {
+                    metadata["picture"] = editedProfile.picture
+                }
+                
+                if !editedProfile.banner.isEmpty {
+                    metadata["banner"] = editedProfile.banner
+                }
+                
+                if !editedProfile.website.isEmpty {
+                    metadata["website"] = editedProfile.website
+                }
+                
+                if !editedProfile.nip05.isEmpty {
+                    metadata["nip05"] = editedProfile.nip05
+                }
+                
+                if !editedProfile.lud16.isEmpty {
+                    metadata["lud16"] = editedProfile.lud16
+                }
+                
+                // Create and publish metadata event (kind 0)
+                let metadataJSON = try JSONSerialization.data(withJSONObject: metadata, options: [])
+                guard let metadataString = String(data: metadataJSON, encoding: .utf8) else { return }
+                
+                // Build and publish event
+                let event = try await NDKEventBuilder(ndk: ndk)
+                    .kind(0) // Metadata event
+                    .content(metadataString)
+                    .tags([])
+                    .build(signer: signer)
+                
+                _ = try await ndk.publish(event)
+                
+                // Update local profile
+                let pubkey = try await signer.pubkey
+                await MainActor.run {
+                    appState.profileManager.invalidateCacheForUser(pubkey)
+                    Task {
+                        await appState.profileManager.loadCurrentUserProfile(for: signer)
+                    }
+                    HapticManager.shared.notification(.success)
+                }
+                
+            } catch {
+                await MainActor.run {
+                    appState.errorMessage = "Failed to save profile: \(error.localizedDescription)"
+                    HapticManager.shared.notification(.error)
+                }
+            }
         }
     }
 }
@@ -600,7 +658,7 @@ struct AnimatedStatCard: View {
                 displayValue = value
             }
         }
-        .onChange(of: value) { newValue in
+        .onChange(of: value) { oldValue, newValue in
             withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
                 displayValue = newValue
             }
@@ -686,12 +744,125 @@ struct CurationsTabView: View {
 }
 
 struct ActivityTabView: View {
+    @EnvironmentObject var appState: AppState
+    @State private var recentZaps: [(event: NDKEvent, amount: Int)] = []
+    @State private var recentReactions: [NDKEvent] = []
+    @State private var isLoading = true
+    
     var body: some View {
-        VStack(spacing: .ds.large) {
-            ActivityEmptyStateView()
-            .padding(.top, 40)
+        ScrollView {
+            VStack(spacing: .ds.large) {
+                if isLoading {
+                    // Loading state
+                    ForEach(0..<3, id: \.self) { _ in
+                        ActivityCardSkeleton()
+                    }
+                } else if recentZaps.isEmpty && recentReactions.isEmpty {
+                    ActivityEmptyStateView()
+                        .padding(.top, 40)
+                } else {
+                    // Recent Zaps Section
+                    if !recentZaps.isEmpty {
+                        VStack(alignment: .leading, spacing: .ds.medium) {
+                            Label("Recent Zaps", systemImage: "bolt.fill")
+                                .font(.ds.title3)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.ds.text)
+                            
+                            ForEach(recentZaps.prefix(10), id: \.event.id) { zap in
+                                ZapActivityCard(event: zap.event, amount: zap.amount)
+                                    .premiumEntrance()
+                            }
+                        }
+                    }
+                    
+                    // Recent Reactions Section
+                    if !recentReactions.isEmpty {
+                        VStack(alignment: .leading, spacing: .ds.medium) {
+                            Label("Recent Reactions", systemImage: "heart.fill")
+                                .font(.ds.title3)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.ds.text)
+                            
+                            ForEach(recentReactions.prefix(10), id: \.id) { reaction in
+                                ReactionActivityCard(event: reaction)
+                                    .premiumEntrance()
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, .ds.screenPadding)
         }
-        .padding(.horizontal, .ds.screenPadding)
+        .task {
+            await loadActivity()
+        }
+    }
+    
+    private func loadActivity() async {
+        guard let ndk = appState.ndk, let signer = appState.activeSigner else { return }
+        
+        isLoading = true
+        
+        do {
+            let pubkey = try await signer.pubkey
+            
+            // Load zaps (kind 9735)
+            let zapFilter = NDKFilter(
+                kinds: [9735],
+                limit: 50,
+                tags: ["p": [pubkey]]
+            )
+            
+            // Load reactions (kind 7) 
+            let reactionFilter = NDKFilter(
+                kinds: [7],
+                limit: 50,
+                tags: ["p": [pubkey]]
+            )
+            
+            // Fetch data in parallel
+            async let zapData = fetchEvents(filter: zapFilter, ndk: ndk)
+            async let reactionData = fetchEvents(filter: reactionFilter, ndk: ndk)
+            
+            let (zaps, reactions) = await (zapData, reactionData)
+            
+            await MainActor.run {
+                // Parse zap amounts from events
+                recentZaps = zaps.compactMap { event in
+                    // Extract amount from zap receipt
+                    if let amountTag = event.tags.first(where: { $0.first == "amount" }),
+                       amountTag.count > 1,
+                       let amount = Int(amountTag[1]) {
+                        return (event: event, amount: amount / 1000) // Convert millisats to sats
+                    }
+                    return nil
+                }.sorted { $0.event.createdAt > $1.event.createdAt }
+                
+                recentReactions = reactions.sorted { $0.createdAt > $1.createdAt }
+                isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                isLoading = false
+            }
+        }
+    }
+    
+    private func fetchEvents(filter: NDKFilter, ndk: NDK) async -> [NDKEvent] {
+        let dataSource = await ndk.outbox.observe(
+            filter: filter,
+            maxAge: 300,
+            cachePolicy: .cacheWithNetwork
+        )
+        
+        var events: [NDKEvent] = []
+        for await event in dataSource.events {
+            events.append(event)
+            if events.count >= filter.limit ?? 50 { break }
+        }
+        
+        return events
     }
 }
 
@@ -862,6 +1033,195 @@ struct ScaleButtonStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .animation(.spring(response: 0.2, dampingFraction: 0.8), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Activity Cards
+
+struct ZapActivityCard: View {
+    let event: NDKEvent
+    let amount: Int
+    @State private var lightningAnimation = false
+    
+    var body: some View {
+        HStack(spacing: .ds.medium) {
+            // Lightning icon
+            ZStack {
+                Circle()
+                    .fill(Color.yellow.opacity(0.2))
+                    .frame(width: 44, height: 44)
+                    .blur(radius: lightningAnimation ? 8 : 4)
+                
+                Image(systemName: "bolt.fill")
+                    .font(.system(size: 20))
+                    .foregroundColor(.yellow)
+                    .scaleEffect(lightningAnimation ? 1.1 : 1)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text("⚡️ \(amount) sats")
+                        .font(.ds.bodyMedium)
+                        .foregroundColor(.ds.text)
+                    
+                    Spacer()
+                    
+                    Text(RelativeTimeFormatter.relativeTime(from: event.createdAt))
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textTertiary)
+                }
+                
+                HStack(spacing: 4) {
+                    Text("from")
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textSecondary)
+                    
+                    Text(PubkeyFormatter.formatCompact(event.pubkey))
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.primary)
+                }
+                
+                if !event.content.isEmpty {
+                    Text(event.content)
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textSecondary)
+                        .lineLimit(2)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                .fill(Color.yellow.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                        .stroke(Color.yellow.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                lightningAnimation = true
+            }
+        }
+    }
+}
+
+struct ReactionActivityCard: View {
+    let event: NDKEvent
+    @State private var heartScale: CGFloat = 1
+    
+    var reactionContent: String {
+        event.content.isEmpty ? "❤️" : event.content
+    }
+    
+    var body: some View {
+        HStack(spacing: .ds.medium) {
+            // Reaction icon
+            Text(reactionContent)
+                .font(.system(size: 32))
+                .scaleEffect(heartScale)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text("Reaction on your content")
+                        .font(.ds.bodyMedium)
+                        .foregroundColor(.ds.text)
+                    
+                    Spacer()
+                    
+                    Text(RelativeTimeFormatter.relativeTime(from: event.createdAt))
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textTertiary)
+                }
+                
+                HStack(spacing: 4) {
+                    Text("from")
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textSecondary)
+                    
+                    Text(PubkeyFormatter.formatCompact(event.pubkey))
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.primary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                .fill(Color.pink.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                        .stroke(Color.pink.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .onAppear {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) {
+                heartScale = 1.2
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) {
+                    heartScale = 1
+                }
+            }
+        }
+    }
+}
+
+struct ActivityCardSkeleton: View {
+    @State private var shimmerOffset: CGFloat = -200
+    
+    var body: some View {
+        HStack(spacing: .ds.medium) {
+            // Icon skeleton
+            Circle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(width: 44, height: 44)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                // Title skeleton
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 180, height: 16)
+                
+                // Subtitle skeleton
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 120, height: 12)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(.ds.medium)
+        .overlay(
+            GeometryReader { geometry in
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(0),
+                        Color.white.opacity(0.3),
+                        Color.white.opacity(0)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .frame(width: 100)
+                .offset(x: shimmerOffset)
+                .onAppear {
+                    withAnimation(
+                        .linear(duration: 1.5)
+                        .repeatForever(autoreverses: false)
+                    ) {
+                        shimmerOffset = geometry.size.width + 100
+                    }
+                }
+            }
+            .mask(
+                RoundedRectangle(cornerRadius: .ds.medium)
+            )
+        )
     }
 }
 

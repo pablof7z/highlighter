@@ -180,6 +180,52 @@ struct CreateHighlightView: View {
                     placeholder: "Author (optional)",
                     text: $sourceAuthor
                 )
+                
+                ModernTextField(
+                    icon: "link",
+                    placeholder: "Source URL (optional)",
+                    text: $sourceURL
+                )
+            }
+            
+            // Additional fields
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Context (optional)", systemImage: "text.alignleft")
+                    .font(.headline)
+                    .foregroundColor(.ds.text)
+                
+                TextEditor(text: $contextText)
+                    .frame(minHeight: 80)
+                    .padding(12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color.ds.surfaceSecondary)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .strokeBorder(Color.ds.border, lineWidth: 1)
+                            )
+                    )
+                    .font(.body)
+            }
+            
+            // Comment field
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Your Comment (optional)", systemImage: "text.bubble")
+                    .font(.headline)
+                    .foregroundColor(.ds.text)
+                
+                TextEditor(text: $commentText)
+                    .frame(minHeight: 80)
+                    .padding(12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color.ds.surfaceSecondary)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .strokeBorder(Color.ds.border, lineWidth: 1)
+                            )
+                    )
+                    .font(.body)
             }
             
         }
