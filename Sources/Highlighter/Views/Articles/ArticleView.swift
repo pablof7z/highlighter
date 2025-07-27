@@ -51,6 +51,10 @@ struct ArticleView: View {
             .task {
                 await initializeArticle()
             }
+            .onDisappear {
+                // End reading session when leaving the article
+                appState.readingProgressService.endReadingSession()
+            }
     }
     
     // MARK: - Main Article View Content
@@ -330,6 +334,15 @@ struct ArticleView: View {
                 articleEvent: article.identifier
             )
         }
+        
+        // Restore previous reading progress
+        if let previousProgress = appState.readingProgressService.getProgress(for: article.id) {
+            readingProgress = previousProgress.progress
+            // Note: We could also restore scroll position here if needed
+        }
+        
+        // Start reading session
+        appState.readingProgressService.startReadingSession(for: article.id)
     }
     
     // MARK: - Enhanced Components
@@ -655,6 +668,13 @@ struct ArticleView: View {
         
         let progress = (currentOffset + visibleHeight) / totalHeight
         readingProgress = min(max(0, progress), 1)
+        
+        // Update reading progress in the service
+        appState.readingProgressService.updateProgress(
+            for: article.id,
+            progress: readingProgress,
+            scrollPosition: currentOffset
+        )
     }
     
     private func formatPubkey(_ pubkey: String) -> String {
@@ -915,6 +935,7 @@ struct BounceButtonStyle: ButtonStyle {
 struct EnhancedCommunityHighlightsSection: View {
     let highlights: [HighlightEvent]
     let onHighlightTap: (HighlightEvent) -> Void
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         VStack(alignment: .leading, spacing: .ds.large) {
@@ -922,86 +943,15 @@ struct EnhancedCommunityHighlightsSection: View {
             
             VStack(spacing: .ds.base) {
                 ForEach(highlights.prefix(5), id: \.id) { highlight in
-                    ArticleEnhancedHighlightCard(
-                        highlight: highlight,
-                        onTap: { onHighlightTap(highlight) }
-                    )
+                    ModernHighlightCard(highlight: highlight)
+                        .environmentObject(appState)
                 }
             }
         }
     }
 }
 
-struct ArticleEnhancedHighlightCard: View {
-    let highlight: HighlightEvent
-    let onTap: () -> Void
-    @State private var isPressed = false
-    
-    var body: some View {
-        let baseSpacing = CGFloat.ds.base
-        let smallSpacing = CGFloat.ds.small
-        let mediumPadding = CGFloat.ds.medium
-        let largeRadius = CGFloat.ds.large
-        let textColor = Color.ds.text
-        let captionFont = Font.ds.caption
-        let tertiaryColor = Color.ds.textTertiary
-        let secondaryColor = Color.ds.textSecondary
-        
-        Button(action: onTap) {
-            VStack(alignment: .leading, spacing: baseSpacing) {
-                Text("\"\(highlight.content)\"")
-                    .font(.system(size: 16, weight: .regular, design: .serif))
-                    .foregroundColor(textColor)
-                    .italic()
-                    .multilineTextAlignment(.leading)
-                
-                if let context = highlight.context {
-                    Text(context)
-                        .font(captionFont)
-                        .foregroundColor(tertiaryColor)
-                        .lineLimit(2)
-                }
-                
-                HStack {
-                    HStack(spacing: smallSpacing) {
-                        Circle()
-                            .fill(DesignSystem.Colors.surfaceSecondary)
-                            .frame(width: 20, height: 20)
-                            .overlay(
-                                Text(PubkeyFormatter.formatForAvatar(highlight.author))
-                                    .font(.system(size: 10, weight: .medium))
-                                    .foregroundColor(textColor)
-                            )
-                        
-                        Text(PubkeyFormatter.formatShort(highlight.author))
-                            .font(captionFont)
-                            .foregroundColor(secondaryColor)
-                    }
-                    
-                    Spacer()
-                    
-                    ZapButton(event: highlight.event, size: .small)
-                }
-            }
-            .padding(mediumPadding)
-            .background(
-                RoundedRectangle(cornerRadius: largeRadius, style: .continuous)
-                    .fill(DesignSystem.Colors.highlightSubtle)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: largeRadius, style: .continuous)
-                            .stroke(DesignSystem.Colors.secondary.opacity(0.2), lineWidth: 1)
-                    )
-            )
-            .scaleEffect(isPressed ? 0.98 : 1)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .onLongPressGesture(minimumDuration: 0.1, maximumDistance: .infinity, pressing: { pressing in
-            withAnimation(.spring(response: 0.2)) {
-                isPressed = pressing
-            }
-        }, perform: {})
-    }
-}
+// ArticleEnhancedHighlightCard removed - now using UnifiedCard system (ModernHighlightCard)
 
 struct EnhancedRelatedArticlesSection: View {
     let currentArticle: Article

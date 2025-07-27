@@ -18,6 +18,7 @@ class AppState: ObservableObject {
     @Published private(set) var commentService = CommentService()
     @Published private(set) var engagementService = EngagementService()
     @Published private(set) var lightningService = LightningService()
+    @Published private(set) var readingProgressService = ReadingProgressService()
     
     // Content State - these need to be @Published for UI updates
     @Published var highlights: [HighlightEvent] = []

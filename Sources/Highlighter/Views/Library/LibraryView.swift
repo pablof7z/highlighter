@@ -937,6 +937,11 @@ struct ArticleRow: View {
     let article: Article
     let highlightCount: Int
     @State private var showArticleDetail = false
+    @EnvironmentObject var appState: AppState
+    
+    private var readingProgress: ReadingProgressService.ArticleProgress? {
+        appState.readingProgressService.getProgress(for: article.id)
+    }
     
     var body: some View {
         Button(action: { showArticleDetail = true }) {
@@ -982,6 +987,18 @@ struct ArticleRow: View {
                                 .foregroundColor(.ds.textTertiary)
                         }
                         
+                        // Reading progress
+                        if let progress = readingProgress, progress.progress > 0 {
+                            HStack(spacing: 4) {
+                                Image(systemName: progress.progress >= 1.0 ? "checkmark.circle.fill" : "book.fill")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(progress.progress >= 1.0 ? .green : .ds.primary)
+                                Text(progress.progress >= 1.0 ? "Completed" : "\(Int(progress.progress * 100))%")
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(progress.progress >= 1.0 ? .green : .ds.primary)
+                            }
+                        }
+                        
                         Label(highlightCount > 0 ? "\(highlightCount) highlights" : "No highlights", 
                               systemImage: "highlighter")
                             .font(.system(size: 12))
@@ -999,6 +1016,30 @@ struct ArticleRow: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .strokeBorder(Color.ds.divider, lineWidth: 1)
+            )
+            .overlay(
+                // Reading progress bar at the bottom
+                GeometryReader { geometry in
+                    if let progress = readingProgress, progress.progress > 0 && progress.progress < 1.0 {
+                        VStack {
+                            Spacer()
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .frame(width: geometry.size.width * progress.progress, height: 3)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .animation(.spring(response: 0.3), value: progress.progress)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 2)
+                    }
+                }
+                .allowsHitTesting(false)
             )
         }
         .buttonStyle(PlainButtonStyle())

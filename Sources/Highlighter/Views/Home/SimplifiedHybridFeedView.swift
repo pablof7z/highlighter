@@ -10,7 +10,6 @@ struct SimplifiedHybridFeedView: View {
     @State private var selectedSection = 0
     @State private var scrollOffset: CGFloat = 0
     @State private var headerOpacity: Double = 1
-    @State private var highlightEngagements: [String: EngagementService.EngagementMetrics] = [:]
     @State private var discussionEngagements: [String: EngagementService.EngagementMetrics] = [:]
     @State private var isRefreshing = false
     @State private var refreshProgress: CGFloat = 0
@@ -39,7 +38,6 @@ struct SimplifiedHybridFeedView: View {
         
         let engagements = await appState.engagementService.fetchEngagementBatch(for: eventIds)
         await MainActor.run {
-            highlightEngagements = engagements
         }
     }
     
@@ -108,10 +106,8 @@ struct SimplifiedHybridFeedView: View {
                                         items: dataManager.userHighlights,
                                         icon: "sparkle"
                                     ) { highlight in
-                                        EnhancedHighlightCard(
-                                            highlight: highlight,
-                                            engagement: highlightEngagements[highlight.id] ?? EngagementService.EngagementMetrics()
-                                        )
+                                        ModernHighlightCard(highlight: highlight)
+                                            .environmentObject(appState)
                                     }
                                 } else {
                                     // Loading state with skeleton UI
@@ -347,173 +343,7 @@ struct SimplifiedHybridFeedView: View {
 }
 
 // MARK: - Enhanced Cards
-
-struct EnhancedHighlightCard: View {
-    let highlight: HighlightEvent
-    let engagement: EngagementService.EngagementMetrics
-    @State private var isPressed = false
-    @State private var showingDetail = false
-    @State private var isHovered = false
-    @State private var glowAnimation = false
-    
-    var body: some View {
-        Button(action: { showingDetail = true }) {
-            ZStack {
-                // Glass morphism background
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .overlay(
-                        LinearGradient(
-                            colors: [
-                                DesignSystem.Colors.primary.opacity(0.12),
-                                DesignSystem.Colors.secondary.opacity(0.05)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-                            .stroke(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.5),
-                                        Color.white.opacity(0.1)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1
-                            )
-                    )
-                
-                // Glow effect when hovered
-                if isHovered {
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-                        .stroke(
-                            LinearGradient(
-                                colors: [
-                                    DesignSystem.Colors.primary.opacity(0.6),
-                                    DesignSystem.Colors.secondary.opacity(0.4)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 2
-                        )
-                        .blur(radius: 4)
-                        .opacity(glowAnimation ? 0.8 : 0.4)
-                        .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: glowAnimation)
-                }
-                
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                    // Source info if available
-                    if let url = highlight.url {
-                        HStack(spacing: DesignSystem.Spacing.small) {
-                            Image(systemName: "link.circle.fill")
-                                .font(.system(size: 16))
-                                .foregroundColor(DesignSystem.Colors.primary)
-                            
-                            Text(ContentFormatter.extractDomain(from: url))
-                                .font(.ds.caption)
-                                .fontWeight(.medium)
-                                .foregroundColor(DesignSystem.Colors.primary)
-                                .lineLimit(1)
-                            
-                            Spacer()
-                        }
-                    }
-                    
-                    // Quote text with stylish quotes
-                    HStack(alignment: .top, spacing: 12) {
-                        Text("\"")
-                            .font(.system(size: 36, weight: .black, design: .serif))
-                            .foregroundColor(DesignSystem.Colors.primary.opacity(0.3))
-                            .offset(y: -8)
-                        
-                        Text(highlight.content)
-                            .font(.system(size: 18, weight: .medium, design: .rounded))
-                            .foregroundColor(DesignSystem.Colors.text)
-                            .lineLimit(4)
-                            .multilineTextAlignment(.leading)
-                        
-                        Spacer(minLength: 0)
-                    }
-                    
-                    Spacer()
-                    
-                    // Footer with interactions
-                    HStack {
-                        // Time and author
-                        HStack(spacing: DesignSystem.Spacing.small) {
-                            Circle()
-                                .fill(DesignSystem.Colors.primary.opacity(0.2))
-                                .frame(width: 24, height: 24)
-                                .overlay(
-                                    Text(PubkeyFormatter.formatForAvatar(highlight.author))
-                                        .font(.system(size: 10, weight: .bold))
-                                        .foregroundColor(DesignSystem.Colors.primary)
-                                )
-                            
-                            Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
-                                .font(.ds.caption)
-                                .foregroundColor(DesignSystem.Colors.textSecondary)
-                        }
-                        
-                        Spacer()
-                        
-                        // Interaction buttons
-                        HStack(spacing: DesignSystem.Spacing.medium) {
-                            InteractionButton(icon: "heart", count: engagement.likes)
-                            InteractionButton(icon: "bubble.right", count: engagement.comments)
-                            InteractionButton(icon: "bolt.fill", count: engagement.zaps, color: DesignSystem.Colors.secondary)
-                        }
-                    }
-                }
-                .padding(DesignSystem.Spacing.xl)
-            }
-            .frame(height: 220)
-            .clipShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous))
-            .shadow(
-                color: isHovered ? DesignSystem.Colors.primary.opacity(0.3) : DesignSystem.Shadow.large.color,
-                radius: isHovered ? 20 : DesignSystem.Shadow.large.radius,
-                x: 0,
-                y: isHovered ? 12 : DesignSystem.Shadow.large.y
-            )
-            .scaleEffect(isPressed ? 0.93 : (isHovered ? 1.02 : 1))
-            .rotation3DEffect(
-                .degrees(isHovered ? 2 : 0),
-                axis: (x: 1, y: 0, z: 0)
-            )
-            .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isPressed)
-            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isHovered)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .onLongPressGesture(minimumDuration: 0.1, maximumDistance: .infinity, pressing: { pressing in
-            isPressed = pressing
-            if pressing {
-                HapticManager.shared.impact(.light)
-            }
-        }, perform: {})
-        .onHover { hovering in
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                isHovered = hovering
-            }
-            if hovering {
-                glowAnimation = true
-            }
-        }
-        .sheet(isPresented: $showingDetail) {
-            HighlightDetailView(highlight: highlight)
-        }
-        .onAppear {
-            if isHovered {
-                glowAnimation = true
-            }
-        }
-    }
-}
-
+// Now using UnifiedCard system - see UnifiedCard.swift for ModernHighlightCard implementation
 
 struct EnhancedDiscussionRow: View {
     let event: NDKEvent

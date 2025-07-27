@@ -4,13 +4,13 @@ import Foundation
 enum PreviewData {
     // MARK: - Articles
     static let articleURLs = [
-        "https://arstechnica.com/gadgets/2024/03/hands-on-with-the-vision-pro/",
-        "https://www.theverge.com/2024/2/28/ai-search-revolution-perplexity/",
-        "https://www.wired.com/story/bitcoin-lightning-network-micropayments/",
-        "https://stratechery.com/2024/the-ai-platform-shift/",
-        "https://www.newyorker.com/magazine/2024/03/04/the-age-of-ai-writing/",
-        "https://www.technologyreview.com/2024/03/01/quantum-computing-breakthrough/",
-        "https://www.fastcompany.com/90987654/future-of-remote-work-2024/"
+        "https://example.com/article/decentralized-networks",
+        "https://example.com/article/bitcoin-lightning",
+        "https://example.com/article/digital-publishing",
+        "https://example.com/article/ai-content-creation",
+        "https://example.com/article/privacy-social-media",
+        "https://example.com/article/reading-experiences",
+        "https://example.com/article/information-retention"
     ]
     
     static let articleTitles = [
@@ -75,26 +75,11 @@ enum PreviewData {
         "Organizational psychologist reimagining work in the digital age."
     ]
     
-    static let profilePictures = [
-        "https://i.pravatar.cc/150?u=alexandra",
-        "https://i.pravatar.cc/150?u=marcus",
-        "https://i.pravatar.cc/150?u=sarah",
-        "https://i.pravatar.cc/150?u=james",
-        "https://i.pravatar.cc/150?u=emma",
-        "https://i.pravatar.cc/150?u=david",
-        "https://i.pravatar.cc/150?u=lisa"
-    ]
+    // Profile pictures are now generated dynamically using initials
+    // See AsyncProfileImage for implementation
     
-    // MARK: - Images
-    static let articleImages = [
-        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=800&h=600&fit=crop"
-    ]
+    // Article images are now generated using gradient placeholders
+    // See ArticleImageView for implementation
     
     // MARK: - Curations
     static let curationNames = [
@@ -140,11 +125,4 @@ enum PreviewData {
         authorNames.randomElement() ?? authorNames[0]
     }
     
-    static func randomProfilePicture() -> String {
-        profilePictures.randomElement() ?? profilePictures[0]
-    }
-    
-    static func randomArticleImage() -> String {
-        articleImages.randomElement() ?? articleImages[0]
-    }
 }
