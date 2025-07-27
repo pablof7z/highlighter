@@ -1,5 +1,6 @@
 import SwiftUI
 import Charts
+import NDKSwift
 
 struct EngagementVisualization: View {
     @EnvironmentObject var appState: AppState
@@ -466,25 +467,189 @@ struct EngagementVisualization: View {
     // MARK: - Helper Methods
     
     private func loadEngagementData() {
-        // Generate mock data based on time range
-        let dataPoints: Int
-        switch selectedTimeRange {
-        case .day: dataPoints = 24
-        case .week: dataPoints = 7
-        case .month: dataPoints = 30
-        case .year: dataPoints = 12
+        Task {
+            guard let ndk = appState.ndk, let signer = appState.activeSigner else { return }
+            
+            do {
+                let pubkey = try await signer.pubkey
+                
+                // Calculate time interval based on selected range
+                let now = Date()
+                let startDate: Date
+                switch selectedTimeRange {
+                case .day:
+                    startDate = now.addingTimeInterval(-86400) // 24 hours
+                case .week:
+                    startDate = now.addingTimeInterval(-604800) // 7 days
+                case .month:
+                    startDate = now.addingTimeInterval(-2592000) // 30 days
+                case .year:
+                    startDate = now.addingTimeInterval(-31536000) // 365 days
+                }
+                
+                // Fetch user's highlights to analyze engagement
+                let highlightFilter = NDKFilter(
+                    authors: [pubkey],
+                    kinds: [9802], // NIP-84 highlights
+                    since: Int64(startDate.timeIntervalSince1970),
+                    limit: 500
+                )
+                
+                let highlightDataSource = await ndk.outbox.observe(
+                    filter: highlightFilter,
+                    maxAge: 300,
+                    cachePolicy: .cacheWithNetwork
+                )
+                
+                var highlights: [NDKEvent] = []
+                for await event in highlightDataSource.events {
+                    highlights.append(event)
+                }
+                
+                // Now fetch reactions for these highlights
+                var dataPoints: [Date: EngagementDataPoint] = [:]
+                
+                // Initialize data points based on time range
+                let interval: TimeInterval
+                let bucketCount: Int
+                
+                switch selectedTimeRange {
+                case .day:
+                    interval = 3600 // 1 hour buckets
+                    bucketCount = 24
+                case .week:
+                    interval = 86400 // 1 day buckets
+                    bucketCount = 7
+                case .month:
+                    interval = 86400 // 1 day buckets
+                    bucketCount = 30
+                case .year:
+                    interval = 2592000 // 30 day buckets
+                    bucketCount = 12
+                }
+                
+                // Initialize buckets
+                for i in 0..<bucketCount {
+                    let bucketDate = now.addingTimeInterval(-Double(i) * interval)
+                    let normalizedDate = Date(timeIntervalSince1970: floor(bucketDate.timeIntervalSince1970 / interval) * interval)
+                    dataPoints[normalizedDate] = EngagementDataPoint(
+                        date: normalizedDate,
+                        likes: 0,
+                        comments: 0,
+                        zaps: 0,
+                        reposts: 0
+                    )
+                }
+                
+                // For each highlight, get its engagement
+                for highlight in highlights {
+                    let highlightDate = Date(timeIntervalSince1970: Double(highlight.createdAt))
+                    let bucketDate = Date(timeIntervalSince1970: floor(highlightDate.timeIntervalSince1970 / interval) * interval)
+                    
+                    // Fetch reactions for this highlight
+                    var tagsFilter: [String: Set<String>] = [:]
+                    tagsFilter["e"] = [highlight.id]
+                    
+                    let reactionFilter = NDKFilter(
+                        kinds: [7], // Reactions
+                        limit: 1000,
+                        tags: tagsFilter
+                    )
+                    
+                    let reactionDataSource = await ndk.outbox.observe(
+                        filter: reactionFilter,
+                        maxAge: 300,
+                        cachePolicy: .cacheWithNetwork
+                    )
+                    
+                    var likes = 0
+                    for await reaction in reactionDataSource.events {
+                        if reaction.content == "🤙" || reaction.content == "+" || reaction.content == "❤️" {
+                            likes += 1
+                        }
+                    }
+                    
+                    // Count replies (kind 1 with e tag)
+                    let replyFilter = NDKFilter(
+                        kinds: [1], // Text notes
+                        limit: 100,
+                        tags: tagsFilter
+                    )
+                    
+                    let replyDataSource = await ndk.outbox.observe(
+                        filter: replyFilter,
+                        maxAge: 300,
+                        cachePolicy: .cacheWithNetwork
+                    )
+                    
+                    var comments = 0
+                    for await _ in replyDataSource.events {
+                        comments += 1
+                    }
+                    
+                    // Count reposts
+                    let repostFilter = NDKFilter(
+                        kinds: [6], // Reposts
+                        limit: 100,
+                        tags: tagsFilter
+                    )
+                    
+                    let repostDataSource = await ndk.outbox.observe(
+                        filter: repostFilter,
+                        maxAge: 300,
+                        cachePolicy: .cacheWithNetwork
+                    )
+                    
+                    var reposts = 0
+                    for await _ in repostDataSource.events {
+                        reposts += 1
+                    }
+                    
+                    // Count zaps (kind 9735)
+                    let zapFilter = NDKFilter(
+                        kinds: [9735], // Zap receipts
+                        limit: 100,
+                        tags: tagsFilter
+                    )
+                    
+                    let zapDataSource = await ndk.outbox.observe(
+                        filter: zapFilter,
+                        maxAge: 300,
+                        cachePolicy: .cacheWithNetwork
+                    )
+                    
+                    var zaps = 0
+                    for await _ in zapDataSource.events {
+                        zaps += 1
+                    }
+                    
+                    // Update the data point
+                    if var dataPoint = dataPoints[bucketDate] {
+                        dataPoint = EngagementDataPoint(
+                            date: dataPoint.date,
+                            likes: dataPoint.likes + likes,
+                            comments: dataPoint.comments + comments,
+                            zaps: dataPoint.zaps + zaps,
+                            reposts: dataPoint.reposts + reposts
+                        )
+                        dataPoints[bucketDate] = dataPoint
+                    }
+                }
+                
+                // Convert to array and sort by date
+                let sortedData = dataPoints.values.sorted { $0.date < $1.date }
+                
+                await MainActor.run {
+                    self.engagementData = sortedData
+                }
+                
+            } catch {
+                // If we can't load real data, show empty state
+                await MainActor.run {
+                    self.engagementData = []
+                }
+            }
         }
-        
-        engagementData = (0..<dataPoints).map { index in
-            let date = Date().addingTimeInterval(-Double(index) * 3600 * (selectedTimeRange == .day ? 1 : 24))
-            return EngagementDataPoint(
-                date: date,
-                likes: Int.random(in: 10...100),
-                comments: Int.random(in: 5...50),
-                zaps: Int.random(in: 20...200),
-                reposts: Int.random(in: 2...30)
-            )
-        }.reversed()
     }
     
     private func startAnimations() {
@@ -658,7 +823,7 @@ struct TrendingHighlightCard: View {
                     .foregroundColor(.orange)
             }
             
-            Text("The future belongs to those who believe in the beauty of their dreams.")
+            Text("Loading trending highlights...")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(DesignSystem.Colors.text)
                 .lineLimit(3)

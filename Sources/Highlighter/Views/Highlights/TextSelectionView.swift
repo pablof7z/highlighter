@@ -314,7 +314,7 @@ struct TextSelectionView: View {
                 dismiss()
             } catch {
                 HapticManager.shared.notification(.error)
-                print("Failed to publish highlight: \(error)")
+                // Failed to publish highlight
             }
         }
     }

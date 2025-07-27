@@ -101,7 +101,7 @@ struct CurationDetailView: View {
                                 .fontWeight(.medium)
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 10)
-                                .background(isFollowing ? Color.gray : DesignSystem.Colors.primary)
+                                .background(isFollowing ? DesignSystem.Colors.textTertiary : DesignSystem.Colors.primary)
                                 .foregroundColor(.white)
                                 .cornerRadius(DesignSystem.CornerRadius.xl)
                         }

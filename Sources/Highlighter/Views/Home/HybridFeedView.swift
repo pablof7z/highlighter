@@ -44,7 +44,7 @@ struct HybridFeedView: View {
     init() {
         let manager = HomeDataManager()
         self._dataManager = StateObject(wrappedValue: manager)
-        print("🔍 HybridFeedView initialized with dataManager")
+        // HybridFeedView initialized with dataManager
     }
     
     var body: some View {

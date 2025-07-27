@@ -83,7 +83,7 @@ struct HighlightCard: View {
                             highlight: highlight,
                             onZapComplete: {
                                 isZapped = true
-                                print("Zap completed with smart splits")
+                                // Zap completed with smart splits
                             }
                         )
                         .environmentObject(appState)

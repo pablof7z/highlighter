@@ -349,7 +349,8 @@ struct CurationManagementView: View {
                             }
                         }
                     case .failure(let error):
-                        print("Failed to load dragged article: \(error)")
+                        // Failed to load dragged article
+                        break
                     }
                 }
                 return true

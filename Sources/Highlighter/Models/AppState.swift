@@ -69,9 +69,7 @@ class AppState: ObservableObject {
             
             // Connect to relays asynchronously
             Task {
-                print("DEBUG: Connecting to relays...")
                 await ndk?.connect()
-                print("DEBUG: Connected to relays")
             }
             
             // Set NDK instance in auth manager
@@ -213,7 +211,7 @@ class AppState: ObservableObject {
             // Create filter for kind 9802 (highlights)
             let highlightFilter = NDKFilter(kinds: [9802])
             
-            print("Starting NIP-77 sync for highlights from relay.damus.io...")
+            // Starting NIP-77 sync for highlights from relay.damus.io
             
             // Perform NIP-77 sync with relay.damus.io
             let syncResult = try await ndk.syncEvents(
@@ -222,18 +220,13 @@ class AppState: ObservableObject {
                 direction: .receive // Only download, don't upload
             )
             
-            print("NIP-77 sync completed:")
-            print("- Local events: \(syncResult.localEventCount)")
-            print("- Downloaded: \(syncResult.downloadedEvents.count) events")
-            print("- Rounds: \(syncResult.messageRounds)")
-            print("- Bytes transferred: \(syncResult.bytesTransferred)")
-            print("- Efficiency: \(syncResult.efficiencyRatio)%")
+            // NIP-77 sync completed successfully
             
             // Let the DataStreamManager handle the highlights after sync
             await dataStreamManager.refresh()
             
         } catch {
-            print("NIP-77 sync failed: \(error)")
+            // NIP-77 sync failed - continuing with normal operation
             // Don't show error to user, continue with normal operation
         }
     }
