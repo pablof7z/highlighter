@@ -4,6 +4,7 @@ import NDKSwift
 struct FollowersListView: View {
     let pubkey: String
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var appState: AppState
     @State private var followers: [UserListItem] = []
     @State private var isLoading = true
     @State private var searchText = ""
@@ -77,8 +78,54 @@ struct FollowersListView: View {
     }
     
     private func loadFollowers() async {
-        // Implementation would load actual followers
-        isLoading = false
+        guard let ndk = appState.ndk else {
+            await MainActor.run {
+                isLoading = false
+            }
+            return
+        }
+        
+        // Get contact list events (NIP-02) for people who follow this pubkey
+        let filter = NDKFilter(
+            kinds: [3], // Contact list
+            tags: ["p": [pubkey]]
+        )
+        
+        await MainActor.run {
+            followers.removeAll()
+        }
+        
+        // Use NDK's observe method
+        let dataSource = await ndk.outbox.observe(
+            filter: filter,
+            maxAge: 300,
+            cachePolicy: .cacheWithNetwork
+        )
+        
+        for await event in dataSource.events {
+            let followerPubkey = event.pubkey
+            
+            // Load profile data for each follower using NDK's profileManager
+            for await profile in await ndk.profileManager.observe(for: followerPubkey, maxAge: TimeConstants.hour) {
+                await MainActor.run {
+                    let userItem = UserListItem(
+                        id: followerPubkey,
+                        pubkey: followerPubkey,
+                        profile: profile
+                    )
+                    
+                    // Avoid duplicates
+                    if !followers.contains(where: { $0.id == followerPubkey }) {
+                        followers.append(userItem)
+                    }
+                }
+                break // Only need current value
+            }
+        }
+        
+        await MainActor.run {
+            isLoading = false
+        }
     }
 }
 
@@ -89,28 +136,18 @@ struct UserRow: View {
     let profile: NDKUserProfile?
     var showFollowButton: Bool = false
     @State private var isFollowing = false
+    @State private var showUserProfile = false
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         HStack(spacing: .ds.medium) {
             // Avatar
-            if let picture = profile?.picture, let url = URL(string: picture) {
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 48, height: 48)
-                        .clipShape(Circle())
-                } placeholder: {
-                    avatarPlaceholder
-                }
-            } else {
-                avatarPlaceholder
-            }
+            EnhancedAsyncProfileImage(pubkey: pubkey, size: 48)
             
             // User info
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(profile?.displayName ?? profile?.name ?? "Anonymous")
+                    Text(profile?.displayName ?? profile?.name ?? PubkeyFormatter.formatShort(pubkey))
                         .font(.ds.bodyMedium)
                         .foregroundColor(.ds.text)
                     
@@ -151,7 +188,16 @@ struct UserRow: View {
         .padding(.vertical, .ds.small)
         .contentShape(Rectangle())
         .onTapGesture {
-            // Navigate to user profile
+            showUserProfile = true
+        }
+        .sheet(isPresented: $showUserProfile) {
+            UserProfileView(pubkey: pubkey)
+                .environmentObject(appState)
+        }
+        .task {
+            if showFollowButton {
+                isFollowing = appState.following.contains(pubkey)
+            }
         }
     }
     
@@ -173,9 +219,23 @@ struct UserRow: View {
     }
     
     private func toggleFollow() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-            isFollowing.toggle()
-            HapticManager.shared.impact(.light)
+        Task {
+            do {
+                if isFollowing {
+                    try await appState.unfollowUser(pubkey)
+                } else {
+                    try await appState.followUser(pubkey)
+                }
+                
+                await MainActor.run {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        isFollowing.toggle()
+                        HapticManager.shared.impact(.light)
+                    }
+                }
+            } catch {
+                print("Error toggling follow: \(error)")
+            }
         }
     }
 }

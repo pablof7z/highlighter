@@ -652,6 +652,7 @@ class FeedDataManager: ObservableObject {
     private var activeFilter: TimelineFeedView.FeedFilter = .all
     private var dataSource: NDKDataSource<NDKEvent>?
     private var streamTask: Task<Void, Never>?
+    private var engagementCache: [String: EngagementService.EngagementMetrics] = [:]
     
     func startStreaming(filter: TimelineFeedView.FeedFilter) async {
         guard let appState = appState, let ndk = appState.ndk else { return }
@@ -701,11 +702,29 @@ class FeedDataManager: ObservableObject {
         case .all:
             return NDKFilter(kinds: [9802]) // All highlights
         case .following:
-            // For now, return all highlights
-            // Following functionality needs to be implemented properly
-            return NDKFilter(kinds: [9802], limit: 100)
+            // Get highlights only from people the user follows
+            guard let appState = appState else {
+                return NDKFilter(kinds: [9802], limit: 100)
+            }
+            
+            let followingList = Array(appState.following)
+            if followingList.isEmpty {
+                // If not following anyone, show recent highlights as fallback
+                let since = Date().addingTimeInterval(-TimeConstants.hour * 6)
+                return NDKFilter(
+                    kinds: [9802],
+                    since: Int64(since.timeIntervalSince1970),
+                    limit: 50
+                )
+            }
+            
+            return NDKFilter(
+                authors: followingList,
+                kinds: [9802],
+                limit: 200
+            )
         case .trending:
-            // Implement trending by getting recent highlights with most engagement
+            // Get recent highlights that will be sorted by engagement
             let since = Date().addingTimeInterval(-TimeConstants.day)
             return NDKFilter(
                 kinds: [9802],
@@ -722,12 +741,46 @@ class FeedDataManager: ObservableObject {
         // Avoid duplicates
         guard !timelineEvents.contains(where: { $0.id == event.id }) else { return }
         
-        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-            timelineEvents.insert(event, at: 0)
+        if activeFilter == .trending {
+            // For trending, we need to sort by engagement
+            Task {
+                await addTrendingEvent(event)
+            }
+        } else {
+            // For other filters, insert at beginning (newest first)
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                timelineEvents.insert(event, at: 0)
+                
+                // Keep max 100 events
+                if timelineEvents.count > 100 {
+                    timelineEvents.removeLast()
+                }
+            }
+        }
+    }
+    
+    private func addTrendingEvent(_ event: NDKEvent) async {
+        guard let appState = appState else { return }
+        
+        // Fetch engagement metrics for this event
+        let metrics = await appState.engagementService.fetchEngagement(for: event.id)
+        engagementCache[event.id] = metrics
+        
+        await MainActor.run {
+            // Add event and re-sort by engagement
+            timelineEvents.append(event)
+            
+            // Sort by total engagement
+            timelineEvents.sort { event1, event2 in
+                let metrics1 = engagementCache[event1.id] ?? EngagementService.EngagementMetrics()
+                let metrics2 = engagementCache[event2.id] ?? EngagementService.EngagementMetrics()
+                
+                return metrics1.totalEngagement > metrics2.totalEngagement
+            }
             
             // Keep max 100 events
             if timelineEvents.count > 100 {
-                timelineEvents.removeLast()
+                timelineEvents = Array(timelineEvents.prefix(100))
             }
         }
     }
