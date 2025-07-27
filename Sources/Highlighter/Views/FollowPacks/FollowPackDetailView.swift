@@ -84,7 +84,7 @@ struct FollowPackDetailView: View {
                     .font(DesignSystem.Typography.caption)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
-                Text(creator?.name ?? creator?.displayName ?? String(followPack.author.prefix(8)))
+                Text(creator?.name ?? creator?.displayName ?? PubkeyFormatter.formatShort(followPack.author))
                     .font(DesignSystem.Typography.caption)
                     .fontWeight(.medium)
             }

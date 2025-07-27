@@ -69,7 +69,7 @@ struct ContentView: View {
                     value: selectedTab
                 )
                 // Add padding to prevent content from going under tab bar
-                .padding(.bottom, tabBarVisible ? 88 : 0)
+                .padding(.bottom, tabBarVisible ? 72 : 0)
                 .background(
                     // Ambient glow effect
                     Circle()

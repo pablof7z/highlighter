@@ -199,7 +199,7 @@ struct ArticleListCard: View {
                                 }
                             }
                         
-                        Text(author?.displayName ?? formatPubkey(article.author))
+                        Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
                             .font(DesignSystem.Typography.caption)
                             .foregroundColor(DesignSystem.Colors.textSecondary)
                     }
@@ -229,9 +229,6 @@ struct ArticleListCard: View {
         }
     }
     
-    private func formatPubkey(_ pubkey: String) -> String {
-        String(pubkey.prefix(8)) + "..."
-    }
     
     private func loadAuthor() async {
         guard let ndk = appState.ndk else { return }
@@ -345,7 +342,7 @@ struct ArticleFeaturedCard: View {
                                 }
                             }
                         
-                        Text(author?.displayName ?? formatPubkey(article.author))
+                        Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
                             .font(DesignSystem.Typography.caption)
                             .foregroundColor(DesignSystem.Colors.textSecondary)
                             .lineLimit(1)
@@ -368,9 +365,6 @@ struct ArticleFeaturedCard: View {
         }
     }
     
-    private func formatPubkey(_ pubkey: String) -> String {
-        String(pubkey.prefix(8)) + "..."
-    }
     
     private func loadAuthor() async {
         guard let ndk = appState.ndk else { return }
@@ -483,7 +477,7 @@ struct ArticleRowCard: View {
                                 }
                             }
                         
-                        Text(author?.displayName ?? formatPubkey(article.author))
+                        Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
                             .font(DesignSystem.Typography.caption)
                             .foregroundColor(DesignSystem.Colors.textSecondary)
                             .lineLimit(1)
@@ -519,9 +513,6 @@ struct ArticleRowCard: View {
         }
     }
     
-    private func formatPubkey(_ pubkey: String) -> String {
-        String(pubkey.prefix(8)) + "..."
-    }
     
     private func loadAuthor() async {
         guard let ndk = appState.ndk else { return }

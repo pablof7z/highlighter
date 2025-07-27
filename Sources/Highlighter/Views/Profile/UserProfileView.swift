@@ -81,7 +81,7 @@ struct UserProfileView: View {
                         }
                         
                         if isFollowing {
-                            Button(role: .destructive, action: { unfollowUser() }) {
+                            Button(role: .destructive, action: { toggleFollow() }) {
                                 Label("Unfollow", systemImage: "person.badge.minus")
                             }
                         }
@@ -308,142 +308,44 @@ struct UserProfileView: View {
     }
     
     private func checkFollowStatus() {
-        guard let ndk = appState.ndk,
-              let signer = appState.activeSigner else { return }
-        
-        // Check if current user follows this pubkey
         Task {
-            guard let currentUserPubkey = try? await signer.pubkey else { return }
-            let filter = NDKFilter(
-                authors: [currentUserPubkey],
-                kinds: [3]
-            )
-            
-            var events: Set<NDKEvent> = []
-            let dataSource = await ndk.outbox.observe(filter: filter)
-            for await event in dataSource.events {
-                events.insert(event)
-                break // Only need the first contact list
-            }
-            if let contactList = events.first {
-                // Check if pubkey is in the contact list
-                isFollowing = contactList.tags.contains { tag in
-                    tag.count >= 2 && tag[0] == "p" && tag[1] == pubkey
-                }
+            do {
+                isFollowing = try await appState.isFollowing(pubkey)
+            } catch {
+                // Error checking follow status
+                isFollowing = false
             }
         }
     }
     
     private func toggleFollow() {
-        if isFollowing {
-            unfollowUser()
-        } else {
-            followUser()
-        }
-    }
-    
-    private func followUser() {
-        guard let ndk = appState.ndk,
-              let signer = appState.activeSigner else { return }
-        
-        HapticManager.shared.impact(.medium)
-        
         Task {
-            do {
-                // Get current user's pubkey
-                let userPubkey = try await signer.pubkey
-                
-                // Get current contact list
-                let filter = NDKFilter(
-                    authors: [userPubkey],
-                    kinds: [3],
-                    limit: 1
-                )
-                
-                var currentFollows: [[String]] = []
-                let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 60)
-                for await event in dataSource.events {
-                    currentFollows = event.tags.filter { $0.count >= 2 && $0[0] == "p" }
-                    break
-                }
-                
-                // Add new follow if not already following
-                let isAlreadyFollowing = currentFollows.contains { tag in
-                    tag.count >= 2 && tag[1] == pubkey
-                }
-                
-                if !isAlreadyFollowing {
-                    currentFollows.append(["p", pubkey])
-                    
-                    // Build and publish updated contact list
-                    let contactListEvent = try await NDKEventBuilder(ndk: ndk)
-                        .kind(3)
-                        .tags(currentFollows)
-                        .content("")
-                        .build(signer: signer)
-                    
-                    _ = try await ndk.publish(contactListEvent)
-                    
-                    await MainActor.run {
-                        isFollowing = true
-                        stats.followerCount += 1
-                    }
-                }
-            } catch {
-                await MainActor.run {
-                    isFollowing = false
-                }
-            }
+            await performToggleFollow()
         }
     }
     
-    private func unfollowUser() {
-        guard let ndk = appState.ndk,
-              let signer = appState.activeSigner else { return }
-        
+    private func performToggleFollow() async {
+        let wasFollowing = isFollowing
+        isFollowing.toggle()
         HapticManager.shared.impact(.light)
         
-        Task {
-            do {
-                // Get current user's pubkey
-                let userPubkey = try await signer.pubkey
-                
-                // Get current contact list
-                let filter = NDKFilter(
-                    authors: [userPubkey],
-                    kinds: [3],
-                    limit: 1
-                )
-                
-                var currentFollows: [[String]] = []
-                let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 60)
-                for await event in dataSource.events {
-                    currentFollows = event.tags.filter { $0.count >= 2 && $0[0] == "p" }
-                    break
-                }
-                
-                // Remove the follow
-                currentFollows = currentFollows.filter { tag in
-                    !(tag.count >= 2 && tag[1] == pubkey)
-                }
-                
-                // Build and publish updated contact list
-                let contactListEvent = try await NDKEventBuilder(ndk: ndk)
-                    .kind(3)
-                    .tags(currentFollows)
-                    .content("")
-                    .build(signer: signer)
-                
-                _ = try await ndk.publish(contactListEvent)
-                
+        do {
+            if isFollowing {
+                try await appState.followUser(pubkey)
                 await MainActor.run {
-                    isFollowing = false
+                    stats.followerCount += 1
+                }
+            } else {
+                try await appState.unfollowUser(pubkey)
+                await MainActor.run {
                     stats.followerCount = max(0, stats.followerCount - 1)
                 }
-            } catch {
-                await MainActor.run {
-                    isFollowing = true
-                }
+            }
+        } catch {
+            // Revert on error
+            await MainActor.run {
+                isFollowing = wasFollowing
+                HapticManager.shared.notification(.error)
             }
         }
     }
@@ -678,7 +580,7 @@ struct HighlightsListView: View {
                 .padding(.vertical, 40)
             } else {
                 ForEach(highlights, id: \.id) { highlight in
-                    HighlightCard(highlight: highlight)
+                    ModernHighlightCard(highlight: highlight)
                 }
             }
         }

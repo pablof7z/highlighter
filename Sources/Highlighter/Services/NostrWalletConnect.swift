@@ -153,26 +153,29 @@ class NostrWalletConnect {
             throw NWCError.invalidConnectionString
         }
         
-        // For now, we'll use the app's main signer to sign the event
-        // In a real implementation, we'd create a dedicated signer for NWC
-        let tags: [[String]] = [
-            ["p", walletPubkey]
-        ]
+        // Get the current signer
+        guard let signer = ndk.signer else {
+            throw NWCError.invalidConnectionString
+        }
         
-        // Create event without encryption for now (NIP-04 encryption would be added here)
-        let event = NDKEvent(
-            kind: 23194, // NWC request kind
-            content: contentString,
-            tags: tags,
-            pubkey: "", // Will be set by signer
-            createdAt: Int64(Date().timeIntervalSince1970)
-        )
+        // Create NDKUser for the wallet
+        let walletUser = NDKUser(pubkey: walletPubkey)
+        
+        // Encrypt the content using NIP-04
+        let encryptedContent = try await signer.encrypt(recipient: walletUser, value: contentString, scheme: .nip04)
+        
+        // Create and sign event using NDKEventBuilder
+        let event = try await NDKEventBuilder(ndk: ndk)
+            .kind(23194) // NWC request kind
+            .content(encryptedContent)
+            .tag(["p", walletPubkey])
+            .build()
         
         return event
     }
     
     private func sendRequest(_ request: NDKEvent) async throws -> [String: Any] {
-        // Publish request to specific relay
+        // Publish request to specific relay (event is already signed)
         _ = try await ndk.publish(request, to: [relay])
         
         // Set up response listener
@@ -208,12 +211,19 @@ class NostrWalletConnect {
                     guard !hasResponded else { break }
                     
                     do {
-                        // For now, use unencrypted content
-                        // In production, implement NIP-04 decryption here
-                        let content = event.content
+                        // Get the signer
+                        guard let signer = ndk.signer else {
+                            continue
+                        }
+                        
+                        // Create NDKUser for the wallet (sender of the response)
+                        let walletUser = NDKUser(pubkey: walletPubkey)
+                        
+                        // Decrypt the content using NIP-04
+                        let decryptedContent = try await signer.decrypt(sender: walletUser, value: event.content, scheme: .nip04)
                         
                         // Parse response
-                        guard let data = content.data(using: .utf8),
+                        guard let data = decryptedContent.data(using: .utf8),
                               let response = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                             continue
                         }
@@ -222,7 +232,7 @@ class NostrWalletConnect {
                         continuation.resume(returning: response)
                         break
                     } catch {
-                        // Continue listening if parsing fails
+                        // Continue listening if parsing/decryption fails
                         continue
                     }
                 }

@@ -22,21 +22,26 @@ struct EnhancedTabBar: View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
                 // Clean minimal background
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color.ds.surface)
+                Rectangle()
+                    .fill(.ultraThinMaterial)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(Color.ds.border, lineWidth: 0.5)
+                        Rectangle()
+                            .fill(Color.ds.surface.opacity(0.85))
                     )
-                    .frame(height: 72)
-                    .shadow(color: Color.black.opacity(0.05), radius: 4, y: -2)
+                    .overlay(
+                        Divider()
+                            .frame(height: 0.5)
+                            .foregroundColor(Color.ds.border),
+                        alignment: .top
+                    )
+                    .frame(height: 56)
                 
                 // Subtle selection indicator
                 if let offset = tabOffsets[selectedTab] {
                     Rectangle()
                         .fill(DesignSystem.Colors.primary)
-                        .frame(width: 32, height: 2)
-                        .offset(x: offset, y: -30)
+                        .frame(width: 28, height: 2)
+                        .offset(x: offset, y: -24)
                         .animation(
                             .easeInOut(duration: 0.25),
                             value: selectedTab
@@ -103,15 +108,15 @@ struct EnhancedTabBar: View {
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 34)
+                .padding(.horizontal, 8)
+                .padding(.top, 6)
+                .padding(.bottom, 20)
                 .coordinateSpace(name: "tabBar")
                 
             }
-            .frame(height: 88)
+            .frame(height: 72)
         }
-        .frame(height: 88)
+        .frame(height: 72)
         .onAppear {
             impactMedium.prepare()
             impactLight.prepare()
@@ -151,28 +156,28 @@ struct TabItem: View {
     @State private var iconScale: CGFloat = 1
     
     var body: some View {
-        VStack(spacing: showLabel ? 6 : 0) {
+        VStack(spacing: showLabel ? 4 : 0) {
             ZStack {
                 // Background icon (for smooth transitions)
                 Image(systemName: tab.icon)
-                    .font(.system(size: 24, weight: .medium))
+                    .font(.system(size: 22, weight: .medium))
                     .opacity(isSelected ? 0 : 1)
                     .foregroundColor(.ds.textSecondary)
                 
                 // Filled icon with animations
                 Image(systemName: tab.filledIcon)
-                    .font(.system(size: 24, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold))
                     .opacity(isSelected ? 1 : 0)
                     .foregroundColor(.ds.primary)
                     .rotationEffect(.degrees(iconRotation))
                     .scaleEffect(iconScale)
             }
-            .frame(width: 28, height: 28)
+            .frame(width: 24, height: 24)
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
             
             if showLabel {
                 Text(tab.title)
-                    .font(.system(size: 11, weight: isSelected ? .semibold : .medium))
+                    .font(.system(size: 10, weight: isSelected ? .semibold : .medium))
                     .foregroundColor(isSelected ? .ds.primary : .ds.textSecondary)
                     .transition(.asymmetric(
                         insertion: .push(from: .bottom).combined(with: .opacity),

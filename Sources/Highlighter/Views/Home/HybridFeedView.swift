@@ -61,7 +61,7 @@ struct HybridFeedView: View {
                             
                             // Recent articles - ALWAYS shown at the top, right after greeting
                             RecentArticlesSection(dataManager: dataManager)
-                                .padding(.vertical, 24)
+                                .padding(.vertical, 16)
                             
                             // Sticky section tabs
                             sectionTabs
@@ -114,10 +114,10 @@ struct HybridFeedView: View {
     // MARK: - Hero Header
     @ViewBuilder
     private var heroHeader: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 12) {
             // App name
             Text("Highlighter")
-                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(
                     LinearGradient(
                         colors: [.ds.text, .ds.text.opacity(0.8)],
@@ -128,7 +128,7 @@ struct HybridFeedView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 30)
+        .padding(.vertical, 16)
     }
     
     // MARK: - Section Tabs
@@ -149,7 +149,7 @@ struct HybridFeedView: View {
                     }
                 }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
     }
@@ -157,7 +157,7 @@ struct HybridFeedView: View {
     // MARK: - Content Sections
     @ViewBuilder
     private var contentSections: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: 24) {
             // Featured highlights carousel
             if selectedSection == .forYou || selectedSection == .trending {
                 CarouselSection(
@@ -167,12 +167,14 @@ struct HybridFeedView: View {
                     id: "featured"
                 ) {
                     ForEach(dataManager.userHighlights.prefix(10), id: \.id) { highlight in
-                        FeaturedHighlightCarouselCard(highlight: highlight)
-                            .onTapGesture {
-                                activeHighlight = highlight
-                                showingHighlightDetail = true
-                                HapticManager.shared.impact(.medium)
-                            }
+                        Button(action: {
+                            activeHighlight = highlight
+                            showingHighlightDetail = true
+                            HapticManager.shared.impact(.medium)
+                        }) {
+                            FeaturedHighlightCarouselCard(highlight: highlight)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
                 .revealAnimation(id: "featured", visibility: $sectionVisibility)
@@ -187,7 +189,14 @@ struct HybridFeedView: View {
                 cardWidth: 280
             ) {
                 ForEach(dataManager.userHighlights.filter { $0.content.count < 150 }.prefix(8), id: \.id) { highlight in
-                    QuoteCarouselCard(highlight: highlight)
+                    Button(action: {
+                        activeHighlight = highlight
+                        showingHighlightDetail = true
+                        HapticManager.shared.impact(.medium)
+                    }) {
+                        QuoteCarouselCard(highlight: highlight)
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
             }
             .revealAnimation(id: "quotes", visibility: $sectionVisibility)
@@ -195,7 +204,7 @@ struct HybridFeedView: View {
             // Active discussions - vertical list within the feed
             if !dataManager.discussions.isEmpty {
                 ActiveDiscussionsInlineSection(discussions: dataManager.discussions)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 16)
                     .revealAnimation(id: "discussions", visibility: $sectionVisibility)
             }
             
@@ -209,7 +218,10 @@ struct HybridFeedView: View {
                     cardWidth: 300
                 ) {
                     ForEach(dataManager.curations) { curation in
-                        CurationCarouselCard(curation: curation)
+                        NavigationLink(destination: CurationDetailView(curation: curation)) {
+                            CurationCarouselCard(curation: curation)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
                 .revealAnimation(id: "curations", visibility: $sectionVisibility)
@@ -225,7 +237,13 @@ struct HybridFeedView: View {
                     cardWidth: 320
                 ) {
                     ForEach(dataManager.zappedArticles.prefix(6), id: \.id) { event in
-                        ZappedArticleCard(event: event)
+                        Button(action: {
+                            // Handle zapped article tap
+                            HapticManager.shared.impact(.medium)
+                        }) {
+                            ZappedArticleCard(event: event)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
                 .revealAnimation(id: "zapped", visibility: $sectionVisibility)
@@ -250,7 +268,7 @@ struct HybridFeedView: View {
                 .revealAnimation(id: "people", visibility: $sectionVisibility)
             }
         }
-        .padding(.vertical, 24)
+        .padding(.vertical, 16)
     }
     
     // MARK: - Helper Methods
@@ -291,7 +309,7 @@ struct CarouselSection<Content: View>: View {
                         .foregroundColor(.ds.primary)
                 }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 16)
             
             // Carousel content
             ScrollView(.horizontal, showsIndicators: false) {
@@ -299,7 +317,7 @@ struct CarouselSection<Content: View>: View {
                     content()
                         .frame(width: cardWidth)
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 12)
                 .scrollTargetLayout()
             }
             .scrollTargetBehavior(.viewAligned)
@@ -357,8 +375,8 @@ struct FeaturedHighlightCarouselCard: View {
                     .opacity(isPressed ? 1 : 0.6)
             }
         }
-        .padding(20)
-        .frame(height: 180)
+        .padding(16)
+        .frame(height: 160)
         .background(
             ZStack {
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
@@ -631,40 +649,16 @@ struct PersonDiscoveryCard: View {
     }
     
     private func checkFollowStatus() async {
-        guard let signer = appState.activeSigner,
-              let ndk = appState.ndk else { return }
-        
         do {
-            let userPubkey = try await signer.pubkey
-            let contactsFilter = NDKFilter(
-                authors: [userPubkey],
-                kinds: [3],
-                limit: 1
-            )
-            
-            let contactsSource = NDKDataSource(
-                ndk: ndk,
-                filter: contactsFilter,
-                maxAge: 0,
-                cachePolicy: .cacheOnly,
-                closeOnEose: true
-            )
-            
-            for await event in contactsSource.events {
-                let followedPubkeys = event.tags
-                    .filter { $0.first == "p" }
-                    .compactMap { $0.count > 1 ? $0[1] : nil }
-                
-                await MainActor.run {
-                    isFollowing = followedPubkeys.contains(pubkey)
-                }
-            }
+            isFollowing = try await appState.isFollowing(pubkey)
         } catch {
             // Error checking follow status
+            isFollowing = false
         }
     }
     
     private func toggleFollow() async {
+        let wasFollowing = isFollowing
         isFollowing.toggle()
         HapticManager.shared.impact(.light)
         
@@ -677,61 +671,19 @@ struct PersonDiscoveryCard: View {
             }
         }
         
-        // Actually update the follow list
-        guard let ndk = appState.ndk,
-              let signer = appState.activeSigner else { return }
-        
+        // Actually update the follow list using AppState
         do {
-            let userPubkey = try await signer.pubkey
-            
-            // Get current contacts
-            let contactsFilter = NDKFilter(
-                authors: [userPubkey],
-                kinds: [3],
-                limit: 1
-            )
-            
-            let contactsSource = NDKDataSource(
-                ndk: ndk,
-                filter: contactsFilter,
-                maxAge: 0,
-                cachePolicy: .cacheOnly,
-                closeOnEose: true
-            )
-            
-            var currentTags: [[String]] = []
-            
-            for await event in contactsSource.events {
-                currentTags = event.tags
-                break
-            }
-            
-            // Update tags
             if isFollowing {
-                // Add follow
-                if !currentTags.contains(where: { $0.first == "p" && $0.count > 1 && $0[1] == pubkey }) {
-                    currentTags.append(["p", pubkey])
-                }
+                try await appState.followUser(pubkey)
             } else {
-                // Remove follow
-                currentTags.removeAll { $0.first == "p" && $0.count > 1 && $0[1] == pubkey }
+                try await appState.unfollowUser(pubkey)
             }
-            
-            // Publish updated contacts
-            let contactsEvent = try await NDKEventBuilder(ndk: ndk)
-                .kind(3)
-                .content("")
-                .tags(currentTags)
-                .build(signer: signer)
-            
-            _ = try await ndk.publish(contactsEvent)
-            
         } catch {
             // Revert on error
             await MainActor.run {
-                isFollowing.toggle()
+                isFollowing = wasFollowing
+                HapticManager.shared.notification(.error)
             }
-            // Error updating follow status
         }
     }
 }
@@ -1060,12 +1012,12 @@ struct RecentArticlesSection: View {
     @State private var showingArticleDetail = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 16) {
             // Section header
             HStack {
                 Label("Recent articles", systemImage: "clock.fill")
-                    .font(.ds.largeTitle)
-                    .fontWeight(.bold)
+                    .font(.ds.title2)
+                    .fontWeight(.semibold)
                     .foregroundColor(.ds.text)
                 
                 Spacer()
@@ -1083,24 +1035,26 @@ struct RecentArticlesSection: View {
                     }
                 }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 16)
             
             // Portrait article cards carousel
             if !dataManager.highlightedArticles.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 16) {
+                    LazyHStack(spacing: 12) {
                         ForEach(Array(dataManager.highlightedArticles.prefix(5).enumerated()), id: \.element.article.id) { index, highlightedArticle in
-                            RecentArticlePortraitCard(
-                                article: highlightedArticle.article,
-                                highlights: highlightedArticle.highlights,
-                                index: index
-                            )
-                            .frame(width: UIScreen.main.bounds.width - 80)
-                            .onTapGesture {
+                            Button(action: {
                                 selectedArticle = highlightedArticle.article
                                 showingArticleDetail = true
                                 HapticManager.shared.impact(.medium)
+                            }) {
+                                RecentArticlePortraitCard(
+                                    article: highlightedArticle.article,
+                                    highlights: highlightedArticle.highlights,
+                                    index: index
+                                )
+                                .frame(width: 280)
                             }
+                            .buttonStyle(PlainButtonStyle())
                             .onAppear {
                                 withAnimation {
                                     currentPage = index
@@ -1108,7 +1062,7 @@ struct RecentArticlesSection: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 16)
                     .scrollTargetLayout()
                 }
                 .scrollTargetBehavior(.viewAligned)
@@ -1246,11 +1200,11 @@ struct RecentArticlePortraitCard: View {
                     }
                 }
             }
-            .padding(24)
+            .padding(20)
         }
-        .frame(height: 500)
+        .frame(height: 420)
         .background(Color.ds.surfaceSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .shadow(
             color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.15),
             radius: 20,
@@ -1270,9 +1224,6 @@ struct RecentArticlePortraitCard: View {
             },
             perform: {}
         )
-        .onTapGesture {
-            HapticManager.shared.impact(.medium)
-        }
     }
     
     

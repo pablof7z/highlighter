@@ -135,6 +135,11 @@ class AppState: ObservableObject {
                         await profileManager.loadCurrentUserProfile(for: signer)
                     }
                 }
+                
+                // Load following list
+                Task {
+                    try? await loadFollowingList()
+                }
             }
         } catch {
             errorMessage = "Failed to initialize: \(error.localizedDescription)"
@@ -166,8 +171,13 @@ class AppState: ObservableObject {
         // Update services with new signer
         configureServices(ndk: ndk, signer: signer)
         
+        // Set user pubkey
+        userPubkey = try? await signer.pubkey
+        
         // Start streaming data
         await dataStreamManager.startAllStreams()
+        
+        // Following list will be empty for new accounts
     }
     
     func importAccount(nsec: String) async throws {
@@ -195,11 +205,17 @@ class AppState: ObservableObject {
         // Update services with new signer
         configureServices(ndk: ndk, signer: signer)
         
+        // Set user pubkey
+        userPubkey = try? await signer.pubkey
+        
         // Start streaming data
         await dataStreamManager.startAllStreams()
         
         // Load user profile
         await profileManager.loadCurrentUserProfile(for: signer)
+        
+        // Load following list
+        try? await loadFollowingList()
     }
     
     func logout() async {
@@ -266,6 +282,96 @@ class AppState: ObservableObject {
     
     func createCuration(name: String, title: String, description: String?, image: String?) async throws {
         try await publishingService.createCuration(name: name, title: title, description: description, image: image)
+    }
+    
+    // MARK: - Follow Management (NIP-02)
+    
+    /// Follow a user by adding them to the contact list
+    func followUser(_ pubkey: String) async throws {
+        guard let ndk = ndk else {
+            throw AuthError.noSigner
+        }
+        
+        let userToFollow = NDKUser(pubkey: pubkey)
+        
+        // Get or create contact list
+        let contactList = try await ndk.fetchContactList() ?? NDKContactList(ndk: ndk)
+        
+        // Add user to contact list
+        contactList.addContact(user: userToFollow)
+        
+        // Publish updated contact list
+        try await ndk.publishContactList(contactList)
+        
+        // Update local following set
+        following.insert(pubkey)
+    }
+    
+    /// Unfollow a user by removing them from the contact list
+    func unfollowUser(_ pubkey: String) async throws {
+        guard let ndk = ndk else {
+            throw AuthError.noSigner
+        }
+        
+        let userToUnfollow = NDKUser(pubkey: pubkey)
+        
+        // Get existing contact list
+        guard let contactList = try await ndk.fetchContactList() else {
+            // No contact list to update
+            return
+        }
+        
+        // Remove user from contact list
+        contactList.removeContact(user: userToUnfollow)
+        
+        // Publish updated contact list
+        try await ndk.publishContactList(contactList)
+        
+        // Update local following set
+        following.remove(pubkey)
+    }
+    
+    /// Check if the current user is following a specific user
+    func isFollowing(_ pubkey: String) async throws -> Bool {
+        // First check local cache
+        if following.contains(pubkey) {
+            return true
+        }
+        
+        guard let ndk = ndk else {
+            throw AuthError.noSigner
+        }
+        
+        // Get contact list
+        guard let contactList = try await ndk.fetchContactList() else {
+            return false
+        }
+        
+        // Check if following
+        let isFollowing = contactList.isFollowing(pubkey)
+        
+        // Update local cache
+        if isFollowing {
+            following.insert(pubkey)
+        }
+        
+        return isFollowing
+    }
+    
+    /// Load the current user's following list
+    func loadFollowingList() async throws {
+        guard let ndk = ndk else {
+            throw AuthError.noSigner
+        }
+        
+        // Get contact list
+        guard let contactList = try await ndk.fetchContactList() else {
+            following = []
+            return
+        }
+        
+        // Update local following set
+        following = Set(contactList.contactPubkeys)
     }
 }
 

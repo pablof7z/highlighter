@@ -41,7 +41,6 @@
 		592922A038AC7CEB7AAD35F7 /* SmartArticleImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C6D9AB2A21C93E8951D6E4 /* SmartArticleImportView.swift */; };
 		5D62AE907A0A91BECED7DCD4 /* DataStreamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D8FA7B43386CEE13EB7B18 /* DataStreamManager.swift */; };
 		63ED41BC7DD413BEE595F3A9 /* HighlightDiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C72655D262C9FB9C686CAF /* HighlightDiscoveryView.swift */; };
-		6462DC934F3BCE00CEEE8BF8 /* HighlightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19C631ECAA0313B22AD50212 /* HighlightCard.swift */; };
 		65B0F76A54167561B653A458 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B732C4AF8ED87EBB93D6D0D5 /* EditProfileView.swift */; };
 		6972D167F453E975971B28E6 /* SwarmOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83206D6462CF11DCF490672D /* SwarmOverlayView.swift */; };
 		6B3A6908C6C27D35E9C37F28 /* FormattingUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = D01FA9F607102E7402D96CA8 /* FormattingUtilities.swift */; };
@@ -111,7 +110,6 @@
 		0E3DC62588BEBADA506749EE /* AdvancedSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchView.swift; sourceTree = "<group>"; };
 		1218D531D7715736DC097843 /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
 		15E27589CBE68F327B765B12 /* CurationManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurationManagementView.swift; sourceTree = "<group>"; };
-		19C631ECAA0313B22AD50212 /* HighlightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightCard.swift; sourceTree = "<group>"; };
 		1A3025E76E14FBF1C8D93736 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		244A38BDC30B8AFB74E55CF6 /* ReadingProgressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingProgressService.swift; sourceTree = "<group>"; };
 		288947C11C084EEA395DB4F3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -431,7 +429,6 @@
 				0986709D8D575050D8063F5D /* EmptyHighlightsView.swift */,
 				B1A668315DD1D30882E006A8 /* EnhancedAsyncProfileImage.swift */,
 				2BA80D19BCF63972B50EDAD4 /* EnhancedTabBar.swift */,
-				19C631ECAA0313B22AD50212 /* HighlightCard.swift */,
 				6251BFC91A9CE5996EB363C1 /* ImmersiveGradientBackground.swift */,
 				A91029F50FE713C2BA3272F5 /* LoadingHighlightView.swift */,
 				06EC35345A13411260DCEEF7 /* MeshGradientBackground.swift */,
@@ -661,7 +658,6 @@
 				9B5E2280A6B1D40EB14EF146 /* FollowingListView.swift in Sources */,
 				6B3A6908C6C27D35E9C37F28 /* FormattingUtilities.swift in Sources */,
 				A25241FBBFAFEE09E8F309E6 /* HapticManager.swift in Sources */,
-				6462DC934F3BCE00CEEE8BF8 /* HighlightCard.swift in Sources */,
 				3A1255EBF3357C89B1E648F6 /* HighlightDetailView.swift in Sources */,
 				63ED41BC7DD413BEE595F3A9 /* HighlightDiscoveryView.swift in Sources */,
 				D6A56128381947ACC6639CC6 /* HighlightEvent.swift in Sources */,

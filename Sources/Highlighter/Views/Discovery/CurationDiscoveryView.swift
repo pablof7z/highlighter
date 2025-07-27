@@ -118,7 +118,7 @@ struct CurationCard: View {
                                 }
                             }
                         
-                        Text(curator?.displayName ?? formatPubkey(curation.author))
+                        Text(curator?.displayName ?? PubkeyFormatter.formatShort(curation.author))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
                     }
@@ -155,10 +155,6 @@ struct CurationCard: View {
                 .font(.system(size: 40))
                 .foregroundColor(.white.opacity(0.5))
         }
-    }
-    
-    private func formatPubkey(_ pubkey: String) -> String {
-        String(pubkey.prefix(8)) + "..."
     }
     
     private func loadCurator() async {

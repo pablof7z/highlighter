@@ -116,7 +116,7 @@ struct ArticleView: View {
         TextSelectionView(
             content: article.content,
             source: article.title,
-            author: author?.displayName ?? formatPubkey(article.author)
+            author: author?.displayName ?? PubkeyFormatter.formatShort(article.author)
         )
     }
     
@@ -677,9 +677,6 @@ struct ArticleView: View {
         )
     }
     
-    private func formatPubkey(_ pubkey: String) -> String {
-        PubkeyFormatter.formatShort(pubkey)
-    }
     
     private func createArticleMarkdownStyle(fontScale: CGFloat) -> MarkdownConfiguration {
         var config = MarkdownConfiguration()

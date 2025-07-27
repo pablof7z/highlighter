@@ -94,7 +94,7 @@ struct UserCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 // Name
-                Text(profile.displayName ?? profile.name ?? formatPubkey(pubkey))
+                Text(profile.displayName ?? profile.name ?? PubkeyFormatter.formatShort(pubkey))
                     .font(.ds.headline)
                     .foregroundColor(.ds.text)
                     .lineLimit(1)
@@ -135,10 +135,9 @@ struct UserCard: View {
             
             // Follow button
             Button {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                    isFollowing.toggle()
+                Task { @MainActor in
+                    await toggleFollow()
                 }
-                HapticManager.shared.impact(HapticManager.ImpactStyle.light)
             } label: {
                 Text(isFollowing ? "Following" : "Follow")
                     .font(.ds.footnoteMedium)
@@ -152,8 +151,24 @@ struct UserCard: View {
         }
     }
     
-    private func formatPubkey(_ pubkey: String) -> String {
-        String(pubkey.prefix(8)) + "..."
+    private func toggleFollow() async {
+        let wasFollowing = isFollowing
+        isFollowing.toggle()
+        HapticManager.shared.impact(.light)
+        
+        do {
+            if isFollowing {
+                try await appState.followUser(pubkey)
+            } else {
+                try await appState.unfollowUser(pubkey)
+            }
+        } catch {
+            // Revert on error
+            await MainActor.run {
+                isFollowing = wasFollowing
+                HapticManager.shared.notification(.error)
+            }
+        }
     }
     
     private func loadUserStats() async {
@@ -180,31 +195,10 @@ struct UserCard: View {
         }
         
         // Check if following
-        if let signer = appState.activeSigner {
-            do {
-                let currentUser = try await signer.pubkey
-                let contactSource = await ndk.outbox.observe(
-                    filter: NDKFilter(
-                        authors: [currentUser],
-                        kinds: [3],
-                        limit: 1
-                    ),
-                    maxAge: 3600,
-                    cachePolicy: .cacheWithNetwork
-                )
-                
-                for await event in contactSource.events {
-                    // Check if this pubkey is in the contact list
-                    let tags = event.tags.filter { $0.count >= 2 && $0[0] == "p" }
-                    let isInContacts = tags.contains { $0[1] == pubkey }
-                    
-                    await MainActor.run {
-                        self.isFollowing = isInContacts
-                    }
-                    break
-                }
-            } catch {
-            }
+        do {
+            isFollowing = try await appState.isFollowing(pubkey)
+        } catch {
+            isFollowing = false
         }
     }
 }

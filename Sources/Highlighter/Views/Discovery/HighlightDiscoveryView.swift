@@ -110,7 +110,7 @@ struct DiscoveryHighlightCard: View {
                             }
                         }
                     
-                    Text(author?.displayName ?? formatPubkey(highlight.author))
+                    Text(author?.displayName ?? PubkeyFormatter.formatShort(highlight.author))
                         .font(.ds.footnoteMedium)
                         .foregroundColor(.ds.text)
                 }
@@ -143,10 +143,6 @@ struct DiscoveryHighlightCard: View {
         .task {
             await loadAuthor()
         }
-    }
-    
-    private func formatPubkey(_ pubkey: String) -> String {
-        String(pubkey.prefix(8)) + "..."
     }
     
     private func loadAuthor() async {
