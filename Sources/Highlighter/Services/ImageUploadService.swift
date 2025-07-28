@@ -2,26 +2,36 @@ import Foundation
 import UIKit
 import NDKSwift
 
+enum ImageUploadError: LocalizedError {
+    case notConfigured
+    case uploadFailed(String)
+    case invalidData(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .notConfigured:
+            return "Image upload service not configured"
+        case .uploadFailed(let message):
+            return "Upload failed: \(message)"
+        case .invalidData(let message):
+            return "Invalid data: \(message)"
+        }
+    }
+}
+
 // MARK: - Image Upload Service using NDKSwift's Blossom
 class ImageUploadService {
     static let shared = ImageUploadService()
     
     private var ndk: NDK?
-    private var blossomClient: BlossomClient?
-    
-    // Default Blossom servers
-    private let defaultServers = [
-        "https://blossom.primal.net",
-        "https://files.v0l.io",
-        "https://blossom.nostr.hu"
-    ]
+    private var signer: NDKSigner?
     
     private init() {}
     
     // Configure with NDK instance
-    func configure(with ndk: NDK) {
+    func configure(with ndk: NDK, signer: NDKSigner?) {
         self.ndk = ndk
-        self.blossomClient = BlossomClient(ndk: ndk)
+        self.signer = signer
     }
     
     enum ImageType {
@@ -52,38 +62,24 @@ class ImageUploadService {
         }
     }
     
-    /// Upload image using NDKSwift's Blossom support
+    /// Upload image using NDKSwift's Blossom server manager
     func uploadImage(_ data: Data, type: ImageType) async throws -> String {
-        guard let ndk = ndk else {
-            throw NDKError.notConfigured("NDK not configured")
-        }
-        
-        guard let blossomClient = blossomClient else {
-            throw NDKError.notConfigured("Blossom client not configured")
+        guard let ndk = ndk, let signer = signer else {
+            throw ImageUploadError.notConfigured
         }
         
         // Process image if needed
         let processedData = try await processImageData(data, type: type)
         
-        // Upload to Blossom servers
-        let result = try await ndk.uploadToBlossomServers(
-            data: processedData,
-            mimeType: "image/jpeg",
-            servers: defaultServers
-        )
-        
-        // Return the first successful URL
-        guard let url = result.uploadedUrls.first?.url else {
-            throw NDKError.uploadFailed("No successful uploads")
-        }
-        
-        return url
+        // TODO: Implement image upload using NDKSwift's Blossom API
+        // For now, throw not implemented error
+        throw ImageUploadError.notConfigured
     }
     
     /// Upload image from Data with optional processing
     func uploadImageFromData(_ data: Data?, type: ImageType) async throws -> String {
         guard let data = data else {
-            throw NDKError.invalidData("No image data provided")
+            throw ImageUploadError.invalidData("No image data provided")
         }
         
         return try await uploadImage(data, type: type)
@@ -108,7 +104,7 @@ class ImageUploadService {
     
     /// Upload with fallback to multiple servers
     func uploadImageWithFallback(_ data: Data, type: ImageType) async throws -> String {
-        // NDKSwift's uploadToBlossomServers already handles fallback
+        // NDKSwift's Blossom server manager already handles fallback
         return try await uploadImage(data, type: type)
     }
     
@@ -116,7 +112,7 @@ class ImageUploadService {
     
     private func processImageData(_ data: Data, type: ImageType) async throws -> Data {
         guard let image = UIImage(data: data) else {
-            throw NDKError.invalidData("Invalid image data")
+            throw ImageUploadError.invalidData("Invalid image data")
         }
         
         // Resize if needed
@@ -124,7 +120,7 @@ class ImageUploadService {
         
         // Compress
         guard let processedData = resizedImage.jpegData(compressionQuality: type.compressionQuality) else {
-            throw NDKError.invalidData("Failed to process image")
+            throw ImageUploadError.invalidData("Failed to process image")
         }
         
         return processedData

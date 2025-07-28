@@ -1,253 +1,16 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
+/// Wrapper around NDKUIProfilePicture to maintain API compatibility
+/// while leveraging NDKSwiftUI's proven implementation
 struct ProfileImage: View {
     let pubkey: String
     let size: CGFloat
     
-    @EnvironmentObject var appState: AppState
-    @State private var profile: NDKUserProfile?
-    @State private var imageState: ImageLoadState = .loading
-    @State private var blurHashImage: Image?
-    @State private var profileImage: Image?
-    @State private var shimmerOffset: CGFloat = -200
-    @State private var pulseAnimation = false
-    
-    enum ImageLoadState: Equatable {
-        case loading
-        case loaded(Image)
-        case failed
-        case placeholder
-        
-        static func == (lhs: ImageLoadState, rhs: ImageLoadState) -> Bool {
-            switch (lhs, rhs) {
-            case (.loading, .loading), (.failed, .failed), (.placeholder, .placeholder):
-                return true
-            case (.loaded(_), .loaded(_)):
-                return true
-            default:
-                return false
-            }
-        }
-    }
-    
     var body: some View {
-        ZStack {
-            // Background gradient placeholder
-            Circle()
-                .fill(gradientForPubkey()
-                .overlay(
-                    // Shimmer effect while loading
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.clear,
-                                    Color.white.opacity(0.3),
-                                    Color.clear
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .offset(x: shimmerOffset)
-                        .opacity(imageState == .loading ? 1 : 0)
-                )
-                .mask(Circle()
-            
-            // Content based on state
-            switch imageState {
-            case .loading:
-                // Show blurhash or initials while loading
-                if let blurHashImage = blurHashImage {
-                    blurHashImage
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: size, height: size)
-                        .clipShape(Circle()
-                        .blur(radius: 10)
-                        .transition(.opacity)
-                } else {
-                    initialsView
-                        .scaleEffect(pulseAnimation ? 1.05 : 0.95)
-                        .opacity(pulseAnimation ? 0.8 : 1)
-                }
-                
-            case .loaded(let image):
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: size, height: size)
-                    .clipShape(Circle()
-                    .transition(.asymmetric(
-                        insertion: .scale(scale: 1.1).combined(with: .opacity),
-                        removal: .scale(scale: 0.9).combined(with: .opacity)
-                    )
-                
-            case .failed, .placeholder:
-                initialsView
-            }
-            
-            // Premium glass overlay for depth
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.2),
-                            Color.clear,
-                            Color.black.opacity(0.1)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .blendMode(.overlay)
-            
-            // Border with gradient
-            Circle()
-                .strokeBorder(
-                    LinearGradient(
-                        colors: borderColors(),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: borderWidth()
-                )
-        }
-        .frame(width: size, height: size)
-        .shadow(color: shadowColor(), radius: shadowRadius(), y: 2)
-        .task {
-            await loadProfile()
-        }
-        .onAppear {
-            startAnimations()
-        }
-    }
-    
-    // MARK: - Subviews
-    
-    private var initialsView: some View {
-        Text(AvatarUtilities.generateInitials(from: pubkey)
-            .font(.system(size: size * 0.4, weight: .bold, design: .rounded)
-            .foregroundColor(.white)
-            .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
-    }
-    
-    // MARK: - Helper Methods
-    
-    private func gradientForPubkey() -> LinearGradient {
-        AvatarUtilities.gradient(for: pubkey)
-    }
-    
-    private func borderColors() -> [Color] {
-        switch imageState {
-        case .loaded:
-            return [
-                Color.white.opacity(0.5),
-                Color.white.opacity(0.2)
-            ]
-        case .loading:
-            return [
-                DesignSystem.Colors.primary.opacity(0.6),
-                DesignSystem.Colors.secondary.opacity(0.4)
-            ]
-        default:
-            return [
-                Color.white.opacity(0.3),
-                Color.white.opacity(0.1)
-            ]
-        }
-    }
-    
-    private func borderWidth() -> CGFloat {
-        size >= 60 ? 2 : 1
-    }
-    
-    private func shadowColor() -> Color {
-        switch imageState {
-        case .loaded:
-            return Color.black.opacity(0.2)
-        case .loading:
-            return DesignSystem.Colors.primary.opacity(0.3)
-        default:
-            return Color.black.opacity(0.1)
-        }
-    }
-    
-    private func shadowRadius() -> CGFloat {
-        size >= 60 ? 6 : 3
-    }
-    
-    // MARK: - Data Loading
-    
-    private func loadProfile() async {
-        guard let ndk = appState.ndk else {
-            imageState = .placeholder
-            return
-        }
-        
-        // Subscribe to profile updates
-        for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
-            await MainActor.run {
-                self.profile = profile
-            }
-            
-            // Load actual image
-            if let picture = profile?.picture, let url = URL(string: picture) {
-                await loadImage(from: url)
-            } else {
-                await MainActor.run {
-                    imageState = .placeholder
-                }
-            }
-            
-            break // Only need current value
-        }
-    }
-    
-    // BlurHash support can be added later when NDKUserProfile includes it
-    
-    private func loadImage(from url: URL) async {
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            
-            if let uiImage = UIImage(data: data) {
-                await MainActor.run {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                        profileImage = Image(uiImage: uiImage)
-                        imageState = .loaded(Image(uiImage: uiImage)
-                    }
-                }
-            } else {
-                await MainActor.run {
-                    imageState = .failed
-                }
-            }
-        } catch {
-            await MainActor.run {
-                imageState = .failed
-            }
-        }
-    }
-    
-    // MARK: - Animations
-    
-    private func startAnimations() {
-        // Shimmer animation
-        withAnimation(
-            .linear(duration: 1.5)
-            .repeatForever(autoreverses: false)
-        ) {
-            shimmerOffset = 200
-        }
-        
-        // Pulse animation for placeholder
-        withAnimation(
-            .easeInOut(duration: 1.2)
-            .repeatForever(autoreverses: true)
-        ) {
-            pulseAnimation = true
-        }
+        NDKProfilePicture(pubkey: pubkey)
+            .frame(width: size, height: size)
     }
 }
 
@@ -257,7 +20,7 @@ extension View {
     func profileImageStyle(size: CGFloat) -> some View {
         self
             .frame(width: size, height: size)
-            .clipShape(Circle()
+            .clipShape(Circle())
             .overlay(
                 Circle()
                     .stroke(Color.white.opacity(0.2), lineWidth: 1)
@@ -283,11 +46,11 @@ struct ProfileImageGrid: View {
         HStack(spacing: -size * 0.3) {
             ForEach(Array(pubkeys.prefix(maxCount).enumerated()), id: \.element) { index, pubkey in
                 ProfileImage(pubkey: pubkey, size: size)
-                    .zIndex(Double(maxCount - index)
+                    .zIndex(Double(maxCount - index))
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.8).combined(with: .opacity),
                         removal: .scale(scale: 1.2).combined(with: .opacity)
-                    )
+                    ))
                     .animation(
                         .spring(response: 0.4, dampingFraction: 0.7)
                         .delay(Double(index) * 0.05),
@@ -297,12 +60,12 @@ struct ProfileImageGrid: View {
             
             if pubkeys.count > maxCount {
                 Circle()
-                    .fill(DesignSystem.Colors.surfaceSecondary)
+                    .fill(Color(.systemGray5))
                     .frame(width: size, height: size)
                     .overlay(
                         Text("+\(pubkeys.count - maxCount)")
-                            .font(.system(size: size * 0.35, weight: .semibold)
-                            .foregroundColor(DesignSystem.Colors.textSecondary)
+                            .font(.system(size: size * 0.35, weight: .semibold))
+                            .foregroundColor(.secondary)
                     )
                     .overlay(
                         Circle()
@@ -334,6 +97,5 @@ struct ProfileImageGrid: View {
         )
     }
     .padding()
-    .background(DesignSystem.Colors.background)
-    .environmentObject(AppState())
+    .background(Color(.systemBackground))
 }

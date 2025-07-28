@@ -1,5 +1,6 @@
 import Foundation
 import NDKSwift
+import NDKSwiftUI
 
 struct Comment: Identifiable, Equatable {
     let id: String
@@ -39,7 +40,10 @@ struct Comment: Identifiable, Equatable {
     }
     
     var formattedTime: String {
-        RelativeTimeFormatter.relativeTime(from: createdAt)
+        // Return a simple formatted string for now
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy"
+        return formatter.string(from: createdAt)
     }
 }
 

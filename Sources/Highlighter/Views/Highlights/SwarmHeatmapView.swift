@@ -46,7 +46,7 @@ struct SwarmHeatmapView: View {
                     .transition(.asymmetric(
                         insertion: .scale(scale: 0.8).combined(with: .opacity),
                         removal: .scale(scale: 0.95).combined(with: .opacity)
-                    )
+                    ))
                     .zIndex(100)
                 }
             }
@@ -99,7 +99,7 @@ struct SwarmHeatmapView: View {
                     start: position,
                     end: position.applying(.init(translationX: .random(in: -50...50), y: -100)),
                     startTime: Date()
-                )
+                ))
             }
         }
         
@@ -118,16 +118,14 @@ struct SwarmHeatmapView: View {
         Task {
             HapticManager.shared.impact(.light)
             
-            // Zap functionality is implemented via LightningService
-            // This UI is ready for integration with the sendSmartZap method
-            // For now, we simulate the UI feedback
+            // Zap functionality removed - no wallet support
             try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 second
             HapticManager.shared.notification(.success)
         }
     }
     
     private func zapAllHighlighters() async {
-        let highlighters = heatmapData.getHighlighters(for: selectedRange ?? NSRange()
+        let highlighters = heatmapData.getHighlighters(for: selectedRange ?? NSRange())
         
         for _ in highlighters {
             // Show UI feedback for each zap
@@ -250,7 +248,7 @@ class HeatmapTextUIView: UITextView {
         layoutManager.enumerateEnclosingRects(forGlyphRange: glyphRange,
                                             withinSelectedGlyphRange: NSRange(location: NSNotFound, length: 0),
                                             in: textContainer) { rect, _ in
-            rects.append(rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top)
+            rects.append(rect.offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top))
         }
         
         return rects
@@ -287,7 +285,7 @@ struct HeatmapParticleView: View {
                 colors: [Color.ds.primary, Color.ds.primary.opacity(0.3)],
                 startPoint: .top,
                 endPoint: .bottom
-            )
+            ))
             .frame(width: 6, height: 6)
             .scaleEffect(scale)
             .opacity(opacity)
@@ -353,7 +351,7 @@ struct SwarmTooltipView: View {
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(Color.ds.surfaceSecondary)
-                            .clipShape(Capsule()
+                            .clipShape(Capsule())
                             .padding(.leading, 8)
                     }
                 }
@@ -417,7 +415,7 @@ struct HighlighterAvatarView: View {
                     .fill(Color.ds.surfaceSecondary)
                     .frame(width: 40, height: 40)
                     .overlay(
-                        Text(highlighter.name.prefix(2).uppercased()
+                        Text(highlighter.name.prefix(2).uppercased())
                             .font(.ds.caption)
                             .fontWeight(.bold)
                             .foregroundColor(.ds.primary)
@@ -595,7 +593,7 @@ class SwarmHeatmapData: ObservableObject {
                 return HighlighterInfo(
                     id: userId,
                     name: String(userId.prefix(8)) + "...",
-                    zapCount: zapCounts[userId] ?? 0,,
+                    zapCount: zapCounts[userId] ?? 0,
                     timestamp: highlights.first { $0.users.contains(userId) }?.timestamp ?? Date()
                 )
             }
@@ -611,7 +609,7 @@ class SwarmHeatmapData: ObservableObject {
             tags: ["a": [articleId]]
         )
         
-        let zapDataSource = await ndk.outbox.observe(
+        let zapDataSource = ndk.observe(
             filter: zapFilter,
             maxAge: 300 // 5 minute cache
         )

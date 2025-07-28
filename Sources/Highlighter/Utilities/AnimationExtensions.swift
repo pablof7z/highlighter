@@ -2,7 +2,7 @@ import SwiftUI
 
 extension View {
     func onAnimationCompleted<Value: VectorArithmetic>(for value: Value, completion: @escaping () -> Void) -> some View {
-        modifier(AnimationCompletionObserver(observedValue: value, completion: completion)
+        modifier(AnimationCompletionObserver(observedValue: value, completion: completion))
     }
 }
 

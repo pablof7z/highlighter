@@ -54,19 +54,19 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: .ds.large) {
+                VStack(spacing: DesignSystem.Spacing.large) {
                     // App Icon Header with enhanced animation
                     appIconHeader
                     
                     // Appearance Section
                     SettingsSection(title: "Appearance", icon: "paintbrush") {
                         // Theme Selector
-                        VStack(alignment: .leading, spacing: .ds.medium) {
+                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
                             Text("Theme")
-                                .font(.ds.footnoteMedium)
-                                .foregroundColor(.ds.textSecondary)
+                                .font(DesignSystem.Typography.footnoteMedium)
+                                .foregroundColor(DesignSystem.Colors.textSecondary)
                             
-                            HStack(spacing: .ds.small) {
+                            HStack(spacing: DesignSystem.Spacing.small) {
                                 ForEach(AppTheme.allCases, id: \.self) { theme in
                                     ThemeButton(
                                         theme: theme,
@@ -86,13 +86,13 @@ struct SettingsView: View {
                             .background(DesignSystem.Colors.divider)
                         
                         // Highlight Color
-                        VStack(alignment: .leading, spacing: .ds.medium) {
+                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
                             Text("Highlight Color")
-                                .font(.ds.footnoteMedium)
-                                .foregroundColor(.ds.textSecondary)
+                                .font(DesignSystem.Typography.footnoteMedium)
+                                .foregroundColor(DesignSystem.Colors.textSecondary)
                             
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: .ds.small) {
+                                HStack(spacing: DesignSystem.Spacing.small) {
                                     ForEach(HighlightColor.allCases, id: \.self) { color in
                                         ColorButton(
                                             color: color,
@@ -153,25 +153,25 @@ struct SettingsView: View {
                     
                     // Lightning Section
                     SettingsSection(title: "Lightning", icon: "bolt.fill", iconColor: .yellow) {
-                        VStack(alignment: .leading, spacing: .ds.small) {
+                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                             HStack {
                                 Image(systemName: "bolt.circle.fill")
-                                    .font(.ds.title3)
+                                    .font(DesignSystem.Typography.title3)
                                     .foregroundColor(.yellow)
                                 
                                 Text("Default Zap Amount")
-                                    .font(.ds.bodyMedium)
-                                    .foregroundColor(.ds.text)
+                                    .font(DesignSystem.Typography.bodyMedium)
+                                    .foregroundColor(DesignSystem.Colors.text)
                                 
                                 Spacer()
                                 
                                 Text("\(defaultZapAmount) sats")
-                                    .font(.ds.body)
-                                    .foregroundColor(.ds.textSecondary)
+                                    .font(DesignSystem.Typography.body)
+                                    .foregroundColor(DesignSystem.Colors.textSecondary)
                             }
                             
                             // Zap amount slider
-                            VStack(spacing: .ds.small) {
+                            VStack(spacing: DesignSystem.Spacing.small) {
                                 Slider(value: Binding(
                                     get: { Double(defaultZapAmount) },
                                     set: { defaultZapAmount = Int($0) }
@@ -188,13 +188,13 @@ struct SettingsView: View {
                                             }
                                         }) {
                                             Text("\(amount)")
-                                                .font(.ds.caption)
-                                                .foregroundColor(defaultZapAmount == amount ? .white : .ds.textSecondary)
+                                                .font(DesignSystem.Typography.caption)
+                                                .foregroundColor(defaultZapAmount == amount ? .white : DesignSystem.Colors.textSecondary)
                                                 .padding(.horizontal, 12)
                                                 .padding(.vertical, 6)
                                                 .background(
                                                     Capsule()
-                                                        .fill(defaultZapAmount == amount ? Color.ds.secondary : Color.ds.textTertiary.opacity(0.2))
+                                                        .fill(defaultZapAmount == amount ? DesignSystem.Colors.secondary : DesignSystem.Colors.textTertiary.opacity(0.2))
                                                 )
                                         }
                                     }
@@ -202,19 +202,6 @@ struct SettingsView: View {
                             }
                         }
                         
-                        Divider()
-                            .background(DesignSystem.Colors.divider)
-                        
-                        SettingsRow(
-                            title: "Lightning Wallet",
-                            subtitle: "Configure your wallet connection",
-                            icon: "bolt.circle.fill",
-                            iconColor: .yellow,
-                            action: {
-                                HapticManager.shared.impact(.light)
-                                showLightningWallet()
-                            }
-                        )
                     }
                     
                     // Network Section
@@ -302,34 +289,34 @@ struct SettingsView: View {
                     }
                     
                     // Danger Zone
-                    VStack(spacing: .ds.medium) {
+                    VStack(spacing: DesignSystem.Spacing.medium) {
                         Button(action: { showDeleteAccount = true }) {
                             HStack {
                                 Image(systemName: "exclamationmark.triangle")
-                                    .font(.ds.headline)
+                                    .font(DesignSystem.Typography.headline)
                                 Text("Delete Account")
-                                    .font(.ds.bodyMedium)
+                                    .font(DesignSystem.Typography.bodyMedium)
                             }
                             .foregroundColor(.red)
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(Color.ds.error.opacity(0.1)
+                                    .fill(DesignSystem.Colors.error.opacity(0.1))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                            .stroke(Color.ds.error.opacity(0.3), lineWidth: 1)
+                                            .stroke(DesignSystem.Colors.error.opacity(0.3), lineWidth: 1)
                                     )
                             )
                         }
                         
                         Text("This action cannot be undone")
-                            .font(.ds.caption)
-                            .foregroundColor(.ds.textSecondary)
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
                     }
-                    .padding(.top, .ds.large)
+                    .padding(.top, DesignSystem.Spacing.large)
                 }
-                .padding(.vertical, .ds.large)
+                .padding(.vertical, DesignSystem.Spacing.large)
             }
             .background(DesignSystem.Colors.background)
             .navigationTitle("Settings")
@@ -339,7 +326,7 @@ struct SettingsView: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .font(.ds.bodyMedium)
+                    .font(DesignSystem.Typography.bodyMedium)
                 }
             }
         }
@@ -367,7 +354,7 @@ struct SettingsView: View {
     // MARK: - App Icon Header
     
     private var appIconHeader: some View {
-        VStack(spacing: .ds.medium) {
+        VStack(spacing: DesignSystem.Spacing.medium) {
             ZStack {
                 // Animated gradient background
                 Circle()
@@ -385,12 +372,12 @@ struct SettingsView: View {
                     .blur(radius: 20)
                 
                 Image(systemName: "highlighter")
-                    .font(.system(size: 40)
+                    .font(.system(size: 40))
                     .foregroundColor(highlightColor.color)
                     .frame(width: 80, height: 80)
                     .background(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(highlightColor.color.opacity(0.1)
+                            .fill(highlightColor.color.opacity(0.1))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
@@ -399,14 +386,14 @@ struct SettingsView: View {
             }
             
             Text("Highlighter")
-                .font(.ds.title2)
-                .foregroundColor(.ds.text)
+                .font(DesignSystem.Typography.title2)
+                .foregroundColor(DesignSystem.Colors.text)
             
             Text("Knowledge at your fingertips")
-                .font(.ds.body)
-                .foregroundColor(.ds.textSecondary)
+                .font(DesignSystem.Typography.body)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
         }
-        .padding(.vertical, .ds.large)
+        .padding(.vertical, DesignSystem.Spacing.large)
     }
     
     // MARK: - Actions
@@ -444,19 +431,6 @@ struct SettingsView: View {
         return "\(version) (Build \(build))"
     }
     
-    private func showLightningWallet() {
-        // Show Lightning wallet configuration
-        showRelayManager = false // Close other sheets first
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let rootVC = windowScene.windows.first?.rootViewController {
-                let lightningWalletView = LightningWalletView()
-                    .environmentObject(appState)
-                let hostingController = UIHostingController(rootView: lightningWalletView)
-                rootVC.present(hostingController, animated: true)
-            }
-        }
-    }
     
     private func showOutboxSettings() {
         // Show Outbox configuration
@@ -478,20 +452,20 @@ struct SettingsView: View {
 struct SettingsSection<Content: View>: View {
     let title: String
     let icon: String
-    var iconColor: Color = .ds.primary
+    var iconColor: Color = DesignSystem.Colors.primary
     @ViewBuilder let content: () -> Content
     
     var body: some View {
-        VStack(alignment: .leading, spacing: .ds.medium) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             // Section header
             Label(title, systemImage: icon)
-                .font(.ds.footnoteMedium)
-                .foregroundColor(.ds.textSecondary)
+                .font(DesignSystem.Typography.footnoteMedium)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
                 .symbolRenderingMode(.hierarchical)
-                .padding(.horizontal, .ds.screenPadding)
+                .padding(.horizontal, DesignSystem.Spacing.screenPadding)
             
             // Section content
-            VStack(spacing: .ds.medium) {
+            VStack(spacing: DesignSystem.Spacing.medium) {
                 content()
             }
             .padding()
@@ -499,7 +473,7 @@ struct SettingsSection<Content: View>: View {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(DesignSystem.Colors.surface)
             )
-            .padding(.horizontal, .ds.screenPadding)
+            .padding(.horizontal, DesignSystem.Spacing.screenPadding)
         }
     }
 }
@@ -508,30 +482,30 @@ struct SettingsRow: View {
     let title: String
     let subtitle: String?
     let icon: String
-    var iconColor: Color = .ds.primary
+    var iconColor: Color = DesignSystem.Colors.primary
     var action: (() -> Void)? = nil
     
     var body: some View {
         Button(action: { action?() }) {
-            HStack(spacing: .ds.medium) {
+            HStack(spacing: DesignSystem.Spacing.medium) {
                 Image(systemName: icon)
-                    .font(.ds.title3)
+                    .font(DesignSystem.Typography.title3)
                     .foregroundColor(iconColor)
                     .frame(width: 32, height: 32)
                     .background(
                         Circle()
-                            .fill(iconColor.opacity(0.1)
+                            .fill(iconColor.opacity(0.1))
                     )
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.ds.bodyMedium)
-                        .foregroundColor(.ds.text)
+                        .font(DesignSystem.Typography.bodyMedium)
+                        .foregroundColor(DesignSystem.Colors.text)
                     
                     if let subtitle = subtitle {
                         Text(subtitle)
-                            .font(.ds.caption)
-                            .foregroundColor(.ds.textSecondary)
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
                     }
                 }
                 
@@ -539,8 +513,8 @@ struct SettingsRow: View {
                 
                 if action != nil {
                     Image(systemName: "chevron.right")
-                        .font(.ds.callout)
-                        .foregroundColor(.ds.textTertiary)
+                        .font(DesignSystem.Typography.callout)
+                        .foregroundColor(DesignSystem.Colors.textTertiary)
                 }
             }
             .contentShape(Rectangle())
@@ -557,25 +531,25 @@ struct SettingsToggle: View {
     @Binding var isOn: Bool
     
     var body: some View {
-        HStack(spacing: .ds.medium) {
+        HStack(spacing: DesignSystem.Spacing.medium) {
             Image(systemName: icon)
-                .font(.ds.title3)
-                .foregroundColor(.ds.primary)
+                .font(DesignSystem.Typography.title3)
+                .foregroundColor(DesignSystem.Colors.primary)
                 .frame(width: 32, height: 32)
                 .background(
                     Circle()
-                        .fill(Color.ds.primary.opacity(0.1)
+                        .fill(DesignSystem.Colors.primary.opacity(0.1))
                 )
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.ds.bodyMedium)
-                    .foregroundColor(.ds.text)
+                    .font(DesignSystem.Typography.bodyMedium)
+                    .foregroundColor(DesignSystem.Colors.text)
                 
                 if let subtitle = subtitle {
                     Text(subtitle)
-                        .font(.ds.caption)
-                        .foregroundColor(.ds.textSecondary)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
             }
             
@@ -583,7 +557,7 @@ struct SettingsToggle: View {
             
             Toggle("", isOn: $isOn)
                 .labelsHidden()
-                .tint(.ds.primary)
+                .tint(DesignSystem.Colors.primary)
         }
     }
 }
@@ -595,19 +569,19 @@ struct ThemeButton: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: .ds.small) {
+            VStack(spacing: DesignSystem.Spacing.small) {
                 Image(systemName: theme.icon)
-                    .font(.ds.title2)
-                    .foregroundColor(isSelected ? .white : .ds.text)
+                    .font(DesignSystem.Typography.title2)
+                    .foregroundColor(isSelected ? .white : DesignSystem.Colors.text)
                     .frame(width: 60, height: 60)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(isSelected ? Color.ds.primary : Color.ds.textTertiary.opacity(0.1))
+                            .fill(isSelected ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary.opacity(0.1))
                     )
                 
                 Text(theme.rawValue)
-                    .font(.ds.caption)
-                    .foregroundColor(isSelected ? .ds.primary : .ds.textSecondary)
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundColor(isSelected ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
             }
         }
         .scaleEffect(isSelected ? 1.05 : 1.0)
@@ -622,7 +596,7 @@ struct ColorButton: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: .ds.small) {
+            VStack(spacing: DesignSystem.Spacing.small) {
                 Circle()
                     .fill(color.color)
                     .frame(width: 44, height: 44)
@@ -633,14 +607,14 @@ struct ColorButton: View {
                     )
                     .overlay(
                         Image(systemName: "checkmark")
-                            .font(.ds.bodyBold)
+                            .font(DesignSystem.Typography.body.bold())
                             .foregroundColor(.white)
                             .opacity(isSelected ? 1 : 0)
                     )
                 
                 Text(color.rawValue)
-                    .font(.ds.caption)
-                    .foregroundColor(isSelected ? .ds.text : .ds.textSecondary)
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundColor(isSelected ? DesignSystem.Colors.text : DesignSystem.Colors.textSecondary)
             }
         }
         .scaleEffect(isSelected ? 1.1 : 1.0)
@@ -656,41 +630,41 @@ struct AboutView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: .ds.large) {
+                VStack(spacing: DesignSystem.Spacing.large) {
                     Image(systemName: "highlighter")
-                        .font(.system(size: 60)
-                        .foregroundColor(.orange)
+                        .font(.system(size: 60))
+                        .foregroundColor(DesignSystem.Colors.secondary)
                         .padding(.top, 40)
                     
                     Text("Highlighter")
-                        .font(.ds.largeTitle)
+                        .font(DesignSystem.Typography.largeTitle)
                     
                     Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")")
-                        .font(.ds.body)
-                        .foregroundColor(.ds.textSecondary)
+                        .font(DesignSystem.Typography.body)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                     
                     Text("Your personal knowledge companion for the decentralized web. Capture, organize, and share insights from anywhere.")
-                        .font(.ds.body)
-                        .foregroundColor(.ds.textSecondary)
+                        .font(DesignSystem.Typography.body)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                     
-                    VStack(spacing: .ds.medium) {
+                    VStack(spacing: DesignSystem.Spacing.medium) {
                         Link(destination: URL(string: "https://github.com/highlighter/app")!) {
                             Label("GitHub", systemImage: "link")
-                                .font(.ds.bodyMedium)
+                                .font(DesignSystem.Typography.bodyMedium)
                         }
                         
                         Link(destination: URL(string: "https://highlighter.com")!) {
                             Label("Website", systemImage: "globe")
-                                .font(.ds.bodyMedium)
+                                .font(DesignSystem.Typography.bodyMedium)
                         }
                     }
-                    .padding(.top, .ds.large)
+                    .padding(.top, DesignSystem.Spacing.large)
                     
                     Spacer()
                 }
-                .padding(.vertical, .ds.large)
+                .padding(.vertical, DesignSystem.Spacing.large)
             }
             .navigationTitle("About")
             .navigationBarTitleDisplayMode(.inline)

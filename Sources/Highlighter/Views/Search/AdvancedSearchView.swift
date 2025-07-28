@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct AdvancedSearchView: View {
     @EnvironmentObject var appState: AppState
@@ -164,7 +165,7 @@ struct AdvancedSearchView: View {
                     .padding(.vertical, 6)
                     .background(
                         Capsule()
-                            .fill(showAISuggestions ? DesignSystem.Colors.primary : DesignSystem.Colors.primary.opacity(0.1)
+                            .fill(showAISuggestions ? DesignSystem.Colors.primary : DesignSystem.Colors.primary.opacity(0.1))
                     )
                     .overlay(
                         Capsule()
@@ -183,7 +184,7 @@ struct AdvancedSearchView: View {
                     Image(systemName: "slider.horizontal.3")
                         .font(.ds.title3)
                         .foregroundColor(DesignSystem.Colors.primary)
-                        .rotationEffect(.degrees(showFilters ? 90 : 0)
+                        .rotationEffect(.degrees(showFilters ? 90 : 0))
                         .scaleEffect(showFilters ? 1.1 : 1.0)
                 }
             }
@@ -193,7 +194,7 @@ struct AdvancedSearchView: View {
                 Image(systemName: "magnifyingglass")
                     .font(.ds.headline)
                     .foregroundColor(isSearchFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
-                    .rotationEffect(.degrees(isSearchFieldFocused ? 360 : 0)
+                    .rotationEffect(.degrees(isSearchFieldFocused ? 360 : 0))
                     .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isSearchFieldFocused)
                 
                 TextField("Search highlights, articles, users...", text: $searchText)
@@ -216,7 +217,7 @@ struct AdvancedSearchView: View {
                         Image(systemName: "xmark.circle.fill")
                             .font(.ds.headline)
                             .foregroundColor(DesignSystem.Colors.textSecondary)
-                            .transition(.scale.combined(with: .opacity)
+                            .transition(.scale.combined(with: .opacity))
                     }
                 }
             }
@@ -298,13 +299,13 @@ struct AdvancedSearchView: View {
                         .transition(.asymmetric(
                             insertion: .scale(scale: 0.8).combined(with: .opacity),
                             removal: .scale(scale: 1.2).combined(with: .opacity)
-                        )
+                        ))
                     }
                 }
                 .padding(.horizontal, DesignSystem.Spacing.large)
             }
         }
-        .transition(.move(edge: .top).combined(with: .opacity)
+        .transition(.move(edge: .top).combined(with: .opacity))
     }
     
     // MARK: - Trending Section
@@ -318,7 +319,7 @@ struct AdvancedSearchView: View {
             
             LazyVGrid(columns: [
                 GridItem(.flexible()),
-                GridItem(.flexible()
+                GridItem(.flexible())
             ], spacing: DesignSystem.Spacing.medium) {
                 ForEach(trendingTopics) { topic in
                     TrendingCard(topic: topic) {
@@ -460,7 +461,7 @@ struct AdvancedSearchView: View {
                 ForEach(0..<3) { index in
                     Circle()
                         .stroke(DesignSystem.Colors.primary.opacity(0.3 - Double(index) * 0.1), lineWidth: 2)
-                        .frame(width: 80 + CGFloat(index * 20), height: 80 + CGFloat(index * 20)
+                        .frame(width: 80 + CGFloat(index * 20), height: 80 + CGFloat(index * 20))
                         .scaleEffect(animateResults ? 1.2 : 0.8)
                         .opacity(animateResults ? 0 : 1)
                         .animation(
@@ -472,9 +473,9 @@ struct AdvancedSearchView: View {
                 }
                 
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 40)
+                    .font(.system(size: 40))
                     .foregroundColor(DesignSystem.Colors.primary)
-                    .rotationEffect(.degrees(animateResults ? 360 : 0)
+                    .rotationEffect(.degrees(animateResults ? 360 : 0))
                     .animation(
                         .linear(duration: 2)
                         .repeatForever(autoreverses: false),
@@ -502,7 +503,7 @@ struct AdvancedSearchView: View {
     private var emptySearchState: some View {
         VStack(spacing: DesignSystem.Spacing.large) {
             Image(systemName: "magnifyingglass.circle")
-                .font(.system(size: 80)
+                .font(.system(size: 80))
                 .foregroundColor(DesignSystem.Colors.textTertiary)
                 .symbolRenderingMode(.hierarchical)
             
@@ -558,7 +559,7 @@ struct AdvancedSearchView: View {
                     let articleFilter = NDKFilter(
                         kinds: [30023]
                     )
-                    let dataSource = await ndk.outbox.observe(filter: articleFilter)
+                    let dataSource = ndk.observe(filter: articleFilter)
                     var articles: [Article] = []
                     for await event in dataSource.events {
                         if let article = try? Article(from: event) {
@@ -601,7 +602,7 @@ struct AdvancedSearchView: View {
         let filter = NDKFilter(
             kinds: [9802]
         )
-        let dataSource = await ndk.outbox.observe(filter: filter)
+        let dataSource = ndk.observe(filter: filter)
         var highlights: [HighlightEvent] = []
         for await event in dataSource.events {
             if let highlight = try? HighlightEvent(from: event) {
@@ -622,7 +623,7 @@ struct AdvancedSearchView: View {
         let filter = NDKFilter(
             kinds: [0]
         )
-        let dataSource = await ndk.outbox.observe(filter: filter)
+        let dataSource = ndk.observe(filter: filter)
         
         var users: [(pubkey: String, profile: NDKUserProfile)] = []
         for await event in dataSource.events {
@@ -632,7 +633,7 @@ struct AdvancedSearchView: View {
                    (profile.name ?? "").localizedCaseInsensitiveContains(searchText) ||
                    (profile.displayName ?? "").localizedCaseInsensitiveContains(searchText) ||
                    (profile.about ?? "").localizedCaseInsensitiveContains(searchText) {
-                    users.append((event.pubkey, profile)
+                    users.append((event.pubkey, profile))
                 }
             }
         }
@@ -643,7 +644,7 @@ struct AdvancedSearchView: View {
         let filter = NDKFilter(
             kinds: [30004]
         )
-        let dataSource = await ndk.outbox.observe(filter: filter)
+        let dataSource = ndk.observe(filter: filter)
         var curations: [ArticleCuration] = []
         for await event in dataSource.events {
             if let curation = try? ArticleCuration(from: event) {
@@ -671,7 +672,7 @@ struct AdvancedSearchView: View {
                     since: Int64(since.timeIntervalSince1970)
                 )
                 
-                let dataSource = await ndk.outbox.observe(filter: filter)
+                let dataSource = ndk.observe(filter: filter)
                 var events: [NDKEvent] = []
                 for await event in dataSource.events {
                     events.append(event)
@@ -802,10 +803,10 @@ struct AdvancedSearchView: View {
                 "Trending article collections",
                 "New voices to follow"
             ]
-            suggestions.append(contentsOf: generalSuggestions.prefix(4 - suggestions.count)
+            suggestions.append(contentsOf: generalSuggestions.prefix(4 - suggestions.count))
         }
         
-        aiSuggestions = Array(suggestions.prefix(4)
+        aiSuggestions = Array(suggestions.prefix(4))
     }
     
     private func startPulseAnimation() {
@@ -839,7 +840,7 @@ struct SearchCategoryChip: View {
             .padding(.vertical, 10)
             .background(
                 Capsule()
-                    .fill(isSelected ? category.color : category.color.opacity(0.1)
+                    .fill(isSelected ? category.color : category.color.opacity(0.1))
                     .overlay(
                         Capsule()
                             .stroke(category.color, lineWidth: isSelected ? 0 : 1)
@@ -1038,21 +1039,21 @@ struct SearchResultHighlightCard: View {
                 .padding(.horizontal, 4)
                 .background(
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(DesignSystem.Colors.highlightSubtle.opacity(0.3)
+                        .fill(DesignSystem.Colors.highlightSubtle.opacity(0.3))
                         .padding(.horizontal, -4)
                 )
             
             HStack {
                 ProfileImage(pubkey: highlight.author, size: 20)
                 
-                Text(PubkeyFormatter.formatCompact(highlight.author)
+                Text(String(highlight.author.prefix(8)))
                     .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Text("·")
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
-                Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt)
+                NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                     .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
@@ -1171,7 +1172,7 @@ struct SearchResultUserCard: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(DesignSystem.Colors.primary)
-                    .clipShape(Capsule()
+                    .clipShape(Capsule())
             }
         }
         .padding(DesignSystem.Spacing.medium)
@@ -1187,7 +1188,7 @@ struct SearchResultUserCard: View {
 
 extension View {
     func searchPremiumEntrance() -> some View {
-        self.modifier(SearchPremiumEntranceModifier()
+        self.modifier(SearchPremiumEntranceModifier())
     }
 }
 

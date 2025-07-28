@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct HighlightsFeedView: View {
     @EnvironmentObject var appState: AppState
@@ -41,7 +42,7 @@ struct HighlightsFeedView: View {
                 
                 if highlights.isEmpty {
                     EmptyHighlightsView()
-                        .transition(.scale.combined(with: .opacity)
+                        .transition(.scale.combined(with: .opacity))
                 } else {
                     // Wrap in ScrollView for pull-to-refresh
                     ScrollView(.vertical, showsIndicators: false) {
@@ -87,7 +88,7 @@ struct HighlightsFeedView: View {
                             }
                         }
                     }
-                    .gesture(createDragGesture()
+                    .gesture(createDragGesture())
                     .frame(width: geometry.size.width, height: geometry.size.height)
                 }
                 .refreshable {
@@ -106,7 +107,7 @@ struct HighlightsFeedView: View {
                         
                         Spacer()
                     }
-                    .transition(.move(edge: .top).combined(with: .opacity)
+                    .transition(.move(edge: .top).combined(with: .opacity))
                     .allowsHitTesting(false)
                 }
             }
@@ -156,7 +157,7 @@ struct HighlightsFeedView: View {
             )
             
             // Stream highlights as they arrive
-            let dataSource = await ndk.outbox.observe(
+            let dataSource = ndk.observe(
                 filter: filter,
                 maxAge: 300, // Use 5 minute cache
                 cachePolicy: .cacheWithNetwork
@@ -228,7 +229,7 @@ struct HighlightsFeedView: View {
             tags: ["d": [String(identifier)]]
         )
         
-        let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 3600)
+        let dataSource = ndk.observe(filter: filter, maxAge: 3600)
         
         for await event in dataSource.events {
             if let article = try? Article(from: event) {
@@ -274,19 +275,8 @@ struct HighlightsFeedView: View {
     }
     
     private func zapHighlight(_ highlight: HighlightEvent) {
-        Task {
-            do {
-                _ = try await appState.lightningService.sendSmartZap(
-                    amount: 1000, // Default 1000 sats
-                    to: highlight,
-                    comment: nil
-                )
-                HapticManager.shared.impact(.medium)
-            } catch {
-                // Handle zap error
-                HapticManager.shared.notification(.error)
-            }
-        }
+        // Zapping functionality removed - no wallet support
+        HapticManager.shared.impact(.light)
     }
     
     private func shareHighlight(_ highlight: HighlightEvent) {
@@ -348,7 +338,7 @@ struct HighlightsFeedView: View {
             )
             
             // Fetch the article
-            let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            let dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
             
             for await event in dataSource.events {
                 if let article = try? Article(from: event) {
@@ -399,7 +389,7 @@ struct HighlightsFeedView: View {
             tags: ["e": [highlightId]]
         )
         
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300, // 5 minute cache
             cachePolicy: .cacheWithNetwork
@@ -472,19 +462,19 @@ struct HighlightFeedItemView: View {
                         HStack(spacing: 4) {
                             Text(sourceText)
                                 .font(.ds.footnote).fontWeight(.medium)
-                                .foregroundColor(.white.opacity(0.8)
+                                .foregroundColor(.white.opacity(0.8))
                             Text("·")
                                 .font(.ds.footnote).fontWeight(.medium)
-                                .foregroundColor(.white.opacity(0.8)
-                            Text(relativeTime(from: highlight.createdAt)
+                                .foregroundColor(.white.opacity(0.8))
+                            NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                                 .font(.ds.footnote).fontWeight(.medium)
-                                .foregroundColor(.white.opacity(0.8)
+                                .foregroundColor(.white.opacity(0.8))
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
                         .background(
                             Capsule()
-                                .fill(Color.black.opacity(0.3)
+                                .fill(Color.black.opacity(0.3))
                                 .overlay(
                                     Capsule()
                                         .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
@@ -500,7 +490,7 @@ struct HighlightFeedItemView: View {
                     
                     // Main Quote Block (centered vertically)
                     Text(highlight.content)
-                        .font(.ds.bodyMedium, design: .serif)
+                        .font(.ds.bodyMedium)
                         .foregroundColor(.white)
                         .lineSpacing(10)
                         .multilineTextAlignment(.center)
@@ -514,7 +504,7 @@ struct HighlightFeedItemView: View {
                         HStack(spacing: 10) {
                             // Small avatar or placeholder
                             Circle()
-                                .fill(Color.white.opacity(0.2)
+                                .fill(Color.white.opacity(0.2))
                                 .frame(width: 32, height: 32)
                                 .overlay(
                                     Text(authorInitial)
@@ -555,7 +545,7 @@ struct HighlightFeedItemView: View {
                                 VStack(spacing: 4) {
                                     ZStack {
                                         Circle()
-                                            .fill(Color.black.opacity(0.3)
+                                            .fill(Color.black.opacity(0.3))
                                             .frame(width: 42, height: 42)
                                         
                                         Image(systemName: isLiked ? "heart.fill" : "heart")
@@ -572,7 +562,7 @@ struct HighlightFeedItemView: View {
                                 VStack(spacing: 4) {
                                     ZStack {
                                         Circle()
-                                            .fill(Color.black.opacity(0.3)
+                                            .fill(Color.black.opacity(0.3))
                                             .frame(width: 42, height: 42)
                                         
                                         Image(systemName: "message")
@@ -583,8 +573,8 @@ struct HighlightFeedItemView: View {
                                     
                                     if commentCount > 0 {
                                         Text("\(commentCount)")
-                                            .font(.ds.caption2)
-                                            .foregroundColor(.white.opacity(0.8)
+                                            .font(.ds.caption)
+                                            .foregroundColor(.white.opacity(0.8))
                                     }
                                 }
                             }
@@ -597,7 +587,7 @@ struct HighlightFeedItemView: View {
                             }) {
                                 ZStack {
                                     Circle()
-                                        .fill(Color.black.opacity(0.3)
+                                        .fill(Color.black.opacity(0.3))
                                         .frame(width: 42, height: 42)
                                     
                                     Image(systemName: "arrow.2.squarepath")
@@ -611,7 +601,7 @@ struct HighlightFeedItemView: View {
                             Button(action: onShare) {
                                 ZStack {
                                     Circle()
-                                        .fill(Color.black.opacity(0.3)
+                                        .fill(Color.black.opacity(0.3))
                                         .frame(width: 42, height: 42)
                                     
                                     Image(systemName: "square.and.arrow.up")
@@ -629,7 +619,7 @@ struct HighlightFeedItemView: View {
                 // Double tap heart animation
                 if showHeartAnimation {
                     Image(systemName: "heart.fill")
-                        .font(.ds.caption0)
+                        .font(.ds.caption)
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.red, .pink],
@@ -683,7 +673,7 @@ struct HighlightFeedItemView: View {
         if let name = author?.name ?? author?.displayName {
             return name.count > 20 ? String(name.prefix(17)) + "..." : name
         } else {
-            return String(highlight.author.prefix(8)
+            return String(highlight.author.prefix(8))
         }
     }
     
@@ -691,11 +681,6 @@ struct HighlightFeedItemView: View {
         (author?.name ?? author?.displayName ?? "U").prefix(1).uppercased()
     }
     
-    private func relativeTime(from date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date()
-    }
 }
 struct HighlightProgressIndicator: View {
     let currentIndex: Int
@@ -706,7 +691,7 @@ struct HighlightProgressIndicator: View {
         HStack(spacing: 4) {
             ForEach(0..<total, id: \.self) { index in
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(index == currentIndex ? Color.white : Color.white.opacity(0.3)
+                    .fill(index == currentIndex ? Color.white : Color.white.opacity(0.3))
                     .frame(height: 3)
                     .scaleEffect(x: index == currentIndex ? animatedProgress : 1, y: 1, anchor: .leading)
             }

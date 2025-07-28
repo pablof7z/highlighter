@@ -62,7 +62,7 @@ struct AnimationSystem {
     
     /// Create wave-like staggered animations
     static func wave(index: Int, total: Int, duration: Double = 1.0) -> Animation {
-        let normalizedIndex = Double(index) / Double(max(total - 1, 1)
+        let normalizedIndex = Double(index) / Double(max(total - 1, 1))
         let waveDelay = sin(normalizedIndex * .pi) * 0.3
         return Curves.premiumSpring.delay(waveDelay)
     }
@@ -394,8 +394,8 @@ struct ShimmerModifier: ViewModifier {
                             endPoint: .trailing
                         )
                     )
-                    .rotationEffect(.degrees(15)
-                    .offset(x: -200 + (phase * 400)
+                    .rotationEffect(.degrees(15))
+                    .offset(x: -200 + (phase * 400))
                     .animation(
                         .linear(duration: duration).repeatForever(autoreverses: false),
                         value: phase
@@ -578,14 +578,14 @@ extension View {
     
     func premiumHover(scale: CGFloat = 1.03, shadowRadius: CGFloat = 12) -> some View {
         #if os(macOS)
-        modifier(PremiumHoverModifier(scale: scale, shadowRadius: shadowRadius)
+        modifier(PremiumHoverModifier(scale: scale, shadowRadius: shadowRadius))
         #else
         self
         #endif
     }
     
     func premiumPress(hapticStyle: HapticManager.ImpactStyle = .light, scale: CGFloat = 0.96) -> some View {
-        modifier(PremiumPressModifier(hapticStyle: hapticStyle, scale: scale)
+        modifier(PremiumPressModifier(hapticStyle: hapticStyle, scale: scale))
     }
     
     func floating(amplitude: CGFloat = 3, duration: Double = 3.0) -> some View {
@@ -719,7 +719,7 @@ struct AnimatedNumber: View {
     
     var body: some View {
         Text("\(displayValue)\(suffix)")
-            .contentTransition(.numericText(countsDown: value < displayValue)
+            .contentTransition(.numericText(countsDown: value < displayValue))
             .onAppear {
                 animate()
             }
@@ -744,7 +744,7 @@ struct AnimatedCheckmark: View {
         ZStack {
             Circle()
                 .stroke(lineWidth: 2)
-                .foregroundColor(.gray.opacity(0.3)
+                .foregroundColor(.gray.opacity(0.3))
                 .frame(width: 24, height: 24)
             
             if isChecked {
@@ -757,12 +757,12 @@ struct AnimatedCheckmark: View {
                         )
                     )
                     .frame(width: 24, height: 24)
-                    .transition(.scale.combined(with: .opacity)
+                    .transition(.scale.combined(with: .opacity))
                 
                 Image(systemName: "checkmark")
                     .font(.ds.caption).fontWeight(.bold)
                     .foregroundColor(.white)
-                    .transition(.scale.combined(with: .opacity)
+                    .transition(.scale.combined(with: .opacity))
             }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isChecked)

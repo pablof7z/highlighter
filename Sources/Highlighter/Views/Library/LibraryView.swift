@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct LibraryView: View {
     @EnvironmentObject var appState: AppState
@@ -62,7 +63,7 @@ struct LibraryView: View {
                                 .transition(.asymmetric(
                                     insertion: .push(from: .top).combined(with: .opacity),
                                     removal: .push(from: .bottom).combined(with: .opacity)
-                                )
+                                ))
                         }
                         
                         // Filter tabs
@@ -216,7 +217,7 @@ struct LibraryView: View {
                 limit: 100
             )
             
-            let dataSource = await ndk.outbox.observe(
+            let dataSource = ndk.observe(
                 filter: filter,
                 maxAge: 300 // 5 minute cache
             )
@@ -247,7 +248,7 @@ struct LibraryView: View {
                 limit: 50
             )
             
-            let dataSource = await ndk.outbox.observe(
+            let dataSource = ndk.observe(
                 filter: filter,
                 maxAge: 300 // 5 minute cache
             )
@@ -278,7 +279,7 @@ struct LibraryView: View {
                 limit: 50
             )
             
-            let dataSource = await ndk.outbox.observe(
+            let dataSource = ndk.observe(
                 filter: filter,
                 maxAge: 300 // 5 minute cache
             )
@@ -307,7 +308,7 @@ struct LibraryView: View {
     private func exportLibrary() {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        let date = dateFormatter.string(from: Date()
+        let date = dateFormatter.string(from: Date())
         
         var exportContent = "# Highlighter Library Export\n\n"
         exportContent += "Date: \(date)\n\n"
@@ -316,7 +317,7 @@ struct LibraryView: View {
         exportContent += "## Highlights (\(appState.highlights.count))\n\n"
         let sortedHighlights = appState.highlights.sorted { $0.createdAt > $1.createdAt }
         for highlight in sortedHighlights {
-            exportContent += "### \(RelativeTimeFormatter.fullDate(from: highlight.createdAt))\n"
+            exportContent += "### \(highlight.createdAt.formatted())\n"
             exportContent += "> \(highlight.content)\n\n"
             if let url = highlight.url {
                 exportContent += "Source: \(url)\n\n"
@@ -422,7 +423,9 @@ struct LibraryStatsCard: View {
         VStack(spacing: DesignSystem.Spacing.large) {
             HStack {
                 Text("Your Library")
-                    .font(.ds.title, weight: .bold, design: .rounded)
+                    .font(.ds.title)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
                     .foregroundColor(.ds.text)
                 
                 Spacer()
@@ -441,34 +444,64 @@ struct LibraryStatsCard: View {
                     .padding(.vertical, DesignSystem.Spacing.mini)
                     .background(
                         Capsule()
-                            .fill(Color.ds.primary.opacity(0.15)
+                            .fill(Color.ds.primary.opacity(0.15))
                     )
-                    .transition(.scale.combined(with: .opacity)
+                    .transition(.scale.combined(with: .opacity))
                 }
             }
             
             // Stats grid
             HStack(spacing: 16) {
-                UnifiedStatCard(
-                    value: "\(appState.highlights.count)",
-                    label: "Highlights",
-                    icon: "pencil.tip",
-                    color: .ds.primary
-                )
+                VStack(spacing: 8) {
+                    Image(systemName: "pencil.tip")
+                        .font(.ds.title2)
+                        .foregroundColor(.ds.primary)
+                    Text("\(appState.highlights.count)")
+                        .font(.ds.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.ds.text)
+                    Text("Highlights")
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.ds.surface)
+                .cornerRadius(12)
                 
-                UnifiedStatCard(
-                    value: "\(appState.curations.count)",
-                    label: "Collections",
-                    icon: "books.vertical",
-                    color: .ds.primary
-                )
+                VStack(spacing: 8) {
+                    Image(systemName: "books.vertical")
+                        .font(.ds.title2)
+                        .foregroundColor(.ds.primary)
+                    Text("\(appState.curations.count)")
+                        .font(.ds.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.ds.text)
+                    Text("Collections")
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.ds.surface)
+                .cornerRadius(12)
                 
-                UnifiedStatCard(
-                    value: "\(appState.savedArticles.count)",
-                    label: "Articles",
-                    icon: "doc.text",
-                    color: .ds.primary
-                )
+                VStack(spacing: 8) {
+                    Image(systemName: "doc.text")
+                        .font(.ds.title2)
+                        .foregroundColor(.ds.primary)
+                    Text("\(appState.savedArticles.count)")
+                        .font(.ds.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.ds.text)
+                    Text("Articles")
+                        .font(.ds.caption)
+                        .foregroundColor(.ds.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.ds.surface)
+                .cornerRadius(12)
             }
         }
         .padding(20)
@@ -520,7 +553,9 @@ struct RecentActivitySection: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Label("Recent Activity", systemImage: "clock.arrow.circlepath")
-                    .font(.ds.title3, weight: .bold, design: .rounded)
+                    .font(.ds.title3)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
                     .foregroundColor(.ds.text)
                 
                 Spacer()
@@ -564,7 +599,7 @@ struct RecentActivitySection: View {
                     limit: 20
                 )
                 
-                let dataSource = await ndk.outbox.observe(filter: filter)
+                let dataSource = ndk.observe(filter: filter)
                 var events: [NDKEvent] = []
                 for await event in dataSource.events {
                     events.append(event)
@@ -578,37 +613,37 @@ struct RecentActivitySection: View {
                         newActivities.append(ActivityItem(
                             type: .zap,
                             title: "Reacted to content",
-                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
-                        )
+                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                        ))
                     case 9735: // Zap
                         let amount = extractZapAmount(from: event) ?? 0
                         newActivities.append(ActivityItem(
                             type: .zap,
                             title: "Zapped \(amount) sats",
-                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
-                        )
+                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                        ))
                     case 9802: // Highlight
-                        let preview = String(event.content.prefix(50)
+                        let preview = String(event.content.prefix(50))
                         newActivities.append(ActivityItem(
                             type: .highlight,
                             title: "Highlighted: \"\(preview)...\"",
-                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
-                        )
+                            time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                        ))
                     case 30004: // Curation
                         if let name = event.tags.first(where: { $0.first == "name" })?.dropFirst().first {
                             newActivities.append(ActivityItem(
                                 type: .curation,
                                 title: "Created '\(name)'",
-                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
-                            )
+                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                            ))
                         }
                     case 30023: // Article
                         if let title = event.tags.first(where: { $0.first == "title" })?.dropFirst().first {
                             newActivities.append(ActivityItem(
                                 type: .article,
                                 title: "Saved '\(title)'",
-                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt)
-                            )
+                                time: Date(timeIntervalSince1970: TimeInterval(event.createdAt))
+                            ))
                         }
                     default:
                         break
@@ -649,7 +684,7 @@ struct ActivityCard: View {
         HStack(spacing: DesignSystem.Spacing.base) {
             ZStack {
                 Circle()
-                    .fill(activity.type.color.opacity(0.15)
+                    .fill(activity.type.color.opacity(0.15))
                     .frame(width: 44, height: 44)
                 
                 Image(systemName: activity.type.icon)
@@ -663,7 +698,7 @@ struct ActivityCard: View {
                     .foregroundColor(.ds.text)
                     .lineLimit(1)
                 
-                Text(RelativeTimeFormatter.shortRelativeTime(from: activity.time)
+                Text(activity.time.formatted(.relative(presentation: .numeric)))
                     .font(.ds.caption)
                     .foregroundColor(.ds.textSecondary)
             }
@@ -686,7 +721,9 @@ struct SavedHighlightsSection: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Your Highlights")
-                        .font(.ds.title3, weight: .bold, design: .rounded)
+                        .font(.ds.title3)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
                         .foregroundColor(.ds.text)
                     
                     Text("\(appState.highlights.count) highlights saved")
@@ -698,10 +735,10 @@ struct SavedHighlightsSection: View {
             .padding(.horizontal)
             
             if appState.highlights.isEmpty {
-                UnifiedEmptyState(
+                EmptyStateView(
                     icon: "pencil.tip",
                     title: "No highlights yet",
-                    message: "Start highlighting content to build your collection"
+                    subtitle: "Start highlighting content to build your collection"
                 )
                 .padding(.horizontal)
             } else {
@@ -747,7 +784,7 @@ struct LibraryHighlightCard: View {
                             .font(.ds.callout)
                             .foregroundColor(.ds.primary)
                         
-                        Text(ContentFormatter.extractDomain(from: url)
+                        Text(URL(string: url)?.host ?? "Link")
                             .font(.ds.caption).fontWeight(.medium)
                             .foregroundColor(.ds.primary)
                         
@@ -776,7 +813,7 @@ struct LibraryHighlightCard: View {
                 
                 // Footer
                 HStack {
-                    Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt)
+                    Text(highlight.createdAt.formatted(.relative(presentation: .numeric)))
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                     
@@ -811,7 +848,7 @@ struct ViewAllCard: View {
             VStack(spacing: DesignSystem.Spacing.medium) {
                 ZStack {
                     Circle()
-                        .fill(Color.ds.primary.opacity(0.1)
+                        .fill(Color.ds.primary.opacity(0.1))
                         .frame(width: 64, height: 64)
                     
                     Image(systemName: "arrow.right.circle.fill")
@@ -836,7 +873,7 @@ struct ViewAllCard: View {
                 .strokeBorder(
                     style: StrokeStyle(lineWidth: 2, dash: [8])
                 )
-                .foregroundColor(.ds.primary.opacity(0.3)
+                .foregroundColor(.ds.primary.opacity(0.3))
         )
     }
 }
@@ -850,15 +887,17 @@ struct SavedArticlesSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Saved Articles")
-                .font(.ds.title2, weight: .bold, design: .rounded)
+                .font(.ds.title2)
+                .fontWeight(.bold)
+                .fontDesign(.rounded)
                 .foregroundColor(.ds.text)
                 .padding(.horizontal)
             
             if appState.savedArticles.isEmpty {
-                UnifiedEmptyState(
+                EmptyStateView(
                     icon: "doc.text",
                     title: "No saved articles yet",
-                    message: "Save articles to read them later"
+                    subtitle: "Save articles to read them later"
                 )
                 .padding(.horizontal)
             } else {
@@ -889,7 +928,7 @@ struct SavedArticlesSection: View {
                     tags: ["a": ["30023:\(article.author):\(article.identifier ?? "")"]]
                 )
                 
-                let dataSource = await ndk.outbox.observe(
+                let dataSource = ndk.observe(
                     filter: filter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly
@@ -971,7 +1010,7 @@ struct ArticleRow: View {
                         if let progress = readingProgress, progress.progress > 0 {
                             HStack(spacing: 4) {
                                 Image(systemName: progress.progress >= 1.0 ? "checkmark.circle.fill" : "book.fill")
-                                    .font(.ds.caption2)
+                                    .font(.ds.caption)
                                     .foregroundColor(progress.progress >= 1.0 ? .green : .ds.primary)
                                 Text(progress.progress >= 1.0 ? "Completed" : "\(Int(progress.progress * 100))%")
                                     .font(.ds.caption).fontWeight(.medium)
@@ -1046,7 +1085,9 @@ struct YourCurationsSection: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Your Collections")
-                        .font(.ds.title3, weight: .bold, design: .rounded)
+                        .font(.ds.title3)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
                         .foregroundColor(.ds.text)
                     
                     Text("\(curations.count) curated collections")
@@ -1067,10 +1108,10 @@ struct YourCurationsSection: View {
                                 .frame(width: 36, height: 36)
                                 .background(
                                     Circle()
-                                        .fill(Color.purple.opacity(0.1)
+                                        .fill(Color.purple.opacity(0.1))
                                 )
                         }
-                        .transition(.scale.combined(with: .opacity)
+                        .transition(.scale.combined(with: .opacity))
                     }
                     
                     Button(action: { showCreateCuration = true }) {
@@ -1094,10 +1135,10 @@ struct YourCurationsSection: View {
             .padding(.horizontal)
             
             if curations.isEmpty {
-                UnifiedEmptyState(
+                EmptyStateView(
                     icon: "books.vertical",
                     title: "No collections yet",
-                    message: "Create curated collections of your favorite articles"
+                    subtitle: "Create curated collections of your favorite articles"
                 )
                 .onTapGesture { showCreateCuration = true }
                 .padding(.horizontal)
@@ -1168,7 +1209,7 @@ struct CurationCard: View {
                 .padding(.vertical, DesignSystem.Spacing.mini)
                 .background(
                     Capsule()
-                        .fill(Color.black.opacity(0.6)
+                        .fill(Color.black.opacity(0.6))
                         .background(.ultraThinMaterial)
                 )
                 .padding(12)
@@ -1200,8 +1241,8 @@ struct CurationCard: View {
                     
                     Spacer()
                     
-                    Text(RelativeTimeFormatter.shortRelativeTime(from: curation.updatedAt)
-                        .font(.ds.caption2)
+                    Text(curation.updatedAt.formatted(.relative(presentation: .numeric)))
+                        .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                 }
                 .padding(.top, 4)
@@ -1229,7 +1270,7 @@ struct CreateCurationCard: View {
                         .strokeBorder(
                             style: StrokeStyle(lineWidth: 2, dash: [8])
                         )
-                        .foregroundColor(.purple.opacity(0.5)
+                        .foregroundColor(.purple.opacity(0.5))
                         .frame(width: 64, height: 64)
                     
                     Image(systemName: "plus")
@@ -1243,13 +1284,13 @@ struct CreateCurationCard: View {
             }
             .frame(width: 160, height: 240)
             .modernCard(noPadding: true, isInteractive: true)
-            .background(Color.purple.opacity(0.05)
+            .background(Color.purple.opacity(0.05))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium, style: .continuous)
                     .strokeBorder(
                         style: StrokeStyle(lineWidth: 2, dash: [8])
                     )
-                    .foregroundColor(.purple.opacity(0.3)
+                    .foregroundColor(.purple.opacity(0.3))
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -1272,7 +1313,9 @@ struct FollowPacksSection: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Follow Packs")
-                        .font(.ds.title3, weight: .bold, design: .rounded)
+                        .font(.ds.title3)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
                         .foregroundColor(.ds.text)
                     
                     Text("Curated lists of people to follow")
@@ -1284,10 +1327,10 @@ struct FollowPacksSection: View {
             .padding(.horizontal)
             
             if followPacks.isEmpty {
-                UnifiedEmptyState(
+                EmptyStateView(
                     icon: "person.3.sequence",
                     title: "No follow packs yet",
-                    message: "Discover curated lists of interesting people to follow"
+                    subtitle: "Discover curated lists of interesting people to follow"
                 )
                 .onTapGesture { showDiscoverMore = true }
                 .padding(.horizontal)
@@ -1329,11 +1372,11 @@ struct FollowPackRow: View {
                         )
                         .frame(width: 40, height: 40)
                         .overlay(
-                            Text(String(followPack.profiles[index].prefix(1))
+                            Text(String(followPack.profiles[index].prefix(1)))
                                 .font(.ds.body).fontWeight(.bold)
                                 .foregroundColor(.white)
                         )
-                        .offset(x: CGFloat(index * 15)
+                        .offset(x: CGFloat(index * 15))
                 }
                 
                 if followPack.profiles.count > 3 {
@@ -1397,7 +1440,9 @@ struct ArchivedContentSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Archived Content")
-                .font(.ds.title2, weight: .bold, design: .rounded)
+                .font(.ds.title2)
+                .fontWeight(.bold)
+                .fontDesign(.rounded)
                 .foregroundColor(.ds.text)
                 .padding(.horizontal)
             
@@ -1406,15 +1451,15 @@ struct ArchivedContentSection: View {
                 Text("Highlights").tag(true)
                 Text("Articles").tag(false)
             }
-            .pickerStyle(SegmentedPickerStyle()
+            .pickerStyle(SegmentedPickerStyle())
             .padding(.horizontal)
             
             if showArchivedHighlights {
                 if appState.archiveService.archivedHighlights.isEmpty {
-                    UnifiedEmptyState(
-                        icon: UnifiedIcons.Features.archive,
+                    EmptyStateView(
+                        icon: "archivebox",
                         title: "No archived highlights",
-                        message: "Swipe left on highlights to archive them for later"
+                        subtitle: "Swipe left on highlights to archive them for later"
                     )
                     .padding(.horizontal)
                 } else {
@@ -1427,10 +1472,10 @@ struct ArchivedContentSection: View {
                 }
             } else {
                 if appState.archiveService.archivedArticles.isEmpty {
-                    UnifiedEmptyState(
-                        icon: UnifiedIcons.Features.archive,
+                    EmptyStateView(
+                        icon: "archivebox",
                         title: "No archived articles",
-                        message: "Archive articles to declutter your library"
+                        subtitle: "Archive articles to declutter your library"
                     )
                     .padding(.horizontal)
                 } else {
@@ -1469,14 +1514,14 @@ struct ArchivedHighlightCard: View {
                                 .font(.ds.caption)
                                 .foregroundColor(.ds.primary)
                             
-                            Text(ContentFormatter.extractDomain(from: url)
+                            Text(URL(string: url)?.host ?? "Link")
                                 .font(.ds.caption)
                                 .foregroundColor(.ds.primary)
                         }
                     }
                     
                     // Timestamp
-                    Text("Archived \(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))")
+                    Text("Archived \(highlight.createdAt.formatted(.relative(presentation: .numeric)))")
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                 }
@@ -1505,7 +1550,7 @@ struct ArchivedHighlightCard: View {
                             // Remove from archive
                             try? await appState.archiveService.unarchiveHighlight(highlight.id)
                             // Publish deletion event via NIP-09
-                            try? await PublishingService.shared.deleteHighlight(highlight.id)
+                            try? await appState.deleteHighlight(highlight.id)
                         }
                     }) {
                         Label("Delete", systemImage: "trash")
@@ -1518,7 +1563,7 @@ struct ArchivedHighlightCard: View {
             }
         }
         .padding()
-        .background(Color.ds.surface.opacity(0.5)
+        .background(Color.ds.surface.opacity(0.5))
         .cornerRadius(DesignSystem.CornerRadius.medium)
         .overlay(
             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
@@ -1556,7 +1601,7 @@ struct ArchivedArticleCard: View {
                         .lineLimit(2)
                 }
                 
-                Text("Archived \(RelativeTimeFormatter.relativeTime(from: article.publishedAt ?? Date()))")
+                Text("Archived \((article.publishedAt ?? Date()).formatted(.relative(presentation: .numeric)))")
                     .font(.ds.caption)
                     .foregroundColor(.ds.textTertiary)
             }
@@ -1585,7 +1630,7 @@ struct ArchivedArticleCard: View {
                         // Remove from archive
                         try? await appState.archiveService.unarchiveArticle(article.id)
                         // Publish deletion event via NIP-09
-                        try? await PublishingService.shared.deleteArticle(article.id)
+                        try? await appState.deleteArticle(article.id)
                     }
                 }) {
                     Label("Delete", systemImage: "trash")
@@ -1597,7 +1642,7 @@ struct ArchivedArticleCard: View {
             }
         }
         .padding()
-        .background(Color.ds.surface.opacity(0.5)
+        .background(Color.ds.surface.opacity(0.5))
         .cornerRadius(DesignSystem.CornerRadius.medium)
         .overlay(
             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)

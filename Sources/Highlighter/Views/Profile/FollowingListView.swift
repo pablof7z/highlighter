@@ -66,7 +66,7 @@ struct FollowingListView: View {
             limit: 1
         )
         
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork

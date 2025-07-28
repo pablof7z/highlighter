@@ -21,7 +21,7 @@ struct TextSelectionView: View {
     @State private var showSelectionHint = false
     @State private var hintOpacity: Double = 1.0
     @Environment(\.dismiss) var dismiss
-    @StateObject private var publishingService = PublishingService.shared
+    @EnvironmentObject var appState: AppState
     
     private let selectionFeedback = UISelectionFeedbackGenerator()
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -308,7 +308,7 @@ struct TextSelectionView: View {
                 )
                 
                 // Publish to Nostr
-                try await publishingService.publishHighlight(highlight)
+                try await appState.publishHighlight(highlight)
                 
                 HapticManager.shared.notification(.success)
                 dismiss()

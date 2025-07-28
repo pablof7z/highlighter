@@ -301,7 +301,7 @@ struct CreateHighlightView: View {
             
             // Publish the highlight
             do {
-                try await appState.publishingService.publishHighlight(highlight)
+                try await appState.publishHighlight(highlight)
                 await MainActor.run {
                     HapticManager.shared.notification(.success)
                     dismiss()

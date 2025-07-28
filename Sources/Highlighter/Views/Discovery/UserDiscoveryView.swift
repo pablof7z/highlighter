@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct UserDiscoveryView: View {
     let searchText: String
@@ -35,7 +36,7 @@ struct UserDiscoveryView: View {
         guard let ndk = appState.ndk else { return }
         
         // For now, load some popular users or recent profile updates
-        let profileSource = await ndk.outbox.observe(
+        let profileSource = ndk.observe(
             filter: NDKFilter(kinds: [0], limit: 100),
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -94,7 +95,7 @@ struct UserCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 // Name
-                Text(profile.displayName ?? profile.name ?? PubkeyFormatter.formatShort(pubkey))
+                Text(profile.displayName ?? profile.name ?? String(pubkey.prefix(16)))
                     .font(DesignSystem.Typography.headline)
                     .foregroundColor(DesignSystem.Colors.text)
                     .lineLimit(1)
@@ -175,7 +176,7 @@ struct UserCard: View {
         guard let ndk = appState.ndk else { return }
         
         // Count highlights by this user
-        let highlightSource = await ndk.outbox.observe(
+        let highlightSource = ndk.observe(
             filter: NDKFilter(
                 authors: [pubkey],
                 kinds: [9802],

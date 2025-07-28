@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct ImmersiveHighlightDetailView: View {
     let highlight: HighlightEvent
@@ -124,7 +125,7 @@ struct ImmersiveHighlightDetailView: View {
                         )
                         .opacity(floatingElementsAnimation ? 0.8 : 0.3)
                         .animation(
-                            .easeInOut(duration: Double.random(in: 15...25)
+                            .easeInOut(duration: Double.random(in: 15...25))
                             .repeatForever(autoreverses: true)
                             .delay(Double(index) * 0.5),
                             value: floatingElementsAnimation
@@ -173,14 +174,14 @@ struct ImmersiveHighlightDetailView: View {
                         .scaleEffect(headerScale)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(author?.displayName ?? PubkeyFormatter.formatCompact(highlight.author))
+                        Text(author?.displayName ?? String(highlight.author.prefix(8)))
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.white)
                         
                         HStack(spacing: 4) {
                             Image(systemName: "clock")
                                 .font(.ds.caption)
-                            Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
+                            Text(highlight.createdAt.formatted(.relative(presentation: .numeric)))
                                 .font(.ds.callout)
                         }
                         .foregroundColor(.white.opacity(0.8))
@@ -221,7 +222,7 @@ struct ImmersiveHighlightDetailView: View {
                 ForEach(0..<20) { index in
                     Circle()
                         .fill(Color.white.opacity(0.05))
-                        .frame(width: CGFloat.random(in: 20...60)
+                        .frame(width: CGFloat.random(in: 20...60))
                         .position(
                             x: CGFloat.random(in: 0...geometry.size.width),
                             y: CGFloat.random(in: 0...geometry.size.height)
@@ -668,7 +669,7 @@ struct ImmersiveHighlightDetailView: View {
             )
             
             var relatedEvents: [NDKEvent] = []
-            let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            let dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
             
             for await event in dataSource.events {
                 relatedEvents.append(event)
@@ -692,7 +693,7 @@ struct ImmersiveHighlightDetailView: View {
             )
             
             var authorHighlights: [NDKEvent] = []
-            let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            let dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
             
             for await event in dataSource.events {
                 authorHighlights.append(event)
@@ -765,30 +766,7 @@ struct ImmersiveHighlightDetailView: View {
         }
         HapticManager.shared.notification(.success)
         
-        // Trigger zap flow
-        Task {
-            do {
-                if appState.lightningService.isConnected {
-                    // Use smart zap for highlights to split payments
-                    _ = try await appState.lightningService.sendSmartZap(
-                        amount: 21, // Default zap amount
-                        to: highlight,
-                        article: nil, // No article context in this view
-                        comment: "⚡ Zapped via Highlighter"
-                    )
-                } else {
-                    // Show wallet connection UI if not connected
-                    await MainActor.run {
-                        hasZapped = false
-                    }
-                }
-            } catch {
-                HapticManager.shared.notification(.error)
-                await MainActor.run {
-                    hasZapped = false
-                }
-            }
-        }
+        // Zap functionality removed - no wallet support
         
         // Reset animation
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -816,7 +794,7 @@ struct MetricView: View {
                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animatedValue)
             
             Text("\(animatedValue)")
-                .font(.system(size: 16, weight: .bold, design: .rounded)
+                .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundColor(DesignSystem.Colors.text)
                 .contentTransition(.numericText())
             
@@ -899,13 +877,13 @@ struct RelatedHighlightCard: View {
             HStack {
                 ProfileImage(pubkey: highlight.author, size: 24)
                 
-                Text(PubkeyFormatter.formatCompact(highlight.author))
+                Text(String(highlight.author.prefix(8)))
                     .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Spacer()
                 
-                Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt))
+                Text(highlight.createdAt.formatted(.relative(presentation: .numeric)))
                     .font(.ds.caption)
                     .foregroundColor(DesignSystem.Colors.textTertiary)
             }

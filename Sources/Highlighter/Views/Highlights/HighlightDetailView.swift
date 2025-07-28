@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct HighlightDetailView: View {
     let highlight: HighlightEvent
@@ -81,7 +82,7 @@ struct CompactRelatedHighlightCard: View {
                         .foregroundColor(DesignSystem.Colors.text)
                         .lineLimit(1)
                     
-                    Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt))
+                    NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                         .font(.caption2)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }

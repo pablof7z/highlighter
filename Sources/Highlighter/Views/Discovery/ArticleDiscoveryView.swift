@@ -313,7 +313,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
         filter.limit = 50
         
         // Subscribe to get all matching events
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 0,
             cachePolicy: .networkOnly
@@ -366,7 +366,7 @@ class ArticleDiscoveryViewModel: ObservableObject {
         }
         
         // Subscribe to get all matching events
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 0,
             cachePolicy: .networkOnly
@@ -581,12 +581,12 @@ struct FeaturedArticleCard: View {
                                 .fill(Color.ds.surfaceSecondary)
                                 .frame(width: 28, height: 28)
                                 .overlay(
-                                    Text(PubkeyFormatter.formatForAvatar(article.author))
+                                    Text(String(article.author.prefix(2)).uppercased())
                                         .font(.ds.captionMedium)
                                         .foregroundColor(.ds.text)
                                 )
                             
-                            Text(PubkeyFormatter.formatShort(article.author))
+                            Text(String(article.author.prefix(16)))
                                 .font(.ds.callout)
                                 .foregroundColor(.ds.textSecondary)
                         }

@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct CommentsSection: View {
     let highlightId: String
@@ -173,7 +174,7 @@ struct CommentsSection: View {
             tags: ["e": [highlightId]]
         )
         
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -387,7 +388,7 @@ struct EnhancedCommentRow: View {
                     Text("·")
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     
-                    Text(RelativeTimeFormatter.shortRelativeTime(from: comment.createdAt))
+                    NDKRelativeTime(timestamp: Int64(comment.createdAt.timeIntervalSince1970))
                         .font(.ds.footnote)
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                 }
@@ -452,7 +453,7 @@ struct EnhancedCommentRow: View {
     }
     
     private var authorName: String {
-        author?.displayName ?? author?.name ?? PubkeyFormatter.formatCompact(comment.author)
+        author?.displayName ?? author?.name ?? String(comment.author.prefix(8))
     }
 }
 

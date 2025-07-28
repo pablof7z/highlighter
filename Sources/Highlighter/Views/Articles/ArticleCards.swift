@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 // MARK: - Article List Card using UnifiedCard
 struct ArticleListCard: View {
@@ -60,7 +61,7 @@ struct ArticleListCard: View {
                         HStack(spacing: DesignSystem.Spacing.mini) {
                             ProfileImage(pubkey: article.author, size: 24)
                             
-                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
+                            Text(author?.displayName ?? String(article.author.prefix(16)))
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                         }
@@ -179,7 +180,7 @@ struct ArticleFeaturedCard: View {
                         HStack(spacing: DesignSystem.Spacing.mini) {
                             ProfileImage(pubkey: article.author, size: 24)
                             
-                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
+                            Text(author?.displayName ?? String(article.author.prefix(16)))
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                                 .lineLimit(1)
@@ -284,7 +285,7 @@ struct ArticleRowCard: View {
                         HStack(spacing: 4) {
                             ProfileImage(pubkey: article.author, size: 20)
                             
-                            Text(author?.displayName ?? PubkeyFormatter.formatShort(article.author))
+                            Text(author?.displayName ?? String(article.author.prefix(16)))
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                                 .lineLimit(1)
@@ -302,7 +303,7 @@ struct ArticleRowCard: View {
                             if let publishedAt = article.publishedAt {
                                 Text("•")
                                     .foregroundColor(DesignSystem.Colors.textSecondary)
-                                Text(RelativeTimeFormatter.relativeTime(from: publishedAt))
+                                NDKRelativeTime(timestamp: Int64(publishedAt.timeIntervalSince1970))
                                     .font(DesignSystem.Typography.caption)
                                     .foregroundColor(DesignSystem.Colors.textSecondary)
                                     .lineLimit(1)

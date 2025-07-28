@@ -32,7 +32,7 @@ struct HighlightDiscoveryView: View {
     private func loadHighlights() async {
         guard let ndk = appState.ndk else { return }
         
-        let highlightSource = await ndk.outbox.observe(
+        let highlightSource = ndk.observe(
             filter: NDKFilter(kinds: [9802], limit: 100),
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -110,7 +110,7 @@ struct DiscoveryHighlightCard: View {
                             }
                         }
                     
-                    Text(author?.displayName ?? PubkeyFormatter.formatShort(highlight.author))
+                    Text(author?.displayName ?? String(highlight.author.prefix(16)))
                         .font(.ds.footnoteMedium)
                         .foregroundColor(.ds.text)
                 }
@@ -148,7 +148,7 @@ struct DiscoveryHighlightCard: View {
     private func loadAuthor() async {
         guard let ndk = appState.ndk else { return }
         
-        let profileDataSource = await ndk.outbox.observe(
+        let profileDataSource = ndk.observe(
             filter: NDKFilter(
                 authors: [highlight.author],
                 kinds: [0]

@@ -1020,22 +1020,7 @@ struct SwarmHighlightRow: View {
             zapParticles.removeAll()
         }
         
-        // Send actual zap
-        Task {
-            do {
-                if appState.lightningService.isConnected {
-                    try await appState.lightningService.sendSimpleZap(
-                        amount: 21, // Default zap amount
-                        to: info.author.pubkey,
-                        comment: "⚡ Zapped via Highlighter"
-                    )
-                } else {
-                    // Show wallet connection UI if not connected
-                }
-            } catch {
-                HapticManager.shared.notification(.error)
-            }
-        }
+        // Zap functionality removed - no wallet support
     }
 }
 
@@ -1480,7 +1465,7 @@ struct ZapCountView: View {
                 tags: tagsFilter
             )
             
-            let dataSource = await ndk.outbox.observe(
+            let dataSource = ndk.observe(
                 filter: zapFilter,
                 maxAge: 300,
                 cachePolicy: .cacheWithNetwork

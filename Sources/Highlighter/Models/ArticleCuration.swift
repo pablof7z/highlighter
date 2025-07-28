@@ -181,17 +181,3 @@ struct ArticleCuration: Identifiable, Equatable, Hashable {
         case address
     }
 }
-
-enum CurationError: LocalizedError {
-    case invalidKind
-    case missingIdentifier
-    
-    var errorDescription: String? {
-        switch self {
-        case .invalidKind:
-            return "Event is not an article curation (kind:30004)"
-        case .missingIdentifier:
-            return "Missing required 'd' tag identifier"
-        }
-    }
-}

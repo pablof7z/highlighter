@@ -34,7 +34,7 @@ struct FollowPack: Identifiable, Equatable {
         self.id = event.id
         self.event = event
         self.author = event.pubkey
-        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt)
+        self.createdAt = Date(timeIntervalSince1970: TimeInterval(event.createdAt))
         
         // Parse d tag for identifier
         let dTag = event.tags.first { $0.first == "d" }

@@ -146,7 +146,7 @@ class ArchiveService: ObservableObject {
         
         var events: [NDKEvent] = []
         
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheOnly
@@ -193,7 +193,7 @@ class ArchiveService: ObservableObject {
         
         var events: [NDKEvent] = []
         
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheOnly
@@ -233,7 +233,7 @@ class ArchiveService: ObservableObject {
                     tags: ["d": Set([dTag])]
                 )
                 
-                let dataSource = await ndk.outbox.observe(
+                let dataSource = ndk.observe(
                     filter: filter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly

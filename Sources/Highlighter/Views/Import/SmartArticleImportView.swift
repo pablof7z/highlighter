@@ -90,19 +90,19 @@ struct SmartArticleImportView: View {
                                 .transition(.asymmetric(
                                     insertion: .scale(scale: 0.8).combined(with: .opacity),
                                     removal: .scale(scale: 1.1).combined(with: .opacity)
-                                )
+                                ))
                         }
                         
                         // Processing animation
                         if importManager.isProcessing {
                             processingSection
-                                .transition(.scale.combined(with: .opacity)
+                                .transition(.scale.combined(with: .opacity))
                         }
                         
                         // Results section
                         if let article = importManager.processedArticle {
                             resultsSection(article: article)
-                                .transition(.push(from: .bottom).combined(with: .opacity)
+                                .transition(.push(from: .bottom).combined(with: .opacity))
                         }
                     }
                     .padding(.horizontal, .ds.screenPadding)
@@ -155,8 +155,8 @@ struct SmartArticleImportView: View {
                     .fill(
                         RadialGradient(
                             colors: [
-                                Color.purple.opacity(0.3),
-                                Color.purple.opacity(0.1),
+                                DesignSystem.Colors.primary.opacity(0.3),
+                                DesignSystem.Colors.primary.opacity(0.1),
                                 Color.clear
                             ],
                             center: .center,
@@ -170,25 +170,25 @@ struct SmartArticleImportView: View {
                 
                 // Brain icon with neural connections
                 Image(systemName: "brain")
-                    .font(.system(size: 56, weight: .light)
+                    .font(.system(size: 56, weight: .light))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.purple, .orange],
+                            colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
                     .symbolEffect(.pulse, options: .repeating, value: aiThinkingAnimation)
                     .scaleEffect(1 + floatingOffset / 100)
-                    .rotationEffect(.degrees(Foundation.sin(brainWaveAnimation * .pi) * 5)
+                    .rotationEffect(.degrees(Foundation.sin(brainWaveAnimation * .pi) * 5))
                 
                 // Neural sparkles
                 ForEach(0..<6) { index in
                     Circle()
-                        .fill(Color.orange)
+                        .fill(DesignSystem.Colors.secondary)
                         .frame(width: 4, height: 4)
                         .offset(x: 35)
-                        .rotationEffect(.degrees(Double(index) * 60 + rotationAngle)
+                        .rotationEffect(.degrees(Double(index) * 60 + rotationAngle))
                         .opacity(importManager.isProcessing ? 1 : 0.3)
                         .scaleEffect(importManager.isProcessing ? 1.2 : 1)
                 }
@@ -230,7 +230,7 @@ struct SmartArticleImportView: View {
                     .transition(.asymmetric(
                         insertion: .push(from: .top).combined(with: .opacity),
                         removal: .push(from: .bottom).combined(with: .opacity)
-                    )
+                    ))
             }
         }
     }
@@ -264,8 +264,8 @@ struct SmartArticleImportView: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            isDragging ? Color.purple.opacity(0.1) : Color.ds.surfaceSecondary,
-                            isDragging ? Color.orange.opacity(0.1) : Color.ds.surfaceSecondary
+                            isDragging ? DesignSystem.Colors.primary.opacity(0.1) : Color.ds.surfaceSecondary,
+                            isDragging ? DesignSystem.Colors.secondary.opacity(0.1) : Color.ds.surfaceSecondary
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -289,24 +289,24 @@ struct SmartArticleImportView: View {
             if isDragging {
                 RadialGradient(
                     colors: [
-                        Color.purple.opacity(0.2 * magneticPull),
+                        DesignSystem.Colors.primary.opacity(0.2 * magneticPull),
                         Color.clear
                     ],
                     center: .center,
                     startRadius: 0,
                     endRadius: 150
                 )
-                .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous)
+                .clipShape(RoundedRectangle(cornerRadius: .ds.large, style: .continuous))
                 .blur(radius: 20)
             }
             
             // Content
             VStack(spacing: .ds.medium) {
                 Image(systemName: "doc.text.magnifyingglass")
-                    .font(.system(size: 48, weight: .light)
+                    .font(.system(size: 48, weight: .light))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: isDragging ? [.purple, .orange] : [.ds.textTertiary],
+                            colors: isDragging ? [DesignSystem.Colors.primary, DesignSystem.Colors.secondary] : [.ds.textTertiary],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -367,7 +367,7 @@ struct SmartArticleImportView: View {
                 .padding(.horizontal, .ds.base)
                 .padding(.vertical, .ds.small)
                 .background(DesignSystem.Colors.surfaceSecondary)
-                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
                 
                 Button(action: importFromURL) {
                     Image(systemName: "arrow.right.circle.fill")
@@ -375,10 +375,10 @@ struct SmartArticleImportView: View {
                         .foregroundStyle(
                             urlText.isEmpty ? AnyShapeStyle(Color.ds.textTertiary) :
                                 AnyShapeStyle(LinearGradient(
-                                    colors: [.purple, .orange],
+                                    colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
-                                )
+                                ))
                         )
                 }
                 .disabled(urlText.isEmpty)
@@ -410,7 +410,7 @@ struct SmartArticleImportView: View {
         }
         .padding(.ds.medium)
         .background(DesignSystem.Colors.surfaceSecondary)
-        .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+        .clipShape(RoundedRectangle(cornerRadius: .ds.medium, style: .continuous))
     }
     
     // MARK: - Processing Section
@@ -444,7 +444,7 @@ struct SmartArticleImportView: View {
                     Capsule()
                         .fill(
                             LinearGradient(
-                                colors: [.purple, .orange],
+                                colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -455,7 +455,7 @@ struct SmartArticleImportView: View {
                     Capsule()
                         .fill(
                             LinearGradient(
-                                colors: [.purple.opacity(0.6), .orange.opacity(0.6)],
+                                colors: [DesignSystem.Colors.primary.opacity(0.6), DesignSystem.Colors.secondary.opacity(0.6)],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -578,7 +578,7 @@ struct SmartArticleImportView: View {
                     .padding(.bottom, 100)
                 }
                 .frame(width: geometry.size.width * 0.4)
-                .background(DesignSystem.Colors.surfaceSecondary.opacity(0.3)
+                .background(DesignSystem.Colors.surfaceSecondary.opacity(0.3))
             }
         }
     }
@@ -686,7 +686,7 @@ struct SmartArticleImportView: View {
                         comment: suggestion.reason
                     )
                     
-                    try await PublishingService.shared.publishHighlight(highlight)
+                    try await appState.publishHighlight(highlight)
                 }
                 
                 // Dismiss after successful import
@@ -768,7 +768,7 @@ struct SmartArticleImportView: View {
                 x: .random(in: -50...UIScreen.main.bounds.width + 50),
                 y: .random(in: -50...UIScreen.main.bounds.height + 50),
                 size: .random(in: 4...12),
-                color: Bool.random() ? .purple : .orange,
+                color: Bool.random() ? DesignSystem.Colors.primary : DesignSystem.Colors.secondary,
                 speed: .random(in: 20...60)
             )
             particlePositions.append(particle)
@@ -781,7 +781,7 @@ struct SmartArticleImportView: View {
                 x: UIScreen.main.bounds.width / 2,
                 y: UIScreen.main.bounds.height / 2,
                 size: .random(in: 6...16),
-                color: .orange,
+                color: DesignSystem.Colors.secondary,
                 speed: .random(in: 40...100)
             )
             particlePositions.append(particle)
@@ -921,13 +921,13 @@ struct ArticleInfoCard: View {
                 MetricBadge(
                     icon: "clock",
                     value: "\(readingTime) min",
-                    color: .blue
+                    color: DesignSystem.Colors.primary.opacity(0.8)
                 )
                 
                 MetricBadge(
                     icon: "brain",
                     value: "Score \(Int(complexityScore * 100))",
-                    color: .purple
+                    color: DesignSystem.Colors.primary
                 )
                 
                 MetricBadge(
@@ -943,7 +943,7 @@ struct ArticleInfoCard: View {
                     .font(.ds.callout)
                     .foregroundColor(.ds.textSecondary)
                     .lineLimit(4)
-                    .transition(.move(edge: .top).combined(with: .opacity)
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
             
             // Expand button
@@ -961,7 +961,7 @@ struct ArticleInfoCard: View {
                     Image(systemName: "chevron.down")
                         .font(.ds.caption).fontWeight(.medium)
                         .foregroundColor(.ds.primary)
-                        .rotationEffect(.degrees(showDetails ? 180 : 0)
+                        .rotationEffect(.degrees(showDetails ? 180 : 0))
                 }
             }
         }
@@ -974,8 +974,8 @@ struct ArticleInfoCard: View {
                         .stroke(
                             LinearGradient(
                                 colors: [
-                                    Color.purple.opacity(0.2),
-                                    Color.orange.opacity(0.2)
+                                    DesignSystem.Colors.primary.opacity(0.2),
+                                    DesignSystem.Colors.secondary.opacity(0.2)
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -1006,7 +1006,7 @@ struct MetricBadge: View {
         .padding(.vertical, .ds.micro)
         .background(
             Capsule()
-                .fill(color.opacity(0.1)
+                .fill(color.opacity(0.1))
         )
     }
 }
@@ -1027,7 +1027,7 @@ struct SuggestedHighlightCard: View {
                         .fill(
                             isSelected ?
                                 AnyShapeStyle(LinearGradient(
-                                    colors: [.orange, .orange.opacity(0.7)],
+                                    colors: [DesignSystem.Colors.secondary, DesignSystem.Colors.secondary.opacity(0.7)],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )) :
@@ -1037,7 +1037,7 @@ struct SuggestedHighlightCard: View {
                         .overlay(
                             Circle()
                                 .stroke(
-                                    isSelected ? Color.orange.opacity(0.3) : Color.ds.textTertiary.opacity(0.3),
+                                    isSelected ? DesignSystem.Colors.secondary.opacity(0.3) : Color.ds.textTertiary.opacity(0.3),
                                     lineWidth: 1
                                 )
                         )
@@ -1046,7 +1046,7 @@ struct SuggestedHighlightCard: View {
                         Image(systemName: "checkmark")
                             .font(.ds.caption).fontWeight(.bold)
                             .foregroundColor(.white)
-                            .transition(.scale.combined(with: .opacity)
+                            .transition(.scale.combined(with: .opacity))
                     }
                 }
                 .scaleEffect(isHovered ? 1.1 : 1)
@@ -1143,8 +1143,8 @@ struct AIThinkingAnimation: View {
                     let x2 = cos(angle2) * radius
                     let y2 = sin(angle2) * radius
                     
-                    path.move(to: CGPoint(x: x1, y: y1)
-                    path.addLine(to: CGPoint(x: x2, y: y2)
+                    path.move(to: CGPoint(x: x1, y: y1))
+                    path.addLine(to: CGPoint(x: x2, y: y2))
                 }
                 .stroke(
                     LinearGradient(
@@ -1189,7 +1189,7 @@ struct AIThinkingAnimation: View {
             
             // Center brain
             Image(systemName: "brain")
-                .font(.system(size: 40, weight: .medium)
+                .font(.system(size: 40, weight: .medium))
                 .foregroundStyle(
                     LinearGradient(
                         colors: [.purple, .orange],
@@ -1273,7 +1273,7 @@ struct ImportParticleView: View {
                 } else {
                     // Floating animation
                     withAnimation(
-                        .easeInOut(duration: Double.random(in: 3...6)
+                        .easeInOut(duration: Double.random(in: 3...6))
                         .repeatForever(autoreverses: true)
                     ) {
                         offset = CGSize(
@@ -1304,7 +1304,7 @@ struct NeuralNetworkVisualization: View {
         ZStack {
             ForEach(paths) { path in
                 Path { p in
-                    p.move(to: CGPoint(x: path.startX, y: path.startY)
+                    p.move(to: CGPoint(x: path.startX, y: path.startY))
                     p.addQuadCurve(
                         to: CGPoint(x: path.endX, y: path.endY),
                         control: CGPoint(
@@ -1692,7 +1692,7 @@ class SmartImportManager: ObservableObject {
         
         for (pattern, radix) in numericPatterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
-                let matches = regex.matches(in: decoded, options: [], range: NSRange(decoded.startIndex..., in: decoded)
+                let matches = regex.matches(in: decoded, options: [], range: NSRange(decoded.startIndex..., in: decoded))
                 var result = decoded
                 
                 // Process matches in reverse order to maintain string indices
@@ -1702,7 +1702,7 @@ class SmartImportManager: ObservableObject {
                        let code = Int(result[codeRange], radix: radix),
                        code > 0 && code <= 0x10FFFF,  // Valid Unicode range
                        let scalar = UnicodeScalar(code) {
-                        result.replaceSubrange(range, with: String(Character(scalar))
+                        result.replaceSubrange(range, with: String(Character(scalar)))
                     }
                 }
                 decoded = result
@@ -2020,7 +2020,7 @@ struct ArticleMetricsCard: View {
                     value: readingTime,
                     unit: "min read",
                     icon: "clock.fill",
-                    color: .blue,
+                    color: DesignSystem.Colors.primary.opacity(0.8),
                     animate: animateMetrics
                 )
                 
@@ -2028,7 +2028,7 @@ struct ArticleMetricsCard: View {
                     value: Int(complexityScore * 100),
                     unit: "complexity",
                     icon: "brain",
-                    color: .purple,
+                    color: DesignSystem.Colors.primary,
                     animate: animateMetrics
                 )
                 
@@ -2075,7 +2075,7 @@ struct AnimatedMetric: View {
                 .symbolEffect(.bounce, value: animate)
             
             Text("\(displayValue)")
-                .font(.ds.title2.monospacedDigit()
+                .font(.ds.title2.monospacedDigit())
                 .foregroundColor(.ds.text)
             
             Text(unit)
@@ -2101,7 +2101,7 @@ struct AnimatedMetric: View {
         
         for i in 0...steps {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * stepDuration) {
-                displayValue = Int(Double(value) * (Double(i) / Double(steps))
+                displayValue = Int(Double(value) * (Double(i) / Double(steps)))
             }
         }
     }
@@ -2120,7 +2120,7 @@ struct ComplexityVisualization: View {
                     startPoint: .leading,
                     endPoint: .trailing
                 )
-                .clipShape(Capsule()
+                .clipShape(Capsule())
                 .opacity(0.3)
                 
                 // Filled portion
@@ -2129,7 +2129,7 @@ struct ComplexityVisualization: View {
                     startPoint: .leading,
                     endPoint: .trailing
                 )
-                .clipShape(Capsule()
+                .clipShape(Capsule())
                 .frame(width: geometry.size.width * animatedScore)
                 
                 // Indicator
@@ -2196,7 +2196,7 @@ struct SuggestionCard: View {
                         Text(reason)
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
-                            .transition(.push(from: .bottom).combined(with: .opacity)
+                            .transition(.push(from: .bottom).combined(with: .opacity))
                     }
                 }
                 
@@ -2237,7 +2237,7 @@ struct SuggestionCard: View {
                         Image(systemName: "chevron.down")
                             .font(.ds.caption).fontWeight(.medium)
                             .foregroundColor(.ds.textSecondary)
-                            .rotationEffect(.degrees(showInsight ? 180 : 0)
+                            .rotationEffect(.degrees(showInsight ? 180 : 0))
                     }
                 }
             }
@@ -2305,14 +2305,14 @@ struct CategoryBadge: View {
                 .symbolEffect(.pulse, value: pulseAnimation)
             
             Text(category.rawValue)
-                .font(.ds.caption.weight(.medium)
+                .font(.ds.caption.weight(.medium))
         }
         .foregroundColor(category.color)
         .padding(.horizontal, .ds.small)
         .padding(.vertical, .ds.micro)
         .background(
             Capsule()
-                .fill(category.color.opacity(0.15)
+                .fill(category.color.opacity(0.15))
                 .overlay(
                     Capsule()
                         .stroke(category.color.opacity(0.3), lineWidth: 1)

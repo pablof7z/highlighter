@@ -43,7 +43,7 @@ struct FollowPackDetailView: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Image(systemName: "person.3.fill")
-                    .font(.system(size: 48)
+                    .font(.system(size: 48))
                     .foregroundColor(DesignSystem.Colors.primary)
                 
                 Spacer()
@@ -84,7 +84,7 @@ struct FollowPackDetailView: View {
                     .font(DesignSystem.Typography.caption)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
-                Text(creator?.name ?? creator?.displayName ?? PubkeyFormatter.formatShort(followPack.author)
+                Text(creator?.name ?? creator?.displayName ?? String(followPack.author.prefix(16)))
                     .font(DesignSystem.Typography.caption)
                     .fontWeight(.medium)
             }
@@ -192,7 +192,7 @@ struct FollowPackDetailView: View {
                     limit: 1
                 )
                 
-                let dataSource = await ndk.outbox.observe(filter: filter)
+                let dataSource = ndk.observe(filter: filter)
                 var currentFollows: Set<String> = []
                 
                 // Parse existing follows
@@ -251,11 +251,11 @@ struct ProfileRow: View {
     var body: some View {
         HStack {
             Image(systemName: "person.circle.fill")
-                .font(.system(size: 40)
+                .font(.system(size: 40))
                 .foregroundColor(DesignSystem.Colors.primary)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(profile?.name ?? profile?.displayName ?? String(pubkey.prefix(16))
+                Text(profile?.name ?? profile?.displayName ?? String(pubkey.prefix(16)))
                     .font(DesignSystem.Typography.body)
                     .fontWeight(.medium)
                 

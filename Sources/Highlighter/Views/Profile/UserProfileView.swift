@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct UserProfileView: View {
     let pubkey: String
@@ -207,7 +208,7 @@ struct UserProfileView: View {
                 )
                 .frame(width: 100, height: 100)
             
-            Text(PubkeyFormatter.formatForAvatar(pubkey))
+            Text(String(pubkey.prefix(2)).uppercased())
                 .font(.ds.bodyMedium)
                 .foregroundColor(.white)
         }
@@ -388,7 +389,7 @@ struct UserProfileView: View {
         )
         
         var events: Set<NDKEvent> = []
-        let dataSource = await ndk.outbox.observe(filter: filter)
+        let dataSource = ndk.observe(filter: filter)
         for await event in dataSource.events {
             events.insert(event)
             if events.count >= 50 { break }
@@ -408,7 +409,7 @@ struct UserProfileView: View {
         )
         
         var events: Set<NDKEvent> = []
-        let dataSource = await ndk.outbox.observe(filter: filter)
+        let dataSource = ndk.observe(filter: filter)
         for await event in dataSource.events {
             events.insert(event)
             if events.count >= 50 { break }
@@ -430,7 +431,7 @@ struct UserProfileView: View {
             tags: ["K": Set(["30023"])]
         )
         
-        let dataSource = await ndk.outbox.observe(filter: filter)
+        let dataSource = ndk.observe(filter: filter)
         var collectedEvents: [NDKEvent] = []
         for await event in dataSource.events {
             collectedEvents.append(event)
@@ -451,7 +452,7 @@ struct UserProfileView: View {
         )
         
         var events: Set<NDKEvent> = []
-        let dataSource = await ndk.outbox.observe(filter: filter)
+        let dataSource = ndk.observe(filter: filter)
         for await event in dataSource.events {
             events.insert(event)
             if events.count >= 50 { break }
@@ -472,7 +473,7 @@ struct UserProfileView: View {
         )
         
         var followerCount = 0
-        let dataSource = await ndk.outbox.observe(filter: followFilter)
+        let dataSource = ndk.observe(filter: followFilter)
         for await _ in dataSource.events {
             followerCount += 1
         }
@@ -485,7 +486,7 @@ struct UserProfileView: View {
         )
         
         var followingCount = 0
-        let followingDataSource = await ndk.outbox.observe(filter: followingFilter)
+        let followingDataSource = ndk.observe(filter: followingFilter)
         for await event in followingDataSource.events {
             // Count the "p" tags in the contact list
             followingCount = event.tags.filter { $0.count >= 2 && $0[0] == "p" }.count
@@ -659,7 +660,7 @@ struct CommentCard: View {
                 .lineLimit(3)
             
             HStack {
-                Text(RelativeTimeFormatter.relativeTime(from: comment.createdAt))
+                NDKRelativeTime(timestamp: comment.createdAt)
                     .font(.ds.caption)
                     .foregroundColor(.ds.textTertiary)
                 
@@ -724,7 +725,7 @@ struct CollectionCard: View {
                         
                         Spacer()
                         
-                        Text(RelativeTimeFormatter.relativeTime(from: collection.updatedAt))
+                        NDKRelativeTime(timestamp: Int64(collection.updatedAt.timeIntervalSince1970))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                     }

@@ -33,7 +33,7 @@ struct CurationDiscoveryView: View {
     private func loadCurations() async {
         guard let ndk = appState.ndk else { return }
         
-        let curationSource = await ndk.outbox.observe(
+        let curationSource = ndk.observe(
             filter: NDKFilter(kinds: [30004], limit: 50),
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -118,7 +118,7 @@ struct DiscoveryCurationCard: View {
                                 }
                             }
                         
-                        Text(curator?.displayName ?? PubkeyFormatter.formatShort(curation.author))
+                        Text(curator?.displayName ?? String(curation.author.prefix(16)))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
                     }
@@ -160,7 +160,7 @@ struct DiscoveryCurationCard: View {
     private func loadCurator() async {
         guard let ndk = appState.ndk else { return }
         
-        let profileDataSource = await ndk.outbox.observe(
+        let profileDataSource = ndk.observe(
             filter: NDKFilter(
                 authors: [curation.author],
                 kinds: [0]

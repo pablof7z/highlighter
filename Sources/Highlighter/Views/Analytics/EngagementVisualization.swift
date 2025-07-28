@@ -1,6 +1,7 @@
 import SwiftUI
 import Charts
 import NDKSwift
+import NDKSwiftUI
 
 struct EngagementVisualization: View {
     @EnvironmentObject var appState: AppState
@@ -101,7 +102,7 @@ struct EngagementVisualization: View {
                         .transition(.asymmetric(
                             insertion: .push(from: .bottom).combined(with: .opacity),
                             removal: .push(from: .top).combined(with: .opacity)
-                        )
+                        ))
                 }
                 
                 // Trending highlights
@@ -124,7 +125,9 @@ struct EngagementVisualization: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Engagement Analytics")
-                        .font(.ds.title, weight: .bold, design: .rounded)
+                        .font(.ds.title)
+                        .fontWeight(.bold)
+                        .fontDesign(.rounded)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("Track your content performance")
@@ -151,7 +154,7 @@ struct EngagementVisualization: View {
                     .padding(.vertical, 8)
                     .background(
                         Capsule()
-                            .fill(showInsights ? DesignSystem.Colors.primary : DesignSystem.Colors.primary.opacity(0.1)
+                            .fill(showInsights ? DesignSystem.Colors.primary : DesignSystem.Colors.primary.opacity(0.1))
                     )
                 }
             }
@@ -213,7 +216,7 @@ struct EngagementVisualization: View {
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 
                 if !engagementData.isEmpty {
                     Chart(engagementData) { dataPoint in
@@ -240,7 +243,7 @@ struct EngagementVisualization: View {
                             y: .value("Value", animateChart ? dataPoint.value(for: selectedMetric) : 0)
                         )
                         .foregroundStyle(selectedMetric.color)
-                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round)
+                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
                         .interpolationMethod(.catmullRom)
                         
                         // Points
@@ -267,7 +270,7 @@ struct EngagementVisualization: View {
                                         .fill(DesignSystem.Colors.surface)
                                         .shadow(radius: 4)
                                 )
-                                .transition(.scale.combined(with: .opacity)
+                                .transition(.scale.combined(with: .opacity))
                             }
                         }
                     }
@@ -545,7 +548,7 @@ struct EngagementVisualization: View {
                     limit: 500
                 )
                 
-                let highlightDataSource = await ndk.outbox.observe(
+                let highlightDataSource = ndk.observe(
                     filter: highlightFilter,
                     maxAge: 300,
                     cachePolicy: .cacheWithNetwork
@@ -606,7 +609,7 @@ struct EngagementVisualization: View {
                         tags: tagsFilter
                     )
                     
-                    let reactionDataSource = await ndk.outbox.observe(
+                    let reactionDataSource = ndk.observe(
                         filter: reactionFilter,
                         maxAge: 300,
                         cachePolicy: .cacheWithNetwork
@@ -626,7 +629,7 @@ struct EngagementVisualization: View {
                         tags: tagsFilter
                     )
                     
-                    let replyDataSource = await ndk.outbox.observe(
+                    let replyDataSource = ndk.observe(
                         filter: replyFilter,
                         maxAge: 300,
                         cachePolicy: .cacheWithNetwork
@@ -644,7 +647,7 @@ struct EngagementVisualization: View {
                         tags: tagsFilter
                     )
                     
-                    let repostDataSource = await ndk.outbox.observe(
+                    let repostDataSource = ndk.observe(
                         filter: repostFilter,
                         maxAge: 300,
                         cachePolicy: .cacheWithNetwork
@@ -662,7 +665,7 @@ struct EngagementVisualization: View {
                         tags: tagsFilter
                     )
                     
-                    let zapDataSource = await ndk.outbox.observe(
+                    let zapDataSource = ndk.observe(
                         filter: zapFilter,
                         maxAge: 300,
                         cachePolicy: .cacheWithNetwork
@@ -713,9 +716,9 @@ struct EngagementVisualization: View {
                 limit: 50
             )
             
-            let dataSource = await ndk.outbox.observe(
+            let dataSource = ndk.observe(
                 filter: filter,
-                maxAge: CachePolicies.shortTerm,
+                maxAge: 300,
                 cachePolicy: .cacheWithNetwork
             )
             
@@ -755,7 +758,8 @@ struct TimeRangeButton: View {
     var body: some View {
         Button(action: action) {
             Text(range.rawValue)
-                .font(.ds.callout, weight: isSelected ? .semibold : .regular)
+                .font(.ds.callout)
+                .fontWeight(isSelected ? .semibold : .regular)
                 .foregroundColor(isSelected ? Color.white : DesignSystem.Colors.text)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
@@ -827,7 +831,9 @@ struct AnimatedMetricCard: View {
                 }
                 
                 Text("\(animatedValue)")
-                    .font(.ds.title, weight: .bold, design: .rounded)
+                    .font(.ds.title)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
                     .foregroundColor(DesignSystem.Colors.text)
                     .contentTransition(.numericText())
                     .opacity(showValue ? 1 : 0)
@@ -890,7 +896,9 @@ struct TrendingHighlightPlaceholder: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             HStack {
                 Text("#\(index + 1)")
-                    .font(.ds.callout, weight: .bold, design: .rounded)
+                    .font(.ds.callout)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
                     .foregroundColor(DesignSystem.Colors.primary)
                 
                 Spacer()
@@ -940,7 +948,9 @@ struct RealTrendingHighlightCard: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             HStack {
                 Text("#\(index + 1)")
-                    .font(.ds.callout, weight: .bold, design: .rounded)
+                    .font(.ds.callout)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
                     .foregroundColor(DesignSystem.Colors.primary)
                 
                 Spacer()
@@ -957,14 +967,14 @@ struct RealTrendingHighlightCard: View {
                 .multilineTextAlignment(.leading)
             
             HStack {
-                Text(PubkeyFormatter.formatCompact(highlight.author))
+                Text(String(highlight.author.prefix(8)))
                     .font(.ds.caption)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
                 
                 Text("·")
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
-                Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
+                NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                     .font(.ds.caption)
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 

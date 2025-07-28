@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 import PhotosUI
 
 struct ProfileView: View {
@@ -448,7 +449,7 @@ struct ProfileView: View {
             limit: 100
         )
         
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -472,7 +473,7 @@ struct ProfileView: View {
             limit: 50
         )
         
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 600,
             cachePolicy: .cacheWithNetwork
@@ -505,7 +506,7 @@ struct ProfileView: View {
         )
         
         // Fetch followers
-        let followerDataSource = await ndk.outbox.observe(
+        let followerDataSource = ndk.observe(
             filter: followerFilter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -518,7 +519,7 @@ struct ProfileView: View {
         }
         
         // Fetch following
-        let followingDataSource = await ndk.outbox.observe(
+        let followingDataSource = ndk.observe(
             filter: followingFilter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -759,7 +760,7 @@ struct ActivityTabView: View {
     }
     
     private func fetchEvents(filter: NDKFilter, ndk: NDK) async -> [NDKEvent] {
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -968,7 +969,7 @@ struct ZapActivityCard: View {
                     
                     Spacer()
                     
-                    Text(RelativeTimeFormatter.relativeTime(from: event.createdAt)
+                    NDKRelativeTime(timestamp: Int64(event.createdAt.timeIntervalSince1970)
                         .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                 }
@@ -978,7 +979,7 @@ struct ZapActivityCard: View {
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                     
-                    Text(PubkeyFormatter.formatCompact(event.pubkey)
+                    Text(String(event.pubkey.prefix(8))
                         .font(.ds.caption)
                         .foregroundColor(.ds.primary)
                 }
@@ -1032,7 +1033,7 @@ struct ReactionActivityCard: View {
                     
                     Spacer()
                     
-                    Text(RelativeTimeFormatter.relativeTime(from: event.createdAt)
+                    NDKRelativeTime(timestamp: Int64(event.createdAt.timeIntervalSince1970)
                         .font(.ds.caption)
                         .foregroundColor(.ds.textTertiary)
                 }
@@ -1042,7 +1043,7 @@ struct ReactionActivityCard: View {
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
                     
-                    Text(PubkeyFormatter.formatCompact(event.pubkey)
+                    Text(String(event.pubkey.prefix(8))
                         .font(.ds.caption)
                         .foregroundColor(.ds.primary)
                 }

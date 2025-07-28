@@ -107,7 +107,7 @@ struct ArticleView: View {
         TextSelectionView(
             content: article.content,
             source: article.title,
-            author: author?.displayName ?? PubkeyFormatter.formatShort(article.author)
+            author: author?.displayName ?? String(article.author.prefix(16))
         )
     }
     
@@ -681,7 +681,7 @@ struct ArticleView: View {
     private func loadAuthor() async {
         guard let ndk = appState.ndk else { return }
         
-        let profileDataSource = await ndk.outbox.observe(
+        let profileDataSource = ndk.observe(
             filter: NDKFilter(
                 authors: [article.author],
                 kinds: [0]
@@ -717,7 +717,7 @@ struct ArticleView: View {
         )
         
         // Fetch events using NDK's outbox
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: TimeConstants.hour,
             cachePolicy: .cacheWithNetwork
@@ -793,7 +793,7 @@ struct AuthorChip: View {
     }
     
     private var displayName: String {
-        profile?.displayName ?? PubkeyFormatter.formatCompact(pubkey)
+        profile?.displayName ?? String(pubkey.prefix(8))
     }
 }
 
@@ -895,7 +895,7 @@ struct RelatedArticlesSection: View {
             
             for filter in filters {
                 // Use NDK's outbox to fetch events
-                let dataSource = await ndk.outbox.observe(
+                let dataSource = ndk.observe(
                     filter: filter,
                     maxAge: TimeConstants.hour,
                     cachePolicy: .cacheWithNetwork
@@ -981,7 +981,7 @@ struct RelatedArticleCard: View {
                     }
                     
                     HStack {
-                        Text(PubkeyFormatter.formatShort(article.author))
+                        Text(String(article.author.prefix(16)))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                         
@@ -1165,17 +1165,17 @@ struct ArticleHighlightDetailView: View {
                         .fill(DesignSystem.Colors.surfaceSecondary)
                         .frame(width: 40, height: 40)
                         .overlay(
-                            Text(PubkeyFormatter.formatForAvatar(highlight.author))
+                            Text(String(highlight.author.prefix(2)).uppercased())
                                 .font(.ds.footnoteMedium)
                                 .foregroundColor(.ds.text)
                         )
                     
                     VStack(alignment: .leading) {
-                        Text(PubkeyFormatter.formatCompact(highlight.author))
+                        Text(String(highlight.author.prefix(8)))
                             .font(.ds.footnoteMedium)
                             .foregroundColor(.ds.text)
                         
-                        Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
+                        NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                     }

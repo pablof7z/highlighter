@@ -70,7 +70,7 @@ class SwarmHighlightManager: ObservableObject {
                 tags: tagsDict.isEmpty ? nil : tagsDict
             )
             
-            dataSource = await ndk.outbox.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
             
             var highlightEvents: [NDKEvent] = []
             
@@ -131,7 +131,7 @@ class SwarmHighlightManager: ObservableObject {
             limit: 1000
         )
         
-        let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+        let dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
         var count = 0
         // Limit zap count to prevent excessive API calls
         let maxZapCount = 100
@@ -149,7 +149,7 @@ class SwarmHighlightManager: ObservableObject {
         for highlight in swarmHighlights {
             if let range = text.range(of: highlight.text) {
                 let nsRange = NSRange(range, in: text)
-                results.append((nsRange, highlight)
+                results.append((nsRange, highlight))
             }
         }
         

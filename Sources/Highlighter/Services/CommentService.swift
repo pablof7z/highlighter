@@ -38,7 +38,7 @@ class CommentService: ObservableObject {
         )
         
         // Subscribe to comments
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300, // 5 minute cache
             cachePolicy: .cacheWithNetwork
@@ -229,7 +229,7 @@ class CommentService: ObservableObject {
         )
         
         // Use outbox to get reactions
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 60 // 1 minute cache for reactions
         )
@@ -255,7 +255,7 @@ class CommentService: ObservableObject {
         )
         
         // Use observe with maxAge for one-shot fetch
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 60 // 1 minute cache
         )

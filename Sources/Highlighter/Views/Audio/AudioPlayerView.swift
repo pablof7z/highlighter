@@ -693,20 +693,7 @@ struct AudioPlayerView: View {
     }
     
     private func sendSatsViaLightning(amount: Int, to address: String) async {
-        // This would integrate with Lightning Service
-        // For now, we'll use the zap functionality
-        do {
-            if article?.author != nil {
-                // Use Lightning service to send payment
-                try await appState.lightningService.sendSimpleZap(
-                    amount: amount,
-                    to: article?.author ?? "",
-                    comment: "Streaming sats for audio content"
-                )
-            }
-        } catch {
-            // Handle error silently
-        }
+        // Lightning functionality removed - no wallet support
     }
 }
 

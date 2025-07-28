@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct CurationDetailView: View {
     let curation: ArticleCuration
@@ -87,7 +88,7 @@ struct CurationDetailView: View {
                                 .font(DesignSystem.Typography.body)
                                 .fontWeight(.medium)
                             
-                            Text("\(curation.articles.count) articles • Updated \(relativeTime(from: curation.updatedAt))")
+                            Text("\(curation.articles.count) articles • Updated \(NDKRelativeTime(timestamp: Int64(curation.updatedAt.timeIntervalSince1970)))")
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                         }
@@ -96,9 +97,9 @@ struct CurationDetailView: View {
                         
                         Button(action: toggleFollow) {
                             Text(isFollowing ? "Following" : "Follow")
-                                .font(.ds.footnoteMedium)
+                                .font(DesignSystem.Typography.footnoteMedium)
                         }
-                        .unifiedPrimaryButton(enabled: true, variant: isFollowing ? .secondary : .primary)
+                        .unifiedPrimaryButton(enabled: true, variant: .standard)
                     }
                     .padding(.horizontal)
                     
@@ -116,7 +117,7 @@ struct CurationDetailView: View {
                         if let userPubkey = currentUserPubkey, curation.author == userPubkey {
                             Button(action: { showAddArticle = true }) {
                                 Label("Add Article", systemImage: "plus.circle")
-                                    .font(.ds.footnoteMedium)
+                                    .font(DesignSystem.Typography.footnoteMedium)
                                     .frame(maxWidth: .infinity)
                             }
                             .unifiedPrimaryButton()
@@ -217,7 +218,7 @@ struct CurationDetailView: View {
         if !eventIds.isEmpty {
             Task {
                 let filter = NDKFilter(ids: eventIds)
-                let articleSource = await ndk.outbox.observe(
+                let articleSource = ndk.observe(
                     filter: filter,
                     maxAge: 300,
                     cachePolicy: .cacheWithNetwork
@@ -245,7 +246,7 @@ struct CurationDetailView: View {
                     kinds: [address.kind]
                 )
                 
-                let articleSource = await ndk.outbox.observe(
+                let articleSource = ndk.observe(
                     filter: filter,
                     maxAge: 300,
                     cachePolicy: .cacheWithNetwork
@@ -285,7 +286,7 @@ struct CurationDetailView: View {
                         limit: 1
                     )
                     
-                    let events = await ndk.outbox.observe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
+                    let events = ndk.observe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
                     for await contactListEvent in events {
                         var tags = contactListEvent.tags.filter { tag in
                             !(tag.first == "p" && tag[safe: 1] == curation.author)
@@ -311,7 +312,7 @@ struct CurationDetailView: View {
                     var tags: [[String]] = []
                     var content = ""
                     
-                    let events = await ndk.outbox.observe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
+                    let events = ndk.observe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
                     for await contactListEvent in events {
                         tags = contactListEvent.tags
                         content = contactListEvent.content
@@ -369,11 +370,6 @@ struct CurationDetailView: View {
         }
     }
     
-    private func relativeTime(from date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
-    }
 }
 
 struct ArticleCard: View {
@@ -391,46 +387,49 @@ struct ArticleCard: View {
                 }
             ) {
                 HStack {
-                    VStack(alignment: .leading, spacing: .ds.small) {
+                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                         // Domain indicator with icon
-                        HStack(spacing: .ds.micro) {
+                        HStack(spacing: DesignSystem.Spacing.micro) {
                             Image(systemName: "link.circle.fill")
-                                .font(.ds.micro)
-                                .foregroundColor(.ds.primary.opacity(0.8))
+                                .font(DesignSystem.Typography.micro)
+                                .foregroundColor(DesignSystem.Colors.primary.opacity(0.8))
                             
                             Text(URL(string: url)?.host ?? "Article")
-                                .font(.ds.caption)
-                                .foregroundColor(.ds.primary)
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundColor(DesignSystem.Colors.primary)
                         }
                         
                         // URL preview
                         Text(url)
-                            .font(.ds.body)
+                            .font(DesignSystem.Typography.body)
                             .lineLimit(2)
-                            .foregroundColor(.ds.text)
+                            .foregroundColor(DesignSystem.Colors.text)
                             .multilineTextAlignment(.leading)
                         
                         // Time with icon
-                        HStack(spacing: .ds.micro) {
+                        HStack(spacing: DesignSystem.Spacing.micro) {
                             Image(systemName: "clock")
-                                .font(.ds.micro)
-                                .foregroundColor(.ds.textTertiary)
+                                .font(DesignSystem.Typography.micro)
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
                             
-                            Text("Added \(relativeTime(from: article.addedAt))")
-                                .font(.ds.caption)
-                                .foregroundColor(.ds.textSecondary)
+                            HStack(spacing: 0) {
+                                Text("Added ")
+                                NDKRelativeTime(timestamp: Int64(article.addedAt.timeIntervalSince1970))
+                            }
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundColor(DesignSystem.Colors.textSecondary)
                         }
                     }
                     
-                    Spacer(minLength: .ds.base)
+                    Spacer(minLength: DesignSystem.Spacing.base)
                     
                     // Action indicator
                     Image(systemName: "arrow.up.right.circle.fill")
-                        .font(.ds.title3)
-                        .foregroundColor(.ds.primary.opacity(0.3))
+                        .font(DesignSystem.Typography.title3)
+                        .foregroundColor(DesignSystem.Colors.primary.opacity(0.3))
                         .background(
                             Circle()
-                                .fill(.ds.primary.opacity(0.05))
+                                .fill(DesignSystem.Colors.primary.opacity(0.05))
                                 .frame(width: 32, height: 32)
                         )
                 }
@@ -439,11 +438,6 @@ struct ArticleCard: View {
         }
     }
     
-    private func relativeTime(from date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
-    }
 }
 
 struct EmptyArticlesView: View {
@@ -451,7 +445,7 @@ struct EmptyArticlesView: View {
     @State private var pulseScale: CGFloat = 1.0
     
     var body: some View {
-        VStack(spacing: .ds.large) {
+        VStack(spacing: DesignSystem.Spacing.large) {
             // Animated icon container
             ZStack {
                 // Background circle with gradient
@@ -459,8 +453,8 @@ struct EmptyArticlesView: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                .ds.primary.opacity(0.1),
-                                .ds.secondary.opacity(0.05)
+                                DesignSystem.Colors.primary.opacity(0.1),
+                                DesignSystem.Colors.secondary.opacity(0.05)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -475,7 +469,7 @@ struct EmptyArticlesView: View {
                     .font(.system(size: 48, weight: .light, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [.ds.primary, .ds.secondary],
+                            colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -491,31 +485,31 @@ struct EmptyArticlesView: View {
                 }
             }
             
-            VStack(spacing: .ds.small) {
+            VStack(spacing: DesignSystem.Spacing.small) {
                 Text("No articles yet")
-                    .font(.ds.title3)
-                    .foregroundColor(.ds.text)
+                    .font(DesignSystem.Typography.title3)
+                    .foregroundColor(DesignSystem.Colors.text)
                 
                 Text("Articles added to this curation will appear here")
-                    .font(.ds.callout)
-                    .foregroundColor(.ds.textSecondary)
+                    .font(DesignSystem.Typography.callout)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, .ds.xxl)
-        .padding(.horizontal, .ds.large)
+        .padding(.vertical, DesignSystem.Spacing.xxl)
+        .padding(.horizontal, DesignSystem.Spacing.large)
         .background(
-            RoundedRectangle(cornerRadius: .ds.large, style: .continuous)
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous)
                 .fill(.ultraThinMaterial)
                 .overlay(
-                    RoundedRectangle(cornerRadius: .ds.large, style: .continuous)
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large, style: .continuous)
                         .strokeBorder(
                             LinearGradient(
                                 colors: [
-                                    .ds.border.opacity(0.5),
-                                    .ds.border.opacity(0.1)
+                                    DesignSystem.Colors.border.opacity(0.5),
+                                    DesignSystem.Colors.border.opacity(0.1)
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -525,7 +519,7 @@ struct EmptyArticlesView: View {
                 )
         )
         .shadow(
-            color: .ds.primary.opacity(0.05),
+            color: DesignSystem.Colors.primary.opacity(0.05),
             radius: 20,
             x: 0,
             y: 10
@@ -549,7 +543,7 @@ struct LoadedArticleCard: View {
                 showArticleView = true
             }
         ) {
-            HStack(alignment: .top, spacing: .ds.medium) {
+            HStack(alignment: .top, spacing: DesignSystem.Spacing.medium) {
                 // Article image thumbnail with loading state
                 Group {
                     if let imageUrl = article.image, let url = URL(string: imageUrl) {
@@ -561,21 +555,21 @@ struct LoadedArticleCard: View {
                                     .aspectRatio(contentMode: .fill)
                             case .failure(_):
                                 ZStack {
-                                    RoundedRectangle(cornerRadius: .ds.small, style: .continuous)
+                                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small, style: .continuous)
                                         .fill(
                                             LinearGradient(
-                                                colors: [.ds.primary.opacity(0.1), .ds.secondary.opacity(0.05)],
+                                                colors: [DesignSystem.Colors.primary.opacity(0.1), DesignSystem.Colors.secondary.opacity(0.05)],
                                                 startPoint: .topLeading,
                                                 endPoint: .bottomTrailing
                                             )
                                         )
                                     Image(systemName: "photo")
-                                        .font(.ds.title3)
-                                        .foregroundColor(.ds.textTertiary)
+                                        .font(DesignSystem.Typography.title3)
+                                        .foregroundColor(DesignSystem.Colors.textTertiary)
                                 }
                             case .empty:
-                                RoundedRectangle(cornerRadius: .ds.small, style: .continuous)
-                                    .fill(.ds.surfaceSecondary)
+                                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small, style: .continuous)
+                                    .fill(DesignSystem.Colors.surfaceSecondary)
                                     .overlay(
                                         ProgressView()
                                             .scaleEffect(0.8)
@@ -585,85 +579,85 @@ struct LoadedArticleCard: View {
                             }
                         }
                         .frame(width: 80, height: 80)
-                        .cornerRadius(.ds.small)
+                        .cornerRadius(DesignSystem.CornerRadius.small)
                         .clipped()
                     } else {
                         // No image placeholder
                         ZStack {
-                            RoundedRectangle(cornerRadius: .ds.small, style: .continuous)
+                            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small, style: .continuous)
                                 .fill(
                                     LinearGradient(
-                                        colors: [.ds.primary.opacity(0.05), .ds.secondary.opacity(0.03)],
+                                        colors: [DesignSystem.Colors.primary.opacity(0.05), DesignSystem.Colors.secondary.opacity(0.03)],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     )
                                 )
                             
                             Image(systemName: "doc.richtext")
-                                .font(.ds.title2)
-                                .foregroundColor(.ds.primary.opacity(0.3))
+                                .font(DesignSystem.Typography.title2)
+                                .foregroundColor(DesignSystem.Colors.primary.opacity(0.3))
                         }
                         .frame(width: 80, height: 80)
                     }
                 }
                 
-                VStack(alignment: .leading, spacing: .ds.small) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                     // Title with better typography
                     Text(article.title)
-                        .font(.ds.headline)
-                        .foregroundColor(.ds.text)
+                        .font(DesignSystem.Typography.headline)
+                        .foregroundColor(DesignSystem.Colors.text)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     
                     // Summary if available
                     if let summary = article.summary {
                         Text(summary)
-                            .font(.ds.callout)
-                            .foregroundColor(.ds.textSecondary)
+                            .font(DesignSystem.Typography.callout)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
                     }
                     
                     // Metadata row with icons
-                    HStack(spacing: .ds.small) {
+                    HStack(spacing: DesignSystem.Spacing.small) {
                         // Author with icon
                         if let author = author {
-                            HStack(spacing: .ds.micro) {
+                            HStack(spacing: DesignSystem.Spacing.micro) {
                                 Image(systemName: "person.circle.fill")
-                                    .font(.ds.micro)
-                                    .foregroundColor(.ds.primary.opacity(0.6))
+                                    .font(DesignSystem.Typography.micro)
+                                    .foregroundColor(DesignSystem.Colors.primary.opacity(0.6))
                                 
                                 Text(author.displayName ?? author.name ?? "Anonymous")
-                                    .font(.ds.footnoteMedium)
-                                    .foregroundColor(.ds.primary)
+                                    .font(DesignSystem.Typography.footnoteMedium)
+                                    .foregroundColor(DesignSystem.Colors.primary)
                                     .lineLimit(1)
                             }
                             
                             Text("•")
-                                .font(.ds.caption)
-                                .foregroundColor(.ds.textTertiary)
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
                         }
                         
                         // Time with icon
-                        HStack(spacing: .ds.micro) {
+                        HStack(spacing: DesignSystem.Spacing.micro) {
                             Image(systemName: "clock")
-                                .font(.ds.micro)
-                                .foregroundColor(.ds.textTertiary)
+                                .font(DesignSystem.Typography.micro)
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
                             
-                            Text(RelativeTimeFormatter.relativeTime(from: article.createdAt))
-                                .font(.ds.caption)
-                                .foregroundColor(.ds.textSecondary)
+                            NDKRelativeTime(timestamp: Int64(article.createdAt.timeIntervalSince1970))
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundColor(DesignSystem.Colors.textSecondary)
                         }
                         
                         // Reading time
-                        HStack(spacing: .ds.micro) {
+                        HStack(spacing: DesignSystem.Spacing.micro) {
                             Image(systemName: "book")
-                                .font(.ds.micro)
-                                .foregroundColor(.ds.textTertiary)
+                                .font(DesignSystem.Typography.micro)
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
                             
                             Text("\(article.estimatedReadingTime) min")
-                                .font(.ds.caption)
-                                .foregroundColor(.ds.textSecondary)
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundColor(DesignSystem.Colors.textSecondary)
                         }
                         
                         Spacer()
@@ -697,11 +691,6 @@ struct LoadedArticleCard: View {
         }
     }
     
-    private func relativeTime(from date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
-    }
 }
 
 struct AddArticleSheet: View {
@@ -717,15 +706,15 @@ struct AddArticleSheet: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: .ds.large) {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
                 // Header section
-                VStack(alignment: .leading, spacing: .ds.small) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                     HStack {
                         Image(systemName: "link.badge.plus")
-                            .font(.ds.largeTitle)
+                            .font(DesignSystem.Typography.largeTitle)
                             .foregroundStyle(
                                 LinearGradient(
-                                    colors: [.ds.primary, .ds.secondary],
+                                    colors: [DesignSystem.Colors.primary, DesignSystem.Colors.secondary],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
@@ -735,37 +724,37 @@ struct AddArticleSheet: View {
                     }
                     
                     Text("Add Article")
-                        .font(.ds.largeTitle)
-                        .foregroundColor(.ds.text)
+                        .font(DesignSystem.Typography.largeTitle)
+                        .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("Add an article URL to your curation")
-                        .font(.ds.body)
-                        .foregroundColor(.ds.textSecondary)
+                        .font(DesignSystem.Typography.body)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
-                .padding(.bottom, .ds.medium)
+                .padding(.bottom, DesignSystem.Spacing.medium)
                 
                 // URL Input field with modern styling
-                VStack(alignment: .leading, spacing: .ds.small) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                     HStack {
                         Image(systemName: "link")
-                            .font(.ds.callout)
-                            .foregroundColor(.ds.textSecondary)
+                            .font(DesignSystem.Typography.callout)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
                         
                         TextField("https://example.com/article", text: $articleUrl)
-                            .font(.ds.body)
+                            .font(DesignSystem.Typography.body)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                             .keyboardType(.URL)
                             .focused($isTextFieldFocused)
                     }
-                    .padding(.ds.base)
+                    .padding(DesignSystem.Spacing.base)
                     .background(
-                        RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
-                            .fill(.ds.surfaceSecondary)
+                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium, style: .continuous)
+                            .fill(DesignSystem.Colors.surfaceSecondary)
                             .overlay(
-                                RoundedRectangle(cornerRadius: .ds.medium, style: .continuous)
+                                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium, style: .continuous)
                                     .strokeBorder(
-                                        isTextFieldFocused ? .ds.primary : .ds.border,
+                                        isTextFieldFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.border,
                                         lineWidth: isTextFieldFocused ? 2 : 1
                                     )
                             )
@@ -777,7 +766,7 @@ struct AddArticleSheet: View {
                 
                 // Action button
                 Button(action: addArticle) {
-                    HStack(spacing: .ds.small) {
+                    HStack(spacing: DesignSystem.Spacing.small) {
                         if isLoading {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))

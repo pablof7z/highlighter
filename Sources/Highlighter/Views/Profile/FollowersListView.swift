@@ -96,7 +96,7 @@ struct FollowersListView: View {
         }
         
         // Use NDK's observe method
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -147,7 +147,7 @@ struct UserRow: View {
             // User info
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(profile?.displayName ?? profile?.name ?? PubkeyFormatter.formatShort(pubkey))
+                    Text(profile?.displayName ?? profile?.name ?? String(pubkey.prefix(16)))
                         .font(.ds.bodyMedium)
                         .foregroundColor(.ds.text)
                     

@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 struct SwipeableHighlightCard: View {
     let highlight: HighlightEvent
@@ -76,14 +77,14 @@ struct SwipeableHighlightCard: View {
                     )
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(PubkeyFormatter.formatCompact(highlight.author))
+                    Text(String(highlight.author.prefix(8)))
                         .font(.ds.bodyMedium)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     HStack(spacing: 4) {
                         Image(systemName: "clock")
                             .font(.ds.caption)
-                        Text(RelativeTimeFormatter.shortRelativeTime(from: highlight.createdAt))
+                        NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                             .font(.ds.caption)
                     }
                     .foregroundColor(DesignSystem.Colors.textSecondary)
@@ -157,7 +158,7 @@ struct SwipeableHighlightCard: View {
                         .font(.ds.callout)
                         .foregroundColor(DesignSystem.Colors.primary)
                     
-                    Text(ContentFormatter.extractDomain(from: url))
+                    Text(URL(string: url)?.host ?? "Link")
                         .font(.ds.footnote)
                         .foregroundColor(DesignSystem.Colors.primary)
                         .lineLimit(1)

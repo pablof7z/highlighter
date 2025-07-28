@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 // Make NDKEvent conform to Identifiable for SwiftUI usage
 extension NDKEvent: @retroactive Identifiable {}
@@ -49,7 +50,7 @@ struct SimplifiedHybridFeedView: View {
                 
                 // Custom refresh indicator
                 RefreshIndicatorView(progress: refreshProgress, isRefreshing: isRefreshing)
-                    .offset(y: -80 + (scrollOffset > 0 ? scrollOffset * 0.5 : 0)
+                    .offset(y: -80 + (scrollOffset > 0 ? scrollOffset * 0.5 : 0))
                     .opacity(scrollOffset > 10 ? 1 : 0)
                     .animation(.spring(response: 0.3), value: scrollOffset)
                 
@@ -103,7 +104,7 @@ struct SimplifiedHybridFeedView: View {
                     .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
                         scrollOffset = value
                         withAnimation(.easeOut(duration: 0.2)) {
-                            headerOpacity = min(1.0, max(0.0, (50.0 + value) / 50.0)
+                            headerOpacity = min(1.0, max(0.0, (50.0 + value) / 50.0))
                         }
                     }
                     .refreshable {
@@ -144,7 +145,7 @@ struct SimplifiedHybridFeedView: View {
     private var headerView: some View {
         HStack {
             Text("Highlighter")
-                .font(.ds.largeTitle, weight: .bold, design: .rounded)
+                .font(.ds.largeTitle.weight(.bold))
                 .foregroundColor(DesignSystem.Colors.text)
             
             Spacer()
@@ -179,7 +180,7 @@ struct SimplifiedHybridFeedView: View {
                     }
                     
                     Text(title)
-                        .font(.ds.title2, weight: .bold, design: .rounded)
+                        .font(.ds.title2.weight(.bold))
                         .foregroundColor(DesignSystem.Colors.text)
                 }
                 
@@ -199,7 +200,7 @@ struct SimplifiedHybridFeedView: View {
                             .transition(.asymmetric(
                                 insertion: .scale.combined(with: .opacity),
                                 removal: .scale.combined(with: .opacity)
-                            )
+                            ))
                     }
                 }
                 .padding(.horizontal, DesignSystem.Spacing.large)
@@ -213,7 +214,7 @@ struct SimplifiedHybridFeedView: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                 Text("Recently Highlighted")
-                    .font(.ds.title, weight: .bold, design: .rounded)
+                    .font(.ds.title.weight(.bold))
                     .foregroundColor(DesignSystem.Colors.text)
                 
                 Text("Articles you might enjoy")
@@ -248,7 +249,7 @@ struct SimplifiedHybridFeedView: View {
                             .foregroundColor(DesignSystem.Colors.primary)
                         
                         Text("Active Discussions")
-                            .font(.ds.title2, weight: .bold, design: .rounded)
+                            .font(.ds.title2.weight(.bold))
                             .foregroundColor(DesignSystem.Colors.text)
                     }
                     
@@ -299,14 +300,14 @@ struct DiscussionRow: View {
             
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.mini) {
                 HStack {
-                    Text(author?.displayName ?? PubkeyFormatter.formatCompact(event.pubkey)
+                    Text(author?.displayName ?? String(event.pubkey.prefix(8)))
                         .font(.ds.body).fontWeight(.semibold)
                         .foregroundColor(DesignSystem.Colors.text)
                     
                     Text("·")
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     
-                    Text(RelativeTimeFormatter.shortRelativeTime(from: event.createdAt)
+                    NDKRelativeTime(timestamp: event.createdAt)
                         .font(.ds.caption)
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     
@@ -401,7 +402,7 @@ struct RecentlyHighlightedArticleCard: View {
                 // Article title
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                     Text(highlightedArticle.article.title)
-                        .font(.ds.headline, weight: .bold, design: .rounded)
+                        .font(.ds.headline.weight(.bold))
                         .foregroundColor(.white)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
@@ -409,7 +410,7 @@ struct RecentlyHighlightedArticleCard: View {
                     if let summary = highlightedArticle.article.summary {
                         Text(summary)
                             .font(.ds.callout)
-                            .foregroundColor(.white.opacity(0.8)
+                            .foregroundColor(.white.opacity(0.8))
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
                     }
@@ -425,7 +426,7 @@ struct RecentlyHighlightedArticleCard: View {
                 HStack(spacing: DesignSystem.Spacing.small) {
                     ProfileImage(pubkey: highlightedArticle.article.author, size: 24)
                     
-                    Text(PubkeyFormatter.formatCompact(highlightedArticle.article.author)
+                    Text(String(highlightedArticle.article.author.prefix(8)))
                         .font(.ds.caption)
                         .fontWeight(.medium)
                         .foregroundColor(DesignSystem.Colors.text)
@@ -451,7 +452,7 @@ struct RecentlyHighlightedArticleCard: View {
                         Text("·")
                             .foregroundColor(DesignSystem.Colors.textTertiary)
                         
-                        Text(RelativeTimeFormatter.shortRelativeTime(from: highlightedArticle.lastHighlightTime)
+                        NDKRelativeTime(timestamp: Int64(highlightedArticle.lastHighlightTime.timeIntervalSince1970))
                             .font(.ds.caption)
                             .foregroundColor(DesignSystem.Colors.textTertiary)
                     }
@@ -459,7 +460,7 @@ struct RecentlyHighlightedArticleCard: View {
                     // Show a preview of the most recent highlight
                     if let latestHighlight = highlightedArticle.highlights.first {
                         Text("\"\(latestHighlight.content.prefix(80))...\"")
-                            .font(.ds.footnote, design: .serif)
+                    .font(.ds.footnote)
                             .italic()
                             .foregroundColor(DesignSystem.Colors.textSecondary)
                             .lineLimit(2)
@@ -467,7 +468,7 @@ struct RecentlyHighlightedArticleCard: View {
                             .padding(.vertical, DesignSystem.Spacing.mini)
                             .background(
                                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                                    .fill(DesignSystem.Colors.highlightSubtle.opacity(0.5)
+                                    .fill(DesignSystem.Colors.highlightSubtle.opacity(0.5))
                             )
                     }
                 }
@@ -475,7 +476,7 @@ struct RecentlyHighlightedArticleCard: View {
             .padding(DesignSystem.Spacing.medium)
             .background(DesignSystem.Colors.surface)
         }
-        .clipShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
+        .clipShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous))
         .shadow(color: DesignSystem.Shadow.medium.color, radius: DesignSystem.Shadow.medium.radius, x: DesignSystem.Shadow.medium.x, y: DesignSystem.Shadow.medium.y)
         .overlay(
             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
@@ -512,17 +513,17 @@ struct ActivityRing: View {
                     ),
                     style: StrokeStyle(lineWidth: 4, lineCap: .round)
                 )
-                .rotationEffect(.degrees(-90)
-                .rotationEffect(.degrees(rotation)
+                .rotationEffect(.degrees(-90))
+                .rotationEffect(.degrees(rotation))
                 .animation(.linear(duration: 20).repeatForever(autoreverses: false), value: rotation)
             
             VStack(spacing: 0) {
                 Text("\(Int(progress * 100))")
-                    .font(.ds.body, weight: .bold, design: .rounded)
+                    .font(.ds.body.weight(.bold))
                     .foregroundColor(DesignSystem.Colors.primary)
                 Text("%")
-                    .font(.ds.caption2).fontWeight(.medium)
-                    .foregroundColor(DesignSystem.Colors.textSecondary)
+                    .font(.ds.caption).fontWeight(.medium)
+                   .foregroundColor(DesignSystem.Colors.textSecondary)
             }
         }
         .onAppear {
@@ -542,7 +543,7 @@ struct InteractionButton: View {
             Image(systemName: icon)
                 .font(.ds.callout)
             if count > 0 {
-                Text(formatCount(count)
+                Text(formatCount(count))
                     .font(.ds.caption).fontWeight(.medium)
             }
         }
@@ -568,7 +569,7 @@ struct EngagementButton: View {
                 .font(.ds.caption)
             if count > 0 {
                 Text("\(count)")
-                    .font(.ds.caption2).fontWeight(.medium)
+                    .font(.ds.caption).fontWeight(.medium)
             }
         }
         .foregroundColor(color)
@@ -625,18 +626,18 @@ struct RefreshIndicatorView: View {
                     style: StrokeStyle(lineWidth: 3, lineCap: .round)
                 )
                 .frame(width: 40, height: 40)
-                .rotationEffect(.degrees(rotation)
+                .rotationEffect(.degrees(rotation))
                 .animation(isRefreshing ? .linear(duration: 1).repeatForever(autoreverses: false) : .spring(), value: rotation)
             
             // Center icon
             Image(systemName: "arrow.clockwise")
                 .font(.ds.body).fontWeight(.semibold)
                 .foregroundColor(DesignSystem.Colors.primary)
-                .rotationEffect(.degrees(isRefreshing ? rotation : 0)
+                .rotationEffect(.degrees(isRefreshing ? rotation : 0))
                 .scaleEffect(isRefreshing ? 1.1 : 1.0)
                 .animation(.spring(response: 0.5, dampingFraction: 0.6), value: isRefreshing)
         }
-        .scaleEffect(0.8 + (progress * 0.2)
+        .scaleEffect(0.8 + (progress * 0.2))
         .opacity(progress > 0.1 ? 1 : 0)
         .onChange(of: isRefreshing) { _, newValue in
             if newValue {
@@ -674,7 +675,7 @@ struct ShimmeringOverlay: View {
                 }
             }
         }
-        .mask(Rectangle()
+        .mask(Rectangle())
     }
 }
 

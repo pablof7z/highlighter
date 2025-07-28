@@ -1,5 +1,6 @@
 import SwiftUI
 import NDKSwift
+import NDKSwiftUI
 
 // MARK: - Unified Card System
 // A flexible, reusable card component that consolidates multiple similar card implementations
@@ -264,7 +265,7 @@ struct HighlightCard: View {
                         .buttonStyle(PlainButtonStyle())
                         
                         // Time
-                        Text(RelativeTimeFormatter.relativeTime(from: highlight.createdAt))
+                        Text(highlight.createdAt.formatted(.relative(presentation: .numeric)))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textSecondary)
                     }
@@ -305,8 +306,7 @@ struct HighlightCard: View {
     private func zapHighlight() {
         isZapped.toggle()
         HapticManager.shared.impact(.light)
-        // Zapping is implemented via NWC in LightningService
-        // This triggers the UI state change - actual zap would be handled by ZapButton
+        // Zapping functionality removed - no wallet support
     }
 }
 

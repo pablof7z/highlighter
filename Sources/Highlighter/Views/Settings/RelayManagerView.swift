@@ -395,7 +395,7 @@ struct RelayManagerView: View {
         }
         
         // Try to fetch an event
-        let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 60)
+        let dataSource = ndk.observe(filter: filter, maxAge: 60)
         
         for await _ in dataSource.events {
             timeoutTask.cancel()
@@ -416,7 +416,7 @@ struct RelayManagerView: View {
             return nil
         }
         
-        let dataSource = await ndk.outbox.observe(filter: filter, maxAge: 60)
+        let dataSource = ndk.observe(filter: filter, maxAge: 60)
         
         for await _ in dataSource.events {
             timeoutTask.cancel()

@@ -150,13 +150,27 @@ struct TappableAvatar: View {
     
     @ViewBuilder
     private var placeholderAvatar: some View {
-        AvatarUtilities.placeholderAvatar(pubkey: pubkey, size: size)
-            .overlay(
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                Color.white.opacity(0.2),
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [.purple, .blue],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: size, height: size)
+            
+            Text(String(pubkey.prefix(2)).uppercased())
+                .font(.system(size: size * 0.4, weight: .medium))
+                .foregroundColor(.white)
+        }
+        .overlay(
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.white.opacity(0.2),
                                 Color.clear
                             ],
                             center: .topLeading,

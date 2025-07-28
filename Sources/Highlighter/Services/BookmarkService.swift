@@ -187,7 +187,7 @@ class BookmarkService: ObservableObject {
         )
         
         // Use outbox to get bookmark events
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: filter,
             maxAge: 300 // 5 minute cache
         )
@@ -267,7 +267,7 @@ class BookmarkService: ObservableObject {
                 let filter = NDKFilter(ids: [highlightId])
                 
                 // Use observe to get the highlight event
-                let highlightDataSource = await ndk.outbox.observe(
+                let highlightDataSource = ndk.observe(
                     filter: filter,
                     maxAge: 300 // 5 minute cache
                 )

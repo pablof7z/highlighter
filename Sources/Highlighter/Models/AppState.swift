@@ -12,11 +12,9 @@ class AppState: ObservableObject {
     
     // Service Dependencies
     @Published private(set) var dataStreamManager = DataStreamManager()
-    @Published private(set) var publishingService = PublishingService()
     @Published private(set) var bookmarkService = BookmarkService()
     @Published private(set) var commentService = CommentService()
     @Published private(set) var engagementService = EngagementService()
-    @Published private(set) var lightningService = LightningService()
     @Published private(set) var readingProgressService = ReadingProgressService()
     @Published private(set) var archiveService = ArchiveService()
     
@@ -83,13 +81,11 @@ class AppState: ObservableObject {
     
     private func configureServices(ndk: NDK, signer: NDKSigner?) {
         dataStreamManager.configure(with: ndk)
-        publishingService.configure(with: ndk, signer: signer)
         bookmarkService.configure(with: ndk, signer: signer)
         commentService.configure(with: ndk, signer: signer)
         engagementService.configure(with: ndk, signer: signer)
         archiveService.configure(with: ndk, signer: signer)
-        lightningService.setNDK(ndk, signer: signer)
-        ImageUploadService.shared.configure(with: ndk)
+        ImageUploadService.shared.configure(with: ndk, signer: signer)
     }
     
     func initialize() async {
@@ -320,14 +316,91 @@ class AppState: ObservableObject {
         }
     }
     
-    // MARK: - Publishing Methods (delegated to PublishingService)
+    // MARK: - Publishing Methods (direct NDK usage)
     
     func publishHighlight(_ highlight: HighlightEvent) async throws {
-        try await publishingService.publishHighlight(highlight)
+        guard let ndk = ndk, let signer = activeSigner else {
+            throw NDKError.notConfigured("Signer not configured")
+        }
+        
+        var tags: [[String]] = []
+        
+        // Add content with context if available
+        if let context = highlight.context, !context.isEmpty {
+            tags.append(["context", context])
+        }
+        
+        // Add source/URL reference
+        if let source = highlight.source {
+            tags.append(["r", source])
+        }
+        
+        // Add author attribution from attributed authors
+        for author in highlight.attributedAuthors {
+            tags.append(["p", author])
+        }
+        
+        // Add alt tag for clients
+        let preview = highlight.content.prefix(50)
+        tags.append(["alt", "Highlight: '\(preview)...'"])
+        
+        // Build event
+        let event = try await NDKEventBuilder(ndk: ndk)
+            .kind(9802) // NIP-84 highlight kind
+            .content(highlight.comment ?? highlight.content)
+            .tags(tags)
+            .build(signer: signer)
+        
+        // Publish
+        _ = try await ndk.publish(event)
     }
     
     func createCuration(name: String, title: String, description: String?, image: String?) async throws {
-        try await publishingService.createCuration(name: name, title: title, description: description, image: image)
+        guard let ndk = ndk, let signer = activeSigner else {
+            throw NDKError.notConfigured("Signer not configured")
+        }
+        
+        let event = try await ArticleCuration.create(
+            ndk: ndk,
+            name: name,
+            title: title,
+            description: description,
+            image: image,
+            articles: [],
+            signer: signer
+        )
+        
+        _ = try await ndk.publish(event)
+    }
+    
+    func deleteHighlight(_ highlightId: String) async throws {
+        guard let ndk = ndk, let signer = activeSigner else {
+            throw NDKError.notConfigured("Signer not configured")
+        }
+        
+        // Create deletion event (NIP-09)
+        let event = try await NDKEventBuilder(ndk: ndk)
+            .kind(5) // Deletion event
+            .content("Deleted highlight")
+            .tags([["e", highlightId]])
+            .build(signer: signer)
+        
+        _ = try await ndk.publish(event)
+    }
+    
+    func deleteArticle(_ articleId: String) async throws {
+        guard let ndk = ndk, let signer = activeSigner else {
+            throw NDKError.notConfigured("Signer not configured")
+        }
+        
+        // Create deletion event (NIP-09)
+        let event = try await NDKEventBuilder(ndk: ndk)
+            .kind(5) // Deletion event
+            .content("Deleted article")
+            .tags([["e", articleId]])
+            .build(signer: signer)
+        
+        _ = try await ndk.publish(event)
     }
     
     // MARK: - Follow Management (NIP-02)

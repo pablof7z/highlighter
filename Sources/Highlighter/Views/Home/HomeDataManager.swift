@@ -137,13 +137,13 @@ class HomeDataManager: ObservableObject {
         let task = Task {
             do {
                 let userPubkey = try await signer.pubkey
-                let userHighlightSource = await ndk.outbox.observe(
+                let userHighlightSource = ndk.observe(
                     filter: NDKFilter(
                         authors: [userPubkey],
                         kinds: [9802],
                         limit: 5
                     ),
-                    maxAge: CachePolicies.mediumTerm
+                    maxAge: 3600
                 )
                 
                 for await event in userHighlightSource.events {
@@ -166,9 +166,9 @@ class HomeDataManager: ObservableObject {
     
     private func streamDiscussions(ndk: NDK) async {
         let task = Task {
-            let discussionSource = await ndk.outbox.observe(
+            let discussionSource = ndk.observe(
                 filter: NDKFilter(kinds: [1], limit: 10, tags: ["t": Set(["bookstr"])]),
-                maxAge: CachePolicies.shortTerm,
+                maxAge: 300,
                 cachePolicy: .cacheWithNetwork
             )
             
@@ -188,9 +188,9 @@ class HomeDataManager: ObservableObject {
     
     private func streamZappedArticles(ndk: NDK) async {
         let task = Task {
-            let zapSource = await ndk.outbox.observe(
+            let zapSource = ndk.observe(
                 filter: NDKFilter(kinds: [9735], limit: 10),
-                maxAge: CachePolicies.shortTerm,
+                maxAge: 300,
                 cachePolicy: .cacheWithNetwork
             )
             
@@ -228,17 +228,17 @@ class HomeDataManager: ObservableObject {
                         authors: [String(parts[1])],
                         kinds: [kind],
                         tags: ["d": Set([dTag])]
-                    )
+                    ))
                 }
             } else {
                 // This is an "e" tag reference (event ID)
-                articleFilters.append(NDKFilter(ids: [reference])
+                articleFilters.append(NDKFilter(ids: [reference]))
             }
         }
         
         // Fetch articles for each filter
         for filter in articleFilters {
-            let dataSource = await ndk.outbox.observe(
+            let dataSource = ndk.observe(
                 filter: filter,
                 maxAge: 0,
                 cachePolicy: .networkOnly
@@ -289,9 +289,9 @@ class HomeDataManager: ObservableObject {
             limit: 50
         )
         
-        let dataSource = await ndk.outbox.observe(
+        let dataSource = ndk.observe(
             filter: highlightersFilter,
-            maxAge: CachePolicies.mediumTerm,
+            maxAge: 3600,
             cachePolicy: .cacheOnly
         )
         
@@ -313,7 +313,7 @@ class HomeDataManager: ObservableObject {
             kinds: [0]
         )
         
-        let profileSource = await ndk.outbox.observe(
+        let profileSource = ndk.observe(
             filter: profileFilter,
             maxAge: 0,
             cachePolicy: .cacheWithNetwork
@@ -324,7 +324,7 @@ class HomeDataManager: ObservableObject {
         for await event in profileSource.events {
             if event.kind == 0,
                let profile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
-                profilesWithPubkeys.append((profile: profile, pubkey: event.pubkey)
+                profilesWithPubkeys.append((profile: profile, pubkey: event.pubkey))
             }
         }
         
