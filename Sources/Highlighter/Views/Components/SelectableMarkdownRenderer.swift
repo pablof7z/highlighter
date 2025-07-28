@@ -22,21 +22,11 @@ struct SelectableMarkdownRenderer: View {
     var onNostrEntityTap: ((ContentEntity) -> Void)?
     
     var body: some View {
-        // Base markdown renderer without overlay for now
-        NDKMarkdownRenderer(content, ndk: ndk)
-            .markdownStyle(configuration)
-            .onMentionTap { mention in
-                onMentionTap?(mention)
-            }
-            .onHashtagTap { tag in
-                onHashtagTap?(tag)
-            }
-            .onLinkTap { url in
-                onLinkTap?(url)
-            }
-            .onNostrEntityTap { entity in
-                onNostrEntityTap?(entity)
-            }
+        // Fallback to simple text for now until NDKMarkdownRenderer is available
+        Text(content)
+            .textSelection(.enabled)
+            .font(.body)
+            .foregroundColor(.primary)
             .fixedSize(horizontal: false, vertical: true)
     }
 }

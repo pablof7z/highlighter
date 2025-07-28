@@ -220,6 +220,9 @@ struct LoadingView: View {
     }
 }
 
+/// Type alias for backward compatibility - use EmptyStateView directly
+typealias UnifiedEmptyState = EmptyStateView
+
 /// Empty state view with illustration and actions
 struct EmptyStateView: View {
     let icon: String
@@ -247,13 +250,14 @@ struct EmptyStateView: View {
         icon: String,
         title: String,
         subtitle: String? = nil,
+        message: String? = nil,
         actionTitle: String? = nil,
         action: (() -> Void)? = nil,
         style: EmptyStateStyle = .standard
     ) {
         self.icon = icon
         self.title = title
-        self.subtitle = subtitle
+        self.subtitle = subtitle ?? message
         self.actionTitle = actionTitle
         self.action = action
         self.style = style

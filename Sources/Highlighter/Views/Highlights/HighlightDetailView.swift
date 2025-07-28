@@ -82,7 +82,7 @@ struct CompactRelatedHighlightCard: View {
                         .foregroundColor(DesignSystem.Colors.text)
                         .lineLimit(1)
                     
-                    NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
+                    NDKUIRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                         .font(.caption2)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }

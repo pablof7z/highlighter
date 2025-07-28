@@ -340,27 +340,7 @@ extension View {
             )
     }
     
-    // MARK: - Primary Button Style
-    func unifiedPrimaryButton() -> some View {
-        self
-            .font(.system(size: DesignSystem.Button.fontSize, weight: DesignSystem.Button.fontWeight))
-            .foregroundColor(DesignSystem.Button.primaryTextColor)
-            .padding(.horizontal, DesignSystem.Button.horizontalPadding)
-            .padding(.vertical, DesignSystem.Button.verticalPadding)
-            .background(DesignSystem.Button.primaryBackground)
-            .cornerRadius(DesignSystem.Button.cornerRadius)
-    }
-    
-    // MARK: - Secondary Button Style
-    func unifiedSecondaryButton() -> some View {
-        self
-            .font(.system(size: DesignSystem.Button.fontSize, weight: DesignSystem.Button.fontWeight))
-            .foregroundColor(DesignSystem.Button.secondaryTextColor)
-            .padding(.horizontal, DesignSystem.Button.horizontalPadding)
-            .padding(.vertical, DesignSystem.Button.verticalPadding)
-            .background(DesignSystem.Button.secondaryBackground)
-            .cornerRadius(DesignSystem.Button.cornerRadius)
-    }
+    // Button styles moved to ButtonSystem.swift for better organization and consistency
 }
 
 // MARK: - View Extensions

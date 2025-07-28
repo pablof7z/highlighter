@@ -214,127 +214,13 @@ struct TimelineEventCard: View {
     var body: some View {
         Button(action: { showDetail = true }) {
             VStack(alignment: .leading, spacing: 0) {
-                // Header with author info
-                HStack(spacing: DesignSystem.Spacing.small) {
-                    ProfileImage(pubkey: event.pubkey, size: 42)
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(String(event.pubkey.prefix(8)))
-                            .font(.ds.body).fontWeight(.semibold)
-                            .foregroundColor(DesignSystem.Colors.text)
-                        
-                        HStack(spacing: 4) {
-                            Image(systemName: "clock")
-                                .font(.ds.caption2)
-                            Text(Date(timeIntervalSince1970: TimeInterval(event.createdAt)).formatted(.relative(presentation: .numeric)))
-                                .font(.ds.caption)
-                        }
-                        .foregroundColor(DesignSystem.Colors.textTertiary)
-                    }
-                    
-                    Spacer()
-                    
-                    // More menu
-                    Menu {
-                        Button(action: {}) {
-                            Label("Share", systemImage: "square.and.arrow.up")
-                        }
-                        Button(action: {}) {
-                            Label("Copy", systemImage: "doc.on.doc")
-                        }
-                        Button(action: {}) {
-                            Label("Report", systemImage: "flag")
-                        }
-                    } label: {
-                        Circle()
-                            .fill(Color.primary.opacity(0.05))
-                            .frame(width: 32, height: 32)
-                            .overlay(
-                                Image(systemName: "ellipsis")
-                                    .font(.ds.callout).fontWeight(.medium)
-                                    .foregroundColor(.primary.opacity(0.6))
-                            )
-                    }
-                }
-                .padding(DesignSystem.Spacing.medium)
-                
-                // Content
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
-                    Text(event.content)
-                        .font(.ds.body)
-                        .foregroundColor(DesignSystem.Colors.text)
-                        .lineLimit(isExpanded ? nil : 4)
-                        .fixedSize(horizontal: false, vertical: true)
-                    
-                    if event.content.count > 200 && !isExpanded {
-                        Button(action: { withAnimation { isExpanded.toggle() } }) {
-                            Text("Show more")
-                                .font(.ds.callout).fontWeight(.medium)
-                                .foregroundColor(DesignSystem.Colors.primary)
-                        }
-                    }
-                }
-                .padding(.horizontal, DesignSystem.Spacing.medium)
-                
-                // Engagement bar
-                HStack(spacing: 0) {
-                    TimelineEngagementButton(
-                        icon: "bubble.right",
-                        count: engagement.comments,
-                        action: {}
-                    )
-                    
-                    TimelineEngagementButton(
-                        icon: "arrow.2.squarepath",
-                        count: engagement.reposts,
-                        action: {}
-                    )
-                    
-                    TimelineEngagementButton(
-                        icon: "heart",
-                        count: engagement.likes,
-                        action: {}
-                    )
-                    
-                    TimelineEngagementButton(
-                        icon: "bolt.fill",
-                        count: engagement.zaps,
-                        color: .ds.secondary,
-                        action: {}
-                    )
-                    
-                    Spacer()
-                    
-                    // Bookmark button
-                    Button(action: {}) {
-                        Image(systemName: "bookmark")
-                            .font(.ds.body)
-                            .foregroundColor(.primary.opacity(0.6))
-                    }
-                    .padding(.trailing, DesignSystem.Spacing.medium)
-                }
-                .padding(.vertical, DesignSystem.Spacing.small)
+                headerView
+                contentView
+                engagementView
             }
         }
         .buttonStyle(PlainButtonStyle())
-        .background(
-            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
-                        .stroke(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.2),
-                                    Color.white.opacity(0.05)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 1
-                        )
-                )
-        )
+        .background(cardBackground)
         .shadow(
             color: Color.black.opacity(0.08),
             radius: isPressed ? 4 : 12,
@@ -354,6 +240,131 @@ struct TimelineEventCard: View {
                 HapticManager.shared.impact(.light)
             }
         }, perform: {})
+    }
+    
+    private var headerView: some View {
+        HStack(spacing: DesignSystem.Spacing.small) {
+            ProfileImage(pubkey: event.pubkey, size: 42)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(String(event.pubkey.prefix(8)))
+                    .font(.ds.body).fontWeight(.semibold)
+                    .foregroundColor(DesignSystem.Colors.text)
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "clock")
+                        .font(.ds.caption)
+                    Text(Date(timeIntervalSince1970: TimeInterval(event.createdAt)).formatted(.relative(presentation: .numeric)))
+                        .font(.ds.caption)
+                }
+                .foregroundColor(DesignSystem.Colors.textTertiary)
+            }
+            
+            Spacer()
+            
+            moreMenu
+        }
+        .padding(DesignSystem.Spacing.medium)
+    }
+    
+    private var moreMenu: some View {
+        Menu {
+            Button(action: {}) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+            Button(action: {}) {
+                Label("Copy", systemImage: "doc.on.doc")
+            }
+            Button(action: {}) {
+                Label("Report", systemImage: "flag")
+            }
+        } label: {
+            Circle()
+                .fill(Color.primary.opacity(0.05))
+                .frame(width: 32, height: 32)
+                .overlay(
+                    Image(systemName: "ellipsis")
+                        .font(.ds.callout).fontWeight(.medium)
+                        .foregroundColor(.primary.opacity(0.6))
+                )
+        }
+    }
+    
+    private var contentView: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+            Text(event.content)
+                .font(.ds.body)
+                .foregroundColor(DesignSystem.Colors.text)
+                .lineLimit(isExpanded ? nil : 4)
+                .fixedSize(horizontal: false, vertical: true)
+            
+            if event.content.count > 200 && !isExpanded {
+                Button(action: { withAnimation { isExpanded.toggle() } }) {
+                    Text("Show more")
+                        .font(.ds.callout).fontWeight(.medium)
+                        .foregroundColor(DesignSystem.Colors.primary)
+                }
+            }
+        }
+        .padding(.horizontal, DesignSystem.Spacing.medium)
+    }
+    
+    private var engagementView: some View {
+        HStack(spacing: 0) {
+            TimelineEngagementButton(
+                icon: "bubble.right",
+                count: engagement.comments,
+                action: {}
+            )
+            
+            TimelineEngagementButton(
+                icon: "arrow.2.squarepath",
+                count: engagement.reposts,
+                action: {}
+            )
+            
+            TimelineEngagementButton(
+                icon: "heart",
+                count: engagement.likes,
+                action: {}
+            )
+            
+            TimelineEngagementButton(
+                icon: "bolt.fill",
+                count: engagement.zaps,
+                color: .ds.secondary,
+                action: {}
+            )
+            
+            Spacer()
+            
+            Button(action: {}) {
+                Image(systemName: "bookmark")
+                    .font(.ds.body)
+                    .foregroundColor(.primary.opacity(0.6))
+            }
+            .padding(.trailing, DesignSystem.Spacing.medium)
+        }
+        .padding(.vertical, DesignSystem.Spacing.small)
+    }
+    
+    private var cardBackground: some View {
+        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
+            .fill(.ultraThinMaterial)
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.xl, style: .continuous)
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.2),
+                                Color.white.opacity(0.05)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            )
     }
 }
 

@@ -84,7 +84,7 @@ struct SwipeableHighlightCard: View {
                     HStack(spacing: 4) {
                         Image(systemName: "clock")
                             .font(.ds.caption)
-                        NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
+                        NDKUIRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                             .font(.ds.caption)
                     }
                     .foregroundColor(DesignSystem.Colors.textSecondary)
@@ -118,7 +118,7 @@ struct SwipeableHighlightCard: View {
                     Image(systemName: "ellipsis")
                         .font(.ds.body)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
-                        .padding(8)
+                        .padding(DesignSystem.Spacing.small)
                         .background(Circle().fill(DesignSystem.Colors.surfaceSecondary))
                 }
             }

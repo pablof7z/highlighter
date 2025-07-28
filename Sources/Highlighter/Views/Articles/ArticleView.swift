@@ -75,8 +75,7 @@ struct ArticleView: View {
     
     private var swarmOverlaySheet: some View {
         SwarmOverlayView(
-            text: article.content,
-            swarmManager: swarmManager
+            text: article.content
         )
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
@@ -1175,7 +1174,7 @@ struct ArticleHighlightDetailView: View {
                             .font(.ds.footnoteMedium)
                             .foregroundColor(.ds.text)
                         
-                        NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
+                        NDKUIRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                     }

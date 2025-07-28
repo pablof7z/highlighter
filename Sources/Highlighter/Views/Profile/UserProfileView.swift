@@ -660,7 +660,7 @@ struct CommentCard: View {
                 .lineLimit(3)
             
             HStack {
-                NDKRelativeTime(timestamp: comment.createdAt)
+                NDKUIRelativeTime(timestamp: comment.createdAt)
                     .font(.ds.caption)
                     .foregroundColor(.ds.textTertiary)
                 
@@ -725,7 +725,7 @@ struct CollectionCard: View {
                         
                         Spacer()
                         
-                        NDKRelativeTime(timestamp: Int64(collection.updatedAt.timeIntervalSince1970))
+                        NDKUIRelativeTime(timestamp: Int64(collection.updatedAt.timeIntervalSince1970))
                             .font(.ds.caption)
                             .foregroundColor(.ds.textTertiary)
                     }

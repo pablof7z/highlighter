@@ -303,7 +303,7 @@ struct ArticleRowCard: View {
                             if let publishedAt = article.publishedAt {
                                 Text("•")
                                     .foregroundColor(DesignSystem.Colors.textSecondary)
-                                NDKRelativeTime(timestamp: Int64(publishedAt.timeIntervalSince1970))
+                                NDKUIRelativeTime(timestamp: Int64(publishedAt.timeIntervalSince1970))
                                     .font(DesignSystem.Typography.caption)
                                     .foregroundColor(DesignSystem.Colors.textSecondary)
                                     .lineLimit(1)

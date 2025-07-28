@@ -88,7 +88,7 @@ struct CurationDetailView: View {
                                 .font(DesignSystem.Typography.body)
                                 .fontWeight(.medium)
                             
-                            Text("\(curation.articles.count) articles • Updated \(NDKRelativeTime(timestamp: Int64(curation.updatedAt.timeIntervalSince1970)))")
+                            Text("\(curation.articles.count) articles • Updated \(NDKUIRelativeTime(timestamp: Int64(curation.updatedAt.timeIntervalSince1970)))")
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                         }
@@ -414,7 +414,7 @@ struct ArticleCard: View {
                             
                             HStack(spacing: 0) {
                                 Text("Added ")
-                                NDKRelativeTime(timestamp: Int64(article.addedAt.timeIntervalSince1970))
+                                NDKUIRelativeTime(timestamp: Int64(article.addedAt.timeIntervalSince1970))
                             }
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
@@ -644,7 +644,7 @@ struct LoadedArticleCard: View {
                                 .font(DesignSystem.Typography.micro)
                                 .foregroundColor(DesignSystem.Colors.textTertiary)
                             
-                            NDKRelativeTime(timestamp: Int64(article.createdAt.timeIntervalSince1970))
+                            NDKUIRelativeTime(timestamp: Int64(article.createdAt.timeIntervalSince1970))
                                 .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textSecondary)
                         }

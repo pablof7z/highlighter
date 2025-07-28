@@ -889,7 +889,7 @@ struct TrendingCard: View {
                     .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
             }
-            .padding(16)
+            .padding(DesignSystem.Spacing.medium)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -1053,7 +1053,7 @@ struct SearchResultHighlightCard: View {
                 Text("·")
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
-                NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
+                NDKUIRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                     .font(.ds.callout)
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 

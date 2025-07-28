@@ -39,6 +39,7 @@
 		58CD029928844C6A40946A74 /* AnimationSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C88288E64D986A7B021700F9 /* AnimationSystem.swift */; };
 		592922A038AC7CEB7AAD35F7 /* SmartArticleImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C6D9AB2A21C93E8951D6E4 /* SmartArticleImportView.swift */; };
 		5D62AE907A0A91BECED7DCD4 /* DataStreamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D8FA7B43386CEE13EB7B18 /* DataStreamManager.swift */; };
+		63A21B4B6B292B6DB7593306 /* UserListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D460DA813C3E05F9ADF3EF /* UserListService.swift */; };
 		63ED41BC7DD413BEE595F3A9 /* HighlightDiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C72655D262C9FB9C686CAF /* HighlightDiscoveryView.swift */; };
 		65B0F76A54167561B653A458 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B732C4AF8ED87EBB93D6D0D5 /* EditProfileView.swift */; };
 		6972D167F453E975971B28E6 /* SwarmOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83206D6462CF11DCF490672D /* SwarmOverlayView.swift */; };
@@ -95,6 +96,7 @@
 		0151014CE7E449B5BE685BE8 /* HighlightEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightEvent.swift; sourceTree = "<group>"; };
 		01F9CBDB1F581FAFF82499ED /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		03DEF9DECD6C6F4D9AF8C400 /* FollowPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowPack.swift; sourceTree = "<group>"; };
+		05D460DA813C3E05F9ADF3EF /* UserListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListService.swift; sourceTree = "<group>"; };
 		08C9371F823E831254881AA4 /* FollowersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowersListView.swift; sourceTree = "<group>"; };
 		0986709D8D575050D8063F5D /* EmptyHighlightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHighlightsView.swift; sourceTree = "<group>"; };
 		0E3DC62588BEBADA506749EE /* AdvancedSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchView.swift; sourceTree = "<group>"; };
@@ -484,6 +486,7 @@
 				361A54288A443FAC2E4515E8 /* EngagementService.swift */,
 				82A5731C3876CFC3835D623E /* ImageUploadService.swift */,
 				244A38BDC30B8AFB74E55CF6 /* ReadingProgressService.swift */,
+				05D460DA813C3E05F9ADF3EF /* UserListService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -662,6 +665,7 @@
 				7241C5CEE9263C4CDD91F716 /* UnifiedGradientBackground.swift in Sources */,
 				0419F8AB6AA5C6DCBF94F7B3 /* UnifiedIcons.swift in Sources */,
 				E3A00B68BDE7C21BA3CD80C2 /* UserDiscoveryView.swift in Sources */,
+				63A21B4B6B292B6DB7593306 /* UserListService.swift in Sources */,
 				A529566D32F92D65708AC6EE /* UserProfileView.swift in Sources */,
 				19D496FFFF2CFFD3E5E681E6 /* ViewModifiers.swift in Sources */,
 				B5E8FDE244E748C0EBA0335C /* ZapButton.swift in Sources */,
@@ -889,8 +893,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pablof7z/NDKSwift";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = revision;
+				revision = dba57b0108cde09d918f5699e94c09f80e82bb98;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

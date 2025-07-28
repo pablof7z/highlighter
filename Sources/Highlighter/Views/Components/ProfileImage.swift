@@ -9,7 +9,7 @@ struct ProfileImage: View {
     let size: CGFloat
     
     var body: some View {
-        NDKProfilePicture(pubkey: pubkey)
+        NDKUIProfilePicture(pubkey: pubkey)
             .frame(width: size, height: size)
     }
 }

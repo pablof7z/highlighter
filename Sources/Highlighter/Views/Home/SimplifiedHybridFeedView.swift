@@ -307,7 +307,7 @@ struct DiscussionRow: View {
                     Text("·")
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     
-                    NDKRelativeTime(timestamp: event.createdAt)
+                    NDKUIRelativeTime(timestamp: event.createdAt)
                         .font(.ds.caption)
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     
@@ -452,7 +452,7 @@ struct RecentlyHighlightedArticleCard: View {
                         Text("·")
                             .foregroundColor(DesignSystem.Colors.textTertiary)
                         
-                        NDKRelativeTime(timestamp: Int64(highlightedArticle.lastHighlightTime.timeIntervalSince1970))
+                        NDKUIRelativeTime(timestamp: Int64(highlightedArticle.lastHighlightTime.timeIntervalSince1970))
                             .font(.ds.caption)
                             .foregroundColor(DesignSystem.Colors.textTertiary)
                     }

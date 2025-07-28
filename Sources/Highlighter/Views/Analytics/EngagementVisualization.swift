@@ -974,7 +974,7 @@ struct RealTrendingHighlightCard: View {
                 Text("·")
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 
-                NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
+                NDKUIRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                     .font(.ds.caption)
                     .foregroundColor(DesignSystem.Colors.textTertiary)
                 

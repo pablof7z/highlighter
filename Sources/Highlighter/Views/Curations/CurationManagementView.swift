@@ -259,7 +259,13 @@ struct CurationManagementView: View {
                     
                     // Empty state
                     if filteredCurations.isEmpty {
-                        CurationEmptyStateView(searchText: searchText)
+                        EmptyStateView(
+                            icon: searchText.isEmpty ? "folder.badge.plus" : "magnifyingglass",
+                            title: searchText.isEmpty ? "No curations yet" : "No results found",
+                            subtitle: searchText.isEmpty ? 
+                                "Create your first curation to organize articles" : 
+                                "Try adjusting your search terms"
+                        )
                             .transition(.scale.combined(with: .opacity))
                     }
                 }
@@ -757,80 +763,76 @@ struct CurationGridItem: View {
     @State private var animateHover = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Image section
-            ZStack {
-                if let imageUrl = curation.image, let url = URL(string: imageUrl) {
-                    AsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        ShimmerView()
-                    }
-                    .frame(height: 120)
-                    .clipped()
-                } else {
-                    RoundedRectangle(cornerRadius: 0)
-                        .fill(
-                            LinearGradient(
-                                colors: [DesignSystem.Colors.primary, DesignSystem.Colors.primary.opacity(0.7)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+        UnifiedCard(
+            variant: .standard,
+            isSelected: isSelected || isHovered
+        ) {
+            VStack(alignment: .leading, spacing: 0) {
+                // Image section
+                ZStack {
+                    if let imageUrl = curation.image, let url = URL(string: imageUrl) {
+                        AsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } placeholder: {
+                            ShimmerView()
+                        }
                         .frame(height: 120)
-                        .overlay(
-                            Image(systemName: "folder.fill")
-                                .font(.system(size: 40, weight: .regular, design: .default))
-                                .foregroundColor(.white.opacity(0.8))
-                        )
-                }
-                
-                // Selection overlay
-                if isEditMode {
-                    DesignSystem.Colors.darkBackground.opacity(isSelected ? 0.3 : 0)
-                        .overlay(
-                            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                                .font(.title2)
-                                .foregroundColor(.white)
-                                .padding(DesignSystem.Spacing.small),
-                            alignment: .topTrailing
-                        )
-                }
-                
-                // Drop indicator
-                if isHovered {
-                    RoundedRectangle(cornerRadius: 0)
-                        .stroke(DesignSystem.Colors.primary, lineWidth: 3)
-                        .background(DesignSystem.Colors.primary.opacity(0.1))
-                        .scaleEffect(animateHover ? 1.05 : 1)
-                }
-            }
-            .cornerRadius(DesignSystem.CornerRadius.medium, corners: [.topLeft, .topRight])
-            
-            // Content section
-            VStack(alignment: .leading, spacing: 6) {
-                Text(curation.title)
-                    .font(DesignSystem.Typography.body.weight(.medium))
-                    .lineLimit(1)
-                
-                HStack {
-                    Label("\(curation.articles.count)", systemImage: "doc.text")
-                        .font(DesignSystem.Typography.caption)
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
+                        .clipped()
+                    } else {
+                        RoundedRectangle(cornerRadius: 0)
+                            .fill(
+                                LinearGradient(
+                                    colors: [DesignSystem.Colors.primary, DesignSystem.Colors.primary.opacity(0.7)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(height: 120)
+                            .overlay(
+                                Image(systemName: "folder.fill")
+                                    .font(.system(size: 40, weight: .regular, design: .default))
+                                    .foregroundColor(.white.opacity(0.8))
+                            )
+                    }
                     
-                    Spacer()
-                    
-                    NDKRelativeTime(timestamp: Int64(curation.updatedAt.timeIntervalSince1970))
-                        .font(.ds.caption)
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
+                    // Selection overlay
+                    if isEditMode {
+                        DesignSystem.Colors.darkBackground.opacity(isSelected ? 0.3 : 0)
+                            .overlay(
+                                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                                    .font(.title2)
+                                    .foregroundColor(.white)
+                                    .padding(DesignSystem.Spacing.small),
+                                alignment: .topTrailing
+                            )
+                    }
                 }
+                .padding(.horizontal, -DesignSystem.Spacing.cardPadding)
+                .padding(.top, -DesignSystem.Spacing.cardPadding)
+                
+                // Content section
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(curation.title)
+                        .font(DesignSystem.Typography.body.weight(.medium))
+                        .lineLimit(1)
+                    
+                    HStack {
+                        Label("\(curation.articles.count)", systemImage: "doc.text")
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
+                        
+                        Spacer()
+                        
+                        NDKUIRelativeTime(timestamp: Int64(curation.updatedAt.timeIntervalSince1970))
+                            .font(.ds.caption)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
+                    }
+                }
+                .padding(.top, DesignSystem.Spacing.base)
             }
-            .padding(.horizontal, DesignSystem.Spacing.base)
-            .padding(.bottom, DesignSystem.Spacing.base)
         }
-        .modernCard()
         .scaleEffect(isSelected || isHovered ? 0.95 : 1)
         .animation(DesignSystem.Animation.springSnappy, value: isSelected)
         .animation(DesignSystem.Animation.springSnappy, value: isHovered)
@@ -905,7 +907,7 @@ struct CurationListRow: View {
                         .font(.ds.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                     
-                    NDKRelativeTime(timestamp: Int64(curation.updatedAt.timeIntervalSince1970))
+                    NDKUIRelativeTime(timestamp: Int64(curation.updatedAt.timeIntervalSince1970))
                         .font(.ds.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
@@ -991,7 +993,7 @@ struct CurationManagementCarouselCard: View {
                     
                     Spacer()
                     
-                    NDKRelativeTime(timestamp: Int64(curation.updatedAt.timeIntervalSince1970))
+                    NDKUIRelativeTime(timestamp: Int64(curation.updatedAt.timeIntervalSince1970))
                         .font(DesignSystem.Typography.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
@@ -1039,37 +1041,6 @@ struct CurationContextMenu: View {
     }
 }
 
-struct CurationEmptyStateView: View {
-    let searchText: String
-    @State private var animateIcon = false
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: searchText.isEmpty ? "folder.badge.plus" : "magnifyingglass")
-                .font(.system(size: 60, weight: .regular, design: .default))
-                .foregroundColor(DesignSystem.Colors.primary.opacity(0.5))
-                .scaleEffect(animateIcon ? 1.1 : 1)
-                .onAppear {
-                    withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
-                        animateIcon = true
-                    }
-                }
-            
-            Text(searchText.isEmpty ? "No curations yet" : "No results found")
-                .font(.ds.title3)
-                .fontWeight(.medium)
-                .foregroundColor(DesignSystem.Colors.text)
-            
-            Text(searchText.isEmpty ? 
-                 "Create your first curation to organize articles" : 
-                 "Try adjusting your search terms")
-                .font(DesignSystem.Typography.body)
-                .foregroundColor(DesignSystem.Colors.textSecondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(DesignSystem.Spacing.huge)
-    }
-}
 
 struct ShimmerView: View {
     @State private var shimmerOffset: CGFloat = -1

@@ -467,7 +467,7 @@ struct LibraryStatsCard: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.ds.surface)
-                .cornerRadius(12)
+                .cornerRadius(DesignSystem.CornerRadius.medium)
                 
                 VStack(spacing: 8) {
                     Image(systemName: "books.vertical")
@@ -484,7 +484,7 @@ struct LibraryStatsCard: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.ds.surface)
-                .cornerRadius(12)
+                .cornerRadius(DesignSystem.CornerRadius.medium)
                 
                 VStack(spacing: 8) {
                     Image(systemName: "doc.text")
@@ -501,10 +501,10 @@ struct LibraryStatsCard: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.ds.surface)
-                .cornerRadius(12)
+                .cornerRadius(DesignSystem.CornerRadius.medium)
             }
         }
-        .padding(20)
+        .padding(DesignSystem.Spacing.large)
         .unifiedCard()
         .onAppear {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.2)) {

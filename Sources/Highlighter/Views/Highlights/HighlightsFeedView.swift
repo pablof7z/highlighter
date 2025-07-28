@@ -225,7 +225,6 @@ struct HighlightsFeedView: View {
         let filter = NDKFilter(
             authors: [author],
             kinds: [30023],
-            limit: 1,
             tags: ["d": [String(identifier)]]
         )
         
@@ -333,7 +332,6 @@ struct HighlightsFeedView: View {
             let filter = NDKFilter(
                 authors: [author],
                 kinds: [30023],
-                limit: 1,
                 tags: ["d": [String(identifier)]]
             )
             
@@ -466,7 +464,7 @@ struct HighlightFeedItemView: View {
                             Text("·")
                                 .font(.ds.footnote).fontWeight(.medium)
                                 .foregroundColor(.white.opacity(0.8))
-                            NDKRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
+                            NDKUIRelativeTime(timestamp: Int64(highlight.createdAt.timeIntervalSince1970))
                                 .font(.ds.footnote).fontWeight(.medium)
                                 .foregroundColor(.white.opacity(0.8))
                         }

@@ -388,7 +388,7 @@ struct EnhancedCommentRow: View {
                     Text("·")
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                     
-                    NDKRelativeTime(timestamp: Int64(comment.createdAt.timeIntervalSince1970))
+                    NDKUIRelativeTime(timestamp: Int64(comment.createdAt.timeIntervalSince1970))
                         .font(.ds.footnote)
                         .foregroundColor(DesignSystem.Colors.textTertiary)
                 }
