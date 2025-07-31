@@ -8,7 +8,7 @@ struct ImmersiveHighlightDetailView: View {
     @Environment(\.dismiss) var dismiss
     
     // State
-    @State private var author: NDKUserProfile?
+    @State private var author: NDKUserMetadata?
     @State private var scrollOffset: CGFloat = 0
     @State private var showShareSheet = false
     @State private var showComments = false
@@ -644,10 +644,10 @@ struct ImmersiveHighlightDetailView: View {
     // MARK: - Helper Methods
     
     private func loadData() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // Load author profile
-        for await profile in await ndk.profileManager.observe(for: highlight.author, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: highlight.author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.author = profile
             }
@@ -669,7 +669,7 @@ struct ImmersiveHighlightDetailView: View {
             )
             
             var relatedEvents: [NDKEvent] = []
-            let dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            let dataSource = ndk.subscribe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
             
             for await event in dataSource.events {
                 relatedEvents.append(event)
@@ -688,12 +688,11 @@ struct ImmersiveHighlightDetailView: View {
             // If no source, fetch recent highlights by the same author
             let filter = NDKFilter(
                 authors: [highlight.pubkey],
-                kinds: [9802], // NIP-84 highlights
-                limit: 6
+                kinds: [9802] // NIP-84 highlights
             )
             
             var authorHighlights: [NDKEvent] = []
-            let dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            let dataSource = ndk.subscribe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
             
             for await event in dataSource.events {
                 authorHighlights.append(event)
@@ -899,49 +898,26 @@ struct RelatedHighlightCard: View {
 
 struct FollowButton: View {
     let pubkey: String
-    @State private var isFollowing = false
-    @State private var isLoading = false
     
     var body: some View {
-        Button(action: toggleFollow) {
-            HStack(spacing: 6) {
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(0.8)
-                } else {
-                    Image(systemName: isFollowing ? "person.fill.checkmark" : "person.fill.badge.plus")
-                        .font(.ds.callout)
-                    Text(isFollowing ? "Following" : "Follow")
-                        .font(.ds.calloutMedium)
-                }
-            }
+        NDKUIFollowButton(pubkey: pubkey)
+            .buttonStyle(HighlighterFollowButtonStyle())
+    }
+}
+
+struct HighlighterFollowButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.ds.calloutMedium)
             .foregroundColor(.white)
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .background(
                 Capsule()
-                    .fill(isFollowing ? Color.white.opacity(0.2) : DesignSystem.Colors.primary)
-                    .overlay(
-                        Capsule()
-                            .stroke(Color.white.opacity(isFollowing ? 0.5 : 0), lineWidth: 1)
-                    )
+                    .fill(DesignSystem.Colors.primary.opacity(configuration.isPressed ? 0.8 : 1))
             )
             .shadow(radius: 4)
-        }
-        .disabled(isLoading)
-    }
-    
-    private func toggleFollow() {
-        HapticManager.shared.impact(.light)
-        isLoading = true
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                isFollowing.toggle()
-                isLoading = false
-            }
-        }
+            .scaleEffect(configuration.isPressed ? 0.95 : 1)
     }
 }
 

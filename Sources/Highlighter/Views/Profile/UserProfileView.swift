@@ -5,7 +5,7 @@ import NDKSwiftUI
 struct UserProfileView: View {
     let pubkey: String
     @EnvironmentObject var appState: AppState
-    @State private var profile: NDKUserProfile?
+    @State private var metadata: NDKUserMetadata?
     @State private var highlights: [HighlightEvent] = []
     @State private var articles: [Article] = []
     @State private var comments: [NDKEvent] = []
@@ -118,7 +118,7 @@ struct UserProfileView: View {
     private var profileHeader: some View {
         VStack(spacing: 16) {
             // Avatar
-            if let picture = profile?.picture, let url = URL(string: picture) {
+            if let picture = metadata?.picture, let url = URL(string: picture) {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .success(let image):
@@ -139,7 +139,7 @@ struct UserProfileView: View {
             
             // Name and username
             VStack(spacing: 8) {
-                if let name = profile?.name {
+                if let name = metadata?.name {
                     Text(name)
                         .font(.ds.title2)
                         .fontWeight(.bold)
@@ -153,7 +153,7 @@ struct UserProfileView: View {
             }
             
             // Bio
-            if let about = profile?.about {
+            if let about = metadata?.about {
                 Text(about)
                     .font(.ds.body)
                     .foregroundColor(.ds.text)
@@ -361,12 +361,12 @@ struct UserProfileView: View {
     // MARK: - Data Loading
     
     private func loadProfileData() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // Get profile from NDK
-        for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: pubkey, maxAge: TimeConstants.hour) {
             await MainActor.run {
-                self.profile = profile
+                self.metadata = profile
             }
             break // Only need first value
         }
@@ -384,12 +384,11 @@ struct UserProfileView: View {
     private func loadHighlights(pubkey: String, ndk: NDK) async {
         let filter = NDKFilter(
             authors: [pubkey],
-            kinds: [9802],
-            limit: 50
+            kinds: [9802]
         )
         
         var events: Set<NDKEvent> = []
-        let dataSource = ndk.observe(filter: filter)
+        let dataSource = ndk.subscribe(filter: filter)
         for await event in dataSource.events {
             events.insert(event)
             if events.count >= 50 { break }
@@ -404,12 +403,11 @@ struct UserProfileView: View {
     private func loadArticles(pubkey: String, ndk: NDK) async {
         let filter = NDKFilter(
             authors: [pubkey],
-            kinds: [30023],
-            limit: 50
+            kinds: [30023]
         )
         
         var events: Set<NDKEvent> = []
-        let dataSource = ndk.observe(filter: filter)
+        let dataSource = ndk.subscribe(filter: filter)
         for await event in dataSource.events {
             events.insert(event)
             if events.count >= 50 { break }
@@ -431,7 +429,7 @@ struct UserProfileView: View {
             tags: ["K": Set(["30023"])]
         )
         
-        let dataSource = ndk.observe(filter: filter)
+        let dataSource = ndk.subscribe(filter: filter)
         var collectedEvents: [NDKEvent] = []
         for await event in dataSource.events {
             collectedEvents.append(event)
@@ -447,12 +445,11 @@ struct UserProfileView: View {
     private func loadCollections(pubkey: String, ndk: NDK) async {
         let filter = NDKFilter(
             authors: [pubkey],
-            kinds: [30004],
-            limit: 50
+            kinds: [30004]
         )
         
         var events: Set<NDKEvent> = []
-        let dataSource = ndk.observe(filter: filter)
+        let dataSource = ndk.subscribe(filter: filter)
         for await event in dataSource.events {
             events.insert(event)
             if events.count >= 50 { break }
@@ -473,7 +470,7 @@ struct UserProfileView: View {
         )
         
         var followerCount = 0
-        let dataSource = ndk.observe(filter: followFilter)
+        let dataSource = ndk.subscribe(filter: followFilter)
         for await _ in dataSource.events {
             followerCount += 1
         }
@@ -481,12 +478,11 @@ struct UserProfileView: View {
         // Load following count from contact list
         let followingFilter = NDKFilter(
             authors: [pubkey],
-            kinds: [3],
-            limit: 1
+            kinds: [3]
         )
         
         var followingCount = 0
-        let followingDataSource = ndk.observe(filter: followingFilter)
+        let followingDataSource = ndk.subscribe(filter: followingFilter)
         for await event in followingDataSource.events {
             // Count the "p" tags in the contact list
             followingCount = event.tags.filter { $0.count >= 2 && $0[0] == "p" }.count

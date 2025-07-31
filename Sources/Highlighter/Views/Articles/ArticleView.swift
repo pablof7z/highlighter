@@ -21,7 +21,7 @@ struct ArticleView: View {
     @State private var highlightOpacity: Double = 0.3
     @State private var selectedHighlight: HighlightEvent?
     @State private var showHighlightDetail = false
-    @State private var author: NDKUserProfile?
+    @State private var author: NDKUserMetadata?
     @State private var showTextSelection = false
     @StateObject private var swarmManager = SwarmHighlightManager(ndk: NDK(relayUrls: []))
     @Environment(\.dismiss) private var dismiss
@@ -211,7 +211,7 @@ struct ArticleView: View {
     // MARK: - Article Metadata Row
     private func articleMetadataRow() -> some View {
         HStack(spacing: .ds.large) {
-            AuthorChip(pubkey: article.author, profile: author)
+            AuthorChip(pubkey: article.author, metadata: author)
                 .premiumEntrance(delay: 0.2)
             
             HStack(spacing: .ds.small) {
@@ -678,9 +678,9 @@ struct ArticleView: View {
     }
     
     private func loadAuthor() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        let profileDataSource = ndk.observe(
+        let profileDataSource = ndk.subscribe(
             filter: NDKFilter(
                 authors: [article.author],
                 kinds: [0]
@@ -690,9 +690,9 @@ struct ArticleView: View {
         )
         
         for await event in profileDataSource.events {
-            if let fetchedProfile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
+            if event.kind == 0 {
                 await MainActor.run {
-                    self.author = fetchedProfile
+                    self.author = NDKUserMetadata(event: event)
                 }
                 break
             }
@@ -700,7 +700,7 @@ struct ArticleView: View {
     }
     
     private func loadHighlights() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // Create filter for highlights related to this article
         var tagsFilter: [String: Set<String>] = [:]
@@ -711,12 +711,11 @@ struct ArticleView: View {
         // Also look for highlights by the same author
         let filter = NDKFilter(
             kinds: [9802], // NIP-84 highlight kind
-            limit: 50,
             tags: tagsFilter
         )
         
         // Fetch events using NDK's outbox
-        let dataSource = ndk.observe(
+        let dataSource = ndk.subscribe(
             filter: filter,
             maxAge: TimeConstants.hour,
             cachePolicy: .cacheWithNetwork
@@ -747,12 +746,12 @@ struct ArticleView: View {
 
 struct AuthorChip: View {
     let pubkey: String
-    let profile: NDKUserProfile?
+    let metadata: NDKUserMetadata?
     
     var body: some View {
         HStack(spacing: .ds.small) {
             Group {
-                if let picture = profile?.picture, let url = URL(string: picture) {
+                if let picture = metadata?.picture, let url = URL(string: picture) {
                     AsyncImage(url: url) { image in
                         image
                             .resizable()
@@ -792,7 +791,7 @@ struct AuthorChip: View {
     }
     
     private var displayName: String {
-        profile?.displayName ?? String(pubkey.prefix(8))
+        metadata?.displayName ?? String(pubkey.prefix(8))
     }
 }
 
@@ -864,7 +863,7 @@ struct RelatedArticlesSection: View {
     }
     
     private func loadRelatedArticles() {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         Task {
             // Create filter for articles from the same author or with similar tags
@@ -873,8 +872,7 @@ struct RelatedArticlesSection: View {
             // Articles from the same author
             filters.append(NDKFilter(
                 authors: [currentArticle.author],
-                kinds: [30023], // Long-form content
-                limit: 10
+                kinds: [30023] // Long-form content
             ))
             
             // Articles with similar tags
@@ -885,7 +883,6 @@ struct RelatedArticlesSection: View {
                 
                 filters.append(NDKFilter(
                     kinds: [30023],
-                    limit: 10,
                     tags: tagsFilter
                 ))
             }
@@ -894,7 +891,7 @@ struct RelatedArticlesSection: View {
             
             for filter in filters {
                 // Use NDK's outbox to fetch events
-                let dataSource = ndk.observe(
+                let dataSource = ndk.subscribe(
                     filter: filter,
                     maxAge: TimeConstants.hour,
                     cachePolicy: .cacheWithNetwork

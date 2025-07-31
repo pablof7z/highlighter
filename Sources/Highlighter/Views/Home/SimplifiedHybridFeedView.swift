@@ -291,7 +291,7 @@ struct SimplifiedHybridFeedView: View {
 struct DiscussionRow: View {
     let event: NDKEvent
     let engagement: EngagementService.EngagementMetrics
-    @State private var author: NDKUserProfile?
+    @State private var author: NDKUserMetadata?
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -340,6 +340,22 @@ struct DiscussionRow: View {
         }
         .padding(.horizontal, DesignSystem.Spacing.medium)
         .padding(.vertical, DesignSystem.Spacing.base)
+        .task {
+            await loadAuthor()
+        }
+    }
+    
+    @EnvironmentObject var appState: AppState
+    
+    private func loadAuthor() async {
+        let ndk = appState.ndk
+        
+        for await profile in await ndk.profileManager.subscribe(for: event.pubkey, maxAge: TimeConstants.hour) {
+            await MainActor.run {
+                self.author = profile
+            }
+            break
+        }
     }
 }
 

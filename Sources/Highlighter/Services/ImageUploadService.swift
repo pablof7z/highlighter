@@ -24,14 +24,14 @@ class ImageUploadService {
     static let shared = ImageUploadService()
     
     private var ndk: NDK?
-    private var signer: NDKSigner?
+    private var blossomManager: NDKBlossomServerManager?
     
     private init() {}
     
     // Configure with NDK instance
     func configure(with ndk: NDK, signer: NDKSigner?) {
         self.ndk = ndk
-        self.signer = signer
+        self.blossomManager = NDKBlossomServerManager(ndk: ndk)
     }
     
     enum ImageType {
@@ -64,16 +64,29 @@ class ImageUploadService {
     
     /// Upload image using NDKSwift's Blossom server manager
     func uploadImage(_ data: Data, type: ImageType) async throws -> String {
-        guard let ndk = ndk, let signer = signer else {
+        guard let ndk = ndk else {
             throw ImageUploadError.notConfigured
         }
         
         // Process image if needed
         let processedData = try await processImageData(data, type: type)
         
-        // TODO: Implement image upload using NDKSwift's Blossom API
-        // For now, throw not implemented error
-        throw ImageUploadError.notConfigured
+        // Use NDK's uploadToBlossom method
+        do {
+            let blobs = try await ndk.uploadToBlossom(
+                data: processedData,
+                mimeType: "image/jpeg",
+                servers: blossomManager?.userServers.isEmpty == false ? blossomManager?.userServers : nil
+            )
+            
+            guard let firstBlob = blobs.first else {
+                throw ImageUploadError.uploadFailed("No upload results returned")
+            }
+            
+            return firstBlob.url
+        } catch {
+            throw ImageUploadError.uploadFailed(error.localizedDescription)
+        }
     }
     
     /// Upload image from Data with optional processing
@@ -148,37 +161,14 @@ class ImageUploadService {
         return newImage ?? image
     }
     
-    // MARK: - Utilities
+    // MARK: - Static Helper Methods
     
-    /// Get optimized image data for upload
     static func optimizeImageForUpload(_ image: UIImage, type: ImageType) -> Data? {
         let service = ImageUploadService.shared
         
-        // Resize if needed
-        let resized = service.resizeImage(image, targetSize: type.maxSize)
+        let targetSize = type.maxSize
+        let resizedImage = service.resizeImage(image, targetSize: targetSize)
         
-        // Try JPEG compression first
-        if let jpegData = resized.jpegData(compressionQuality: type.compressionQuality) {
-            return jpegData
-        }
-        
-        // Fallback to PNG
-        return resized.pngData()
-    }
-    
-    /// Check if image needs optimization
-    static func needsOptimization(_ data: Data, for type: ImageType) -> Bool {
-        // Check data size
-        let maxSize: Int
-        switch type {
-        case .profile:
-            maxSize = 500_000 // 500KB
-        case .banner:
-            maxSize = 1_000_000 // 1MB
-        case .highlight:
-            maxSize = 2_000_000 // 2MB
-        }
-        
-        return data.count > maxSize
+        return resizedImage.jpegData(compressionQuality: type.compressionQuality)
     }
 }

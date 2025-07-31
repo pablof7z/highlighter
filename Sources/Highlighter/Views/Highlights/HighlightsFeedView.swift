@@ -18,7 +18,7 @@ struct HighlightsFeedView: View {
     @State private var showUserProfile = false
     
     // Author cache
-    @State private var authorProfiles: [String: NDKUserProfile] = [:]
+    @State private var authorProfiles: [String: NDKUserMetadata] = [:]
     
     // Article cache for highlights from articles
     @State private var articleCache: [String: Article] = [:]
@@ -147,17 +147,16 @@ struct HighlightsFeedView: View {
     }
     
     private func streamHighlights() {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         streamTask?.cancel()
         streamTask = Task {
             let filter = NDKFilter(
-                kinds: [9802],
-                limit: 50
+                kinds: [9802]
             )
             
             // Stream highlights as they arrive
-            let dataSource = ndk.observe(
+            let dataSource = ndk.subscribe(
                 filter: filter,
                 maxAge: 300, // Use 5 minute cache
                 cachePolicy: .cacheWithNetwork
@@ -196,12 +195,12 @@ struct HighlightsFeedView: View {
     }
     
     private func loadAuthorProfile(for author: String) async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // Don't reload if we already have it
         if authorProfiles[author] != nil { return }
         
-        for await profile in await ndk.profileManager.observe(for: author, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.authorProfiles[author] = profile
             }
@@ -210,7 +209,8 @@ struct HighlightsFeedView: View {
     }
     
     private func loadReferencedArticleForHighlight(_ highlight: HighlightEvent) async {
-        guard let ndk = appState.ndk,
+        let ndk = appState.ndk
+        guard
               let ref = highlight.referencedEvent,
               ref.contains(":") else { return }
         
@@ -228,7 +228,7 @@ struct HighlightsFeedView: View {
             tags: ["d": [String(identifier)]]
         )
         
-        let dataSource = ndk.observe(filter: filter, maxAge: 3600)
+        let dataSource = ndk.subscribe(filter: filter, maxAge: 3600)
         
         for await event in dataSource.events {
             if let article = try? Article(from: event) {
@@ -307,7 +307,7 @@ struct HighlightsFeedView: View {
     }
     
     private func loadReferencedArticles(for highlights: [HighlightEvent]) async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // Collect all referenced events that look like article references
         let articleReferences = highlights.compactMap { highlight -> String? in
@@ -336,7 +336,7 @@ struct HighlightsFeedView: View {
             )
             
             // Fetch the article
-            let dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            let dataSource = ndk.subscribe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
             
             for await event in dataSource.events {
                 if let article = try? Article(from: event) {
@@ -378,16 +378,15 @@ struct HighlightsFeedView: View {
     }
     
     private func loadCommentCount(for highlightId: String) async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // Create filter for replies to this highlight (kind 1 events that tag this event)
         let filter = NDKFilter(
             kinds: [1], // Kind 1 = text note/comment
-            limit: 50,
             tags: ["e": [highlightId]]
         )
         
-        let dataSource = ndk.observe(
+        let dataSource = ndk.subscribe(
             filter: filter,
             maxAge: 300, // 5 minute cache
             cachePolicy: .cacheWithNetwork
@@ -407,7 +406,7 @@ struct HighlightsFeedView: View {
 // MARK: - Feed Item View
 struct HighlightFeedItemView: View {
     let highlight: HighlightEvent
-    let author: NDKUserProfile?
+    let author: NDKUserMetadata?
     let article: Article?
     let articleImage: UIImage?
     let onAuthorTap: () -> Void
@@ -856,8 +855,8 @@ extension HighlightsFeedView {
     }
     
     private func repostHighlight(_ highlight: HighlightEvent) async {
-        guard let ndk = appState.ndk,
-              let signer = appState.activeSigner else { return }
+        let ndk = appState.ndk
+        guard let signer = appState.auth.activeSigner else { return }
         
         do {
             // Create a repost event (kind: 6)

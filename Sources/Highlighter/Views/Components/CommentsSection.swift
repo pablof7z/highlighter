@@ -9,7 +9,7 @@ struct CommentsSection: View {
     // No loading states - stream progressively
     @State private var newCommentText = ""
     @State private var isPostingComment = false
-    @State private var commentAuthors: [String: NDKUserProfile] = [:]
+    @State private var commentAuthors: [String: NDKUserMetadata] = [:]
     @State private var showComposer = false
     @State private var animatedCommentIds = Set<String>()
     @State private var replyingTo: Comment?
@@ -166,15 +166,14 @@ struct CommentsSection: View {
     }
     
     private func loadComments() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         let filter = NDKFilter(
             kinds: [1],
-            limit: 50,
             tags: ["e": [highlightId]]
         )
         
-        let dataSource = ndk.observe(
+        let dataSource = ndk.subscribe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -214,11 +213,11 @@ struct CommentsSection: View {
     }
     
     private func loadAuthorProfile(for pubkey: String) async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         if commentAuthors[pubkey] != nil { return }
         
-        for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: pubkey, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.commentAuthors[pubkey] = profile
             }
@@ -227,7 +226,7 @@ struct CommentsSection: View {
     }
     
     private func loadCurrentUserPubkey() async {
-        if let signer = appState.activeSigner {
+        if let signer = appState.ndk.signer {
             if let pubkey = try? await signer.pubkey {
                 await MainActor.run {
                     self.currentUserPubkey = pubkey
@@ -237,8 +236,7 @@ struct CommentsSection: View {
     }
     
     private func postComment() {
-        guard let ndk = appState.ndk,
-              let signer = appState.activeSigner,
+        guard let signer = appState.ndk.signer,
               !newCommentText.isEmpty else { return }
         
         isPostingComment = true
@@ -246,14 +244,14 @@ struct CommentsSection: View {
         Task {
             do {
                 // Create comment event using NDKEventBuilder
-                let commentEvent = try await NDKEventBuilder(ndk: ndk)
+                let commentEvent = try await NDKEventBuilder(ndk: appState.ndk)
                     .kind(1)
                     .content(newCommentText)
                     .tags([["e", highlightId]])
                     .build(signer: signer)
                 
                 // Publish
-                _ = try await ndk.publish(commentEvent)
+                _ = try await appState.ndk.publish(commentEvent)
                 
                 await MainActor.run {
                     newCommentText = ""
@@ -357,7 +355,7 @@ struct EmptyCommentsView: View {
 // Enhanced comment row with animations and interactions
 struct EnhancedCommentRow: View {
     let comment: Comment
-    let author: NDKUserProfile?
+    let author: NDKUserMetadata?
     let reactions: CommentReactions
     let isAnimated: Bool
     let onReply: () -> Void
@@ -508,7 +506,7 @@ struct CommentReactions {
 
 struct CommentsList: View {
     let comments: [Comment]
-    let commentAuthors: [String: NDKUserProfile]
+    let commentAuthors: [String: NDKUserMetadata]
     let commentReactions: [String: CommentReactions]
     @Binding var animatedCommentIds: Set<String>
     let onReply: (Comment) -> Void
@@ -539,7 +537,7 @@ struct CommentsList: View {
 // Simplified wrapper to reduce complexity
 struct CommentRowWrapper: View {
     let comment: Comment
-    let author: NDKUserProfile?
+    let author: NDKUserMetadata?
     let reactions: CommentReactions
     let isAnimated: Bool
     let index: Int

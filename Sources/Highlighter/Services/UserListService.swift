@@ -153,7 +153,7 @@ class UserListService<ArticleType: UserListItem, HighlightType: UserListItem>: O
             tags: ["d": [listIdentifier]]
         )
         
-        let dataSource = ndk.observe(
+        let dataSource = ndk.subscribe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork

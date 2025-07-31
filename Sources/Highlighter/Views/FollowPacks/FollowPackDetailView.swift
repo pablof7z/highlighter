@@ -6,9 +6,9 @@ struct FollowPackDetailView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) var dismiss
     
-    @State private var profiles: [String: NDKUserProfile] = [:]
+    @State private var profiles: [String: NDKUserMetadata] = [:]
     @State private var showSuccess = false
-    @State private var creator: NDKUserProfile?
+    @State private var creator: NDKUserMetadata?
     
     var body: some View {
         NavigationStack {
@@ -144,17 +144,17 @@ struct FollowPackDetailView: View {
                 .padding(.horizontal)
             
             ForEach(followPack.profiles, id: \.self) { pubkey in
-                ProfileRow(pubkey: pubkey, profile: profiles[pubkey])
+                ProfileRow(pubkey: pubkey, metadata: profiles[pubkey])
                     .padding(.horizontal)
             }
         }
     }
     
     private func loadProfiles() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // Load creator profile
-        for await profile in await ndk.profileManager.observe(for: followPack.author, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: followPack.author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.creator = profile
             }
@@ -164,7 +164,7 @@ struct FollowPackDetailView: View {
         // Load profiles in the pack
         for pubkey in followPack.profiles {
             Task {
-                for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
+                for await profile in await ndk.profileManager.subscribe(for: pubkey, maxAge: TimeConstants.hour) {
                     await MainActor.run {
                         self.profiles[pubkey] = profile
                     }
@@ -179,8 +179,9 @@ struct FollowPackDetailView: View {
         
         Task {
             do {
-                guard let ndk = appState.ndk,
-                      let signer = appState.activeSigner else {
+                let ndk = appState.ndk
+        guard
+                      let signer = appState.auth.activeSigner else {
                     throw AuthError.noSigner
                 }
                 
@@ -188,11 +189,10 @@ struct FollowPackDetailView: View {
                 let pubkey = try await signer.pubkey
                 let filter = NDKFilter(
                     authors: [pubkey],
-                    kinds: [3],
-                    limit: 1
+                    kinds: [3]
                 )
                 
-                let dataSource = ndk.observe(filter: filter)
+                let dataSource = ndk.subscribe(filter: filter)
                 var currentFollows: Set<String> = []
                 
                 // Parse existing follows
@@ -245,7 +245,7 @@ struct FollowPackDetailView: View {
 
 struct ProfileRow: View {
     let pubkey: String
-    let profile: NDKUserProfile?
+    let metadata: NDKUserMetadata?
     @State private var isFollowing = false
     
     var body: some View {
@@ -255,11 +255,11 @@ struct ProfileRow: View {
                 .foregroundColor(DesignSystem.Colors.primary)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(profile?.name ?? profile?.displayName ?? String(pubkey.prefix(16)))
+                Text(metadata?.name ?? metadata?.displayName ?? String(pubkey.prefix(16)))
                     .font(DesignSystem.Typography.body)
                     .fontWeight(.medium)
                 
-                if let about = profile?.about {
+                if let about = metadata?.about {
                     Text(about)
                         .font(DesignSystem.Typography.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)

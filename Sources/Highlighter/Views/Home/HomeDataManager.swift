@@ -11,7 +11,7 @@ class HomeDataManager: ObservableObject {
     @Published var discussions: [NDKEvent] = []
     @Published var zappedArticles: [NDKEvent] = []
     @Published var userHighlights: [HighlightEvent] = []
-    @Published var suggestedUsers: [NDKUserProfile] = []
+    @Published var suggestedUsers: [NDKUserMetadata] = []
     @Published var suggestedUserPubkeys: [String] = []
     @Published var isRefreshing = false
     
@@ -132,16 +132,15 @@ class HomeDataManager: ObservableObject {
     // Removed streamHighlights - now handled by DataStreamManager
     
     private func streamUserHighlights(ndk: NDK) async {
-        guard let signer = appState?.activeSigner else { return }
+        guard let signer = appState?.auth.activeSigner else { return }
         
         let task = Task {
             do {
                 let userPubkey = try await signer.pubkey
-                let userHighlightSource = ndk.observe(
+                let userHighlightSource = ndk.subscribe(
                     filter: NDKFilter(
                         authors: [userPubkey],
-                        kinds: [9802],
-                        limit: 5
+                        kinds: [9802]
                     ),
                     maxAge: 3600
                 )
@@ -166,8 +165,8 @@ class HomeDataManager: ObservableObject {
     
     private func streamDiscussions(ndk: NDK) async {
         let task = Task {
-            let discussionSource = ndk.observe(
-                filter: NDKFilter(kinds: [1], limit: 10, tags: ["t": Set(["bookstr"])]),
+            let discussionSource = ndk.subscribe(
+                filter: NDKFilter(kinds: [1], tags: ["t": Set(["bookstr"])]),
                 maxAge: 300,
                 cachePolicy: .cacheWithNetwork
             )
@@ -188,8 +187,8 @@ class HomeDataManager: ObservableObject {
     
     private func streamZappedArticles(ndk: NDK) async {
         let task = Task {
-            let zapSource = ndk.observe(
-                filter: NDKFilter(kinds: [9735], limit: 10),
+            let zapSource = ndk.subscribe(
+                filter: NDKFilter(kinds: [9735]),
                 maxAge: 300,
                 cachePolicy: .cacheWithNetwork
             )
@@ -238,7 +237,7 @@ class HomeDataManager: ObservableObject {
         
         // Fetch articles for each filter
         for filter in articleFilters {
-            let dataSource = ndk.observe(
+            let dataSource = ndk.subscribe(
                 filter: filter,
                 maxAge: 0,
                 cachePolicy: .networkOnly
@@ -285,11 +284,10 @@ class HomeDataManager: ObservableObject {
     private func fetchSuggestedUsers(ndk: NDK) async {
         // Fetch users who are actively creating highlights
         let highlightersFilter = NDKFilter(
-            kinds: [9802],
-            limit: 50
+            kinds: [9802]
         )
         
-        let dataSource = ndk.observe(
+        let dataSource = ndk.subscribe(
             filter: highlightersFilter,
             maxAge: 3600,
             cachePolicy: .cacheOnly
@@ -313,18 +311,18 @@ class HomeDataManager: ObservableObject {
             kinds: [0]
         )
         
-        let profileSource = ndk.observe(
+        let profileSource = ndk.subscribe(
             filter: profileFilter,
             maxAge: 0,
             cachePolicy: .cacheWithNetwork
         )
         
-        var profilesWithPubkeys: [(profile: NDKUserProfile, pubkey: String)] = []
+        var profilesWithPubkeys: [(metadata: NDKUserMetadata, pubkey: String)] = []
         
         for await event in profileSource.events {
-            if event.kind == 0,
-               let profile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
-                profilesWithPubkeys.append((profile: profile, pubkey: event.pubkey))
+            if event.kind == 0 {
+                let metadata = NDKUserMetadata(event: event)
+                profilesWithPubkeys.append((metadata: metadata, pubkey: event.pubkey))
             }
         }
         
@@ -334,9 +332,9 @@ class HomeDataManager: ObservableObject {
                 // For now, store pubkeys separately
                 suggestedUserPubkeys = profilesWithPubkeys.map { $0.pubkey }
                 suggestedUsers = profilesWithPubkeys
-                    .filter { $0.profile.displayName != nil || $0.profile.name != nil } // Only users with names
+                    .filter { $0.metadata.displayName != nil || $0.metadata.name != nil } // Only users with names
                     .prefix(10)
-                    .map { $0.profile }
+                    .map { $0.metadata }
             }
         }
     }

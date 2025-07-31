@@ -15,7 +15,7 @@ class DataStreamManager: ObservableObject {
     // MARK: - Private Properties
     private weak var ndk: NDK?
     private var streamingTasks: [Task<Void, Never>] = []
-    private var dataSourceRefs: [NDKDataSource<NDKEvent>] = []
+    private var dataSourceRefs: [NDKSubscription<NDKEvent>] = []
     
     // MARK: - Initialization
     init() {}
@@ -65,8 +65,8 @@ class DataStreamManager: ObservableObject {
     // MARK: - Individual Stream Methods
     
     private func startHighlightStream(ndk: NDK) async {
-        let highlightFilter = NDKFilter(kinds: [9802], limit: 100)
-        let dataSource = ndk.observe(
+        let highlightFilter = NDKFilter(kinds: [9802])
+        let dataSource = ndk.subscribe(
             filter: highlightFilter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -84,8 +84,8 @@ class DataStreamManager: ObservableObject {
     }
     
     private func startCurationStream(ndk: NDK) async {
-        let curationFilter = NDKFilter(kinds: [30004], limit: 50)
-        let dataSource = ndk.observe(
+        let curationFilter = NDKFilter(kinds: [30004])
+        let dataSource = ndk.subscribe(
             filter: curationFilter,
             maxAge: 3600,
             cachePolicy: .cacheWithNetwork
@@ -103,8 +103,8 @@ class DataStreamManager: ObservableObject {
     }
     
     private func startFollowPackStream(ndk: NDK) async {
-        let followPackFilter = NDKFilter(kinds: [39089], limit: 20)
-        let dataSource = ndk.observe(
+        let followPackFilter = NDKFilter(kinds: [39089])
+        let dataSource = ndk.subscribe(
             filter: followPackFilter,
             maxAge: 3600,
             cachePolicy: .cacheWithNetwork
@@ -122,8 +122,8 @@ class DataStreamManager: ObservableObject {
     }
     
     private func startArticleStream(ndk: NDK) async {
-        let articleFilter = NDKFilter(kinds: [30023], limit: 50)
-        let dataSource = ndk.observe(
+        let articleFilter = NDKFilter(kinds: [30023])
+        let dataSource = ndk.subscribe(
             filter: articleFilter,
             maxAge: 3600,
             cachePolicy: .cacheWithNetwork

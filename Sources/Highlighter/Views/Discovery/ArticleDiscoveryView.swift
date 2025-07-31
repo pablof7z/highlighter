@@ -84,10 +84,9 @@ struct ArticleDiscoveryView: View {
             HapticManager.shared.notification(.success)
         }
         .task(id: refreshID) {
-            if let ndk = appState.ndk {
-                viewModel.configure(with: ndk)
-                await viewModel.loadArticles(category: selectedCategory, searchText: searchText)
-            }
+            let ndk = appState.ndk
+            viewModel.configure(with: ndk)
+            await viewModel.loadArticles(category: selectedCategory, searchText: searchText)
         }
         .onChange(of: selectedCategory) { _, newCategory in
             Task {
@@ -305,15 +304,13 @@ class ArticleDiscoveryViewModel: ObservableObject {
             // Create a new filter with the category tags
             filter = NDKFilter(
                 kinds: [30023],
-                limit: 20,
                 tags: ["t": Set(category.hashtags)]
             )
         }
         
-        filter.limit = 50
         
         // Subscribe to get all matching events
-        let dataSource = ndk.observe(
+        let dataSource = ndk.subscribe(
             filter: filter,
             maxAge: 0,
             cachePolicy: .networkOnly
@@ -359,14 +356,13 @@ class ArticleDiscoveryViewModel: ObservableObject {
         defer { isLoading = false }
         
         var filter = NDKFilter(kinds: [30023])
-        filter.limit = 30
         
         if let lastTimestamp = lastLoadedTimestamp {
             filter.until = lastTimestamp
         }
         
         // Subscribe to get all matching events
-        let dataSource = ndk.observe(
+        let dataSource = ndk.subscribe(
             filter: filter,
             maxAge: 0,
             cachePolicy: .networkOnly

@@ -64,7 +64,7 @@ class EngagementService: ObservableObject {
         await withTaskGroup(of: Void.self) { group in
             // Fetch reactions
             group.addTask {
-                let reactionSource = ndk.observe(
+                let reactionSource = ndk.subscribe(
                     filter: reactionFilter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly
@@ -82,7 +82,7 @@ class EngagementService: ObservableObject {
             
             // Fetch reposts
             group.addTask {
-                let repostSource = ndk.observe(
+                let repostSource = ndk.subscribe(
                     filter: repostFilter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly
@@ -97,7 +97,7 @@ class EngagementService: ObservableObject {
             
             // Fetch zaps
             group.addTask {
-                let zapSource = ndk.observe(
+                let zapSource = ndk.subscribe(
                     filter: zapFilter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly
@@ -122,7 +122,7 @@ class EngagementService: ObservableObject {
             
             // Fetch comments/replies
             group.addTask {
-                let replySource = ndk.observe(
+                let replySource = ndk.subscribe(
                     filter: replyFilter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly
@@ -183,7 +183,7 @@ class EngagementService: ObservableObject {
         await withTaskGroup(of: Void.self) { group in
             // Reactions
             group.addTask {
-                let source = ndk.observe(
+                let source = ndk.subscribe(
                     filter: reactionFilter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly
@@ -202,7 +202,7 @@ class EngagementService: ObservableObject {
             
             // Reposts
             group.addTask {
-                let source = ndk.observe(
+                let source = ndk.subscribe(
                     filter: repostFilter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly
@@ -220,7 +220,7 @@ class EngagementService: ObservableObject {
             
             // Zaps
             group.addTask {
-                let source = ndk.observe(
+                let source = ndk.subscribe(
                     filter: zapFilter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly
@@ -248,7 +248,7 @@ class EngagementService: ObservableObject {
             
             // Comments
             group.addTask {
-                let source = ndk.observe(
+                let source = ndk.subscribe(
                     filter: replyFilter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly

@@ -4,7 +4,7 @@ import NDKSwift
 struct FollowingListView: View {
     let pubkey: String
     @EnvironmentObject var appState: AppState
-    @State private var following: [(pubkey: String, profile: NDKUserProfile?)] = []
+    @State private var following: [(pubkey: String, metadata: NDKUserMetadata?)] = []
     @State private var isLoading = true
     @Environment(\.dismiss) var dismiss
     
@@ -25,7 +25,7 @@ struct FollowingListView: View {
                             ForEach(Array(following.enumerated()), id: \.element.pubkey) { index, item in
                                 UserRow(
                                     pubkey: item.pubkey,
-                                    profile: item.profile,
+                                    metadata: item.metadata,
                                     showFollowButton: true
                                 )
                                 .premiumEntrance()
@@ -58,21 +58,20 @@ struct FollowingListView: View {
     }
     
     private func loadFollowing() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         let filter = NDKFilter(
             authors: [pubkey],
-            kinds: [3],
-            limit: 1
+            kinds: [3]
         )
         
-        let dataSource = ndk.observe(
+        let dataSource = ndk.subscribe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
         )
         
-        var followingList: [(pubkey: String, profile: NDKUserProfile?)] = []
+        var followingList: [(pubkey: String, metadata: NDKUserMetadata?)] = []
         
         for await event in dataSource.events {
             // Extract following pubkeys from p tags
@@ -83,12 +82,12 @@ struct FollowingListView: View {
             // Load profiles for each pubkey
             for followPubkey in followingPubkeys {
                 // Get cached profile if available from NDK's profile manager
-                var profile: NDKUserProfile?
-                for await p in await ndk.profileManager.observe(for: followPubkey, maxAge: TimeConstants.hour) {
-                    profile = p
+                var metadata: NDKUserMetadata?
+                for await p in await ndk.profileManager.subscribe(for: followPubkey, maxAge: TimeConstants.hour) {
+                    metadata = p
                     break
                 }
-                followingList.append((pubkey: followPubkey, profile: profile))
+                followingList.append((pubkey: followPubkey, metadata: metadata))
             }
             
             break // We only need the first event

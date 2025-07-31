@@ -74,9 +74,8 @@ struct SwarmHeatmapView: View {
     
     private func startHeatmapUpdates() {
         // Configure with NDK instance
-        if let ndk = appState.ndk {
-            heatmapData.configure(ndk: ndk)
-        }
+        let ndk = appState.ndk
+        heatmapData.configure(ndk: ndk)
         
         Task {
             await heatmapData.startStreaming(articleId: articleId)
@@ -460,9 +459,9 @@ struct HighlighterInfo: Identifiable, Equatable {
 class SwarmHeatmapData: ObservableObject {
     @Published var highlights: [HeatmapHighlight] = []
     @Published var activeHighlights: [HeatmapHighlight] = []
-    var profileCache: [String: NDKUserProfile] = [:]
+    var profileCache: [String: NDKUserMetadata] = [:]
     var zapCounts: [String: Int] = [:]
-    private var dataSource: NDKDataSource<NDKEvent>?
+    private var dataSource: NDKSubscription<NDKEvent>?
     private var ndk: NDK?
     
     struct HeatmapHighlight {
@@ -492,7 +491,7 @@ class SwarmHeatmapData: ObservableObject {
         )
         
         // Start observing
-        dataSource = await ndk.observe(filter: filter)
+        dataSource = ndk.subscribe(filter: filter)
         
         // Stream highlights
         guard let events = dataSource?.events else { return }
@@ -502,7 +501,7 @@ class SwarmHeatmapData: ObservableObject {
             
             // Also fetch profile for the highlighter
             Task {
-                for await profile in await ndk.profileManager.observe(for: event.pubkey, maxAge: TimeConstants.hour) {
+                for await profile in await ndk.profileManager.subscribe(for: event.pubkey, maxAge: TimeConstants.hour) {
                     await MainActor.run {
                         profileCache[event.pubkey] = profile
                     }
@@ -609,7 +608,7 @@ class SwarmHeatmapData: ObservableObject {
             tags: ["a": [articleId]]
         )
         
-        let zapDataSource = ndk.observe(
+        let zapDataSource = ndk.subscribe(
             filter: zapFilter,
             maxAge: 300 // 5 minute cache
         )

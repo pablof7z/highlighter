@@ -5,16 +5,16 @@ import NDKSwiftUI
 struct UserDiscoveryView: View {
     let searchText: String
     @EnvironmentObject var appState: AppState
-    @State private var users: [(pubkey: String, profile: NDKUserProfile)] = []
+    @State private var users: [(pubkey: String, metadata: NDKUserMetadata)] = []
     
-    var filteredUsers: [(pubkey: String, profile: NDKUserProfile)] {
+    var filteredUsers: [(pubkey: String, metadata: NDKUserMetadata)] {
         if searchText.isEmpty {
             return users
         }
         return users.filter { user in
-            user.profile.displayName?.localizedCaseInsensitiveContains(searchText) == true ||
-            user.profile.name?.localizedCaseInsensitiveContains(searchText) == true ||
-            user.profile.about?.localizedCaseInsensitiveContains(searchText) == true
+            user.metadata.displayName?.localizedCaseInsensitiveContains(searchText) == true ||
+            user.metadata.name?.localizedCaseInsensitiveContains(searchText) == true ||
+            user.metadata.about?.localizedCaseInsensitiveContains(searchText) == true
         }
     }
     
@@ -22,7 +22,7 @@ struct UserDiscoveryView: View {
         ScrollView {
             LazyVStack(spacing: 16) {
                 ForEach(filteredUsers, id: \.pubkey) { user in
-                    UserCard(pubkey: user.pubkey, profile: user.profile)
+                    UserCard(pubkey: user.pubkey, metadata: user.metadata)
                 }
             }
             .padding()
@@ -33,24 +33,25 @@ struct UserDiscoveryView: View {
     }
     
     private func loadUsers() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // For now, load some popular users or recent profile updates
-        let profileSource = ndk.observe(
-            filter: NDKFilter(kinds: [0], limit: 100),
+        let profileSource = ndk.subscribe(
+            filter: NDKFilter(kinds: [0]),
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
         )
         
         for await event in profileSource.events {
-            if let profile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
+            if event.kind == 0 {
+                let metadata = NDKUserMetadata(event: event)
                 await MainActor.run {
                     if !users.contains(where: { $0.pubkey == event.pubkey }) {
-                        users.append((pubkey: event.pubkey, profile: profile))
+                        users.append((pubkey: event.pubkey, metadata: metadata))
                         // Sort by display name
                         users.sort { 
-                            ($0.profile.displayName ?? $0.profile.name ?? "") < 
-                            ($1.profile.displayName ?? $1.profile.name ?? "")
+                            ($0.metadata.displayName ?? $0.metadata.name ?? "") < 
+                            ($1.metadata.displayName ?? $1.metadata.name ?? "")
                         }
                     }
                 }
@@ -63,7 +64,7 @@ struct UserDiscoveryView: View {
 
 struct UserCard: View {
     let pubkey: String
-    let profile: NDKUserProfile
+    let metadata: NDKUserMetadata
     @EnvironmentObject var appState: AppState
     @State private var isFollowing = false
     @State private var highlightCount = 0
@@ -75,7 +76,7 @@ struct UserCard: View {
                 .fill(DesignSystem.Colors.primary.opacity(0.2))
                 .frame(width: 56, height: 56)
                 .overlay {
-                    if let picture = profile.picture, let url = URL(string: picture) {
+                    if let picture = metadata.picture, let url = URL(string: picture) {
                         AsyncImage(url: url) { image in
                             image
                                 .resizable()
@@ -95,14 +96,14 @@ struct UserCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 // Name
-                Text(profile.displayName ?? profile.name ?? String(pubkey.prefix(16)))
+                Text(metadata.displayName ?? metadata.name ?? String(pubkey.prefix(16)))
                     .font(DesignSystem.Typography.headline)
                     .foregroundColor(DesignSystem.Colors.text)
                     .lineLimit(1)
                 
                 // Username if different from display name
-                if let name = profile.name, 
-                   let displayName = profile.displayName,
+                if let name = metadata.name, 
+                   let displayName = metadata.displayName,
                    name != displayName {
                     Text("@\(name)")
                         .font(DesignSystem.Typography.caption)
@@ -111,7 +112,7 @@ struct UserCard: View {
                 }
                 
                 // About
-                if let about = profile.about {
+                if let about = metadata.about {
                     Text(about)
                         .font(DesignSystem.Typography.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
@@ -124,7 +125,7 @@ struct UserCard: View {
                         .font(DesignSystem.Typography.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                     
-                    if profile.lud16 != nil || profile.lud06 != nil {
+                    if metadata.lud16 != nil || metadata.lud06 != nil {
                         Image(systemName: "bolt.fill")
                             .font(DesignSystem.Typography.caption)
                             .foregroundColor(DesignSystem.Colors.secondary)
@@ -173,14 +174,13 @@ struct UserCard: View {
     }
     
     private func loadUserStats() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // Count highlights by this user
-        let highlightSource = ndk.observe(
+        let highlightSource = ndk.subscribe(
             filter: NDKFilter(
                 authors: [pubkey],
-                kinds: [9802],
-                limit: 100
+                kinds: [9802]
             ),
             maxAge: 3600,
             cachePolicy: .cacheOnly
@@ -196,10 +196,6 @@ struct UserCard: View {
         }
         
         // Check if following
-        do {
-            isFollowing = try await appState.isFollowing(pubkey)
-        } catch {
-            isFollowing = false
-        }
+        isFollowing = (try? await appState.isFollowing(pubkey)) ?? false
     }
 }

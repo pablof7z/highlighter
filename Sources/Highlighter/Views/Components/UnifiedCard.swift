@@ -209,7 +209,7 @@ enum CardVariant {
 struct HighlightCard: View {
     let highlight: HighlightEvent
     @EnvironmentObject var appState: AppState
-    @State private var author: NDKUserProfile?
+    @State private var author: NDKUserMetadata?
     @State private var isZapped = false
     @State private var showDetail = false
     
@@ -293,9 +293,9 @@ struct HighlightCard: View {
     }
     
     private func loadAuthor() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        for await profile in await ndk.profileManager.observe(for: highlight.author, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: highlight.author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.author = profile
             }

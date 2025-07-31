@@ -31,10 +31,10 @@ struct CurationDiscoveryView: View {
     }
     
     private func loadCurations() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        let curationSource = ndk.observe(
-            filter: NDKFilter(kinds: [30004], limit: 50),
+        let curationSource = ndk.subscribe(
+            filter: NDKFilter(kinds: [30004]),
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
         )
@@ -56,7 +56,7 @@ struct CurationDiscoveryView: View {
 
 struct DiscoveryCurationCard: View {
     let curation: ArticleCuration
-    @State private var curator: NDKUserProfile?
+    @State private var curator: NDKUserMetadata?
     @EnvironmentObject var appState: AppState
     
     var body: some View {
@@ -158,9 +158,9 @@ struct DiscoveryCurationCard: View {
     }
     
     private func loadCurator() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        let profileDataSource = ndk.observe(
+        let profileDataSource = ndk.subscribe(
             filter: NDKFilter(
                 authors: [curation.author],
                 kinds: [0]
@@ -170,9 +170,9 @@ struct DiscoveryCurationCard: View {
         )
         
         for await event in profileDataSource.events {
-            if let fetchedProfile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
+            if event.kind == 0 {
                 await MainActor.run {
-                    self.curator = fetchedProfile
+                    self.curator = NDKUserMetadata(event: event)
                 }
                 break
             }

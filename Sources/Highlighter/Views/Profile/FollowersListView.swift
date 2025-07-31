@@ -12,7 +12,7 @@ struct FollowersListView: View {
     struct UserListItem: Identifiable {
         let id: String
         let pubkey: String
-        let profile: NDKUserProfile?
+        let metadata: NDKUserMetadata?
     }
     
     var filteredFollowers: [UserListItem] {
@@ -21,8 +21,8 @@ struct FollowersListView: View {
         }
         
         return followers.filter { follower in
-            let name = follower.profile?.displayName ?? follower.profile?.name ?? ""
-            let about = follower.profile?.about ?? ""
+            let name = follower.metadata?.displayName ?? follower.metadata?.name ?? ""
+            let about = follower.metadata?.about ?? ""
             return name.localizedCaseInsensitiveContains(searchText) ||
                    about.localizedCaseInsensitiveContains(searchText)
         }
@@ -45,7 +45,7 @@ struct FollowersListView: View {
                             ForEach(filteredFollowers) { follower in
                                 UserRow(
                                     pubkey: follower.pubkey,
-                                    profile: follower.profile
+                                    metadata: follower.metadata
                                 )
                                 .premiumEntrance()
                                 
@@ -78,12 +78,7 @@ struct FollowersListView: View {
     }
     
     private func loadFollowers() async {
-        guard let ndk = appState.ndk else {
-            await MainActor.run {
-                isLoading = false
-            }
-            return
-        }
+        let ndk = appState.ndk
         
         // Get contact list events (NIP-02) for people who follow this pubkey
         let filter = NDKFilter(
@@ -96,7 +91,7 @@ struct FollowersListView: View {
         }
         
         // Use NDK's observe method
-        let dataSource = ndk.observe(
+        let dataSource = ndk.subscribe(
             filter: filter,
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
@@ -106,12 +101,12 @@ struct FollowersListView: View {
             let followerPubkey = event.pubkey
             
             // Load profile data for each follower using NDK's profileManager
-            for await profile in await ndk.profileManager.observe(for: followerPubkey, maxAge: TimeConstants.hour) {
+            for await profile in await ndk.profileManager.subscribe(for: followerPubkey, maxAge: TimeConstants.hour) {
                 await MainActor.run {
                     let userItem = UserListItem(
                         id: followerPubkey,
                         pubkey: followerPubkey,
-                        profile: profile
+                        metadata: profile
                     )
                     
                     // Avoid duplicates
@@ -133,7 +128,7 @@ struct FollowersListView: View {
 
 struct UserRow: View {
     let pubkey: String
-    let profile: NDKUserProfile?
+    let metadata: NDKUserMetadata?
     var showFollowButton: Bool = false
     @State private var isFollowing = false
     @State private var showUserProfile = false
@@ -147,18 +142,18 @@ struct UserRow: View {
             // User info
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(profile?.displayName ?? profile?.name ?? String(pubkey.prefix(16)))
+                    Text(metadata?.displayName ?? metadata?.name ?? String(pubkey.prefix(16)))
                         .font(.ds.bodyMedium)
                         .foregroundColor(.ds.text)
                     
-                    if profile?.nip05 != nil {
+                    if metadata?.nip05 != nil {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.ds.caption)
                             .foregroundColor(.ds.primary)
                     }
                 }
                 
-                if let about = profile?.about {
+                if let about = metadata?.about {
                     Text(about)
                         .font(.ds.caption)
                         .foregroundColor(.ds.textSecondary)
@@ -212,7 +207,7 @@ struct UserRow: View {
             )
             .frame(width: 48, height: 48)
             .overlay(
-                Text(String((profile?.displayName ?? profile?.name ?? "A").prefix(1)))
+                Text(String((metadata?.displayName ?? metadata?.name ?? "A").prefix(1)))
                     .font(.ds.bodyMedium)
                     .foregroundColor(Color.white)
             )

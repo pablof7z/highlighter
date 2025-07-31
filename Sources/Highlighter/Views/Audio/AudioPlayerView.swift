@@ -682,7 +682,7 @@ struct AudioPlayerView: View {
         guard let ndk = appState.ndk else { return nil }
         
         // Get profile from NDK (will use cache if available)
-        for await profile in await ndk.profileManager.observe(for: pubkey, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: pubkey, maxAge: TimeConstants.hour) {
             if let profile = profile {
                 return profile.lud16 ?? profile.lud06
             }

@@ -34,7 +34,7 @@ struct SwarmHighlight: Identifiable, Equatable {
         let id = UUID()
         let event: NDKEvent
         let author: NDKUser
-        let profile: NDKUserProfile?
+        let metadata: NDKUserMetadata?
         let note: String?
         let createdAt: Date
         let zapCount: Int
@@ -46,7 +46,7 @@ class SwarmHighlightManager: ObservableObject {
     @Published var isLoading = false
     
     var ndk: NDK
-    private var dataSource: NDKDataSource<NDKEvent>?
+    private var dataSource: NDKSubscription<NDKEvent>?
     
     init(ndk: NDK) {
         self.ndk = ndk
@@ -70,7 +70,7 @@ class SwarmHighlightManager: ObservableObject {
                 tags: tagsDict.isEmpty ? nil : tagsDict
             )
             
-            dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+            dataSource = ndk.subscribe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
             
             var highlightEvents: [NDKEvent] = []
             
@@ -90,9 +90,9 @@ class SwarmHighlightManager: ObservableObject {
             guard !content.isEmpty else { continue }
             
             // Use streaming observe API to get the profile
-            var profile: NDKUserProfile?
-            for await p in await ndk.profileManager.observe(for: event.pubkey, maxAge: TimeConstants.hour) {
-                profile = p
+            var metadata: NDKUserMetadata?
+            for await profile in await ndk.profileManager.subscribe(for: event.pubkey, maxAge: TimeConstants.hour) {
+                metadata = profile
                 break // Just get the first result
             }
             let zapCount = await fetchZapCount(for: event.id)
@@ -100,7 +100,7 @@ class SwarmHighlightManager: ObservableObject {
             let info = SwarmHighlight.HighlightInfo(
                 event: event,
                 author: NDKUser(pubkey: event.pubkey),
-                profile: profile,
+                metadata: metadata,
                 note: event.tags.first(where: { $0.count > 1 && $0[0] == "comment" })?.dropFirst().joined(separator: " "),
                 createdAt: Date(timeIntervalSince1970: TimeInterval(event.createdAt)),
                 zapCount: zapCount
@@ -131,7 +131,7 @@ class SwarmHighlightManager: ObservableObject {
             limit: 1000
         )
         
-        let dataSource = ndk.observe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
+        let dataSource = ndk.subscribe(filter: filter, maxAge: 3600, cachePolicy: .cacheWithNetwork)
         var count = 0
         // Limit zap count to prevent excessive API calls
         let maxZapCount = 100

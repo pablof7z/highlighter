@@ -5,7 +5,7 @@ import NDKSwiftUI
 // MARK: - Article List Card using UnifiedCard
 struct ArticleListCard: View {
     let article: Article
-    @State private var author: NDKUserProfile?
+    @State private var author: NDKUserMetadata?
     @EnvironmentObject var appState: AppState
     @State private var isBookmarked = false
     
@@ -92,9 +92,9 @@ struct ArticleListCard: View {
     }
     
     private func loadAuthor() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        for await profile in await ndk.profileManager.observe(for: article.author, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: article.author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.author = profile
             }
@@ -112,7 +112,7 @@ struct ArticleListCard: View {
 // MARK: - Featured Article Card using UnifiedCard
 struct ArticleFeaturedCard: View {
     let article: Article
-    @State private var author: NDKUserProfile?
+    @State private var author: NDKUserMetadata?
     @EnvironmentObject var appState: AppState
     
     var body: some View {
@@ -204,9 +204,9 @@ struct ArticleFeaturedCard: View {
     }
     
     private func loadAuthor() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        for await profile in await ndk.profileManager.observe(for: article.author, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: article.author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.author = profile
             }
@@ -218,7 +218,7 @@ struct ArticleFeaturedCard: View {
 // MARK: - Row Article Card using UnifiedCard
 struct ArticleRowCard: View {
     let article: Article
-    @State private var author: NDKUserProfile?
+    @State private var author: NDKUserMetadata?
     @EnvironmentObject var appState: AppState
     
     var body: some View {
@@ -322,9 +322,9 @@ struct ArticleRowCard: View {
     }
     
     private func loadAuthor() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        for await profile in await ndk.profileManager.observe(for: article.author, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: article.author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.author = profile
             }

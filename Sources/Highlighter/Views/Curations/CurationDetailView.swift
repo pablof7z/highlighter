@@ -9,7 +9,7 @@ struct CurationDetailView: View {
     
     @State private var isFollowing = false
     @State private var showAddArticle = false
-    @State private var curator: NDKUserProfile?
+    @State private var curator: NDKUserMetadata?
     @State private var currentUserPubkey: String?
     @State private var loadedArticles: [Article] = []
     
@@ -180,9 +180,9 @@ struct CurationDetailView: View {
     }
     
     private func loadCurator() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        for await profile in await ndk.profileManager.observe(for: curation.author, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: curation.author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.curator = profile
             }
@@ -191,7 +191,7 @@ struct CurationDetailView: View {
     }
     
     private func loadArticles() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
         // Collect event IDs and addresses to fetch
         var eventIds: [String] = []
@@ -218,7 +218,7 @@ struct CurationDetailView: View {
         if !eventIds.isEmpty {
             Task {
                 let filter = NDKFilter(ids: eventIds)
-                let articleSource = ndk.observe(
+                let articleSource = ndk.subscribe(
                     filter: filter,
                     maxAge: 300,
                     cachePolicy: .cacheWithNetwork
@@ -246,7 +246,7 @@ struct CurationDetailView: View {
                     kinds: [address.kind]
                 )
                 
-                let articleSource = ndk.observe(
+                let articleSource = ndk.subscribe(
                     filter: filter,
                     maxAge: 300,
                     cachePolicy: .cacheWithNetwork
@@ -272,7 +272,8 @@ struct CurationDetailView: View {
     
     private func toggleFollow() {
         Task {
-            guard let ndk = appState.ndk,
+            let ndk = appState.ndk
+        guard
                   let signer = appState.activeSigner else { return }
             
             do {
@@ -282,11 +283,10 @@ struct CurationDetailView: View {
                     // Unfollow
                     let filter = NDKFilter(
                         authors: [pubkey],
-                        kinds: [3],
-                        limit: 1
+                        kinds: [3]
                     )
                     
-                    let events = ndk.observe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
+                    let events = ndk.subscribe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
                     for await contactListEvent in events {
                         var tags = contactListEvent.tags.filter { tag in
                             !(tag.first == "p" && tag[safe: 1] == curation.author)
@@ -305,14 +305,13 @@ struct CurationDetailView: View {
                     // Follow
                     let filter = NDKFilter(
                         authors: [pubkey],
-                        kinds: [3],
-                        limit: 1
+                        kinds: [3]
                     )
                     
                     var tags: [[String]] = []
                     var content = ""
                     
-                    let events = ndk.observe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
+                    let events = ndk.subscribe(filter: filter, maxAge: 300, cachePolicy: .cacheWithNetwork).events
                     for await contactListEvent in events {
                         tags = contactListEvent.tags
                         content = contactListEvent.content
@@ -530,7 +529,7 @@ struct EmptyArticlesView: View {
 struct LoadedArticleCard: View {
     let article: Article
     @State private var showArticleView = false
-    @State private var author: NDKUserProfile?
+    @State private var author: NDKUserMetadata?
     @State private var isPressed = false
     @EnvironmentObject var appState: AppState
     
@@ -681,9 +680,9 @@ struct LoadedArticleCard: View {
     }
     
     private func loadAuthor() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        for await profile in await ndk.profileManager.observe(for: article.author, maxAge: TimeConstants.hour) {
+        for await profile in await ndk.profileManager.subscribe(for: article.author, maxAge: TimeConstants.hour) {
             await MainActor.run {
                 self.author = profile
             }

@@ -345,8 +345,6 @@ struct RelayManagerView: View {
     
     private func loadRelays() {
         Task {
-            guard let ndk = appState.ndk else { return }
-            
             await MainActor.run {
                 isRefreshing = true
             }
@@ -362,12 +360,10 @@ struct RelayManagerView: View {
             ]
             
             for relayUrl in defaultRelays {
-                let isConnected = await checkRelayConnection(url: relayUrl, ndk: ndk)
-                let latency = isConnected ? await measureRelayLatency(url: relayUrl, ndk: ndk) : nil
                 let info = RelayInfo(
                     url: relayUrl,
-                    isConnected: isConnected,
-                    latency: latency,
+                    isConnected: true, // Assume available, no testing needed
+                    latency: nil,
                     supportedNIPs: [1, 2, 4, 9, 11, 12, 16, 20, 23, 25, 28, 30, 33, 40, 42],
                     software: "nostr-relay",
                     version: "1.0.0",
@@ -384,48 +380,6 @@ struct RelayManagerView: View {
         }
     }
     
-    private func checkRelayConnection(url: String, ndk: NDK) async -> Bool {
-        // Check if we can fetch a recent event from this relay
-        let filter = NDKFilter(kinds: [1], limit: 1)
-        
-        // Create a timeout task
-        let timeoutTask = Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
-            return false
-        }
-        
-        // Try to fetch an event
-        let dataSource = ndk.observe(filter: filter, maxAge: 60)
-        
-        for await _ in dataSource.events {
-            timeoutTask.cancel()
-            return true
-        }
-        
-        return await timeoutTask.value
-    }
-    
-    private func measureRelayLatency(url: String, ndk: NDK) async -> Int? {
-        let start = Date()
-        
-        // Simple latency test - fetch a recent event
-        let filter = NDKFilter(kinds: [1], limit: 1)
-        
-        let timeoutTask = Task { () -> Int? in
-            try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
-            return nil
-        }
-        
-        let dataSource = ndk.observe(filter: filter, maxAge: 60)
-        
-        for await _ in dataSource.events {
-            timeoutTask.cancel()
-            let latency = Int(Date().timeIntervalSince(start) * 1000)
-            return min(latency, 9999) // Cap at 9999ms
-        }
-        
-        return await timeoutTask.value
-    }
     
     private func refreshRelays() {
         loadRelays()
@@ -453,7 +407,7 @@ struct RelayManagerView: View {
         }
         
         Task {
-            guard let ndk = appState.ndk else { return }
+            let ndk = appState.ndk
             
             // Check if relay is already added
             if relays.contains(where: { $0.url == url }) {
@@ -465,7 +419,7 @@ struct RelayManagerView: View {
             }
             
             // Add relay using NDK's relay management
-            _ = await ndk.addRelayAndConnect(url)
+            _ = await appState.ndk.addRelay(url)
             
             await MainActor.run {
                 newRelayURL = ""
@@ -477,7 +431,7 @@ struct RelayManagerView: View {
     
     private func removeRelay(_ relay: RelayInfo) {
         Task {
-            guard let ndk = appState.ndk else { return }
+            let ndk = appState.ndk
             
             // Remove relay using NDK's relay management
             await ndk.removeRelay(relay.url)

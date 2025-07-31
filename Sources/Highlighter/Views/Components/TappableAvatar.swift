@@ -4,7 +4,7 @@ import NDKSwift
 struct TappableAvatar: View {
     let pubkey: String
     let size: CGFloat
-    let profile: NDKUserProfile?
+    let metadata: NDKUserMetadata?
     let showOnlineIndicator: Bool
     let enableHoverEffect: Bool
     
@@ -17,13 +17,13 @@ struct TappableAvatar: View {
     init(
         pubkey: String,
         size: CGFloat = 40,
-        profile: NDKUserProfile? = nil,
+        metadata: NDKUserMetadata? = nil,
         showOnlineIndicator: Bool = false,
         enableHoverEffect: Bool = true
     ) {
         self.pubkey = pubkey
         self.size = size
-        self.profile = profile
+        self.metadata = metadata
         self.showOnlineIndicator = showOnlineIndicator
         self.enableHoverEffect = enableHoverEffect
     }
@@ -89,7 +89,7 @@ struct TappableAvatar: View {
     
     @ViewBuilder
     private var avatarView: some View {
-        if let picture = profile?.picture, let url = URL(string: picture) {
+        if let picture = metadata?.picture, let url = URL(string: picture) {
             AsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):
@@ -189,7 +189,7 @@ extension View {
     func tappableAvatar(
         pubkey: String,
         size: CGFloat = 40,
-        profile: NDKUserProfile? = nil,
+        metadata: NDKUserMetadata? = nil,
         showOnlineIndicator: Bool = false,
         enableHoverEffect: Bool = true
     ) -> some View {
@@ -197,7 +197,7 @@ extension View {
             TappableAvatar(
                 pubkey: pubkey,
                 size: size,
-                profile: profile,
+                metadata: metadata,
                 showOnlineIndicator: showOnlineIndicator,
                 enableHoverEffect: enableHoverEffect
             )

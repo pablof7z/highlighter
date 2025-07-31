@@ -633,12 +633,13 @@ class FeedDataManager: ObservableObject {
     
     weak var appState: AppState?
     private var activeFilter: TimelineFeedView.FeedFilter = .all
-    private var dataSource: NDKDataSource<NDKEvent>?
+    private var dataSource: NDKSubscription<NDKEvent>?
     private var streamTask: Task<Void, Never>?
     private var engagementCache: [String: EngagementService.EngagementMetrics] = [:]
     
     func startStreaming(filter: TimelineFeedView.FeedFilter) async {
-        guard let appState = appState, let ndk = appState.ndk else { return }
+        guard let appState = appState else { return }
+        let ndk = appState.ndk
         
         // Start streaming immediately - no loading states
         activeFilter = filter
@@ -651,7 +652,7 @@ class FeedDataManager: ObservableObject {
         let filter = createFilter(for: filter)
         
         // Create data source for observing events
-        dataSource = await ndk.outbox.observe(
+        dataSource = ndk.subscribe(
             filter: filter,
             maxAge: 0,  // Real-time updates
             cachePolicy: .cacheWithNetwork
@@ -687,7 +688,7 @@ class FeedDataManager: ObservableObject {
         case .following:
             // Get highlights only from people the user follows
             guard let appState = appState else {
-                return NDKFilter(kinds: [9802], limit: 100)
+                return NDKFilter(kinds: [9802])
             }
             
             let followingList = Array(appState.following)
@@ -696,23 +697,20 @@ class FeedDataManager: ObservableObject {
                 let since = Date().addingTimeInterval(-TimeConstants.hour * 6)
                 return NDKFilter(
                     kinds: [9802],
-                    since: Int64(since.timeIntervalSince1970),
-                    limit: 50
+                    since: Int64(since.timeIntervalSince1970)
                 )
             }
             
             return NDKFilter(
                 authors: followingList,
-                kinds: [9802],
-                limit: 200
+                kinds: [9802]
             )
         case .trending:
             // Get recent highlights that will be sorted by engagement
             let since = Date().addingTimeInterval(-TimeConstants.day)
             return NDKFilter(
                 kinds: [9802],
-                since: Int64(since.timeIntervalSince1970),
-                limit: 100
+                since: Int64(since.timeIntervalSince1970)
             )
         case .recent:
             let since = Date().addingTimeInterval(-TimeConstants.hour * 2)

@@ -521,7 +521,8 @@ struct EngagementVisualization: View {
     
     private func loadEngagementData() {
         Task {
-            guard let ndk = appState.ndk, let signer = appState.activeSigner else { return }
+            let ndk = appState.ndk
+        guard let signer = appState.auth.activeSigner else { return }
             
             do {
                 let pubkey = try await signer.pubkey
@@ -544,11 +545,10 @@ struct EngagementVisualization: View {
                 let highlightFilter = NDKFilter(
                     authors: [pubkey],
                     kinds: [9802], // NIP-84 highlights
-                    since: Int64(startDate.timeIntervalSince1970),
-                    limit: 500
+                    since: Int64(startDate.timeIntervalSince1970)
                 )
                 
-                let highlightDataSource = ndk.observe(
+                let highlightDataSource = ndk.subscribe(
                     filter: highlightFilter,
                     maxAge: 300,
                     cachePolicy: .cacheWithNetwork
@@ -605,11 +605,10 @@ struct EngagementVisualization: View {
                     
                     let reactionFilter = NDKFilter(
                         kinds: [7], // Reactions
-                        limit: 1000,
                         tags: tagsFilter
                     )
                     
-                    let reactionDataSource = ndk.observe(
+                    let reactionDataSource = ndk.subscribe(
                         filter: reactionFilter,
                         maxAge: 300,
                         cachePolicy: .cacheWithNetwork
@@ -625,11 +624,10 @@ struct EngagementVisualization: View {
                     // Count replies (kind 1 with e tag)
                     let replyFilter = NDKFilter(
                         kinds: [1], // Text notes
-                        limit: 100,
                         tags: tagsFilter
                     )
                     
-                    let replyDataSource = ndk.observe(
+                    let replyDataSource = ndk.subscribe(
                         filter: replyFilter,
                         maxAge: 300,
                         cachePolicy: .cacheWithNetwork
@@ -643,11 +641,10 @@ struct EngagementVisualization: View {
                     // Count reposts
                     let repostFilter = NDKFilter(
                         kinds: [6], // Reposts
-                        limit: 100,
                         tags: tagsFilter
                     )
                     
-                    let repostDataSource = ndk.observe(
+                    let repostDataSource = ndk.subscribe(
                         filter: repostFilter,
                         maxAge: 300,
                         cachePolicy: .cacheWithNetwork
@@ -661,11 +658,10 @@ struct EngagementVisualization: View {
                     // Count zaps (kind 9735)
                     let zapFilter = NDKFilter(
                         kinds: [9735], // Zap receipts
-                        limit: 100,
                         tags: tagsFilter
                     )
                     
-                    let zapDataSource = ndk.observe(
+                    let zapDataSource = ndk.subscribe(
                         filter: zapFilter,
                         maxAge: 300,
                         cachePolicy: .cacheWithNetwork
@@ -707,16 +703,15 @@ struct EngagementVisualization: View {
     
     private func loadTrendingHighlights() {
         Task {
-            guard let ndk = appState.ndk else { return }
+            let ndk = appState.ndk
             
             // Fetch recent highlights with high engagement
             let filter = NDKFilter(
                 kinds: [9802],
-                since: Timestamp(Date().addingTimeInterval(-7 * 24 * 60 * 60).timeIntervalSince1970),
-                limit: 50
+                since: Timestamp(Date().addingTimeInterval(-7 * 24 * 60 * 60).timeIntervalSince1970)
             )
             
-            let dataSource = ndk.observe(
+            let dataSource = ndk.subscribe(
                 filter: filter,
                 maxAge: 300,
                 cachePolicy: .cacheWithNetwork

@@ -206,18 +206,18 @@ struct LibraryView: View {
     }
     
     private func loadHighlights() async {
-        guard let ndk = appState.ndk,
+        let ndk = appState.ndk
+        guard
               let signer = appState.activeSigner else { return }
         
         do {
             let pubkey = try await signer.pubkey
             let filter = NDKFilter(
                 authors: [pubkey],
-                kinds: [9802], // NIP-84 highlights
-                limit: 100
+                kinds: [9802] // NIP-84 highlights
             )
             
-            let dataSource = ndk.observe(
+            let dataSource = ndk.subscribe(
                 filter: filter,
                 maxAge: 300 // 5 minute cache
             )
@@ -237,18 +237,18 @@ struct LibraryView: View {
     }
     
     private func loadCurations() async {
-        guard let ndk = appState.ndk,
+        let ndk = appState.ndk
+        guard
               let signer = appState.activeSigner else { return }
         
         do {
             let pubkey = try await signer.pubkey
             let filter = NDKFilter(
                 authors: [pubkey],
-                kinds: [30004], // Article curations
-                limit: 50
+                kinds: [30004] // Article curations
             )
             
-            let dataSource = ndk.observe(
+            let dataSource = ndk.subscribe(
                 filter: filter,
                 maxAge: 300 // 5 minute cache
             )
@@ -268,18 +268,18 @@ struct LibraryView: View {
     }
     
     private func loadArticles() async {
-        guard let ndk = appState.ndk,
+        let ndk = appState.ndk
+        guard
               let signer = appState.activeSigner else { return }
         
         do {
             let pubkey = try await signer.pubkey
             let filter = NDKFilter(
                 authors: [pubkey],
-                kinds: [30023], // Long-form articles
-                limit: 50
+                kinds: [30023] // Long-form articles
             )
             
-            let dataSource = ndk.observe(
+            let dataSource = ndk.subscribe(
                 filter: filter,
                 maxAge: 300 // 5 minute cache
             )
@@ -584,7 +584,8 @@ struct RecentActivitySection: View {
     
     private func loadRecentActivities() {
         Task {
-            guard let ndk = appState.ndk,
+            let ndk = appState.ndk
+        guard
                   let signer = appState.activeSigner else { return }
             
             do {
@@ -595,11 +596,10 @@ struct RecentActivitySection: View {
                 let filter = NDKFilter(
                     authors: [pubkey],
                     kinds: [7, 9735, 9802, 30004, 30023], // reactions, zaps, highlights, curations, articles
-                    since: Int64(since.timeIntervalSince1970),
-                    limit: 20
+                    since: Int64(since.timeIntervalSince1970)
                 )
                 
-                let dataSource = ndk.observe(filter: filter)
+                let dataSource = ndk.subscribe(filter: filter)
                 var events: [NDKEvent] = []
                 for await event in dataSource.events {
                     events.append(event)
@@ -919,16 +919,15 @@ struct SavedArticlesSection: View {
     
     private func loadHighlightCounts() {
         Task {
-            guard let ndk = appState.ndk else { return }
+            let ndk = appState.ndk
             
             for article in appState.savedArticles {
                 let filter = NDKFilter(
                     kinds: [9802],
-                    limit: 100,
                     tags: ["a": ["30023:\(article.author):\(article.identifier ?? "")"]]
                 )
                 
-                let dataSource = ndk.observe(
+                let dataSource = ndk.subscribe(
                     filter: filter,
                     maxAge: 300,
                     cachePolicy: .cacheOnly

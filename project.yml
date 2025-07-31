@@ -7,8 +7,7 @@ options:
   generateEmptyDirectories: true
 packages:
   NDKSwift:
-    url: https://github.com/pablof7z/NDKSwift
-    revision: dba57b0108cde09d918f5699e94c09f80e82bb98
+    path: ../NDKSwift
 targets:
   Highlighter:
     type: application

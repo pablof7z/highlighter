@@ -83,7 +83,6 @@
 		D6BF6DEBA828B3B11D10832E /* CurationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D807FD00E2D24A226C0CA61A /* CurationDetailView.swift */; };
 		D83BD036658262CBBFDDA420 /* CachePolicies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9694D8B76F8D0AAF3F94C325 /* CachePolicies.swift */; };
 		D9DDE855A6260257D14B363C /* TimelineFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02BF635DE3D5488C2EC049B /* TimelineFeedView.swift */; };
-		DE72306A67DEB86D06A8878E /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8002949A23F78D10720992C /* KeychainManager.swift */; };
 		DEF4ACD6D408D383F02A9C06 /* NDKSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8F0120155B5FA6FCE7E43793 /* NDKSwift */; };
 		E3A00B68BDE7C21BA3CD80C2 /* UserDiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374EC425180288ED47940087 /* UserDiscoveryView.swift */; };
 		E85CEAE60DFDAE1A4E709ED0 /* CreateHighlightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513F373BC7DB42A589AB44E8 /* CreateHighlightView.swift */; };
@@ -130,6 +129,7 @@
 		6518EDA69718BECFF41C4E02 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		666B0ACBD17E885451A80F89 /* ProfileImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImage.swift; sourceTree = "<group>"; };
 		68EE862B30307430C752F295 /* SelectableMarkdownRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableMarkdownRenderer.swift; sourceTree = "<group>"; };
+		693469AD3921FCE59CCA2587 /* NDKSwift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = NDKSwift; path = ../NDKSwift; sourceTree = SOURCE_ROOT; };
 		71A83CD10503C7B187BEE747 /* ArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleView.swift; sourceTree = "<group>"; };
 		7557E38E531DE0B78A14909E /* AnimationExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationExtensions.swift; sourceTree = "<group>"; };
 		7D7CB442B1CBDC62436052A8 /* CommentsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsSection.swift; sourceTree = "<group>"; };
@@ -165,7 +165,6 @@
 		D969455E05A9A63B81679E4A /* ArticleDiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleDiscoveryView.swift; sourceTree = "<group>"; };
 		E226564B9D8D44FE91929960 /* CommentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentService.swift; sourceTree = "<group>"; };
 		E38C4DFEFB7576650F14C1E2 /* BookmarkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkService.swift; sourceTree = "<group>"; };
-		E8002949A23F78D10720992C /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		EB1FCE23179A3E53DAAA70D5 /* PreferenceKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceKeys.swift; sourceTree = "<group>"; };
 		EDC09191327374283955B1F6 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
 		EE32978277A7016DD9A2864A /* EngagementVisualization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngagementVisualization.swift; sourceTree = "<group>"; };
@@ -255,6 +254,14 @@
 				374EC425180288ED47940087 /* UserDiscoveryView.swift */,
 			);
 			path = Discovery;
+			sourceTree = "<group>";
+		};
+		4E710612FC2266FC921A8A16 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				693469AD3921FCE59CCA2587 /* NDKSwift */,
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 		5B7B339EEBD21CB543AA2E53 /* Audio */ = {
@@ -375,6 +382,7 @@
 		A041F7C169CA548DDDDDFE27 = {
 			isa = PBXGroup;
 			children = (
+				4E710612FC2266FC921A8A16 /* Packages */,
 				1F5456C944AAF1D25D070180 /* Resources */,
 				39FEB9D7BEBF39D76C295F55 /* Sources */,
 				9288D1FF044AFA08F6DE9CC7 /* Products */,
@@ -498,7 +506,6 @@
 				2E74B3E244D7F253B507F4B6 /* ArticleTimeEstimator.swift */,
 				5C9A8C38CB54B7E5605AF14A /* BlurHashDecoder.swift */,
 				01F9CBDB1F581FAFF82499ED /* HapticManager.swift */,
-				E8002949A23F78D10720992C /* KeychainManager.swift */,
 				EB1FCE23179A3E53DAAA70D5 /* PreferenceKeys.swift */,
 			);
 			path = Utilities;
@@ -562,7 +569,7 @@
 			mainGroup = A041F7C169CA548DDDDDFE27;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				6C257F1AC7E369E7BF474631 /* XCRemoteSwiftPackageReference "NDKSwift" */,
+				2B35E65CAA76613A405C535E /* XCLocalSwiftPackageReference "../NDKSwift" */,
 			);
 			preferredProjectObjectVersion = 54;
 			projectDirPath = "";
@@ -638,7 +645,6 @@
 				34DF18AC7EC3EE0F46E1A1A3 /* HomeDataManager.swift in Sources */,
 				7D93A481371B7F31B093B6DB /* ImageUploadService.swift in Sources */,
 				0AB8E358C4D1ED0B7B320B12 /* ImmersiveHighlightDetailView.swift in Sources */,
-				DE72306A67DEB86D06A8878E /* KeychainManager.swift in Sources */,
 				39ED8F05509F9A4FFF466557 /* LibraryView.swift in Sources */,
 				1F8DBCE1121AC3831365569B /* LoadingHighlightView.swift in Sources */,
 				981A640F5DAAE1DC2566BE65 /* ModernFormComponents.swift in Sources */,
@@ -888,26 +894,20 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		6C257F1AC7E369E7BF474631 /* XCRemoteSwiftPackageReference "NDKSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pablof7z/NDKSwift";
-			requirement = {
-				kind = revision;
-				revision = dba57b0108cde09d918f5699e94c09f80e82bb98;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		2B35E65CAA76613A405C535E /* XCLocalSwiftPackageReference "../NDKSwift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../NDKSwift;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		066BFE60CA36619DDAF24249 /* NDKSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 6C257F1AC7E369E7BF474631 /* XCRemoteSwiftPackageReference "NDKSwift" */;
 			productName = NDKSwiftUI;
 		};
 		8F0120155B5FA6FCE7E43793 /* NDKSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 6C257F1AC7E369E7BF474631 /* XCRemoteSwiftPackageReference "NDKSwift" */;
 			productName = NDKSwift;
 		};
 /* End XCSwiftPackageProductDependency section */

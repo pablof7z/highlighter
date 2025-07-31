@@ -7,9 +7,10 @@ import NDKSwiftUI
 struct ProfileImage: View {
     let pubkey: String
     let size: CGFloat
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
-        NDKUIProfilePicture(pubkey: pubkey)
+        NDKUIProfilePicture(ndk: appState.ndk, pubkey: pubkey)
             .frame(width: size, height: size)
     }
 }

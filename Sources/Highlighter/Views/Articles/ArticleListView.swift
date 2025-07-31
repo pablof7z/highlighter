@@ -97,10 +97,10 @@ struct ArticleListView: View {
     }
     
     private func loadArticles() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        let articleSource = ndk.observe(
-            filter: NDKFilter(kinds: [30023], limit: 50),
+        let articleSource = ndk.subscribe(
+            filter: NDKFilter(kinds: [30023]),
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
         )

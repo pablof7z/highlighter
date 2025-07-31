@@ -50,7 +50,7 @@ struct AdvancedSearchView: View {
     struct SearchResults {
         var highlights: [HighlightEvent] = []
         var articles: [Article] = []
-        var users: [(pubkey: String, profile: NDKUserProfile)] = []
+        var users: [(pubkey: String, metadata: NDKUserMetadata)] = []
         var curations: [ArticleCuration] = []
         
         var isEmpty: Bool {
@@ -439,7 +439,7 @@ struct AdvancedSearchView: View {
                             count: searchResults.users.count
                         ) {
                             ForEach(searchResults.users, id: \.pubkey) { userInfo in
-                                SearchResultUserCard(pubkey: userInfo.pubkey, user: userInfo.profile)
+                                SearchResultUserCard(pubkey: userInfo.pubkey, user: userInfo.metadata)
                                     .searchPremiumEntrance()
                             }
                         }
@@ -528,7 +528,8 @@ struct AdvancedSearchView: View {
         animateResults = false
         
         Task {
-            guard let ndk = appState.ndk, !searchText.isEmpty else {
+            let ndk = appState.ndk
+        guard !searchText.isEmpty else {
                 await MainActor.run {
                     isSearching = false
                     searchResults = SearchResults()
@@ -559,7 +560,7 @@ struct AdvancedSearchView: View {
                     let articleFilter = NDKFilter(
                         kinds: [30023]
                     )
-                    let dataSource = ndk.observe(filter: articleFilter)
+                    let dataSource = ndk.subscribe(filter: articleFilter)
                     var articles: [Article] = []
                     for await event in dataSource.events {
                         if let article = try? Article(from: event) {
@@ -602,7 +603,7 @@ struct AdvancedSearchView: View {
         let filter = NDKFilter(
             kinds: [9802]
         )
-        let dataSource = ndk.observe(filter: filter)
+        let dataSource = ndk.subscribe(filter: filter)
         var highlights: [HighlightEvent] = []
         for await event in dataSource.events {
             if let highlight = try? HighlightEvent(from: event) {
@@ -618,22 +619,23 @@ struct AdvancedSearchView: View {
         return highlights
     }
     
-    private func searchUsers(ndk: NDK) async -> [(pubkey: String, profile: NDKUserProfile)] {
+    private func searchUsers(ndk: NDK) async -> [(pubkey: String, metadata: NDKUserMetadata)] {
         // Search user metadata
         let filter = NDKFilter(
             kinds: [0]
         )
-        let dataSource = ndk.observe(filter: filter)
+        let dataSource = ndk.subscribe(filter: filter)
         
-        var users: [(pubkey: String, profile: NDKUserProfile)] = []
+        var users: [(pubkey: String, metadata: NDKUserMetadata)] = []
         for await event in dataSource.events {
-            if let profile = try? JSONDecoder().decode(NDKUserProfile.self, from: Data(event.content.utf8)) {
+            if event.kind == 0 {
+                let metadata = NDKUserMetadata(event: event)
                 // Filter by search text
                 if searchText.isEmpty ||
-                   (profile.name ?? "").localizedCaseInsensitiveContains(searchText) ||
-                   (profile.displayName ?? "").localizedCaseInsensitiveContains(searchText) ||
-                   (profile.about ?? "").localizedCaseInsensitiveContains(searchText) {
-                    users.append((event.pubkey, profile))
+                   (metadata.name ?? "").localizedCaseInsensitiveContains(searchText) ||
+                   (metadata.displayName ?? "").localizedCaseInsensitiveContains(searchText) ||
+                   (metadata.about ?? "").localizedCaseInsensitiveContains(searchText) {
+                    users.append((event.pubkey, metadata))
                 }
             }
         }
@@ -644,7 +646,7 @@ struct AdvancedSearchView: View {
         let filter = NDKFilter(
             kinds: [30004]
         )
-        let dataSource = ndk.observe(filter: filter)
+        let dataSource = ndk.subscribe(filter: filter)
         var curations: [ArticleCuration] = []
         for await event in dataSource.events {
             if let curation = try? ArticleCuration(from: event) {
@@ -662,7 +664,7 @@ struct AdvancedSearchView: View {
     
     private func loadTrendingTopics() {
         Task {
-            guard let ndk = appState.ndk else { return }
+            let ndk = appState.ndk
             
             do {
                 // Fetch recent highlights to analyze trending topics
@@ -672,7 +674,7 @@ struct AdvancedSearchView: View {
                     since: Int64(since.timeIntervalSince1970)
                 )
                 
-                let dataSource = ndk.observe(filter: filter)
+                let dataSource = ndk.subscribe(filter: filter)
                 var events: [NDKEvent] = []
                 for await event in dataSource.events {
                     events.append(event)
@@ -1136,7 +1138,7 @@ struct SearchResultArticleCard: View {
 
 struct SearchResultUserCard: View {
     let pubkey: String
-    let user: NDKUserProfile
+    let user: NDKUserMetadata
     
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.medium) {

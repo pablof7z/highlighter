@@ -3,7 +3,7 @@ import NDKSwift
 
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
-    @State private var authManager = NDKAuthManager.shared
+    // Auth manager is now accessed through appState
     @State private var selectedTab = Tab.home
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     
@@ -12,7 +12,7 @@ struct ContentView: View {
     }
     
     var body: some View {
-        if !hasCompletedOnboarding || !authManager.isAuthenticated {
+        if !hasCompletedOnboarding || !appState.auth.isAuthenticated {
             OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)
                 .transition(.asymmetric(
                     insertion: .opacity,

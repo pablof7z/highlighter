@@ -704,7 +704,8 @@ struct SmartArticleImportView: View {
     }
     
     private func createArticleEvent(from article: ProcessedArticle) async -> NDKEvent? {
-        guard let ndk = appState.ndk,
+        let ndk = appState.ndk
+        guard
               let signer = appState.activeSigner else { return nil }
         
         // Create article event if needed

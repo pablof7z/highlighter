@@ -30,10 +30,10 @@ struct HighlightDiscoveryView: View {
     }
     
     private func loadHighlights() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        let highlightSource = ndk.observe(
-            filter: NDKFilter(kinds: [9802], limit: 100),
+        let highlightSource = ndk.subscribe(
+            filter: NDKFilter(kinds: [9802]),
             maxAge: 300,
             cachePolicy: .cacheWithNetwork
         )
@@ -55,7 +55,7 @@ struct HighlightDiscoveryView: View {
 
 struct DiscoveryHighlightCard: View {
     let highlight: HighlightEvent
-    @State private var author: NDKUserProfile?
+    @State private var author: NDKUserMetadata?
     @EnvironmentObject var appState: AppState
     
     var body: some View {
@@ -146,9 +146,9 @@ struct DiscoveryHighlightCard: View {
     }
     
     private func loadAuthor() async {
-        guard let ndk = appState.ndk else { return }
+        let ndk = appState.ndk
         
-        let profileDataSource = ndk.observe(
+        let profileDataSource = ndk.subscribe(
             filter: NDKFilter(
                 authors: [highlight.author],
                 kinds: [0]
@@ -158,9 +158,9 @@ struct DiscoveryHighlightCard: View {
         )
         
         for await event in profileDataSource.events {
-            if let fetchedProfile = JSONCoding.safeDecode(NDKUserProfile.self, from: event.content) {
+            if event.kind == 0 {
                 await MainActor.run {
-                    self.author = fetchedProfile
+                    self.author = NDKUserMetadata(event: event)
                 }
                 break
             }
