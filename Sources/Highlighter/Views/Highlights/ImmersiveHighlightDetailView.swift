@@ -2,6 +2,19 @@ import SwiftUI
 import NDKSwift
 import NDKSwiftUI
 
+// Engagement metrics model
+struct EngagementMetrics {
+    var likes: Int = 0
+    var reposts: Int = 0
+    var zaps: Int = 0
+    var zapAmount: Int = 0
+    var comments: Int = 0
+    
+    var totalEngagement: Int {
+        likes + reposts + comments + (zaps > 0 ? 1 : 0)
+    }
+}
+
 struct ImmersiveHighlightDetailView: View {
     let highlight: HighlightEvent
     @EnvironmentObject var appState: AppState
@@ -14,7 +27,7 @@ struct ImmersiveHighlightDetailView: View {
     @State private var showComments = false
     @State private var isBookmarked = false
     @State private var hasZapped = false
-    @State private var engagementMetrics = EngagementService.EngagementMetrics()
+    @State private var engagementMetrics = EngagementMetrics()
     @State private var relatedHighlights: [HighlightEvent] = []
     
     // Animation states
@@ -655,10 +668,7 @@ struct ImmersiveHighlightDetailView: View {
         }
         
         // Load engagement metrics
-        let metrics = await appState.engagementService.fetchEngagementBatch(for: [highlight.id])
-        await MainActor.run {
-            self.engagementMetrics = metrics[highlight.id] ?? EngagementService.EngagementMetrics()
-        }
+        await loadEngagementMetrics()
         
         // Load related highlights from the same source
         if let sourceUrl = highlight.source, let ndk = appState.ndk {
@@ -710,6 +720,57 @@ struct ImmersiveHighlightDetailView: View {
         }
     }
     
+    private func loadEngagementMetrics() async {
+        guard let ndk = appState.ndk else { return }
+        
+        var metrics = EngagementMetrics()
+        
+        // Fetch reactions (kind 7)
+        let reactionFilter = NDKFilter(
+            kinds: [7],
+            tags: ["e": Set([highlight.id])]
+        )
+        
+        let reactionSource = ndk.subscribe(
+            filter: reactionFilter,
+            maxAge: 300,
+            cachePolicy: .cacheOnly
+        )
+        
+        for await event in reactionSource.events {
+            if event.content == "+" || event.content == "❤️" || event.content == "👍" {
+                metrics.likes += 1
+            }
+        }
+        
+        await MainActor.run {
+            self.engagementMetrics = metrics
+        }
+    }
+    
+    private func toggleHighlightBookmark() async {
+        guard let ndk = appState.ndk,
+              let signer = appState.auth.activeSigner else { return }
+        
+        do {
+            // Create bookmark list event (NIP-51)
+            var tags: [[String]] = [["d", "bookmarks"]]
+            
+            // Add the highlight to bookmarks
+            tags.append(["e", highlight.id, "", "highlight"])
+            
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(30001)
+                .content("")
+                .tags(tags)
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(event)
+        } catch {
+            print("Failed to toggle bookmark: \(error)")
+        }
+    }
+    
     private func startAnimations() {
         withAnimation(.easeInOut(duration: 0.6)) {
             contentAppeared = true
@@ -745,7 +806,7 @@ struct ImmersiveHighlightDetailView: View {
         
         Task {
             do {
-                try await appState.bookmarkService.toggleHighlightBookmark(highlight)
+                await toggleHighlightBookmark()
             } catch {
                 // Revert the UI state on error
                 await MainActor.run {
@@ -898,9 +959,10 @@ struct RelatedHighlightCard: View {
 
 struct FollowButton: View {
     let pubkey: String
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
-        NDKUIFollowButton(pubkey: pubkey)
+        NDKUIFollowButton(ndk: appState.ndk, pubkey: pubkey)
             .buttonStyle(HighlighterFollowButtonStyle())
     }
 }

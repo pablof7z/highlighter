@@ -2,6 +2,19 @@ import SwiftUI
 import NDKSwift
 import NDKSwiftUI
 
+// Engagement metrics model
+struct EngagementMetrics {
+    var likes: Int = 0
+    var reposts: Int = 0
+    var zaps: Int = 0
+    var zapAmount: Int = 0
+    var comments: Int = 0
+    
+    var totalEngagement: Int {
+        likes + reposts + comments + (zaps > 0 ? 1 : 0)
+    }
+}
+
 struct SwipeableHighlightCard: View {
     let highlight: HighlightEvent
     let onSwipeRight: () -> Void
@@ -18,7 +31,7 @@ struct SwipeableHighlightCard: View {
     @State private var hapticTriggered = false
     @State private var glowAnimation = false
     @State private var particleAnimation = false
-    @State private var engagement: EngagementService.EngagementMetrics?
+    @State private var engagement: EngagementMetrics?
     
     // Gesture thresholds
     private let swipeThreshold: CGFloat = 120
@@ -96,12 +109,11 @@ struct SwipeableHighlightCard: View {
                 Menu {
                     Button(action: {
                         Task {
-                            try? await appState.bookmarkService.toggleHighlightBookmark(highlight)
+                            await toggleHighlightBookmark(highlight)
                             HapticManager.shared.impact(.light)
                         }
                     }) {
-                        Label(appState.bookmarkService.isHighlightBookmarked(highlight.id) ? "Unsave" : "Save", 
-                              systemImage: appState.bookmarkService.isHighlightBookmarked(highlight.id) ? "bookmark.fill" : "bookmark")
+                        Label("Save", systemImage: "bookmark")
                     }
                     Button(action: {
                         shareHighlight()
@@ -331,10 +343,77 @@ struct SwipeableHighlightCard: View {
     }
     
     private func loadEngagement() async {
-        let metrics = await appState.engagementService.fetchEngagement(for: highlight.id)
+        guard let ndk = appState.ndk else { return }
+        
+        var metrics = EngagementMetrics()
+        
+        // Fetch reactions (kind 7)
+        let reactionFilter = NDKFilter(
+            kinds: [7],
+            tags: ["e": Set([highlight.id])]
+        )
+        
+        // Count positive reactions
+        let reactionSource = ndk.subscribe(
+            filter: reactionFilter,
+            maxAge: 300,
+            cachePolicy: .cacheOnly
+        )
+        
+        for await event in reactionSource.events {
+            if event.content == "+" || event.content == "❤️" || event.content == "👍" {
+                metrics.likes += 1
+            }
+        }
         
         await MainActor.run {
             self.engagement = metrics
+        }
+    }
+    
+    private func toggleHighlightBookmark(_ highlight: HighlightEvent) async {
+        guard let ndk = appState.ndk,
+              let signer = appState.auth.activeSigner else { return }
+        
+        do {
+            // Create bookmark list event (NIP-51)
+            var tags: [[String]] = [["d", "bookmarks"]]
+            
+            // Add the highlight to bookmarks
+            tags.append(["e", highlight.id, "", "highlight"])
+            
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(30001)
+                .content("")
+                .tags(tags)
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(event)
+        } catch {
+            print("Failed to toggle bookmark: \(error)")
+        }
+    }
+    
+    private func archiveHighlight(_ highlight: HighlightEvent) async {
+        guard let ndk = appState.ndk,
+              let signer = appState.auth.activeSigner else { return }
+        
+        do {
+            // Create archive list event (NIP-51)
+            var tags: [[String]] = [["d", "archive"]]
+            
+            // Add the highlight to archive
+            tags.append(["e", highlight.id, "", "highlight"])
+            
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(30001)
+                .content("")
+                .tags(tags)
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(event)
+        } catch {
+            print("Failed to archive highlight: \(error)")
         }
     }
     
@@ -487,27 +566,63 @@ struct SwipeableCardStack: View {
     
     private func saveHighlight(_ highlight: HighlightEvent) {
         Task {
-            do {
-                // Toggle bookmark
-                try await appState.bookmarkService.toggleHighlightBookmark(highlight)
-                
-                // Show success feedback
-                HapticManager.shared.notification(.success)
-            } catch {
-                HapticManager.shared.notification(.error)
-            }
+            await toggleHighlightBookmark(highlight)
+            HapticManager.shared.notification(.success)
         }
     }
     
     private func archiveHighlight(_ highlight: HighlightEvent) {
         Task {
-            do {
-                try await appState.archiveService.archiveHighlight(highlight)
-                HapticManager.shared.notification(.success)
-            } catch {
-                HapticManager.shared.notification(.error)
-                // Archive failed - error feedback provided via haptics
-            }
+            await SwipeableHighlightCard.archiveHighlight(highlight, appState: appState)
+            HapticManager.shared.notification(.success)
+        }
+    }
+    
+    // Helper function for archiving from SwipeableCardStack
+    private static func archiveHighlight(_ highlight: HighlightEvent, appState: AppState) async {
+        guard let ndk = appState.ndk,
+              let signer = appState.auth.activeSigner else { return }
+        
+        do {
+            // Create archive list event (NIP-51)
+            var tags: [[String]] = [["d", "archive"]]
+            
+            // Add the highlight to archive
+            tags.append(["e", highlight.id, "", "highlight"])
+            
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(30001)
+                .content("")
+                .tags(tags)
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(event)
+        } catch {
+            print("Failed to archive highlight: \(error)")
+        }
+    }
+    
+    // Helper function for bookmarking from SwipeableCardStack
+    private func toggleHighlightBookmark(_ highlight: HighlightEvent) async {
+        guard let ndk = appState.ndk,
+              let signer = appState.auth.activeSigner else { return }
+        
+        do {
+            // Create bookmark list event (NIP-51)
+            var tags: [[String]] = [["d", "bookmarks"]]
+            
+            // Add the highlight to bookmarks
+            tags.append(["e", highlight.id, "", "highlight"])
+            
+            let event = try await NDKEventBuilder(ndk: ndk)
+                .kind(30001)
+                .content("")
+                .tags(tags)
+                .build(signer: signer)
+            
+            _ = try await ndk.publish(event)
+        } catch {
+            print("Failed to toggle bookmark: \(error)")
         }
     }
 }

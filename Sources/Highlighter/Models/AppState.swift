@@ -12,11 +12,8 @@ class AppState: ObservableObject {
     
     // Service Dependencies
     @Published private(set) var dataStreamManager = DataStreamManager()
-    @Published private(set) var bookmarkService = BookmarkService()
     @Published private(set) var commentService = CommentService()
-    @Published private(set) var engagementService = EngagementService()
     @Published private(set) var readingProgressService = ReadingProgressService()
-    @Published private(set) var archiveService = ArchiveService()
     
     // Content State - these need to be @Published for UI updates
     @Published var highlights: [HighlightEvent] = []
@@ -89,10 +86,7 @@ class AppState: ObservableObject {
     
     private func configureServices(ndk: NDK, signer: NDKSigner?) {
         dataStreamManager.configure(with: ndk)
-        bookmarkService.configure(with: ndk, signer: signer)
         commentService.configure(with: ndk, signer: signer)
-        engagementService.configure(with: ndk, signer: signer)
-        archiveService.configure(with: ndk, signer: signer)
         ImageUploadService.shared.configure(with: ndk, signer: signer)
     }
     
