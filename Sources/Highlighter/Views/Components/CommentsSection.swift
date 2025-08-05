@@ -352,8 +352,8 @@ struct EmptyCommentsView: View {
     }
 }
 
-// Enhanced comment row with animations and interactions
-struct EnhancedCommentRow: View {
+// Comment row with animations and interactions
+struct CommentRow: View {
     let comment: Comment
     let author: NDKUserMetadata?
     let reactions: CommentReactions
@@ -548,7 +548,7 @@ struct CommentRowWrapper: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            EnhancedCommentRow(
+            CommentRow(
                 comment: comment,
                 author: author,
                 reactions: reactions,
